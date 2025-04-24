@@ -64,7 +64,7 @@ const WorkModeDialog = ({ getIsOpen }) => {
       > */}
         <div className={`${style.backGroundStyle}`}>
           <div className={`${style.displayInCol}`}>
-            <div className={`${style.heading}  ${style.padding}`}>Select The Workspace You Would Like To Work With</div>
+            <div className={`${style.heading}  ${style.padding}`}>Select The Workspace You Would Like To Work In</div>
             {/* <img
               src={CrossPink}
               alt="cross"
@@ -77,7 +77,7 @@ const WorkModeDialog = ({ getIsOpen }) => {
                   userRole?.length % 2 === 0 ? style.twoColumnGrid :
                   style.threeColumnGrid
                 } 
-                ${style.padding}
+                ${style.padding} ${style.placeCenter}
               `}
              >
               {userRole?.includes("Staff Manager") && (
@@ -122,7 +122,22 @@ const WorkModeDialog = ({ getIsOpen }) => {
                     alt="Credentialing Committee"
                     className={`${style.crossStyle} ${style.cursorPointer}`}
                   />
-                  <p className={`${hoveredRole === "Credentialing Committee" ? style.roleTitleHover : style.roleTitle}  ${style.marginTop10}`}>Credentialing Committee</p>
+                  <p className={`${hoveredRole === "Credentialing Committee" ? style.roleTitleHover : style.roleTitle} ${style.marginTop10}`}>Credentialing Committee</p>
+                </div>
+              )}
+              {userRole?.includes("Credentialing Committee User") && (
+                <div
+                  className={`${style.justifyItem} ${style.backgroundRoleColor} ${style.cursorPointer}`}
+                  onClick={() => handleWorkModeSelection("Credentialing Committee User")}
+                  onMouseEnter={() => setHoveredRole("Credentialing Committee User")}
+                  onMouseLeave={() => setHoveredRole(null)}
+                >
+                  <img
+                    src={hoveredRole === "Credentialing Committee User" ? CCimgHover : CCimg}
+                    alt="Credentialing Committee User"
+                    className={`${style.crossStyle} ${style.cursorPointer}`}
+                  />
+                  <p className={`${hoveredRole === "Credentialing Committee User" ? style.roleTitleHover : style.roleTitle}  ${style.marginTop10}`}>Staff Manager's Credentialing Committee Workspace</p>
                 </div>
               )}
               {userRole?.includes("Chief Of Staff") && (
@@ -137,7 +152,7 @@ const WorkModeDialog = ({ getIsOpen }) => {
                     alt="Chief Of Staff"
                     className={`${style.crossStyle} ${style.cursorPointer}`}
                   />
-                  <p className={`${hoveredRole === "Chief Of Staff" ? style.roleTitleHover : style.roleTitle}`}>Chief Of Staff</p>
+                  <p className={`${hoveredRole === "Chief Of Staff" ? style.roleTitleHover : style.roleTitle} ${style.marginTop10}`}>Chief Of Staff</p>
                 </div>
               )}
                  {userRole?.includes("Entity Sys Admin") && (
@@ -152,7 +167,7 @@ const WorkModeDialog = ({ getIsOpen }) => {
                     alt="Entity Sys Admin"
                     className={`${style.crossStyle} ${style.cursorPointer}`}
                   />
-                  <p className={`${hoveredRole === "Entity Sys Admin" ? style.roleTitleHover : style.roleTitle}`}>System Administrator</p>
+                  <p className={`${hoveredRole === "Entity Sys Admin" ? style.roleTitleHover : style.roleTitle} ${style.marginTop10}`}>System Administrator</p>
                 </div>
               )}
             </div>

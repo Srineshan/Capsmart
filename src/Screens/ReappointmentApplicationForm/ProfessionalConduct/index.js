@@ -1,3 +1,5 @@
+// main professinaldisclosures
+
 import React, { useEffect, useState } from 'react';
 import ProgressCard from '../../../Components/ProgressCard';
 import ApplicationUserCard from '../../../Components/ApplicationUserCard';
@@ -17,6 +19,7 @@ import ReappointmentProgressCard from '../../../Components/ReappointmentProgress
 import ReappointmentJourneyDialog from '../../../Components/reappointmentJourneyDialog';
 import MenuIcon from "@mui/icons-material/Menu";
 import Close from './../../../images/close.png';
+import { Tooltip } from '@mui/material';
 
 const ProfessionalConduct = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [formSchema, setFormSchema] = useState();
@@ -34,6 +37,7 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, getPreApplication }) => 
     const [navigateBackURL, setNavigateBackURL] = useState();
     const [showJourneyDialog, setShowJourneyDialog] = useState(false);
     const [showInfo, setShowInfo] = useState(false);
+    let allMissingFields = [];
     useEffect(() => {
         if (basicForm && !formSchema) {
             getFormSchema()
@@ -64,11 +68,13 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, getPreApplication }) => 
 
     const getAllLabels = (data) => {
         let tempLabels = labels;
-        if (!tempLabels?.includes(data)) {
-            console.log(tempLabels, data, 'Metadata')
+        if (tempLabels?.filter(innerData => data?.path === innerData?.path)?.length === 0) {
+            console.log(tempLabels, data, 'Metadata9999')
             tempLabels.push(data);
         }
         setLabels(tempLabels);
+        console.log();
+        
     }
 
     const getIsSaveInProgressOpen = (value) => {
@@ -89,16 +95,60 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, getPreApplication }) => 
         }
     }
 
+    // const getSkipClicked = () => {
+    //     let missingKeys = [];
+    //     let keyValuePair = [];
+    //     let hasMandatoryMissingFields = [];
+    //     metadata?.map((data, index) => {
+    //         keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: labels[index] })
+    //     })
+    //     keyValuePair?.map(data => {
+    //         if (data?.value === "" || data?.value === null || data?.value === undefined || data?.value === 0) {
+    //             missingKeys.push(data)
+    //         }
+    //     })
+    //     if (getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.formalComplaintToLicensingBody`) === 'No' || getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.formalComplaintToLicensingBody`) === undefined) {
+    //         let filterKeys = [`forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.formalComplaintToLicensingBodyText`,`forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.formalComplaintToLicensingBodyFile`]
+    //         let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+    //         missingKeys = temp;
+    //     }
+    //     if (getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.presentlyInvestigatedByCPSO`) === 'No' || getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.presentlyInvestigatedByCPSO`) === undefined) {
+    //         let filterKeys = [`forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.presentlyInvestigatedByCPSOText`,`forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.presentlyInvestigatedByCPSOFile`]
+    //         let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+    //         missingKeys = temp;
+    //     }
+    //     if (getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.formalComplaintToLicensingBody`) === 'Yes' || getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.formalComplaintToLicensingBody`) === undefined) {
+    //         let filterKeys = [`forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.formalComplaintToLicensingBodyResponse`]
+    //         let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+    //         missingKeys = temp;
+    //     }
+    //     if (getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.presentlyInvestigatedByCPSO`) === 'Yes' || getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.presentlyInvestigatedByCPSO`) === undefined) {
+    //         let filterKeys = [`forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.presentlyInvestigatedByCPSOResponse`]
+    //         let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+    //         missingKeys = temp;
+    //     }
+    //     setWarningFields(missingKeys)
+    //     allMissingFields = missingKeys;
+    //     // hasMandatoryMissingFields = missingKeys?.find(field => field?.label?.mandatory === true);
+
+    //     // if (hasMandatoryMissingFields) {
+    //     //     setShowValidationDialog(true)
+    //     // } else {
+    //         handleSubmitApplicationReq(" ", allMissingFields)
+    //     // }
+    //     console.log(keyValuePair, 'Metadata23456', missingKeys, isEdited , hasMandatoryMissingFields , allMissingFields)
+    // }
+
     const getSkipClicked = (value) => {
         if (value) {
-            handleSubmitApplicationReq("skipped")
+            getMissingFields("skipped");
         }
-    }
+    };
 
-
-    const getMissingFields = () => {
+    const getMissingFields = (data) => {
         let missingKeys = [];
         let keyValuePair = [];
+        let hasMandatoryMissingFields = [];
         metadata?.map((data, index) => {
             keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: labels[index] })
         })
@@ -108,31 +158,54 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, getPreApplication }) => 
             }
         })
         if (getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.formalComplaintToLicensingBody`) === 'No' || getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.formalComplaintToLicensingBody`) === undefined) {
-            let filterKeys = [`forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.formalComplaintToLicensingBodyText`]
+            let filterKeys = [`forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.formalComplaintToLicensingBodyText`,`forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.formalComplaintToLicensingBodyFile`,`forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.formalComplaintToLicensingBodyResponse`]
             let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
             missingKeys = temp;
         }
         if (getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.presentlyInvestigatedByCPSO`) === 'No' || getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.presentlyInvestigatedByCPSO`) === undefined) {
-            let filterKeys = [`forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.presentlyInvestigatedByCPSOText`]
+            let filterKeys = [`forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.presentlyInvestigatedByCPSOText`,`forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.presentlyInvestigatedByCPSOFile`,`forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.presentlyInvestigatedByCPSOResponse`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.formalComplaintToLicensingBody`) === 'Yes') {
+            let filterKeys = [`forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.formalComplaintToLicensingBodyResponse`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.presentlyInvestigatedByCPSO`) === 'Yes') {
+            let filterKeys = [`forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.presentlyInvestigatedByCPSOResponse`]
             let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
             missingKeys = temp;
         }
         setWarningFields(missingKeys)
-        if (missingKeys?.length !== 0) {
-            setShowValidationDialog(true)
-        } else {
-            handleSubmitApplicationReq()
+        allMissingFields = missingKeys;
+        hasMandatoryMissingFields = missingKeys?.find(field => field?.label?.mandatory === true);
+
+        if (data === "skipped") {
+            handleSubmitApplicationReq();
         }
-        console.log(keyValuePair, 'Metadata', missingKeys)
+
+        if(data !== "skipped"){
+            if (hasMandatoryMissingFields) {
+            setShowValidationDialog(true);
+          } else {
+            handleSubmitApplicationReq();
+          }
+        }
+        
+        console.log(keyValuePair, 'ProfessionalConductMetadata', missingKeys, isEdited , hasMandatoryMissingFields , allMissingFields)
+
     }
 
-    const handleSubmitApplicationReq = async (data) => {
-        if (isEdited) {
+    const handleSubmitApplicationReq = async () => {
+        // if (isEdited) {
+            console.log("MissingProfessionalConduct", allMissingFields)
             let temp = {
                 schemaId: basicForm?.forms?.[formIndex]?.schemaId,
                 data: basicForm?.forms?.[formIndex]?.data,
-                unFilledFields: warningFields?.map(data => data?.label),
-                acknowledged: data === "skipped" ? false : true
+                unFilledFields: allMissingFields?.map(field => JSON.stringify(field)),
+                // unFilledFields: warningFields?.map(data => data?.label),
+                acknowledged: true,
             }
             await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
                 .then(response => {
@@ -152,15 +225,15 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, getPreApplication }) => 
                     console.log(error)
                     ErrorToaster("Unexpected Error Updating Application");
                 });
-        } else {
-            if (sessionStorage.getItem('fromSummary') === "true") {
-                navigate(-1);
-            }
-            else {
-                navigate(navigateURL)
+        // } else {
+        //     if (sessionStorage.getItem('fromSummary') === "true") {
+        //         navigate(-1);
+        //     }
+        //     else {
+        //         navigate(navigateURL)
 
-            }
-        }
+        //     }
+        // }
     }
 
     const getValueByPath = (obj, path) => {
@@ -192,10 +265,14 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, getPreApplication }) => 
                         )}
                     </div>
                     <div className={style.threeColForButton}>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
-                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleBackClick()}>BACK</div>
-                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => getMissingFields()}>CONTINUE</div>
+                    <Tooltip title={"Click to Skip This Step and Continue Later"} arrow>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div></Tooltip>
+                        <Tooltip title={"Click to Save your Progress and Continue later"} arrow>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div></Tooltip>
+                        <Tooltip title={"Click to Go Back to the Previous Step"} arrow>
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleBackClick()}>BACK</div></Tooltip>
+                        <Tooltip title={"Click to Proceed to the Next Step"} arrow>
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => getMissingFields()}>CONTINUE</div></Tooltip>
                     </div>
                 </div>
                 <div>
@@ -224,12 +301,16 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, getPreApplication }) => 
                     </div>
 
                     <div className={`${style.stickyContainer} ${isSaveInProgressOpen || showValidationDialog || showJourneyDialog ? style.hiddenStickyContainer : ""}`}>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
-                        <div className={`${style.saveInProgress} ${style.marginTop10}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
+                    <Tooltip title={"Click to Skip This Step and Continue Later"} arrow>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div></Tooltip>
+                        <Tooltip title={"Click to Save your Progress and Continue later"} arrow>
+                        <div className={`${style.saveInProgress} ${style.marginTop10}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div></Tooltip>
                         <div className={style.twoColForButton}>
-                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleBackClick()}>BACK</div>
+                        <Tooltip title={"Click to Go Back to the Previous Step"} arrow>
+                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleBackClick()}>BACK</div></Tooltip>
                             {/* <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowJourneyDialog(true)}>CONTINUE</div> */}
-                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()}>CONTINUE</div>
+                            <Tooltip title={"Click to Proceed to the Next Step"} arrow>
+                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()}>CONTINUE</div></Tooltip>
                         </div>
                     </div>
 
@@ -241,7 +322,9 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, getPreApplication }) => 
                 )
             }
             {showValidationDialog && (
-                <ValidationDialog getIsOpen={getIsValidationDialogOpen} labelList={warningFields} getSkipClicked={getSkipClicked} />
+                <ValidationDialog getIsOpen={getIsValidationDialogOpen} 
+                labelList={warningFields?.filter(field => field?.label?.mandatory !== false)} 
+                getSkipClicked={getSkipClicked} />
             )}
             {showJourneyDialog && (
                 <ReappointmentJourneyDialog getIsOpen={getIsShowReappointmentJourneyDialog} title={`Great Job So Far! You're On The Right Track.`} img={JourneyStep3} formIndex={formIndex} basicForm={basicForm} continueClick={getMissingFields} />

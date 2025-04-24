@@ -10,9 +10,10 @@ import TextField from '@mui/material/TextField';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, subMonths, subDays, startOfQuarter, endOfQuarter, startOfYear, endOfYear, add, sub } from 'date-fns';
+import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, subMonths, addMonths,subYears,subDays, startOfQuarter, endOfQuarter, startOfYear, endOfYear, add, sub } from 'date-fns';
 import SaveReport from './saveReport';
 import { useParams } from 'react-router-dom';
+import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
 
 import style from './index.module.scss';
 
@@ -54,22 +55,35 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
     const [user, setUsers] = useState([]);
     const [from, setFrom] = useState(startOfMonth(new Date()));
     const [to, setTo] = useState(endOfMonth(new Date()));
+    const generateMonthYearOptions = () => {
+        const startDate = subYears(new Date(), 1); // Start from one year ago
+        const monthsList = [];
+      
+        for (let i = 0; i < 24; i++) { // 12 previous months + 12 upcoming months
+          const date = addMonths(startDate, i);
+          monthsList.push(format(date, "MMMM yyyy")); // Format: March 2025
+        }
+      
+        return monthsList;
+      };
+    const monthOptions = generateMonthYearOptions();
+    const [selectedMonth, setSelectedMonth] = useState(format(new Date(), "MMMM yyyy")); // Default: Current month & year
     let reportFilter = JSON.parse(sessionStorage.getItem('reportFilter'));
     let reportCategory = {
         activitiesOrServices: 'ACTIVITY',
         addOnActivities: 'ACTIVITY',
         timesheetProcessingSummary: 'TIMESHEET',
         listingOfTimesheetsNotPaid: 'TIMESHEET',
-        submittedTimesheetsPaymentStatus: 'TIMESHEET',
+        staffReappointmentTracker: 'TIMESHEET',
         paymentsProcessingSummary: 'TIMESHEET',
-        upcomingContractRenewals: 'CONTRACT',
-        oneTimeContract: 'CONTRACT',
+        staffReappointmentsNotes: 'CONTRACT',
+        staffReappointments: 'CONTRACT',
         contractDocumentsOnFile: 'CONTRACT',
         contractsWithABusinessEntity: 'CONTRACT',
         multiProviderContractsList: 'CONTRACT',
         currentRemitToAddressForActiveContracts: 'CONTRACT',
         nonCompliant: 'CONTRACT',
-        activityStatusTracker: 'CONTRACT',
+        staffbyTypes: 'CONTRACT',
         paymentProcessingStatusTracker: 'TIMESHEET'
     }
     const defaultOption = ''
@@ -109,7 +123,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         setUserId(userDetail?.id);
         setUserDetails();
         getActivityLogger();
-        getContractAndUserList();
+        // getContractAndUserList();
         if (reportType === 'paymentProcessingStatusTracker') {
             getTimesheetIntervals()
         }
@@ -128,13 +142,15 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         }
     }
 
+    console.log("222222222222222222222222222222",departments)
+
     const getActivityLogger = async () => {
         const { data: user } = await GET(`user-management-service/user?userType=CONTRACTED_SERVICE_PROVIDER_USER`);
         setContractedServiceProviders(user);
     }
     console.log(currentUserDetails?.roles?.length >= 2, currentUserDetails?.roles?.length === 1, currentUserDetails?.roles?.filter(data => data?.roleName === "Activity Logger")?.length === 0)
     const getContractAndUserList = async () => {
-        // if (reportType !== "upcomingContractRenewals" && reportType !== "oneTimeContract" &&
+        // if (reportType !== "staffReappointmentsNotes" && reportType !== "staffReappointments" &&
         //     reportType !== "contractDocumentsOnFile" && reportType !== "multiProviderContractsList" &&
         //     reportType !== "contractsWithABusinessEntity" && reportType !== "currentRemitToAddressForActiveContracts") {
         if (currentUserDetails?.roles?.length >= 2 || (currentUserDetails?.roles?.length === 1 && currentUserDetails?.roles?.filter(data => data?.roleName === "Activity Logger")?.length === 0)) {
@@ -272,12 +288,12 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         // }
     }, [selectedSitesToSend]);
 
-    useEffect(() => {
-        getContractAndUserList();
-    }, isMyReport ? [currentUserDetails] : [selectedSitesToSend, selectedDepartmentsToSend, selectedContractsToSend, currentUserDetails]);
+    // useEffect(() => {
+    //     getContractAndUserList();
+    // }, isMyReport ? [currentUserDetails] : [selectedSitesToSend, selectedDepartmentsToSend, selectedContractsToSend, currentUserDetails]);
 
     useEffect(() => {
-        if (reportType === "activitiesOrServices" || reportType === "paymentsProcessingSummary" || reportType === "addOnActivities" || reportType === "timesheetProcessingSummary" || reportType === "listingOfTimesheetsNotPaid" || reportType === "submittedTimesheetsPaymentStatus") {
+        if (reportType === "activitiesOrServices" || reportType === "paymentsProcessingSummary" || reportType === "addOnActivities" || reportType === "timesheetProcessingSummary" || reportType === "listingOfTimesheetsNotPaid" || reportType === "staffReappointmentTracker") {
             const quarter = Math.floor((new Date().getMonth() / 3));
             const lastyear = new Date(new Date().getFullYear() - 1, 0, 1);
             if (reportingTimePeriod === 'Current Week') {
@@ -448,6 +464,10 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         setSelectedContractedServiceProviderToSend([]);
     };
 
+    const handleMonthChange = (event) => {
+        setSelectedMonth(event.target.value);
+      };
+
     const handleChangeContracts = (event) => {
         const {
             target: { value },
@@ -502,16 +522,18 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
 
     return (
         <div>
-            <div className={`${style.leftCard} ${style.marginTop20} ${style.bigCalendarLeftCardWidth}`}>
-                <div className={style.reportTypeTextStyle}>Reporting Parameter Selection For This Report</div>
-                {(reportType === "upcomingContractRenewals" || reportType === "oneTimeContract" ||
+            <div className={`${style.leftCard} ${style.leftCardDisplay} ${style.marginTop20} ${style.bigCalendarLeftCardWidth}`}>
+                <div className={`${style.reporttypeLeftBackGround}`}>
+                  <div className={style.reportLeftTextStyle}>Save Parameter Selection As My Report</div>
+                </div>
+                {(reportType === "staffReappointmentsNotes" || reportType === "staffReappointments" ||
                     reportType === "contractDocumentsOnFile" || reportType === "multiProviderContractsList" ||
                     reportType === "contractsWithABusinessEntity" || reportType === "currentRemitToAddressForActiveContracts" ||
-                    reportType === 'nonCompliant' || reportType === "activityStatusTracker" || reportType === "paymentProcessingStatusTracker") ? (
+                    reportType === 'nonCompliant' || reportType === "staffbyTypes" || reportType === "paymentProcessingStatusTracker" || reportType === "staffReappointmentTracker") ? (
                     <>
-                        {reportType === "upcomingContractRenewals" && (
+                        {/* {reportType === "staffReappointmentsNotes" && (
                             <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                                <InputLabel id="demo-simple-select-standard-label1">{reportType === "upcomingContractRenewals" ? 'Renewal' : 'Expiration'} Time Frame</InputLabel>
+                                <InputLabel id="demo-simple-select-standard-label1">{reportType === "staffReappointmentsNotes" ? 'Renewal' : 'Expiration'} Time Frame</InputLabel>
                                 <Select
                                     labelId="demo-simple-select-standard-label1"
                                     id="demo-simple-select-standard1"
@@ -520,14 +542,14 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                     label="Renewal Time Frame"
                                     disabled={isMyReport || isLoading}
                                 >
-                                    <MenuItem value={30} disabled={isMyReport || isLoading}>{reportType === "upcomingContractRenewals" ? 'Renewal' : 'Expiration'} Within Next 30 days</MenuItem>
-                                    <MenuItem value={60} disabled={isMyReport || isLoading}>{reportType === "upcomingContractRenewals" ? 'Renewal' : 'Expiration'} Within Next 60 days</MenuItem>
-                                    <MenuItem value={90} disabled={isMyReport || isLoading}>{reportType === "upcomingContractRenewals" ? 'Renewal' : 'Expiration'} Within Next 90 days</MenuItem>
+                                    <MenuItem value={30} disabled={isMyReport || isLoading}>{reportType === "staffReappointmentsNotes" ? 'Renewal' : 'Expiration'} Within Next 30 days</MenuItem>
+                                    <MenuItem value={60} disabled={isMyReport || isLoading}>{reportType === "staffReappointmentsNotes" ? 'Renewal' : 'Expiration'} Within Next 60 days</MenuItem>
+                                    <MenuItem value={90} disabled={isMyReport || isLoading}>{reportType === "staffReappointmentsNotes" ? 'Renewal' : 'Expiration'} Within Next 90 days</MenuItem>
                                 </Select>
                             </FormControl>
-                        )}
-                        <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                            <InputLabel id="demo-multiple-name-label2">Site</InputLabel>
+                        )} */}
+                        {/* <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                            <InputLabel id="demo-multiple-name-label2" className={style.headingtextStyle}>Site</InputLabel>
                             <Select
                                 labelId="demo-multiple-name-label2"
                                 id="demo-multiple-name2"
@@ -550,9 +572,25 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                     </MenuItem>
                                 ))}
                             </Select>
+                        </FormControl> */}
+                       <FormControl variant="standard" sx={{ m: 1, width: "250px", marginTop: "20px" }}>
+                        <InputLabel id="month-selector-label">Reporting Period</InputLabel>
+                        <Select
+                            labelId="month-selector-label"
+                            id="month-selector"
+                            value={selectedMonth}
+                            onChange={handleMonthChange}
+                            disabled={isMyReport || isLoading}
+                        >
+                            {monthOptions.map((month) => (
+                            <MenuItem key={month} value={month}>
+                                {month}
+                            </MenuItem>
+                            ))}
+                        </Select>
                         </FormControl>
                         <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                            <InputLabel id="demo-multiple-name-label2">Departments</InputLabel>
+                            <InputLabel id="demo-multiple-name-label2" className={style.headingtextStyle}>Departments</InputLabel>
                             <Select
                                 labelId="demo-multiple-name-label2"
                                 id="demo-multiple-name2"
@@ -563,7 +601,51 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 disabled={isMyReport || isLoading}
                             >
                                 {departments?.length >= 2 && (
-                                    <MenuItem value={defaultOption} disabled={isMyReport || isLoading}>All Departments</MenuItem>
+                                    <MenuItem value={defaultOption} disabled={isMyReport || isLoading}>All</MenuItem>
+                                )}
+                                {departments?.map((data) => (
+                                    // <MenuItem
+                                    //     key={data?.dept?.id}
+                                    //     value={data?.dept?.id}
+                                    // >
+                                    //     {`${data?.site?.siteName?.siteName} - ${data?.dept?.departmentName?.name}`}
+                                    // </MenuItem>
+                                    <MenuItem
+                                        key={data?.id}
+                                        value={data?.id}
+                                        disabled={isMyReport || isLoading}
+                                    >
+                                        {data?.departmentName?.name}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                        {/* <CommonSelectField
+                            label="Departments"
+                            value={selectedDepartments}
+                            onChange={handleChangeDepartments}
+                            firstOptionLabel={departments?.length >= 2 ? "All" : ""}
+                            firstOptionValue={defaultOption}
+                            valueList={departments?.map((data) => data?.id)}
+                            labelList={departments?.map((data) => data?.departmentName?.name)}
+                            disabledList={departments?.map(() => isMyReport || isLoading)}
+                            disabledSelect={isMyReport || isLoading}
+                            multiple={true}
+                            // widthValue="250px"
+                        /> */}
+                        <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                            <InputLabel id="demo-multiple-name-label2" className={style.headingtextStyle}>Division / Speciality</InputLabel>
+                            <Select
+                                labelId="demo-multiple-name-label2"
+                                id="demo-multiple-name2"
+                                multiple
+                                value={selectedDepartments}
+                                onChange={handleChangeDepartments}
+                                MenuProps={MenuProps}
+                                disabled={isMyReport || isLoading}
+                            >
+                                {departments?.length >= 2 && (
+                                    <MenuItem value={defaultOption} disabled={isMyReport || isLoading}>All</MenuItem>
                                 )}
                                 {departments?.map((data) => (
                                     // <MenuItem
@@ -583,7 +665,69 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                             </Select>
                         </FormControl>
                         <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                            <InputLabel id="demo-multiple-name-label5">Contract</InputLabel>
+                            <InputLabel id="demo-multiple-name-label2" className={style.headingtextStyle}>Staff Type</InputLabel>
+                            <Select
+                                labelId="demo-multiple-name-label2"
+                                id="demo-multiple-name2"
+                                multiple
+                                value={selectedDepartments}
+                                onChange={handleChangeDepartments}
+                                MenuProps={MenuProps}
+                                disabled={isMyReport || isLoading}
+                            >
+                                {departments?.length >= 2 && (
+                                    <MenuItem value={defaultOption} disabled={isMyReport || isLoading}>All</MenuItem>
+                                )}
+                                {departments?.map((data) => (
+                                    // <MenuItem
+                                    //     key={data?.dept?.id}
+                                    //     value={data?.dept?.id}
+                                    // >
+                                    //     {`${data?.site?.siteName?.siteName} - ${data?.dept?.departmentName?.name}`}
+                                    // </MenuItem>
+                                    <MenuItem
+                                        key={data?.id}
+                                        value={data?.id}
+                                        disabled={isMyReport || isLoading}
+                                    >
+                                        {data?.departmentName?.name}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                        <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                            <InputLabel id="demo-multiple-name-label2" className={style.headingtextStyle}>Privilege Category</InputLabel>
+                            <Select
+                                labelId="demo-multiple-name-label2"
+                                id="demo-multiple-name2"
+                                multiple
+                                value={selectedDepartments}
+                                onChange={handleChangeDepartments}
+                                MenuProps={MenuProps}
+                                disabled={isMyReport || isLoading}
+                            >
+                                {departments?.length >= 2 && (
+                                    <MenuItem value={defaultOption} disabled={isMyReport || isLoading}>All Categories</MenuItem>
+                                )}
+                                {departments?.map((data) => (
+                                    // <MenuItem
+                                    //     key={data?.dept?.id}
+                                    //     value={data?.dept?.id}
+                                    // >
+                                    //     {`${data?.site?.siteName?.siteName} - ${data?.dept?.departmentName?.name}`}
+                                    // </MenuItem>
+                                    <MenuItem
+                                        key={data?.id}
+                                        value={data?.id}
+                                        disabled={isMyReport || isLoading}
+                                    >
+                                        {data?.departmentName?.name}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                        {/* <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                            <InputLabel id="demo-multiple-name-label5" className={style.headingtextStyle}>Contract</InputLabel>
                             <Select
                                 labelId="demo-multiple-name-label5"
                                 id="demo-multiple-name5"
@@ -606,8 +750,8 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                     </MenuItem>
                                 ))}
                             </Select>
-                        </FormControl>
-                        {(reportType === "contractDocumentsOnFile" || reportType === "currentRemitToAddressForActiveContracts" || reportType === "activityStatusTracker") && (
+                        </FormControl> */}
+                        {(reportType === "contractDocumentsOnFile" || reportType === "currentRemitToAddressForActiveContracts") && (
                             <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                                 <InputLabel id="demo-multiple-name-label5">Contracted Service Provider</InputLabel>
                                 <Select
@@ -728,7 +872,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                     </Select>
                                 </FormControl>
                             )}
-                        {reportType === "upcomingContractRenewals" && (
+                        {/* {reportType === "staffReappointmentsNotes" && (
                             <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                                 <InputLabel id="demo-simple-select-standard-label4">Contract Continuation Policy</InputLabel>
                                 <Select
@@ -747,7 +891,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                     <MenuItem value={'ONETIMECONTRACTTERMINATEONEXPIRATION'} disabled={isMyReport || isLoading}>One Time Contract - Terminate On Expiration</MenuItem>
                                 </Select>
                             </FormControl>
-                        )}
+                        )} */}
                         {reportType === 'nonCompliant' && (
                             <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                                 <InputLabel id="demo-simple-select-standard-label4">Proof of Documentation</InputLabel>
@@ -767,7 +911,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                             </FormControl>
                         )}
                     </>
-                ) : (reportType === "activitiesOrServices" || reportType === "paymentsProcessingSummary" || reportType === "addOnActivities" || reportType === "timesheetProcessingSummary" || reportType === "listingOfTimesheetsNotPaid" || reportType === "submittedTimesheetsPaymentStatus") ? (
+                ) : (reportType === "activitiesOrServices" || reportType === "paymentsProcessingSummary" || reportType === "addOnActivities" || reportType === "timesheetProcessingSummary" || reportType === "listingOfTimesheetsNotPaid") ? (
                     <>
                         <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                             <InputLabel id="demo-multiple-name-label1">Reporting Time Period</InputLabel>
@@ -853,7 +997,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 </Select>
                             </FormControl>
                         )} */}
-                        {/* {(reportType === "activitiesOrServices" || reportType === "addOnActivities" || reportType === "timesheetProcessingSummary" || reportType === "listingOfTimesheetsNotPaid" || reportType === "submittedTimesheetsPaymentStatus" || reportType === "paymentsProcessingSummary") && (
+                        {/* {(reportType === "activitiesOrServices" || reportType === "addOnActivities" || reportType === "timesheetProcessingSummary" || reportType === "listingOfTimesheetsNotPaid" || reportType === "staffReappointmentTracker" || reportType === "paymentsProcessingSummary") && (
                             <>
                                 {reportType !== "paymentsProcessingSummary" && ( */}
                         <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>

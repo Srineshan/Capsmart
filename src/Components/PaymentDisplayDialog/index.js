@@ -6,6 +6,7 @@ import style from "./index.module.scss";
 import LoadingScreen from "../LoadingScreen";
 import { add, format, isValid, parse, sub, differenceInDays } from 'date-fns';
 import ForwardToInboxIcon from '@mui/icons-material/ForwardToInbox';
+import { Tooltip } from "@mui/material";
 
 const EmailTemplateDialog = ({ getIsOpen }) => {
   const [applicationId, setApplicationId] = useState(
@@ -51,12 +52,14 @@ const EmailTemplateDialog = ({ getIsOpen }) => {
                 <div className={style.Headertext}>
                   Application Payment Status
                 </div>
+                <Tooltip title={"Click to Close"} arrow>
                 <img
                   src={CrossPink}
                   alt="cross"
                   className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft}`}
                   onClick={() => getIsOpen(false)}
                 />
+                </Tooltip>
               </div>
             </div>
           </div>

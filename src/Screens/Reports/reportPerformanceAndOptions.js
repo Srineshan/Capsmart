@@ -50,8 +50,16 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
     const openInfo = Boolean(anchorElInfo);
 
     const reportTitleList = {
-        upcomingContractRenewals: 'Upcoming Contract Renewals',
-        oneTimeContract: "List of One Time Contracts that will Terminate on Expiration",
+        // staffReappointmentsNotes: 'Upcoming Contract Renewals',
+        staffReappointmentsNotes: 'Staff Reappointments to Process',
+        locumStaffRenewalNotes: 'Locum Staff Extensions Renewals To Review',
+        // staffReappointments: "List of One Time Contracts that will Terminate on Expiration",
+        staffReappointments: "Staff Reappointments to Process",
+        locumStaffRenewal: "Locum Staff Extensions Renewals To Review",
+        // staffReappointmentTracker: 'Submitted Timesheets Payment Status',
+        staffReappointmentTracker: 'Staff Reappointment Status Tracker',
+        locumStaffRenewalStatusTracker: 'Locum Staff Renewal Status Tracker',
+        staffbyTypes: 'Staff Reappointments Application Status',
         scheduledActivity: "Scheduled Activity/ Services - Forcasted To Actual",
         scheduledActivityByContract: "Scheduled Activity/ Services - Forcasted To Actual By Contract",
         complianceStatus: "Proof Of Documentation Status By Contractor",
@@ -60,7 +68,6 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
         compensationCostAnalysis: 'Compensation Cost Analysis',
         timesheetProcessingSummary: 'Timesheet Processing Summary',
         listingOfTimesheetsNotPaid: 'Listing Of Timesheets Not Paid',
-        submittedTimesheetsPaymentStatus: 'Submitted Timesheets Payment Status',
         addOnActivities: 'Add On Activities/ Services Requests Status Summary',
         activitiesOrServices: 'Activities/ Services Log Status Summary',
         contractDocumentsOnFile: 'Contract Documents On File',
@@ -77,12 +84,12 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
 
     return (
         <div>
-            <div className={`${style.spaceBetween} ${style.alignCenter}`}>
+            <div className={`${style.spaceBetween} ${style.alignCenter} ${style.IconHeaderBackgroundStyle}`}>
                 <div className={`${style.displayInRow} ${style.cardPadding} ${style.alignCenter}`}>
-                    <div className={style.reportTypeTextStyle}>
+                    <div className={style.reportTypeTextNotificationStyle}>
                         {reportTitleList[reportType]}
                     </div>
-                    <div onMouseEnter={(e) => setAnchorElInfo(e.currentTarget)} onMouseLeave={() => setAnchorElInfo(null)} aria-owns={openInfo ? 'mouse-over-popover' : undefined} aria-haspopup="true">
+                    {/* <div onMouseEnter={(e) => setAnchorElInfo(e.currentTarget)} onMouseLeave={() => setAnchorElInfo(null)} aria-owns={openInfo ? 'mouse-over-popover' : undefined} aria-haspopup="true">
                         <img src={Info} className={`${style.infoStyle} ${style.marginTop5} ${style.marginLeft10}`} />
                         <Popover
                             id={'mouse-over-popover'}
@@ -100,7 +107,7 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                         >
                             <div className={style.popoverStyle}>{reportTitleList[reportType]}</div>
                         </Popover>
-                    </div>
+                    </div> */}
                 </div>
                 <div className={` ${style.margin20}`}>
                     <div className={style.displayInRow}>
@@ -112,7 +119,7 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                             <Icon icon="star" size={20} color="#D3D3D3" className={style.marginLeft} />
                             <Icon icon="star" size={20} color="#D3D3D3" className={style.marginLeft} />
                         </div> */}
-                        <div className={`${style.iconPadding} ${style.cursorPointer} ${style.marginLeft20}`}
+                        {/* <div className={`${style.iconPadding} ${style.cursorPointer} ${style.marginLeft20}`}
                             onMouseEnter={(e) => setAnchorElRefresh(e.currentTarget)} onMouseLeave={() => setAnchorElRefresh(null)} aria-owns={openRefresh ? 'mouse-over-popover' : undefined}
                             aria-haspopup="true">
                             <img src={ReportsRefresh} alt="" className={`${style.reportsActions} ${style.marginTop5}`} onClick={() => { setShowReportRefreshingDialog(true); window.location.reload() }} />
@@ -132,15 +139,14 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                             >
                                 <div className={style.popoverStyle}>Click To Refresh This Report</div>
                             </Popover>
-                        </div>
+                        </div> */}
                         {/* <div className={`${style.iconPadding} ${style.cursorPointer}`}>
                             <ShareOutlinedIcon style={{color:"#2C2C2C"}} onClick={() => setShowShareDialog(true)} />
                         </div> */}
-                        <div className={`${style.iconPadding} ${style.cursorPointer} ${isNoData && style.disabledCursor}`}
+                        {/* <div className={`${style.iconPadding} ${style.cursorPointer} ${isNoData && style.disabledCursor}`}
                             onMouseEnter={(e) => !isNoData ? setAnchorElSchedule(e.currentTarget) : {}} onMouseLeave={() => !isNoData ? setAnchorElSchedule(null) : {}} aria-owns={openSchedule ? 'mouse-over-popover' : undefined}
                             aria-haspopup="true">
                             <img src={ReportsSchedule} alt="" className={`${style.reportsActions} ${style.marginTop5}`} onClick={() => !isNoData ? setShowSaveReport(true) : {}} />
-                            {/* <CalendarTodayIcon style={{ color: "#2C2C2C" }} onClick={() => !isNoData ? setShowSaveReport(true) : {}} /> */}
                             <Popover
                                 id={'mouse-over-popover'}
                                 sx={{
@@ -157,7 +163,7 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                             >
                                 <div className={style.popoverStyle}>Click To Schedule This Report</div>
                             </Popover>
-                        </div>
+                        </div> */}
                         {/* <div className={`${style.iconPadding} ${style.cursorPointer}`} onClick={() => setShowSaveReportOutput(true)}
                             onMouseEnter={(e) => setAnchorElSave(e.currentTarget)} onMouseLeave={() => setAnchorElSave(null)} aria-owns={openSave ? 'mouse-over-popover' : undefined}
                             aria-haspopup="true">

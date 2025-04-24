@@ -20,6 +20,7 @@ import ApplicationSubmitDialog from '../../../Components/ApplicationSubmitDialog
 import ApplicationReferenceDocuments from '../../../Components/ApplicationReferenceDocuments';
 import SaveInProgressDialog from '../../../Components/SaveInProgressDialog';
 import { dataLoadingGIF } from '../../../utils/formatting';
+import { Tooltip } from '@mui/material';
 
 const ScheduleB = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApplication }) => {
     const [isChecked, setIsChecked] = useState(false);
@@ -99,7 +100,7 @@ const ScheduleB = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
     const addNewDocument = async (file) => {
         console.log(file, file?.name, 'Test')
         let fileName = {
-            "fileName": 'acknowledgement.pdf'
+            "fileName": 'scheduleB.pdf'
         };
         const formData = new FormData();
 
@@ -114,7 +115,7 @@ const ScheduleB = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
             try {
                 const response = await POST(`application-management-service/application/${applicationId}/files`, formData);
                 console.log(response?.data);
-                uploadedFile = response?.data;
+                uploadedFile = response?.data?.file;
             } catch (error) {
                 console.error(error);
                 return null;
@@ -173,14 +174,15 @@ const ScheduleB = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
         navigate(navigateBackURL)
     }
 
-    const handleSubmitApplicationReq = async () => {
+    const handleSubmitApplicationReq = async (data) => {
         setIsLoading(true)
-        if (isSigned) {
+        // if (isSigned) {
             let temp = {
                 schemaId: basicForm?.forms?.[formIndex]?.schemaId,
-                data: !isEdited ? basicForm?.forms?.[formIndex]?.data : { esignDate: isSigned ? name + " " + currentDate : '' },
-                acknowledged: isSigned,
-                esign: { esign: isSigned ? encryptedText : '', name: isSigned ? name : '', signedDate: isSigned ? currentDate : '' }
+                data: data !== "skipped" ? (!isEdited ? basicForm?.forms?.[formIndex]?.data : { esignDate: isSigned ? `${name} ${currentDate}` : '' }) : {},
+                acknowledged: true,
+                unFilledFields: data === "skipped" ? ["skipped"] : ["continue"],
+                esign: data !== "skipped" ? { esign: isSigned ? encryptedText : '', name: isSigned ? name : '', signedDate: isSigned ? currentDate : '' } : null
             }
             await PUT(`application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
                 .then(response => {
@@ -201,15 +203,15 @@ const ScheduleB = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
                     console.log(error)
                     ErrorToaster("Unexpected Error Updating Application");
                 });
-        }
-        else {
-            setIsLoading(false)
-            if (sessionStorage.getItem('fromSummary') === 'true') {
-                navigate(-1);
-            } else {
-                navigate(navigateURL)
-            }
-        }
+        // }
+        // else {
+        //     setIsLoading(false)
+        //     if (sessionStorage.getItem('fromSummary') === 'true') {
+        //         navigate(-1);
+        //     } else {
+        //         navigate(navigateURL)
+        //     }
+        // }
     }
     return (
         <div>
@@ -283,11 +285,15 @@ const ScheduleB = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
                         <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                     </div>
                     <div className={`${style.stickyContainer} ${isSaveInProgressOpen || showJourneyDialog ? style.hiddenStickyContainer : ""}`}>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => handleSubmitApplicationReq()}>SKIP FOR NOW</div>
-                        <div className={`${style.saveInProgress} ${style.marginTop10}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
+                    <Tooltip title={"Click to Skip This Step and Continue Later"} arrow>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => handleSubmitApplicationReq("skipped")}>SKIP FOR NOW</div></Tooltip>
+                        <Tooltip title={"Click to Save your Progress and Continue later"} arrow>
+                        <div className={`${style.saveInProgress} ${style.marginTop10}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div></Tooltip>
                         <div className={style.twoColForButton}>
-                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleBackClick()}>BACK</div>
-                            <div className={`${style.continue} ${style.marginTop10} ${!isSigned ? style.disabledButton : ''}`} onClick={!isSigned ? () => { } : () => { handleSubmitApplicationReq() }} >CONTINUE</div>
+                        <Tooltip title={"Click to Go Back to the Previous Step"} arrow>
+                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleBackClick()}>BACK</div></Tooltip>
+                            <Tooltip title={isSigned ? "Click to Proceed to the Next Step" : ""} arrow>
+                            <div className={`${style.continue} ${style.marginTop10} ${!isSigned ? style.disabledButton : ''}`} onClick={!isSigned ? () => { } : () => { handleSubmitApplicationReq() }} >CONTINUE</div></Tooltip>
                         </div>
                     </div>
                     <div className={style.marginTop}>

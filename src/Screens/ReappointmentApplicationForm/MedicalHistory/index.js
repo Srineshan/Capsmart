@@ -17,6 +17,7 @@ import ReappointmentProgressCard from '../../../Components/ReappointmentProgress
 import ReappointmentJourneyDialog from '../../../Components/reappointmentJourneyDialog';
 import MenuIcon from "@mui/icons-material/Menu";
 import Close from './../../../images/close.png';
+import { Tooltip } from '@mui/material';
 
 const MedicalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [formSchema, setFormSchema] = useState();
@@ -34,6 +35,7 @@ const MedicalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [navigateBackURL, setNavigateBackURL] = useState();
     const [showJourneyDialog, setShowJourneyDialog] = useState(false);
     const [showInfo, setShowInfo] = useState(false);
+    let allMissingFields = [];
     useEffect(() => {
         if (basicForm && !formSchema) {
             getFormSchema()
@@ -62,14 +64,17 @@ const MedicalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
         setMetadata(temp);
     }
 
+
     const getAllLabels = (data) => {
         let tempLabels = labels;
-        if (!tempLabels?.includes(data)) {
-            console.log(tempLabels, data, 'Metadata')
+        if (tempLabels?.filter(innerData => data?.path === innerData?.path)?.length === 0) {
+            console.log(tempLabels, data, 'Metadata9999')
             tempLabels.push(data);
         }
         setLabels(tempLabels);
+        console.log();    
     }
+
 
     const getIsSaveInProgressOpen = (value) => {
         setIsSaveInProgressOpen(value);
@@ -91,13 +96,14 @@ const MedicalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
 
     const getSkipClicked = (value) => {
         if (value) {
-            handleSubmitApplicationReq("skipped")
+            getMissingFields("skipped");
         }
-    }
+    };
 
-    const getMissingFields = () => {
+    const getMissingFields = (data) => {
         let missingKeys = [];
         let keyValuePair = [];
+        let hasMandatoryMissingFields = [];
         metadata?.map((data, index) => {
             keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: labels[index] })
         })
@@ -107,7 +113,7 @@ const MedicalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
             }
         })
         if (getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.medicalDisclosures.anyHealthProblems`) === 'No' || getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.medicalDisclosures.anyHealthProblems`) === undefined) {
-            let filterKeys = [`forms[${formIndex}].data.disclosures.medicalDisclosures.anyHealthProblemsText`]
+            let filterKeys = [`forms[${formIndex}].data.disclosures.medicalDisclosures.anyHealthProblemsText`,`forms[${formIndex}].data.disclosures.medicalDisclosures.anyHealthProblemsFile`,`forms[${formIndex}].data.disclosures.medicalDisclosures.nameOfFacility`,`forms[${formIndex}].data.disclosures.medicalDisclosures.treatingPhysicianOrProvider`,`forms[${formIndex}].data.disclosures.medicalDisclosures.emailId`,`forms[${formIndex}].data.disclosures.medicalDisclosures.cellPhone`,`forms[${formIndex}].data.disclosures.medicalDisclosures.anyHealthProblemsResponse`]
             let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
             missingKeys = temp;
         }
@@ -116,20 +122,40 @@ const MedicalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
             let temp = missingKeys?.filter(data => !medicalHistoryRequiredKeys?.includes(data?.key));
             missingKeys = temp;
         }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.medicalDisclosures.anyHealthProblems`) === 'Yes') {
+            let filterKeys = [`forms[${formIndex}].data.disclosures.medicalDisclosures.anyHealthProblemsResponse`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
+        // if (getValueByPath(basicForm, `forms[${formIndex}].data.impactingPractice.medicalHistory.abilityToPractice`) === 'Yes') {
+        //     let medicalHistoryRequiredKeys = [`forms[${formIndex}].data.impactingPractice.medicalHistory.nameOfFacility`]
+        //     let temp = missingKeys?.filter(data => !medicalHistoryRequiredKeys?.includes(data?.key));
+        //     missingKeys = temp;
+        // }
       
     const emailPath = `forms[${formIndex}].data.disclosures.medicalDisclosures.emailId`;
     const emailValue = getValueByPath(basicForm, emailPath);
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    if (emailValue && !emailRegex.test(emailValue)) {
-        missingKeys.push({ key: emailPath, label: "Email Id (Invalid Format)" });
+    if (emailValue && emailValue!=="" && !emailRegex.test(emailValue)) {
+        missingKeys.push({ key: emailPath, label: {
+            label:"Email Id (Invalid Email Format)",
+            mandatory:true,
+            path:emailPath
+        },
+    value:emailValue });
     }
 
     
     const phonePath = `forms[${formIndex}].data.disclosures.medicalDisclosures.cellPhone`;
     const phoneValue = getValueByPath(basicForm, phonePath);
     const phoneRegex = /^\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/;
-    if (phoneValue && !phoneRegex.test(phoneValue)) {
-        missingKeys.push({ key: phonePath, label: "Cell Phone (Invalid Canadian Format)" });
+    if (phoneValue && phoneValue !== "" && !phoneRegex.test(phoneValue)) {
+        missingKeys.push({ key: phonePath, label: {
+            label:"Cell Phone (Invalid Canadian Format)",
+            mandatory:true,
+            path:phonePath
+        },
+    value:phoneValue });
     }
 
     
@@ -137,21 +163,34 @@ const MedicalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
     console.log("Phone Value:", phoneValue);
     console.log("Missing Fields:", missingKeys);
 
-        if (missingKeys?.length !== 0) {
-            setShowValidationDialog(true)
-        } else {
-            handleSubmitApplicationReq()
-        }
-        setWarningFields(missingKeys)
-        console.log(keyValuePair, 'Metadata', missingKeys)
+    setWarningFields(missingKeys);
+    allMissingFields = missingKeys;
+    hasMandatoryMissingFields = missingKeys?.find(field => field?.label?.mandatory === true);
+
+    if (data === "skipped") {
+        handleSubmitApplicationReq();
+    }
+
+    if(data !== "skipped"){
+        if (hasMandatoryMissingFields) {
+        setShowValidationDialog(true);
+      } else {
+        handleSubmitApplicationReq();
+      }
+    }
+        console.log(keyValuePair, 'medicalHistoryMetadata', missingKeys, hasMandatoryMissingFields, allMissingFields)
     }
 
     const handleSubmitApplicationReq = async (data) => {
-        if (isEdited) {
+        // if (isEdited) {
+            console.log("MissingmedicalHistory", allMissingFields)
             let temp = {
                 schemaId: basicForm?.forms?.[formIndex]?.schemaId,
                 data: basicForm?.forms?.[formIndex]?.data,
-                unFilledFields: warningFields?.map(data => data?.label),
+                unFilledFields: allMissingFields?.map(field => JSON.stringify(field)),
+                // unFilledFields: Array.isArray(warningFields) 
+                // ? warningFields.map(field => JSON.stringify(field))
+                // : [],
                 acknowledged: data === "skipped" ? false : true
             }
             await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
@@ -172,15 +211,15 @@ const MedicalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
                     console.log(error)
                     ErrorToaster("Unexpected Error Updating Application");
                 });
-        } else {
-            if (sessionStorage.getItem('fromSummary') === "true") {
-                navigate(-1);
-            }
-            else {
-                navigate(navigateURL)
+        // } else {
+        //     if (sessionStorage.getItem('fromSummary') === "true") {
+        //         navigate(-1);
+        //     }
+        //     else {
+        //         navigate(navigateURL)
 
-            }
-        }
+        //     }
+        // }
     }
 
     const getValueByPath = (obj, path) => {
@@ -212,10 +251,14 @@ const MedicalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
                         )}
                     </div>
                     <div className={style.threeColForButton}>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
-                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleBackClick()}>BACK</div>
-                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => getMissingFields()}>CONTINUE</div>
+                    <Tooltip title={"Click to Skip This Step and Continue Later"} arrow>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div></Tooltip>
+                        <Tooltip title={"Click to Save your Progress and Continue later"} arrow>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div></Tooltip>
+                        <Tooltip title={"Click to Go Back to the Previous Step"} arrow>
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleBackClick()}>BACK</div></Tooltip>
+                        <Tooltip title={"Click to Proceed to the Next Step"} arrow>
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => getMissingFields()}>CONTINUE</div></Tooltip>
                     </div>
                 </div>
                 <div>
@@ -242,12 +285,16 @@ const MedicalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
                         </div>
                     </div>
                     <div className={`${style.stickyContainer} ${isSaveInProgressOpen || showValidationDialog || showJourneyDialog ? style.hiddenStickyContainer : ""}`}>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
-                        <div className={`${style.saveInProgress} ${style.marginTop10}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
+                    <Tooltip title={"Click to Skip This Step and Continue Later"} arrow>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div></Tooltip>
+                        <Tooltip title={"Click to Save your Progress and Continue later"} arrow>
+                        <div className={`${style.saveInProgress} ${style.marginTop10}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div></Tooltip>
                         <div className={style.twoColForButton}>
-                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleBackClick()}>BACK</div>
+                        <Tooltip title={"Click to Go Back to the Previous Step"} arrow>
+                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleBackClick()}>BACK</div></Tooltip>
                             {/* <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowJourneyDialog(true)}>CONTINUE</div> */}
-                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()}>CONTINUE</div>
+                            <Tooltip title={"Click to Proceed to the Next Step"} arrow>
+                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()}>CONTINUE</div></Tooltip>
                         </div>
                     </div>
 
@@ -259,7 +306,9 @@ const MedicalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
                 )
             }
             {showValidationDialog && (
-                <ValidationDialog getIsOpen={getIsValidationDialogOpen} labelList={warningFields} getSkipClicked={getSkipClicked} />
+                <ValidationDialog getIsOpen={getIsValidationDialogOpen} 
+                labelList={warningFields?.filter(field => field?.label?.mandatory !== false)}
+                getSkipClicked={getSkipClicked} />
             )}
             {showJourneyDialog && (
                 <ReappointmentJourneyDialog getIsOpen={getIsShowReappointmentJourneyDialog} title={`Great Job So Far! You're On The Right Track.`} img={JourneyStep3} formIndex={formIndex} basicForm={basicForm} continueClick={getMissingFields} />

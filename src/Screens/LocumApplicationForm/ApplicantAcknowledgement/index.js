@@ -15,9 +15,14 @@ import { format } from 'date-fns';
 import { SuccessToaster, ErrorToaster } from '../../../utils/toaster';
 import ESignature from '../../../Components/ESignature';
 import ReappointmentProgressCard from '../../../Components/ReappointmentProgressCard';
+import ReappointmentJourneyDialog from '../../../Components/reappointmentJourneyDialog';
 import ApplicationSubmitDialog from '../../../Components/ApplicationSubmitDialog';
 import ApplicationReferenceDocuments from '../../../Components/ApplicationReferenceDocuments';
 import SaveInProgressDialog from '../../../Components/SaveInProgressDialog';
+import { dataLoadingGIF } from '../../../utils/formatting';
+import MenuIcon from "@mui/icons-material/Menu";
+import Close from './../../../images/close.png';
+import LocumProgressCard from '../../../Components/LocumProgressCard';
 import LocumJourneyDialog from '../../../Components/LocumJourneyDialog';
 
 const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApplication }) => {
@@ -38,6 +43,9 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
     const { applicationId, section, step } = useParams();
     const [showJourneyDialog, setShowJourneyDialog] = useState(false);
     const [isSaveInProgressOpen, setIsSaveInProgressOpen] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [showInfo, setShowInfo] = useState(false);
+    const [navigateBackURL, setNavigateBackURL] = useState();
     useEffect(() => {
         if (basicForm && !formSchema) {
             getFormSchema()
@@ -46,10 +54,16 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
         // setEncryptedText(basicForm?.forms?.[formIndex]?.esign?.esign)
         setSignText(basicForm?.forms?.[formIndex]?.acknowledged ? basicForm?.forms?.[formIndex]?.esign?.esign : '');
         setIsSigned((basicForm?.forms?.[formIndex]?.esign?.esign !== undefined && basicForm?.forms?.[formIndex]?.acknowledged) ? true : false);
+        if (basicForm !== undefined && formIndex !== undefined) {
+            setNavigateBackURL(`/locumApplicationForm/${applicationId}/${basicForm?.forms?.[formIndex - 1]?.formCategory}/${btoa(basicForm?.forms?.[formIndex - 1]?.schemaCategory)}`);
+        }
         // setDecryptedText(CryptoJS.AES.decrypt(basicForm?.forms?.[formIndex]?.esign?.esign, publicKey).toString(CryptoJS.enc.Utf8))
     }, [basicForm, formIndex])
 
     useEffect(() => {
+        if (sessionStorage.getItem('fromSummary') === true || sessionStorage.getItem('fromSummary') === 'true') {
+            setShowJourneyDialog(true);
+        }
         sessionStorage.setItem('fromSummary', false);
     }, [])
 
@@ -62,19 +76,21 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
     }, [formSchema])
 
     const getFormSchema = async () => {
-        if (basicForm?.formSchemas?.[formIndex]?.id !== undefined) {
+        if (basicForm?.forms?.[formIndex]?.schemaId !== undefined) {
             const { data: form } = await GET(
-                `application-management-service/formSchema/${basicForm?.formSchemas?.[formIndex]?.id}`
+                `application-management-service/formSchema/${basicForm?.forms?.[formIndex]?.schemaId}`
             );
             setFormSchema(form)
         }
     }
 
     const getRenderedContent = async () => {
-        const { data: content } = await GET(
-            `application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[formIndex]?.id}/render`
-        );
-        setFormContent(content)
+        if (basicForm?.forms?.[formIndex]?.id !== undefined) {
+            const { data: content } = await GET(
+                `application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[formIndex]?.id}/render`
+            );
+            setFormContent(content)
+        }
     }
 
     const getIsShowReappointmentJourneyDialog = (value) => {
@@ -103,7 +119,7 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
             try {
                 const response = await POST(`application-management-service/application/${applicationId}/files`, formData);
                 console.log(response?.data);
-                uploadedFile = response?.data;
+                uploadedFile = response?.data?.file;
             } catch (error) {
                 console.error(error);
                 return null;
@@ -112,6 +128,7 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
             try {
                 const response = await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}/addFileToForm`, uploadedFile);
                 console.log(response?.data);
+                setIsLoading(false)
                 return response?.data;
             } catch (error) {
                 console.error(error);
@@ -134,10 +151,10 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
             jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
             pagebreak: { mode: ["avoid-all", "css", "legacy"] },
         };
-        const nestedElements = element.querySelectorAll('.applicationCardScrollStyle');
-        nestedElements.forEach((_element) => {
-            _element.classList.remove('applicationCardScrollStyle');
-        });
+        // const nestedElements = element.querySelectorAll('.applicationCardScrollStyle');
+        // nestedElements.forEach((_element) => {
+        //     _element.classList.remove('applicationCardScrollStyle');
+        // });
         html2pdf().set(opt).from(element).outputPdf("blob").then((pdfBlob) => {
             addNewDocument(pdfBlob);
         });
@@ -157,7 +174,12 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
         }
     }
 
+    const handleBackClick = async () => {
+        navigate(navigateBackURL)
+    }
+
     const handleSubmitApplicationReq = async () => {
+        setIsLoading(true)
         if (isSigned) {
             let temp = {
                 schemaId: basicForm?.forms?.[formIndex]?.schemaId,
@@ -180,11 +202,13 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
                     // }
                 })
                 .catch((error) => {
+                    setIsLoading(false)
                     console.log(error)
                     ErrorToaster("Unexpected Error Updating Application");
                 });
         }
         else {
+            setIsLoading(false)
             // if (sessionStorage.getItem('fromSummary') === 'true') {
             //     navigate(-1);
             // } else {
@@ -194,13 +218,18 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
     }
     return (
         <div>
-            <div className={style.applicationScreenGrid}>
-                <ReappointmentProgressCard step={'STEP 1'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={32} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} basicForm={basicForm} />
-                <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
-            </div>
-            <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
+            {isLoading && (
+                <div
+                    className={`${style.verticalAlignCenter} ${style.justifyCenter} ${style.loadingOverlay}`}
+                >
+                    <img src={dataLoadingGIF} alt="" className={style.fileLoadingStyle} />
+                </div>
+            )}
+            {showInfo && <div className={style.bgdrop} onClick={() => setShowInfo(false)}></div>}
+            <div className={`${style.applicationScreenGrid} ${showInfo ? "blurredBackground" : ""}`}>
                 <div>
-                    <div className={`${style.applicationCardStyle} ${style.applicationCardScrollStyle}`} ref={targetRef}>
+                    <LocumProgressCard step={'STEP 1'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={32} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} basicForm={basicForm} />
+                    <div className={`${style.applicationCardStyle} ${style.applicationCardScrollStyle} ${style.marginTop}`} ref={targetRef}>
                         <div className={`${style.marginTop} ${style.justifyCenter}`}>
                             <img src={logo} alt="Hospital Logo" className={`${style.logo}`} />
                         </div>
@@ -248,24 +277,43 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
                         )}
                     </div>
                     <div className={style.threeColForButton}>
-                        {/* <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div> */}
-                        {/* <div className={`${style.continue} ${style.marginTop}`} onClick={() => navigate(-1)}>BACK</div>
+                        <div></div>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
-                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => { handleSubmitApplicationReq(); setShowJourneyDialog(true) }}>CONTINUE</div> */}
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleBackClick()}>BACK</div>
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => { handleSubmitApplicationReq(); setShowJourneyDialog(true) }}>CONTINUE</div>
                     </div>
                 </div>
                 <div>
-                    <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
+                    {!showInfo && (
+                        <div>
+                            <div className={`${style.toggleButton} ${isSaveInProgressOpen || showJourneyDialog ? style.hidden : ""}`} onClick={() => setShowInfo(!showInfo)}>
+                                <MenuIcon className={style.toggleIcon} />
+                            </div>
+                            <div className={`${style.headerData} ${isSaveInProgressOpen || showJourneyDialog ? style.hidden : ""}`}>
+                                <span style={{ marginLeft: '20px' }}>Confirm Your Acknowledgement And Agreement</span>
+                            </div>
+                        </div>
+                    )}
+                    <div>
+                        <div className={`${style.infoContainer} ${showInfo ? style.show : ""}`}>
+                            <img src={Close} alt="Close" className={style.closeIcon} onClick={() => setShowInfo(false)} />
+                            <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
+                            <div className={style.marginTop}>
+                                <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
+                            </div>
+                            <div className={style.marginTop}>
+                                <ApplicationReferenceDocuments />
+                            </div>
+                        </div>
+                    </div>
                     <div className={`${style.stickyContainer} ${isSaveInProgressOpen || showJourneyDialog ? style.hiddenStickyContainer : ""}`}>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                         <div className={style.twoColForButton}>
-                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
+                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleBackClick()}>BACK</div>
                             <div className={`${style.continue} ${style.marginTop10}`} onClick={() => { handleSubmitApplicationReq(); setShowJourneyDialog(true) }} >CONTINUE</div>
                         </div>
                     </div>
-                    <div className={style.marginTop}>
-                        <ApplicationReferenceDocuments />
-                    </div>
+
                 </div>
                 {showJourneyDialog && (
                     <LocumJourneyDialog getIsOpen={getIsShowReappointmentJourneyDialog} title={`Mission Accomplished! You're A Champion`} img={JourneyStep10} formIndex={formIndex} basicForm={basicForm} continueClick={() => { }} />

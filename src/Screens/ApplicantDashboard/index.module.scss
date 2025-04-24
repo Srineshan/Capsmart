@@ -4,7 +4,7 @@
 .backgroundDashboard {
   background: transparent radial-gradient(at 2% -8%, #F5F8F8 0%, #BDD4DA 66%, #06617A 100%) 0% 0% no-repeat padding-box;
   opacity: 1;
-  height: 100vh;
+  height: calc(100vh - 60px);
   overflow: scroll;
 }
 
@@ -21,6 +21,10 @@
 .flexGap {
   display: flex;
   gap: 5px;
+}
+
+.gap {
+  gap: 30px;
 }
 
 .flexGap10 {
@@ -99,6 +103,10 @@
   margin-left: 5px;
 }
 
+.marginLeft10 {
+  margin-left: 10px;
+}
+
 .paddingAllSide {
   padding: 0px 0px 0px 0px !important;
 }
@@ -112,14 +120,14 @@
 
 .greeting {
   text-align: left;
-  font: normal normal bold 20px/34px Proxima Nova;
+  font: normal normal bold 20px/34px proxima-nova;
   letter-spacing: 0px;
   color: #737575;
 }
 
 .userName {
   text-align: left;
-  font: normal normal bold 28px/34px Proxima Nova;
+  font: normal normal bold 28px/34px proxima-nova;
   letter-spacing: 0px;
   color: #737575;
 }
@@ -132,44 +140,40 @@
 }
 
 .header {
-  justify-content: space-between;
+  // justify-content: space-between;
   align-items: center;
   background: white;
   border-radius: 10px;
   margin-bottom: 20px;
-  width: 100%
+  width: 100%;
+  align-content: center;
 }
 
 .notificationText {
   text-align: left;
-  font: normal normal normal 20px/24px Proxima Nova;
+  font: normal normal normal 16px/14px proxima-nova;
   letter-spacing: 0px;
-  color: #454747;
+  color: #171A1A;
   opacity: 1;
   margin-left: 15px;
 }
 
 .notificationNumber {
   text-align: left;
-  font: normal normal bold 17px/21px Proxima Nova;
+  font: normal normal bold 18px/22px proxima-nova;
   letter-spacing: 0px;
   color: #454747;
-  opacity: 0.6;
-  align-content: center;
+  opacity: 1;
 }
 
 .viewButton {
-  background: #06617A 0% 0% no-repeat padding-box;
-  border: 0.4000000059604645px solid #FFFFFF;
-  border-radius: 8px;
-  opacity: 1;
-  padding: 0px 30px;
-  text-align: left;
-  font: normal normal bold 20px/24px Proxima Nova;
+  text-align: center;
+  text-decoration: underline;
+  font: normal normal bold 14px/30px proxima-nova;
   letter-spacing: 0px;
-  color: #FFFFFF;
+  color: #06617A;
   text-transform: capitalize;
-  align-content: center;
+  opacity: 1;
 }
 
 .taskBoardShadow {
@@ -177,6 +181,7 @@
   border-radius: 8px;
   padding: 5px;
   width: 100%;
+  margin-bottom: 30px;
   // margin-left: 10px;
 }
 
@@ -187,22 +192,22 @@
   // flex-direction: column;
   padding: 10px;
   width: 100%;
-  min-height: calc(100vh - 200px);
-  max-height: calc(100vh - 200px) !important;
+  // min-height: calc(100vh - 200px);
+  // max-height: calc(100vh - 200px) !important;
   overflow: scroll;
+  height: calc(100vh - 110px);
   // margin-left: 10px;
 }
 
 .addTask {
   background: rgb(6, 97, 122, 0.06);
   border-radius: 8px;
-  padding: 10px;
+  padding: 5px;
   text-align: center;
-  font: normal normal bold 14px/30px Proxima Nova;
+  font: normal normal bold 14px/30px proxima-nova;
   letter-spacing: 0px;
   color: #06617A;
   text-transform: capitalize;
-  opacity: 1;
   display: flex;
   justify-content: center;
 }
@@ -211,37 +216,102 @@
   background-color: rgba(255, 230, 230, 0.4);
   border-radius: 10px;
   width: 25%;
-  // height: calc(100vh - 40px);
+  position: relative;
+  padding-top: 5px;
+  padding-left: 15px;
+  padding-right: 15px;
+  // height: calc(100vh - 140px);
+  // overflow: scroll;
+}
+
+.pastDueHeader {
+  background-color: #FF6562;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
 }
 
 .ongoing {
   background-color: rgba(255, 244, 204, 0.4);
   border-radius: 10px;
   width: 25%;
-  height: calc(100vh - 220px);
-  overflow: scroll;
-  // height: 100vh;
+  position: relative;
+  padding-top: 5px;
+  padding-left: 15px;
+  padding-right: 15px;
+  // height: calc(100vh - 140px);
+  // overflow: scroll;
+}
+
+.ongoingHeader {
+  background-color: #FFC100;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
 }
 
 .notStarted {
-  background-color: rgba(230, 240, 255, 0.4);
+  background-color: rgba(115, 117, 117, 0.06);
   border-radius: 10px;
   width: 25%;
-  // height: calc(100vh - 40px);
-  // height: 100vh;
+  position: relative;
+  padding-top: 5px;
+  padding-left: 15px;
+  padding-right: 15px;
+  // height: calc(100vh - 140px);
+  // overflow: scroll;
+}
+
+.notStartedHeader {
+  background-color: #7A7E7E;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
 }
 
 .completed {
   background-color: rgba(217, 246, 217, 0.4);
   border-radius: 10px;
   width: 25%;
-  // height: calc(100vh - 40px);
-  // height: 100vh;
+  position: relative;
+  padding-top: 5px;
+  padding-left: 15px;
+  padding-right: 15px;
+  // height: calc(100vh - 140px);
+  // overflow: scroll;
+}
+
+.completedHeader {
+  background-color: #14B15A;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+.tasksScroll {
+  height: calc(100vh - 190px);
+  overflow: scroll;
 }
 
 .columnTitlePastDue {
   text-align: left;
-  font: normal normal bold 14px/30px Proxima Nova;
+  font: normal normal bold 14px/30px proxima-nova;
   letter-spacing: 0px;
   color: #FF6562;
   text-transform: capitalize;
@@ -251,7 +321,7 @@
 
 .columnTitleOngoing {
   text-align: left;
-  font: normal normal bold 14px/30px Proxima Nova;
+  font: normal normal bold 14px/30px proxima-nova;
   letter-spacing: 0px;
   color: #FFC100;
   text-transform: capitalize;
@@ -261,7 +331,7 @@
 
 .columnTitleNotYet {
   text-align: left;
-  font: normal normal bold 14px/30px Proxima Nova;
+  font: normal normal bold 14px/30px proxima-nova;
   letter-spacing: 0px;
   color: #737575;
   text-transform: capitalize;
@@ -271,7 +341,7 @@
 
 .columnTitleCompleted {
   text-align: left;
-  font: normal normal bold 14px/30px Proxima Nova;
+  font: normal normal bold 14px/30px proxima-nova;
   letter-spacing: 0px;
   color: #14B15A;
   text-transform: capitalize;
@@ -349,7 +419,7 @@
 
 .weekTextStyle {
   text-align: left;
-  font: normal normal normal 10px/30px Proxima Nova;
+  font: normal normal normal 10px/30px proxima-nova;
   letter-spacing: 0px;
   color: #171A1A;
   text-transform: capitalize;
@@ -376,7 +446,7 @@
 
 .taskType {
   text-align: left;
-  font: normal normal 600 8px/18px Proxima Nova;
+  font: normal normal 600 8px/18px proxima-nova;
   letter-spacing: 0.8px;
   color: #737575;
   text-transform: uppercase;
@@ -387,7 +457,7 @@
 
 .taskTitle {
   text-align: left;
-  font: normal normal bold 14px/18px Proxima Nova;
+  font: normal normal bold 14px/18px proxima-nova;
   letter-spacing: 0px;
   color: #171A1A;
   opacity: 1;
@@ -395,7 +465,7 @@
 
 .assignedBy {
   text-align: left;
-  font: normal normal normal 12px/16px Proxima Nova;
+  font: normal normal normal 12px/16px proxima-nova;
   letter-spacing: 0px;
   color: #171A1A;
   opacity: 0.7;
@@ -403,7 +473,7 @@
 
 .date {
   text-align: left;
-  font: normal normal bold 12px/16px Proxima Nova;
+  font: normal normal bold 12px/16px proxima-nova;
   letter-spacing: 0px;
   color: #171A1A;
   opacity: 0.7;
@@ -417,7 +487,7 @@
 
 .daysToGoStyle {
   text-align: right;
-  font: normal normal bold 10px/16px Proxima Nova;
+  font: normal normal bold 10px/16px proxima-nova;
   letter-spacing: 0px;
   color: #171A1A;
   opacity: 0.7;
@@ -425,7 +495,7 @@
 
 .commentStyle {
   text-align: left;
-  font: normal normal normal 10px/16px Proxima Nova;
+  font: normal normal normal 10px/16px proxima-nova;
   letter-spacing: 0px;
   color: #171A1A;
   opacity: 0.7;
@@ -473,7 +543,7 @@
 
 .sidebarWidgetText {
   text-align: left;
-  font: normal normal normal 10px/16px Proxima Nova;
+  font: normal normal normal 10px/16px proxima-nova;
   letter-spacing: 0px;
   color: #737575;
   text-transform: capitalize;
@@ -482,7 +552,7 @@
 
 .sidebarWidgetNumber {
   text-align: left;
-  font: normal normal normal 10px/16px Proxima Nova;
+  font: normal normal normal 10px/16px proxima-nova;
   letter-spacing: 0px;
   color: #737575;
   text-transform: capitalize;
@@ -492,7 +562,7 @@
 
 .count {
   text-align: right;
-  font: normal normal bold 24px/29px Proxima Nova;
+  font: normal normal bold 24px/29px proxima-nova;
   letter-spacing: 0px;
   color: #737575;
   opacity: 1;
@@ -501,7 +571,7 @@
 
 .titleStyle {
   text-align: left;
-  font: normal normal bold 12px/15px Proxima Nova;
+  font: normal normal bold 12px/15px proxima-nova;
   letter-spacing: 0px;
   color: #737575;
   opacity: 1;
@@ -509,7 +579,7 @@
 
 .titleStyleActive {
   text-align: left;
-  font: normal normal bold 12px/15px Proxima Nova;
+  font: normal normal bold 12px/15px proxima-nova;
   letter-spacing: 0px;
   color: #06617A;
   opacity: 1;
@@ -522,7 +592,7 @@
   flex-direction: column;
   padding: 10px;
   width: 100%;
-  height: calc(100vh - 220px);
+  height: calc(100vh - 130px);
   overflow: scroll;
 }
 
@@ -536,7 +606,7 @@
   padding: 10px;
 }
 
-.logo {
+.logoNotification {
   position: relative;
   width: auto;
   height: 30px;
@@ -548,7 +618,7 @@
   background-color: rgba(154, 175, 181, 0.3);
   border-radius: 2px;
   text-align: left;
-  font: italic normal bold 12px/16px Proxima Nova;
+  font: italic normal bold 12px/16px proxima-nova;
   letter-spacing: 0px;
   color: #06617A;
   text-transform: capitalize;
@@ -557,7 +627,7 @@
 
 .departmentType {
   text-align: left;
-  font: normal normal medium 16px/16px Proxima Nova;
+  font: normal normal medium 16px/16px proxima-nova;
   letter-spacing: 0px;
   color: #454747;
   text-transform: capitalize;
@@ -566,7 +636,7 @@
 
 .trackApplication {
   text-align: right;
-  font: normal normal bold 10px/18px Proxima Nova;
+  font: normal normal bold 10px/18px proxima-nova;
   letter-spacing: 1px;
   color: #06617A;
   text-transform: uppercase;
@@ -575,7 +645,7 @@
 
 .trackApplication1 {
   text-align: left;
-  font: normal normal bold 10px/18px Proxima Nova;
+  font: normal normal bold 10px/18px proxima-nova;
   letter-spacing: 1px;
   color: #06617A;
   text-transform: uppercase;
@@ -594,7 +664,7 @@
 
 .DashboardTitle {
   text-align: left;
-  font: normal normal bold 14px/18px Proxima Nova;
+  font: normal normal bold 14px/18px proxima-nova;
   letter-spacing: 0px;
   color: #737575;
   opacity: 1;
@@ -602,7 +672,7 @@
 
 .DashboardDescription {
   text-align: left;
-  font: normal normal normal 12px Proxima Nova;
+  font: normal normal normal 12px proxima-nova;
   letter-spacing: 0.38px;
   color: #737575;
   opacity: 1;
@@ -610,7 +680,7 @@
 
 .recordTextStyle {
   text-align: right;
-  font: normal normal bold 16px/18px Proxima Nova;
+  font: normal normal bold 16px/18px proxima-nova;
   letter-spacing: 1.6px;
   color: #06617A;
   text-transform: uppercase;
@@ -619,7 +689,7 @@
 
 .approvedDate {
   text-align: right;
-  font: normal normal normal 12px/16px Proxima Nova;
+  font: normal normal normal 12px/16px proxima-nova;
   letter-spacing: 0px;
   color: #171A1A;
   opacity: 0.7;
@@ -664,7 +734,7 @@
   object-fit: contain;
 }
 
-.smallLogo {
+.smallLogo1 {
   position: relative;
   width: auto;
   height: 15px;
@@ -673,4 +743,11 @@
 
 .cursorPointer {
   cursor: pointer;
+}
+
+.logo {
+  position: relative;
+  width: auto;
+  height: 25px;
+  object-fit: contain;
 }

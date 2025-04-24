@@ -4,11 +4,12 @@ import CrossPink from "../../images/crossPink.png";
 import Pencil from "../../images/pencil.png";
 import SignatureCanvas from 'react-signature-canvas';
 import { POST, PUT, GET } from '../../Screens/dataSaver';
-import { ErrorToaster, SuccessToaster } from '../../utils/toaster';
+import { ErrorToaster, ErrorToaster2, SuccessToaster } from '../../utils/toaster';
 import style from './index.module.scss'
 import CommonSelectField from '../CommonFields/CommonSelectField';
 import { getValueByPath } from '../../utils/formatting';
 import { useParams } from 'react-router-dom';
+import { Tooltip } from '@mui/material';
 
 const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, basicForm, setBasicForm, getPreApplication, hideCross }) => {
     const [isContinue, setIsContinue] = useState(false);
@@ -83,14 +84,29 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
 
 
     const handleContentChange = () => {
-        console.log(contentRef.current.innerHTML)
+        console.log(contentRef.current.innerHTML.replaceAll("&nbsp;", ""))
         if (contentRef.current) {
-            setESignType(contentRef.current.innerHTML);
+            setESignType(contentRef.current.innerHTML.replaceAll("&nbsp;", ""));
         }
     };
 
     const saveSignature = async () => {
+        if (selectedESignFormat === 'DRAW' && !isShowDrawCanvas) {
+            ErrorToaster2("Signature cannot be empty.");
+            return;
+        }
         if (selectedESignFormat === 'DRAW' && isShowDrawCanvas) {
+            if (!sigCanvas.current.isEmpty()) {
+                const canvas = sigCanvas.current.getTrimmedCanvas();
+                const { width, height } = canvas;
+                if (width < 30 && height < 30) {
+                    ErrorToaster2("Please add a valid signature, not just a dot.");
+                    return;
+                }
+            } else {
+                ErrorToaster2("Signature cannot be empty.");
+                return;
+            }
             const dataURL = sigCanvas.current.getTrimmedCanvas().toDataURL('image/png');
             let blobFormat = dataURLToBlob(dataURL)
             let fileName = {
@@ -116,8 +132,15 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
                 return null;
             }
         } else {
+            if (eSignType === "" || eSignType === "<br>") {
+                ErrorToaster2("Signature shouldn't be empty");
+                return;
+            }
             let temp = tempValue;
-            if (temp[baseKey].type === undefined) {
+            if (temp?.[baseKey]?.type === undefined) {
+                if (temp?.[baseKey] === undefined) {
+                    temp[baseKey] = {}
+                }
                 temp[baseKey].type = {}
             }
             temp[baseKey].type.text = eSignType;
@@ -164,12 +187,14 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
                             {/* <p className={`${style.dateAndTimeTextStyle} ${style.marginLeft}`}>Mm/Dd/Yyyy</p>
                             <p className={`${style.dateAndTimeTextStyle} ${style.marginLeft}`}>00:00</p> */}
                             {!hideCross && (
+                                <Tooltip title={"Click to Close"} arrow>
                                 <img
                                     src={CrossPink}
                                     alt="cross"
                                     className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft} `}
                                     onClick={() => { getIsOpen(false) }}
                                 />
+                                </Tooltip>
                             )}
                         </div>
                     </div>
@@ -270,8 +295,10 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
                     )}
                     <div className={style.marginTop}>{children}</div>
                     <div className={`${style.justifyCenter} ${style.displayInRow} ${style.marginTop}`}>
-                        <div className={`${style.saveInProgress}`} onClick={() => { setIsContinue(true); getIsOpen(false) }}>CANCEL</div>
-                        <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { setIsContinue(true); saveSignature() }}>ADOPT FOR e-SIGN</div>
+                    <Tooltip title={"Click to Cancel Changes"} arrow>
+                        <div className={`${style.saveInProgress}`} onClick={() => { setIsContinue(true); getIsOpen(false) }}>CANCEL</div></Tooltip>
+                        <Tooltip title={"Click to Adopt for E-signature"} arrow>
+                        <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { setIsContinue(true); saveSignature() }}>ADOPT FOR e-SIGN</div></Tooltip>
                     </div>
                 </div>
 

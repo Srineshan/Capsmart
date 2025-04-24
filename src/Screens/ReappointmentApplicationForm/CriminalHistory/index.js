@@ -17,6 +17,7 @@ import ReappointmentProgressCard from '../../../Components/ReappointmentProgress
 import ReappointmentJourneyDialog from '../../../Components/reappointmentJourneyDialog';
 import MenuIcon from "@mui/icons-material/Menu";
 import Close from './../../../images/close.png';
+import { Tooltip } from '@mui/material';
 
 const CriminalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [formSchema, setFormSchema] = useState();
@@ -34,6 +35,7 @@ const CriminalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [navigateBackURL, setNavigateBackURL] = useState();
     const [showJourneyDialog, setShowJourneyDialog] = useState(false);
     const [showInfo, setShowInfo] = useState(false);
+    let allMissingFields = [];
     useEffect(() => {
         if (basicForm && !formSchema) {
             getFormSchema()
@@ -64,13 +66,14 @@ const CriminalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
 
     const getAllLabels = (data) => {
         let tempLabels = labels;
-        if (!tempLabels?.includes(data)) {
-            console.log(tempLabels, data, 'Metadata')
+        if (tempLabels?.filter(innerData => data?.path === innerData?.path)?.length === 0) {
+            console.log(tempLabels, data, 'Metadata9999')
             tempLabels.push(data);
         }
         setLabels(tempLabels);
+        console.log();    
     }
-
+    
     const getIsSaveInProgressOpen = (value) => {
         setIsSaveInProgressOpen(value);
     }
@@ -91,9 +94,9 @@ const CriminalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
 
     const getSkipClicked = (value) => {
         if (value) {
-            handleSubmitApplicationReq("skipped")
+            getMissingFields("skipped");
         }
-    }
+    };
 
     const handleContinue = async () => {
         if (sessionStorage.getItem('fromSummary') === "true") {
@@ -105,11 +108,12 @@ const CriminalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
         }
     }
 
-    const getMissingFields = () => {
+    const getMissingFields = (data) => {
         let missingKeys = [];
         let keyValuePair = [];
+        let hasMandatoryMissingFields = [];
         metadata?.map((data, index) => {
-            keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: labels[index] })
+            keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: labels[index]})
         })
         keyValuePair?.map(data => {
             if (data?.value === "" || data?.value === null || data?.value === undefined || data?.value === 0) {
@@ -117,31 +121,54 @@ const CriminalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
             }
         })
         if (getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.criminalCivilSuitDisclosure.anyCivilOrCriminalActions`) === 'No' || getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.criminalCivilSuitDisclosure.anyCivilOrCriminalActions`) === undefined) {
-            let filterKeys = [`forms[${formIndex}].data.disclosures.criminalCivilSuitDisclosure.anyCivilOrCriminalActionsText`]
+            let filterKeys = [`forms[${formIndex}].data.disclosures.criminalCivilSuitDisclosure.anyCivilOrCriminalActionsText`,`forms[${formIndex}].data.disclosures.criminalCivilSuitDisclosure.anyCivilOrCriminalActionsFile`,`forms[${formIndex}].data.disclosures.criminalCivilSuitDisclosure.anyCivilOrCriminalActionsResponse`]
             let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
             missingKeys = temp;
         }
         if (getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.criminalCivilSuitDisclosure.defendantInAnyCivilLaw`) === 'No' || getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.criminalCivilSuitDisclosure.defendantInAnyCivilLaw`) === undefined) {
-            let filterKeys = [`forms[${formIndex}].data.disclosures.criminalCivilSuitDisclosure.defendantInAnyCivilLawText`]
+            let filterKeys = [`forms[${formIndex}].data.disclosures.criminalCivilSuitDisclosure.defendantInAnyCivilLawText`,`forms[${formIndex}].data.disclosures.criminalCivilSuitDisclosure.defendantInAnyCivilLawFile`,`forms[${formIndex}].data.disclosures.criminalCivilSuitDisclosure.defendantInAnyCivilLawResponse`]
             let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
             missingKeys = temp;
         }
-        if (missingKeys?.length !== 0) {
-            setShowValidationDialog(true)
-        } else {
-            handleSubmitApplicationReq()
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.criminalCivilSuitDisclosure.anyCivilOrCriminalActions`) === 'Yes') {
+            let filterKeys = [`forms[${formIndex}].data.disclosures.criminalCivilSuitDisclosure.anyCivilOrCriminalActionsResponse`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
         }
-        setWarningFields(missingKeys)
-        console.log(keyValuePair, 'Metadata', missingKeys)
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.criminalCivilSuitDisclosure.defendantInAnyCivilLaw`) === 'Yes') {
+            let filterKeys = [`forms[${formIndex}].data.disclosures.criminalCivilSuitDisclosure.defendantInAnyCivilLawResponse`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
+        setWarningFields(missingKeys);
+        allMissingFields = missingKeys;
+        hasMandatoryMissingFields = missingKeys?.find(field => field?.label?.mandatory === true);
+
+        if (data === "skipped") {
+                handleSubmitApplicationReq();
+        }
+    
+        if(data !== "skipped"){
+            if (hasMandatoryMissingFields) {
+            setShowValidationDialog(true);
+          } else {
+            handleSubmitApplicationReq();
+          }
+        }
+        console.log(keyValuePair, 'MetadataCriminalHistory', missingKeys, hasMandatoryMissingFields, allMissingFields)
     }
 
     const handleSubmitApplicationReq = async (data) => {
-        if (isEdited) {
+        // if (isEdited) {
+            console.log("MissingCriminalHistory", allMissingFields)
             let temp = {
                 schemaId: basicForm?.forms?.[formIndex]?.schemaId,
                 data: basicForm?.forms?.[formIndex]?.data,
-                unFilledFields: warningFields?.map(data => data?.label),
-                acknowledged: data === "skipped" ? false : true
+                unFilledFields: allMissingFields?.map(field => JSON.stringify(field)),
+                // unFilledFields: Array.isArray(warningFields) 
+                // ? warningFields.map(field => JSON.stringify(field))
+                // : [],
+                acknowledged: true
             }
             await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
                 .then(response => {
@@ -161,15 +188,15 @@ const CriminalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
                     console.log(error)
                     ErrorToaster("Unexpected Error Updating Application");
                 });
-        } else {
-            if (sessionStorage.getItem('fromSummary') === "true") {
-                navigate(-1);
-            }
-            else {
-                navigate(navigateURL)
+        // } else {
+        //     if (sessionStorage.getItem('fromSummary') === "true") {
+        //         navigate(-1);
+        //     }
+        //     else {
+        //         navigate(navigateURL)
 
-            }
-        }
+        //     }
+        // }
     }
 
     const getValueByPath = (obj, path) => {
@@ -203,10 +230,14 @@ const CriminalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
                         )}
                     </div>
                     <div className={style.threeColForButton}>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
-                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleBackClick()}>BACK</div>
-                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => getMissingFields()}>CONTINUE</div>
+                    <Tooltip title={"Click to Skip This Step and Continue Later"} arrow>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div></Tooltip>
+                        <Tooltip title={"Click to Save your Progress and Continue later"} arrow>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div></Tooltip>
+                        <Tooltip title={"Click to Go Back to the Previous Step"} arrow>
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleBackClick()}>BACK</div></Tooltip>
+                        <Tooltip title={"Click to Proceed to the Next Step"} arrow>
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => getMissingFields()}>CONTINUE</div></Tooltip>
                     </div>
                 </div>
                 <div>
@@ -233,12 +264,17 @@ const CriminalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
                         </div>
                     </div>
                     <div className={`${style.stickyContainer} ${isSaveInProgressOpen || showValidationDialog || showJourneyDialog ? style.hiddenStickyContainer : ""}`}>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
-                        <div className={`${style.saveInProgress} ${style.marginTop10}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
+                    <Tooltip title={"Click to Skip This Step and Continue Later"} arrow>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div></Tooltip>
+                        <Tooltip title={"Click to Save your Progress and Continue later"} arrow>
+                        <div className={`${style.saveInProgress} ${style.marginTop10}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div></Tooltip>
+
                         <div className={style.twoColForButton}>
-                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleBackClick()}>BACK</div>
+                        <Tooltip title={"Click to Go Back to the Previous Step"} arrow>
+                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleBackClick()}>BACK</div></Tooltip>
                             {/* <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowJourneyDialog(true)}>CONTINUE</div> */}
-                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()}>CONTINUE</div>
+                            <Tooltip title={"Click to Proceed to the Next Step"} arrow>
+                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()}>CONTINUE</div></Tooltip>
                         </div>
                     </div>
 
@@ -250,7 +286,9 @@ const CriminalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
                 )
             }
             {showValidationDialog && (
-                <ValidationDialog getIsOpen={getIsValidationDialogOpen} labelList={warningFields} getSkipClicked={getSkipClicked} />
+                <ValidationDialog getIsOpen={getIsValidationDialogOpen} 
+                labelList={warningFields?.filter(field => field?.label?.mandatory !== false)}
+                getSkipClicked={getSkipClicked} />
             )}
             {showJourneyDialog && (
                 <ReappointmentJourneyDialog getIsOpen={getIsShowReappointmentJourneyDialog} title={`Great Job So Far! You're On The Right Track.`} img={JourneyStep3} formIndex={formIndex} basicForm={basicForm} continueClick={getMissingFields} />

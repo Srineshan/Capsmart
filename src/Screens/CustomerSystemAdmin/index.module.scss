@@ -18,6 +18,12 @@
     margin: 20px;
 }
 
+.grid3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-gap: 20px;
+}
+
 .grid4 {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr;
@@ -107,13 +113,13 @@
 
 .registeredUsersGrid {
     display: grid;
-    grid-template-columns: 5% 15% 15% 8% 10% 15% 8% 10% 5%;
+    grid-template-columns: 5% 20% 20% 8% 10% 15% 9% 5%;
     grid-gap: 10px;
 }
 
 .registeredUsersMultiSiteGrid {
     display: grid;
-    grid-template-columns: 5% 15% 14% 5% 8% 10% 10% 9% 9% 5%;
+    grid-template-columns: 5% 15% 14% 5% 8% 10% 10% 9% 5%;
     grid-gap: 1%;
 }
 

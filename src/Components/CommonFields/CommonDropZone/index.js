@@ -6,7 +6,7 @@ import Papa from "papaparse";
 import Dropzone from "react-dropzone";
 
 import style from './index.module.scss'
-const CommonDropZone = ({ title, description, changeHandler }) => {
+const CommonDropZone = ({ title, description, changeHandler, maxFiles }) => {
 
     const dropzoneStyle = {
         width: "100%",
@@ -28,7 +28,7 @@ const CommonDropZone = ({ title, description, changeHandler }) => {
                 'image/jpg': [],
                 'application/pdf': []
             }}
-
+            maxFiles={maxFiles ? maxFiles : 10}
         >
             {({ getRootProps, getInputProps }) => (
                 <section>

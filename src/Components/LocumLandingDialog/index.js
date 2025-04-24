@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Dialog, Classes, Icon, Intent } from "@blueprintjs/core";
-import logo from "./../../images/cambridgeHospital.png";
+// import logo from "./../../images/cambridgeHospital.png";
 import CrossPink from "../../images/crossPink.png";
 import ReappointmentLandingImage from "../../images/reappointmentLandingImage.png";
 import style from "./index.module.scss";
@@ -17,12 +17,14 @@ import RadioGroup from '@mui/material/RadioGroup';
 import FormControl from '@mui/material/FormControl';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import CommonRadio from "../CommonFields/CommonRadio";
-import { GET, PUT } from "../../Screens/dataSaver";
+import { GET, PUT, TenantID } from "../../Screens/dataSaver";
 import { format, subDays } from "date-fns";
 import { ErrorToaster, SuccessToaster } from "../../utils/toaster";
+import Cookies from "universal-cookie";
 
 const LocumLandingDialog = ({ getIsOpen, days }) => {
   // const { login, register, sendOTP, verifyOTP } = useDescope();
+  let cookie = new Cookies();
   const descopeSdk = useDescope();
   const { logout } = useDescope();
   const [isContinue, setIsContinue] = useState(false);
@@ -30,6 +32,7 @@ const LocumLandingDialog = ({ getIsOpen, days }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState("");
+  const [logo, setLogo] = useState(null);
   const [mobile, setMobile] = useState('');
   const handleClickShowPassword = () => setShowPassword(!showPassword);
   const [isPasswordStrong, setIsPasswordStrong] = useState(true);
@@ -41,6 +44,7 @@ const LocumLandingDialog = ({ getIsOpen, days }) => {
   const [passcode, setPasscode] = useState(["0", "0", "0", "0", "0", "0"]);
   const [isPassCode, setIsPassCode] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
+  const [showUserGuide, setShowUserGuide] = useState(false);
   const [showLogoutAlert, setShowLogoutAlert] = useState(false);
   const [processReappointment, setProcessReappointment] = useState('');
   const { applicationId, section, step } = useParams();
@@ -70,6 +74,24 @@ const LocumLandingDialog = ({ getIsOpen, days }) => {
       getApplication()
     }
   }, [applicationId])
+
+
+  useEffect(() => {
+    const getLogo = async () => {
+      try {
+        const { data } = await GET(`entity-service/entity/${cookie.get('entityId')}`);
+        if (data && data.logo?.file?.fileURL) {
+          setLogo(data.logo.file.fileURL);
+        }
+      } catch (error) {
+        console.error("Error fetching logo:", error);
+      }
+    };
+
+    if (cookie.get('entityId')) {
+      getLogo();
+    }
+  }, [cookie.get('entityId')]);
 
   const getApplication = async () => {
     const { data: basicForm } = await GET(
@@ -123,12 +145,16 @@ const LocumLandingDialog = ({ getIsOpen, days }) => {
 
   const handleContinue = () => {
     if (processReappointment === 'Yes') {
-      setIsContinue(true);
       getIsOpen(false);
+      setIsContinue(true);
     }
     if (processReappointment === 'No') {
       setShowAlert(true);
     }
+  }
+
+  const handleOpenUserGuide = () => {
+    setShowUserGuide(true);
   }
 
   const handleChange = (e, index) => {
@@ -155,7 +181,6 @@ const LocumLandingDialog = ({ getIsOpen, days }) => {
       .then(response => {
         console.log(response)
         SuccessToaster("Application Terminated Successfully");
-        logout();
       })
       .catch((error) => {
         console.log(error)
@@ -182,19 +207,22 @@ const LocumLandingDialog = ({ getIsOpen, days }) => {
         canOutsideClickClose={false}
         canEscapeKeyClose={false}
       >
-        <div>
+        <div className={style.dialogContent}>
           <div className={style.alignCenter}>
             <img src={'https://capmanager-dev.s3.us-east-1.amazonaws.com/CAP_Manager.png'} alt="CAPManager Logo" className={`${style.CAPSmartLogoCenterAlign}`} />
           </div>
           <div className={`${style.descriptionStyle} ${style.marginTop}`}>
-            {`Your reappointment application for recredentialing and continuation of privileges for Jan 1, 2025 to Dec 31, 2025 at ${title} has been declined.`}
+            {`Your reappointment application for recredentialing and continuation of privileges for July 1, 2025 to June 30, 2026 at ${title !== 'HapiCare' ? title : ''} has been suspended.`}
+          </div>
+          <div className={`${style.descriptionStyle} ${style.marginTop}`}>
+            {`Prior to Jun 30, 2025, if you change your mind, you can click on the link in the application declined notification.`}
           </div>
           <div className={style.alignCenter}>
             <div
               className={`${style.continue} ${style.marginTop}`}
               onClick={() => logout()}
             >
-              Logout
+              Okay
             </div>
           </div>
 
@@ -249,33 +277,46 @@ const LocumLandingDialog = ({ getIsOpen, days }) => {
         canOutsideClickClose={false}
         canEscapeKeyClose={false}
       >
-        <div>
-          <div className={style.whiteBackground}>
+        <div className={style.dialogContent}>
+          <div className={`${style.responsiveCard} ${style.whiteBackground}`}>
             {/* <div className={style.alignCenter}>
             <p className={style.loginHeaderText}>
               <span className={style.bold}>CAP</span>Smart
             </p>
           </div> */}
-            <div className={style.spaceBetween}>
-              <img src={logo} alt="Hospital Logo" className={`${style.logo}`} />
+            <div className={`${style.logoStyle} ${style.spaceBetween}`}>
+              {logo !== null ? (
+                <img src={logo} alt="Hospital Logo" className={`${style.logo}`} />
+              ) : ''}
               <img src={'https://capmanager-dev.s3.us-east-1.amazonaws.com/CAP_Manager.png'} alt="CAPManager Logo" className={`${style.CAPSmartLogo}`} />
             </div>
-            <br />
+            <div
+              className={`${style.daysToComplete} ${style.marginTop10} ${style.displayInRow} ${style.alignCenter}`}
+            >
+              <div className={`${style.verticalAlignCenter1} ${style.alignCenter}`}>
+                <div className={style.textStyle}>{"YOU HAVE"}</div>
+                <div className={style.daysCountStyle}>{days}</div>
+                <div className={`${style.textStyle}`}>{"DAYS TO COMPLETE"}</div>
+              </div>
+            </div>
             <div className={style.reappointmentGrid}>
-              <div>
+              <div className={style.imageCard}>
                 <img src={ReappointmentLandingImage} alt="" className={style.reappointmentLandingImage} />
               </div>
-              <div>
-                <div className={style.welcomeText}>Your Locum Renewal Application</div>
-                <div className={`${style.descriptionStyle} ${style.marginTop}`}>
-                  {`Locum Term for your current Privileges is expiring on ${format(subDays(new Date(basicForm?.basicDetails?.credentialingPrivilegeCategory?.from || null), 1), 'MMM dd, yyyy')}. Your department has indicated that your privileges be extended for a new term starting ${format(new Date(basicForm?.basicDetails?.credentialingPrivilegeCategory?.from || null), 'MMM dd, yyyy')} and ending on ${format(new Date(basicForm?.basicDetails?.credentialingPrivilegeCategory?.to || null), 'MMM dd, yyyy')}.`}
+              <div className={style.contentCard}>
+                <div className={style.welcomeText}>Your Locum {basicForm?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'} Application</div>
+                <div className={style.headerData}>
+                  <span style={{ marginLeft: '20px' }}>Your Locum {basicForm?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'} Application</span>
                 </div>
-                {/* <div className={`${style.descriptionStyle} ${style.marginTop}`}>
-                  Processing of your reappointment application will now be a less burdensome activity.
+                <div className={`${style.descriptionStyle} ${style.marginTop10}`}>
+                  {`Locum Term for your current Privileges is expiring on ${format(new Date(basicForm?.expiryDate || null), 'MMM dd, yyyy')}. Your department would like to extend your privileges for a new term ${format(new Date(basicForm?.cyclePeriod?.from || null), 'MMM dd, yyyy')} to ${format(new Date(basicForm?.cyclePeriod?.to || null), 'MMM dd, yyyy')}.`}
+                </div>
+                {/* <div className={`${style.descriptionStyle} ${style.marginTop10}`}>
+                  Processing of your Reappointment Application will now be a less burdensome activity.
                 </div> */}
                 <div className={`${style.reappointmentCard} ${style.marginTop}`}>
                   <div className={`${style.descriptionStyle}`}>
-                    Indicate your preference for continuing to serve as a Locum Staff at {title}.
+                    Indicate your preference for continuing to serve as a Locum Staff at {title !== 'HapiCare' ? title : ''}.
                   </div>
                   {/* <CommonRadio
                     className={style.leftAlign}
@@ -304,7 +345,7 @@ const LocumLandingDialog = ({ getIsOpen, days }) => {
                               size="large"
                             />
                           }
-                          label={'No, I do not want to Extend my Privileges'}
+                          label={`No, I do not want to ${basicForm?.reappointmentType === "EXTENSION" ? 'Extend' : 'Renew'} my Privileges`}
                           componentsProps={{ typography: { variant: "subtitle1" } }}
                         />
                         <FormControlLabel
@@ -318,21 +359,33 @@ const LocumLandingDialog = ({ getIsOpen, days }) => {
                               size="large"
                             />
                           }
-                          label={'Yes, I want to Extend my Privileges'}
+                          label={`Yes, I want to ${basicForm?.reappointmentType === "EXTENSION" ? 'Extend' : 'Renew'} my Privileges`}
                           componentsProps={{ typography: { variant: "subtitle1" } }}
                         />
                       </RadioGroup>
                     </FormControl>
                   </ThemeProvider>
                 </div>
-                <div >
-                  <div
-                    className={`${style.continue} ${style.marginTop} ${processReappointment !== '' ? '' : style.disable}`}
-                    onClick={processReappointment !== '' ? () => {
-                      handleContinue();
-                    } : () => { }}
-                  >
-                    SUBMIT
+                <div className={style.displayInRow}>
+                  <div>
+                    <div
+                      className={`${style.userGuideButton} ${style.marginTop}`}
+                      onClick={() => {
+                        handleOpenUserGuide();
+                      }}
+                    >
+                      USER GUIDES & TUTORIALS
+                    </div>
+                  </div>
+                  <div>
+                    <div
+                      className={`${style.continue} ${style.marginTop} ${style.marginLeft} ${processReappointment !== '' ? '' : style.disable}`}
+                      onClick={processReappointment !== '' ? () => {
+                        handleContinue();
+                      } : () => { }}
+                    >
+                      CONTINUE
+                    </div>
                   </div>
                 </div>
               </div>
@@ -357,14 +410,14 @@ const LocumLandingDialog = ({ getIsOpen, days }) => {
         canOutsideClickClose={false}
         canEscapeKeyClose={false}
       >
-        <div>
+        <div className={style.dialogContent}>
           <div className={style.alignCenter}><WarningAmberIcon sx={{ fontSize: 60, color: '#FF5555' }} /></div>
           <div className={`${style.descriptionStyle} ${style.marginTop}`}>
-            {`You have opted to not continue with your reappointment application for recredentialing and continuation of privileges for Jan 1, 2025 to Dec 31, 2025 at ${title}.`}
+            {`You have opted to not continue with your reappointment application for recredentialing and continuation of privileges for July 1, 2025 to June 30, 2026 at ${title !== 'HapiCare' ? title : ''}.`}
           </div>
           <div className={`${style.descriptionStyle} ${style.marginTop}`}>
             {/* {`If we do not receive a completed reappointment application by ${format(new Date(basicForm?.expiryDate || null), 'MMM dd, yyyy')} your staff position as a ${basicForm?.basicDetails?.applicant?.applicantType}, ${basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory}, will be terminated.`} */}
-            {`If we do not receive a completed reappointment application by Jun 30, 2024 your staff position as a ${basicForm?.basicDetails?.applicant?.applicantType}, ${basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory}, will be terminated.`}
+            {`If we do not receive a completed reappointment application by Jun 30, 2025 your staff position as a ${basicForm?.basicDetails?.applicant?.applicantType}, ${basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory}, will be terminated.`}
           </div>
           <div className={style.spaceBetween}>
             <div
@@ -375,9 +428,64 @@ const LocumLandingDialog = ({ getIsOpen, days }) => {
             </div>
             <div
               className={`${style.continue} ${style.marginTop}`}
-              onClick={() => { handleTerminate() }}
+              onClick={() => { setShowAlert(false); setShowLogoutAlert(true); handleTerminate() }}
             >
               OKAY & EXIT
+            </div>
+          </div>
+
+        </div>
+      </Dialog>
+      <Dialog
+        isOpen={showUserGuide}
+        onClose={() => getIsOpen(false)}
+        className={style.customWidthUserGuide}
+        canOutsideClickClose={false}
+        canEscapeKeyClose={false}
+      >
+        <div className={style.dialogContent}>
+          <div className={style.heading}>
+            Step-By-Step Guides and Tutorials
+          </div>
+          <div className={`${style.descriptionStyle} ${style.justifyCenter} ${style.marginTop}`}><strong>How Would You Like To Get Started?</strong></div>
+          <div className={`${style.descriptionStyle} ${style.justifyCenter} ${style.marginTop}`}>Select Your Preferred Guide for a Seamless Reappointment Application</div>
+          <div className={style.userGuideGrid}>
+            <div className={`${style.verticalAlignCenter} ${style.cursorPointer}`} onClick={() => window.open('https://xd.adobe.com/view/df41ec43-33b6-4fa1-9418-33d1cf1690f7-8a12/?fullscreen')}>
+              <img src="https://capm-prod-entity-mgmt-service.s3.ca-central-1.amazonaws.com/Interactive+guide.png"
+                alt="Interactive Guide" className={style.iconStyleUserGuide} />
+            </div>
+            <div className={`${style.cursorPointer} ${style.marginTop}`} onClick={() => window.open('https://xd.adobe.com/view/df41ec43-33b6-4fa1-9418-33d1cf1690f7-8a12/?fullscreen')}>
+              <p className={`${style.descriptionStyle} ${style.hoverText}`}>
+                <strong>Go through this Interactive Step-by-Step Training Guide</strong>
+              </p>
+              <p className={`${style.descriptionStyle} ${style.marginTop10} ${style.hoverText}`}>
+                This guide highlights all of the steps, allowing you to interact with the screens,
+                that you need to complete in order to successfully submit your Reappointment Application.
+              </p>
+            </div>
+          </div>
+          <div className={`${style.userGuideGrid}`}>
+            <div className={`${style.verticalAlignCenter} ${style.cursorPointer}`} onClick={() => window.open('https://capm-prod-entity-mgmt-service.s3.ca-central-1.amazonaws.com/Step-by-Step+User+Guide.pdf')}>
+              <img src="https://capm-prod-entity-mgmt-service.s3.ca-central-1.amazonaws.com/User+guide.png"
+                alt="PDF Guide" className={style.iconStyleUserGuide} />
+            </div>
+            <div className={`${style.cursorPointer} ${style.marginTop}`} onClick={() => window.open('https://capm-prod-entity-mgmt-service.s3.ca-central-1.amazonaws.com/Step-by-Step+User+Guide.pdf')}>
+              <p className={`${style.descriptionStyle} ${style.hoverText}`}>
+                <strong>Download a PDF Step-by-Step Training Guide</strong>
+              </p>
+              <p className={`${style.descriptionStyle} ${style.marginTop10} ${style.hoverText}`}>
+                This guide highlights all of the steps that you need to complete in order to
+                successfully submit your Reappointment Application.
+              </p>
+            </div>
+          </div>
+          <div className={style.spaceBetween}>
+            <div></div>
+            <div
+              className={`${style.saveInProgress} ${style.marginTop}`}
+              onClick={() => setShowUserGuide(false)}
+            >
+              CLOSE
             </div>
           </div>
 

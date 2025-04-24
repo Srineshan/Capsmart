@@ -16,6 +16,7 @@ import WelcomeCard from '../../../Components/WelcomeCard';
 import ReappointmentProgressCard from '../../../Components/ReappointmentProgressCard';
 import { format } from 'date-fns';
 import ReappointmentJourneyDialog from '../../../Components/reappointmentJourneyDialog';
+import { Tooltip } from '@mui/material';
 
 const LMSModules = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [formSchema, setFormSchema] = useState();
@@ -40,7 +41,7 @@ const LMSModules = ({ basicForm, setBasicForm, getPreApplication }) => {
         if (basicForm !== undefined && formIndex !== undefined) {
             setYesOrNo(basicForm?.forms?.[formIndex]?.data?.yesOrNo !== undefined ? basicForm?.forms?.[formIndex]?.data?.yesOrNo : '');
             setUpdatedDate(basicForm?.forms?.[formIndex]?.data?.updatedDate !== undefined ? basicForm?.forms?.[formIndex]?.data?.updatedDate : '');
-            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form')?.length === (formIndex + 1)) ? `/reappointmentApplicationForm/${applicationId}/Form/PODCheck` : `/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${basicForm?.forms[formIndex + 1]?.schemaCategory}`)
+            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form' || 'Disclosure')?.length === (formIndex + 1)) ? `/locumApplicationForm/${applicationId}/Form/PODCheck` : `/locumApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${basicForm?.forms[formIndex + 1]?.schemaCategory}`)
         }
     }, [basicForm, formIndex])
 
@@ -80,9 +81,9 @@ const LMSModules = ({ basicForm, setBasicForm, getPreApplication }) => {
     }
 
     const getFormSchema = async () => {
-        if (basicForm?.formSchemas?.[formIndex]?.id !== undefined) {
+        if (basicForm?.forms?.[formIndex]?.schemaId !== undefined) {
             const { data: form } = await GET(
-                `application-management-service/formSchema/${basicForm?.formSchemas?.[formIndex]?.id}`
+                `application-management-service/formSchema/${basicForm?.forms?.[formIndex]?.schemaId}`
             );
             setFormSchema(form?.schema)
             setFormSchemaWholeObject(form)
@@ -171,18 +172,22 @@ const LMSModules = ({ basicForm, setBasicForm, getPreApplication }) => {
                             <div
                                 className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop}`}
                             >
+                               <Tooltip title={"Click to mark as Yes"} arrow>
                                 <div
                                     className={`${style.reappointmentButtonOutlined}`}
                                     onClick={() => { setYesOrNo('Yes'); setUpdatedDate(format(new Date(), 'yyyy-MM-dd')) }}
                                 >
                                     Yes
                                 </div>
+                                </Tooltip> 
+                                <Tooltip title={"Click to mark as No"} arrow>
                                 <div
                                     className={`${style.reappointmentButton} ${style.marginLeft}`}
                                     onClick={() => { setYesOrNo('No'); setUpdatedDate(format(new Date(), 'yyyy-MM-dd')) }}
                                 >
                                     NO
                                 </div>
+                                </Tooltip>
                             </div>
                         ) : (
                             <>
@@ -190,12 +195,14 @@ const LMSModules = ({ basicForm, setBasicForm, getPreApplication }) => {
                                 <div
                                     className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop}`}
                                 >
+                                    <Tooltip title={"Click to Edit Details"} arrow>
                                     <div
                                         className={`${style.reappointmentButtonEdit}`}
                                         onClick={() => setYesOrNo('')}
                                     >
                                         Edit
                                     </div>
+                                    </Tooltip>
                                 </div>
                             </>
                         )}
@@ -204,11 +211,17 @@ const LMSModules = ({ basicForm, setBasicForm, getPreApplication }) => {
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                     <div className={`${style.stickyContainer} ${isSaveInProgressOpen || showValidationDialog || showJourneyDialog ? style.hiddenStickyContainer : ""}`}>
+                        <Tooltip title={"Click to Save your Progress and Continue later"} arrow>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
+                        </Tooltip>
                         <div className={style.twoColForButton}>
+                        <Tooltip title={"Click to Go Back to the Previous Step"} arrow>
                             <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
+                            </Tooltip>
                             {/* <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowJourneyDialog(true)}>CONTINUE</div> */}
+                            <Tooltip title={"Click to Proceed to the Next Step"} arrow>
                             <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()}>CONTINUE</div>
+                            </Tooltip>
                         </div>
                     </div>
                     <div className={style.marginTop}>

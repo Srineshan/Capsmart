@@ -17,6 +17,7 @@ import ESignature from '../ESignature';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import CommonRadio from '../CommonFields/CommonRadio';
+import { Tooltip } from '@mui/material';
 
 const PrivilegeDisplayDialog = ({ getIsOpen, privilegeList }) => {
     const [isContinue, setIsContinue] = useState(false);
@@ -54,6 +55,7 @@ const PrivilegeDisplayDialog = ({ getIsOpen, privilegeList }) => {
                         <div className={style.spaceBetween}>
                             <div className={style.heading}>Requested Privileges</div>
                             <div className={style.displayInRow}>
+                            <Tooltip title={"Click to Print"} arrow>
                                 <div
                                     className={`${isPrintClicked && style.addStyle} ${style.alignCenter
                                         } ${style.cursorPointer} ${style.marginRight}`}
@@ -66,17 +68,22 @@ const PrivilegeDisplayDialog = ({ getIsOpen, privilegeList }) => {
                                         onClick={handlePrintClick}
                                     />
                                 </div>
+                                </Tooltip>
                                 {!isExpanded ? (
+                                    <Tooltip title={"Click to Expand"} arrow>
                                     <FullscreenSharpIcon
                                         className={`${style.iconStyle} ${style.cursorPointer} `}
                                         onClick={toggleExpand}
                                         sx={{ color: '#06617A' }}
-                                    />) : (
+                                    />
+                                    </Tooltip>) : (
+                                        <Tooltip title={"Click to Minimize"} arrow>
                                     <FullscreenExitIcon
                                         className={`${style.iconStyle} ${style.cursorPointer} `}
                                         onClick={toggleExpand}
                                         sx={{ color: '#06617A' }}
                                     />
+                                    </Tooltip>
                                 )
                                 }
                                 {/* <FullscreenSharpIcon
@@ -84,12 +91,14 @@ const PrivilegeDisplayDialog = ({ getIsOpen, privilegeList }) => {
                                 onClick={toggleExpand}
                                 sx={{ color: '#06617A' }} 
                             /> */}
+                            <Tooltip title={"Click to Close"} arrow>
                                 <img
                                     src={CrossPink}
                                     alt="cross"
                                     className={`${style.crossStyle} ${style.cursorPointer} `}
                                     onClick={() => { getIsOpen(false) }}
                                 />
+                                </Tooltip>
                             </div>
                         </div>
                         <div className={style.marginTop}>
@@ -397,7 +406,8 @@ const PrivilegeDisplayDialog = ({ getIsOpen, privilegeList }) => {
                             ))}
                         </div>
                         <div className={`${style.justifyCenter} ${style.displayInRow} ${style.marginTop}`}>
-                            <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { getIsOpen(false); }}>CLOSE</div>
+                        <Tooltip title={"Click to Close"} arrow>
+                            <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { getIsOpen(false); }}>CLOSE</div></Tooltip>
                         </div>
                     </div>
 

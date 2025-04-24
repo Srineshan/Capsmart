@@ -188,6 +188,10 @@
   grid-gap: 10px;
 }
 
+.placeCenter{
+  place-items: center;
+}
+
 .threeColumnGrid {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
@@ -354,4 +358,6 @@
   border-radius: 20px;
   opacity: 1;
   padding-top: 20px;
+  width: 60%;
+  height: 100%;
 }

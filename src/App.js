@@ -49,6 +49,7 @@ const StaffManager = React.lazy(() => import("./Screens/StaffManager"));
 const Applicant = React.lazy(() => import("./Screens/Applicant"));
 const StaffApplication = React.lazy(() => import("./Screens/StaffApplication"));
 const ActiveStaff = React.lazy(() => import("./Screens/ActiveStaff"));
+const LocumStaff = React.lazy(() => import("./Screens/LocumStaff"));
 const DescopeLoginDialog = React.lazy(() => import("./Components/DescopeLogin"));
 const Welcome = React.lazy(() =>
   import("./Screens/SuperAdminDashboard/welcome")
@@ -287,6 +288,11 @@ const CreateStaffReapplication = React.lazy(() =>
   import("./Screens/CreateStaffReapplication")
 );
 
+const ApplicantPortalRFC = React.lazy(() =>
+  import("./Screens/ApplicantPortalRFC")
+);
+
+
 const ApplicantPortalDashboard = React.lazy(() =>
   import("./Screens/ApplicantDashboard")
 );
@@ -298,6 +304,11 @@ const ApplicationSetup = React.lazy(() =>
 const MedicalDirectivesAttestRFC = React.lazy(() =>
   import("./Screens/MedicalDirectiveAttestRFC")
 );
+
+const MedicalDirectivesAttestDisplay = React.lazy(() =>
+  import("./Screens/MedicalDirectivesAttestDisplay")
+);
+
 const App = ({ props }) => {
   const [accessToken, setAccessToken] = useState(Auth());
   const { isAuthenticated, isSessionLoading } = useSession();
@@ -761,7 +772,7 @@ const App = ({ props }) => {
         method: "GET",
         headers: {
           "Authorization": `Bearer ${authorization}`,
-          "X-subdomain": 'master',
+          "X-subdomain": 'cmh-hospital',
         },
       };
     console.log(requestHeader, 'requestHeader')
@@ -801,7 +812,7 @@ const App = ({ props }) => {
         "Content-Type": "application/json",
         "X-tenantID": id,
         "Authorization": `Bearer ${authorization}`,
-        "X-subdomain": 'master',
+        "X-subdomain": 'cmh-hospital',
       },
     }
     fetch(`${baseUrl()}/user-management-service/auth/login`, requestOptions)
@@ -836,11 +847,11 @@ const App = ({ props }) => {
   // }, [window.location.pathname]);
 
   useEffect(() => {
-    changeFavicon();
+    // changeFavicon();
   }, [logo, title]);
 
   useEffect(() => {
-    changeFavicon();
+    // changeFavicon();
     if (TenantID !== undefined && TenantID !== '' && TenantID) {
       getLogo();
     }
@@ -866,7 +877,9 @@ const App = ({ props }) => {
 
   const changeFavicon = () => {
     const favicon = document.getElementById("favicon");
-    favicon.href = logo;
+    if (logo !== null) {
+      favicon.href = logo;
+    }
     document.title = title;
   };
 
@@ -892,7 +905,12 @@ const App = ({ props }) => {
           // return(
           //   <WorkModeDialog getIsOpen={true} />
           // ) 
-          setShowDialog(true);
+          if (sessionStorage?.getItem('initialRoute') !== undefined && sessionStorage?.getItem('initialRoute') !== 'undefined' && sessionStorage?.getItem('initialRoute') !== null && sessionStorage?.getItem('initialRoute')?.includes('/applicationById/REAPPOINTMENT')) {
+            sessionStorage.setItem("workModeType", roles[0]);
+            window.location.pathname = sessionStorage?.getItem('initialRoute');
+          } else {
+            setShowDialog(true);
+          }
         }
         if (roles?.length === 1) {
           sessionStorage.setItem("workModeType", roles[0]);
@@ -971,6 +989,9 @@ const App = ({ props }) => {
   };
 
   const ProtectedRoute = ({ children }) => {
+    if (!(cookie.get("authorization") !== undefined && cookie.get("authorization") !== 'undefined' && !isSessionTokenExpired(cookie.get("authorization")))) {
+      sessionStorage.setItem('initialRoute', window.location.pathname + (window.location.search ? window.location.search : ''))
+    }
     return (cookie.get("authorization") !== undefined && cookie.get("authorization") !== 'undefined' && !isSessionTokenExpired(cookie.get("authorization"))) ? children : <Navigate to="/loginPage" />;
   };
 
@@ -1005,7 +1026,9 @@ const App = ({ props }) => {
                 <Route path="/contracts" element={<ProtectedRoute><ActiveContracts /></ProtectedRoute>} />
                 <Route path="/staffs" element={<ProtectedRoute><StaffManager /></ProtectedRoute>} />
                 <Route path="/applications" element={<ProtectedRoute><StaffApplication /></ProtectedRoute>} />
+                <Route path="/applicationById/:applicationTypeFromUrl/:applicationId" element={<ProtectedRoute><StaffApplication /></ProtectedRoute>} />
                 <Route path="/activeStaff" element={<ProtectedRoute><ActiveStaff /></ProtectedRoute>} />
+                <Route path="/locumStaff" element={<ProtectedRoute><LocumStaff /></ProtectedRoute>} />
                 {/* <Route
                 path="/privilegeListManager"
                 element={<PrivilegeListMaster />}
@@ -1301,6 +1324,10 @@ const App = ({ props }) => {
                   element={<ProtectedRoute><MedicalDirectivesAttest /></ProtectedRoute>}
                 />
                 <Route
+                  path="/medicalDirective/:applicationId/:medicalDirectivesId"
+                  element={<ProtectedRoute><MedicalDirectivesAttestDisplay /></ProtectedRoute>}
+                />
+                <Route
                   path="/locumApplicationForm/:applicationId/:section/:step"
                   element={<ProtectedRoute><LocumApplicationForm /></ProtectedRoute>}
                 />
@@ -1331,6 +1358,10 @@ const App = ({ props }) => {
                 <Route
                   path="/createStaffReapplication"
                   element={<ProtectedRoute><CreateStaffReapplication /></ProtectedRoute>}
+                />
+                <Route
+                  path="/RFC/:clarificationId"
+                  element={<ProtectedRoute><ApplicantPortalRFC /></ProtectedRoute>}
                 />
                 <Route
                   path="/ApplicantDashboard"

@@ -76,6 +76,7 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
     const [selectedFile, setselectedFile] = useState(false);
     const [showInfo, setShowInfo] = useState(false);
     const [notes, setNotes] = useState('');
+    const [checkingCondition, setCheckingCondition] = useState([]);
     useEffect(() => {
         if (basicForm && !formSchema) {
             getFormSchema()
@@ -128,6 +129,58 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
             setIsSigned(false);
         }
     }, [basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours])
+
+    useEffect(() => {
+        let tempData = basicForm?.forms?.[formIndex]?.data ?? {};
+        tempData.yesOrNoCMETranscript = yesOrNoCMETranscript;
+
+        const fileData = tempData?.cmeTranscripts?.file;
+        const creditOrHours = tempData?.cmeTranscripts?.creditOrHours;
+        const isSigned = basicForm?.forms?.[formIndex]?.esign;
+        const applicantType = basicForm?.basicDetails?.applicant?.applicantType;
+
+        if (applicantType === "Midwife") {
+            if (!tempData.yesOrNoCMETranscript || fileData == null) {
+                setCheckingCondition(['notYetStarted']);
+            } else if (fileData && isSigned) {
+                setCheckingCondition(['Completed']);
+            } else if (notes) {
+                setCheckingCondition(['Completed']);
+            } else if (!notes) {
+                setCheckingCondition(['notYetStarted']);
+            } else {
+                setCheckingCondition(['inProgress']);
+            }
+        }
+        else if (applicantType === "Dentist") {
+            if (!tempData.yesOrNoCMETranscript || fileData == null) {
+                setCheckingCondition(['notYetStarted']);
+            } else if (fileData && creditOrHours >= 90 && isSigned) {
+                setCheckingCondition(['Completed']);
+            } else if (fileData && creditOrHours < 90 && notes) {
+                setCheckingCondition(['Completed']);
+            } else if (fileData && creditOrHours < 90) {
+                setCheckingCondition(['notYetStarted']);
+            } else {
+                setCheckingCondition(['inProgress']);
+            }
+        }
+        else {
+            if (!tempData.yesOrNoCMETranscript || fileData == null) {
+                setCheckingCondition(['notYetStarted']);
+            } else if (fileData && creditOrHours >= 25 && isSigned) {
+                setCheckingCondition(['Completed']);
+            } else if (fileData && creditOrHours < 25 && notes) {
+                setCheckingCondition(['Completed']);
+            } else if (fileData && creditOrHours < 25) {
+                setCheckingCondition(['notYetStarted']);
+            } else {
+                setCheckingCondition(['inProgress']);
+            }
+        }
+
+        console.log('Checking Condition:', checkingCondition);
+    }, [basicForm, formIndex, yesOrNoCMETranscript, isSigned, notes]);
 
     const getIsValidationDialogOpen = (value) => {
         setShowValidationDialog(value);
@@ -300,37 +353,42 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
         setIsLoading(true);
         setFiles(event);
         console.log(event, 'Test');
+        if (basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.file?.fileName) {
+            handleCMETranscriptDelete()
+        }
         // let table = tempValue.table !== undefined ? tempValue.table : []
 
         const formData = new FormData();
         let fileNameArray = [];
-        event?.forEach(file => {
-            fileNameArray.push({ "fileName": file?.name });
-            formData.append('documents', file); // Append each file individually
-        });
-
-        formData.append('files', new Blob([JSON.stringify(fileNameArray)], {
+        // event?.forEach(file => {
+        //     fileNameArray.push({ "fileName": file?.name });
+        //     formData.append('documents', file); // Append each file individually
+        // });
+        let fileName = { "fileName": event?.[0]?.name }
+        formData.append('documents', event?.[0]);
+        formData.append('files', new Blob([JSON.stringify(fileName)], {
             type: "application/json"
         }));
         console.log(fileNameArray)
         try {
-            const response = await POST(`application-management-service/application/${applicationId}/files/bulk?isLLMRequired=${true}`, formData);
+            // const response = await POST(`application-management-service/application/${applicationId}/files/bulk?isLLMRequired=${true}`, formData);
+            const response = await POST(`application-management-service/application/${applicationId}/files?isLLMRequired=${true}&schemaId=${formSchemaWholeObject?.id}`, formData);
             SuccessToaster('File Uploaded Successfully');
             console.log(response?.data);
-            // setFields(response?.data?.[0]?.fields);
-            // setFile(response?.data?.[0]?.file);
-            // setFileMetadata(response?.data?.[0]?.metaData);
-            // setApplicationDocumentId(response?.data?.[0]?.id)
-            for (let triggerIndex = 0; triggerIndex < event.length; triggerIndex++) {
-                try {
-                    if (response?.data[triggerIndex]?.documentType !== null) {
-                        await PUT(`application-management-service/application/${applicationId}/form/updateData?documentType=${response?.data[triggerIndex]?.documentType?.name}&applicationDocumentId=${response?.data[triggerIndex]?.id}`, { documentType: response?.data[triggerIndex]?.documentType !== null ? response?.data[triggerIndex]?.documentType?.name : '', fileSize: `${(event[triggerIndex]?.size / (1024 * 1024)).toFixed(2)} Mb`, fileURL: response?.data[triggerIndex]?.file?.fileURL, fileType: response?.data[triggerIndex]?.file?.fileType, fileUploaded: event[triggerIndex]?.name, requirement: response?.data[triggerIndex]?.documentType !== null ? basicForm?.documentsRequired?.filter(data => data?.document?.name === response?.data[triggerIndex]?.documentType?.name)?.[0]?.required ? 'Required' : 'Recommended' : '', valid: response?.data[triggerIndex]?.valid, verified: response?.data[triggerIndex]?.verified, rowId: response?.data[triggerIndex]?.id });
-                    }
-                    console.log(response);
-                } catch (error) {
-                    console.log(error);
+            setFields(response?.data?.fields);
+            setFile(response?.data?.file);
+            setFileMetadata(response?.data?.metaData);
+            setApplicationDocumentId(response?.data?.id)
+            // for (let triggerIndex = 0; triggerIndex < event.length; triggerIndex++) {
+            try {
+                if (response?.data?.documentType !== null) {
+                    await PUT(`application-management-service/application/${applicationId}/form/updateData?documentType=${response?.data?.documentType?.name}&applicationDocumentId=${response?.data?.id}`, { documentType: response?.data?.documentType !== null ? response?.data?.documentType?.name : '', fileSize: `${(event[0]?.size / (1024 * 1024)).toFixed(2)} Mb`, fileURL: response?.data?.file?.fileURL, fileType: response?.data?.file?.fileType, fileUploaded: event[0]?.name, requirement: response?.data?.documentType !== null ? basicForm?.documentsRequired?.filter(data => data?.document?.name === response?.data?.documentType?.name)?.[0]?.required ? 'Required' : 'Recommended' : '', valid: response?.data?.valid, verified: response?.data?.verified, rowId: response?.data?.id });
                 }
+                console.log(response);
+            } catch (error) {
+                console.log(error);
             }
+            // }
             // handleSubmitApplicationReq(table)
             setIsLoading(false);
             setShowUploadDialog(false);
@@ -356,8 +414,7 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
         console.log("fffffff", fields)
     }
 
-
-    const handleContinue = async () => {
+    const handleContinue = async (actionType) => {
         let tempData = basicForm?.forms?.[formIndex]?.data !== null ? basicForm?.forms?.[formIndex]?.data : {};
         tempData.yesOrNoCME = yesOrNoCME;
         tempData.yesOrNoCMETranscript = yesOrNoCMETranscript;
@@ -365,9 +422,11 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
         let temp = {
             schemaId: basicForm?.forms?.[formIndex]?.schemaId,
             data: tempData,
-            unFilledFields: basicForm?.forms?.[formIndex]?.unFilledFields,
+            unFilledFields: checkingCondition,
             acknowledged: true,
-            esign: { esign: isSigned ? encryptedText : '', name: isSigned ? name : '', signedDate: isSigned ? currentDate : '' }
+            esign: actionType === "skip"
+                ? { esign: '', name: '', signedDate: '' }
+                : { esign: isSigned ? encryptedText : '', name: isSigned ? name : '', signedDate: isSigned ? currentDate : '' }
         }
         await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
             .then(response => {
@@ -434,18 +493,22 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                                 <div
                                     className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
                                 >
+                                    <Tooltip title={"Click to mark as Yes"} arrow>
                                     <div
                                         className={`${style.reappointmentButtonOutlined}`}
                                         onClick={() => { setSelectedUpload('transcript'); setYesOrNoCMETranscript('Yes'); setUpdatedDateCMETranscript(format(new Date(), "yyyy-MM-dd'T'00:00")); setShowUploadDialog(true) }}
                                     >
                                         YES
                                     </div>
+                                    </Tooltip>
+                                    <Tooltip title={"Click to mark as No"} arrow>
                                     <div
                                         className={`${style.reappointmentButtonOutlined} ${style.marginLeft}`}
                                         onClick={() => { setYesOrNoCMETranscript('No'); setUpdatedDateCMETranscript(format(new Date(), "yyyy-MM-dd'T'00:00")) }}
                                     >
                                         NO
                                     </div>
+                                    </Tooltip>
                                 </div>
                             ) : (
                                 <>
@@ -453,12 +516,14 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                                     <div
                                         className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
                                     >
+                                        <Tooltip title={"Click to View & Modify"} arrow>
                                         <div
                                             className={`${style.reappointmentButtonEdit}`}
                                             onClick={() => setYesOrNoCMETranscript('')}
                                         >
                                             VIEW TO MODIFY
                                         </div>
+                                        </Tooltip>
                                     </div>
                                 </>
                             )}
@@ -469,7 +534,7 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                                     <div className={`${style.fileDisplayGrid} ${style.fileDisplay} ${style.marginTop} ${style.verticalAlignCenter}`}>
                                         <div><strong>{basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.file?.classification}</strong></div>
                                         <div className={style.leftAlign}>{basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.file?.fileName}</div>
-                                        <Tooltip title={basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.file?.valid ? "Valid File" : "Not Valid"} arrow>
+                                        <Tooltip title={basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.file?.valid ? "Valid Transcript" : "Not Valid"} arrow>
                                             <img
                                                 src={basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.file?.valid ? VerifiedImage : NotVerifiedImage}
                                                 alt=""
@@ -480,7 +545,9 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                                                 }
                                             />
                                         </Tooltip>
+                                        <Tooltip title={"Click to Delete Transcript"} arrow>
                                         <img src={DeleteIcon} alt="" className={`${style.imgIcon} ${style.cursorPointer}`} onClick={() => { handleCMETranscriptDelete() }} />
+                                        </Tooltip>
                                     </div>
                                 )}
                                 {basicForm?.basicDetails?.applicant?.applicantType === "Midwife" ? (
@@ -902,10 +969,14 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                         )}
                     </div> */}
                     <div className={style.threeColForButton}>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
-                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleBackClick()}>BACK</div>
-                        <div className={`${style.continue} ${style.marginTop} ${isContinueEnabled ? '' : style.disabledButton}`} onClick={isContinueEnabled ? () => handleContinue() : () => { }}>CONTINUE</div>
+                    <Tooltip title={"Click to Skip This Step and Continue Later"} arrow>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => handleContinue("skip")}>SKIP FOR NOW</div></Tooltip>
+                        <Tooltip title={"Click to Save your Progress and Continue later"} arrow>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div></Tooltip>
+                        <Tooltip title={"Click to Go Back to the Previous Step"} arrow>
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleBackClick()}>BACK</div></Tooltip>
+                        <Tooltip title={isContinueEnabled ? "Click to Proceed to the Next Step" : ""} arrow>
+                        <div className={`${style.continue} ${style.marginTop} ${isContinueEnabled ? '' : style.disabledButton}`} onClick={isContinueEnabled ? () => handleContinue() : () => { }}>CONTINUE</div></Tooltip>
                     </div>
                 </div>
                 <div>
@@ -932,11 +1003,15 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                         </div>
                     </div>
                     <div className={`${style.stickyContainer} ${isSaveInProgressOpen || showValidationDialog ? style.hiddenStickyContainer : ""}`}>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
-                        <div className={`${style.saveInProgress} ${style.marginTop10}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
+                    <Tooltip title={"Click to Skip This Step and Continue Later"} arrow>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => handleContinue()}>SKIP FOR NOW</div></Tooltip>
+                        <Tooltip title={"Click to Save your Progress and Continue later"} arrow>
+                        <div className={`${style.saveInProgress} ${style.marginTop10}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div></Tooltip>
                         <div className={style.twoColForButton}>
-                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleBackClick()}>BACK</div>
-                            <div className={`${style.continue} ${style.marginTop10} ${isContinueEnabled ? '' : style.disabledButton}`} onClick={isContinueEnabled ? () => handleContinue() : () => { }}>CONTINUE</div>
+                        <Tooltip title={"Click to Go Back to the Previous Step"} arrow>
+                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleBackClick()}>BACK</div></Tooltip>
+                            <Tooltip title={isContinueEnabled ? "Click to Proceed to the Next Step" : ""} arrow>
+                            <div className={`${style.continue} ${style.marginTop10} ${isContinueEnabled ? '' : style.disabledButton}`} onClick={isContinueEnabled ? () => handleContinue() : () => { }}>CONTINUE</div></Tooltip>
                         </div>
                     </div>
 
@@ -984,6 +1059,7 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                                 }
                                 changeHandler={changeHandler}
                                 files={files}
+                                maxFiles={1}
                             />
                             <CommonDropZone
                                 title={"Upload A Photo"}
@@ -993,6 +1069,7 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                                 changeHandler={changeHandler}
                                 files={files}
                                 accept="image/*"
+                                maxFiles={1}
                             />
                         </div>
                     </div>

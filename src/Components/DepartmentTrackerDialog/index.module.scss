@@ -44,12 +44,32 @@
   margin-left: 20px;
 }
 
+.marginLeft10 {
+  margin-left: 10px;
+}
+
+.marginRight20 {
+  margin-right: 20px;
+}
+
+.marginRight10 {
+  margin-right: 10px;
+}
+
+.marginLeft5 {
+  margin-left: 5px;
+}
+
 .marginTop10 {
   margin-top: 10px;
 }
 
 .marginTop {
   margin-top: 20px;
+}
+
+.marginRight5 {
+  margin-right: 5px;
 }
 
 .reviewButtonContainer {
@@ -99,8 +119,16 @@
 
 .permanentStaffGrid {
   display: grid;
-  grid-template-columns: 4% 18% 14% 11% 8% 9% 10% 14% 5%;
+  // grid-template-columns: 4% 18% 14% 11% 8% 9% 10% 14% 5%;
+  grid-template-columns: 3% 9% 8% 11% 11% 4% 4% 3% 4% 4% 16% 9% 4%;
   grid-gap: 10px;
+}
+
+.permanentLocumStaffGrid {
+  display: grid;
+  // grid-template-columns: 4% 18% 14% 11% 8% 9% 10% 14% 5%;
+  grid-template-columns: 2% 8% 6% 8% 13% 4% 8% 7% 4% 4% 4% 6% 11% 9%;
+  grid-gap: 0.5%;
 }
 
 .verticalAlignCenter {
@@ -131,4 +159,42 @@
   height: auto;
   width: 20%;
   object-fit: contain;
+}
+
+.departmentContainer {
+  background: #FFFFFF 0% 0% no-repeat padding-box;
+  box-shadow: 0px 10px 20px #171A1A29;
+  border-radius: 4px;
+  opacity: 1;
+  padding: 10px;
+  width: 30%;
+  position: absolute;
+  right: 7%;
+  z-index: 10;
+}
+
+.fullWidth {
+  width: 100%;
+}
+
+.filterBackground {
+  background-color: rgba(6, 97, 122, 0.1);
+  border-radius: 20px;
+  padding: 5px;
+  max-height: min-content;
+  align-items: center;
+}
+
+.filtertextStyle {
+  text-align: left;
+  font: italic normal medium 14px/22px proxima-nova;
+  letter-spacing: 0px;
+  color: #06617A;
+  opacity: 1;
+}
+
+.searchFieldWidth {
+  width: 300px;
+  margin-right: 15px;
+  margin-top: -10px;
 }

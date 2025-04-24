@@ -23,6 +23,7 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import DatalistInput from 'react-datalist-input';
 import MenuIcon from "@mui/icons-material/Menu";
 import Close from './../../../images/close.png';
+import { Tooltip } from '@mui/material';
 
 const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) => {
   const [formSchema, setFormSchema] = useState();
@@ -66,6 +67,8 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
   const [refresh, setRefresh] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
   const [departmentList, setDepartmentList] = useState([]);
+  const [checkingCondition, setCheckingCondition] = useState([]);
+  let allMissingFields = [];
   useEffect(() => {
     if (basicForm && !formSchema) {
       getFormSchema()
@@ -278,9 +281,10 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
 
   const getSkipClicked = (value) => {
     if (value) {
-      handleSubmit()
-      handleSubmitApplicationReq("skipped")
-      navigate(navigateURL);
+      // handleSubmit()
+      // handleSubmitApplicationReq("skipped")
+      // navigate(navigateURL);
+      getMissingFields("skipped")
     }
   }
 
@@ -329,21 +333,25 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
 
   console.log(covererName, providerType, basicForm?.forms?.[formIndex]?.data?.coverageDetails?.covererName)
 
-  const getMissingFields = () => {
+  const getMissingFields = (data) => {
     let missingKeys = [];
+    let hasMandatoryMissingFields = [];
     if (yesOrNoLMS === '') {
-      missingKeys.push({ label: 'Have you completed all of the CMH assigned LMS Modules for your reappointment?' })
+      missingKeys.push({ label: { label: 'Have you completed all of the CMH assigned LMS Modules for your reappointment?', mandatory: true } });
+
     }
     if (yesOrNoSuboxone === '') {
-      missingKeys.push({ label: 'Do you prescribe Suboxone?' })
+      missingKeys.push({ label: { label: 'Do you prescribe Suboxone?', mandatory: true } });
     }
     if (yesOrNoMRP === '' && (basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children' && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics')) {
-      missingKeys.push({ label: 'Do you wish to be MRP for your patients in the Nursery?' })
+      missingKeys.push({ label: { label: 'Do you wish to be MRP for your patients in the Nursery?', mandatory: true } });
     }
-    if ((covererName === "" && covererNameList?.length === 0) && providerType !== "Not Applicable" && providerType !== "Department / Specialty Group") {
-      missingKeys.push({
-        label: "Who covers your hospital patients when you are not available?",
-      });
+    if ((covererName === "" && covererNameList?.length === 0) && providerType !== "Not Applicable" && providerType !== "Department / Specialty Group" &&
+      basicForm?.basicDetails?.departmentSpecialty?.department !==
+      "Women & Children" &&
+      basicForm?.basicDetails?.departmentSpecialty?.specialty !==
+      "Obstetrics & Gynecology") {
+      missingKeys.push({ label: { label: "Who covers your hospital patients when you are not available?", mandatory: true } });
     }
     if (
       (obstetricsCovererName === "" && obstetricsCovererNameList?.length === 0) && obstetricsProviderType !== "Not Applicable" && obstetricsProviderType !== "Department / Specialty Group"
@@ -354,13 +362,14 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
       "Obstetrics & Gynecology"
     ) {
       missingKeys.push({
-        label:
-          "If You Are Practicing Obstetrics, Who Covers Your Patients When You Are Not Available?",
+        label: { label: "If You Are Practicing Obstetrics, Who Covers Your Patients When You Are Not Available?", mandatory: true }
       });
     }
-    if (missingKeys?.length !== 0) {
-      setShowValidationDialog(true)
-    } else {
+    setWarningFields(missingKeys)
+    allMissingFields = missingKeys;
+    hasMandatoryMissingFields = missingKeys?.find(field => field?.label?.mandatory === true);
+
+    if (data === "skipped") {
       handleSubmit()
         .then(() => {
           return getPreApplication();
@@ -373,7 +382,23 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
         });
     }
 
-    setWarningFields(missingKeys)
+
+    if (data !== "skipped") {
+      if (hasMandatoryMissingFields) {
+        setShowValidationDialog(true)
+      } else {
+        handleSubmit()
+          .then(() => {
+            return getPreApplication();
+          })
+          .then(() => {
+            return handleSubmitApplicationReq();
+          })
+          .catch((error) => {
+            console.error("Error during API calls:", error);
+          });
+      }
+    }
     console.log('Metadata', missingKeys)
   }
 
@@ -387,20 +412,20 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
     let temp = {
       providerType: providerType,
       providerDetails: providerType === 'Group' ? [] : selectApplicant
-        .filter(obj => covererNameList.includes(obj.id))
+        .filter(obj => covererNameList?.includes(obj.id))
         .map(obj => ({
-          id: obj.id,
-          name: [obj.applicant?.name?.firstName, obj.applicant?.name?.middleName, obj.applicant?.name?.lastName]
+          id: obj?.id,
+          name: [obj?.applicant?.name?.firstName, obj?.applicant?.name?.middleName, obj?.applicant?.name?.lastName]
             .filter(Boolean) // Remove any empty or falsy values
             .join(' ') || 'N/A', // If all fields are empty, send 'N/A'
         })),
       groupDetails: providerType === 'Group' ? covererNameList : [],
       obstetricsProviderType: obstetricsProviderType,
       obstetricsProviderDetails: obstetricsProviderType === 'Group' ? [] : selectApplicantObstetrics
-        .filter(obj => obstetricsCovererNameList.includes(obj.id))
+        .filter(obj => obstetricsCovererNameList?.includes(obj?.id))
         .map(obj => ({
-          id: obj.id,
-          name: [obj.applicant?.name?.firstName, obj.applicant?.name?.middleName, obj.applicant?.name?.lastName]
+          id: obj?.id,
+          name: [obj?.applicant?.name?.firstName, obj?.applicant?.name?.middleName, obj?.applicant?.name?.lastName]
             .filter(Boolean) // Remove any empty or falsy values
             .join(' ') || 'N/A', // If all fields are empty, send 'N/A'
         })),
@@ -425,7 +450,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
         wishToBeMRP: { response: yesOrNoMRP, date: updatedDateMRP },
         coverageDetails: { covererName: covererName, obstetricsCovererName: obstetricsCovererName, providerType: providerType, obstetricsProviderType: obstetricsProviderType },
       },
-      unFilledFields: warningFields?.map(data => data?.label),
+      unFilledFields: allMissingFields?.map(field => JSON.stringify(field)),
       acknowledged: data === "skipped" ? false : true
     }
     await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
@@ -486,18 +511,22 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
               <div
                 className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
               >
+                <Tooltip title={"Click to mark as Yes"} arrow>
                 <div
                   className={`${style.reappointmentButtonOutlined}`}
                   onClick={() => { setYesOrNoLMS('Yes'); setUpdatedDateLMS(format(new Date(), "yyyy-MM-dd'T'00:00")) }}
                 >
                   YES
                 </div>
+                </Tooltip>
+                <Tooltip title={"Click to mark as No"} arrow>
                 <div
                   className={`${style.reappointmentButtonOutlined} ${style.marginLeft}`}
                   onClick={() => { setYesOrNoLMS('No'); setUpdatedDateLMS(format(new Date(), "yyyy-MM-dd'T'00:00")) }}
                 >
                   NO
                 </div>
+                </Tooltip>
               </div>
             ) : (
               <>
@@ -505,12 +534,14 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                 <div
                   className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
                 >
+                                          <Tooltip title={"Click to View & Modify"} arrow>
                   <div
                     className={`${style.reappointmentButtonEdit}`}
                     onClick={() => setYesOrNoLMS('')}
                   >
                     VIEW TO MODIFY
                   </div>
+                  </Tooltip>
                 </div>
               </>
             )}
@@ -523,18 +554,22 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
               <div
                 className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
               >
+                <Tooltip title={"Click to mark as Yes"} arrow>
                 <div
                   className={`${style.reappointmentButtonOutlined}`}
                   onClick={() => { setYesOrNoSuboxone('Yes'); setUpdatedDateSuboxone(format(new Date(), "yyyy-MM-dd'T'00:00")) }}
                 >
                   YES
                 </div>
+                </Tooltip>
+                <Tooltip title={"Click to mark as No"} arrow>
                 <div
                   className={`${style.reappointmentButtonOutlined} ${style.marginLeft}`}
                   onClick={() => { setYesOrNoSuboxone('No'); setUpdatedDateSuboxone(format(new Date(), "yyyy-MM-dd'T'00:00")) }}
                 >
                   NO
                 </div>
+                </Tooltip>
               </div>
             ) : (
               <>
@@ -542,12 +577,14 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                 <div
                   className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
                 >
+                  <Tooltip title={"Click to View & Modify"} arrow>
                   <div
                     className={`${style.reappointmentButtonEdit}`}
                     onClick={() => setYesOrNoSuboxone('')}
                   >
                     VIEW TO MODIFY
                   </div>
+                  </Tooltip>
                 </div>
               </>
             )}
@@ -561,18 +598,22 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                 <div
                   className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
                 >
+                  <Tooltip title={"Click to mark as Yes"} arrow>
                   <div
                     className={`${style.reappointmentButtonOutlined}`}
                     onClick={() => { setYesOrNoMRP('Yes'); setUpdatedDateMRP(format(new Date(), "yyyy-MM-dd'T'00:00")) }}
                   >
                     YES
                   </div>
+                  </Tooltip>
+                  <Tooltip title={"Click to mark as No"} arrow>
                   <div
                     className={`${style.reappointmentButtonOutlined} ${style.marginLeft}`}
                     onClick={() => { setYesOrNoMRP('No'); setUpdatedDateMRP(format(new Date(), "yyyy-MM-dd'T'00:00")) }}
                   >
                     NO
                   </div>
+                  </Tooltip>
                 </div>
               ) : (
                 <>
@@ -580,12 +621,14 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                   <div
                     className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
                   >
+                    <Tooltip title={"Click to View & Modify"} arrow>
                     <div
                       className={`${style.reappointmentButtonEdit}`}
                       onClick={() => setYesOrNoMRP('')}
                     >
                       VIEW TO MODIFY
                     </div>
+                    </Tooltip>
                   </div>
                 </>
               )}
@@ -1063,14 +1106,18 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
             </div>
           </div>
           <div className={style.threeColForButton}>
-            <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
-            <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
-            <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleBackClick()}>BACK</div>
+          <Tooltip title={"Click to Skip This Step and Continue Later"} arrow>
+            <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div></Tooltip>
+            <Tooltip title={"Click to Save your Progress and Continue later"} arrow>
+            <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div></Tooltip>
+            <Tooltip title={"Click to Go Back to the Previous Step"} arrow>
+            <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleBackClick()}>BACK</div></Tooltip>
+            <Tooltip title={"Click to Proceed to the Next Step"} arrow>
             <div className={`${style.continue} ${style.marginTop} ${((basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children'
               && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics') ? (yesOrNoLMS !== '' && yesOrNoSuboxone !== '' && yesOrNoMRP !== '')
               : (yesOrNoLMS !== '' && yesOrNoSuboxone !== '')) ? '' : style.disabledButton}`} onClick={((basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children'
                 && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics') ? (yesOrNoLMS !== '' && yesOrNoSuboxone !== '' && yesOrNoMRP !== '') :
-                (yesOrNoLMS !== '' && yesOrNoSuboxone !== '')) ? () => getMissingFields() : () => { }}>CONTINUE</div>
+                (yesOrNoLMS !== '' && yesOrNoSuboxone !== '')) ? () => getMissingFields() : () => { }}>CONTINUE</div></Tooltip>
           </div>
         </div>
         <div>
@@ -1097,16 +1144,23 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
             </div>
           </div>
           <div className={`${style.stickyContainer} ${isSaveInProgressOpen || showValidationDialog || showJourneyDialog ? style.hiddenStickyContainer : ""}`}>
-            <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
-            <div className={`${style.saveInProgress} ${style.marginTop10}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
+          <Tooltip title={"Click to Skip This Step and Continue Later"} arrow>
+            <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div></Tooltip>
+            <Tooltip title={"Click to Save your Progress and Continue later"} arrow>
+            <div className={`${style.saveInProgress} ${style.marginTop10}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div></Tooltip>
             <div className={style.twoColForButton}>
-              <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleBackClick()}>BACK</div>
+            <Tooltip title={"Click to Go Back to the Previous Step"} arrow>
+              <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleBackClick()}>BACK</div></Tooltip>
+
               {/* <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowJourneyDialog(true)}>CONTINUE</div> */}
+              <Tooltip title={((basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children'
+                && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics') ? (yesOrNoLMS !== '' && yesOrNoSuboxone !== '' && yesOrNoMRP !== '')
+                : (yesOrNoLMS !== '' && yesOrNoSuboxone !== '')) ? "Click to Proceed to the Next Step" : ""} arrow>
               <div className={`${style.continue} ${style.marginTop10} ${((basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children'
                 && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics') ? (yesOrNoLMS !== '' && yesOrNoSuboxone !== '' && yesOrNoMRP !== '')
                 : (yesOrNoLMS !== '' && yesOrNoSuboxone !== '')) ? '' : style.disabledButton}`} onClick={((basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children'
                   && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics') ? (yesOrNoLMS !== '' && yesOrNoSuboxone !== '' && yesOrNoMRP !== '') :
-                  (yesOrNoLMS !== '' && yesOrNoSuboxone !== '')) ? () => getMissingFields() : () => { }}>CONTINUE</div>
+                  (yesOrNoLMS !== '' && yesOrNoSuboxone !== '')) ? () => getMissingFields() : () => { }}>CONTINUE</div></Tooltip>
 
             </div>
           </div>

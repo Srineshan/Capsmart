@@ -3,9 +3,10 @@ import { Dialog, Classes } from '@blueprintjs/core';
 import CrossPink from "../../images/crossPink.png";
 
 import style from './index.module.scss'
+import { Tooltip } from '@mui/material';
 
 const ValidationDialog = ({ getIsOpen, labelList, getSkipClicked }) => {
-  console.log(labelList, 'Metadata')
+  console.log(labelList, 'Metadatarrrr')
   return (
     <Dialog isOpen={getIsOpen} onClose={() => getIsOpen(false)} className={`${style.eSignDialog} ${style.eSignDialogBackground}`} canOutsideClickClose={false} canEscapeKeyClose={false}>
       <div>
@@ -32,7 +33,9 @@ const ValidationDialog = ({ getIsOpen, labelList, getSkipClicked }) => {
                 <div
                   className={`${style.description} ${style.marginTop10} ${style.marginLeft}`}
                   dangerouslySetInnerHTML={{
-                    __html: data?.label
+                    __html: window.location.pathname.includes("reappointmentApplicationForm")
+                    ? data?.label?.label
+                    : data?.label
                   }}
                 />
               </div>
@@ -48,8 +51,10 @@ const ValidationDialog = ({ getIsOpen, labelList, getSkipClicked }) => {
           ))}
           <p className={`${style.description} ${style.marginTop}`}>Do you want to skip or continue your data entry?</p>
           <div className={`${style.justifyCenter} ${style.displayInRow} ${style.marginTop}`}>
-            <div className={`${style.saveInProgress}`} onClick={() => { getIsOpen(false); }}>CONTINUE</div>
-            <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { getIsOpen(false); getSkipClicked(true); }}>SKIP</div>
+          <Tooltip title={"Click to Continue and Proceed"} arrow>
+            <div className={`${style.saveInProgress}`} onClick={() => { getIsOpen(false); }}>CONTINUE</div> </Tooltip>
+            <Tooltip title={"Click to Skip and Move Forward"} arrow>
+            <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { getIsOpen(false); getSkipClicked(true); }}>SKIP</div></Tooltip>
           </div>
         </div>
 

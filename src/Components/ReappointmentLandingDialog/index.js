@@ -21,6 +21,7 @@ import { GET, PUT, TenantID } from "../../Screens/dataSaver";
 import { format } from "date-fns";
 import { ErrorToaster, SuccessToaster } from "../../utils/toaster";
 import Cookies from "universal-cookie";
+import { Tooltip } from "@mui/material";
 
 const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
   // const { login, register, sendOTP, verifyOTP } = useDescope();
@@ -368,24 +369,28 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
                 </div>
                 <div className={style.displayInRow}>
                   <div>
-                    <div
-                      className={`${style.userGuideButton} ${style.marginTop}`}
-                      onClick={() => {
-                        handleOpenUserGuide();
-                      }}
-                    >
-                      USER GUIDES & TUTORIALS
-                    </div>
+                    <Tooltip title={"Click to access User Guides & Tutorials"} arrow>
+                      <div
+                        className={`${style.userGuideButton} ${style.marginTop}`}
+                        onClick={() => {
+                          handleOpenUserGuide();
+                        }}
+                      >
+                        USER GUIDES & TUTORIALS
+                      </div>
+                    </Tooltip>
                   </div>
                   <div>
-                    <div
-                      className={`${style.continue} ${style.marginTop} ${style.marginLeft} ${processReappointment !== '' ? '' : style.disable}`}
-                      onClick={processReappointment !== '' ? () => {
-                        handleContinue();
-                      } : () => { }}
-                    >
-                      CONTINUE
-                    </div>
+                    <Tooltip title={processReappointment !== '' ? "Click to Begin Reappointment Application" : ""} arrow>
+                      <div
+                        className={`${style.continue} ${style.marginTop} ${style.marginLeft} ${processReappointment !== '' ? '' : style.disable}`}
+                        onClick={processReappointment !== '' ? () => {
+                          handleContinue();
+                        } : () => { }}
+                      >
+                        CONTINUE
+                      </div>
+                    </Tooltip>
                   </div>
                 </div>
               </div>
@@ -420,18 +425,22 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
             {`If we do not receive a completed reappointment application by Jun 30, 2025 your staff position as a ${basicForm?.basicDetails?.applicant?.applicantType}, ${basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory}, will be terminated.`}
           </div>
           <div className={style.spaceBetween}>
-            <div
-              className={`${style.saveInProgress} ${style.marginTop}`}
-              onClick={() => setShowAlert(false)}
-            >
-              CANCEL
-            </div>
-            <div
-              className={`${style.continue} ${style.marginTop}`}
-              onClick={() => { setShowAlert(false); setShowLogoutAlert(true); handleTerminate() }}
-            >
-              OKAY & EXIT
-            </div>
+            <Tooltip title={"Click to Cancel and Close"} arrow>
+              <div
+                className={`${style.saveInProgress} ${style.marginTop}`}
+                onClick={() => setShowAlert(false)}
+              >
+                CANCEL
+              </div>
+            </Tooltip>
+            <Tooltip title={"Click to Confirm and Exit"} arrow>
+              <div
+                className={`${style.continue} ${style.marginTop}`}
+                onClick={() => { setShowAlert(false); setShowLogoutAlert(true); handleTerminate() }}
+              >
+                OKAY & EXIT
+              </div>
+            </Tooltip>
           </div>
 
         </div>
@@ -481,12 +490,14 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
           </div>
           <div className={style.spaceBetween}>
             <div></div>
-            <div
-              className={`${style.saveInProgress} ${style.marginTop}`}
-              onClick={() => setShowUserGuide(false)}
-            >
-              CLOSE
-            </div>
+            <Tooltip title={"Click to Close"} arrow>
+              <div
+                className={`${style.saveInProgress} ${style.marginTop}`}
+                onClick={() => setShowUserGuide(false)}
+              >
+                CLOSE
+              </div>
+            </Tooltip>
           </div>
 
         </div>

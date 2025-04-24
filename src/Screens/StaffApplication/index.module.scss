@@ -295,6 +295,19 @@ body::-webkit-scrollbar {
   gap: 10px;
 }
 
+
+.applicantGrid2 {
+  display: grid;
+  grid-template-columns: 2% 15% 15% 15% 20% 5% 15% 5%;
+  grid-gap: 1%;
+}
+
+.applicantGrid3 {
+  display: grid;
+  grid-template-columns: 2% 15% 20% 15% 15% 15% 15%;
+  grid-gap: 1%;
+}
+
 .applicationCardStyle {
   background: #FFFFFF 0% 0% no-repeat padding-box;
   box-shadow: 0px 5px 20px #52575D4D;
@@ -613,7 +626,7 @@ body::-webkit-scrollbar {
   box-shadow: 0px 10px 20px #c4c8d066;
   border-radius: 16px;
   opacity: 1;
-  cursor: pointer;
+  // cursor: pointer;
   padding: 15px;
 }
 
@@ -814,6 +827,14 @@ body::-webkit-scrollbar {
   flex-direction: row;
 }
 
+.displayInRow1 {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+
+
 
 .displayInRowDecline {
   display: flex;
@@ -936,7 +957,7 @@ body::-webkit-scrollbar {
   display: grid;
   // grid-template-columns: 2% 18% 10% 16% 6% 6% 6% 10% 14% 6%;
   // grid-template-columns: 2% 20% 14% 15% 7% 7% 7% 16% 6%;
-  grid-template-columns: 3% 25% 11% 30% 6% 5% 9% 6%;
+  grid-template-columns: 3% 18% 12% 26% 10% 7% 4% 7% 5%;
   grid-gap: 1%;
 }
 
@@ -958,7 +979,13 @@ body::-webkit-scrollbar {
   display: grid;
   // grid-template-columns: 2% 18% 12% 13% 6% 6% 7% 13% 12% 3% 2%;
   // grid-template-columns: 2% 18% 11% 13% 5% 6% 7% 13% 12% 3% 2%;
-  grid-template-columns: 2% 26% 11% 30% 7% 5% 8% 6%;
+  grid-template-columns: 2% 21% 11% 28% 9% 6% 4% 7% 4%;
+  grid-gap: 1%;
+}
+
+.credUserStaffReappointGrid {
+  display: grid;
+  grid-template-columns: 5% 16% 10% 15% 10% 6% 5% 12% 10% 3%;
   grid-gap: 1%;
 }
 
@@ -974,7 +1001,7 @@ body::-webkit-scrollbar {
   // grid-template-columns: 4% 20% 15% 14% 6% 6% 7% 7% 9% 5%;
   // grid-template-columns: 20% 15% 14% 6% 6% 7% 9% 9% 5%;
   // grid-template-columns: 20% 15% 14% 8% 8% 8% 11% 9%;
-  grid-template-columns: 3% 26% 11% 27% 7% 7% 8% 6%;
+  grid-template-columns: 5% 23% 11% 27% 7% 15% 8%;
   grid-gap: 1%;
 }
 
@@ -990,7 +1017,7 @@ body::-webkit-scrollbar {
   // grid-template-columns: 4% 20% 15% 14% 6% 6% 7% 7% 9% 5%;
   // grid-template-columns: 20% 15% 14% 6% 6% 8% 8% 7% 10%;
   // grid-template-columns: 20% 15% 14% 7% 8% 11% 12% 9%;
-  grid-template-columns: 5% 25% 12% 30% 6% 5% 7% 5%;
+  grid-template-columns: 5% 25% 12% 30% 6% 12% 5%;
   grid-gap: 1%;
 }
 
@@ -1181,6 +1208,7 @@ body::-webkit-scrollbar {
   box-shadow: 0px 3px 18px #0F0B3129;
   border: 1px solid #0F0B3129;
   border-radius: 8px;
+  padding: 15px 0px;
 }
 
 .extensionOptionsStyle {
@@ -1551,6 +1579,11 @@ body::-webkit-scrollbar {
   cursor: pointer;
 }
 
+.crossStyle1 {
+  height: 24px;
+  width: 24px;
+}
+
 .crossStyleImg {
   height: 20px;
   width: 20px;
@@ -1715,7 +1748,13 @@ select {
 
 .dialogStyle {
   height: 80%;
-  width: 75% !important;
+  width: 85% !important;
+  border-radius: 20px;
+}
+
+.dialogStyle2 {
+  height: 80%;
+  width: 92% !important;
   border-radius: 20px;
 }
 
@@ -1943,6 +1982,10 @@ select {
 
 .marginBottom {
   margin-bottom: 10px;
+}
+
+.marginBottom5 {
+  margin-bottom: 5px;
 }
 
 .flexWrap {
@@ -2259,7 +2302,7 @@ select {
   color: black !important;
 }
 
-.bold {
+.boldNotesText {
   font-weight: bold;
 }
 
@@ -4214,7 +4257,7 @@ input[type="number"] {
 
 .eSignDialogBackground {
   background: #ffffff 0% 0% no-repeat padding-box;
-  padding: 20px 40px 0px 40px;
+  padding: 20px 40px 20px 40px;
   border-radius: 20px !important;
 }
 
@@ -4239,6 +4282,16 @@ input[type="number"] {
   text-transform: capitalize;
 }
 
+.heading1 {
+  text-align: left;
+  font: normal normal bold 24px proxima-nova;
+  letter-spacing: 0px;
+  color: #06617A;
+  text-transform: capitalize;
+  opacity: 1;
+
+}
+
 .marginCenter {
   margin-left: auto;
   margin-right: auto;
@@ -4251,7 +4304,6 @@ input[type="number"] {
 .borderStyleTiles {
   background: $tableheadhover 0% 0% no-repeat padding-box;
   height: 2px;
-
 }
 
 .selectedNewApplicantBackground {
@@ -4993,7 +5045,7 @@ input[type="number"] {
   display: flex;
   flex-direction: column;
   margin: 0 auto;
-  font-family: 'Proxima Nova', Arial, sans-serif;
+  font-family: 'proxima nova', Arial, sans-serif;
 }
 
 .row {
@@ -5208,4 +5260,79 @@ input[type="number"] {
   border-radius: 4px;
   opacity: 0.9;
   // padding: 3px;
+}
+
+.viewCurrentStatusText {
+  text-align: center;
+  font: normal normal bold 12px proxima-nova;
+  padding: 5px;
+  letter-spacing: 0px;
+  color: #F5F8F8;
+  text-transform: uppercase;
+  background: #06617A 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 6px #00000029;
+  border-radius: 8px;
+  opacity: 1;
+}
+
+.searchFieldAlignment {
+  margin-right: 18px;
+}
+
+.filterContainer {
+  background: #FFFFFF 0% 0% no-repeat padding-box;
+  box-shadow: 0px 10px 20px #171A1A29;
+  border-radius: 4px;
+  opacity: 1;
+  padding: 0px 10px 10px 10px;
+  width: 25%;
+  position: absolute;
+  right: 2%;
+  z-index: 10;
+}
+
+.filterBackground {
+  background-color: rgba(6, 97, 122, 0.1);
+  border-radius: 20px;
+  padding: 5px;
+  max-height: min-content;
+  align-items: center;
+}
+
+.filtertextStyle {
+  text-align: left;
+  font: italic normal medium 14px/22px proxima-nova;
+  letter-spacing: 0px;
+  color: #06617A;
+  opacity: 1;
+}
+
+.Bold {
+  font-weight: 500;
+}
+
+.privateBorderText {
+  background: #FFBFBE1A 0% 0% no-repeat padding-box;
+  border: 1px solid #FFBFBE;
+  border-radius: 3px;
+  opacity: 1;
+  text-align: left;
+  font: italic normal 600 10px/12px proxima-nova;
+  letter-spacing: 0px;
+  color: #FFB4B2;
+  text-transform: capitalize;
+  padding: 1px;
+}
+
+.viewCurrentStatusText {
+  text-align: center;
+  font: normal normal bold 12px proxima-nova;
+  padding: 5px;
+  letter-spacing: 0px;
+  color: #F5F8F8;
+  text-transform: uppercase;
+  background: #06617A 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 6px #00000029;
+  border-radius: 8px;
+  opacity: 1;
 }

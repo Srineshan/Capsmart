@@ -25,6 +25,7 @@ import axios from "axios";
 
 import style from "./index.module.scss";
 import { useDescope } from "@descope/react-sdk";
+import { Tooltip } from "@mui/material";
 // import { Logout } from "../../utils/auth";
 
 const useStyles = makeStyles((theme) => ({
@@ -57,8 +58,14 @@ const Navbar = () => {
   const openHelp = Boolean(anchorElHelp);
   const popoverAnchorHelp = useRef(null);
   const [anchorElTools, setAnchorElTools] = useState(null);
+  const [anchorElGuide, setAnchorElGuide] = useState(null);
+  const [openPrivileged, setOpenPrivileged] = useState(null);
   const openTools = Boolean(anchorElTools);
+  const openGuide = Boolean(anchorElGuide);
+  const openStaff = Boolean(openPrivileged);
+  const popoverAnchorStaff = useRef(null);
   const popoverAnchorTools = useRef(null);
+  const popoverAnchorGuide = useRef(null);
   const [hospitalLogo, setHospitalLogo] = useState(null);
   const [logo, setLogo] = useState(sessionStorage?.getItem("logo"));
   const [isActivityServiceLogAvailable, setIsActivityServiceLogAvailable] =
@@ -78,7 +85,8 @@ const Navbar = () => {
   const [isSystemAdministrationAvailable, setIsSystemAdministrationAvailable] =
     useState(false);
   const [isSupportAvailable, setIsSupportAvailable] = useState(false);
-  let selectedWorkingMode = sessionStorage.getItem("SelectedWorkingMode");
+  // let selectedWorkingMode = sessionStorage.getItem("SelectedWorkingMode");
+  const workModeType = sessionStorage.getItem('workModeType')
 
   useEffect(() => {
     if (currentUserRoles?.includes("Activity Logger")) {
@@ -197,8 +205,28 @@ const Navbar = () => {
     setAnchorElTools(event.currentTarget);
   };
 
+  const handleClickGuide = (event) => {
+    setAnchorElGuide(event.currentTarget);
+  };
+
+  const handleClickStaff = (event) => {
+    setOpenPrivileged(event.currentTarget);
+  };
+
   const handleCloseTools = () => {
     setAnchorElTools(null);
+  };
+
+  const handleCloseGuide = () => {
+    setAnchorElGuide(null);
+  };
+
+  const handleCloseStaff = () => {
+    setOpenPrivileged(null);
+  };
+
+  const sendEmail = (email) => {
+      window.location.href = `mailto:${email}`;
   };
 
   const idTools = open ? "mouse-over-popover" : undefined;
@@ -271,6 +299,7 @@ const Navbar = () => {
     cookie.remove("user", { path: "/" });
     cookie.remove("entityId", { path: "/" });
     cookie.remove("authorization", { path: "/" });
+    sessionStorage.setItem('applicationCreationType', 'REAPPOINTMENT');
     logout()
     navigate('/')
   }
@@ -363,16 +392,18 @@ const Navbar = () => {
               </Link>
             )
           } */}
-          <Link to={"/applications"} className={style.noFontStyle}>
-            <div
-              className={`${style.menuStyle} ${window.location.pathname.includes("/applications") &&
-                style.activeMenuColor
-                }`}
-            >
-              <p>STAFF APPLICATIONS</p>
-            </div>
-          </Link>
-          <Link to={"/activeStaff"} className={style.noFontStyle}>
+          {workModeType !== "Entity Sys Admin" && (
+            <Link to={"/applications"} className={style.noFontStyle}>
+              <div
+                className={`${style.menuStyle} ${window.location.pathname.includes("/applications") &&
+                  style.activeMenuColor
+                  }`}
+              >
+                <p>STAFF APPLICATIONS</p>
+              </div>
+            </Link>
+          )}
+          {/* <Link to={"/activeStaff"} className={style.noFontStyle}>
             <div
               onClick={handlePrivilegedStaffClick}
               className={`${style.menuStyle} ${window.location.pathname.includes("/activeStaff") &&
@@ -381,7 +412,59 @@ const Navbar = () => {
             >
               <p>PRIVILEGED STAFF</p>
             </div>
-          </Link>
+          </Link> */}
+          <div
+            ref={popoverAnchorStaff}
+            onMouseEnter={(e) => handleClickStaff(e)}
+            onMouseLeave={() => handleCloseStaff()}
+            aria-owns={openStaff ? "mouse-over-popover" : undefined}
+            aria-haspopup="true"
+          >
+            <div className={`${style.menuStyle} ${style?.cursorPointer}`}>PRIVILEGED STAFF</div>
+            <Popover
+              id={"mouse-over-popover"}
+              open={openStaff}
+              anchorEl={popoverAnchorStaff.current}
+              onClose={handleCloseGuide}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "center",
+              }}
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "center",
+              }}
+              classes={{
+                paper: classes.popoverContent,
+              }}
+              PaperProps={{
+                style: { width: "200px" },
+                onMouseEnter: handleClickStaff,
+                onMouseLeave: handleCloseStaff,
+              }}
+            >
+              <div className={style.helpCardStyle}>
+                {/* {workModeType === "Department Head" || workModeType === "Credentialing Committee" ? ( */}
+                   <Link
+                   className={style.noFontStyle1}
+                   to={"/activeStaff"}
+                 >
+                   <div className={`${style.options1} ${style.cursorPointer} ${window.location.pathname.includes("/activeStaff")
+                  }`} 
+                   >
+                     Permanent Staff</div>
+                 </Link>
+
+                {/* ) : ""} */}
+                <Link
+                  className={style.noFontStyle1}
+                  to={"/locumStaff"}
+                >
+                  <div className={`${style.options1} ${style.cursorPointer} ${window.location.pathname.includes("/locumStaff")}`}>Locum Staff</div>
+                </Link>
+              </div>
+            </Popover>
+          </div>
 
           <div
             className={`${style.menuStyle} ${window.location.pathname.includes("/inactiveStaff") &&
@@ -656,7 +739,7 @@ const Navbar = () => {
           </div> */}
         </div>
 
-        <div className={style.displayInRow}>
+        <div className={`${style.displayInRow} ${style.centerAlignCenter}`}>
           {/* {!window.location.pathname.includes('reportTypeOverview') && (
                     <>
                         <img src={File} alt="print" className={style.icons} />
@@ -668,13 +751,69 @@ const Navbar = () => {
           <img src={NotificationsIcon} alt="print" className={style.icons} />
           <img src={RedBackground} alt="print" className={style.notificationIcon} />
           <img src={NotificationCount} alt="print" className={style.notificationCount} /> */}
-          <div className={`${style.centerAlign} ${style.iconSize}`}><SettingsOutlinedIcon fontSize="large" /></div>
-          <div className={`${style.centerAlign} ${style.iconSize}`}><HelpOutlineOutlinedIcon fontSize="large" /></div>
+          <div className={`${style.centerAlign} ${style.iconSize}`}><SettingsOutlinedIcon fontSize="small" /></div>
+          {/* <div className={`${style.centerAlign} ${style.iconSize}`}><HelpOutlineOutlinedIcon fontSize="large" /></div> */}
+          <div
+            ref={popoverAnchorGuide}
+            onMouseEnter={(e) => handleClickGuide(e)}
+            onMouseLeave={() => handleCloseGuide()}
+            aria-owns={openGuide ? "mouse-over-popover" : undefined}
+            aria-haspopup="true"
+          >
+            <div className={`${style.alignContent} ${style.iconSize1} ${style?.cursorPointer}`}><HelpOutlineOutlinedIcon fontSize="small"  sx={{ "&:hover": { color: "#06617A" } }}  /></div>
+            <Popover
+              id={"mouse-over-popover"}
+              open={openGuide}
+              anchorEl={popoverAnchorGuide.current}
+              onClose={handleCloseGuide}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "center",
+              }}
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              classes={{
+                paper: classes.popoverContent,
+              }}
+              PaperProps={{
+                style: { width: "200px" },
+                onMouseEnter: handleClickGuide,
+                onMouseLeave: handleCloseGuide,
+              }}
+            >
+              <div className={style.helpCardStyle}>
+                {workModeType === "Department Head" || workModeType === "Credentialing Committee" ? (
+                   <div
+                   className={style.noFontStyle1}
+                 >
+                   <div className={`${style.options1} ${style.cursorPointer}`} 
+                    onClick={() => window.open(
+                     workModeType === "Department Head"
+                       ? 'https://xd.adobe.com/view/f679ea78-f822-432c-85b2-07b5599aa84e-a32a/?fullscreen' 
+                       : 'https://xd.adobe.com/view/90b13ba5-0ca0-4681-8d9e-abd451dc2f38-c5e2/?fullscreen'
+                   )}
+                   >
+                     Step-By-Step Guide for Reappointment Application Review</div>
+                 </div>
+
+                ) : ""}
+                <div
+                  className={style.noFontStyle1}
+                >
+                  <div className={`${style.options1} ${style.cursorPointer}`} onClick={() => sendEmail("capmanager_support@hapicare.com")}>Send Support Ticket By Email</div>
+                </div>
+              </div>
+            </Popover>
+          </div>
           <div
             className={`${style.logoutStyle} ${style.cursorPointer}`}
             onClick={() => handleLogout()}
           >
+             <Tooltip title={'Click to Logout'} arrow >
             <div className={`${style.logOutTextStyle}`}>Logout</div>
+            </Tooltip>
           </div>
           {/* <img
             src={LogoutIcon1}
@@ -682,7 +821,11 @@ const Navbar = () => {
             className={style.logoutIcons}
             onClick={logout}
           /> */}
-          <LogoutIcon className={`${style.logoutIcons} ${style.iconSize1}`} onClick={handleLogout} style={{ fontSize: 40 }} />
+          <div>
+            <Tooltip title={'Click to Logout'} arrow >
+          <LogoutIcon className={`${style.logoutIcons} ${style.iconSize1}`} onClick={handleLogout} style={{ fontSize: 20 }} />
+          </Tooltip>
+          </div>
         </div>
       </div>
     </div>

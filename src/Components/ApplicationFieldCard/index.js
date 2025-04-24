@@ -1,3 +1,5 @@
+// main applicationFieldCard
+
 import React, { useEffect, useState } from "react";
 import CommonPhoneField from "../../Components/CommonFields/CommonPhoneField";
 import CommonInputField from "../CommonFields/CommonInputField";
@@ -99,7 +101,7 @@ const ApplicationFieldCard = ({
   const [isLoading, setIsLoading] = useState(false);
   const [disclosureBaseKey, setDisclosureBaseKey] = useState('');
   const [disclosureFieldKey, setDisclosureFieldKey] = useState('');
-  const [disclosurSchema, setDisclosureSchema] = useState({});
+  const [disclosurSchema, setDisclosureSchema] = useState({});  
   const { setValue, value } = useComboboxControls({ initialValue: "" });
   const canadaData = JSON.parse(sessionStorage.getItem("canadaData")) || {};
   let user = JSON.parse(sessionStorage.getItem("user"));
@@ -108,7 +110,7 @@ const ApplicationFieldCard = ({
   useEffect(() => {
     renderObjectFields(object);
     console.log("entered");
-  }, [basicForm, isAddMore]);
+  }, [basicForm, isAddMore]); 
 
   useEffect(() => {
     if (step !== undefined && basicForm !== undefined) {
@@ -295,7 +297,7 @@ const ApplicationFieldCard = ({
         setNestedValue(newData, `${basicpath}.${basePath}.${path}`, value);
       } else if (basePath2 && basePath && path) {
         setNestedValue(newData, `${basePath}.${basePath2}.${path}`, value);
-        setNestedValue(newData, `${basicpath}.${basePath}.${path}`, value);
+        setNestedValue(newData, `${basicpath}.${basePath}.${path}`, value); 
       } else if (basePath && path) {
         setNestedValue(newData, `${basePath}.${path}`, value);
         setNestedValue(newData, `${basicpath}.${basePath}.${path}`, value);
@@ -306,7 +308,31 @@ const ApplicationFieldCard = ({
         setNestedValue(newData, baseKey, value);
         setNestedValue(newData, `${basicpath}.${baseKey}`, value);
       }
-
+         // **New Logic to Reset Address Fields**
+         if (path === "isMailingAddressSameAsHomeAddress") {
+          if (value === "Different Address") {
+            setNestedValue(newData, `forms[${addressPageIndex}].data.contactAddress2.mailingAddress`, {
+              pinCode: "",
+              streetName: "",
+              city: "",
+              province: "",
+            });
+          }
+        }
+    
+        // Business Address Logic
+        if (path === "isBusinessAddressSameAsHomeAddressOrMailingAddress") {
+          if (value === "Different Address") {
+            setNestedValue(newData, `forms[${addressPageIndex}].data.contactAddress3.business.businessAddress`, {
+              pinCode: "",
+              streetName: "",
+              city: "",
+              province: "",
+            });
+          }
+        }
+  
+  
       return newData;
     });
   };
@@ -867,6 +893,135 @@ const ApplicationFieldCard = ({
     }
   }, [isBusinessAddressSameAsHomeAddressOrMailingAddress]);
 
+  
+  // const updateMailingAddress = (prevData) => {
+  //   let tempData = { ...prevData };
+  //   let formRef = tempData.forms[addressPageIndex].data;
+  
+   
+  //   if (!formRef.contactAddress2) {
+  //     formRef.contactAddress2 = { mailingAddress: {} };
+  //   }
+  
+  //   switch (isMailingAddressSameAsHomeAddress) {
+  //     case "Same as Home Address":
+  //       if (formRef.contactAddress1?.homeAddress) {
+  //         formRef.contactAddress2.mailingAddress = {
+  //           streetName: formRef.contactAddress1.homeAddress.streetName || "",
+  //           pinCode: formRef.contactAddress1.homeAddress.pinCode || "",
+  //           city: formRef.contactAddress1.homeAddress.city || "",
+  //           province: formRef.contactAddress1.homeAddress.province || "",
+  //         };
+  //       }
+  //       break;
+  
+  //     case "Same as Business Address":
+  //       if (formRef.contactAddress3?.business?.businessAddress) {
+  //         formRef.contactAddress2.mailingAddress = {
+  //           streetName: formRef.contactAddress3.business.businessAddress.streetName || "",
+  //           pinCode: formRef.contactAddress3.business.businessAddress.pinCode || "",
+  //           city: formRef.contactAddress3.business.businessAddress.city || "",
+  //           province: formRef.contactAddress3.business.businessAddress.province || "",
+  //         };
+  //       }
+  //       break;
+  
+  //     case "Different Address":
+        
+  //       if (!isInitialLoad && isManualChange) {
+  //         formRef.contactAddress2.mailingAddress = {
+  //           streetName: "",
+  //           pinCode: "",
+  //           city: "",
+  //           province: "",
+  //         };
+  //       }
+  //       break;
+  
+  //     default:
+  //       break;
+  //   }
+  
+  //   return tempData;
+  // };
+  
+
+ 
+  // const updateBusinessAddress = (prevData) => {
+  //   let tempData = { ...prevData };
+  //   let formRef = tempData.forms[addressPageIndex].data;
+  
+   
+  //   if (!formRef.contactAddress3) {
+  //     formRef.contactAddress3 = { business: { businessAddress: {} } };
+  //   }
+  
+  //   switch (isBusinessAddressSameAsHomeAddressOrMailingAddress) {
+  //     case "Same as Home Address":
+  //       if (formRef.contactAddress1?.homeAddress) {
+  //         formRef.contactAddress3.business.businessAddress = {
+  //           streetName: formRef.contactAddress1.homeAddress.streetName || "",
+  //           pinCode: formRef.contactAddress1.homeAddress.pinCode || "",
+  //           city: formRef.contactAddress1.homeAddress.city || "",
+  //           province: formRef.contactAddress1.homeAddress.province || "",
+  //         };
+  //       }
+  //       break;
+  
+  //     case "Same as Mailing Address":
+  //       if (formRef.contactAddress2?.mailingAddress) {
+  //         formRef.contactAddress3.business.businessAddress = {
+  //           streetName: formRef.contactAddress2.mailingAddress.streetName || "",
+  //           pinCode: formRef.contactAddress2.mailingAddress.pinCode || "",
+  //           city: formRef.contactAddress2.mailingAddress.city || "",
+  //           province: formRef.contactAddress2.mailingAddress.province || "",
+  //         };
+  //       }
+  //       break;
+  
+  //     case "Different Address":
+        
+  //       if (!isInitialLoad && isManualChange) {
+  //         formRef.contactAddress3.business.businessAddress = {
+  //           streetName: "",
+  //           pinCode: "",
+  //           city: "",
+  //           province: "",
+  //         };
+  //       }
+  //       break;
+  
+  //     default:
+  //       break;
+  //   }
+  
+  //   return tempData;
+  // };
+  
+
+  
+  // useEffect(() => {
+  //   if (isMailingAddressSameAsHomeAddress) {
+  //     setBasicForm((prevData) => updateMailingAddress(prevData));
+  //     setIsManualChange(false);
+  //   }
+  // }, [isMailingAddressSameAsHomeAddress]);
+
+
+  // useEffect(() => {
+  //   if (isBusinessAddressSameAsHomeAddressOrMailingAddress) {
+  //     setBasicForm((prevData) => updateBusinessAddress(prevData));
+  //     setIsManualChange(false);
+  //   }
+  // }, [isBusinessAddressSameAsHomeAddressOrMailingAddress]);
+
+  
+  // useEffect(() => {
+  //   setIsInitialLoad(false);
+  // }, []);
+
+  
+
   useEffect(() => {
     if (
       registeredBusinessAddress !== undefined &&
@@ -1024,23 +1179,24 @@ const ApplicationFieldCard = ({
         );
         let data = response.data;
         console.log(data);
+  
         setBasicForm((prevData) => {
           let tempContactAddress2 = { ...prevData };
           tempContactAddress2.forms[
             addressPageIndex
-          ].data.contactAddress2.mailingAddress.city =
-            data?.standard?.city || "";
+          ].data.contactAddress2.mailingAddress.city = data?.standard?.city || "";
           tempContactAddress2.forms[
             addressPageIndex
-          ].data.contactAddress2.mailingAddress.province =
-            data?.standard?.prov || "";
+          ].data.contactAddress2.mailingAddress.province = data?.standard?.prov || "";
           return tempContactAddress2;
         });
       } catch (error) {
         console.log("Error fetching data");
       }
     };
+  
     if (
+      isMailingAddressSameAsHomeAddress === "Different Address" && 
       isMailingAddressPincodeEntered !== undefined &&
       isMailingAddressPincodeEntered !== null &&
       isMailingAddressPincodeEntered?.length >= 7 &&
@@ -1061,7 +1217,8 @@ const ApplicationFieldCard = ({
         });
       }
     }
-  }, [isMailingAddressPincodeEntered]);
+  }, [isMailingAddressPincodeEntered, isMailingAddressSameAsHomeAddress]); 
+  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -1071,23 +1228,24 @@ const ApplicationFieldCard = ({
         );
         let data = response.data;
         console.log(data);
+  
         setBasicForm((prevData) => {
           let tempContactAddress3 = { ...prevData };
           tempContactAddress3.forms[
             addressPageIndex
-          ].data.contactAddress3.business.businessAddress.city =
-            data?.standard?.city || "";
+          ].data.contactAddress3.business.businessAddress.city = data?.standard?.city || "";
           tempContactAddress3.forms[
             addressPageIndex
-          ].data.contactAddress3.business.businessAddress.province =
-            data?.standard?.prov || "";
+          ].data.contactAddress3.business.businessAddress.province = data?.standard?.prov || "";
           return tempContactAddress3;
         });
       } catch (error) {
         console.log("Error fetching data");
       }
     };
+  
     if (
+      isBusinessAddressSameAsHomeAddressOrMailingAddress === "Different Address" && 
       isBusinessAddressPincodeEntered !== undefined &&
       isBusinessAddressPincodeEntered !== null &&
       isBusinessAddressPincodeEntered?.length >= 7 &&
@@ -1108,7 +1266,8 @@ const ApplicationFieldCard = ({
         });
       }
     }
-  }, [isBusinessAddressPincodeEntered]);
+  }, [isBusinessAddressPincodeEntered, isBusinessAddressSameAsHomeAddressOrMailingAddress]); 
+  
 
   const getItems = (data) => {
     let temp = [];
@@ -1353,12 +1512,12 @@ const ApplicationFieldCard = ({
           : true && fieldData.fieldType
     ) {
       if (
-        (isLableEmpty(fieldData.label)
-          ? false
-          : object.required?.includes(fieldKey) ||
-          (parentData !== null
-            ? parentData.required?.includes(fieldKey)
-            : false)) &&
+        // (isLableEmpty(fieldData.label)
+        //   ? false
+        //   : object.required?.includes(fieldKey) ||
+        //   (parentData !== null
+        //     ? parentData.required?.includes(fieldKey)
+        //     : false)) &&
         getAllPath &&
         getAllLabels &&
         fieldData.fieldType !== "switchbutton"
@@ -1370,12 +1529,22 @@ const ApplicationFieldCard = ({
         ) {
           getAllPath(`${basicpath}.${baseKey}.${fieldKey}`);
           getAllLabels({
-            label: fieldData.label,
+            label: fieldData?.label,
             path: `${basicpath}.${baseKey}.${fieldKey}`,
+            mandatory:  (isLableEmpty(fieldData.label)
+              ? false
+              : object.required?.includes(fieldKey) ||
+              (parentData !== null
+                ? parentData?.required?.includes(fieldKey)
+                : false)),
           });
         } else {
           getAllPath(`${basicpath}.${baseKey}.${fieldKey}`);
-          getAllLabels(fieldData.label);
+          getAllLabels({
+            label: fieldData?.label,
+            path: `${basicpath}.${baseKey}.${fieldKey}`,
+            mandatory: parentData?.required?.includes(fieldKey),
+          });
         }
       }
       switch (fieldData.fieldType) {
@@ -1589,6 +1758,7 @@ const ApplicationFieldCard = ({
                         }`}
                       placement="bottom-start"
                       followCursor
+                      arrow
                     >
                       <div className={style.lableReadOnlyStyle}>
                         {getValueByPath(
@@ -2497,13 +2667,13 @@ const ApplicationFieldCard = ({
                   <div className={style.uploadButton2}>
                     <div className={style.uploadGrid2}>
 
-                      <Tooltip title="Click to View File" placement="bottom-start" followCursor>
+                      <Tooltip title="Click to View File" placement="bottom-start" followCursor arrow>
                         <span
                           className={`${style.uploadText2} ${style.cursorPointer} ${style.verticalAlignCenter}`}
                           onClick={() => {
                             setShowFileDisplayDialog(true);
                             setselectedFile(
-                              fileURL
+                              fieldValue
                             );
 
                           }}
@@ -2511,12 +2681,14 @@ const ApplicationFieldCard = ({
                           {fieldValue?.fileName}
                         </span>
                       </Tooltip>
+                      <Tooltip title="Click to Delete File" arrow>
                       <img
                         src={DeleteIcon}
                         alt="Delete"
                         className={`${style.imgIcon} ${style.cursorPointer}`}
                         onClick={() => handleChange(fieldKey, null, baseKey)}
                       />
+                      </Tooltip>
                     </div>
                   </div>
                 )}
@@ -2551,14 +2723,14 @@ const ApplicationFieldCard = ({
                         src={VerifiedImage}
                         alt=""
                         className={`${style.imgIcon} ${style.cursorPointer}`}
-                        onClick={() =>
-                          window.open(
+                         onClick={() => {
+                          setShowFileDisplayDialog(true); setselectedFile(
                             getValueByPath(
                               basicForm,
                               `${basicpath}.${baseKey}.${fieldKey}`
-                            )?.fileURL,
-                            "_blank"
-                          )
+                            )
+                          );
+                        }
                         }
                       />
                     ) : (
@@ -2584,12 +2756,14 @@ const ApplicationFieldCard = ({
                         })`}
                     </div>
                     <div>
+                    <Tooltip title="Click to upload a file" arrow>
                       <label
                         for={`file-upload-dynamic-${fieldKey}`}
                         className={` ${style.uploadTextButton} ${style.cursorPointer} ${style.verticalAlignCenter}`}
                       >
                         Click to upload
                       </label>
+                      </Tooltip>
                     </div>
                   </div>
                 </div>
@@ -2598,35 +2772,57 @@ const ApplicationFieldCard = ({
                   type="file"
                   accept=".pdf,.doc,.png,.xls,.xlsx,.jpeg,.gif,.docx"
                   onChange={(e) => {
-                    handleChange(fieldKey, e.target.files[0], baseKey);
+                    const selectedFile = e.target.files[0];
+                
+                    if (basicForm?.forms?.[formIndex]?.formCategory === "Disclosure") {
+                    
+                      setBasicForm((prevData) => {
+                        const newData = { ...prevData };
+                        setNestedValue(newData, `${basicpath}.${baseKey}.${fieldKey}`, {
+                          fileName: selectedFile.name,  
+                        });
+                        return newData;
+                      });
+                
+                      
+                      handleChange(fieldKey, selectedFile, baseKey);
+                    }
                   }}
                 />
                 {basicForm?.forms?.[formIndex]?.formCategory === "Disclosure" &&
                   getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)?.fileName && (
                     <div className={style.uploadButton2}>
                       <div className={style.uploadGrid2}>
-                        <Tooltip title="Click to View File" placement="bottom-start" followCursor>
+                        <Tooltip title="Click to View File" placement="bottom-start" followCursor arrow   >
                           <span
                             className={`${style.uploadText2} ${style.cursorPointer} ${style.verticalAlignCenter}`}
-                            onClick={() =>
-                              window.open(
+                            onClick={() => {
+                              setShowFileDisplayDialog(true);
+                              console.log(getValueByPath(
+                                basicForm,
+                                `${basicpath}.${baseKey}.${fieldKey}`
+                              )
+                            );
+                               setselectedFile(
                                 getValueByPath(
                                   basicForm,
                                   `${basicpath}.${baseKey}.${fieldKey}`
-                                )?.fileURL,
-                                "_blank"
-                              )
+                                )
+                              );
+                            }
                             }
                           >
-                            {getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)?.fileName}
+                           {getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)?.fileName}
                           </span>
                         </Tooltip>
+                        <Tooltip title="Click to Delete File" arrow>
                         <img
                           src={DeleteIcon}
                           alt="Delete"
                           className={`${style.imgIcon} ${style.cursorPointer}`}
                           onClick={() => handleChange(fieldKey, null, baseKey)}
                         />
+                        </Tooltip>
                       </div>
                     </div>
                   )}
@@ -3195,6 +3391,7 @@ const ApplicationFieldCard = ({
                       className={`${style.displayInRowRev} ${style.marginTop}`}
                     >
                       <div className={style.marginLeft}>
+                      <Tooltip title={"Click to Save & Close"} arrow>
                         <div
                           className={`${style.addMoreButton}`}
                           onClick={() => {
@@ -3203,8 +3400,10 @@ const ApplicationFieldCard = ({
                         >
                           SAVE & CLOSE
                         </div>
+                        </Tooltip>
                       </div>
                       <div>
+                      <Tooltip title={"Click to Save & Addmore"} arrow>
                         <div
                           className={`${style.addMoreButtonOutlined}`}
                           onClick={() => {
@@ -3213,6 +3412,7 @@ const ApplicationFieldCard = ({
                         >
                           SAVE & ADD MORE
                         </div>
+                        </Tooltip>
                       </div>
                     </div>
                   </div>
@@ -3224,12 +3424,14 @@ const ApplicationFieldCard = ({
                       className={style.addMoreText}
                       dangerouslySetInnerHTML={{ __html: object?.items?.label }}
                     />
+                    <Tooltip title={"Click to Add"} arrow>
                     <div
                       className={`${style.addMoreButton} ${style.marginLeft}`}
                       onClick={() => setIsAddMore(true)}
                     >
                       ADD
                     </div>
+                    </Tooltip>
                   </div>
                 )}
               </div>
@@ -3330,6 +3532,7 @@ const ApplicationFieldCard = ({
                         className={`${style.displayInRowRev} ${style.marginTop}`}
                       >
                         <div className={style.marginLeft}>
+                        <Tooltip title={isEdited ? "Click to Update" : ""} arrow>
                           <button
                             className={`${style.reappointmentButton} ${isEdited ? "" : style.disabledButtonLook
                               }`}
@@ -3344,6 +3547,7 @@ const ApplicationFieldCard = ({
                           >
                             UPDATE
                           </button>
+                          </Tooltip>
                         </div>
                         {/* <div>
                           <div
@@ -3361,6 +3565,7 @@ const ApplicationFieldCard = ({
                         className={`${style.displayInRowRev} ${style.marginTop}`}
                       >
                         <div>
+                        <Tooltip title={"Click to Close"} arrow>
                           <div
                             className={`${style.reappointmentButton}`}
                             onClick={() => {
@@ -3370,6 +3575,7 @@ const ApplicationFieldCard = ({
                           >
                             CLOSE
                           </div>
+                          </Tooltip>
                         </div>
                       </div>
                     )}
@@ -3388,6 +3594,7 @@ const ApplicationFieldCard = ({
                     <div
                       className={`${style.displayInRow} ${style.verticalAlignCenter}`}
                     >
+                      <Tooltip title={"Click to Yes"} arrow>
                       <div
                         className={`${yesOrNoDemographic === "Yes"
                           ? style.reappointmentButton
@@ -3400,6 +3607,8 @@ const ApplicationFieldCard = ({
                       >
                         YES
                       </div>
+                      </Tooltip>
+                      <Tooltip title={"Click to No"} arrow>
                       <div
                         className={`${yesOrNoDemographic === "No"
                           ? style.reappointmentButton
@@ -3412,6 +3621,7 @@ const ApplicationFieldCard = ({
                       >
                         NO
                       </div>
+                      </Tooltip>
                     </div>
                   </>
                 )}

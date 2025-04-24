@@ -103,6 +103,17 @@
     padding: 10px;
 }
 
+.leftCardDisplay {
+    min-height: calc(100vh - 215px);
+    overflow: scroll;
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 10px 20px #C4C8D066;
+    border-radius: 8px;
+    opacity: 1;
+    padding: 10px;
+    display: none;
+}
+
 .displayInRow {
     display: flex;
     flex-direction: row;
@@ -504,6 +515,14 @@
     color: #333333;
     display: flex;
     align-items: center;
+}
+
+.reportTypeTextNotificationStyle {
+    text-align: left;
+    font: normal normal bold 24px/22px proxima-nova;
+    letter-spacing: 0px;
+    color: #737575;
+    opacity: 1;
 }
 
 .cardPadding {
@@ -1221,7 +1240,7 @@
     box-shadow: 0px 10px 20px #C4C8D066;
     border-radius: 8px;
     width: 100%;
-    padding: 30px 40px;
+    padding: 80px;
 }
 
 .doNotDisturbTextStyle {
@@ -1246,6 +1265,11 @@
 
 .headerLogo {
     width: 130px;
+    height: 55px;
+    object-fit: contain;
+}
+
+.headerLogoReport {
     height: 55px;
     object-fit: contain;
 }
@@ -1275,9 +1299,34 @@
     color: #2C2C2C;
 }
 
+.reportRunByParamStyle {
+    text-align: left;
+    font: normal normal bold 16px/13px proxima-nova;
+    letter-spacing: 0px;
+    color: #253240;
+    text-transform: uppercase;
+    opacity: 0.6;
+}
+
+.reportRunByParamStyle1 {
+    text-align: left;
+    font: normal normal bold 16px/13px proxima-nova;
+    letter-spacing: 0px;
+    color: #253240;
+    opacity: 0.6;
+    font-weight: normal;
+}
+
+
 .reportFooterLogo {
     width: 150px;
     height: 70px;
+    object-fit: contain;
+}
+
+.reportFooterLogoApplicant {
+    width: 100px;
+    height: 50px;
     object-fit: contain;
 }
 
@@ -1286,6 +1335,14 @@
     font: normal normal 600 13px/24px proxima-nova;
     letter-spacing: 0px;
     color: #000;
+}
+
+.reportCopyRightFooterTextStyle {
+    text-align: left;
+    font: normal normal 600 16px/20px proxima-nova;
+    letter-spacing: 0px;
+    color: #454747;
+    opacity: 0.6;
 }
 
 .poweredByTextStyle {
@@ -1301,6 +1358,23 @@
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: capitalize;
+}
+
+.reportTypeValueParamTextStyle {
+    text-align: left;
+    font: normal normal medium 20px/34px proxima-nova;
+    letter-spacing: 0px;
+    color: #253240;
+    text-transform: capitalize;
+    opacity: 1;
+}
+
+.reportTypeParamsBackground {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    border: 1px solid #9AAFB5;
+    border-radius: 8px;
+    opacity: 1;
+    padding: 10px;
 }
 
 .reportTypeValueBoldTextStyle {
@@ -1445,8 +1519,14 @@
 
 // @page {
 //     size: auto;
-//     margin: 3mm 0mm 10mm 0mm;
-// }
+//     margin: 20px 0 20px 0; /* Top and bottom margin */
+//   }
+
+
+//   .printContainer {
+//     padding-top: 50px !important;
+//     page-break-before: always; /* Ensures spacing on new pages */
+//   }
 
 // @media print {
 //     a[href]:after {
@@ -1457,6 +1537,34 @@
 //         content: none !important;
 //     }
 // }
+
+/* In your CSS file */
+@page {
+    margin-top: 20px;
+}
+
+@media print {
+
+    /* Ensure your header stays at top */
+    .reportBackgroundCard {
+        break-inside: avoid;
+    }
+
+    /* Optional: Adjust any other print-specific styles */
+    body {
+        padding-top: 0;
+    }
+}
+
+// @media print {
+//     @page {
+//       margin-top: 50px; /* Adjust the top margin */
+//     }
+
+//     .print-container {
+//       padding-top: 50px; /* Ensures space at the top of each page */
+//     }
+//   }
 
 .summaryGrid {
     display: grid;
@@ -1680,4 +1788,81 @@
 .paymentProcessedTableDataGrid {
     display: grid;
     grid-template-columns: 15% 15% 13% 10% 13% 10% 13% 10%;
+}
+
+.reporttypeLeftBackGround {
+    background: transparent radial-gradient(at 28% -9%, #0995BC 0%, #06617A 100%) 0% 0% no-repeat padding-box;
+    border-radius: 8px;
+    opacity: 1;
+}
+
+.reportLeftTextStyle {
+    text-align: center;
+    font: normal normal 600 16px/20px proxima-nova;
+    letter-spacing: 0px;
+    color: #FFFFFF;
+    text-transform: capitalize;
+    opacity: 1;
+    padding: 5px;
+}
+
+.headingtextStyle {
+    text-align: left;
+    font: normal normal 600 20px/21px proxima-nova;
+    letter-spacing: 0px;
+    color: #253240;
+    text-transform: capitalize;
+    opacity: 0.7;
+}
+
+.IconHeaderBackgroundStyle {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 8px 16px #17133814;
+    border-radius: 8px;
+    opacity: 1;
+}
+
+.permanentStaffGrid {
+    display: grid;
+    grid-template-columns: 4% 14% 11% 19% 21% 13% 13%;
+    grid-gap: 5px;
+}
+
+//   @media print {
+//     .reportBackgroundCard {
+//       padding: 20px !important;
+//     }
+
+//     @page {
+//         margin-top: 50px; 
+//       }
+//   }
+
+@media print {
+    @page {
+        margin-top: 20px;
+    }
+
+    .printContainer {
+        page-break-inside: avoid;
+    }
+
+    .printContainer>* {
+        page-break-before: auto;
+        page-break-inside: avoid;
+    }
+
+    .reportBackgroundCard {
+        padding: 20px !important;
+    }
+
+    .tableRow {
+        page-break-inside: avoid;
+        /* Ensure table rows do not split across pages */
+    }
+
+    .reportSection {
+        page-break-before: always;
+        /* Force sections to start on a new page if needed */
+    }
 }

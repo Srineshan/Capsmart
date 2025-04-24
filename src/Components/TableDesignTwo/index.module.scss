@@ -8,6 +8,18 @@
     border: 0.4000000059604645px solid $secondarycolor;
     border-radius: 2px;
     padding: 10px 20px;
+    overflow-x: hidden !important;
+    overflow-y: scroll !important;
+    scrollbar-width: thin !important;
+    scrollbar-color: gray $tableheadbg !important;
+}
+
+.tableBodyScroll {
+    overflow: auto;
+    overflow-x: hidden !important;
+    overflow-y: scroll !important;
+    scrollbar-width: thin !important;
+    scrollbar-color: gray $tableheadbg !important;
 }
 
 .marginTop5 {
@@ -38,6 +50,14 @@
     margin-left: 10px !important;
 }
 
+.padding0 {
+    padding: 0px;
+}
+
+.cursorArrow {
+    cursor: default;
+}
+
 .isParagraph {
     font-size: 14px;
     color: #FFFFFF;
@@ -60,7 +80,7 @@
 }
 
 .tableData {
-    background: #FFFFFF 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
     min-height: 50px;
     width: 100%;
     // margin-left: 2%;
@@ -85,8 +105,13 @@
 }
 
 .green {
+    color: $statuslightgreen;
+}
+
+.darkGreen {
     color: $statusgreen;
 }
+
 
 .yellow {
     color: $statusyellow;
@@ -105,6 +130,13 @@
     width: 12px;
     border-radius: 50%;
     background-color: $statuslightgreen;
+}
+
+.darkGreenDotStyle {
+    height: 12px;
+    width: 12px;
+    border-radius: 50%;
+    background-color: $statusgreen;
 }
 
 .purpleDotStyle {
@@ -139,7 +171,7 @@
     font: normal normal normal 16px proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
-    text-transform: capitalize;
+    // text-transform: capitalize;
     text-align: left !important;
     word-break: break-word;
     width: auto;
@@ -241,6 +273,8 @@
 .multipleOptionsCard {
     background: #737575 0% 0% no-repeat padding-box;
     border: none;
+    scrollbar-color: rgba(15, 173, 70, 0.5) rgba(187, 26, 26, 0.2);
+    scrollbar-width: thin;
 }
 
 .specificActionCard {
@@ -249,7 +283,7 @@
     display: flex;
     align-items: center;
     color: #F5F9FD;
-    max-width: 250px;
+    max-width: 280px;
 }
 
 .siteCard {
@@ -444,5 +478,59 @@
 
 .redBorder {
     border: 2px solid red !important;
-  }
-  
+}
+
+.searchPaginationGrid {
+    display: grid;
+    grid-template-columns: 50% 50%;
+}
+
+.chipsContainer {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.searchChips {
+    background: $secondarycolor 0% 0% no-repeat padding-box;
+    font: italic normal bold 14px/18px proxima-nova;
+    border: 1px solid $primarycolor;
+    border-radius: 23px;
+    padding: 5px 10px;
+    color: $primarycolor;
+}
+
+.searchTextStyle {
+    font: normal normal 600 16px/18px proxima-nova;
+    letter-spacing: 0px;
+    color: #2C2C2C;
+    opacity: 1;
+    text-align: left;
+}
+
+.alignBottom {
+    margin-top: auto;
+}
+
+.floatRight {
+    float: right;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.bold {
+    font-weight: bolder;
+}
+
+.textHoverColor {
+    color: $textgrey;
+}
+
+.textHoverColor:hover {
+    font-weight: bold;
+    color: $primarycolor !important;
+}

@@ -36,7 +36,9 @@ const EmailTemplateDialog = ({ getIsOpen }) => {
               src={CrossPink}
               alt="cross"
               className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft}`}
-              onClick={() => getIsOpen(false)}
+              onClick={() => {
+                getIsOpen(false);
+              }}
             />
           </div>
           <div className={`${style.displayInRow} ${style.alignCenter}`}>

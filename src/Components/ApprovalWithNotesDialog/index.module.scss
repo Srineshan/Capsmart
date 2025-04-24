@@ -412,12 +412,6 @@
   gap: 20px;
 }
 
-.verticalAlignCenter {
-  display: flex;
-  align-items: center;
-  height: 100%;
-}
-
 .disclaimer {
   text-align: left;
   font: normal normal bold 22px/34px proxima-nova;
@@ -455,8 +449,8 @@
 }
 
 .rejectionHeadingTextStyle {
-  text-align: left;
-  font: normal normal bold 16px proxima-nova;
+  text-align: center;
+  font: normal normal bold 15px proxima-nova;
   letter-spacing: 0px;
   color: #2C2C2C;
   text-transform: capitalize;
@@ -464,7 +458,7 @@
 }
 
 .rejectionTextStyle {
-  text-align: left;
+  text-align: center;
   font: normal normal medium 18px/34px proxima-nova;
   letter-spacing: 0px;
   color: #2C2C2C;
@@ -498,9 +492,16 @@
 
 .twoColumnGridInner {
   display: grid;
-  grid-template-columns: 40% 45%;
-  grid-gap: 20px;
-  justify-items: start;
+  grid-template-columns: 45% 35%;
+  margin-left: 17px;
+  justify-items: center;
+}
+
+.twoColumnGridInner2 {
+  display: grid;
+  grid-template-columns: 55% 40%;
+  justify-items: center;
+  margin-left: 30px;
 }
 
 .rejectionTextStyle1 {
@@ -610,4 +611,39 @@
   border-radius: 4px;
   opacity: 0.9;
   // padding: 3px;
+}
+
+
+.gridContainer2 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.gridRow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  align-items: center;
+  justify-content: center;
+}
+
+.gridItem {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.gridItem1 {
+  display: flex;
+  gap: 0;
+  align-items: center;
+  margin-left: 17px;
+}
+
+.gridItem2 {
+  display: flex;
+  gap: 0;
+  align-items: center;
+  justify-content: center;
 }

@@ -84,7 +84,7 @@ import React, { useState, useEffect } from 'react';
 import { Dialog, Classes, Icon, Intent } from '@blueprintjs/core';
 import style from './index.module.scss';
 import DeclineMailTemplate from './declineMailTemplate';
-import { GET, PUT,POST,TenantID } from "../../Screens/dataSaver";
+import { GET, PUT, POST, TenantID } from "../../Screens/dataSaver";
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import CommonInputField from '../../Components/CommonFields/CommonInputField';
@@ -94,12 +94,12 @@ import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
 import { format } from "date-fns";
 import Dropzone from "react-dropzone";
-import { SuccessToaster,ErrorToaster } from "../../utils/toaster";
+import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
 import DescriptionIcon from '@mui/icons-material/Description';
 import { fileLoadingURL, FormatPhoneNumber, FormatPostalCode } from "../../utils/formatting";
 import LoadingScreen from "../../Components/LoadingScreen";
 
-const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicationDeclineDialog, getActiveApplicationView }) => {
+const ApplicationDecline = ({ getIsOpen, selectedTab, applicationType, getApplicationDeclineDialog, getActiveApplicationView }) => {
   const [showDeclineMailDialog, setShowDeclineMailDialog] = useState(false);
   const [notes, setNotes] = useState('');
   const [formDetails, setFormDetails] = useState([]);
@@ -122,25 +122,26 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
   const [entity, setEntity] = useState([]);
   const [files, setFiles] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [uploadFileData, setUploadFileData]= useState('');
+  const [uploadFileData, setUploadFileData] = useState('');
   const [documentDesc, setDocumentDesc] = useState("");
   const [documentTitle, setDocumentTitle] = useState("");
-    const dropzoneStyle = {
-        width: "100%",
-        height: "auto",
-        borderWidth: 2,
-        borderColor: "rgb(102, 102, 102)",
-        borderStyle: "dashed",
-        borderRadius: 5,
-      };
+  const dropzoneStyle = {
+    width: "100%",
+    height: "auto",
+    borderWidth: 2,
+    borderColor: "rgb(102, 102, 102)",
+    borderStyle: "dashed",
+    borderRadius: 5,
+  };
 
   const [isLoadingImage, setIsLoadingImage] = useState(false);
   const [isLoadingImageDocs, setIsLoadingImageDocs] = useState(false);
+  const workModeType = sessionStorage.getItem('workModeType')
   const getDeclineMailDialog = (value) => {
     setShowDeclineMailDialog(value);
     getApplicationDeclineDialog(false);
   }
-  
+
 
   useEffect(() => {
     sessionStorage.setItem("fromSummary", false);
@@ -177,53 +178,53 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
     setEntity(basicFormEntity);
   };
 
-   const changeHandler = async (event) => {
-             console.log("Event received:", event);
-             const filesArray = Array.from(event);
-             console.log("Converted files array:", filesArray);
-             setFiles(filesArray);
-           
-             const formData = new FormData();
-             let fileNameArray = [];
-           
-             filesArray.forEach(file => {
-               const fileInfo = {
-                 "filePath": file.path || '', 
-                 "fileName": file.name,
-                 "fileURL": "",  
-                 "fileType": file.type,
-                 "classification": "",  
-                 "verified": true,     
-                 "valid": true ,     
-               };
-               fileNameArray.push(fileInfo);
-               formData.append('documents', file);
-             });
-           
-             const blob = new Blob([JSON.stringify(fileNameArray)], {
-               type: "application/json"
-             });
-             formData.append('files', blob);
-           
-             try {
-              setIsLoadingImageDocs(true);
-               const response = await POST(`application-management-service/application/${id}/files/bulk?isLLMRequired=${false}`, formData);
-               console.log("API Response:", response);
-               SuccessToaster('File Uploaded Successfully');
-               console.log("Response data:", response?.data);
-               setUploadFileData(prevData => {
-                 // Merge previous data with new data
-                 return [...(prevData || []), ...(response?.data || [])];
-               });
-               setIsLoadingImageDocs(false);
-               return response?.data;
-             } catch (error) {
-               ErrorToaster('File Upload Failed');
-               console.error("Error:", error);
-               setIsLoading(false);
-               return null;
-             }
-           };  
+  const changeHandler = async (event) => {
+    console.log("Event received:", event);
+    const filesArray = Array.from(event);
+    console.log("Converted files array:", filesArray);
+    setFiles(filesArray);
+
+    const formData = new FormData();
+    let fileNameArray = [];
+
+    filesArray.forEach(file => {
+      const fileInfo = {
+        "filePath": file.path || '',
+        "fileName": file.name,
+        "fileURL": "",
+        "fileType": file.type,
+        "classification": "",
+        "verified": true,
+        "valid": true,
+      };
+      fileNameArray.push(fileInfo);
+      formData.append('documents', file);
+    });
+
+    const blob = new Blob([JSON.stringify(fileNameArray)], {
+      type: "application/json"
+    });
+    formData.append('files', blob);
+
+    try {
+      setIsLoadingImageDocs(true);
+      const response = await POST(`application-management-service/application/${id}/files/bulk?isLLMRequired=${false}`, formData);
+      console.log("API Response:", response);
+      SuccessToaster('File Uploaded Successfully');
+      console.log("Response data:", response?.data);
+      setUploadFileData(prevData => {
+        // Merge previous data with new data
+        return [...(prevData || []), ...(response?.data || [])];
+      });
+      setIsLoadingImageDocs(false);
+      return response?.data;
+    } catch (error) {
+      ErrorToaster('File Upload Failed');
+      console.error("Error:", error);
+      setIsLoading(false);
+      return null;
+    }
+  };
 
   useEffect(() => {
     if (name && dateTime) {
@@ -247,31 +248,184 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
     }
   };
 
-   const getLog = async () => {
-          setIsLoadingImage(true);
-          const { data: basicLog } = await GET(`application-management-service/application/${id}/logs`);
-          setLogDetails(basicLog);
-          console.log("basicLog" +JSON.stringify(basicLog));
-          setIsLoadingImage(false)
-        };
+  const getLog = async () => {
+    setIsLoadingImage(true);
+    const { data: basicLog } = await GET(`application-management-service/application/${id}/logs`);
+    setLogDetails(basicLog);
+    console.log("basicLog" + JSON.stringify(basicLog));
+    setIsLoadingImage(false)
+  };
+
+
+  const onClickRejectMoveFunction = () => {
+    if (workModeType === "Credentialing Committee") {
+      handleApplicationReject(true)
+        .then(() => {
+          console.log('Application approved.');
+        })
+        .catch((error) => {
+          console.error('Error approving application:', error);
+        });
+    } else {
+      handleApplicationReject(true)
+        .then(() => {
+          return handleApplicationRejectMove(true);
+        })
+        .then(() => {
+          console.log('Application successfully moved to next step.');
+        })
+        .catch((error) => {
+          console.error('Error processing application:', error);
+        });
+    }
+  };
 
   const handleApplicationReject = async () => {
     try {
+      let role;
+      let title;
       const files = (uploadFileData || []).map((item, index) => ({
-        ...item.file,              
+        ...item.file,
         description: documentDesc[index] || "",
-        title: documentTitle[index] || "", 
+        title: documentTitle[index] || "",
       }));
+      let notesComments = notes;
+      let isDelegate = true;
+      if (selectedTab === 'level-2' && applicationType !== "LOCUM") {
+        if (workModeType === "Department Head") {
+          role = "Department Head";
+          isDelegate = false;
+          title = "Dept. Head / Chief Review"
+        } else {
+          role = "Department Head";
+          title = "Dept. Head / Chief Review"
+        }
+      } else if (selectedTab === 'level-2' && applicationType === "LOCUM") {
+        if (workModeType === "Credentialing Committee") {
+          role = "Credentialing Committee";
+          isDelegate = false;
+          title = "Credentialing Committee Review"
+        } else {
+          role = "Credentialing Committee";
+          title = "Credentialing Committee Review"
+        }
+      }  else if (selectedTab === 'level-3') {
+        if (workModeType === "Credentialing Committee") {
+          role = "Credentialing Committee";
+          title = "Credentialing Committee Review";
+          isDelegate = false;
+        } else if (workModeType === "Chief Of Staff") {
+          role = "Credentialing Committee";
+          title = "Chief Of Staff Review";
+        } else if (workModeType === "Credentialing Committee User") {
+          role = "Credentialing Committee";
+          title = "Credentialing Committee User Review";
+        } else if (workModeType === "Staff Manager") {
+          role = "Credentialing Committee";
+          title = "Credentialing Committee User Review";
+        }
+      } else if (selectedTab === 'level-4') {
+        role = "Advisory Committee";
+        title = "MAC Review";
+      } else if (selectedTab === 'level-5') {
+        role = "Board";
+        title = "BOD Approval";
+      } else if (selectedTab === 'level-1') {
+        role = "Staff Manager";
+        title = "Staff Manager Verification";
+        isDelegate = false;
+      }
+  
       const payload = {
+        role: isDelegate ? role : "",
         notes: {
-            notes: notes
-               },
+          notes: notesComments
+        },
         approvedDate: new Date().toISOString(),
+        title: title,
         files: files
       };
 
       await PUT(
-        `application-management-service/application/${id}/workflow/complete/REJECTED?isDelegate=false`,
+        `application-management-service/application/${id}/workflow/complete/REJECTED?isDelegate=${isDelegate}&approvalType=NOT_RECOMMENDED`,
+        payload
+      );
+
+      await getApplication();
+      onClose();
+    } catch (error) {
+      console.error('Error approving application:', error);
+    }
+  };
+
+  const handleApplicationRejectMove = async () => {
+    try {
+      let role;
+      let title;
+      const files = (uploadFileData || []).map((item, index) => ({
+        ...item.file,
+        description: documentDesc[index] || "",
+        title: documentTitle[index] || "",
+      }));
+      let notesComments = notes;
+      let isDelegate = true;
+      if (selectedTab === 'level-2' && applicationType !== "LOCUM") {
+        if (workModeType === "Department Head") {
+          role = "Department Head";
+          isDelegate = false;
+          title = "Dept. Head / Chief Review"
+        } else {
+          role = "Department Head";
+          title = "Dept. Head / Chief Review"
+        }
+      } else if (selectedTab === 'level-2' && applicationType === "LOCUM") {
+        if (workModeType === "Credentialing Committee") {
+          role = "Credentialing Committee";
+          isDelegate = false;
+          title = "Credentialing Committee Review"
+        } else {
+          role = "Credentialing Committee";
+          title = "Credentialing Committee Review"
+        }
+      }  else if (selectedTab === 'level-3') {
+        if (workModeType === "Credentialing Committee") {
+          role = "Credentialing Committee";
+          title = "Credentialing Committee Review";
+          isDelegate = false;
+        } else if (workModeType === "Chief Of Staff") {
+          role = "Credentialing Committee";
+          title = "Chief Of Staff Review";
+        } else if (workModeType === "Credentialing Committee User") {
+          role = "Credentialing Committee";
+          title = "Credentialing Committee User Review";
+        } else if (workModeType === "Staff Manager") {
+          role = "Credentialing Committee";
+          title = "Credentialing Committee User Review";
+        }
+      } else if (selectedTab === 'level-4') {
+        role = "Advisory Committee";
+        title = "MAC Review";
+      } else if (selectedTab === 'level-5') {
+        role = "Board";
+        title = "BOD Approval";
+      } else if (selectedTab === 'level-1') {
+        role = "Staff Manager";
+        title = "Staff Manager Verification";
+        isDelegate = false;
+      }
+  
+      const payload = {
+        role: isDelegate ? role : "",
+        notes: {
+          notes: notesComments
+        },
+        approvedDate: new Date().toISOString(),
+        title: title,
+        files: files
+      };
+
+      await PUT(
+        `application-management-service/application/${id}/workflow/move?workflowAction=REJECTED&isDelegate=${isDelegate}`,
         payload
       );
 
@@ -321,19 +475,19 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
   //   // const hasValidSignature = formDetails?.esignatureRequired ? isSigned : true;
   //   // setIsApproveEnabled(isChecked.isChecked && hasValidComments && isSigned);
   //   setIsApproveEnabled(hasValidComments);
-    
+
   // };
 
   const checkApproveEnabled = () => {
     const hasValidComments = notes.trim() !== '';
-    
+
     // Check if there are any uploaded files
     if (uploadFileData.length > 0) {
       // For files, check if all documents have titles
-      const allFilesHaveTitles = uploadFileData.every((_, index) => 
+      const allFilesHaveTitles = uploadFileData.every((_, index) =>
         documentTitle[index] && documentTitle[index].trim() !== ''
       );
-      
+
       setIsApproveEnabled(hasValidComments && allFilesHaveTitles);
     } else {
       // If no files are uploaded, only check for valid comments
@@ -343,7 +497,7 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
 
 
   const checkRequirements = () => {
-      return isChecked.isChecked
+    return isChecked.isChecked
   };
 
   // const getUserRole = (selectedTab) => {
@@ -371,36 +525,36 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
 
   // const userRoleTab = getUserRole(selectedTab);
   const lastModifiedDate = formDetails?.lastModifiedDate;
-  const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), "MMM dd, yyyy") : "-";
+  const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), "MM/dd/yyyy") : "-";
   const lastSubmittedLog = logDetails?.logs?.find((log) => log.workflowStatus === "SUBMITTED");
   const lastSubmittedDate = lastSubmittedLog ? lastSubmittedLog.lastModifiedDate : null;
-  const formattedSubmissionDate = lastSubmittedDate ? format(new Date(lastSubmittedDate), "MMM dd, yyyy") : "-";
+  const formattedSubmissionDate = lastSubmittedDate ? format(new Date(lastSubmittedDate), "MM/dd/yyyy") : "-";
 
   return (
     <div>
-       {isLoadingImageDocs && (
-      <div
-        className={`${style.verticalAlignCenter} ${style.justifyCenter1} ${style.loadingOverlay}`}
-      >
-        <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
-      </div>
+      {isLoadingImageDocs && (
+        <div
+          className={`${style.verticalAlignCenter} ${style.justifyCenter1} ${style.loadingOverlay}`}
+        >
+          <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
+        </div>
 
-    )}
-      
- {isLoadingImage && (
-      <div  className={style.loadingOverlay}>
-        <LoadingScreen/>
-      </div>
-    )}
-{!isLoadingImage && (
-      <Dialog isOpen={getApplicationDeclineDialog} onClose={() => getApplicationDeclineDialog(false)} className={`${style.dialogStyle} ${style.dialogPaddingBottom}`}>
-        <div className={`${Classes.DIALOG_BODY} ${style.extensionDialogBackground}`}>
-          <div className={style.spaceBetween}>
-            <p className={style.extensionStyle1}>Staff Not Recommended for Reappointment</p>
-            <Icon icon="cross" size={20} className={style.crossStyle} onClick={() => getApplicationDeclineDialog(false)} />
-          </div>
-          <div>
-            {/* <div className={`${style.rejectionBorderStyle} ${style.declineBorderStyle}`}>
+      )}
+
+      {isLoadingImage && (
+        <div className={style.loadingOverlay}>
+          <LoadingScreen />
+        </div>
+      )}
+      {!isLoadingImage && (
+        <Dialog isOpen={getApplicationDeclineDialog} onClose={() => getApplicationDeclineDialog(false)} className={`${style.dialogStyle} ${style.dialogPaddingBottom}`}>
+          <div className={`${style.eSignDialogBackground}`}>
+            <div className={style.spaceBetween}>
+              <p className={style.heading1}>Staff Not Recommended for Reappointment</p>
+              <Icon icon="cross" size={20} className={style.crossStyle} onClick={() => getApplicationDeclineDialog(false)} />
+            </div>
+            <div>
+              {/* <div className={`${style.rejectionBorderStyle} ${style.declineBorderStyle}`}>
               <div className={`${style.displayInRow} ${style.marginLeft10} ${style.marginTop10}`}>
                 <div className={style.displayInRow}>
                   <span className={style.rejectionHeadingTextStyle}> {formDetails?.basicDetails?.applicant?.name?.firstName
@@ -419,78 +573,78 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
                   <div className={`${style.marginBothText} ${style.marginBottom}`}>Privilege Category:<span className={`${style.rightSideFontStyle} ${style.marginLeft10}`}>{formDetails?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || "-"}</span></div>
                 
             </div> */}
-             <div className={`${style.rejectionBorderStyle} ${style.declineBorderStyle} ${style.marginTop10}`}>
-              <div className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop10}`}>
-                <div className={`${style.displayInRow} ${style.displayInRowCenter}`}>
-                  <span className={style.rejectionHeadingTextStyle}> 
-                  {formDetails?.basicDetails?.applicant?.name?.firstName}{" "}{formDetails?.basicDetails?.applicant?.name?.lastName}{", "}
-                  {/* {formDetails?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{","} */}
-                  </span>
-                <div className={`${style.rejectionTextStyle} ${style.marginLeft2}`}>{formDetails?.providerType?.serviceProviderType}</div>
-                  {/* <span className={`${style.rejectionSubHeadingTextStyle} ${style.marginLeft20} ${style.alignCenter}`}>{formDetails?.displayId}</span> */}
-                </div>
-                <div>
-                <span className={`${style.rejectionSubHeadingTextStyle} ${style.marginLeft20} ${style.alignCenter}`}>{formDetails?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || "-"}</span>
-                </div>
-              </div>
-              {/* <div className={`${style.rejectionTextStyle} ${style.marginLeft20} ${style.marginTop5}`}>{formDetails?.providerType?.serviceProviderType}</div> */}
-              <div className={style.marginTop10}>
-                <div className={`${style.twoColumnGrid} ${style.marginLeftRight20} ${style.marginBottom10}`}>
-                  <div className={`${style.twoColumnGridInner}`}>
-                    <span className={`${style.rejectionTextStyle}`}>Department:</span>
-                    <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetails?.departmentSpecialty?.department || "-"}</span>
-                  </div>
-                  <div className={`${style.twoColumnGridInner}`}>
-                    <span className={`${style.rejectionTextStyle}`}>Application ID:</span>
-                    <span className={`${style.rejectionTextStyle1}`}>{formDetails?.displayId}</span>
-                  </div>
-                {/* </div>
+              <div className={`${style.rejectionBorderStyle} ${style.declineBorderStyle} ${style.marginTop10}`}>
+                <div className={style.marginTop10}>
+                  <div className={`${style.twoColumnGrid} ${style.marginLeftRight20} ${style.marginBottom10}`}>
+                    <div className={`${style.displayInRow} ${style.displayInRowCenter}`}>
+                      <span className={style.rejectionHeadingTextStyle}>
+                        {formDetails?.basicDetails?.applicant?.name?.lastName?.charAt(0).toUpperCase() + formDetails?.basicDetails?.applicant?.name?.lastName?.slice(1).toLowerCase()}{", "}
+                        {formDetails?.basicDetails?.applicant?.name?.firstName
+                          ? formDetails.basicDetails.applicant.name.firstName.charAt(0).toUpperCase() +
+                          formDetails.basicDetails.applicant.name.firstName.slice(1).toLowerCase()
+                          : ""}{", "}
+                      </span>
+                      <div className={`${style.rejectionTextStyle} ${style.marginLeft2}`}>{formDetails?.providerType?.serviceProviderType}</div>
+                    </div>
+                    <div className={`${style.twoColumnGridInner} ${style.displayInRowCenter}`}>
+                      <span className={`${style.rejectionTextStyle}`}>Privilege Category:</span>
+                      <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || "-"}</span>
+                    </div>
+                    <div className={`${style.twoColumnGridInner}`}>
+                      <span className={`${style.rejectionTextStyle}`}>Department:</span>
+                      <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetails?.departmentSpecialty?.department || "-"}</span>
+                    </div>
+                    <div className={`${style.twoColumnGridInner}`}>
+                      <span className={`${style.rejectionTextStyle}`}>Application ID:</span>
+                      <span className={`${style.rejectionTextStyle1}`}>{formDetails?.displayId}</span>
+                    </div>
+                    {/* </div>
               </div>
               <div className={style.marginTop5}>
                 <div className={`${style.twoColumnGrid} ${style.marginLeftRight20} ${style.marginBottom10}`}> */}
-                  <div className={`${style.twoColumnGridInner}`}>
-                    <span className={`${style.rejectionTextStyle}`}>Division / Speciality:</span>
-                    <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetails?.departmentSpecialty?.specialty || "-"}</span>
-                  </div>
-                  {/* <div className={`${style.twoColumnGridInner}`}>
+                    <div className={`${style.twoColumnGridInner}`}>
+                      <span className={`${style.rejectionTextStyle}`}>Division / Speciality:</span>
+                      <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetails?.departmentSpecialty?.specialty || "-"}</span>
+                    </div>
+                    {/* <div className={`${style.twoColumnGridInner}`}>
                     <span className={`${style.rejectionTextStyle}`}>Site Name:</span>
                     <span className={`${style.rejectionTextStyle1}`}>Only If Multisite</span>
                   </div> */}
-                   {
-                    entity?.multiSiteEntity && (
+                    {
+                      entity?.multiSiteEntity && (
                         <div className={`${style.twoColumnGridInner}`}>
-                        <span className={`${style.rejectionTextStyle}`}>Site Name:</span>
-                        <span className={`${style.rejectionTextStyle1}`}>
+                          <span className={`${style.rejectionTextStyle}`}>Site Name:</span>
+                          <span className={`${style.rejectionTextStyle1}`}>
                             {entity?.multiSiteEntity?.[0]?.name || "-"}
-                        </span>
+                          </span>
                         </div>
-                    )
+                      )
                     }
-                {/* </div>
+                    {/* </div>
               </div>
               <div className={style.marginTop5}>
                 <div className={`${style.twoColumnGrid} ${style.marginLeftRight20} ${style.marginBottom10}`}> */}
-                  <div className={`${style.twoColumnGridInner}`}>
-                    <span className={`${style.rejectionTextStyle}`}>Submission Date:</span>
-                    <span className={`${style.rejectionTextStyle1}`}>{formattedSubmissionDate}</span>
-                  </div>
-                  <div className={`${style.twoColumnGridInner}`}>
-                    <span className={`${style.rejectionTextStyle}`}>Last Updated :</span>
-                    <span className={`${style.rejectionTextStyle1}`}>{formattedDate}</span>
-                  </div>
-                  <div className={`${style.twoColumnGridInner}`}>
-                    <span className={`${style.rejectionTextStyle}`}>Last Updated by:</span>
-                    <span className={`${style.rejectionTextStyle1}`}>
-                      {formDetails?.basicDetails?.applicant?.name?.firstName
-                      ? formDetails?.updatedBy?.name?.firstName.charAt(0).toUpperCase() +
-                      formDetails?.updatedBy?.name?.firstName.slice(1).toLowerCase()
-                      : ""}{formDetails?.updatedBy?.name?.lastName?.toUpperCase()}, {formDetails?.updatedBy?.title?.title}
-                    </span>
+                    <div className={`${style.twoColumnGridInner}`}>
+                      <span className={`${style.rejectionTextStyle}`}>Submission Date:</span>
+                      <span className={`${style.rejectionTextStyle1}`}>{formattedSubmissionDate}</span>
+                    </div>
+                    <div className={`${style.twoColumnGridInner}`}>
+                      <span className={`${style.rejectionTextStyle}`}>Last Updated :</span>
+                      <span className={`${style.rejectionTextStyle1}`}>{formattedDate}</span>
+                    </div>
+                    <div className={`${style.twoColumnGridInner}`}>
+                      <span className={`${style.rejectionTextStyle}`}>Last Updated by:</span>
+                      <span className={`${style.rejectionTextStyle1}`}>
+                        {formDetails?.basicDetails?.applicant?.name?.firstName
+                          ? formDetails?.updatedBy?.name?.firstName.charAt(0).toUpperCase() +
+                          formDetails?.updatedBy?.name?.firstName.slice(1).toLowerCase()
+                          : ""}{formDetails?.updatedBy?.name?.lastName?.toUpperCase()}, {formDetails?.updatedBy?.title?.title}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div className={`${style.marginTop20} ${style.commentsNotesHeadingFontStyle}`}>Enter your Notes / Comments *</div>
+              <div className={`${style.marginTop20} ${style.commentsNotesHeadingFontStyle}`}>Enter your Notes / Comments *</div>
               <div className={`${style.rejectionBorderStyle} ${style.marginTop10}`}>
                 {/* <div className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop10}`}>
                   <textarea
@@ -523,7 +677,7 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
                           'bold', 'italic', 'strikethrough', 'subscript', 'superscript', 'code',
                           '|',
                           'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'
-                      ],
+                        ],
                       },
                       autoGrow: false,
                     }}
@@ -540,73 +694,73 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
                 </div>
               </div>
               <div className={`${style.marginTop} ${style.cursorPointer}`}>
-                  <>
-                    <Dropzone
-                      style={dropzoneStyle}
-                      onDrop={(acceptedFiles) => changeHandler(acceptedFiles)}
-                      accept={{
-                        'image/jpeg': [],
-                        'image/png': [],
-                        'image/jpg': [],
-                        'application/pdf': []
-                      }}
-                    >
-                      {({ getRootProps, getInputProps }) => (
-                        <section>
-                          <div {...getRootProps()}>
-                            <input {...getInputProps()} />
-                            <div className={style.uploadBorderStyle1}>
+                <>
+                  <Dropzone
+                    style={dropzoneStyle}
+                    onDrop={(acceptedFiles) => changeHandler(acceptedFiles)}
+                    accept={{
+                      'image/jpeg': [],
+                      'image/png': [],
+                      'image/jpg': [],
+                      'application/pdf': []
+                    }}
+                  >
+                    {({ getRootProps, getInputProps }) => (
+                      <section>
+                        <div {...getRootProps()}>
+                          <input {...getInputProps()} />
+                          <div className={style.uploadBorderStyle1}>
                             <div className={`${style.spaceBetween} ${style.displayInRowCenter}`}>
-                                <div className={style.uploadTextStyle1}>
-                                  Upload any supporting documents
-                                </div>
-                                <div className={`${style.marginLeftRight20}`}>
-                                  Click To Upload
-                                </div>
-                                </div>
+                              <div className={style.uploadTextStyle1}>
+                                Upload any supporting documents
+                              </div>
+                              <div className={`${style.marginLeftRight20}`}>
+                                Click To Upload
+                              </div>
                             </div>
                           </div>
-                        </section>
-                      )}
-                    </Dropzone>
-                  </>
-                  </div>
-                  {uploadFileData.length > 0 && (
+                        </div>
+                      </section>
+                    )}
+                  </Dropzone>
+                </>
+              </div>
+              {uploadFileData.length > 0 && (
                 <div>
                   {uploadFileData.map((file, index) => (
                     <div key={index} className={`${style.alignItem} ${style.marginTop10}`}>
                       <div className={`${style.threeColumnGrid}`}>
-                      <div className={`${style.displayInRow} ${style.referenceCardStyleDocs}`}>
-                        <DescriptionIcon className={style.docsIcon} />
-                        <div className={style.marginLeft20}>{file?.file?.fileName}</div>
+                        <div className={`${style.displayInRow} ${style.referenceCardStyleDocs}`}>
+                          <DescriptionIcon className={style.docsIcon} />
+                          <div className={style.marginLeft20}>{file?.file?.fileName}</div>
+                        </div>
+                        <div>
+                          <CommonInputField
+                            value={documentTitle[index] || ""}
+                            onChange={(e) => {
+                              const newDocumentTitle = [...documentTitle];
+                              newDocumentTitle[index] = e.target.value;
+                              setDocumentTitle(newDocumentTitle);
+                            }}
+                            type="text"
+                            placeholder="Title*"
+                            className={style.referenceCardStyleDescription}
+                          />
+                        </div>
+                        <div>
+                          <CommonInputField
+                            value={documentDesc[index] || ""}
+                            onChange={(e) => {
+                              const newDocumentDesc = [...documentDesc];
+                              newDocumentDesc[index] = e.target.value;
+                              setDocumentDesc(newDocumentDesc);
+                            }}
+                            type="text"
+                            placeholder="Description (Optional)"
+                            className={style.referenceCardStyleDescription}
+                          />
+                        </div>
                       </div>
-                      <div>
-                      <CommonInputField
-                        value={documentTitle[index] || ""}
-                        onChange={(e) => {
-                          const newDocumentTitle = [...documentTitle];
-                          newDocumentTitle[index] = e.target.value;
-                          setDocumentTitle(newDocumentTitle);
-                        }}
-                        type="text"
-                        placeholder="Title*"
-                        className={style.referenceCardStyleDescription}
-                      />
-                      </div>
-                      <div>
-                      <CommonInputField
-                        value={documentDesc[index] || ""}
-                        onChange={(e) => {
-                          const newDocumentDesc = [...documentDesc];
-                          newDocumentDesc[index] = e.target.value;
-                          setDocumentDesc(newDocumentDesc);
-                        }}
-                        type="text"
-                        placeholder="Description (Optional)"
-                        className={style.referenceCardStyleDescription}
-                      />
-                      </div>
-                    </div>
                     </div>
                   ))}
                 </div>
@@ -619,7 +773,7 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
                   onChange={handleCheckboxChange('isChecked')}
                 />
                 </div> */}
-                {/* <div className={style.twoCol}>
+              {/* <div className={style.twoCol}>
               <div
                 onClick={!checkRequirements() ? () => { } : onClicksignFunction}
                 className={!checkRequirements() ? style.disabled : style.signatureContainer}
@@ -642,8 +796,8 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
                 </div>
               </div>
             </div> */}
-            {/* </div> */}
-            {/* <div className={`${style.displayInRow} ${style.alignCenter} ${style.marginTop10}`}>
+              {/* </div> */}
+              {/* <div className={`${style.displayInRow} ${style.alignCenter} ${style.marginTop10}`}>
               <button
                 className={`${style.buttonStyle} ${style.sendNotificationsButtonWidth} ${style.floatRight} ${style.cursorPointer}`}
                 // onClick={handleApplicationReject}
@@ -658,12 +812,12 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
                 CONTINUE
               </button>
             </div> */}
-            <div className={`${style.marginTop10} ${style.reviewButtonContainer}`} onClick={isApproveEnabled ? () => handleApplicationReject() : () => { }}  style={{ pointerEvents: isApproveEnabled ? 'auto' : 'none', opacity: isApproveEnabled ? 1 : 0.5 }}>
-               <div className={style.reviewButton}>NOT RECOMMENDED</div>
+              <div className={`${style.marginTop10} ${style.reviewButtonContainer}`} onClick={isApproveEnabled ? () => onClickRejectMoveFunction() : () => { }} style={{ pointerEvents: isApproveEnabled ? 'auto' : 'none', opacity: isApproveEnabled ? 1 : 0.5 }}>
+                <div className={style.reviewButton}>NOT RECOMMENDED</div>
+              </div>
             </div>
           </div>
-        </div>
-      </Dialog>
+        </Dialog>
       )}
       {
         showDeclineMailDialog && (

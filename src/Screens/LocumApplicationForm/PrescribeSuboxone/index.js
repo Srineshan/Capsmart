@@ -16,6 +16,7 @@ import style from './index.module.scss';
 import WelcomeCard from '../../../Components/WelcomeCard';
 import ReappointmentProgressCard from '../../../Components/ReappointmentProgressCard';
 import ReappointmentJourneyDialog from '../../../Components/reappointmentJourneyDialog';
+import LocumProgressCard from '../../../Components/LocumProgressCard';
 
 const PrescribeSuboxone = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [formSchema, setFormSchema] = useState();
@@ -40,7 +41,7 @@ const PrescribeSuboxone = ({ basicForm, setBasicForm, getPreApplication }) => {
         if (basicForm !== undefined && formIndex !== undefined) {
             setYesOrNo(basicForm?.forms?.[formIndex]?.data?.yesOrNo !== undefined ? basicForm?.forms?.[formIndex]?.data?.yesOrNo : '');
             setUpdatedDate(basicForm?.forms?.[formIndex]?.data?.updatedDate !== undefined ? basicForm?.forms?.[formIndex]?.data?.updatedDate : '');
-            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form')?.length === (formIndex + 1)) ? `/reappointmentApplicationForm/${applicationId}/Form/PODCheck` : `/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${basicForm?.forms[formIndex + 1]?.schemaCategory}`)
+            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form' || 'Disclosure')?.length === (formIndex + 1)) ? `/locumApplicationForm/${applicationId}/Form/PODCheck` : `/locumApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${basicForm?.forms[formIndex + 1]?.schemaCategory}`)
         }
     }, [basicForm, formIndex])
 
@@ -80,9 +81,9 @@ const PrescribeSuboxone = ({ basicForm, setBasicForm, getPreApplication }) => {
     }
 
     const getFormSchema = async () => {
-        if (basicForm?.formSchemas?.[formIndex]?.id !== undefined) {
+        if (basicForm?.forms?.[formIndex]?.schemaId !== undefined) {
             const { data: form } = await GET(
-                `application-management-service/formSchema/${basicForm?.formSchemas?.[formIndex]?.id}`
+                `application-management-service/formSchema/${basicForm?.forms?.[formIndex]?.schemaId}`
             );
             setFormSchema(form?.schema)
             setFormSchemaWholeObject(form)
@@ -166,7 +167,7 @@ const PrescribeSuboxone = ({ basicForm, setBasicForm, getPreApplication }) => {
     return (
         <div>
             <div className={style.applicationScreenGrid}>
-                <ReappointmentProgressCard step={'STEP 11'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={22} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} basicForm={basicForm} />
+                <LocumProgressCard step={'STEP 11'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={22} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} basicForm={basicForm} />
                 <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
             </div>
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>

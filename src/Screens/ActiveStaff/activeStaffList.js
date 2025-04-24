@@ -28,6 +28,7 @@ import CircleIcon from "@mui/icons-material/Circle";
 import { SuccessToaster } from "../../utils/toaster";
 import { ErrorToaster } from "../../utils/toaster";
 import Tooltip from "@mui/material/Tooltip";
+import {formatFirstNameLastName } from "../../utils/formatting";
 
 const ActiveStaffList = ({
   isLoading,
@@ -341,9 +342,8 @@ const ActiveStaffList = ({
             : "grey"
       );
       applicantName.push(
-        `  ${data?.applicant?.name?.firstName} ${data?.applicant?.name?.lastName.toLowerCase()}` ||
-        " "
-      );
+              `${formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName)}` || " "
+            );
       // applicantId.push(data?.displayId || "123");
       applicantId.push(data?.staffId || "123");
       // applicantType.push(data?.providerType?.serviceProviderType || "Doctor");
@@ -408,7 +408,7 @@ const ActiveStaffList = ({
 
       // taskListStatus.push(data?.tasks.completedCount + "/" + data?.tasks.totalCount);
       lastUpdated.push(
-        format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
+        format(new Date(data?.lastModifiedDate), "MM/dd/yyyy")
       );
       lastUpdatedBy.push(["-"]);
       // const lastUpdatedDate = new Date(data?.lastModifiedDate);
@@ -487,8 +487,7 @@ const ActiveStaffList = ({
             : "grey"
       );
       applicantName.push(
-        `  ${data?.applicant?.name?.firstName} ${data?.applicant?.name?.lastName.toLowerCase()}` ||
-        " "
+        `${formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName)}` || " "
       );
       // applicantType.push(data?.providerType.serviceProviderType);
       applicantType.push(data?.basicDetailReferences?.applicantType?.serviceProviderType || "Doctor");
@@ -587,8 +586,7 @@ const ActiveStaffList = ({
 
     tableData?.map((data) => {
       applicantName.push(
-        `  ${data?.applicant?.name?.firstName} ${data?.applicant?.name?.lastName.toLowerCase()}` ||
-        " "
+        `${formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName)}` || " "
       );
       applicantId.push(data?.staffId || "123");
       applicantType.push(data?.basicDetailReferences?.applicantType?.serviceProviderType || "Doctor");
@@ -996,6 +994,7 @@ const ActiveStaffList = ({
               <AddCircleOutlineIcon sx={{ fontSize: 25, color: '#06617A' }} />
               </div>
               </Tooltip>
+              <Tooltip title="Print" arrow>
               <div
                 className={`${isPrintClicked && style.addStyle} ${style.alignCenter
                   } ${style.cursorPointer} ${style.marginRight}`}
@@ -1007,6 +1006,7 @@ const ActiveStaffList = ({
                   }}
                 />
               </div>
+              </Tooltip>
             </div>
           </div>
 
