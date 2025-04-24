@@ -17,17 +17,24 @@ const CCDateDialog = ({ checkedIds, getCCDateDialogOpen, onClose, selectedTab })
   const [calendarStart, setCalendarStart] = useState(false);
   const [SelectedDate, setSelectedDate] = useState(null);
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
+  const applicationType = sessionStorage.getItem('applicationCreationType') ?? 'REAPPOINTMENT';
 
   const getApplicationDateForCC = async () => {
     let role;
     let meetingDate = format(new Date(SelectedDate), 'yyyy-MM-dd');
 
-    if (selectedTab === 'level-2') {
+    if (selectedTab === 'level-2' && applicationType === "REAPPOINTMENT") {
       role = "Department Head";
-    } else if (selectedTab === 'level-3') {
+    } else if (selectedTab === 'level-2' && applicationType === "LOCUM") {
       role = "Credentialing Committee";
-    } else if (selectedTab === 'level-4') {
+    } else if (selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") {
+      role = "Credentialing Committee";
+    } else if (selectedTab === 'level-3' && applicationType === "LOCUM") {
       role = "Advisory Committee";
+    } else if (selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") {
+      role = "Advisory Committee";
+    } else if (selectedTab === 'level-4' && applicationType === "LOCUM") {
+      role = "Board";
     } else if (selectedTab === 'level-5') {
       role = "Board";
     } else if (selectedTab === 'level-1') {

@@ -6,9 +6,10 @@ import CloseIcon from '@mui/icons-material/Close';
 import style from './index.module.scss';
 import { TenantID, GET } from '../../Screens/dataSaver';
 import Cookies from 'universal-cookie';
+import PrintOutlinedIcon from "@mui/icons-material/PrintOutlined";
 import { Tooltip } from '@mui/material';
 
-const ApplicationHeader = ({ title, close, closeClick }) => {
+const ApplicationHeader = ({ title, close, closeClick, handleNavigate, isShowPrint }) => {
     // const { logout } = useDescope();
     // const handleSignOut = () => {
     //     logout()
@@ -41,21 +42,38 @@ const ApplicationHeader = ({ title, close, closeClick }) => {
                 }
                 <div className={`${style.titleText} ${style.verticalAlignCenter}`}>{title}</div>
                 <div></div>
-                {close && (
-                    
-                    <div className={style.verticalAlignCenter}>
-                        {/* <img
+                <div className={style.displayInRow}>
+                    {isShowPrint && (
+                        <div
+                            className={` ${style.alignCenter} ${style.cursorPointer}`}
+                        >
+                            <Tooltip title="Print Report" arrow>
+                                <PrintOutlinedIcon
+                                    sx={{
+                                        fontSize: 40,
+                                        color: "#06617A",
+                                    }}
+                                    onClick={handleNavigate}
+                                />
+                            </Tooltip>
+                        </div>
+                    )}
+                    {close && (
+
+                        <div className={`${style.verticalAlignCenter} ${style.marginLeft20}`}>
+                            {/* <img
                             src={CrossPink}
                             alt="cross"
                             className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft20}`}
                             onClick={closeClick}
                         /> */}
-                        <Tooltip title={"Click to Close"} arrow>
-                        <CloseIcon sx={{ fontSize: 40, color: '#06617A', cursor: 'pointer' }} onClick={closeClick} />
-                        </Tooltip>
-                    </div>
-                    
-                )}
+                            <Tooltip title={"Click to Close"} arrow>
+                                <CloseIcon sx={{ fontSize: 40, color: '#06617A', cursor: 'pointer' }} onClick={closeClick} />
+                            </Tooltip>
+                        </div>
+
+                    )}
+                </div>
             </div>
         </div>
     )

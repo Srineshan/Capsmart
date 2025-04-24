@@ -109,11 +109,11 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
 
     const availableSortValue = {
         // APPLICANT_NAME: applicationType === "NEW" ? 'Applicant Name' : "Staff for Reappointment",
-        APPLICANT_NAME: ["Applicant Name", "Staff for Reappointment"],
-        APPLICANT_LAST_NAME: ["Staff for Reappointment", "Staff", "Applicant Name"],
+        APPLICANT_NAME: ["Applicant Name", "Staff for Reappointment", "Locum Staff"],
+        APPLICANT_LAST_NAME: ["Staff for Reappointment", "Staff", "Applicant Name" , "Locum Staff"],
         DEPARTMENT: ["Dept / Division & Specialty", "Department"],
         STAFF_LAST_NAME: ['Staff Name'],
-        APPLICANT_TYPE: ['Applicant Type', 'Type', 'Staff Type'],
+        APPLICANT_TYPE: ['Applicant Type', 'Type', 'Staff Type', 'Locum Type'],
         CREATED_DATE: ['created date'],
         LAST_UPDATED: ['Last Updated'],
         SUBMITTED_DATE: ['Submitted'],
@@ -133,11 +133,13 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
     const availableSortValueEnum = {
         'Applicant Name': 'APPLICANT_LAST_NAME',
         'Staff for Reappointment': 'APPLICANT_LAST_NAME',
+        'Locum Staff': 'APPLICANT_LAST_NAME',
         'Staff': 'APPLICANT_LAST_NAME',
         'Staff Name': 'STAFF_LAST_NAME',
         'Applicant Type': 'APPLICANT_TYPE',
         'Staff Type': 'APPLICANT_TYPE',
         'Type': 'APPLICANT_TYPE',
+        'Locum Type': 'APPLICANT_TYPE',
         'created date': 'CREATED_DATE',
         'Last Updated': 'LAST_UPDATED',
         'Submitted': 'SUBMITTED_DATE',

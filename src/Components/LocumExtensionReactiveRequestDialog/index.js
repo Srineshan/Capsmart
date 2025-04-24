@@ -13,7 +13,7 @@ import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import Cookie from "universal-cookie";
 import jwt from "jwt-decode";
 import style from "./index.module.scss";
-import { format, differenceInDays ,addDays, sub, add} from "date-fns";
+import { format, differenceInDays ,addDays, addMonths, subDays, parseISO, addYears} from "date-fns";
 import { fileLoadingURL } from "../../utils/formatting";
 import LoadingScreen from "../LoadingScreen";
 import CommonCheckBox from "../CommonFields/CommonCheckBox";
@@ -119,7 +119,7 @@ const getActiveUserData = async () => {
       const response = await GET(url);
       const staffs = response?.data?.staffs || [];
 
-      const filteredData = staffs.find(item => item?.currentApplication?.id === id);
+      const filteredData = staffs.find(item => item?.id === id);
       console.log("Filtered Application Data", filteredData);
       setSelectDataLocum(filteredData);
       console.log("applicationmanage",selectDataLocum)
@@ -160,7 +160,7 @@ const getActiveUserData = async () => {
     
       try {
         setIsLoadingImageDocs(true);
-        const response = await POST(`application-management-service/application/${id}/files/bulk?isLLMRequired=${false}`, formData);
+        const response = await POST(`application-management-service/application/${selectDataLocum?.onGoingApplication?.id}/files/bulk?isLLMRequired=${false}`, formData);
         console.log("API Response:", response);
         SuccessToaster('File Uploaded Successfully');
         console.log("Response data:", response?.data);
@@ -350,7 +350,7 @@ const getActiveUserData = async () => {
  const getApplication = async () => {
   try {
    setIsLoadingImage(true);
-   const { data: formDetails } = await GET(`application-management-service/application/${id}`);
+   const { data: formDetails } = await GET(`application-management-service/application/${selectDataLocum?.onGoingApplication?.id}`);
    setFormDetails(formDetails);
    setIsLoadingImage(false);
   } catch (error) {
@@ -433,13 +433,13 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
   const months = [];
   const createdDate = new Date(createdDateStr);
 
-  // Start from the month after the createdDate
-  createdDate.setMonth(createdDate.getMonth() + 1);
+  for (let i = 1; i <= 12; i++) {
+    const futureDate = addMonths(createdDate, i);
+    const oneDayBefore = subDays(futureDate, 1); // Go one day before the future "same day"
 
-  for (let i = 0; i < 12; i++) {
-    const date = new Date(createdDate.getFullYear(), createdDate.getMonth() + i, 1);
-    const label = format(date, 'MMMM yyyy');
-    const value = format(date, 'yyyy-MM');
+    const label = `${i} ${i === 1 ? 'month' : 'months'}`;
+    const value = format(futureDate, 'yyyy-MM-dd');
+
     months.push({ label, value });
   }
 
@@ -447,18 +447,19 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
   const now = new Date();
   months.push({
     label: 'Custom End Date',
-    value: format(now, 'yyyy-MM') // this is now a valid date value
+    value: format(now, 'yyyy-MM-dd')
   });
+
   return months;
 };
-
- const monthOptions = selectDataLocum?.tenure?.to ? getNext12MonthsFromCreatedDate(selectDataLocum?.tenure?.to) : [];
 
  const lastModifiedDate = formDetails?.lastModifiedDate;
  const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), "MM/dd/yyyy") : "-";
  const ExpireDate = selectDataLocum?.tenure?.to;
  const formattedExpiringDate = ExpireDate ? format(new Date(ExpireDate), "MM/dd/yyyy") : "-";
+ const currentDate = format(new Date(), "MM/dd/yyyy");
  const daysRemaining = ExpireDate ? differenceInDays(new Date(ExpireDate), new Date()) : null;
+ const monthOptions = currentDate ? getNext12MonthsFromCreatedDate(currentDate) : [];
 
  return (
   <>
@@ -627,37 +628,6 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
            )}
            {/* </div> */}
            {/* <div> */}
-           {selectedMonth === format(new Date(), 'yyyy-MM') && (
-            <div className={`${style.marginTopLess}`}>
-             <CommonDateField
-                className={`${style.dateWidth} ${style.fullWidth}`}
-                onChange={(date) => handleDateChange(date)}
-                open={calendarStart}
-                onOpen={() => setCalendarStart(true)}
-                onClose={() => setCalendarStart(false)}
-
-                minDate={sub(new Date(), { years: 3 })}
-                maxDate={add(new Date(), { years: 3 })}
-                // minDate={lastSubmittedDate ? new Date(lastSubmittedDate) : sub(new Date(), { years: 3 })}
-                // maxDate={getJune30thOfCurrentYear()}
-                value={customDate ? format(customDate, 'yyyy-MM') : ''}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    inputProps={{
-                      ...params.inputProps,
-                      placeholder: 'Enter Extend Date',
-                      readOnly: true
-                    }}
-                    variant="outlined"
-                    margin="normal"
-                    
-                  />
-                 
-                )}
-              />
-               </div>
-            )}
             {/* </div> */}
            <div className={`${style.marginLeft} ${style.rejectionHeadingTextStyle}`}>
             Start Date <br />
@@ -670,9 +640,40 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
             End Date <br />
             <span className={`${style.rejectionTextStyle}`}>
              {" "}
-             {ExpireDate ? format(new Date(selectedMonth), "dd MMM yyyy") : "N/A"}{" "}
+             {currentDate ? format(new Date(selectedMonth), "dd MMM yyyy") : "N/A"}{" "}
             </span>
            </div>
+           {selectedMonth === format(new Date(), 'yyyy-MM-dd') && (
+              <div className={`${style.marginTopLess}`}>
+              <CommonDateField
+                  className={`${style.dateWidth} ${style.fullWidth}`}
+                  onChange={(date) => handleDateChange(date)}
+                  open={calendarStart}
+                  onOpen={() => setCalendarStart(true)}
+                  onClose={() => setCalendarStart(false)}
+  
+                  // minDate={sub(new Date(), { years: 3 })}
+                  // maxDate={add(new Date(), { years: 3 })}
+                  minDate={currentDate}
+                  maxDate={currentDate ? addYears(new Date(currentDate), 1) : null}
+                  value={customDate ? format(customDate, 'yyyy-MM') : ''}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      inputProps={{
+                        ...params.inputProps,
+                        placeholder: 'Enter Extend Date',
+                        readOnly: true
+                      }}
+                      variant="outlined"
+                      margin="normal"
+                      
+                    />
+                  
+                  )}
+                />
+                </div>
+              )}
           </div>
           <div className={`${style.flexCenter}`}>
           <div className={`${style.fullWidth}`}>

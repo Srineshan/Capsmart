@@ -299,7 +299,7 @@ const Navbar = () => {
     cookie.remove("user", { path: "/" });
     cookie.remove("entityId", { path: "/" });
     cookie.remove("authorization", { path: "/" });
-    sessionStorage.removeItem('applicationCreationType');
+    sessionStorage.setItem('applicationCreationType', 'REAPPOINTMENT');
     logout()
     navigate('/')
   }

@@ -1,15 +1,34 @@
 @import "../../index.scss";
 
+/* First Dialog */
 .eSignDialog {
   height: 75%;
   overflow: hidden;
   width: 70% !important;
+  z-index: 1000;
 }
 
 .eSignDialogBackground {
   background: #ffffff 0% 0% no-repeat padding-box;
   padding: 20px 40px 0px 40px;
   border-radius: 20px !important;
+  z-index: 1000;
+}
+
+/* Second Dialog */
+.eSignDialog1 {
+  height: 75%;
+  width: 70% !important;
+  z-index: 1100 !important;
+  position: relative;
+}
+
+.eSignDialogBackground1 {
+  background: #ffffff 0% 0% no-repeat padding-box;
+  padding: 20px 40px 0px 40px;
+  border-radius: 20px !important;
+  z-index: 1100 !important;
+  position: relative;
 }
 
 .spaceBetween {

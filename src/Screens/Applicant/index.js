@@ -29,7 +29,7 @@ const Applicant = () => {
 
     useEffect(() => {
         if (applicationForm?.length > 0) {
-            let privilegeCategory = applicationForm?.[applicationForm?.length - 1]?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory;
+            let privilegeCategory = applicationForm?.[applicationForm?.length - 1]?.basicDetailReferences?.credentialingAndPrivilegingCategory?.type;
             console.log('Inside UseEffect', applicationForm);
             cookies.remove('entityId', { path: '/' })
             cookies.set('entityId', applicationForm?.[applicationForm?.length - 1]?.tenant?.id, { path: '/' });
@@ -42,9 +42,9 @@ const Applicant = () => {
                     navigate('/applicationSubmitted');
                 } else {
                     if (applicationForm?.[applicationForm?.length - 1]?.lastSavedSection !== null && applicationForm?.[applicationForm?.length - 1]?.lastSavedSection !== "") {
-                        navigate(applicationForm?.[applicationForm?.length - 1]?.creationType === 'REAPPOINTMENT' ? privilegeCategory === "Locum Tennens" ? `/locumApplicationForm/${applicationForm?.[applicationForm?.length - 1]?.id}/${JSON.parse(applicationForm?.[applicationForm?.length - 1]?.lastSavedSection)}` : `/reappointmentApplicationForm/${applicationForm?.[applicationForm?.length - 1]?.id}/${JSON.parse(applicationForm?.[applicationForm?.length - 1]?.lastSavedSection)}` : `/applicationForm/${applicationForm?.[applicationForm?.length - 1]?.id}/${JSON.parse(applicationForm?.[applicationForm?.length - 1]?.lastSavedSection)}`);
+                        navigate(applicationForm?.[applicationForm?.length - 1]?.creationType === 'REAPPOINTMENT' ? privilegeCategory === "LOCUM" ? `/locumApplicationForm/${applicationForm?.[applicationForm?.length - 1]?.id}/${JSON.parse(applicationForm?.[applicationForm?.length - 1]?.lastSavedSection)}` : `/reappointmentApplicationForm/${applicationForm?.[applicationForm?.length - 1]?.id}/${JSON.parse(applicationForm?.[applicationForm?.length - 1]?.lastSavedSection)}` : `/applicationForm/${applicationForm?.[applicationForm?.length - 1]?.id}/${JSON.parse(applicationForm?.[applicationForm?.length - 1]?.lastSavedSection)}`);
                     } else {
-                        navigate(applicationForm?.[applicationForm?.length - 1]?.creationType === 'REAPPOINTMENT' ? privilegeCategory === "Locum Tennens" ? `/locumApplicationForm/${applicationForm?.[applicationForm?.length - 1]?.id}` : `/reappointmentApplicationForm/${applicationForm?.[applicationForm?.length - 1]?.id}` : `/applicationForm/${applicationForm?.[applicationForm?.length - 1]?.id}`);
+                        navigate(applicationForm?.[applicationForm?.length - 1]?.creationType === 'REAPPOINTMENT' ? privilegeCategory === "LOCUM" ? `/locumApplicationForm/${applicationForm?.[applicationForm?.length - 1]?.id}` : `/reappointmentApplicationForm/${applicationForm?.[applicationForm?.length - 1]?.id}` : `/applicationForm/${applicationForm?.[applicationForm?.length - 1]?.id}`);
                     }
                 }
             }

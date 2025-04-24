@@ -80,6 +80,7 @@ const LocumApplicationFormRequirement = () => {
 
     useEffect(() => {
         if (cookie.get('entityId') !== "63ab2ec1bc9089d77c9232ad" && cookie.get('entityId') !== "undefined" && cookie.get('entityId') !== undefined) {
+            handleGetEntityId()
             console.log(cookie.get('entityId'), 'refreshCheck')
             setIsLoading(false);
         } else {
@@ -131,6 +132,21 @@ const LocumApplicationFormRequirement = () => {
         }
         getUploadFormSchema()
     }, [basicForm])
+
+    const handleGetEntityId = async () => {
+        setIsLoading(true);
+        const { data: response } = await GET(`entity-service/entity/${cookie.get('entityId')}`)
+        sessionStorage.setItem('title', response?.entityName?.entityName)
+        setIsLoading(false);
+    }
+
+    const handleLogout = () => {
+        cookie.remove("user", { path: "/" });
+        cookie.remove("entityId", { path: "/" });
+        cookie.remove("authorization", { path: "/" });
+        logout()
+        navigate('/')
+    }
 
     const setUserDetails = async () => {
         const { data: userDetails } = await GET(`user-management-service/user/${user?.id}`);
@@ -918,7 +934,7 @@ const LocumApplicationFormRequirement = () => {
             ) : (
                 <>
                     <div className={style.screenBackground}>
-                        <ApplicationHeader title={`Locum Staff Renewal Application For ${basicForm?.basicDetails?.applicant?.name?.firstName !== undefined ? basicForm?.basicDetails?.applicant?.name?.firstName : '{First Name}'} ${basicForm?.basicDetails?.applicant?.name?.lastName !== undefined ? basicForm?.basicDetails?.applicant?.name?.lastName : '{Last Name}'}, ${(basicForm?.basicDetails?.applicant?.applicantType !== null) ? basicForm?.basicDetails?.applicant?.applicantType : ''}`} close={true} closeClick={logout} />
+                        <ApplicationHeader title={`Locum Staff Renewal Application For ${basicForm?.basicDetails?.applicant?.name?.firstName !== undefined ? basicForm?.basicDetails?.applicant?.name?.firstName : '{First Name}'} ${basicForm?.basicDetails?.applicant?.name?.lastName !== undefined ? basicForm?.basicDetails?.applicant?.name?.lastName : '{Last Name}'}, ${(basicForm?.basicDetails?.applicant?.applicantType !== null) ? basicForm?.basicDetails?.applicant?.applicantType : ''}`} close={true} closeClick={handleLogout} />
                         <div className={style.screenPadding}>
                             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
                                 <div>
