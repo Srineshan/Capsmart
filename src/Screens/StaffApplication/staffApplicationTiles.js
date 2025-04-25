@@ -261,6 +261,10 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
         initialTab = "level-2";
         // getSelectedTab(initialTab);
         // setInitialTabSet(false);
+      } else if (workModeType === "Chief Of Staff" && applicationType === "LOCUM") {
+        initialTab = "level-2";
+        // getSelectedTab(initialTab);
+        // setInitialTabSet(false);
       } else if (workModeType === "Credentialing Committee" && applicationType === "REAPPOINTMENT") {
         initialTab = "level-3";
         // getSelectedTab(initialTab);
@@ -334,6 +338,13 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
     //   filteredArray = baseUserFlowArray.filter(tile => tile.level === 'level-3');
     // }  
     else if (workModeType === "Credentialing Committee" && applicationType === "LOCUM") {
+      filteredArray = baseUserFlowArray.filter(tile => tile.level === 'level-2').map(tile => ({
+        ...tile,
+        label: "Privilege Extensions to Review",
+      }));
+    }
+
+    else if (workModeType === "Chief Of Staff" && applicationType === "LOCUM") {
       filteredArray = baseUserFlowArray.filter(tile => tile.level === 'level-2').map(tile => ({
         ...tile,
         label: "Privilege Extensions to Review",

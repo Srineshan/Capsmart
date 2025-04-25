@@ -10687,7 +10687,7 @@ const NewActiveApplication = ({
                           // className={`${style.bigButtonStyle1} ${style.cursorPointer}`}
                           className={`${style.buttonCardStyle} ${isApproved ? style.cursorPointer : ''}`}
                           style={{ opacity: isApproved ? 1 : 0.5 }}>
-                          <Tooltip title={isApproved ? "Click to Send later to the Department Head after verification": ""} arrow>
+                          <Tooltip title={isApproved && applicationType === "REAPPOINTMENT" ? "Click to Send later to the Department Head after verification": isApproved && applicationType === "LOCUM" ? "Click to Send later to the Cred Comm after verification" : ""} arrow>
                             <div
                               className={`${style.buttonTextStyle} ${style.alignCenter}`}
                               // onClick={onClickApprovalDeptFunction}
@@ -10703,7 +10703,7 @@ const NewActiveApplication = ({
                           // className={`${style.bigButtonStyle1} ${style.cursorPointer}`}
                           className={`${style.bigButtonStyle1} ${isApproved ? style.cursorPointer : ''}`}
                           style={{ opacity: isApproved ? 1 : 0.5 }}>
-                          <Tooltip title={isApproved ? "Click to Send the verified application to the Department Head" : ""} arrow>
+                          <Tooltip title={ isApproved && applicationType === "REAPPOINTMENT" ? "Click to Send the verified application to the Department Head" : isApproved && applicationType === "LOCUM" ? "Click to Send the verified application to the Cred Comm" : ""} arrow>
                             <div
                               className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
                               // onClick={onClickApprovalDeptFunction}
@@ -11055,7 +11055,7 @@ const NewActiveApplication = ({
                       </div>
                     </div>
                   ) : (" ")}
-                  {((workModeType === 'Credentialing Committee' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" && isApproverCred === "Approve") || (workModeType === 'Credentialing Committee' && selectedTab === 'level-2' && applicationType === "LOCUM" && isApproverCred === "Approve")) ? (
+                  {((workModeType === 'Credentialing Committee' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" && isApproverCred === "Approve") || (workModeType === 'Credentialing Committee' && selectedTab === 'level-2' && applicationType === "LOCUM" && isApproverCred === "Approve") || (workModeType === 'Chief Of Staff' && selectedTab === 'level-2' && applicationType === "LOCUM" && isApproverCred === "Approve")) ? (
                     <div className={`${style.fixedBottom} ${approvalwithoutnotesCommentsBox || approvalnotesCommentsBox || approvalnotesCommentsBoxDept || showApplicationDeclineDialog || notesCommentsBox || reappointmentChangesCommentsBox ? style.hiddenStickyContainer : " "}`}>
                       {/* <div className={`${style.twoColumnGrid}`}> */}
                       <div className={`${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer}`}>
@@ -11142,7 +11142,7 @@ const NewActiveApplication = ({
                   </div>
                 </>) : ("")} */}
 
-                  {((workModeType === 'Credentialing Committee' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" && isApproverCred === "NotApproved") || (workModeType === 'Credentialing Committee' && selectedTab === 'level-2' && applicationType === "LOCUM" && isApproverCred === "NotApproved")) ? (<>
+                  {((workModeType === 'Credentialing Committee' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" && isApproverCred === "NotApproved") || (workModeType === 'Credentialing Committee' && selectedTab === 'level-2' && applicationType === "LOCUM" && isApproverCred === "NotApproved") || (workModeType === 'Chief Of Staff' && selectedTab === 'level-2' && applicationType === "LOCUM" && isApproverCred === "NotApproved")) ? (<>
                     <div>
                       <div className={`${style.textCardStyle} ${style.pendingTextStyle} ${style.alignCenter} ${style.padding30} ${style.marginBottom20}`}>
                         Pending Cred. Comm. Recommendation
