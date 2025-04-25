@@ -897,6 +897,7 @@ const LocumApplicationFormRequirement = () => {
     }
 
     const handleSubmit = async () => {
+        setIsLoading(true)
         let temp = {
             obligatedPrivileges: selectedPrivilegeForDisplay,
             additionalPrivileges: selectedAdditionalPrivilegeForDisplay,
@@ -916,6 +917,7 @@ const LocumApplicationFormRequirement = () => {
             .catch((error) => {
                 ErrorToaster("Unexpected Error Updating Application");
             });
+        setIsLoading(false)
     };
 
     console.log(basicForm, 'processReappointment', isOpen)
