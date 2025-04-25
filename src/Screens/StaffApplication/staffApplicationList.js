@@ -570,7 +570,7 @@ const StaffApplicationList = ({
     // true,
     true,
     true,
-    true,
+    false,
     false,
     false,
     false,
@@ -4410,6 +4410,12 @@ const StaffApplicationList = ({
       requiredValue: "boolean",
       onClick: onClickViewAndVerifyLevel1Function,
     },
+    {
+      data: "Send for Cred Comm Review",
+      requiredValue: "boolean",
+      onClick: onClickDeptReviewDialog,
+      conditionToShow: `!data?.completedWorkflows?.find(wf => wf?.role === "Staff Manager")?.allFormsApproved === false`,
+    },
     { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog },
   ];
 
@@ -4582,7 +4588,7 @@ const StaffApplicationList = ({
     {
       data: "Review and Approve",
       requiredValue: "boolean",
-      onClick: "",
+      onClick: onClickViewAndVerifyCredFunction,
     },
     { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog },
   ];
@@ -4840,6 +4846,8 @@ const StaffApplicationList = ({
           ? credUserHeaderValues
           : selectedTab === "level-2" && applicationType === "LOCUM" && workModeType === "Credentialing Committee"
             ? applicationHeaderValues
+            : selectedTab === "level-2" && applicationType === "LOCUM" && workModeType === "Chief Of Staff"
+            ? applicationHeaderValues
             : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Credentialing Committee"
               ? applicationHeaderValues
               : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Staff Manager"
@@ -4871,6 +4879,8 @@ const StaffApplicationList = ({
           ? credUserColSortValues
           : selectedTab === "level-2" && applicationType === "LOCUM" && workModeType === "Credentialing Committee"
             ? applicationColSortValues
+            : selectedTab === "level-2" && applicationType === "LOCUM" && workModeType === "Chief Of Staff"
+            ? applicationColSortValues
             : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Credentialing Committee"
               ? applicationColSortValues
               : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Staff Manager"
@@ -4901,6 +4911,8 @@ const StaffApplicationList = ({
         : selectedTab === "level-2" && applicationType === "LOCUM" && workModeType === "Staff Manager"
           ? getCredUserValues()
           : selectedTab === "level-2" && applicationType === "LOCUM" && workModeType === "Credentialing Committee"
+            ? getApplicationValues()
+            : selectedTab === "level-2" && applicationType === "LOCUM" && workModeType === "Chief Of Staff"
             ? getApplicationValues()
             : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Credentialing Committee"
               ? getApplicationValues()
@@ -4935,6 +4947,8 @@ const StaffApplicationList = ({
             ? credUserActionsData
             : selectedTab === "level-2" && applicationType === "LOCUM" && workModeType === "Credentialing Committee"
               ? applicationActionsData
+              : selectedTab === "level-2" && applicationType === "LOCUM" && workModeType === "Chief Of Staff"
+              ? applicationLocumActionData
               : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Credentialing Committee"
                 ? applicationActionsData
                 : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Staff Manager"
@@ -4967,6 +4981,8 @@ const StaffApplicationList = ({
           : selectedTab === "level-2" && applicationType === "LOCUM" && workModeType === "Staff Manager"
             ? style.credUserStaffReappointGrid
             : selectedTab === "level-2" && applicationType === "LOCUM" && workModeType === "Credentialing Committee"
+              ? style.applicationStaffReappointGrid
+              : selectedTab === "level-2" && applicationType === "LOCUM" && workModeType === "Chief Of Staff"
               ? style.applicationStaffReappointGrid
               : selectedTab === "level-3" && applicationType === "NEW"
                 ? style.applicationStaffGrid
