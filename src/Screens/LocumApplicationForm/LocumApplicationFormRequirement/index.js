@@ -968,7 +968,7 @@ const LocumApplicationFormRequirement = () => {
                                                             className={`${style.privilegeContentCard} ${style.marginTop10}`}
                                                         >
                                                             <div className={style.privilegeHeadingReappointment}>
-                                                                Change for Extension
+                                                                Change for {` ${basicForm?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'}`}
                                                             </div>
                                                             <div className={style.privilegeHeading}>
                                                                 <strong>
@@ -1033,7 +1033,7 @@ const LocumApplicationFormRequirement = () => {
                                                                 className={`${style.privilegeContentCard} ${style.marginTop10}`}
                                                             >
                                                                 <div className={`${style.privilegeHeadingReappointment}`}>
-                                                                    Change for Extension
+                                                                    Change for {` ${basicForm?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'}`}
                                                                 </div>
                                                                 {basicForm?.privileges?.obligatedPrivileges?.map(
                                                                     (data) => (
@@ -1083,7 +1083,7 @@ const LocumApplicationFormRequirement = () => {
                                                         </div>
                                                         {basicForm?.privileges?.priorAdditionalPrivileges?.length !== 0 && (
                                                             <div className={`${style.privilegeContentCard} ${style.marginTop10}`}>
-                                                                <div className={`${style.privilegeHeadingReappointment}`}>Change for Extension</div>
+                                                                <div className={`${style.privilegeHeadingReappointment}`}>Change for {` ${basicForm?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'}`}</div>
                                                                 {basicForm?.privileges?.additionalPrivileges?.map(data => (
                                                                     <div className={`${style.privilegeTitleStyle} ${style.cursorPointer}`}
                                                                     // onClick={() => { setShowCurrentPrivileges(true); handleChangeAdditional(data?.id); setCurrentPrivilegesCategory('Additional') }}
