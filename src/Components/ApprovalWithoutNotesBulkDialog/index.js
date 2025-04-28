@@ -437,7 +437,7 @@ const BulkApproveDialog = ({ checkedIds, getBulkApproveDialogOpen, onClose, sele
           <div>
             <div className={style.templateHeader}>
               <div className={style.templateHeadertext}>
-                {selectedTab === "level-3"
+                {selectedTab === "level-3" || selectedTab === "level-2"
                   ? "Staff Reappointments Approved by the Cred. Comm." :
                   selectedTab === "level-4"
                     ? "Staff Reappointments Approved by the MAC."
@@ -481,7 +481,7 @@ const BulkApproveDialog = ({ checkedIds, getBulkApproveDialogOpen, onClose, sele
               </div>
             )} */}
             <div className={`${style.marginTop10} ${style.commentsNotesHeadingFontStyle}`}>
-              {selectedTab === "level-3"
+              {selectedTab === "level-3" || selectedTab === "level-2"
                 ? "Notes /Comments By The Cred Comm*"
                 : selectedTab === "level-4"
                   ? "Notes /Comments By The MAC*"

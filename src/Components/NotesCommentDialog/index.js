@@ -452,9 +452,12 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
           <div>
             <div className={Classes.DIALOG_BODY}>
               <div className={style.spaceBetween}>
-                <div className={`${style.heading}`}>
-                  {/* {userRoleTab} Review & Approval */}
-                  Staff Reappointment for Review & Approval
+                <div className={style.heading}>
+                  {`Staff ${
+                    applicationType === "LOCUM"
+                      ? `${formDetails?.reappointmentType === "EXTENSION" ? "Locum Extension" : "Locum Renewal"}`
+                      : "Reappointment"
+                  } for Review & Approval`}
                 </div>
                 <div className={style.displayInRow}>
                   <Tooltip title={"Click to Close"} arrow>

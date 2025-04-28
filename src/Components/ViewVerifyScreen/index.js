@@ -5022,7 +5022,7 @@ const NewActiveApplication = ({
               {(workModeType === 'Staff Manager') || (workModeType === 'Chief Of Staff') || (workModeType === 'Credentialing Committee') || (workModeType === 'Credentialing Committee User') || (workModeType === 'Department Head') ? (
                 <>
                   <div>
-                    {(selectedTab === "level-1" && applicationType === "REAPPOINTMENT") ? (
+                    {((selectedTab === "level-1" && applicationType === "REAPPOINTMENT") || (selectedTab === "level-1" && applicationType === "LOCUM")) ? (
                       <div className={style.grid5and2}>
                         <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth}`}>
                           <div className={style.flex}>
@@ -5139,11 +5139,13 @@ const NewActiveApplication = ({
                           <div className={style.greyDotTextStyle}>
                             Application Payment Status
                           </div>
+                          {applicationType !== "LOCUM" && (
                           <div className={style.cursorPointer}> Transaction ID:{" "}
-                            <Tooltip title="Click to View Transaction Details" arrow>
-                              <span className={`${style.marginTop10} ${style.paymentIDStyle}`} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(form?.payment?.invoice) }}>{form?.payment?.receiptId || "-"}</span>
-                            </Tooltip>
+                          <Tooltip title="Click to View Transaction Details" arrow>
+                            <span className={`${style.marginTop10} ${style.paymentIDStyle}`} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(form?.payment?.invoice) }}>{form?.payment?.receiptId || "-"}</span>
+                          </Tooltip>
                           </div>
+                          )}
                         </div>
                         <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.statusCardHeight} ${style.displayInCol}`}>
                           <div className={`${statusStyle} ${style.marginCenter}`}></div>
@@ -12929,6 +12931,7 @@ const NewActiveApplication = ({
                 getApplicationDeclineDialog={getApplicationDeclineDialog}
                 getActiveApplicationView={getActiveApplicationView}
                 selectedTab={selectedTab}
+                applicationType={applicationType}
               />
             )
           }

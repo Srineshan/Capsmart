@@ -159,7 +159,7 @@ const [covererId, setCovererId] = useState("");
   getStaffPrivilege();
   const staffLocumId = selectDataLocum?.onGoingApplication?.id
   console.log("staffLocumIdssssss",staffLocumId)
- }, [showSelectedPrivilegeLocum,privilegeSetChangeYesOrNo]);
+ }, [showSelectedPrivilegeLocum,privilegeSetChangeYesOrNo,selectedDepartment,selectedSpeciality]);
 
  useEffect(() => {
    const coveredDetails = covererNameList?.map((data) => {
@@ -295,28 +295,22 @@ let userDepartmentList;
 
     const onClickExtensiveRequest = async () => {
       setIsLoadingImage(true);
+      
       try {
         await reappointmentApplication();
+        await  getActiveUserData();
+        // await getApplication();
+        // await handleSubmitPrivilegeSet();
+        // await handleSubmitAdditionalPrivilegeSet();
         setShowSelectedPrivilegeLocum(true);
       } catch (error) {
         console.error("Error in onClickExtensiveRequest:", error);
       } finally {
         setIsLoadingImage(false);
       }
+    };
     
-      // After finally block
-      setIsLoadingImage(true);
-      try {
-        await Promise.all([
-          handleSubmitPrivilegeSet(),
-          handleSubmitAdditionalPrivilegeSet()
-        ]);
-      } catch (error) {
-        console.error("Error while submitting privilege sets:", error);
-      } finally {
-        setIsLoadingImage(false);
-      }
-    };    
+    
 
 const getActiveUserData = async () => {
     try {
@@ -3482,7 +3476,7 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
                     <>
                       {staffPrivilege?.map((data, index) => (
                         <>
-                          <Tooltip title={selectedPrivilegesForDisplayMultiple?.map((data) => data?.id)?.includes(data?.id) ? "Click to Remove" : "Click to Request and Sign"} arrow>
+                          <Tooltip title={selectedPrivilegesForDisplayMultiple?.map((data) => data?.id)?.includes(data?.id) ? "Click to Remove" : "Click to Request"} arrow>
                             <div
                               className={`${style.privilegeConfirmationGrid} ${style.marginTop}`}
                               onClick={selectedPrivilegesForDisplayMultiple
@@ -3652,7 +3646,7 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
                       <>
                         {staffPrivilege?.map((data, index) => (
                           <>
-                            <Tooltip title={selectedPrivilegesForDisplayMultiple?.map((data) => data?.id)?.includes(data?.id) ? "Click to Remove" : "Click to Request and Sign"} arrow>
+                            <Tooltip title={selectedPrivilegesForDisplayMultiple?.map((data) => data?.id)?.includes(data?.id) ? "Click to Remove" : "Click to Request"} arrow>
                               <div
                                 className={`${style.privilegeConfirmationGrid} ${style.marginTop}`}
                                 onClick={selectedPrivilegesForDisplayMultiple
@@ -3887,7 +3881,7 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
                     <>
                       {additionalStaffPrivilege?.map((data, index) => (
                         <>
-                          <Tooltip title={selectedAdditionalPrivilegesForDisplayMultiple?.map(data => data?.id)?.includes(data?.id) ? "Click to Remove" : "Click to Request and Sign"} arrow>
+                          <Tooltip title={selectedAdditionalPrivilegesForDisplayMultiple?.map(data => data?.id)?.includes(data?.id) ? "Click to Remove" : "Click to Request"} arrow>
                             <div className={`${style.privilegeConfirmationGrid} ${style.verticalAlignCenter} ${style.marginTop}`}
                               onClick={selectedAdditionalPrivilegesForDisplayMultiple?.map(data => data?.id)?.includes(data?.id) ? () => { handleDeleteSelectedAdditionalPrrivilege(data?.id) } : () => { setShowAdditionalPrivileges(true); handleChangeAdditional(data?.id) }}
                             >
