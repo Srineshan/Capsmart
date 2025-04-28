@@ -289,7 +289,7 @@ const BulkApproveDialog = ({ checkedIds, getBulkApproveDialogOpen, onClose, sele
         role = "Credentialing Committee";
         title = "Credentialing Committee Review"
       }
-    }  else if (selectedTab === 'level-3') {
+    }  else if (selectedTab === 'level-3' && applicationType !== "LOCUM") {
       if (workModeType === "Credentialing Committee") {
         role = "Credentialing Committee";
         title = "Credentialing Committee Review";
@@ -304,9 +304,27 @@ const BulkApproveDialog = ({ checkedIds, getBulkApproveDialogOpen, onClose, sele
         role = "Credentialing Committee";
         title = "Credentialing Committee User Review";
       }
-    } else if (selectedTab === 'level-4') {
+    } else if (selectedTab === 'level-3' && applicationType === "LOCUM") {
+      if (workModeType === "Advisory Committee") {
+        role = "Advisory Committee";
+        isDelegate = false;
+        title = "MAC Review"
+      } else {
+        role = "Advisory Committee";
+        title = "MAC Review"
+      }
+    } else if (selectedTab === 'level-4' && applicationType !== "LOCUM") {
       role = "Advisory Committee";
       title = "MAC Review";
+    }  else if (selectedTab === 'level-4' && applicationType === "LOCUM") {
+      if (workModeType === "Advisory Committee") {
+        role = "Board";
+        isDelegate = false;
+        title = "Board Approval"
+      } else {
+        role = "Board";
+        title = "Board Approval"
+      }
     } else if (selectedTab === 'level-5') {
       role = "Board";
       title = "BOD Approval";
@@ -437,9 +455,9 @@ const BulkApproveDialog = ({ checkedIds, getBulkApproveDialogOpen, onClose, sele
           <div>
             <div className={style.templateHeader}>
               <div className={style.templateHeadertext}>
-                {selectedTab === "level-3" || selectedTab === "level-2"
+                {((selectedTab === "level-3" && applicationType === "REAPPOINTMENT") || (selectedTab === "level-2" && applicationType === "LOCUM"))
                   ? "Staff Reappointments Approved by the Cred. Comm." :
-                  selectedTab === "level-4"
+                  ((selectedTab === "level-4" && applicationType === "REAPPOINTMENT") || (selectedTab === "level-3" && applicationType === "LOCUM"))
                     ? "Staff Reappointments Approved by the MAC."
                     : "Staff Reappointments Approved by the BOD."}
               </div>
@@ -481,9 +499,9 @@ const BulkApproveDialog = ({ checkedIds, getBulkApproveDialogOpen, onClose, sele
               </div>
             )} */}
             <div className={`${style.marginTop10} ${style.commentsNotesHeadingFontStyle}`}>
-              {selectedTab === "level-3" || selectedTab === "level-2"
+              {((selectedTab === "level-3" && applicationType === "REAPPOINTMENT") || (selectedTab === "level-2" && applicationType === "LOCUM"))
                 ? "Notes /Comments By The Cred Comm*"
-                : selectedTab === "level-4"
+                : ((selectedTab === "level-4" && applicationType === "REAPPOINTMENT") || (selectedTab === "level-3" && applicationType === "LOCUM"))
                   ? "Notes /Comments By The MAC*"
                   : " Notes /Comments By The BOD*"}
             </div>

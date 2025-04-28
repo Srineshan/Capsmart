@@ -5471,7 +5471,7 @@ const StaffApplicationList = ({
                         setShowBulkApproveDialog(true);
                       }}
                     >
-                      <Tooltip title={(selectedTab === "level-3" && applicationType === "REAPPOINTMENT" || selectedTab === "level-2") ? "Update CC Approval Status" : (selectedTab === "level-4" || (selectedTab === "level-3" && applicationType === "LOCUM")) ? "Update MAC Approval Status" : "Update BOD Approval Status"} arrow>
+                      <Tooltip title={((selectedTab === "level-3" && applicationType === "REAPPOINTMENT") || (selectedTab === "level-2" && applicationType === "LOCUM")) ? "Update CC Approval Status" : ((selectedTab === "level-4" && applicationType === "REAPPOINTMENT") || (selectedTab === "level-3" && applicationType === "LOCUM")) ? "Update MAC Approval Status" : "Update BOD Approval Status"} arrow>
                         <PeopleOutlinedIcon
                           sx={{
                             fontSize: 25,
@@ -5491,7 +5491,7 @@ const StaffApplicationList = ({
                         setShowCCDateDialog(true);
                       }}
                     >
-                      <Tooltip title={(selectedTab === "level-3" && applicationType === "REAPPOINTMENT" || selectedTab === "level-2") ? "Designate CC Meeting Date" : (selectedTab === "level-4" || (selectedTab === "level-3" && applicationType === "LOCUM")) ? "MAC Approval Date" : "BOD Approval Date"} arrow>
+                      <Tooltip title={((selectedTab === "level-3" && applicationType === "REAPPOINTMENT") || (selectedTab === "level-2" && applicationType === "LOCUM")) ? "Designate CC Meeting Date" : ((selectedTab === "level-4" && applicationType === "REAPPOINTMENT") || (selectedTab === "level-3" && applicationType === "LOCUM")) ? "MAC Approval Date" : "BOD Approval Date"} arrow>
                         <EventAvailableOutlinedIcon
                           sx={{
                             fontSize: 25,
