@@ -72,6 +72,10 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
   }, [applicationType]);
 
   useEffect(() => {
+    getTitleCounts(applicationType);
+  }, [searchTermForTable, applicationType]);
+
+  useEffect(() => {
     if (userDetails !== undefined) {
       setUser(jwt(userDetails));
     }

@@ -9,6 +9,7 @@ import PrintOutlinedIcon from "@mui/icons-material/PrintOutlined";
 import TextSnippetOutlinedIcon from "@mui/icons-material/TextSnippetOutlined";
 import NoteAltOutlinedIcon from "@mui/icons-material/NoteAltOutlined";
 import HapiCare from "./../../images/PoweredHapiCare.png";
+import Renewed from "./../../images/Renewed.png";
 import LocumStaffTiles from "./locumStaffTiles";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
@@ -83,14 +84,15 @@ const LocumStaffList = ({
     sessionStorage.getItem('applicationCreationType') || 'NEW'
   );
   const workModeType = sessionStorage.getItem("workModeType")
-  // const userDepartmentList;
+  const [userDepartmentList, setUserDepartmentList] = useState('');
+  // let userDepartmentList;
   let userSpecialty;
 
-  const activeLocumHeaderValues = ["Locum Staff", "OHIP Number", "Locum Type", "Notes", "Docs", "Start Date", "End Date", "Days to Expiration", ""];
+  const activeLocumHeaderValues = ["Locum Staff","", "OHIP Number", "Locum Type", "Notes", "Docs", "Start Date", "End Date", "Days to Expiration", ""];
   const expiredLocumHeaderValues = ["Locum Staff", "OHIP Number", "Locum Type", "Notes", "Docs", "Last End Date", "Days Since Expired", ""];
 
 
-  const activeLocumColSortValues = [false, false, false, false, false, , false, false, false];
+  const activeLocumColSortValues = [false, false, false, false, false, , false, false, false, false];
   const expiredLocumColSortValues = [false, false, false, false, false, false, false, false, false, false];
 
   const [isPrintClicked, setIsPrintClicked] = useState(false);
@@ -108,7 +110,7 @@ const LocumStaffList = ({
   };
 
   useEffect(() => {
-    const userDepartmentList = userDetailsFetchOption?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.id;
+    // setUserDepartmentList (userDetailsFetchOption?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.id);
     userSpecialty = userDetailsFetchOption?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.serviceAreas?.[0]?.id;
     console.log("userSpecialty", userDepartmentList, userSpecialty)
     console.log("userDetailsFetchOption", userDetailsFetchOption);
@@ -127,6 +129,8 @@ const LocumStaffList = ({
     const { data: userData } = await GET(`user-management-service/user/${users?.id}`);
     console.log("userdataaaa" + JSON.stringify(userData))
     sessionStorage.setItem('user', JSON.stringify(userData))
+    setUserDepartmentList(userData?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.id)
+    console.log("setUserDetails",userDepartmentList)
   }
 
   const onClickViewAndVerifyFunction = (data) => {
@@ -207,17 +211,17 @@ const LocumStaffList = ({
   useEffect(() => {
     getActiveUserDataActiveCount();
     getActiveUserDataExpireCount();
-  }, [selectedTab]);
+  }, []);
 
   const getActiveUserDataActiveCount = async () => {
     try {
-      const userDepartmentList =
+      const userDepartmentListData =
         userDetailsFetchOption?.sites?.sites[0]?.departmentList?.departments[0]?.id;
 
       let apiUrl = `application-management-service/staff?status=ACTIVE&type=LOCUM&noOfDays=30&isExpired=false`;
 
-      if (userDepartmentList) {
-        apiUrl += `&departmentSpecialties=${userDepartmentList}`;
+      if (userDepartmentListData) {
+        apiUrl += `&departmentSpecialties=${userDepartmentListData}`;
       }
 
       const response = await GET(apiUrl);
@@ -233,13 +237,13 @@ const LocumStaffList = ({
 
   const getActiveUserDataExpireCount = async () => {
     try {
-      const userDepartmentList =
+      const userDepartmentListData =
         userDetailsFetchOption?.sites?.sites[0]?.departmentList?.departments[0]?.id;
 
       let apiUrl = `application-management-service/staff?status=ACTIVE&type=LOCUM&noOfDays=30&isExpired=true`;
 
-      if (userDepartmentList) {
-        apiUrl += `&departmentSpecialties=${userDepartmentList}`;
+      if (userDepartmentListData) {
+        apiUrl += `&departmentSpecialties=${userDepartmentListData}`;
       }
 
       const response = await GET(apiUrl);
@@ -255,13 +259,13 @@ const LocumStaffList = ({
 
   const getActiveUserData = async () => {
     try {
-      const userDepartmentList =
+      const userDepartmentListData =
         userDetailsFetchOption?.sites?.sites[0]?.departmentList?.departments[0]?.id;
 
       let apiUrl = `application-management-service/staff?status=ACTIVE&type=LOCUM&noOfDays=30&isExpired=${selectedTab === "ACTIVELOCUM" ? false : true}`;
 
-      if (userDepartmentList) {
-        apiUrl += `&departmentSpecialties=${userDepartmentList}`;
+      if (userDepartmentListData) {
+        apiUrl += `&departmentSpecialties=${userDepartmentListData}`;
       }
 
       const response = await GET(apiUrl);
@@ -388,6 +392,8 @@ const LocumStaffList = ({
   let ExpiredDays = [];
   let startDate = [];
   let endDate = [];
+  let icon = [];
+  let reappointDate = [];
 
   const getLocumActiveValues = () => {
     dot = [];
@@ -413,11 +419,26 @@ const LocumStaffList = ({
     ExpiredDays = [];
     startDate = [];
     endDate = [];
+    icon = [];
+    reappointDate = [];
 
     tableData?.map((data) => {
       applicantName.push(
         `${formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName)}` || " "
       );
+      if (data?.reAppointmentInitiated === true) {
+        icon.push(
+          <img src={Renewed} alt="Renewed Icon" style={{ width: 20, height: 20 }} />
+        );
+      } else {
+        icon.push(" ");
+      }
+
+      reappointDate.push([
+        data?.reAppointmentSentDate 
+          ?` Locum Extension sent on ${format(new Date(data?.reAppointmentSentDate), "dd/MM/yyyy")}`
+          : "Locum Extension Not Sent",
+      ]);
       applicantId.push(data?.staffId || "123");
 
       applicantType.push(data?.basicDetailReferences?.applicantType?.serviceProviderType || "Doctor");
@@ -435,14 +456,21 @@ const LocumStaffList = ({
         "Lorem ipsum dolor sit amet, consetetur sadipscing.",
       ]);
       startDate.push(
-        format(new Date(data?.tenure?.from), "MM/dd/yyyy")
+        data?.tenure?.from
+          ? format(new Date(data.tenure.from), "MM/dd/yyyy")
+          : "-"
       );
       endDate.push(
-        format(new Date(data?.tenure?.to), "MM/dd/yyyy")
+        data?.tenure?.to ? format(new Date(data?.tenure?.to), "MM/dd/yyyy") : "-"
       );
       lastUpdatedBy.push(["-"]);
-      const expiredDays = differenceInDays(new Date(data?.tenure?.to), new Date());
-      ExpiredDays.push(expiredDays.toString());
+
+      if (data?.tenure?.to) {
+        const expiredDays = differenceInDays(new Date(data.tenure.to), new Date());
+        ExpiredDays.push(expiredDays.toString());
+      } else {
+        ExpiredDays.push("-");
+      }
 
       action.push(true);
 
@@ -452,6 +480,12 @@ const LocumStaffList = ({
     return [
       // { type: "dot", value: dot, tooltipValue: dotTooltipValues },
       { type: "text", value: applicantName },
+      {
+        type: "iconWithCount",
+        icon: icon,
+        hoverText: reappointDate,
+        isShowHoverText: true,
+      },
       { type: "text", value: applicantId },
       { type: "text", value: applicantType },
       // { type: "text", value: department },

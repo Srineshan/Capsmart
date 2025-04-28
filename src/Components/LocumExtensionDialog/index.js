@@ -54,12 +54,12 @@ const LocumExtensiveDialog = ({ getIsOpen,selectedTab }) => {
  const [showSelectedPrivilegeLocum, setShowSelectedPrivilegeLocum] = useState(false);
  const [selectedPrivilege, setSelectedPrivilege] = useState(false);
  const { step } = useParams();
- const [privilegeChangeYesOrNo, setPrivilegeChangeYesOrNo] = useState("");
+ const [privilegeChangeYesOrNo, setPrivilegeChangeYesOrNo] = useState("Yes");
  const [departmentChangeYesOrNo, setDepartmentChangeYesOrNo] = useState("");
  const [privilegeSetChangeYesOrNo, setPrivilegeSetChangeYesOrNo] = useState("");
  const [showCurrentPrivileges, setShowCurrentPrivileges] = useState(false);
  const [hospitalPrivilegeSet, setHospitalPrivilegeSet] = useState([]);
- const [additionalPrivilegeChangeYesOrNo, setAdditionalPrivilegeChangeYesOrNo] = useState("");
+ const [additionalPrivilegeChangeYesOrNo, setAdditionalPrivilegeChangeYesOrNo] = useState("No");
  const [privilegeAtOtherHospitalYesOrNo, setPrivilegeAtOtherHospitalYesOrNo] = useState("");
  const [currentPrivilegesCategory, setCurrentPrivilegesCategory] = useState(false);
  const [isPrivilegeCategoryChanging, setIsPrivilegeCategoryChanging] = useState(false);
@@ -133,11 +133,11 @@ const [covererId, setCovererId] = useState("");
   getActiveUserData();
  }, [applicationType, id]);
 
-//  useEffect(() => {
-//   const index = formDetails?.forms?.findIndex(data => data?.schemaCategory === "PrivilegeSelection");
-//   setFormIndex(index);
-//   console.log("Found index:", index);
-// }, [formDetails?.forms]);
+ useEffect(() => {
+  const index = formDetails?.forms?.findIndex(data => data?.schemaCategory === "PrivilegeSelection");
+  setFormIndex(index);
+  console.log("Found index:", index);
+}, [formDetails?.forms]);
 
 
  useEffect(() => {
@@ -294,20 +294,29 @@ let userDepartmentList;
     };
 
     const onClickExtensiveRequest = async () => {
+      setIsLoadingImage(true);
       try {
-        setIsLoadingImage(true);
-    
-        await reappointmentApplication(); 
-    
+        await reappointmentApplication();
         setShowSelectedPrivilegeLocum(true);
       } catch (error) {
-        console.error("Error in reappointmentApplication:", error);
+        console.error("Error in onClickExtensiveRequest:", error);
       } finally {
         setIsLoadingImage(false);
       }
-    };
     
-
+      // After finally block
+      setIsLoadingImage(true);
+      try {
+        await Promise.all([
+          handleSubmitPrivilegeSet(),
+          handleSubmitAdditionalPrivilegeSet()
+        ]);
+      } catch (error) {
+        console.error("Error while submitting privilege sets:", error);
+      } finally {
+        setIsLoadingImage(false);
+      }
+    };    
 
 const getActiveUserData = async () => {
     try {
@@ -2069,7 +2078,7 @@ handleSubmitAdditionalPrivilegeSet(true, temp)
     privilegeSetChangeYesOrNo:
      formDetails?.forms?.[formIndex]?.data?.privilegeSetChangeYesOrNo !== undefined
       ? formDetails?.forms?.[formIndex]?.data?.privilegeSetChangeYesOrNo
-      : "",
+      : "Yes",
     additionalPrivilegeChangeYesOrNo: isUpdated ? additionalPrivilegeChangeYesOrNo : "No",
     privilegeAtOtherHospitalYesOrNo:
      formDetails?.forms?.[formIndex]?.data?.privilegeAtOtherHospitalYesOrNo !== undefined
@@ -2594,10 +2603,13 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
    : null;
  const formattedExpiringDate = ExpireDate ? format(new Date(ExpireDate), "dd/MM/yyyy") : "-";
  const daysRemaining = ExpireDate ? differenceInDays(new Date(ExpireDate), new Date()) : null;
-//  const monthsList = getNext12MonthsFromCreatedDate(selectDataLocum?.tenure?.to);
+//  const monthsList = getNext12MonthsFromCreatedDate(format(new Date(selectDataLocum?.tenure?.to), "dd/MM/yyyy"));
   // const selectedMonthLabel = selectedMonth === "Custom"
   // ? "Custom End Date"
-  // : monthsList.find(month => month.value === selectedMonth)?.label || '';
+  // : monthsList.find(month => month?.value === selectedMonth)?.label || '';
+  // const selectedMonthLabel = selectedMonth !== "Custom"
+  // ? monthsList.find(month => month.value === selectedMonth)?.label
+  // : "Custom End Date";
 
 
  return (
@@ -3038,11 +3050,11 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
                           (data) => (
                             <div
                               className={`${style.privilegeHeadingWithHover} ${style.cursorPointer}`}
-                              onClick={() => {
-                                setShowCurrentPrivileges(true);
-                                setCurrentPrivilegesCategory('Basic')
-                                setSelectedPrivilege(data?.id);
-                              }}
+                              // onClick={() => {
+                              //   setShowCurrentPrivileges(true);
+                              //   setCurrentPrivilegesCategory('Basic')
+                              //   setSelectedPrivilege(data?.id);
+                              // }}
                             >
                               {data?.privilegeSetTitle}
                             </div>
@@ -3099,8 +3111,9 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
                       </div>
                       {formDetails?.privileges?.additionalPrivileges?.map(data => (
                         <div
-                          className={`${style.privilegeHeadingWithHover} ${style.cursorPointer}`} onClick={() => { setShowCurrentPrivileges(true); setCurrentPrivilegesCategory('Additional'); setSelectedPrivilege(data?.id) }}
-                        >{data?.privilegeSetTitle} {data?.privilegeDetails?.corePrivileges?.esign?.signedDate !== undefined && (<span className={style.signedOnText}>signed on {data?.privilegeDetails?.corePrivileges?.esign?.signedDate}</span>)}</div>
+                          className={`${style.privilegeHeadingWithHover} ${style.cursorPointer}`} 
+                          // onClick={() => { setShowCurrentPrivileges(true); setCurrentPrivilegesCategory('Additional'); setSelectedPrivilege(data?.id) }}
+                        >{data?.privilegeSetTitle}</div>
                       ))}
                     </>
                   )}
@@ -3405,10 +3418,10 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
                  Indicate the privilege set that you would like to assign to this Locum Staff from your department?
                 </div>
                 <>
-                  <div className={`${style.cardTitle} ${style.marginTop}`}>
+                  {/* <div className={`${style.cardTitle} ${style.marginTop}`}>
                     What would you like to change your current Privilege Set
                     to?
-                  </div>
+                  </div> */}
                   {/* {basicForm?.basicDetails?.credentialingPrivilegeCategory
                     ?.credentialingCategory === "Courtesy Staff With Admitting Privileges" ? (
                     <div
@@ -3960,6 +3973,8 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
           if (!showSelectedPrivilegeLocum) {
             if (selectedMonth) {
               onClickExtensiveRequest();
+              // handleSubmitPrivilegeSet();
+              // handleSubmitAdditionalPrivilegeSet();
             }
           } else {
             getIsOpen(false);
