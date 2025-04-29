@@ -694,7 +694,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                     <Typography className={`${style.verticalAlignCenter} ${style.cursorArrow}`}  >
                                                         {tableData?.icon?.[index]}
                                                         <p className={`${style.tableDataFontStyle1} ${style.marginTop10} ${style.marginLeft5}`}>{tableData?.value?.[index]}</p>
-                                                        {tableData?.isShowHoverText && index === selectedMenuIndex && tableDataIndex === selectedMenuColIndex && tableData?.value?.[index] !== '-' && (
+                                                        {tableData?.isShowHoverText && index === selectedMenuIndex && tableDataIndex === selectedMenuColIndex && tableData?.value?.[index] !== '-' && tableData?.icon?.[index] !== '' && (
                                                             <Popover
                                                                 id="mouse-over-popover"
                                                                 open={openIconWithCount}

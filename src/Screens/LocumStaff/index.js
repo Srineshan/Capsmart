@@ -77,6 +77,7 @@ const LocumStaff = () => {
                 getLocumExtensiveRequestDialog={getLocumExtensiveRequestDialog}
                 getLocumExtensiveReactiveRequestDialog={getLocumExtensiveReactiveRequestDialog}
                 getNotesDialog = {getNotesDialog}
+                showLocumExtensiveDialog= {showLocumExtensiveDialog}
             />
              {showDeptTrackerDialog && (
                 <DepartmentTrackerDialog isLoading={isLoading} getIsOpen={getDeptTrackerDialog} getActiveApplicationView={getActiveApplicationView}/>

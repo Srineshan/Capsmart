@@ -1413,12 +1413,24 @@ const StaffApplicationList = ({
     try {
       let response;
       if (applicationType === "LOCUM") {
-        response = await GET(`application-management-service/staff?status=ACTIVE&departmentSpecialties=${userDepartmentList}`);
-        console.log("LOCUM data", response?.data.staffs);
-        setTableData(response?.data?.staffs);
-        setTotalCount(response?.data?.numberOfElements);
-        console.log("LOCUM data length", response?.data?.numberOfElements);
-        return response?.data.staffs || [];
+        let role = workModeType === "Credentialing Committee User" ? "Staff Manager" : workModeType;
+        const shouldIncludeAssignee = showAssignee &&
+          (workModeType === "Department Head" ||
+            workModeType === "Chief Of Staff" ||
+            workModeType === "Credentialing Committee");
+        const assignedUserIdsParam = shouldIncludeAssignee ? `&assignedUserIds=${users?.id}` : "";
+        const departmentParam = selectedDepartment || selectedServiceArea ? `&departmentSpecialties=${selectedDepartment}%23${selectedServiceArea}` : "";
+        response = await GET(
+          `application-management-service/application/workflowUser?tab=${selectedTab}&sortBy=${sortValue}&sortByField=${sortField}&positionType=${applicationType}&limit=${limit}&offset=${page - 1}&role=${role}&searchText=${searchTermForTable}&applicationCreationType=${applicationType === "LOCUM" ? "REAPPOINTMENT" : applicationType}&isPaginationRequired=${limit === 9999 ? false : true}${departmentParam}${assignedUserIdsParam}`, { signal }
+        );
+        console.log("Application data", response?.data?.applications);
+        setSearchData(response?.data?.applications.map(item => ({
+          id: item.id,
+          name: `${formatFirstNameLastName(item?.applicant?.name?.firstName, item?.applicant?.name?.lastName)}` || " ",
+          desc: `${item?.basicDetails?.departmentSpecialty?.department} | ${item?.basicDetails?.applicant?.applicantType}`
+        })));
+        console.log("Application data length", response?.data?.numberOfElements);
+        return response?.data?.applications || [];
       } else {
         let role = workModeType === "Credentialing Committee User" ? "Staff Manager" : workModeType;
         // setIsLoadingImage(true);
@@ -1446,6 +1458,8 @@ const StaffApplicationList = ({
   const handleLimitChange = (newLimit) => {
     setLimit(newLimit);
   };
+
+  console.log("searchTermForTablesssssssssssssss",searchTermForTable)
 
   console.log("0000000000000000000000" + JSON.stringify(tableData));
 
@@ -1503,7 +1517,7 @@ const StaffApplicationList = ({
         typesWithoutFirst.map(async (type) => {
           try {
             const res = await GET(
-              `application-management-service/staff?status=ACTIVE&applicantTypeId=${type.id}&reappointmentStatus=SENT&reappointmentStatus=RE_SENT&applicationStatus=CREATED&applicationStatus=COMPLETED&applicationStatus=DECLINED`
+              `application-management-service/staff?status=ACTIVE&applicantTypeId=${type?.id}&reappointmentStatus=SENT&reappointmentStatus=RE_SENT&applicationStatus=CREATED&applicationStatus=COMPLETED&applicationStatus=DECLINED`
             );
             const count = res?.data?.numberOfElements || 0;
 
@@ -5030,9 +5044,9 @@ const StaffApplicationList = ({
           <div>
             <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
               <>
-                {applicationType === "REAPPOINTMENT" || applicationType === "LOCUM" && (
+                {(applicationType === "REAPPOINTMENT" || applicationType === "LOCUM") && (
                   <div className={style.searchFieldAlignment}>
-                    <CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} isOnClickAvailable={true} onClickFunc={onClickViewAndVerifyLevel1Function} />
+                    <CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} isOnClickAvailable={true} onClickFunc={onClickViewAndVerifyLevel1Function} placeholder={applicationType === "LOCUM" ? 'Search By Locum Staff' : "Search Staff Reappointments to Process"} />
                   </div>
                 )}
                 {(!(applicationType === "REAPPOINTMENT" && ((workModeType === "Department Head") || (workModeType === "Credentialing Committee") || (workModeType === "Advisory Committee") || (workModeType === "Board"))) || !(applicationType === "LOCUM" && ((workModeType === "Department Head") || (workModeType === "Credentialing Committee") || (workModeType === "Advisory Committee") || (workModeType === "Board")))) ? (
