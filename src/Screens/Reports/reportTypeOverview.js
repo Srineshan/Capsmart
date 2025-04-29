@@ -97,6 +97,9 @@ const ReportTypeOverview = () => {
     const [paymentTrackValues, setPaymentTrackValues] = useState();
     const [selectedPaymentTab, setSelectedPaymentTab] = useState('Payment Processed');
     const [tableDataStatus, setTableDataStatus] = useState([]);
+    const [applicationType, setApplicationType] = useState(() =>
+        sessionStorage.getItem('applicationCreationType') || 'NEW'
+    );
     const [apexStackedBarChartDisplay, setApexStackedBarChartDisplay] = useState(
         <ApexStackedBarChart stackedSeries={stackedSeries} stackedCategories={stackedCategories} />
     )
@@ -985,14 +988,14 @@ const ReportTypeOverview = () => {
                 }
             } else {
                 if (data?.status === "DECLINED") {
-                    status.push("Reappointment Application Declined");
+                    status.push(`${applicationType === "LOCUM" ? '' : 'Reappointment'} Application Declined`);
                 } else {
                     if (data?.formFillingStatus === "IN_PROGRESS") {
-                        status.push("Reappointment Application In-Progress");
+                        status.push(`${applicationType === "LOCUM" ? '' : 'Reappointment'} Application In-Progress`);
                     } else if (data?.formFillingStatus === "PENDING") {
-                        status.push("Reappointment Application Not Started");
+                        status.push(`${applicationType === "LOCUM" ? '' : 'Reappointment'} Application Not Started`);
                     } else {
-                        status.push("MSO Verification Not Started");
+                        status.push(`MSO Verification Not Started`);
                     }
                 }
             }
