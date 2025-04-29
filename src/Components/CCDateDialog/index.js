@@ -74,9 +74,9 @@ const CCDateDialog = ({ checkedIds, getCCDateDialogOpen, onClose, selectedTab })
           <div className={style.templateHeader}>
             <div className={style.templateHeadertext}>
               {checkedIds?.length}{" "}
-              {selectedTab === "level-3" || selectedTab === "level-2"
+              {((selectedTab === "level-3" && applicationType === "REAPPOINTMENT")|| (selectedTab === "level-2" && applicationType === "LOCUM"))
                 ? "Staff Application for Presenting to CC"
-                : selectedTab === "level-4"
+                :((selectedTab === "level-4" && applicationType === "REAPPOINTMENT")|| (selectedTab === "level-3" && applicationType === "LOCUM"))
                   ? "Staff Application Approval Date by MAC" : "Staff Application Approval Date by BOD"}
             </div>
             <Tooltip title="Click to Close" arrow>
@@ -100,7 +100,7 @@ const CCDateDialog = ({ checkedIds, getCCDateDialogOpen, onClose, selectedTab })
               // minDate={add(new Date(), { days: 1 })}
               // maxDate={add(new Date(), { years: 3 })}
               value={SelectedDate}
-              label={selectedTab === "level-3" || selectedTab === "level-2" ? "CC Meeting Date*" : selectedTab === "level-4" ? "MAC Approval Date*" : "BOD Approval Date*"}
+              label={((selectedTab === "level-3" && applicationType === "REAPPOINTMENT") || (selectedTab === "level-2" && applicationType === "LOCUM")) ? "CC Meeting Date*" : ((selectedTab === "level-4" && applicationType === "REAPPOINTMENT") || (selectedTab === "level-3" && applicationType === "LOCUM")) ? "MAC Approval Date*" : "BOD Approval Date*"}
               InputProps={{
                 style: {
                   fontSize: 14,

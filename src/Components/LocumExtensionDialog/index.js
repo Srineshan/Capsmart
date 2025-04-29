@@ -93,6 +93,7 @@ const LocumExtensiveDialog = ({ getIsOpen,selectedTab }) => {
  const [isAdditionalPrivilegeCategoryChanging, setIsAdditionalPrivilegeCategoryChanging] = useState(false);
  const [showInfo, setShowInfo] = useState(false);
  const [privilegeAtOtherHospitalIndex, setPrivilegeAtOtherHospitalIndex] = useState();
+ const departmentName = selectDataLocum?.basicDetailReferences?.department?.name;
 const [
     selectedAdditionalPrivilegeForEdit,
     setSelectedAdditionalPrivilegeForEdit,
@@ -112,6 +113,7 @@ const [applicantOptions, setApplicantOptions] = useState([]);
 const [covererNameList, setCovererNameList] = useState([]);
 const [covererName, setCovererName] = useState("");
 const [covererId, setCovererId] = useState("");
+const [emailSendDialog, setEmailSendDialog] = useState(false);
  const prevDepartment = formDetails?.basicDetailReferences?.department?.id;
  const prevSpeciality = formDetails?.basicDetailReferences?.specialty?.id;
  const [currentDate, setCurrentDate] = useState(
@@ -143,6 +145,8 @@ const [covererId, setCovererId] = useState("");
  useEffect(() => {
   sessionStorage.setItem("fromSummary", false);
   getApplication();
+  // getPrivilegeCategory();
+  // getformDetails()
  }, [selectDataLocum]);
 
 
@@ -152,13 +156,14 @@ const [covererId, setCovererId] = useState("");
     formDetails?.privileges?.obligatedPrivileges
   );
   staffLocumId = selectDataLocum?.onGoingApplication?.id
-  console.log("staffLocumId",staffLocumId)
+  // departmentName = selectDataLocum?.basicDetailReferences?.department?.name
+  console.log("staffLocumId",staffLocumId,departmentName)
  }, []);
 
  useEffect(() => {
   getStaffPrivilege();
   const staffLocumId = selectDataLocum?.onGoingApplication?.id
-  console.log("staffLocumIdssssss",staffLocumId)
+  console.log("staffLocumIdssssss",staffLocumId,departmentName)
  }, [showSelectedPrivilegeLocum,privilegeSetChangeYesOrNo,selectedDepartment,selectedSpeciality]);
 
  useEffect(() => {
@@ -250,7 +255,7 @@ let userDepartmentList;
       };
   
       fetchDepartmentStaffs();
-    }, [formDetails]);
+    }, [selectDataLocum]);
 
     const getStaffPrivilege = async () => {
         if (selectedDepartment !== undefined) {
@@ -355,10 +360,21 @@ const getActiveUserData = async () => {
     coveredDetails: coveredDetails,
     };
   
-    await POST(`application-management-service/staff/${selectDataLocum?.id}/reappoint?positionType=LOCUM&reappointmentType=${selectedTab === "ACTIVELOCUM" ? "EXTENSION" : "RENEWAL"}`, temp)
+    await POST(`application-management-service/staff/${selectDataLocum?.id}/reappoint?positionType=LOCUM&reappointmentType=${selectedTab === "ACTIVELOCUM" ? "EXTENSION" : "RENEWAL"}&sendReappointmentInvite=false`, temp)
       .then((response) => {
         console.log(response?.data);
         getActiveUserData();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const sendEmail = async () => {
+  
+    await POST(`application-management-service/application/${selectDataLocum?.onGoingApplication?.id}/sendEmail`)
+      .then((response) => {
+        console.log(response?.data);
       })
       .catch((error) => {
         console.log(error);
@@ -717,17 +733,18 @@ handleSubmitAdditionalPrivilegeSet(true, temp)
                                   <div className={style.floatRight}>
                                     <CommonRadio
                                       value={privileges?.response || ""}
-                                      onChange={(e) =>
-                                        handleRestrictedSelection(
-                                          index,
-                                          categoriesIndex,
-                                          privilegesIndex,
-                                          e.target.value,
-                                          "response"
-                                        )
-                                      }
+                                      // onChange={(e) =>
+                                      //   handleRestrictedSelection(
+                                      //     index,
+                                      //     categoriesIndex,
+                                      //     privilegesIndex,
+                                      //     e.target.value,
+                                      //     "response"
+                                      //   )
+                                      // }
                                       radioValue={["NO", "YES"]}
                                       label={["No", "Yes"]}
+                                      readOnly
                                     />
                                   </div>
                                   {privileges?.response === "YES" &&
@@ -1279,18 +1296,19 @@ handleSubmitAdditionalPrivilegeSet(true, temp)
                                 <div className={style.floatRight}>
                                   <CommonRadio
                                     value={privileges?.response || ""}
-                                    onChange={(e) =>
-                                      handleRestrictedSelection(
-                                        index,
-                                        categoriesIndex,
-                                        privilegesIndex,
-                                        e.target.value,
-                                        "response",
-                                        'Additional'
-                                      )
-                                    }
+                                    // onChange={(e) =>
+                                    //   handleRestrictedSelection(
+                                    //     index,
+                                    //     categoriesIndex,
+                                    //     privilegesIndex,
+                                    //     e.target.value,
+                                    //     "response",
+                                    //     'Additional'
+                                    //   )
+                                    // }
                                     radioValue={["NO", "YES"]}
                                     label={["No", "Yes"]}
+                                    readOnly
                                   />
                                 </div>
                                 {privileges?.response === "YES" &&
@@ -1302,17 +1320,17 @@ handleSubmitAdditionalPrivilegeSet(true, temp)
                                         <CKEditor
                                           editor={ClassicEditor}
                                           data={privileges?.notes?.notes || ""}
-                                          onChange={(event, editor) => {
-                                            const data = editor.getData();
-                                            handleRestrictedSelection(
-                                              index,
-                                              categoriesIndex,
-                                              privilegesIndex,
-                                              data,
-                                              "notes",
-                                              'Additional'
-                                            );
-                                          }}
+                                          // onChange={(event, editor) => {
+                                          //   const data = editor.getData();
+                                          //   handleRestrictedSelection(
+                                          //     index,
+                                          //     categoriesIndex,
+                                          //     privilegesIndex,
+                                          //     data,
+                                          //     "notes",
+                                          //     'Additional'
+                                          //   );
+                                          // }}
                                           onReady={(editor) => {
                                             editor.editing.view.change(
                                               (writer) => {
@@ -2604,7 +2622,20 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
   // const selectedMonthLabel = selectedMonth !== "Custom"
   // ? monthsList.find(month => month.value === selectedMonth)?.label
   // : "Custom End Date";
+  const currentDateNow = new Date();
+  const minDateValue =
+  selectedTab === 'ACTIVELOCUM'
+    ? ExpireDate
+      ? addDays(new Date(ExpireDate), 1)
+      : null
+    : currentDateNow;
 
+const maxDateValue =
+  selectedTab === 'ACTIVELOCUM'
+    ? ExpireDate
+      ? addYears(new Date(ExpireDate), 1)
+      : null
+    : addYears(currentDateNow, 1);
 
  return (
   <>
@@ -2630,6 +2661,7 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
             : "Reactivate Locum Staff"}
         </div>
         <div className={style.displayInRow}>
+        <Tooltip title="Click to Close" arrow >
          <img
           src={CrossPink}
           alt="cross"
@@ -2638,6 +2670,7 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
            getIsOpen(false);
           }}
          />
+         </Tooltip>
         </div>
        </div>
        <div className={`${style.rejectionBorderStyle} ${style.declineBorderStyle} ${style.marginTop10}`}>
@@ -2652,10 +2685,9 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
              ? selectDataLocum?.applicant?.name?.firstName.charAt(0).toUpperCase() +
              selectDataLocum?.applicant?.name?.firstName.slice(1).toLowerCase()
              : ""}
-            {", "}
            </span>
            <div className={`${style.rejectionTextStyle} ${style.marginLeft2}`}>
-            {selectDataLocum?.basicDetailReferences?.applicantType?.serviceProviderType}
+            Locum {selectDataLocum?.basicDetailReferences?.applicantType?.serviceProviderType}
            </div>
           </div>
           <div className={`${style.twoColumnGridInner} ${style.displayInRowCenter}`}>
@@ -2695,8 +2727,8 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
          </div>
          <div className={`${style.rejectionTextStyle}`}>
           {selectedTab === "ACTIVELOCUM"
-            ? "Extend the Period and Privileges for "
-            : "Indicate the Period and Privileges for "}
+            ? "Extend the Period & Privileges for "
+            : "Indicate the Period & Privileges for "}
           <span className={style.rejectionHeadingTextStyle}>
             {selectDataLocum?.applicant?.name?.lastName
               ? selectDataLocum.applicant.name.lastName.charAt(0).toUpperCase() +
@@ -2776,8 +2808,20 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
                   open={calendarStart}
                   onOpen={() => setCalendarStart(true)}
                   onClose={() => setCalendarStart(false)}
-                  minDate={ExpireDate}
-                  maxDate={ExpireDate ? addYears(new Date(ExpireDate), 1) : null}
+                  minDate={minDateValue}
+                  maxDate={maxDateValue}
+                  // minDate={ExpireDate ? addDays(new Date(ExpireDate), 1) : null}
+                  // maxDate={ExpireDate ? addYears(new Date(ExpireDate), 1) : null}
+                  // minDate={
+                  //   selectedTab === "ACTIVELOCUM"
+                  //     ? (ExpireDate ? addDays(new Date(ExpireDate), 1) : null)
+                  //     : currentDate
+                  // }
+                  // maxDate={
+                  //   selectedTab === "ACTIVELOCUM"
+                  //     ? (ExpireDate ? addYears(new Date(ExpireDate), 1) : null)
+                  //     : addYears(currentDate, 1)
+                  // }
                   value={customEndDate ? new Date(customEndDate) : null}
                   InputProps={{
                     style: {
@@ -2849,7 +2893,7 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
               }}
               className={`${style.fullWidth} ${style.marginTop10}`}
               maxLength={50}
-              placeholder={'Select from privileged staff'}
+              placeholder={`Select from privileged staff from ${departmentName}`}
               value={covererName}
               required={true}
               error={!covererName}
@@ -2858,6 +2902,14 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
               //   ?.includes(
               //     `Who covers your hospital patients when you are not available?`
               //   )}
+              listboxProps={{
+                style: {
+                  maxHeight: '80px',
+                  overflowY: 'scroll',
+                  background: '#fff',
+                  border: '1px solid #2c2c2c',
+                }
+              }}
             />
           </div>
          </div>
@@ -3069,7 +3121,7 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
                 <div className={`${style.privilegeHeadingCurrent}`}>Current</div>
                 {formDetails?.privileges?.priorAdditionalPrivileges?.length === 0 ? (
                   <>
-                    {formDetails?.privileges?.additionalPrivileges?.length === 0 ? (
+                    {formDetails?.privileges?.priorAdditionalPrivileges?.length === 0 ? (
                       <div className={style.privilegeHeading}>None</div>
                     ) : (
                       <>
@@ -3409,7 +3461,7 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
               ) : (
                 <div>
                 <div className={`${style.cardTitle} ${style.marginTop}`}>
-                 Indicate the privilege set that you would like to assign to this Locum Staff from your department?
+                 Indicate the Privilege Sets that you would like to assign to this Locum Staff from your department?
                 </div>
                 <>
                   {/* <div className={`${style.cardTitle} ${style.marginTop}`}>
@@ -3476,7 +3528,7 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
                     <>
                       {staffPrivilege?.map((data, index) => (
                         <>
-                          <Tooltip title={selectedPrivilegesForDisplayMultiple?.map((data) => data?.id)?.includes(data?.id) ? "Click to Remove" : "Click to Request"} arrow>
+                          <Tooltip title={selectedPrivilegesForDisplayMultiple?.map((data) => data?.id)?.includes(data?.id) ? "Click to Remove" : "Click to View"} arrow>
                             <div
                               className={`${style.privilegeConfirmationGrid} ${style.marginTop}`}
                               onClick={selectedPrivilegesForDisplayMultiple
@@ -3646,7 +3698,7 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
                       <>
                         {staffPrivilege?.map((data, index) => (
                           <>
-                            <Tooltip title={selectedPrivilegesForDisplayMultiple?.map((data) => data?.id)?.includes(data?.id) ? "Click to Remove" : "Click to Request"} arrow>
+                            <Tooltip title={selectedPrivilegesForDisplayMultiple?.map((data) => data?.id)?.includes(data?.id) ? "Click to Remove" : "Click to View"} arrow>
                               <div
                                 className={`${style.privilegeConfirmationGrid} ${style.marginTop}`}
                                 onClick={selectedPrivilegesForDisplayMultiple
@@ -3734,14 +3786,14 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
                         >
                           SAVE
                         </div> */}
-                        <Tooltip title={"Click to Cancel"} arrow>
+                        {/* <Tooltip title={"Click to Cancel"} arrow>
                           <div
                             className={`${style.reappointmentButtonOutlined}`}
                             onClick={() => { setIsPrivilegeSetChanging(false); setPrivilegeSetChangeYesOrNo('') }}
                           >
                             CANCEL
                           </div>
-                        </Tooltip>
+                        </Tooltip> */}
                       </div>
                     </div>
                     {/* )} */}
@@ -3848,7 +3900,7 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
                             setSelectedAdditionalSpeciality(item.specialityId);
                           }
                         }}
-                        className={`${style.fullWidth} ${style.marginTop10} ${style.leftAlign}`}
+                        className={`${style.fullWidth} ${style.marginTop10}`}
                         maxLength={50}
                         onChange={(e) => {
                           const inputValue = e.target.value;
@@ -3873,6 +3925,14 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
                           : data?.id === selectedAdditionalDepartment && data.specialityId === selectedAdditionalSpeciality)
                         )?.value || ''}
                         required={true}
+                        listboxProps={{
+                          style: {
+                            maxHeight: '150px',
+                            overflowY: 'scroll',
+                            background: '#fff',
+                            border: '1px solid #2c2c2c',
+                          }
+                        }}
                       />
 
                     </div>
@@ -3881,7 +3941,7 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
                     <>
                       {additionalStaffPrivilege?.map((data, index) => (
                         <>
-                          <Tooltip title={selectedAdditionalPrivilegesForDisplayMultiple?.map(data => data?.id)?.includes(data?.id) ? "Click to Remove" : "Click to Request"} arrow>
+                          <Tooltip title={selectedAdditionalPrivilegesForDisplayMultiple?.map(data => data?.id)?.includes(data?.id) ? "Click to Remove" : "Click to View"} arrow>
                             <div className={`${style.privilegeConfirmationGrid} ${style.verticalAlignCenter} ${style.marginTop}`}
                               onClick={selectedAdditionalPrivilegesForDisplayMultiple?.map(data => data?.id)?.includes(data?.id) ? () => { handleDeleteSelectedAdditionalPrrivilege(data?.id) } : () => { setShowAdditionalPrivileges(true); handleChangeAdditional(data?.id) }}
                             >
@@ -3931,14 +3991,14 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
                   >
                     SAVE
                   </div> */}
-                  <Tooltip title={"Click to Cancel"} arrow>
+                  {/* <Tooltip title={"Click to Cancel"} arrow>
                     <div
                       className={`${style.reappointmentButtonOutlined}`}
                       onClick={() => { setAdditionalPrivilegeChangeYesOrNo(''); setIsAdditionalPrivilegeCategoryChanging(false); }}
                     >
                       CANCEL
                     </div>
-                  </Tooltip>
+                  </Tooltip> */}
                 </div>
               </div>
             )}
@@ -3950,6 +4010,7 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
        {/* <div className={`${style.cursorPointer}`} onClick={() => getIsOpen(false)}>
                 <div className={`${style.cancelButton} ${style.cancelButtonTextStyle}`}>Cancel</div>
               </div> */}
+              <Tooltip title="Click to Continue" arrow >
        <div
         className={`${style.reviewButtonStyle}
                  ${style.cursorPointer}
@@ -3971,14 +4032,17 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
               // handleSubmitAdditionalPrivilegeSet();
             }
           } else {
-            getIsOpen(false);
+            // getIsOpen(false);
+            sendEmail();
+            setEmailSendDialog(true);
           }
         }}
        >
        <div className={`${style.reviewButton}`}>
-        Continue
+        {showSelectedPrivilegeLocum ? "Send By Email" : "Continue" }
       </div>
        </div>
+       </Tooltip>
       </div>
      </div>
     </Dialog>
@@ -4279,6 +4343,43 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
                 <div>{currentPrivilegesCategory === 'Basic' ? getFields() : getFieldsAdditional()}</div>
               </div>
             </div>
+          </Dialog>
+          <Dialog
+            isOpen={emailSendDialog}
+            onClose={() => {setEmailSendDialog(false);getIsOpen(false);}}
+            className={`${style.eSignDialog1} ${style.eSignDialogBackground1}`}
+            canOutsideClickClose={false}
+            canEscapeKeyClose={false}
+            >
+            {/* <div className={style.spaceBetween}> */}
+            <div className={style.heading1}>
+              Locum {selectedTab === "ACTIVELOCUM" ? "Extension" : "Renewal"} Request has been sent
+            </div>
+            {/* <div className={style.displayInRow}>
+              <img
+                src={CrossPink}
+                alt="cross"
+                className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft} `}
+                onClick={() => {
+                  {setEmailSendDialog(false);getIsOpen(false);}
+                }}
+              />
+            </div> */}
+          {/* </div> */}
+          {/* <div className={`${style.actionButtons} ${style.marginTop10}`}>
+            <div
+                className={`${style.reviewButtonStyle} ${style.reviewButtonStyle} ${style.cursorPointer}`}
+
+              > */}
+              <Tooltip title="Click to Close" arrow>
+                <div className={`${style.reviewButtonStyle} ${style.marginLeft} ${style.marginTop30} ${style.cursorPointer}`}  
+                onClick={() => {
+                  {setEmailSendDialog(false);getIsOpen(false);}
+                }}>
+                  OKAY</div></Tooltip>
+              {/* </div>
+          
+          </div> */}
           </Dialog>
     {/* {
     isOpenAdd && (
