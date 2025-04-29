@@ -1413,12 +1413,24 @@ const StaffApplicationList = ({
     try {
       let response;
       if (applicationType === "LOCUM") {
-        response = await GET(`application-management-service/staff?status=ACTIVE&departmentSpecialties=${userDepartmentList}`);
-        console.log("LOCUM data", response?.data.staffs);
-        setTableData(response?.data?.staffs);
-        setTotalCount(response?.data?.numberOfElements);
-        console.log("LOCUM data length", response?.data?.numberOfElements);
-        return response?.data.staffs || [];
+        let role = workModeType === "Credentialing Committee User" ? "Staff Manager" : workModeType;
+        const shouldIncludeAssignee = showAssignee &&
+          (workModeType === "Department Head" ||
+            workModeType === "Chief Of Staff" ||
+            workModeType === "Credentialing Committee");
+        const assignedUserIdsParam = shouldIncludeAssignee ? `&assignedUserIds=${users?.id}` : "";
+        const departmentParam = selectedDepartment || selectedServiceArea ? `&departmentSpecialties=${selectedDepartment}%23${selectedServiceArea}` : "";
+        response = await GET(
+          `application-management-service/application/workflowUser?tab=${selectedTab}&sortBy=${sortValue}&sortByField=${sortField}&positionType=${applicationType}&limit=${limit}&offset=${page - 1}&role=${role}&searchText=${searchTermForTable}&applicationCreationType=${applicationType === "LOCUM" ? "REAPPOINTMENT" : applicationType}&isPaginationRequired=${limit === 9999 ? false : true}${departmentParam}${assignedUserIdsParam}`, { signal }
+        );
+        console.log("Application data", response?.data?.applications);
+        setSearchData(response?.data?.applications.map(item => ({
+          id: item.id,
+          name: `${formatFirstNameLastName(item?.applicant?.name?.firstName, item?.applicant?.name?.lastName)}` || " ",
+          desc: `${item?.basicDetails?.departmentSpecialty?.department} | ${item?.basicDetails?.applicant?.applicantType}`
+        })));
+        console.log("Application data length", response?.data?.numberOfElements);
+        return response?.data?.applications || [];
       } else {
         let role = workModeType === "Credentialing Committee User" ? "Staff Manager" : workModeType;
         // setIsLoadingImage(true);
@@ -1446,6 +1458,8 @@ const StaffApplicationList = ({
   const handleLimitChange = (newLimit) => {
     setLimit(newLimit);
   };
+
+  console.log("searchTermForTablesssssssssssssss",searchTermForTable)
 
   console.log("0000000000000000000000" + JSON.stringify(tableData));
 
@@ -1503,7 +1517,7 @@ const StaffApplicationList = ({
         typesWithoutFirst.map(async (type) => {
           try {
             const res = await GET(
-              `application-management-service/staff?status=ACTIVE&applicantTypeId=${type.id}&reappointmentStatus=SENT&reappointmentStatus=RE_SENT&applicationStatus=CREATED&applicationStatus=COMPLETED&applicationStatus=DECLINED`
+              `application-management-service/staff?status=ACTIVE&applicantTypeId=${type?.id}&reappointmentStatus=SENT&reappointmentStatus=RE_SENT&applicationStatus=CREATED&applicationStatus=COMPLETED&applicationStatus=DECLINED`
             );
             const count = res?.data?.numberOfElements || 0;
 
@@ -4868,8 +4882,8 @@ const StaffApplicationList = ({
                               ? rejectedHeaderValues
                               // :[];
 
-                              // : approvedHeaderValues;
-                              : applicantHeaderValues;
+                                // : approvedHeaderValues;
+                                : applicantHeaderValues;
   let tableSortValues =
     selectedTab === "level-1"
       ? applicantColSortValues
@@ -4969,7 +4983,7 @@ const StaffApplicationList = ({
                                 ? rejectedActionsData
                                 // :[];
 
-                                : applicantActionsData;
+                                  : applicantActionsData;
   // : applicantActionsData;
   let gridStyle =
     selectedTab === "level-1" && applicationType === "NEW"
@@ -5030,9 +5044,9 @@ const StaffApplicationList = ({
           <div>
             <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
               <>
-                {applicationType === "REAPPOINTMENT" || applicationType === "LOCUM" && (
+                {(applicationType === "REAPPOINTMENT" || applicationType === "LOCUM") && (
                   <div className={style.searchFieldAlignment}>
-                    <CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} isOnClickAvailable={true} onClickFunc={onClickViewAndVerifyLevel1Function} />
+                    <CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} isOnClickAvailable={true} onClickFunc={onClickViewAndVerifyLevel1Function} placeholder={applicationType === "LOCUM" ? 'Search By Locum Staff' : "Search Staff Reappointments to Process"} />
                   </div>
                 )}
                 {(!(applicationType === "REAPPOINTMENT" && ((workModeType === "Department Head") || (workModeType === "Credentialing Committee") || (workModeType === "Advisory Committee") || (workModeType === "Board"))) || !(applicationType === "LOCUM" && ((workModeType === "Department Head") || (workModeType === "Credentialing Committee") || (workModeType === "Advisory Committee") || (workModeType === "Board")))) ? (
@@ -5105,7 +5119,7 @@ const StaffApplicationList = ({
                   />
                 </div> */}
 
-                {((applicationType === "REAPPOINTMENT" || applicationType === "LOCUM" && ((workModeType === "Staff Manager") || (workModeType === "Department Head") || (workModeType === "Credentialing Committee")))) ? (
+                {/* {((applicationType === "REAPPOINTMENT" || applicationType === "LOCUM" && ((workModeType === "Staff Manager") || (workModeType === "Department Head") || (workModeType === "Credentialing Committee")))) ? (
                   <div className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
                     <div className={`${style.spaceBetween} ${style.marginLeftRight10}`}>
                       <div className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}>
@@ -5167,7 +5181,7 @@ const StaffApplicationList = ({
                       </div>
                     )}
                   </div>
-                ) : null}
+                ) : null} */}
 
                 {(applicationType === "REAPPOINTMENT" || applicationType === "LOCUM" && ((workModeType === "Staff Manager") || (workModeType === "Department Head") || (workModeType === "Credentialing Committee"))) ? (
                   <div className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
@@ -5471,7 +5485,7 @@ const StaffApplicationList = ({
                         setShowBulkApproveDialog(true);
                       }}
                     >
-                      <Tooltip title={selectedTab === "level-3" ? "Update CC Approval Status" : selectedTab === "level-4" ? "Update MAC Approval Status" : "Update BOD Approval Status"} arrow>
+                      <Tooltip title={((selectedTab === "level-3" && applicationType === "REAPPOINTMENT") || (selectedTab === "level-2" && applicationType === "LOCUM")) ? "Update CC Approval Status" : ((selectedTab === "level-4" && applicationType === "REAPPOINTMENT") || (selectedTab === "level-3" && applicationType === "LOCUM")) ? "Update MAC Approval Status" : "Update BOD Approval Status"} arrow>
                         <PeopleOutlinedIcon
                           sx={{
                             fontSize: 25,
@@ -5491,7 +5505,7 @@ const StaffApplicationList = ({
                         setShowCCDateDialog(true);
                       }}
                     >
-                      <Tooltip title={selectedTab === "level-3" ? "Designate CC Meeting Date" : selectedTab === "level-4" ? "MAC Approval Date" : "BOD Approval Date"} arrow>
+                      <Tooltip title={((selectedTab === "level-3" && applicationType === "REAPPOINTMENT") || (selectedTab === "level-2" && applicationType === "LOCUM")) ? "Designate CC Meeting Date" : ((selectedTab === "level-4" && applicationType === "REAPPOINTMENT") || (selectedTab === "level-3" && applicationType === "LOCUM")) ? "MAC Approval Date" : "BOD Approval Date"} arrow>
                         <EventAvailableOutlinedIcon
                           sx={{
                             fontSize: 25,

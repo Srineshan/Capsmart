@@ -900,27 +900,30 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
                   className={`${style.saveInProgress} ${style.marginTop} ${style.marginLeft}`}
                   onClick={() => window.location.reload()}
                 >
-                  CLEAR
+                  RESET
                 </div>
               </Tooltip>
-              <Tooltip title={selectedReappointmentStatus === "SENT" || selectedReappointmentStatus === "RE_SENT" ? "Click to Resend Reappointment Application" : "Click to Send Reappointment Application"} disableHoverListener={!(checkedIds?.length > 0)} arrow>
-                <div
-                  className={`${style.continue} ${style.marginTop} ${style.marginLeft}`}
-                  onClick={() => {
-                    if (isDataAvailable && checkedIds?.length > 0) {
-                      if (selectedReappointmentStatus === "SENT" || selectedReappointmentStatus === "RE_SENT") {
-                        reappointmentApplicationResendbulk();
-                      } else {
-                        reappointmentApplicationbulk();
+              {!(selectedReappointmentStatus === "NOT_SENT" && applicationCreationType === "LOCUM") && (
+                <Tooltip title={selectedReappointmentStatus === "SENT" || selectedReappointmentStatus === "RE_SENT" ? "Click to Resend Reappointment Application" : "Click to Send Reappointment Application"} disableHoverListener={!(checkedIds?.length > 0)} arrow>
+                  <div
+                    className={`${style.continue} ${style.marginTop} ${style.marginLeft}`}
+                    onClick={() => {
+                      if (isDataAvailable  && checkedIds?.length > 0) {
+                        if (selectedReappointmentStatus === "SENT" || selectedReappointmentStatus === "RE_SENT") {
+                          reappointmentApplicationResendbulk();
+                        } else {
+                          reappointmentApplicationbulk();
+                        }
                       }
-                    }
-                  }}
-                  disabled={!isDataAvailable && checkedIds?.length === 0 }
-                  style={{ opacity: isDataAvailable && checkedIds?.length > 0 ? 1 : 0.5 }}
-                >
-                  {(selectedReappointmentStatus === "SENT" || selectedReappointmentStatus === "RE_SENT") ? 'RESEND REAPPOINTMENT APPLICATION' : 'SEND REAPPOINTMENT APPLICATION'}
-                </div>
-              </Tooltip>
+                    }}
+                    disabled={!isDataAvailable  && checkedIds?.length === 0 }
+                    style={{ opacity: isDataAvailable && checkedIds?.length > 0 ? 1 : 0.5 }}
+
+                  >
+                    {(selectedReappointmentStatus === "SENT" || selectedReappointmentStatus === "RE_SENT" || applicationCreationType === "LOCUM") ? `RESEND ${applicationCreationType === "LOCUM" ? '' : 'REAPPOINTMENT'} APPLICATION` : 'SEND REAPPOINTMENT APPLICATION'}
+                  </div>
+                </Tooltip>
+              )}
             </div>
           </div>
         </div>

@@ -18,7 +18,7 @@
 /* Second Dialog */
 .eSignDialog1 {
   height: 75%;
-  width: 70% !important;
+  width: 50% !important;
   z-index: 1100 !important;
   position: relative;
 }
@@ -29,7 +29,7 @@
 
 .eSignDialogBackground1 {
   background: #ffffff 0% 0% no-repeat padding-box;
-  padding: 20px 40px 0px 40px;
+  padding: 20px 40px 20px 40px;
   border-radius: 20px !important;
   z-index: 1100 !important;
   position: relative;
@@ -68,6 +68,15 @@
   color: #06617A;
   text-transform: capitalize;
   opacity: 1;
+}
+
+.heading1 {
+  font: normal normal bold 24px proxima-nova;
+  letter-spacing: 0px;
+  color: #06617A;
+  // text-transform: capitalize;
+  opacity: 1;
+  text-align: center;
 }
 
 .displayInRow {
@@ -793,4 +802,17 @@
   grid-template-columns: 55% 40%;
   justify-items: center;
   margin-left: 30px;
+}
+
+.reviewButtonStyle {
+  background: $primarycolor 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 6px #00000029;
+  border-radius: 8px;
+  opacity: 1;
+  padding: 10px 20px;
+  color: #fff;
+  font: normal normal bold 15px/15px proxima-nova;
+  text-align: center;
+  width: fit-content;
+  align-self: center;
 }

@@ -630,7 +630,7 @@ const StaffApplicationTopTiles = (searchTermForTable) => {
     }
 
     // For Credentialing Committee, show only level-3 count
-    if (workModeType === "Credentialing Committee") {
+    if (workModeType === "Credentialing Committee" && applicationType === "REAPPOINTMENT") {
       return (parseInt(countsObj['level-3']) || 0) + clarifications;
     }
 

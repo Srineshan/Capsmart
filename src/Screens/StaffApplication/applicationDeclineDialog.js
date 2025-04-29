@@ -550,7 +550,13 @@ const ApplicationDecline = ({ getIsOpen, selectedTab, applicationType, getApplic
         <Dialog isOpen={getApplicationDeclineDialog} onClose={() => getApplicationDeclineDialog(false)} className={`${style.dialogStyle} ${style.dialogPaddingBottom}`}>
           <div className={`${style.eSignDialogBackground}`}>
             <div className={style.spaceBetween}>
-              <p className={style.heading1}>Staff Not Recommended for Reappointment</p>
+            <p className={style.heading1}>
+            {`Staff Not Recommended for ${
+              applicationType === "LOCUM"
+                ? `${formDetails?.reappointmentType === "EXTENSION" ? "Locum Extension" : "Locum Renewal"}`
+                : "Reappointment"
+            }`}
+          </p>
               <Icon icon="cross" size={20} className={style.crossStyle} onClick={() => getApplicationDeclineDialog(false)} />
             </div>
             <div>

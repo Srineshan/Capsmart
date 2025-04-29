@@ -358,7 +358,7 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
         assignedColor: color
       });
 
-      expirationDate.push(format(new Date(data?.expiryDate), 'MM/dd/yyyy'))
+      expirationDate.push(data?.priorCyclePeriod?.to ? format(new Date(data?.priorCyclePeriod?.to), 'MM/dd/yyyy') : '-')
 
       if (workflowStaffManagerRole) {
         const color = workflowStaffManagerRole?.approvalType === "VERIFIED_AND_ACCEPTED" ? "darkgreen"
@@ -439,24 +439,24 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
           status.push(`${lastApproval?.role}, ${formattedApprovalType}`);
         } else {
           if (data?.status === "DECLINED") {
-            status.push("Reappointment Application Declined");
+            status.push(`${applicationType === "LOCUM" ? '' : 'Reappointment'} Application Declined`);
           } else if (data?.formFillingStatus === "COMPLETED" && data?.status === "CREATED") {
-            status.push("Reappointment Application Not Submitted");
+            status.push(`${applicationType === "LOCUM" ? '' : 'Reappointment'} Application Not Submitted`);
           } else if (data?.formFillingStatus === "IN_PROGRESS") {
-            status.push("Reappointment Application In-Progress");
+            status.push(`${applicationType === "LOCUM" ? '' : 'Reappointment'} Application In-Progress`);
           } else {
             status.push("MSO Verification Not Started");
           }
         }
       } else {
         if (data?.status === "DECLINED") {
-          status.push("Reappointment Application Declined");
+          status.push(`${applicationType === "LOCUM" ? '' : 'Reappointment'} Application Declined`);
         } else if (data?.formFillingStatus === "COMPLETED" && data?.status === "CREATED") {
-          status.push("Reappointment Application Not Submitted");
+          status.push(`${applicationType === "LOCUM" ? '' : 'Reappointment'} Application Not Submitted`);
         } else if (data?.formFillingStatus === "IN_PROGRESS") {
-          status.push("Reappointment Application In-Progress");
+          status.push(`${applicationType === "LOCUM" ? '' : 'Reappointment'} Application In-Progress`);
         } else {
-          status.push("Reappointment Application Not Started");
+          status.push(`${applicationType === "LOCUM" ? '' : 'Reappointment'} Application Not Started`);
         }
       }
 
@@ -671,7 +671,7 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
                         searchCount={searchCount}
                         setSearchTermForTable={setSearchTermForTable}
                         onLimitChange={handleLimitChange}
-                        searchField={<CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} />}
+                        searchField={<CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} placeholder={applicationType === "LOCUM" ? 'Search Locum Staff' : 'Search Staff Reappointment'} />}
                       />
                     </div>
                   )}

@@ -72,6 +72,10 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
   }, [applicationType]);
 
   useEffect(() => {
+    getTitleCounts(applicationType);
+  }, [searchTermForTable, applicationType]);
+
+  useEffect(() => {
     if (userDetails !== undefined) {
       setUser(jwt(userDetails));
     }
@@ -156,10 +160,10 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
   }, [applicationType]);
 
   useEffect(() => {
-    if (applicationType === "LOCUM" || applicationType === "REAPPOINTMENT") {
+    if (applicationType === "LOCUM" || applicationType === "REAPPOINTMENT" || applicationType === "NEW") {
       setInitialTabSet(false);
     }
-  }, [applicationType]);
+  }, [applicationType,initialTabSet]);
 
   // Handle refetch metadata changes
   useEffect(() => {
@@ -270,7 +274,6 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
         // getSelectedTab(initialTab);
       } else if (workModeType === "Credentialing Committee" && applicationType === "NEW") {
         initialTab = "level-3";
-        // getSelectedTab(initialTab);
       }  else {
         initialTab = isManagerOrChief
           ? "level-1"
@@ -350,10 +353,16 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
         label: "Privilege Extensions to Review",
       }));
     }
-    else if (workModeType === "Credentialing Committee") {
+    else if (workModeType === "Credentialing Committee" && applicationType === "REAPPOINTMENT") {
       filteredArray = baseUserFlowArray.filter(tile => tile.level === 'level-3').map(tile => ({
         ...tile,
         label: "Reappointments To Review",
+      }));
+    }
+    else if (workModeType === "Credentialing Committee" && applicationType === "NEW") {
+      filteredArray = baseUserFlowArray.filter(tile => tile.level === 'level-3').map(tile => ({
+        ...tile,
+        label: "Applicants To Process",
       }));
     }
     else if (workModeType === "Credentialing Committee User") {

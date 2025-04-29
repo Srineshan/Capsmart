@@ -9,6 +9,7 @@ import PrintOutlinedIcon from "@mui/icons-material/PrintOutlined";
 import TextSnippetOutlinedIcon from "@mui/icons-material/TextSnippetOutlined";
 import NoteAltOutlinedIcon from "@mui/icons-material/NoteAltOutlined";
 import HapiCare from "./../../images/PoweredHapiCare.png";
+import Renewed from "./../../images/Renewed.png";
 import LocumStaffTiles from "./locumStaffTiles";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
@@ -47,7 +48,8 @@ const LocumStaffList = ({
   getLocumExtensiveReactiveDialog,
   getLocumExtensiveRequestDialog,
   getLocumExtensiveReactiveRequestDialog,
-  getNotesDialog
+  getNotesDialog,
+  showLocumExtensiveDialog
 
 }) => {
   const PDFRef = createRef();
@@ -83,14 +85,18 @@ const LocumStaffList = ({
     sessionStorage.getItem('applicationCreationType') || 'NEW'
   );
   const workModeType = sessionStorage.getItem("workModeType")
-  // const userDepartmentList;
+  const [userDepartmentList, setUserDepartmentList] = useState('');
+  const [searchCount, setSearchount] = useState(0);
+  const [selectedDepartment, setSelectedDepartment] = useState("");
+  const [selectedSpeciality, setSelectedSpeciality] = useState("");
+  // let userDepartmentList;
   let userSpecialty;
 
-  const activeLocumHeaderValues = ["Locum Staff", "OHIP Number", "Locum Type", "Notes", "Docs", "Start Date", "End Date", "Days to Expiration", ""];
-  const expiredLocumHeaderValues = ["Locum Staff", "OHIP Number", "Locum Type", "Notes", "Docs", "Last End Date", "Days Since Expired", ""];
+  const activeLocumHeaderValues = ["Locum Staff","", "Locum Type", "Notes", "Docs", "Start Date", "End Date", "Days to Expiration", ""];
+  const expiredLocumHeaderValues = ["Locum Staff", "Locum Type", "Notes", "Docs", "Last End Date", "Days Since Expired", ""];
 
 
-  const activeLocumColSortValues = [false, false, false, false, false, , false, false, false];
+  const activeLocumColSortValues = [false, false, false, false, false, , false, false, false, false];
   const expiredLocumColSortValues = [false, false, false, false, false, false, false, false, false, false];
 
   const [isPrintClicked, setIsPrintClicked] = useState(false);
@@ -108,7 +114,7 @@ const LocumStaffList = ({
   };
 
   useEffect(() => {
-    const userDepartmentList = userDetailsFetchOption?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.id;
+    // setUserDepartmentList (userDetailsFetchOption?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.id);
     userSpecialty = userDetailsFetchOption?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.serviceAreas?.[0]?.id;
     console.log("userSpecialty", userDepartmentList, userSpecialty)
     console.log("userDetailsFetchOption", userDetailsFetchOption);
@@ -120,6 +126,20 @@ const LocumStaffList = ({
   // }
 
   useEffect(() => {
+    if (searchTerm.trim() === "") {
+      setSearchData([]); // Clear results if input is empty
+      return;
+    }
+
+    const controller = new AbortController(); // Create an AbortController instance
+    const signal = controller.signal;
+
+    getActiveUserDataSearch(signal); // Call API function with signal
+
+    return () => controller.abort(); // Cleanup: Cancel previous request if a new one starts
+  }, [searchTerm, selectedTab]);
+
+  useEffect(() => {
     setUserDetails();
   }, [users?.id])
 
@@ -127,6 +147,8 @@ const LocumStaffList = ({
     const { data: userData } = await GET(`user-management-service/user/${users?.id}`);
     console.log("userdataaaa" + JSON.stringify(userData))
     sessionStorage.setItem('user', JSON.stringify(userData))
+    setUserDepartmentList(userData?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.id)
+    console.log("setUserDetails",userDepartmentList)
   }
 
   const onClickViewAndVerifyFunction = (data) => {
@@ -153,11 +175,13 @@ const LocumStaffList = ({
 
   useEffect(() => {
     getActiveUserData(selectedTab);
-  }, [selectedTab, sortField, sortValue, page, totalCount]);
+  }, [selectedTab, sortField, sortValue, page, totalCount,showLocumExtensiveDialog,searchTermForTable]);
 
   const getReFetchMetaData = (value) => {
     setReFetchMetaData(value);
   };
+
+  console.log("searchTermForTable",searchTermForTable)
 
   const getSelectedPage = (value) => {
     setPage(value);
@@ -204,26 +228,35 @@ const LocumStaffList = ({
 
   console.log("tabbbbbbbbbbbbbbb", selectedTab, totalCount)
 
-  useEffect(() => {
+   useEffect(() => {
+    setSelectedDepartment(userDetailsFetchOption?.sites?.sites[0]?.departmentList?.departments[0]?.id);
+    // setSelectedSpeciality(formDetails?.basicDetailReferences?.specialty?.id);
     getActiveUserDataActiveCount();
     getActiveUserDataExpireCount();
-  }, [selectedTab]);
+    console.log("setSelectedDepartment",selectedDepartment)
+   }, [selectedDepartment,searchTermForTable]);
+
+  // useEffect(() => {
+  //   getActiveUserDataActiveCount();
+  //   getActiveUserDataExpireCount();
+  // }, [selectedDepartment]);
 
   const getActiveUserDataActiveCount = async () => {
     try {
-      const userDepartmentList =
+      const userDepartmentListData =
         userDetailsFetchOption?.sites?.sites[0]?.departmentList?.departments[0]?.id;
 
-      let apiUrl = `application-management-service/staff?status=ACTIVE&type=LOCUM&noOfDays=30&isExpired=false`;
+      let apiUrl = `application-management-service/staff?status=ACTIVE&type=LOCUM&noOfDays=30&isExpired=false&searchText=${searchTermForTable}`;
 
-      if (userDepartmentList) {
-        apiUrl += `&departmentSpecialties=${userDepartmentList}`;
+      if (userDepartmentListData) {
+        apiUrl += `&departmentSpecialties=${userDepartmentListData}`;
       }
 
       const response = await GET(apiUrl);
 
       console.log("Application data", response?.data?.staffs);
       setTotalCount(response?.data?.numberOfElements);
+      console.log("setTotalCount",response?.data?.numberOfElements)
       return response?.data || [];
     } catch (error) {
       console.error("Error fetching applications:", error);
@@ -233,13 +266,13 @@ const LocumStaffList = ({
 
   const getActiveUserDataExpireCount = async () => {
     try {
-      const userDepartmentList =
+      const userDepartmentListData =
         userDetailsFetchOption?.sites?.sites[0]?.departmentList?.departments[0]?.id;
 
-      let apiUrl = `application-management-service/staff?status=ACTIVE&type=LOCUM&noOfDays=30&isExpired=true`;
+      let apiUrl = `application-management-service/staff?status=ACTIVE&type=LOCUM&noOfDays=30&isExpired=true&searchText=${searchTermForTable}`;
 
-      if (userDepartmentList) {
-        apiUrl += `&departmentSpecialties=${userDepartmentList}`;
+      if (userDepartmentListData) {
+        apiUrl += `&departmentSpecialties=${userDepartmentListData}`;
       }
 
       const response = await GET(apiUrl);
@@ -253,21 +286,56 @@ const LocumStaffList = ({
     }
   };
 
-  const getActiveUserData = async () => {
+  const getActiveUserDataSearch = async (signal) => {
     try {
-      const userDepartmentList =
+      const userDepartmentListData =
         userDetailsFetchOption?.sites?.sites[0]?.departmentList?.departments[0]?.id;
 
-      let apiUrl = `application-management-service/staff?status=ACTIVE&type=LOCUM&noOfDays=30&isExpired=${selectedTab === "ACTIVELOCUM" ? false : true}`;
+      let apiUrl = `application-management-service/staff?status=ACTIVE&type=LOCUM&noOfDays=30&isExpired=${selectedTab === "ACTIVELOCUM" ? false : true}&searchText=${searchTermForTable}`;
 
-      if (userDepartmentList) {
-        apiUrl += `&departmentSpecialties=${userDepartmentList}`;
+      if (selectedDepartment) {
+        apiUrl += `&departmentSpecialties=${selectedDepartment}`;
+      }
+
+      const response = await GET(apiUrl, { signal });
+
+      console.log("Application data", response?.data?.staffs);
+      // setTableData(response?.data?.staffs);
+      // setSearchount(response?.data?.numberOfElements)
+      setSearchData(response?.data?.staffs.map(item => ({
+        id: item.id,
+        name: `${formatFirstNameLastName(item?.applicant?.name?.firstName, item?.applicant?.name?.lastName)}` || " ",
+        desc: `${item?.basicDetailReferences?.department?.name} | ${item?.basicDetailReferences?.applicantType?.serviceProviderType}`
+      })));
+      // setTotalCount(response?.data?.numberOfElements);
+      return response?.data?.staffs || [];
+    } catch (error) {
+      console.error("Error fetching applications:", error);
+      return [];
+    }
+  };
+
+  const getActiveUserData = async () => {
+    try {
+      const userDepartmentListData =
+        userDetailsFetchOption?.sites?.sites[0]?.departmentList?.departments[0]?.id;
+
+      let apiUrl = `application-management-service/staff?status=ACTIVE&type=LOCUM&noOfDays=30&isExpired=${selectedTab === "ACTIVELOCUM" ? false : true}&searchText=${searchTermForTable}`;
+
+      if (selectedDepartment) {
+        apiUrl += `&departmentSpecialties=${selectedDepartment}`;
       }
 
       const response = await GET(apiUrl);
 
       console.log("Application data", response?.data?.staffs);
       setTableData(response?.data?.staffs);
+      setSearchount(response?.data?.numberOfElements)
+      // setSearchData(response?.data?.staffs.map(item => ({
+      //   id: item.id,
+      //   name: `${formatFirstNameLastName(item?.applicant?.name?.firstName, item?.applicant?.name?.lastName)}` || " ",
+      //   desc: `${item?.basicDetailReferences?.department?.name} | ${item?.basicDetailReferences?.applicantType?.serviceProviderType}`
+      // })));
       // setTotalCount(response?.data?.numberOfElements);
       return response?.data || [];
     } catch (error) {
@@ -388,6 +456,8 @@ const LocumStaffList = ({
   let ExpiredDays = [];
   let startDate = [];
   let endDate = [];
+  let icon = [];
+  let reappointDate = [];
 
   const getLocumActiveValues = () => {
     dot = [];
@@ -413,11 +483,26 @@ const LocumStaffList = ({
     ExpiredDays = [];
     startDate = [];
     endDate = [];
+    icon = [];
+    reappointDate = [];
 
     tableData?.map((data) => {
       applicantName.push(
         `${formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName)}` || " "
       );
+      if (data?.reAppointmentInitiated === true) {
+        icon.push(
+          <img src={Renewed} alt="Renewed Icon" style={{ width: 20, height: 20 }} />
+        );
+      } else {
+        icon.push("");
+      }
+
+      reappointDate.push([
+        data?.reAppointmentInitiated 
+          ?` Locum Extension Request Sent on ${format(new Date(data?.reAppointmentSentDate), "dd/MM/yyyy")}`
+          : "Locum Extension Not Sent",
+      ]);
       applicantId.push(data?.staffId || "123");
 
       applicantType.push(data?.basicDetailReferences?.applicantType?.serviceProviderType || "Doctor");
@@ -435,14 +520,21 @@ const LocumStaffList = ({
         "Lorem ipsum dolor sit amet, consetetur sadipscing.",
       ]);
       startDate.push(
-        format(new Date(data?.tenure?.from), "MM/dd/yyyy")
+        data?.tenure?.from
+          ? format(new Date(data.tenure.from), "MM/dd/yyyy")
+          : "-"
       );
       endDate.push(
-        format(new Date(data?.tenure?.to), "MM/dd/yyyy")
+        data?.tenure?.to ? format(new Date(data?.tenure?.to), "MM/dd/yyyy") : "-"
       );
       lastUpdatedBy.push(["-"]);
-      const expiredDays = differenceInDays(new Date(data?.tenure?.to), new Date());
-      ExpiredDays.push(expiredDays.toString());
+
+      if (data?.tenure?.to) {
+        const expiredDays = differenceInDays(new Date(data.tenure.to), new Date());
+        ExpiredDays.push(expiredDays.toString());
+      } else {
+        ExpiredDays.push("-");
+      }
 
       action.push(true);
 
@@ -452,7 +544,14 @@ const LocumStaffList = ({
     return [
       // { type: "dot", value: dot, tooltipValue: dotTooltipValues },
       { type: "text", value: applicantName },
-      { type: "text", value: applicantId },
+      {
+        type: "iconWithCount",
+        icon: icon,
+        // value: reappointValue,
+        hoverText: reappointDate,
+        isShowHoverText: true,
+      },
+      // { type: "text", value: applicantId },
       { type: "text", value: applicantType },
       // { type: "text", value: department },
       {
@@ -551,7 +650,7 @@ const LocumStaffList = ({
     return [
       // { type: "dot", value: dot },
       { type: "text", value: applicantName },
-      { type: "text", value: applicantId },
+      // { type: "text", value: applicantId },
       { type: "text", value: applicantType },
       {
         type: "iconWithCount",
@@ -680,7 +779,7 @@ const LocumStaffList = ({
         <div>
           <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
             <div className={style.searchFieldAlignment}>
-              <CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} />
+              <CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} isOnClickAvailable={true} placeholder={'Search By Locum Staff'}/>
             </div>
             <div className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
               <div className={`${style.spaceBetween} ${style.marginLeftRight10}`}>
@@ -797,17 +896,6 @@ const LocumStaffList = ({
             />
 
             <div className={`${style.spaceBetween} ${style.marginLeft} `}>
-              <div
-                className={`${isPrintClicked && style.addStyle} ${style.alignCenter
-                  } ${style.cursorPointer} ${style.marginRight20}`}
-              >
-                <SearchOutlinedIcon
-                  sx={{
-                    fontSize: isPrintClicked ? 20 : 25,
-                    color: isPrintClicked ? "#fff" : "#06617A",
-                  }}
-                />
-              </div>
               <Tooltip title="Fill Historical Data" arrow>
                 <div
                   className={`${style.alignCenter
@@ -859,6 +947,9 @@ const LocumStaffList = ({
                     getSelectedPage={getSelectedPage}
                     totalCount={totalCount}
                     page={page}
+                    searchTermForTable={searchTermForTable}
+                    searchCount={searchCount}
+                    setSearchTermForTable={setSearchTermForTable}
                   />
                 </div>
               </div>

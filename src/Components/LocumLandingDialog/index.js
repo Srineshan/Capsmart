@@ -309,7 +309,7 @@ const LocumLandingDialog = ({ getIsOpen, days }) => {
                   <span style={{ marginLeft: '20px' }}>Your Locum {basicForm?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'} Application</span>
                 </div>
                 <div className={`${style.descriptionStyle} ${style.marginTop10}`}>
-                  {`Locum Term for your current Privileges is expiring on ${format(new Date(basicForm?.expiryDate || null), 'MMM dd, yyyy')}. Your department would like to extend your privileges for a new term ${format(new Date(basicForm?.cyclePeriod?.from || null), 'MMM dd, yyyy')} to ${format(new Date(basicForm?.cyclePeriod?.to || null), 'MMM dd, yyyy')}.`}
+                  {`Locum Term for your current Privileges is expiring on ${basicForm?.priorCyclePeriod?.to ? format(new Date(basicForm?.priorCyclePeriod?.to || null), 'MMM dd, yyyy') : '-'}. Your department would like to extend your privileges for a new term ${format(new Date(basicForm?.cyclePeriod?.from || null), 'MMM dd, yyyy')} to ${format(new Date(basicForm?.cyclePeriod?.to || null), 'MMM dd, yyyy')}.`}
                 </div>
                 {/* <div className={`${style.descriptionStyle} ${style.marginTop10}`}>
                   Processing of your Reappointment Application will now be a less burdensome activity.

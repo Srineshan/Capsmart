@@ -4241,7 +4241,7 @@ const NewActiveApplication = ({
                         className={`${style.privilegeContentChangeCard} ${style.marginTop10}`}
                       >
                         <div className={style.privilegeHeadingReappointment}>
-                          Change for Reappointment
+                          Change for {applicationType === "LOCUM" ? `Locum ${form?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'}` : 'Reappointment'}
                         </div>
                         <div className={style.privilegeHeading}>
                           {privilegeChangeYesOrNo === "Yes" ? (
@@ -4278,7 +4278,7 @@ const NewActiveApplication = ({
                         className={`${style.privilegeContentChangeCard} ${style.marginTop10}`}
                       >
                         <div className={style.privilegeHeadingReappointment}>
-                          Change for Reappointment
+                          Change for {applicationType === "LOCUM" ? `Locum ${form?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'}` : 'Reappointment'}
                         </div>
                         <div className={style.privilegeHeading}>
                           {form?.forms?.[formIndex]?.data?.departmentChangeYesOrNo === "No" ? (
@@ -4351,7 +4351,7 @@ const NewActiveApplication = ({
                             className={`${style.privilegeContentChangeCard} ${style.marginTop10}`}
                           >
                             <div className={`${style.privilegeHeadingReappointment}`}>
-                              Change for Reappointment
+                              Change for {applicationType === "LOCUM" ? `Locum ${form?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'}` : 'Reappointment'}
                             </div>
                             {privilegeSetChangeYesOrNo === "Yes" ? (
                               <>
@@ -4430,7 +4430,7 @@ const NewActiveApplication = ({
                         </div>
                         {form?.forms?.[formIndex]?.data?.additionalPrivilegeChangeYesOrNo !== '' && form?.forms?.[formIndex]?.data?.additionalPrivilegeChangeYesOrNo !== undefined && (
                           <div className={`${style.privilegeContentChangeCard} ${style.marginTop10}`}>
-                            <div className={`${style.privilegeHeadingReappointment}`}>{additionalPrivilegeChangeYesOrNo === 'No' ? 'Privileges Requested' : 'Change for Reappointment'}</div>
+                            <div className={`${style.privilegeHeadingReappointment}`}>{additionalPrivilegeChangeYesOrNo === 'No' ? 'Privileges Requested' : `Change for ${applicationType === "LOCUM" ? `Locum ${form?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'}` : 'Reappointment'}`}</div>
                             {additionalPrivilegeChangeYesOrNo === 'No' ? (
                               <div className={`${style.privilegeHeading}`}>None</div>
                             ) : (
@@ -4477,7 +4477,7 @@ const NewActiveApplication = ({
                             className={`${style.privilegeContentChangeCard} ${style.marginTop10}`}
                           >
                             <div className={style.privilegeHeadingReappointment}>
-                              Change for Reappointment
+                              Change for {applicationType === "LOCUM" ? `Locum ${form?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'}` : 'Reappointment'}
                             </div>
                             <div className={style.privilegeHeading}>
                               <div>
@@ -4542,7 +4542,7 @@ const NewActiveApplication = ({
               selectedPrivilegeForDisplay?.privilegeDetails?.corePrivileges) && (
                 <>
                   <div className={`${style.cardTitle} ${style.marginTop30}`}>
-                    Requested Privilege Sets for Reappointment
+                    Requested Privilege Sets for {applicationType === "LOCUM" ? `Application ${form?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'}` : 'Reappointment'}
                   </div>
                   <div className={`${style.borderStyleTiles}`}></div>
                 </>
@@ -4991,7 +4991,7 @@ const NewActiveApplication = ({
         closeClick={onClose}
       /> */}
         <ApplicationHeader
-          title={`${form?.creationType === "NEW" ? "New Application For" : "Reappointment Application For"} ${form?.basicDetails?.applicant?.name?.firstName !== undefined &&
+          title={`${form?.creationType === "NEW" ? "New Application For" : applicationType === "LOCUM" ? `Locum Application ${form?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'} For` : "Reappointment Application For"} ${form?.basicDetails?.applicant?.name?.firstName !== undefined &&
             form?.basicDetails?.applicant?.name?.lastName !== undefined
             ? formatFirstNameLastName(
               form?.basicDetails?.applicant?.name?.firstName,
@@ -5022,7 +5022,7 @@ const NewActiveApplication = ({
               {(workModeType === 'Staff Manager') || (workModeType === 'Chief Of Staff') || (workModeType === 'Credentialing Committee') || (workModeType === 'Credentialing Committee User') || (workModeType === 'Department Head') ? (
                 <>
                   <div>
-                    {(selectedTab === "level-1" && applicationType === "REAPPOINTMENT") ? (
+                    {((selectedTab === "level-1" && applicationType === "REAPPOINTMENT") || (selectedTab === "level-1" && applicationType === "LOCUM")) ? (
                       <div className={style.grid5and2}>
                         <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth}`}>
                           <div className={style.flex}>
@@ -5139,11 +5139,13 @@ const NewActiveApplication = ({
                           <div className={style.greyDotTextStyle}>
                             Application Payment Status
                           </div>
+                          {applicationType !== "LOCUM" && (
                           <div className={style.cursorPointer}> Transaction ID:{" "}
-                            <Tooltip title="Click to View Transaction Details" arrow>
-                              <span className={`${style.marginTop10} ${style.paymentIDStyle}`} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(form?.payment?.invoice) }}>{form?.payment?.receiptId || "-"}</span>
-                            </Tooltip>
+                          <Tooltip title="Click to View Transaction Details" arrow>
+                            <span className={`${style.marginTop10} ${style.paymentIDStyle}`} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(form?.payment?.invoice) }}>{form?.payment?.receiptId || "-"}</span>
+                          </Tooltip>
                           </div>
+                          )}
                         </div>
                         <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.statusCardHeight} ${style.displayInCol}`}>
                           <div className={`${statusStyle} ${style.marginCenter}`}></div>
@@ -5290,7 +5292,7 @@ const NewActiveApplication = ({
                                   className={`${style.displayInRow} ${style.verticalAlignCenter} `}
                                 >
                                   <div className={`${style.tableHeaderTextStyle} ${style.marginLeft20}`}>
-                                    Required Reappointment data and Proof of Documentation for July 1, 2025 and June 30, 2026
+                                    Required {applicationType === "LOCUM" ? `Application ${form?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'}` : 'Reappointment'} data and Proof of Documentation for July 1, 2025 and June 30, 2026
                                   </div>
                                 </div>
                               </div>
@@ -5311,7 +5313,7 @@ const NewActiveApplication = ({
                                     className={`${style.displayInRow} ${style.verticalAlignCenter} `}
                                   >
                                     <div className={`${style.tableHeaderTextStyle}`}>
-                                      Required Reappointment data and Proof of Documentation for July 1, 2025 and June 30, 2026
+                                      Required {applicationType === "LOCUM" ? `Application ${form?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'}` : 'Reappointment'} data and Proof of Documentation for July 1, 2025 and June 30, 2026
                                     </div>
                                   </div>
                                   <div
@@ -6812,7 +6814,7 @@ const NewActiveApplication = ({
                             <div className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderGridStyleCred1} `}>
 
                               <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                                <div className={`${style.tableHeaderTextStyleCred}`}> Required Reappointment data and Proof of Documentation for July 1, 2025 and June 30, 2026 </div>
+                                <div className={`${style.tableHeaderTextStyleCred}`}> Required {applicationType === "LOCUM" ? `Application ${form?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'}` : 'Reappointment'} data and Proof of Documentation for July 1, 2025 and June 30, 2026 </div>
                               </div>
 
                             </div>
@@ -7868,7 +7870,7 @@ const NewActiveApplication = ({
                                 className={`${style.displayInRow} ${style.verticalAlignCenter} `}
                               >
                                 <div className={`${style.tableHeaderTextStyle}`}>
-                                  Required Reappointment data and Proof of Documentation for July 1, 2025 and June 30, 2026
+                                  Required {applicationType === "LOCUM" ? `Application ${form?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'}` : 'Reappointment'} data and Proof of Documentation for July 1, 2025 and June 30, 2026
                                 </div>
                               </div>
                               <div
@@ -8856,7 +8858,7 @@ const NewActiveApplication = ({
                             <div className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderGridStyleCred1} `}>
 
                               <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                                <div className={`${style.tableHeaderTextStyleCred}`}> Required Reappointment data and Proof of Documentation for July 1, 2025 and June 30, 2026 </div>
+                                <div className={`${style.tableHeaderTextStyleCred}`}> Required {applicationType === "LOCUM" ? `Application ${form?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'}` : 'Reappointment'} data and Proof of Documentation for July 1, 2025 and June 30, 2026 </div>
                               </div>
 
                             </div>
@@ -9469,7 +9471,7 @@ const NewActiveApplication = ({
                               className={`${style.displayInRow} ${style.verticalAlignCenter} `}
                             >
                               <div className={`${style.tableHeaderTextStyle}`}>
-                                Required Reappointment data and Proof of Documentation for July 1, 2025 and June 30, 2026
+                                Required {applicationType === "LOCUM" ? `Application ${form?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'}` : 'Reappointment'} data and Proof of Documentation for July 1, 2025 and June 30, 2026
                               </div>
                             </div>
                             <div
@@ -12929,6 +12931,7 @@ const NewActiveApplication = ({
                 getApplicationDeclineDialog={getApplicationDeclineDialog}
                 getActiveApplicationView={getActiveApplicationView}
                 selectedTab={selectedTab}
+                applicationType={applicationType}
               />
             )
           }

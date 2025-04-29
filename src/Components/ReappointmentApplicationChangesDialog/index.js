@@ -114,7 +114,7 @@ const ReappointmentChangesDialog = ({ getIsOpen, getActiveApplicationView, selec
             <div className={Classes.DIALOG_BODY}>
               <div className={style.spaceBetween}>
                 <div className={`${style.heading}`}>
-                  Reappointment Application Data & Document Verification
+                  {applicationType === "LOCUM" ? `Locum ${formDetails?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'}` : 'Reappointment'} Application Data & Document Verification
                 </div>
 
                 <div className={style.displayInRow}>
@@ -217,7 +217,7 @@ const ReappointmentChangesDialog = ({ getIsOpen, getActiveApplicationView, selec
                  Reappointment Application has updates and changes that require verification:
                 </div> */}
                     <div className={style.commentsNotesHeadingFontStyle}>
-                      Reappointment Application has been submitted with all required documents for processing.
+                      {applicationType === "LOCUM" ? `Locum ${formDetails?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'}` : 'Reappointment'} Application has been submitted with all required documents for processing.
                     </div>
                     {/* <div>
                     {formDetails?.formSchemas?.map((item, index) => (
