@@ -134,7 +134,9 @@ const LocumStaffList = ({
     const controller = new AbortController(); // Create an AbortController instance
     const signal = controller.signal;
 
-    getActiveUserDataSearch(signal); // Call API function with signal
+    // getActiveUserDataSearch(signal); // Call API function with signal
+    console.log("Triggering search with:", searchTerm, selectedTab);
+    getActiveUserDataSearch(signal, searchTerm);
 
     return () => controller.abort(); // Cleanup: Cancel previous request if a new one starts
   }, [searchTerm, selectedTab]);
@@ -233,6 +235,7 @@ const LocumStaffList = ({
     // setSelectedSpeciality(formDetails?.basicDetailReferences?.specialty?.id);
     getActiveUserDataActiveCount();
     getActiveUserDataExpireCount();
+    // getActiveUserDataSearch();
     console.log("setSelectedDepartment",selectedDepartment)
    }, [selectedDepartment,searchTermForTable]);
 
@@ -291,7 +294,7 @@ const LocumStaffList = ({
       const userDepartmentListData =
         userDetailsFetchOption?.sites?.sites[0]?.departmentList?.departments[0]?.id;
 
-      let apiUrl = `application-management-service/staff?status=ACTIVE&type=LOCUM&noOfDays=30&isExpired=${selectedTab === "ACTIVELOCUM" ? false : true}&searchText=${searchTermForTable}`;
+      let apiUrl = `application-management-service/staff?status=ACTIVE&type=LOCUM&noOfDays=30&isExpired=${selectedTab === "ACTIVELOCUM" ? false : true}&searchText=${searchTerm}`;
 
       if (selectedDepartment) {
         apiUrl += `&departmentSpecialties=${selectedDepartment}`;
