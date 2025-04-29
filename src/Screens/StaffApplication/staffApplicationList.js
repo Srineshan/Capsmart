@@ -4868,8 +4868,8 @@ const StaffApplicationList = ({
                               ? rejectedHeaderValues
                               // :[];
 
-                              // : approvedHeaderValues;
-                              : applicantHeaderValues;
+                                // : approvedHeaderValues;
+                                : applicantHeaderValues;
   let tableSortValues =
     selectedTab === "level-1"
       ? applicantColSortValues
@@ -4969,7 +4969,7 @@ const StaffApplicationList = ({
                                 ? rejectedActionsData
                                 // :[];
 
-                                : applicantActionsData;
+                                  : applicantActionsData;
   // : applicantActionsData;
   let gridStyle =
     selectedTab === "level-1" && applicationType === "NEW"
@@ -5105,7 +5105,7 @@ const StaffApplicationList = ({
                   />
                 </div> */}
 
-                {((applicationType === "REAPPOINTMENT" || applicationType === "LOCUM" && ((workModeType === "Staff Manager") || (workModeType === "Department Head") || (workModeType === "Credentialing Committee")))) ? (
+                {/* {((applicationType === "REAPPOINTMENT" || applicationType === "LOCUM" && ((workModeType === "Staff Manager") || (workModeType === "Department Head") || (workModeType === "Credentialing Committee")))) ? (
                   <div className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
                     <div className={`${style.spaceBetween} ${style.marginLeftRight10}`}>
                       <div className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}>
@@ -5167,7 +5167,7 @@ const StaffApplicationList = ({
                       </div>
                     )}
                   </div>
-                ) : null}
+                ) : null} */}
 
                 {(applicationType === "REAPPOINTMENT" || applicationType === "LOCUM" && ((workModeType === "Staff Manager") || (workModeType === "Department Head") || (workModeType === "Credentialing Committee"))) ? (
                   <div className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
