@@ -92,7 +92,7 @@ const LocumStaffList = ({
   // let userDepartmentList;
   let userSpecialty;
 
-  const activeLocumHeaderValues = ["Locum Staff","", "Locum Type", "Notes", "Docs", "Start Date", "End Date", "Days to Expiration", ""];
+  const activeLocumHeaderValues = ["Locum Staff", "", "Locum Type", "Notes", "Docs", "Start Date", "End Date", "Days to Expiration", ""];
   const expiredLocumHeaderValues = ["Locum Staff", "Locum Type", "Notes", "Docs", "Last End Date", "Days Since Expired", ""];
 
 
@@ -148,7 +148,7 @@ const LocumStaffList = ({
     console.log("userdataaaa" + JSON.stringify(userData))
     sessionStorage.setItem('user', JSON.stringify(userData))
     setUserDepartmentList(userData?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.id)
-    console.log("setUserDetails",userDepartmentList)
+    console.log("setUserDetails", userDepartmentList)
   }
 
   const onClickViewAndVerifyFunction = (data) => {
@@ -175,13 +175,13 @@ const LocumStaffList = ({
 
   useEffect(() => {
     getActiveUserData(selectedTab);
-  }, [selectedTab, sortField, sortValue, page, totalCount,showLocumExtensiveDialog,searchTermForTable]);
+  }, [selectedTab, sortField, sortValue, page, totalCount, showLocumExtensiveDialog, searchTermForTable]);
 
   const getReFetchMetaData = (value) => {
     setReFetchMetaData(value);
   };
 
-  console.log("searchTermForTable",searchTermForTable)
+  console.log("searchTermForTable", searchTermForTable)
 
   const getSelectedPage = (value) => {
     setPage(value);
@@ -228,13 +228,13 @@ const LocumStaffList = ({
 
   console.log("tabbbbbbbbbbbbbbb", selectedTab, totalCount)
 
-   useEffect(() => {
+  useEffect(() => {
     setSelectedDepartment(userDetailsFetchOption?.sites?.sites[0]?.departmentList?.departments[0]?.id);
     // setSelectedSpeciality(formDetails?.basicDetailReferences?.specialty?.id);
     getActiveUserDataActiveCount();
     getActiveUserDataExpireCount();
-    console.log("setSelectedDepartment",selectedDepartment)
-   }, [selectedDepartment,searchTermForTable]);
+    console.log("setSelectedDepartment", selectedDepartment)
+  }, [selectedDepartment, searchTermForTable]);
 
   // useEffect(() => {
   //   getActiveUserDataActiveCount();
@@ -256,7 +256,7 @@ const LocumStaffList = ({
 
       console.log("Application data", response?.data?.staffs);
       setTotalCount(response?.data?.numberOfElements);
-      console.log("setTotalCount",response?.data?.numberOfElements)
+      console.log("setTotalCount", response?.data?.numberOfElements)
       return response?.data || [];
     } catch (error) {
       console.error("Error fetching applications:", error);
@@ -499,8 +499,8 @@ const LocumStaffList = ({
       }
 
       reappointDate.push([
-        data?.reAppointmentInitiated 
-          ?` Locum Extension Request Sent on ${format(new Date(data?.reAppointmentSentDate), "dd/MM/yyyy")}`
+        data?.reAppointmentInitiated
+          ? ` Locum Extension Request Sent on ${format(new Date(data?.reAppointmentSentDate), "dd/MM/yyyy")}`
           : "Locum Extension Not Sent",
       ]);
       applicantId.push(data?.staffId || "123");
@@ -521,16 +521,16 @@ const LocumStaffList = ({
       ]);
       startDate.push(
         data?.tenure?.from
-          ? format(new Date(data.tenure.from), "MM/dd/yyyy")
+          ? format(new Date(data?.tenure?.from), "dd/MM/yyyy")
           : "-"
       );
       endDate.push(
-        data?.tenure?.to ? format(new Date(data?.tenure?.to), "MM/dd/yyyy") : "-"
+        data?.tenure?.to ? format(new Date(data?.tenure?.to), "dd/MM/yyyy") : "-"
       );
       lastUpdatedBy.push(["-"]);
 
       if (data?.tenure?.to) {
-        const expiredDays = differenceInDays(new Date(data.tenure.to), new Date());
+        const expiredDays = differenceInDays(new Date(data?.tenure?.to), new Date());
         ExpiredDays.push(expiredDays.toString());
       } else {
         ExpiredDays.push("-");
@@ -779,7 +779,7 @@ const LocumStaffList = ({
         <div>
           <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
             <div className={style.searchFieldAlignment}>
-              <CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} isOnClickAvailable={true} placeholder={'Search By Locum Staff'}/>
+              <CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} isOnClickAvailable={true} placeholder={'Search By Locum Staff'} />
             </div>
             <div className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
               <div className={`${style.spaceBetween} ${style.marginLeftRight10}`}>
