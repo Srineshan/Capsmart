@@ -4998,7 +4998,7 @@ const NewActiveApplication = ({
               form?.basicDetails?.applicant?.name?.lastName
             )
             : "{First Name} {Last Name}"
-            }, ${form?.basicDetails?.applicant?.applicantType !== undefined
+            } ${applicationType === "LOCUM" ? "Locum" : ""} ${form?.basicDetails?.applicant?.applicantType !== undefined
               ? form?.basicDetails?.applicant?.applicantType
               : "{Applicant Type}"
             }`}
@@ -5184,12 +5184,12 @@ const NewActiveApplication = ({
                                         form?.basicDetails?.applicant?.name?.lastName
                                       )
                                       : "{First Name} {Last Name}"
-                                  },{" "}
+                                  }{" "}
                                   {/* {form?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{","} */}
                                 </span>
                                 <span className={`${style.cardTextNormalStyle}`}>
                                   {/* {form?.displayId || ""} */}
-                                  {form?.basicDetailReferences?.applicantType?.serviceProviderType || ""}
+                                  {applicationType === "LOCUM" ? "Locum":""} {form?.basicDetailReferences?.applicantType?.serviceProviderType || ""}
                                 </span>
                               </div>
                               <div className={`${style.marginTop10} ${style.twoColumnGridInner2}`}>

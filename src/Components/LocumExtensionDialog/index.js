@@ -13,7 +13,7 @@ import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import Cookie from "universal-cookie";
 import jwt from "jwt-decode";
 import style from "./index.module.scss";
-import { format, differenceInDays ,addDays, addMonths, subDays, parseISO, addYears} from "date-fns";
+import { format, differenceInDays ,addDays, addMonths, subDays, parseISO, addYears,isValid } from "date-fns";
 import { fileLoadingURL } from "../../utils/formatting";
 import LoadingScreen from "../LoadingScreen";
 import CommonCheckBox from "../CommonFields/CommonCheckBox";
@@ -2581,6 +2581,56 @@ const handleKeepYourPrivilegeNo = () => {
   getIsOpen(false);
  };
 
+ const getMonthOrDays = (startDateStr, endDateStr) => {
+  const startDate = new Date(startDateStr);
+  const endDate = new Date(endDateStr);
+ 
+  // Ensure end date is after start date
+  if (endDate < startDate) return 0;
+ 
+  const yearDiff = endDate.getFullYear() - startDate.getFullYear();
+  const monthDiff = endDate.getMonth() - startDate.getMonth();
+  const dayDiff = endDate.getDate() - startDate.getDate();
+ 
+  let months = yearDiff * 12 + monthDiff;
+  if (dayDiff >= 0) {
+    months += 1;
+  }
+ 
+  // If less than 1 month
+  if (months <= 0) {
+    const diffInMs = endDate - startDate;
+    const days = Math.ceil(diffInMs / (1000 * 60 * 60 * 24));
+    return `${days} day(s)`;
+  }
+ 
+  return `${months} month(s)`;
+}
+ 
+// Examples:
+console.log(getMonthOrDays("2025-01-15", "2025-01-28")); // 13 day(s)
+const rawExpireDate = selectDataLocum?.tenure?.to ?? null;
+const ExpireDate = rawExpireDate ? parseISO(rawExpireDate) : null;
+
+// Validate date before using
+const isExpireDateValid = ExpireDate && isValid(ExpireDate);
+const isCustomEndDateValid = customEndDate && isValid(new Date(customEndDate));
+
+const startDateStr =
+  selectedTab === "ACTIVELOCUM" && isExpireDateValid
+    ? format(addDays(ExpireDate, 1), "yyyy-MM-dd")
+    : format(addDays(new Date(),1), "yyyy-MM-dd");
+const endDateStr =
+  selectedTab === "ACTIVELOCUM" || selectedTab === "EXPIREDLOCUM"
+    ? selectedMonth === "Custom" && isCustomEndDateValid
+      ? format(new Date(customEndDate), "yyyy-MM-dd")
+      : selectedMonth
+    : format(new Date(), "yyyy-MM-dd");
+
+// Now call the function safely
+const monthOptionsToView = getMonthOrDays(startDateStr, endDateStr);
+console.log("1111111111111111111111",getMonthOrDays("2025-04-30", "2025-05-30"),monthOptionsToView,selectedMonth,startDateStr,endDateStr); // 2 month(s)
+
 
 const getNext12MonthsFromCreatedDate = (createdDateStr) => {
   const months = [];
@@ -2605,14 +2655,14 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
 
   return months;
 };
-
- const monthOptions = selectDataLocum?.tenure?.to ? getNext12MonthsFromCreatedDate(selectDataLocum?.tenure?.to) : [];
+const referenceDate =
+  selectedTab === "ACTIVELOCUM" && selectDataLocum?.tenure?.to
+    ? selectDataLocum.tenure.to
+    : new Date();
+const monthOptions = getNext12MonthsFromCreatedDate(referenceDate);
 
  const lastModifiedDate = formDetails?.lastModifiedDate;
  const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), "dd/MM/yyyy") : "-";
- const ExpireDate = selectDataLocum?.tenure?.to 
-   ? parseISO(selectDataLocum.tenure.to) 
-   : null;
  const formattedExpiringDate = ExpireDate ? format(new Date(ExpireDate), "dd/MM/yyyy") : "-";
  const daysRemaining = ExpireDate ? differenceInDays(new Date(ExpireDate), new Date()) : null;
 //  const monthsList = getNext12MonthsFromCreatedDate(format(new Date(selectDataLocum?.tenure?.to), "dd/MM/yyyy"));
@@ -2740,7 +2790,9 @@ const maxDateValue =
                 selectDataLocum.applicant.name.firstName.slice(1).toLowerCase()
               : ""}
           </span>
-          {/* {selectedMonthLabel && <span> By {selectedMonthLabel}</span>} */}
+          {selectedMonth && (
+            <span> By {monthOptionsToView}</span>
+          )}
         </div>
          <div>
           {/* <CommonRadio

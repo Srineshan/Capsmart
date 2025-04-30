@@ -509,9 +509,9 @@ const LocumStaffList = ({
       applicantId.push(data?.staffId || "123");
 
       applicantType.push(data?.basicDetailReferences?.applicantType?.serviceProviderType || "Doctor");
-      docs.push("1/2");
+      docs.push("0/3");
       docsIcon.push(
-        <TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#FFCA27` }} />
+        <TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#b0a6a6` }} />
       );
       crsHoverText.push(["Ontario Medical Society", "Ontario Medical Society"]);
       notes.push("0");
@@ -632,7 +632,7 @@ const LocumStaffList = ({
       notesIcon.push(
         <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#2C2C2C` }} />
       );
-      docs.push("1/2");
+      docs.push("0/3");
       docsIcon.push(
         <TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#FFCA27` }} />
       );
@@ -683,11 +683,13 @@ const LocumStaffList = ({
       data: "Extend Locum Period",
       requiredValue: "boolean",
       onClick: onClickExtensiveLocumDialog,
+      conditionToShow: `data?.reAppointmentInitiated === false`,
     },
     {
       data: "Create Note",
       requiredValue: "boolean",
       onClick: onClickNotesDialog,
+      conditionToShow: `data?.reAppointmentInitiated === true`,
     },
   ];
 
@@ -709,11 +711,13 @@ const LocumStaffList = ({
       data: "Reactivate Locum Staff",
       requiredValue: "boolean",
       onClick: onClickExtensiveLocumDialog,
+      conditionToShow: `data?.reAppointmentInitiated === false`,
     },
     {
       data: "Create Note",
       requiredValue: "boolean",
       onClick: onClickNotesDialog,
+      conditionToShow: `data?.reAppointmentInitiated === true`,
     },
 
   ];
