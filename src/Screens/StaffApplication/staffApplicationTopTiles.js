@@ -504,7 +504,12 @@ const StaffApplicationTopTiles = (searchTermForTable) => {
     userDepartmentList = userDetailsFetchOption?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.id;
     userSpecialty = userDetailsFetchOption?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.serviceAreas?.[0]?.id;
     console.log("userSpecialty", userDepartmentList, userSpecialty)
-  }, [applicationType, selectedTab])
+    getTitleCountsLocum();
+  }, [applicationType, selectedTab, searchTermForTable])
+
+  useEffect(() => {
+    getTitleCountsLocum();
+  }, [])
 
   useEffect(() => {
     getTitleCounts(applicationCreationType);
@@ -535,23 +540,25 @@ const StaffApplicationTopTiles = (searchTermForTable) => {
   const getTitleCounts = async (type) => {
     try {
       setIsLoading(true);
-      const positionTypeParam = applicationType === "LOCUM" ? `&positionType=${applicationType}` : "";
+      // const positionTypeParam = applicationType === "LOCUM" ? `&positionType=${applicationType}` : "";
       let role = workModeType === "Credentialing Committee User" ? "Staff Manager" : workModeType;
       const response = await GET(
-        `application-management-service/application/workflowUser/meta?applicationCreationType=${type === "LOCUM" ? "REAPPOINTMENT" : type}&role=${role}&searchText=${searchTermForTable?.searchTermForTable}${positionTypeParam}`
+        `application-management-service/application/workflowUser/meta?applicationCreationType=${type === "LOCUM" ? "REAPPOINTMENT" : type}&role=${role}&searchText=${searchTermForTable?.searchTermForTable}`
       );
-
+      setReappointmentCounts(response.data);
       if (response?.data) {
         if (type === 'NEW') {
           setNewCounts(response.data);
           console.log("setLocumCounts", response.data)
-        } else if (type === 'REAPPOINTMENT') {
-          setReappointmentCounts(response.data);
-          console.log("setLocumCounts", response.data)
-        } else if (type === 'LOCUM') {
-          setLocumCounts(response.data);
-          console.log("setLocumCounts1111", response.data)
-        }
+        } 
+        // else if (type === 'REAPPOINTMENT') {
+        //   setReappointmentCounts(response.data);
+        //   console.log("setLocumCounts", response.data)
+        // } 
+        // else if (type === 'LOCUM') {
+        //   setLocumCounts(response.data);
+        //   console.log("setLocumCounts1111", response.data)
+        // }
       }
     } catch (error) {
       console.error('Error fetching counts:', error);
@@ -571,6 +578,34 @@ const StaffApplicationTopTiles = (searchTermForTable) => {
       setUserFlow(response?.data?.approvalFlowMap);
     } catch (error) {
       console.error('Error fetching user role type:', error);
+    }
+  };
+
+  const getTitleCountsLocum = async () => {
+    try {
+      setIsLoading(true);
+      const positionTypeParam = applicationType === "LOCUM" ? `&positionType=${applicationType}` : "";
+      let role = workModeType === "Credentialing Committee User" ? "Staff Manager" : workModeType;
+      const response = await GET(
+        `application-management-service/application/workflowUser/meta?applicationCreationType=REAPPOINTMENT&role=${role}&searchText=${searchTermForTable?.searchTermForTable}&&positionType=LOCUM`
+      );
+      setLocumCounts(response.data);
+      // if (response?.data) {
+      //   if (type === 'NEW') {
+      //     setNewCounts(response.data);
+      //     console.log("setLocumCounts", response.data)
+      //   } else if (type === 'REAPPOINTMENT') {
+      //     setReappointmentCounts(response.data);
+      //     console.log("setLocumCounts", response.data)
+      //   } else if (type === 'LOCUM') {
+      //     setLocumCounts(response.data);
+      //     console.log("setLocumCounts1111", response.data)
+      //   }
+      // }
+    } catch (error) {
+      console.error('Error fetching counts:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 

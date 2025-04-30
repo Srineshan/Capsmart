@@ -5022,7 +5022,7 @@ const NewActiveApplication = ({
               {(workModeType === 'Staff Manager') || (workModeType === 'Chief Of Staff') || (workModeType === 'Credentialing Committee') || (workModeType === 'Credentialing Committee User') || (workModeType === 'Department Head') ? (
                 <>
                   <div>
-                    {((selectedTab === "level-1" && applicationType === "REAPPOINTMENT") || (selectedTab === "level-1" && applicationType === "LOCUM")) ? (
+                    {((selectedTab === "level-1" && applicationType === "REAPPOINTMENT")) ? (
                       <div className={style.grid5and2}>
                         <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth}`}>
                           <div className={style.flex}>
@@ -5062,9 +5062,13 @@ const NewActiveApplication = ({
                                 </span>
                               </div>
                               <div className={`${style.marginTop10} ${style.twoColumnGridInner2}`}>
-                                <span className={style.rightAlignTextStyle}>
-                                  Reappointment Date:
-                                </span>
+                              <span className={style.rightAlignTextStyle}>
+                                {applicationType === "REAPPOINTMENT"
+                                  ? "Reappointment Date:"
+                                  : applicationType === "LOCUM" && form?.reappointmentType === "EXTENSION"
+                                  ? "Extension Date:"
+                                  : "Renewal Date:"}
+                              </span>
                                 <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>
                                   {/* {form?.createdDate} */}
                                   {reappointmentStartDate}
@@ -5189,8 +5193,12 @@ const NewActiveApplication = ({
                                 </span>
                               </div>
                               <div className={`${style.marginTop10} ${style.twoColumnGridInner2}`}>
-                                <span className={style.rightAlignTextStyle}>
-                                  Reappointment Date:
+                              <span className={style.rightAlignTextStyle}>
+                                {applicationType === "REAPPOINTMENT"
+                                  ? "Reappointment Date:"
+                                  : applicationType === "LOCUM" && form?.reappointmentType === "EXTENSION"
+                                  ? "Extension Date:"
+                                  : "Renewal Date:"}
                                 </span>
                                 <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>
                                   {/* {form?.createdDate} */}
@@ -5218,8 +5226,8 @@ const NewActiveApplication = ({
                               <div className={`${style.emailTextBoldStyle}`}>
                                 {form?.basicDetails?.applicant?.cellPhone ? `+1 ${form?.basicDetails?.applicant?.cellPhone}` : ""}
                               </div>
-                              <div className={`${style.emailTextBoldStyle}`} onClick={() => sendEmail(form?.basicDetails?.applicant?.email?.officialEmail || "")} style={{ cursor: form?.basicDetails?.applicant?.email?.officialEmail ? 'pointer' : 'default' }}>
-                                {form?.basicDetails?.applicant?.email?.officialEmail || ""}
+                              <div className={`${style.emailTextBoldStyle}`}>
+                                <span className={style.cursorPointer} onClick={() => sendEmail(form?.basicDetails?.applicant?.email?.officialEmail || "")}>{form?.basicDetails?.applicant?.email?.officialEmail || ""}</span>
                               </div>
                               {/* <div className={`${style.emailTextBoldStyle} ${style.marginTop10}`}>
                                 {form?.basicDetails?.applicant?.email?.officialEmail || ""}
@@ -5261,12 +5269,21 @@ const NewActiveApplication = ({
                           </div> */}
                           </div>
                         </div>
-                        <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.statusCardHeight} ${style.displayInCol}`}>
+                        {(selectedTab === "level-1" && applicationType === "LOCUM") ? (
+                          <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.statusCardHeight} ${style.displayInCol}`}>
+                          <div className={`${statusStyle} ${style.marginCenter}`}></div>
+                          <div className={style.greyDotTextStyle}>
+                            MSO Verification & Acceptance Status
+                          </div>
+                        </div>
+                        ) : (
+                          <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.statusCardHeight} ${style.displayInCol}`}>
                           <div className={`${style.greenBigDotStyle} ${style.marginCenter}`}></div>
                           <div className={style.greyDotTextStyle}>
                             Overall Review Status
                           </div>
-                        </div>
+                          </div>
+                        )}
                       </div>
                     )}
 

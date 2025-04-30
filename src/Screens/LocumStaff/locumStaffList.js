@@ -642,7 +642,7 @@ const LocumStaffList = ({
       cc.push("grey");
 
       const expiredDays = differenceInDays(new Date(data?.tenure?.to), new Date());
-      ExpiredDays.push(expiredDays.toString());
+      ExpiredDays.push(Math.abs(expiredDays).toString());
       endDate.push(
         format(new Date(data?.tenure?.to), "MMM dd, yyyy")
       );
@@ -897,29 +897,6 @@ const LocumStaffList = ({
               locumCount={totalCount}
               locumexpireCount={totalExpireCount}
             />
-
-            <div className={`${style.spaceBetween} ${style.marginLeft} `}>
-              <Tooltip title="Fill Historical Data" arrow>
-                <div
-                  className={`${style.alignCenter
-                    } ${style.cursorPointer} ${style.marginRight20}`}
-                  onClick={() => navigate("/historicalData")}
-                >
-                  <AddCircleOutlineIcon sx={{ fontSize: 25, color: '#06617A' }} />
-                </div>
-              </Tooltip>
-              <div
-                className={`${isPrintClicked && style.addStyle} ${style.alignCenter
-                  } ${style.cursorPointer} ${style.marginRight}`}
-              >
-                <PrintOutlinedIcon
-                  sx={{
-                    fontSize: isPrintClicked ? 20 : 25,
-                    color: isPrintClicked ? "#fff" : "#06617A",
-                  }}
-                />
-              </div>
-            </div>
           </div>
 
           <div className={`${style.bigCardStyle}`}>
