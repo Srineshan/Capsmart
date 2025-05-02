@@ -52,6 +52,8 @@ import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import { Tooltip } from "@mui/material";
 import ReappointmentReportDialog from "./ReappointmentReportDialog";
+import Resend from './../../images/Resend.png';
+import ResendDisabled from './../../images/Resend-disabled.png';
 
 const StaffApplicationList = ({
   isLoading,
@@ -380,6 +382,7 @@ const StaffApplicationList = ({
     // "CRs",
     "Notes",
     "Meeting Date",
+    "",
     // "Task List",
     // "CC Status",
     // "MAC Status",
@@ -997,9 +1000,9 @@ const StaffApplicationList = ({
     sessionStorage.setItem("applicationId", data?.id)
   };
 
-  const onClickMoveToNextFunction = (data) => {
-    getApplicationMoveToNext(data?.id);
-    sessionStorage.setItem("applicationId", data?.id);
+  const onClickMoveToNextFunction = (id) => {
+    getApplicationMoveToBod(id);
+    // sessionStorage.setItem("applicationId", data?.id);
   };
 
   const onClickStartTheWorkFlowFunction = (data) => {
@@ -1028,6 +1031,61 @@ const StaffApplicationList = ({
       });
     // getPreApplication();
   }
+
+   const getApplicationMoveToBod = async (id) => {
+      let role;
+      let title;
+      let notes = "";
+      let isDelegate = true;
+  
+      // Determine role based on selectedTab and applicationType
+      if (selectedTab === 'level-2') {
+        if (workModeType === "Department Head") {
+          role = "Department Head";
+          isDelegate = false;
+          title = "Dept. Head / Chief Review"
+        } else {
+          role = "Department Head";
+          title = "Dept. Head / Chief Review"
+        }
+      } else if (selectedTab === 'level-3') {
+        if (workModeType === "Credentialing Committee") {
+          role = "Credentialing Committee";
+          title = "Credentialing Committee Review";
+          isDelegate = false;
+        } else if (workModeType === "Chief Of Staff") {
+          role = "Credentialing Committee";
+          isDelegate = true;
+          title = "Credentialing Committee Review";
+        }
+      } else if (selectedTab === 'level-4') {
+        role = "Advisory Committee";
+        title = "MAC Review";
+      } else if (selectedTab === 'level-5') {
+        role = "Board";
+        title = "BOD Approval";
+      } else if (selectedTab === 'level-1') {
+        role = "Staff Manager";
+        title = "Staff Manager Verification";
+      }
+  
+      // Prepare the payload
+      let temp = {
+        role: isDelegate ? role : "",
+        // notes: notes,
+        // approvedDate: new Date().toISOString(),
+        title: title
+      };
+  
+      await PUT(`application-management-service/application/${id}/workflow/move?workflowAction=APPROVED&isDelegate=${isDelegate}`, temp)
+        .then(response => {
+          console.log('successfull')
+        })
+        .catch((error) => {
+          console.log(error)
+        });
+        getWorkflowUserData();
+    }
   const getApplicationMoveToNext = async (id) => {
     // let role;
     let notes;
@@ -1642,6 +1700,7 @@ const StaffApplicationList = ({
   let checkbox = [];
   let ccMember = [];
   let dhMember = [];
+  let pdfSendIcon = []; 
 
   const getApplicantValues = applicationType === "NEW" ? () => {
     dot = [];
@@ -3389,6 +3448,7 @@ const StaffApplicationList = ({
     mac = [];
     boddate = [];
     action = [];
+    pdfSendIcon = [];
 
     tableData?.map((data) => {
       // const workflowCredRole = data?.completedWorkflows?.find(workflow => workflow.role === "Credentialing Committee");
@@ -3585,6 +3645,13 @@ const StaffApplicationList = ({
       // lastUpdated.push(isNaN(lastUpdatedDate.getTime()) ? 'Invalid Date' : format(lastUpdatedDate, 'MM-dd-yyyy'));
       // capManager.push(data?.interviewDetails?.interviewedBy || '- ');
       action.push(true);
+      pdfSendIcon.push(
+        (data?.completionLetter) ?
+          <div className={style.justifyCenter} 
+          onClick={() => onClickMoveToNextFunction(data.id)}
+          > <Tooltip arrow title={"Click to send as Staff"}><img src={Resend} alt="" className={style.resentIcon} /></Tooltip></div> :
+          <div className={`${style.justifyCenter} ${style.disabled}`}> <Tooltip arrow title="Wait for Approval"><img src={ResendDisabled} alt="" className={style.resentIcon} /></Tooltip></div>
+      );
 
       console.log("tabledata" + tableData);
     });
@@ -3630,6 +3697,10 @@ const StaffApplicationList = ({
       {
         type: "text",
         value: boddate,
+      },
+      {
+        type: "iconWithCount",
+        icon: pdfSendIcon,
       },
       { type: "action", value: action },
     ];
