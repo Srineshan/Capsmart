@@ -3649,8 +3649,8 @@ const StaffApplicationList = ({
         (data?.completionLetter) ?
           <div className={style.justifyCenter} 
           onClick={() => onClickMoveToNextFunction(data.id)}
-          > <Tooltip arrow title={"Click to send as Staff"}><img src={Resend} alt="" className={style.resentIcon} /></Tooltip></div> :
-          <div className={`${style.justifyCenter} ${style.disabled}`}> <Tooltip arrow title="Wait for Approval"><img src={ResendDisabled} alt="" className={style.resentIcon} /></Tooltip></div>
+          > <Tooltip arrow title={"Click to Send as Staff"}><img src={Resend} alt="" className={style.resentIcon} /></Tooltip></div> :
+          <div className={`${style.justifyCenter} ${style.disabled}`}> <Tooltip arrow title="Waiting for Approval"><img src={ResendDisabled} alt="" className={style.resentIcon} /></Tooltip></div>
       );
 
       console.log("tabledata" + tableData);
