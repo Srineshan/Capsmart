@@ -120,6 +120,14 @@ const LocumStaffList = ({
 
   }, [])
 
+  useEffect(() => {
+    sessionStorage.setItem('applicationCreationType', 'LOCUM')
+  }, [])
+
+  useEffect(() => {
+    setApplicationType(sessionStorage.getItem('applicationCreationType') || 'NEW')
+  }, [sessionStorage.getItem('applicationCreationType')])
+
   // const onClickViewAndVerifyFunction = (data) => {
   //   getActiveApplicationView(true);
   // }
@@ -230,8 +238,8 @@ const LocumStaffList = ({
     getActiveUserDataActiveCount();
     getActiveUserDataExpireCount();
     // getActiveUserDataSearch();
-    console.log("setSelectedDepartment",selectedDepartment)
-   }, [selectedDepartment,searchTermForTable]);
+    console.log("setSelectedDepartment", selectedDepartment)
+  }, [selectedDepartment, searchTermForTable]);
 
   // useEffect(() => {
   //   getActiveUserDataActiveCount();
