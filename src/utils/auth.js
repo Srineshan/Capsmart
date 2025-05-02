@@ -35,7 +35,7 @@ export const baseUrl = () => {
 
   // response = `http://${hostname}:8000`;
 
-  response = `https://rest.hapicare.ca`
+  response = `https://rest.indocaribe.com`
 
   return response;
 }
