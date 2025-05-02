@@ -509,10 +509,11 @@ const StaffApplicationTopTiles = (searchTermForTable) => {
 
   useEffect(() => {
     getTitleCountsLocum();
-  }, [])
+    getTitleCounts("REAPPOINTMENT");
+  }, [searchTermForTable])
 
   useEffect(() => {
-    getTitleCounts(applicationCreationType);
+    // getTitleCounts(applicationCreationType);
     getUserRoleType(applicationCreationType)
   }, [searchTermForTable, applicationCreationType]);
 
@@ -587,7 +588,7 @@ const StaffApplicationTopTiles = (searchTermForTable) => {
       const positionTypeParam = applicationType === "LOCUM" ? `&positionType=${applicationType}` : "";
       let role = workModeType === "Credentialing Committee User" ? "Staff Manager" : workModeType;
       const response = await GET(
-        `application-management-service/application/workflowUser/meta?applicationCreationType=REAPPOINTMENT&role=${role}&searchText=${searchTermForTable?.searchTermForTable}&&positionType=LOCUM`
+        `application-management-service/application/workflowUser/meta?applicationCreationType=REAPPOINTMENT&role=${role}&searchText=${searchTermForTable?.searchTermForTable}&positionType=LOCUM`
       );
       setLocumCounts(response.data);
       // if (response?.data) {
@@ -665,7 +666,7 @@ const StaffApplicationTopTiles = (searchTermForTable) => {
     }
 
     // For Credentialing Committee, show only level-3 count
-    if (workModeType === "Credentialing Committee" && applicationType === "REAPPOINTMENT") {
+    if (workModeType === "Credentialing Committee" && ( applicationType === "REAPPOINTMENT" ||applicationType === "NEW" )) {
       return (parseInt(countsObj['level-3']) || 0) + clarifications;
     }
 

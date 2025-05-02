@@ -45,7 +45,6 @@ const LocumStaffList = ({
   getStaffView,
   getDeptTrackerDialog,
   getLocumExtensiveDialog,
-  getLocumExtensiveReactiveDialog,
   getLocumExtensiveRequestDialog,
   getLocumExtensiveReactiveRequestDialog,
   getNotesDialog,
@@ -191,11 +190,6 @@ const LocumStaffList = ({
 
   const onClickExtensiveLocumDialog = (data) => {
     getLocumExtensiveDialog(true);
-    sessionStorage.setItem("applicationId", data?.id);
-  };
-
-  const onClickExtensiveReactiveLocumDialog = (data) => {
-    getLocumExtensiveReactiveDialog(true);
     sessionStorage.setItem("applicationId", data?.id);
   };
 

@@ -256,7 +256,10 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
       else if (workModeType === "Staff Manager") {
         initialTab = "level-1";
         // setInitialTabSet(false);
-      } else if ((workModeType === "Department Head" || workModeType === "Chief Of Staff") && applicationType === "REAPPOINTMENT" || applicationType === "NEW" ) {
+      } else if (workModeType === "Chief Of Staff" && applicationType === "NEW") {
+        initialTab = "level-3";
+        // setInitialTabSet(false);
+      } else if ((workModeType === "Department Head" || workModeType === "Chief Of Staff") && applicationType === "REAPPOINTMENT") {
         initialTab = "level-2";
         // setInitialTabSet(false);
       }  else if (workModeType === "Credentialing Committee User") {

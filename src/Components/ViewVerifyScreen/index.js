@@ -1504,9 +1504,12 @@ const NewActiveApplication = ({
         isDelegate = true;
         title = "Credentialing Committee Review";
       }
-    } else if (selectedTab === 'level-4') {
+    } else if (selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") {
       role = "Advisory Committee";
       title = "MAC Review";
+    } else if (selectedTab === 'level-4' && applicationType === "LOCUM") {
+      role = "Board";
+      title = "BOD Approval";
     } else if (selectedTab === 'level-5') {
       role = "Board";
       title = "BOD Approval";
@@ -11536,7 +11539,16 @@ const NewActiveApplication = ({
                           <div
                             className={`${style.bigButtonStyle2} ${isButtonDisabled ? undefined : style.cursorPointer}`}
                             style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
-                            onClick={isButtonDisabled ? undefined : handleApplicationAccept}
+                            onClick={
+                              isButtonDisabled ? undefined
+                                : () => {
+                                    if (applicationType === "LOCUM") {
+                                      getApplicationMoveToNext();
+                                    } else {
+                                      handleApplicationAccept();
+                                    }
+                                  }
+                            }
                           >
                             <Tooltip title={isButtonDisabled ? "" : "Click to Mark as Approved by BOD"} arrow>
                               <div className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20}`}>

@@ -13,7 +13,7 @@ import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import Cookie from "universal-cookie";
 import jwt from "jwt-decode";
 import style from "./index.module.scss";
-import { format, differenceInDays ,addDays, addMonths, subDays, parseISO, addYears,isValid } from "date-fns";
+import { format, differenceInDays ,addDays, addMonths, endOfMonth, parseISO, addYears,isValid } from "date-fns";
 import { fileLoadingURL } from "../../utils/formatting";
 import LoadingScreen from "../LoadingScreen";
 import CommonCheckBox from "../CommonFields/CommonCheckBox";
@@ -296,6 +296,9 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
   const handleRemoveChip = (index) => {
     const updatedList = covererNameList.filter((_, i) => i !== index);
     setCovererNameList(updatedList);
+    if (updatedList.length === 0) {
+      setCovererName('');
+    }
   };
 
   const onClickExtensiveRequest = async () => {
@@ -2637,7 +2640,8 @@ console.log("1111111111111111111111",getMonthOrDays("2025-04-30", "2025-05-30"),
     const createdDate = new Date(createdDateStr);
 
     for (let i = 1; i <= 12; i++) {
-      const futureDate = addMonths(createdDate, i);
+      let futureDate = addMonths(createdDate, i);
+      futureDate = endOfMonth(futureDate);
       // const oneDayBefore = subDays(futureDate, 1); // Go one day before the future "same day"
 
       const label = `${i} ${i === 1 ? 'month' : 'months'}`;
