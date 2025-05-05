@@ -4,7 +4,7 @@ import style from './index.module.scss';
 
 const CommonDivider = () => {
     return (
-        <div className={`${style.divider} ${style.marginTop}`}></div>
+        <div className={`${style.divider} ${style.marginTop10}`}></div>
     )
 }
 

@@ -978,7 +978,7 @@ const LocumApplicationFormRequirement = () => {
             ) : (
                 <>
                     <div className={style.screenBackground}>
-                        <ApplicationHeader title={`Locum Staff Renewal Application For ${basicForm?.basicDetails?.applicant?.name?.firstName !== undefined ? basicForm?.basicDetails?.applicant?.name?.firstName : '{First Name}'} ${basicForm?.basicDetails?.applicant?.name?.lastName !== undefined ? basicForm?.basicDetails?.applicant?.name?.lastName : '{Last Name}'}, ${(basicForm?.basicDetails?.applicant?.applicantType !== null) ? basicForm?.basicDetails?.applicant?.applicantType : ''}`} close={true} closeClick={handleLogout} />
+                        <ApplicationHeader title={`Locum Staff ${basicForm?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'} Application For ${basicForm?.basicDetails?.applicant?.name?.firstName !== undefined ? basicForm?.basicDetails?.applicant?.name?.firstName : '{First Name}'} ${basicForm?.basicDetails?.applicant?.name?.lastName !== undefined ? basicForm?.basicDetails?.applicant?.name?.lastName : '{Last Name}'}, ${(basicForm?.basicDetails?.applicant?.applicantType !== null) ? basicForm?.basicDetails?.applicant?.applicantType : ''}`} close={true} closeClick={handleLogout} />
                         <div className={style.screenPadding}>
                             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
                                 <div>
@@ -1139,7 +1139,7 @@ const LocumApplicationFormRequirement = () => {
                                         </div>
                                     </div>
                                     <div className={style.marginTop}>
-                                        <WelcomeCard title={'Before you get started having the documents listed below will expedite the completion of your Locum Extension Application.You will be required to Sign Off on your Privileges that are listed for your new Locum Term.'} description={''} />
+                                        <WelcomeCard title={'Before you get started having the documents listed below will expedite the completion of your Locum Extension Application. You will be required to Sign Off on your Privileges that are listed for your new Locum Term.'} description={''} />
                                     </div>
                                     <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
                                         <div className={style.titleTextStyle}> List of Documents to Complete this Application</div>
@@ -1322,7 +1322,7 @@ const LocumApplicationFormRequirement = () => {
                                                                     ?.length === 0 &&
                                                                     selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
                                                                         ?.corePrivileges?.privilegesByCategories?.[0]
-                                                                        ?.privileges?.length !== undefined)) && getIsAdditionalRestrictedValuesFilled(selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
+                                                                        ?.privileges?.length !== undefined)) && getIsAdditionalRestrictedValuesFilled(selectedAdditionalPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
                                                                             ?.restrictedPrivileges?.privilegesByCategories?.[0]
                                                                             ?.privileges))
                                                             ? ""
@@ -1353,7 +1353,7 @@ const LocumApplicationFormRequirement = () => {
                                                                         ?.length === 0 &&
                                                                         selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
                                                                             ?.corePrivileges?.privilegesByCategories?.[0]
-                                                                            ?.privileges?.length !== undefined)) && getIsAdditionalRestrictedValuesFilled(selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
+                                                                            ?.privileges?.length !== undefined)) && getIsAdditionalRestrictedValuesFilled(selectedAdditionalPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
                                                                                 ?.restrictedPrivileges?.privilegesByCategories?.[0]
                                                                                 ?.privileges))
                                                                 ? selectedAdditionalPrivilegeForDisplay?.length === indexForSign + 1 ? () => {

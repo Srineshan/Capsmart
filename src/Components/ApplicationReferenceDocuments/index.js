@@ -10,6 +10,7 @@ import { Tooltip } from "@mui/material";
 const ApplicationReferenceDocuments = ({ refetchRefDoc, getResetRefetch }) => {
   const [basicForm, setBasicForm] = useState({});
   const applicationId = sessionStorage.getItem("applicationId");
+  const applicationCreationType = sessionStorage.getItem("applicationCreationType");
   const [formIndex, setFormIndex] = useState();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
@@ -56,7 +57,7 @@ const ApplicationReferenceDocuments = ({ refetchRefDoc, getResetRefetch }) => {
 
   return (
     <div className={style.referenceDocumentParentCard}>
-      <div className={style.referenceDocumentTitle}>Your Reappointment Documents</div>
+      <div className={style.referenceDocumentTitle}>Your {applicationCreationType === "LOCUM" ? `Locum ${basicForm?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'}` : 'Reappointment'} Documents</div>
       {(tableData?.length > 0 || basicForm?.payment?.invoice?.fileURL !== undefined) ? (
         <>
           {tableData?.map((document, index) => {

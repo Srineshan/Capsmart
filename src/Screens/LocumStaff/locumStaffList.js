@@ -91,8 +91,8 @@ const LocumStaffList = ({
   // let userDepartmentList;
   let userSpecialty;
 
-  const activeLocumHeaderValues = ["Locum Staff", "", "Locum Type", "Notes", "Docs", "Start Date", "End Date", "Days to Expiration", ""];
-  const expiredLocumHeaderValues = ["Locum Staff", "Locum Type", "Notes", "Docs", "Last End Date", "Days Since Expired", ""];
+  const activeLocumHeaderValues = ["Locum Staff", "", "Locum Type", "Notes", "Docs", "Start Date", "End Date", "Days to Expiration", "Action"];
+  const expiredLocumHeaderValues = ["Locum Staff", "Locum Type", "Notes", "Docs", "Last End Date", "Days Since Expired", "Action"];
 
 
   const activeLocumColSortValues = [false, false, false, false, false, , false, false, false, false];
@@ -526,11 +526,11 @@ const LocumStaffList = ({
       ]);
       startDate.push(
         data?.tenure?.from
-          ? format(new Date(data?.tenure?.from), "dd/MM/yyyy")
+          ? format(new Date(data?.tenure?.from), "MMM dd, yyyy")
           : "-"
       );
       endDate.push(
-        data?.tenure?.to ? format(new Date(data?.tenure?.to), "dd/MM/yyyy") : "-"
+        data?.tenure?.to ? format(new Date(data?.tenure?.to), "MMM dd, yyyy") : "-"
       );
       lastUpdatedBy.push(["-"]);
 
@@ -687,12 +687,12 @@ const LocumStaffList = ({
       onClick: onClickExtensiveLocumDialog,
       conditionToShow: `data?.reAppointmentInitiated === false`,
     },
-    {
-      data: "Create Note",
-      requiredValue: "boolean",
-      onClick: onClickNotesDialog,
-      conditionToShow: `data?.reAppointmentInitiated === true`,
-    },
+    // {
+    //   data: "Create Note",
+    //   requiredValue: "boolean",
+    //   onClick: onClickNotesDialog,
+    //   conditionToShow: `data?.reAppointmentInitiated === true`,
+    // },
   ];
 
   const activeLocumActionsSMData = [
@@ -701,11 +701,11 @@ const LocumStaffList = ({
       requiredValue: "boolean",
       onClick: onClickExtensiveRequestLocumDialog,
     },
-    {
-      data: "Create Note",
-      requiredValue: "boolean",
-      onClick: onClickNotesDialog,
-    },
+    // {
+    //   data: "Create Note",
+    //   requiredValue: "boolean",
+    //   onClick: onClickNotesDialog,
+    // },
   ];
 
   const expiredLocumActionsData = [
@@ -715,12 +715,12 @@ const LocumStaffList = ({
       onClick: onClickExtensiveLocumDialog,
       conditionToShow: `data?.reAppointmentInitiated === false`,
     },
-    {
-      data: "Create Note",
-      requiredValue: "boolean",
-      onClick: onClickNotesDialog,
-      conditionToShow: `data?.reAppointmentInitiated === true`,
-    },
+    // {
+    //   data: "Create Note",
+    //   requiredValue: "boolean",
+    //   onClick: onClickNotesDialog,
+    //   conditionToShow: `data?.reAppointmentInitiated === true`,
+    // },
 
   ];
 
@@ -735,11 +735,11 @@ const LocumStaffList = ({
     //   requiredValue: "boolean",
     //   onClick: "",
     // },
-    {
-      data: "Create Note",
-      requiredValue: "boolean",
-      onClick: onClickNotesDialog,
-    },
+    // {
+    //   data: "Create Note",
+    //   requiredValue: "boolean",
+    //   onClick: onClickNotesDialog,
+    // },
 
   ];
   const getIsExpanded = (value) => {

@@ -177,6 +177,19 @@
     width: auto;
 }
 
+.tableDataFontStyleForButton {
+    font: normal normal normal 14px / 18px proxima-nova;
+    color: $primarycolor;
+    // text-transform: capitalize;
+    text-align: left !important;
+    word-break: break-word;
+    width: auto;
+}
+
+.textHoverStyleForButton:hover {
+    font-weight: bold;
+}
+
 .tableDataFontStyle1 {
     font: normal normal normal 14px proxima-nova;
     letter-spacing: 0px;
@@ -533,4 +546,9 @@
 .textHoverColor:hover {
     font-weight: bold;
     color: $primarycolor !important;
+}
+
+.disabledLook {
+    opacity: 0.5;
+    cursor: not-allowed !important;
 }
