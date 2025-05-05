@@ -45,7 +45,6 @@ const LocumStaffList = ({
   getStaffView,
   getDeptTrackerDialog,
   getLocumExtensiveDialog,
-  getLocumExtensiveReactiveDialog,
   getLocumExtensiveRequestDialog,
   getLocumExtensiveReactiveRequestDialog,
   getNotesDialog,
@@ -92,7 +91,7 @@ const LocumStaffList = ({
   // let userDepartmentList;
   let userSpecialty;
 
-  const activeLocumHeaderValues = ["Locum Staff","", "Locum Type", "Notes", "Docs", "Start Date", "End Date", "Days to Expiration", ""];
+  const activeLocumHeaderValues = ["Locum Staff", "", "Locum Type", "Notes", "Docs", "Start Date", "End Date", "Days to Expiration", ""];
   const expiredLocumHeaderValues = ["Locum Staff", "Locum Type", "Notes", "Docs", "Last End Date", "Days Since Expired", ""];
 
 
@@ -121,6 +120,14 @@ const LocumStaffList = ({
 
   }, [])
 
+  useEffect(() => {
+    sessionStorage.setItem('applicationCreationType', 'LOCUM')
+  }, [])
+
+  useEffect(() => {
+    setApplicationType(sessionStorage.getItem('applicationCreationType') || 'NEW')
+  }, [sessionStorage.getItem('applicationCreationType')])
+
   // const onClickViewAndVerifyFunction = (data) => {
   //   getActiveApplicationView(true);
   // }
@@ -134,7 +141,9 @@ const LocumStaffList = ({
     const controller = new AbortController(); // Create an AbortController instance
     const signal = controller.signal;
 
-    getActiveUserDataSearch(signal); // Call API function with signal
+    // getActiveUserDataSearch(signal); // Call API function with signal
+    console.log("Triggering search with:", searchTerm, selectedTab);
+    getActiveUserDataSearch(signal, searchTerm);
 
     return () => controller.abort(); // Cleanup: Cancel previous request if a new one starts
   }, [searchTerm, selectedTab]);
@@ -148,7 +157,7 @@ const LocumStaffList = ({
     console.log("userdataaaa" + JSON.stringify(userData))
     sessionStorage.setItem('user', JSON.stringify(userData))
     setUserDepartmentList(userData?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.id)
-    console.log("setUserDetails",userDepartmentList)
+    console.log("setUserDetails", userDepartmentList)
   }
 
   const onClickViewAndVerifyFunction = (data) => {
@@ -175,13 +184,13 @@ const LocumStaffList = ({
 
   useEffect(() => {
     getActiveUserData(selectedTab);
-  }, [selectedTab, sortField, sortValue, page, totalCount,showLocumExtensiveDialog,searchTermForTable]);
+  }, [selectedTab, sortField, sortValue, page, totalCount, showLocumExtensiveDialog, searchTermForTable]);
 
   const getReFetchMetaData = (value) => {
     setReFetchMetaData(value);
   };
 
-  console.log("searchTermForTable",searchTermForTable)
+  console.log("searchTermForTable", searchTermForTable)
 
   const getSelectedPage = (value) => {
     setPage(value);
@@ -189,11 +198,6 @@ const LocumStaffList = ({
 
   const onClickExtensiveLocumDialog = (data) => {
     getLocumExtensiveDialog(true);
-    sessionStorage.setItem("applicationId", data?.id);
-  };
-
-  const onClickExtensiveReactiveLocumDialog = (data) => {
-    getLocumExtensiveReactiveDialog(true);
     sessionStorage.setItem("applicationId", data?.id);
   };
 
@@ -228,13 +232,14 @@ const LocumStaffList = ({
 
   console.log("tabbbbbbbbbbbbbbb", selectedTab, totalCount)
 
-   useEffect(() => {
+  useEffect(() => {
     setSelectedDepartment(userDetailsFetchOption?.sites?.sites[0]?.departmentList?.departments[0]?.id);
     // setSelectedSpeciality(formDetails?.basicDetailReferences?.specialty?.id);
     getActiveUserDataActiveCount();
     getActiveUserDataExpireCount();
-    console.log("setSelectedDepartment",selectedDepartment)
-   }, [selectedDepartment,searchTermForTable]);
+    // getActiveUserDataSearch();
+    console.log("setSelectedDepartment", selectedDepartment)
+  }, [selectedDepartment, searchTermForTable]);
 
   // useEffect(() => {
   //   getActiveUserDataActiveCount();
@@ -256,7 +261,7 @@ const LocumStaffList = ({
 
       console.log("Application data", response?.data?.staffs);
       setTotalCount(response?.data?.numberOfElements);
-      console.log("setTotalCount",response?.data?.numberOfElements)
+      console.log("setTotalCount", response?.data?.numberOfElements)
       return response?.data || [];
     } catch (error) {
       console.error("Error fetching applications:", error);
@@ -291,7 +296,7 @@ const LocumStaffList = ({
       const userDepartmentListData =
         userDetailsFetchOption?.sites?.sites[0]?.departmentList?.departments[0]?.id;
 
-      let apiUrl = `application-management-service/staff?status=ACTIVE&type=LOCUM&noOfDays=30&isExpired=${selectedTab === "ACTIVELOCUM" ? false : true}&searchText=${searchTermForTable}`;
+      let apiUrl = `application-management-service/staff?status=ACTIVE&type=LOCUM&noOfDays=30&isExpired=${selectedTab === "ACTIVELOCUM" ? false : true}&searchText=${searchTerm}`;
 
       if (selectedDepartment) {
         apiUrl += `&departmentSpecialties=${selectedDepartment}`;
@@ -499,16 +504,16 @@ const LocumStaffList = ({
       }
 
       reappointDate.push([
-        data?.reAppointmentInitiated 
-          ?` Locum Extension Request Sent on ${format(new Date(data?.reAppointmentSentDate), "dd/MM/yyyy")}`
+        data?.reAppointmentInitiated
+          ? ` Locum Extension Request Sent on ${format(new Date(data?.reAppointmentSentDate), "dd/MM/yyyy")}`
           : "Locum Extension Not Sent",
       ]);
       applicantId.push(data?.staffId || "123");
 
       applicantType.push(data?.basicDetailReferences?.applicantType?.serviceProviderType || "Doctor");
-      docs.push("1/2");
+      docs.push("0/3");
       docsIcon.push(
-        <TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#FFCA27` }} />
+        <TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#b0a6a6` }} />
       );
       crsHoverText.push(["Ontario Medical Society", "Ontario Medical Society"]);
       notes.push("0");
@@ -521,16 +526,16 @@ const LocumStaffList = ({
       ]);
       startDate.push(
         data?.tenure?.from
-          ? format(new Date(data.tenure.from), "MM/dd/yyyy")
+          ? format(new Date(data?.tenure?.from), "dd/MM/yyyy")
           : "-"
       );
       endDate.push(
-        data?.tenure?.to ? format(new Date(data?.tenure?.to), "MM/dd/yyyy") : "-"
+        data?.tenure?.to ? format(new Date(data?.tenure?.to), "dd/MM/yyyy") : "-"
       );
       lastUpdatedBy.push(["-"]);
 
       if (data?.tenure?.to) {
-        const expiredDays = differenceInDays(new Date(data.tenure.to), new Date());
+        const expiredDays = differenceInDays(new Date(data?.tenure?.to), new Date());
         ExpiredDays.push(expiredDays.toString());
       } else {
         ExpiredDays.push("-");
@@ -629,7 +634,7 @@ const LocumStaffList = ({
       notesIcon.push(
         <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#2C2C2C` }} />
       );
-      docs.push("1/2");
+      docs.push("0/3");
       docsIcon.push(
         <TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#FFCA27` }} />
       );
@@ -639,7 +644,7 @@ const LocumStaffList = ({
       cc.push("grey");
 
       const expiredDays = differenceInDays(new Date(data?.tenure?.to), new Date());
-      ExpiredDays.push(expiredDays.toString());
+      ExpiredDays.push(Math.abs(expiredDays).toString());
       endDate.push(
         format(new Date(data?.tenure?.to), "MMM dd, yyyy")
       );
@@ -680,11 +685,13 @@ const LocumStaffList = ({
       data: "Extend Locum Period",
       requiredValue: "boolean",
       onClick: onClickExtensiveLocumDialog,
+      conditionToShow: `data?.reAppointmentInitiated === false`,
     },
     {
       data: "Create Note",
       requiredValue: "boolean",
       onClick: onClickNotesDialog,
+      conditionToShow: `data?.reAppointmentInitiated === true`,
     },
   ];
 
@@ -706,11 +713,13 @@ const LocumStaffList = ({
       data: "Reactivate Locum Staff",
       requiredValue: "boolean",
       onClick: onClickExtensiveLocumDialog,
+      conditionToShow: `data?.reAppointmentInitiated === false`,
     },
     {
       data: "Create Note",
       requiredValue: "boolean",
       onClick: onClickNotesDialog,
+      conditionToShow: `data?.reAppointmentInitiated === true`,
     },
 
   ];
@@ -779,7 +788,7 @@ const LocumStaffList = ({
         <div>
           <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
             <div className={style.searchFieldAlignment}>
-              <CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} isOnClickAvailable={true} placeholder={'Search By Locum Staff'}/>
+              <CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} isOnClickAvailable={true} placeholder={'Search By Locum Staff'} />
             </div>
             <div className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
               <div className={`${style.spaceBetween} ${style.marginLeftRight10}`}>
@@ -894,29 +903,6 @@ const LocumStaffList = ({
               locumCount={totalCount}
               locumexpireCount={totalExpireCount}
             />
-
-            <div className={`${style.spaceBetween} ${style.marginLeft} `}>
-              <Tooltip title="Fill Historical Data" arrow>
-                <div
-                  className={`${style.alignCenter
-                    } ${style.cursorPointer} ${style.marginRight20}`}
-                  onClick={() => navigate("/historicalData")}
-                >
-                  <AddCircleOutlineIcon sx={{ fontSize: 25, color: '#06617A' }} />
-                </div>
-              </Tooltip>
-              <div
-                className={`${isPrintClicked && style.addStyle} ${style.alignCenter
-                  } ${style.cursorPointer} ${style.marginRight}`}
-              >
-                <PrintOutlinedIcon
-                  sx={{
-                    fontSize: isPrintClicked ? 20 : 25,
-                    color: isPrintClicked ? "#fff" : "#06617A",
-                  }}
-                />
-              </div>
-            </div>
           </div>
 
           <div className={`${style.bigCardStyle}`}>

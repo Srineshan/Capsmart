@@ -212,11 +212,13 @@ const LocumLandingDialog = ({ getIsOpen, days }) => {
             <img src={'https://capmanager-dev.s3.us-east-1.amazonaws.com/CAP_Manager.png'} alt="CAPManager Logo" className={`${style.CAPSmartLogoCenterAlign}`} />
           </div>
           <div className={`${style.descriptionStyle} ${style.marginTop}`}>
-            {`Your reappointment application for recredentialing and continuation of privileges for July 1, 2025 to June 30, 2026 at ${title !== 'HapiCare' ? title : ''} has been suspended.`}
+            {basicForm?.reappointmentType === "EXTENSION" ?
+              `This is to confirm that you are declining this Locum Staff extension request, and your Locum Staff Privileges will end on ${basicForm?.priorCyclePeriod?.to ? format(new Date(basicForm?.priorCyclePeriod?.to || null), 'MMM dd, yyyy') : '-'}  at ${title !== 'HapiCare' ? title : ''}.`
+              : `This is to confirm that you are declining this Locum Staff renewal request at this time. Your prior Locum Staff Privileges expired on ${basicForm?.priorCyclePeriod?.to ? format(new Date(basicForm?.priorCyclePeriod?.to || null), 'MMM dd, yyyy') : '-'} .`}
           </div>
-          <div className={`${style.descriptionStyle} ${style.marginTop}`}>
+          {/* <div className={`${style.descriptionStyle} ${style.marginTop}`}>
             {`Prior to Jun 30, 2025, if you change your mind, you can click on the link in the application declined notification.`}
-          </div>
+          </div> */}
           <div className={style.alignCenter}>
             <div
               className={`${style.continue} ${style.marginTop}`}
@@ -413,11 +415,14 @@ const LocumLandingDialog = ({ getIsOpen, days }) => {
         <div className={style.dialogContent}>
           <div className={style.alignCenter}><WarningAmberIcon sx={{ fontSize: 60, color: '#FF5555' }} /></div>
           <div className={`${style.descriptionStyle} ${style.marginTop}`}>
-            {`You have opted to not continue with your reappointment application for recredentialing and continuation of privileges for July 1, 2025 to June 30, 2026 at ${title !== 'HapiCare' ? title : ''}.`}
+            {basicForm?.reappointmentType === "EXTENSION" ?
+              `You are opting to not extend your Locum period for continuation of privileges that end on ${basicForm?.priorCyclePeriod?.to ? format(new Date(basicForm?.priorCyclePeriod?.to || null), 'MMM dd, yyyy') : '-'} at ${title !== 'HapiCare' ? title : ''}.`
+              : `You are opting to not renew your Locum status for continuation of privileges for the required Locum period starting ${basicForm?.cyclePeriod?.from ? format(new Date(basicForm?.cyclePeriod?.from || null), 'MMM dd, yyyy') : '-'} and ending on ${basicForm?.cyclePeriod?.to ? format(new Date(basicForm?.cyclePeriod?.to || null), 'MMM dd, yyyy') : '-'} at ${title !== 'HapiCare' ? title : ''}.`}
           </div>
           <div className={`${style.descriptionStyle} ${style.marginTop}`}>
-            {/* {`If we do not receive a completed reappointment application by ${format(new Date(basicForm?.expiryDate || null), 'MMM dd, yyyy')} your staff position as a ${basicForm?.basicDetails?.applicant?.applicantType}, ${basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory}, will be terminated.`} */}
-            {`If we do not receive a completed reappointment application by Jun 30, 2025 your staff position as a ${basicForm?.basicDetails?.applicant?.applicantType}, ${basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory}, will be terminated.`}
+            {basicForm?.reappointmentType === "EXTENSION" ?
+              `If we do not receive a completed Locum Extension application by ${basicForm?.priorCyclePeriod?.to ? format(new Date(basicForm?.priorCyclePeriod?.to || null), 'MMM dd, yyyy') : '-'} your Locum status will be marked as "Expired".`
+              : `If we do not receive a completed Locum renewal application by ${basicForm?.cyclePeriod?.from ? format(new Date(basicForm?.cyclePeriod?.from || null), 'MMM dd, yyyy') : '-'} your status will remain as "Expired".`}
           </div>
           <div className={style.spaceBetween}>
             <div

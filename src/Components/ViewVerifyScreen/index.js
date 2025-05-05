@@ -1504,9 +1504,12 @@ const NewActiveApplication = ({
         isDelegate = true;
         title = "Credentialing Committee Review";
       }
-    } else if (selectedTab === 'level-4') {
+    } else if (selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") {
       role = "Advisory Committee";
       title = "MAC Review";
+    } else if (selectedTab === 'level-4' && applicationType === "LOCUM") {
+      role = "Board";
+      title = "BOD Approval";
     } else if (selectedTab === 'level-5') {
       role = "Board";
       title = "BOD Approval";
@@ -4998,7 +5001,7 @@ const NewActiveApplication = ({
               form?.basicDetails?.applicant?.name?.lastName
             )
             : "{First Name} {Last Name}"
-            }, ${form?.basicDetails?.applicant?.applicantType !== undefined
+            } ${applicationType === "LOCUM" ? "Locum" : ""} ${form?.basicDetails?.applicant?.applicantType !== undefined
               ? form?.basicDetails?.applicant?.applicantType
               : "{Applicant Type}"
             }`}
@@ -5022,7 +5025,7 @@ const NewActiveApplication = ({
               {(workModeType === 'Staff Manager') || (workModeType === 'Chief Of Staff') || (workModeType === 'Credentialing Committee') || (workModeType === 'Credentialing Committee User') || (workModeType === 'Department Head') ? (
                 <>
                   <div>
-                    {((selectedTab === "level-1" && applicationType === "REAPPOINTMENT") || (selectedTab === "level-1" && applicationType === "LOCUM")) ? (
+                    {((selectedTab === "level-1" && applicationType === "REAPPOINTMENT")) ? (
                       <div className={style.grid5and2}>
                         <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth}`}>
                           <div className={style.flex}>
@@ -5062,9 +5065,13 @@ const NewActiveApplication = ({
                                 </span>
                               </div>
                               <div className={`${style.marginTop10} ${style.twoColumnGridInner2}`}>
-                                <span className={style.rightAlignTextStyle}>
-                                  Reappointment Date:
-                                </span>
+                              <span className={style.rightAlignTextStyle}>
+                                {applicationType === "REAPPOINTMENT"
+                                  ? "Reappointment Date:"
+                                  : applicationType === "LOCUM" && form?.reappointmentType === "EXTENSION"
+                                  ? "Extension Date:"
+                                  : "Renewal Date:"}
+                              </span>
                                 <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>
                                   {/* {form?.createdDate} */}
                                   {reappointmentStartDate}
@@ -5180,17 +5187,21 @@ const NewActiveApplication = ({
                                         form?.basicDetails?.applicant?.name?.lastName
                                       )
                                       : "{First Name} {Last Name}"
-                                  },{" "}
+                                  }{" "}
                                   {/* {form?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{","} */}
                                 </span>
                                 <span className={`${style.cardTextNormalStyle}`}>
                                   {/* {form?.displayId || ""} */}
-                                  {form?.basicDetailReferences?.applicantType?.serviceProviderType || ""}
+                                  {applicationType === "LOCUM" ? "Locum":""} {form?.basicDetailReferences?.applicantType?.serviceProviderType || ""}
                                 </span>
                               </div>
                               <div className={`${style.marginTop10} ${style.twoColumnGridInner2}`}>
-                                <span className={style.rightAlignTextStyle}>
-                                  Reappointment Date:
+                              <span className={style.rightAlignTextStyle}>
+                                {applicationType === "REAPPOINTMENT"
+                                  ? "Reappointment Date:"
+                                  : applicationType === "LOCUM" && form?.reappointmentType === "EXTENSION"
+                                  ? "Extension Date:"
+                                  : "Renewal Date:"}
                                 </span>
                                 <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>
                                   {/* {form?.createdDate} */}
@@ -5218,8 +5229,8 @@ const NewActiveApplication = ({
                               <div className={`${style.emailTextBoldStyle}`}>
                                 {form?.basicDetails?.applicant?.cellPhone ? `+1 ${form?.basicDetails?.applicant?.cellPhone}` : ""}
                               </div>
-                              <div className={`${style.emailTextBoldStyle}`} onClick={() => sendEmail(form?.basicDetails?.applicant?.email?.officialEmail || "")} style={{ cursor: form?.basicDetails?.applicant?.email?.officialEmail ? 'pointer' : 'default' }}>
-                                {form?.basicDetails?.applicant?.email?.officialEmail || ""}
+                              <div className={`${style.emailTextBoldStyle}`}>
+                                <span className={style.cursorPointer} onClick={() => sendEmail(form?.basicDetails?.applicant?.email?.officialEmail || "")}>{form?.basicDetails?.applicant?.email?.officialEmail || ""}</span>
                               </div>
                               {/* <div className={`${style.emailTextBoldStyle} ${style.marginTop10}`}>
                                 {form?.basicDetails?.applicant?.email?.officialEmail || ""}
@@ -5261,12 +5272,21 @@ const NewActiveApplication = ({
                           </div> */}
                           </div>
                         </div>
-                        <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.statusCardHeight} ${style.displayInCol}`}>
+                        {(selectedTab === "level-1" && applicationType === "LOCUM") ? (
+                          <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.statusCardHeight} ${style.displayInCol}`}>
+                          <div className={`${statusStyle} ${style.marginCenter}`}></div>
+                          <div className={style.greyDotTextStyle}>
+                            MSO Verification & Acceptance Status
+                          </div>
+                        </div>
+                        ) : (
+                          <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.statusCardHeight} ${style.displayInCol}`}>
                           <div className={`${style.greenBigDotStyle} ${style.marginCenter}`}></div>
                           <div className={style.greyDotTextStyle}>
                             Overall Review Status
                           </div>
-                        </div>
+                          </div>
+                        )}
                       </div>
                     )}
 
@@ -11519,7 +11539,16 @@ const NewActiveApplication = ({
                           <div
                             className={`${style.bigButtonStyle2} ${isButtonDisabled ? undefined : style.cursorPointer}`}
                             style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
-                            onClick={isButtonDisabled ? undefined : handleApplicationAccept}
+                            onClick={
+                              isButtonDisabled ? undefined
+                                : () => {
+                                    if (applicationType === "LOCUM") {
+                                      getApplicationMoveToNext();
+                                    } else {
+                                      handleApplicationAccept();
+                                    }
+                                  }
+                            }
                           >
                             <Tooltip title={isButtonDisabled ? "" : "Click to Mark as Approved by BOD"} arrow>
                               <div className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20}`}>

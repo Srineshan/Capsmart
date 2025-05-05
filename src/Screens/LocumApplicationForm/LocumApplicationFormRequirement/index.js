@@ -108,6 +108,18 @@ const LocumApplicationFormRequirement = () => {
         getBasicForm();
     }, [cookie.get('entityId')])
 
+    useEffect(() => {
+        if (basicForm && selectedPrivilegeForDisplay) {
+            if (selectedPrivilegeForDisplay?.length === 0) {
+                if (selectedAdditionalPrivilegeForDisplay?.length !== 0) {
+                    setShowAdditionalPrivileges(true)
+                } else {
+                    navigate(`/locumApplicationForm/${applicationId}/${basicForm?.forms[1]?.formCategory}/${btoa(basicForm?.forms[1]?.schemaCategory)}`)
+                }
+            }
+        }
+    }, [selectedPrivilegeForDisplay])
+
     const getIsOpen = (value) => {
         setIsOpen(value);
         console.log('processReappointment', value)
@@ -294,7 +306,8 @@ const LocumApplicationFormRequirement = () => {
             privilegesIndex,
             value,
             key,
-            "onChange"
+            "onChange",
+            basicOrAdditional
         );
         if (basicOrAdditional === 'Additional') {
             setSelectedAdditionalPrivilegeForDisplay((prevData) => {
@@ -381,12 +394,11 @@ const LocumApplicationFormRequirement = () => {
                 temp[index] = {
                     ...temp[index],
                     privilegeDetails: {
-                        ...temp[index].privilegeDetails,
+                        ...temp[index]?.privilegeDetails,
                         restrictedPrivileges: {
-                            ...temp[index].privilegeDetails.restrictedPrivileges,
+                            ...temp[index]?.privilegeDetails?.restrictedPrivileges,
                             privilegesByCategories: [
-                                ...temp[index].privilegeDetails.restrictedPrivileges
-                                    .privilegesByCategories,
+                                ...temp[index]?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories,
                             ],
                         },
                     },
@@ -395,11 +407,9 @@ const LocumApplicationFormRequirement = () => {
                 temp[index].privilegeDetails.restrictedPrivileges.privilegesByCategories[
                     categoriesIndex
                 ] = {
-                    ...temp[index].privilegeDetails.restrictedPrivileges
-                        .privilegesByCategories[categoriesIndex],
+                    ...temp?.[index]?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.[categoriesIndex],
                     privileges: [
-                        ...temp[index].privilegeDetails.restrictedPrivileges
-                            .privilegesByCategories[categoriesIndex].privileges,
+                        ...temp?.[index]?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.[categoriesIndex]?.privileges,
                     ],
                 };
                 if (key === "file") {
@@ -529,9 +539,9 @@ const LocumApplicationFormRequirement = () => {
     const getFieldsForSign = (id, privilegeSetIndex, privilegeData, isBasicOrAdditional) => {
         if (id !== "") {
             console.log(
-                privilegeData,
+                isBasicOrAdditional,
                 "entered",
-                id,
+                privilegeData,
             );
             return (
                 <>
@@ -656,7 +666,8 @@ const LocumApplicationFormRequirement = () => {
                                                                             categoriesIndex,
                                                                             privilegesIndex,
                                                                             e.target.value,
-                                                                            "response"
+                                                                            "response",
+                                                                            isBasicOrAdditional
                                                                         )
                                                                     }
                                                                     radioValue={["NO", "YES"]}
@@ -679,7 +690,8 @@ const LocumApplicationFormRequirement = () => {
                                                                                         categoriesIndex,
                                                                                         privilegesIndex,
                                                                                         data,
-                                                                                        "notes"
+                                                                                        "notes",
+                                                                                        isBasicOrAdditional
                                                                                     );
                                                                                 }}
                                                                                 onReady={(editor) => {
@@ -827,7 +839,8 @@ const LocumApplicationFormRequirement = () => {
                                                                                                     categoriesIndex,
                                                                                                     privilegesIndex,
                                                                                                     null,
-                                                                                                    "removeFile"
+                                                                                                    "removeFile",
+                                                                                                    isBasicOrAdditional
                                                                                                 );
                                                                                             }}
                                                                                         />

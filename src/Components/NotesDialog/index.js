@@ -284,8 +284,8 @@ const NotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, selected
                           formDetails.basicDetails.applicant.name.firstName.slice(1).toLowerCase()
                           : ""}
                       </span>
-                        <span className={`${style.rejectionTextStyle}`}>
-                          {", "}{formDetails?.providerType?.serviceProviderType}
+                        <span className={`${style.rejectionTextStyle} ${style.marginLeft4}`}>
+                        {" "} {applicationType === "LOCUM" ? "Locum":""} {formDetails?.providerType?.serviceProviderType}
                         </span>
                       </div>
                       <div className={`${style.gridItem2}`}>
