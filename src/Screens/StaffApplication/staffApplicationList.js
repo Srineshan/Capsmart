@@ -16,6 +16,7 @@ import StaffApplicationTopTiles from "./staffApplicationTopTiles";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import EventAvailableOutlinedIcon from '@mui/icons-material/EventAvailableOutlined';
+import UnsubscribeOutlinedIcon from '@mui/icons-material/UnsubscribeOutlined';
 import PeopleOutlinedIcon from '@mui/icons-material/PeopleOutlined';
 import RemoveIcon from "@mui/icons-material/Remove";
 import AddIcon from "@mui/icons-material/Add";
@@ -31,6 +32,7 @@ import ApplicationRejection from "./applicationRejectionDialog";
 import ApplicationApprovedDeclined from "./applicationApprovedDecline";
 import CCDateDialog from "../../Components/CCDateDialog";
 import ApprovalBulkDialog from "../../Components/ApprovalWithoutNotesBulkDialog";
+import MoveBulkDialog from "../../Components/MoveBulkDialog";
 import { useNavigate, useParams } from "react-router-dom";
 import { GET, PUT, POST, TenantID } from "../dataSaver";
 import ReactToPrint, { useReactToPrint } from "react-to-print";
@@ -61,6 +63,7 @@ const StaffApplicationList = ({
   selectedTab,
   // applicationCreationType,
   // getApplicationCreationType,
+  activeApplicationView,
   getActiveApplicationView,
   getActiveApplicationTask,
   getNotesCommentBox,
@@ -76,6 +79,7 @@ const StaffApplicationList = ({
   getMdTrackerDialog
 }) => {
   const PDFRef = createRef();
+  const prevCompletionLettersRef = useRef([]);
   const navigate = useNavigate();
   const componentRef = useRef(null);
   const { applicationTypeFromUrl, applicationId } = useParams()
@@ -652,6 +656,7 @@ const StaffApplicationList = ({
     useState(false);
   const [showCCDateDialog, setShowCCDateDialog] = useState(false);
   const [showBulkApproveDialog, setShowBulkApproveDialog] = useState(false);
+  const [showBulkMoveDialog, setShowBulkMoveDialog] = useState(false);
   const [showCheckListDialog, setShowCheckListDialog] = useState(false);
   const [reFetchMetaData, setReFetchMetaData] = useState(false);
   const [isApproved, setIsApproved] = useState([]);
@@ -879,6 +884,29 @@ const StaffApplicationList = ({
   const getBulkApproveDialogOpen = (value) => {
     // // getCCDateDialog(true,checkedIds);
     setShowBulkApproveDialog(value)
+  };
+
+  useEffect(() => {
+    if (!showBulkApproveDialog && selectedTab === "level-5") {
+      const timer = setTimeout(() => {
+        console.log("setShowBulkApproveDialog")
+        getWorkflowUserData();
+      }, 30000);
+  
+      return () => clearTimeout(timer);
+    }
+    if(!activeApplicationView && selectedTab === "level-5"){
+      const timer = setTimeout(() => {
+        console.log("setShowBulkApproveDialog1111111111")
+        getWorkflowUserData();
+      }, 30000);
+  
+      return () => clearTimeout(timer);
+    }
+  }, [showBulkApproveDialog,activeApplicationView]);
+
+  const getBulkMoveDialogOpen = (value) => {
+    setShowBulkMoveDialog(value)
   };
 
   const getCheckListDialog = (value) => {
@@ -1282,7 +1310,7 @@ const StaffApplicationList = ({
     // getNotesDialog();
     getReFetchMetaData(true);
     console.log("getReFetchMetaData", reFetchMetaData)
-  }, [showNotesDialog, showCCDateDialog, approvalnotesCommentsBoxDept, showBulkApproveDialog, activeApplicationTask]);
+  }, [showNotesDialog, showCCDateDialog, approvalnotesCommentsBoxDept, showBulkApproveDialog,showBulkMoveDialog, activeApplicationTask]);
 
   // useEffect(() => {
   //   getApplicationCreationType();
@@ -1400,6 +1428,18 @@ const StaffApplicationList = ({
       return [];
     }
   };
+
+  // useEffect(() => {
+  //   // Check if any completionLetter in tableData has changed
+  //   const hasCompletionLetterChanged = tableData?.some(item => 
+  //     item?.completionLetter !== null
+  //   );
+  
+  //   if (hasCompletionLetterChanged) {
+  //     console.log("Aravinthan RS")
+  //     getWorkflowUserData();
+  //   }
+  // }, [tableData]);
 
   const getWorkflowUserDataSearch = async (signal) => {
     try {
@@ -4629,14 +4669,14 @@ const StaffApplicationList = ({
       onClick: onClickViewAndVerifyApproveFromBODFunction,
       conditionToShow: `data?.completedWorkflows?.find((wf) => wf?.role === "Board")?.meetingDate`,
     },
-    {
-      data: "Go to Task List",
-      requiredValue: "boolean",
-      onClick: onClickProcessingTaskFunction,
-      hideForRoles: "Department Head",
-      hideForRoles2: "Credentialing Committee",
-      conditionToShow: `data?.completedWorkflows?.find(wf => wf?.role === "Board")?.approvalType`,
-    },
+    // {
+    //   data: "Go to Task List",
+    //   requiredValue: "boolean",
+    //   onClick: onClickProcessingTaskFunction,
+    //   hideForRoles: "Department Head",
+    //   hideForRoles2: "Credentialing Committee",
+    //   conditionToShow: `data?.completedWorkflows?.find(wf => wf?.role === "Board")?.approvalType`,
+    // },
     { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog, hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
     // {
     //   data: "Request For Clarification",
@@ -5301,6 +5341,27 @@ const StaffApplicationList = ({
                 )}
                 {((workModeType === "Staff Manager" && selectedTab === "level-3") || (workModeType === "Staff Manager" && selectedTab === "level-4") || (workModeType === "Staff Manager" && selectedTab === "level-5")) && (
                   <>
+                  {(workModeType === "Staff Manager" && selectedTab === "level-5") && (
+                    <div
+                    className={`${style.alignCenter} ${style.cursorPointer} ${style.marginRight20}`}
+                    style={{
+                      pointerEvents: checkedIds?.length > 0 ? "auto" : "none",
+                      opacity: checkedIds?.length > 0 ? 1 : 0.5,
+                    }}
+                    onClick={() => {
+                      setShowBulkMoveDialog(true);
+                    }}
+                    >
+                    <Tooltip title={"Update BOD Move Status"} arrow>
+                      <UnsubscribeOutlinedIcon
+                        sx={{
+                          fontSize: 25,
+                          color: "#06617A",
+                        }}
+                      />
+                    </Tooltip>
+                    </div>
+                  )}
                     <div
                       className={`${style.alignCenter} ${style.cursorPointer} ${style.marginRight20}`}
                       style={{
@@ -5545,9 +5606,55 @@ const StaffApplicationList = ({
           showBulkApproveDialog && (
             <ApprovalBulkDialog
               getBulkApproveDialogOpen={getBulkApproveDialogOpen}
-              checkedIds={checkedIds}
+              checkedIds={
+                selectedTab === "level-3"
+                  ? tableData.filter(data =>
+                      checkedIds.includes(data.id) &&
+                      data?.completedWorkflows?.some(workflow =>
+                        workflow?.role === "Credentialing Committee" && workflow?.meetingDate
+                      )
+                    ).map(data => data.id)
+                  : selectedTab === "level-4"
+                  ? tableData.filter(data =>
+                      checkedIds.includes(data.id) &&
+                      data?.completedWorkflows?.some(workflow =>
+                        workflow?.role === "Advisory Committee" && workflow?.meetingDate
+                      )
+                    ).map(data => data.id)
+                  : selectedTab === "level-5"
+                  ? tableData.filter(data =>
+                      checkedIds.includes(data.id) &&
+                      data?.completedWorkflows?.some(workflow =>
+                        workflow?.role === "Board" && workflow?.meetingDate
+                      )
+                    ).map(data => data.id)
+                  : []
+              }
               selectedTab={selectedTab}
-              onClose={() => { setShowBulkApproveDialog(false); setCheckedIds([]); }}
+              onClose={() => {
+                setShowBulkApproveDialog(false);
+                setCheckedIds([]);
+              }}
+            />
+          )
+        }
+        {
+          showBulkMoveDialog && (
+            <MoveBulkDialog
+              getBulkApproveDialogOpen={getBulkMoveDialogOpen}
+              // checkedIds={checkedIds}
+              checkedIds={
+                tableData
+                  .filter(data =>
+                    checkedIds.includes(data.id) && // only process checked IDs
+                    data?.completedWorkflows?.some(workflow =>
+                      workflow?.role === "Board" && workflow?.approvalType
+                    ) && data?.completionLetter !== null
+                  )
+                  .map(data => data.id)
+              }
+              selectedTab={selectedTab}
+              onClose={() => { setShowBulkMoveDialog(false); setCheckedIds([]); }}
             />
           )
         }
