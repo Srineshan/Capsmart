@@ -759,7 +759,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                             actions={currentTab === "ByApplicants" ? actionsDataByApplicant : actionsData}
                             scrollStyle={style.contractScrollStyle}
                             tableSortValues={currentTab === "ByApplicants" ? colSortValuesByApplicants : colSortValuesByMedicalDirective}
-                            heading={"There are no record to display"}
+                            heading={"There are no records to display"}
                             getHandleSort={getHandleSort}
                             sortValue={{ sortBy: sortValue, sortByField: sortField }}
                             getSelectedPage={getSelectedPage}

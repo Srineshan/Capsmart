@@ -2387,7 +2387,7 @@ const ReportTypeOverview = () => {
                                                                             tableData={tableData}
                                                                             gridStyle={style.permanentStaffGrid}
                                                                             tableSortValues={colSortValues}
-                                                                            heading={"There are no record to display"}
+                                                                            heading={"There are no records to display"}
                                                                             className={`${style.tableRow} ${style.reportSection}`}
                                                                         />
                                                                     </>
@@ -2414,7 +2414,7 @@ const ReportTypeOverview = () => {
                                                                             tableData={tableData}
                                                                             gridStyle={style.permanentStaffGrid}
                                                                             tableSortValues={colSortValues}
-                                                                            heading={"There are no record to display"}
+                                                                            heading={"There are no records to display"}
                                                                             className={`${style.tableRow} ${style.reportSection}`}
                                                                         />
                                                                     </>
