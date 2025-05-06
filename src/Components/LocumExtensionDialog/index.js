@@ -2669,7 +2669,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
   const lastModifiedDate = formDetails?.lastModifiedDate;
   const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), "MMM dd, yyyy") : "-";
   const formattedExpiringDate = ExpireDate ? format(new Date(ExpireDate), "MMM dd, yyyy") : "-";
-  const daysRemaining = ExpireDate ? differenceInDays(new Date(ExpireDate), new Date()) : null;
+  const daysRemaining = ExpireDate ? Math.abs(differenceInDays(new Date(ExpireDate), new Date())) : null;
   //  const monthsList = getNext12MonthsFromCreatedDate(format(new Date(selectDataLocum?.tenure?.to), "MMM dd, yyyy"));
   // const selectedMonthLabel = selectedMonth === "Custom"
   // ? "Custom End Date"
@@ -2765,8 +2765,8 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
                       <span className={`${style.rejectionTextStyle1}`}>{formattedExpiringDate}</span>
                     </div>
                     <div className={`${style.twoColumnGridInner}`}>
-                      <span className={`${style.rejectionTextStyle}`}>Days From Expiration :</span>
-                      <span className={`${style.rejectionTextStyle1}`}>{daysRemaining}</span>
+                      <span className={`${style.rejectionTextStyle}`}>{selectedTab === "ACTIVELOCUM" ? "Days From Expiration :" : "Days Since Expiration :"}</span>
+                      <span className={`${style.rejectionTextStyle1}`}> {selectedTab === "ACTIVELOCUM"  ? `${daysRemaining} days to go`  : `${daysRemaining} days Ago`}</span>
                     </div>
                     {/* <div className={`${style.twoColumnGridInner}`}>
            <span className={`${style.rejectionTextStyle}`}>OHIP Number :</span>
