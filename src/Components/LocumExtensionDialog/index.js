@@ -622,33 +622,41 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
               }`}</div>
 
             {selectedPrivilegeForDisplay?.map((data) =>
-              data?.privilegeDetails?.corePrivileges?.privilegesByCategories?.map(
-                (categories, index) => (
-                  <div>
-                    <div className={style.categoryGrid}>
-                      <div className={style.itemLeft}>
-                        <strong>
-                          {categories?.category === null
-                            ? ""
-                            : categories?.category}
-                        </strong>
-                      </div>
-                    </div>
-                    <>
-                      {categories?.privileges?.map((privileges) => (
-                        <div className={style.privilegeCodeGrid}>
-                          <div className={style.itemLeft}>
-                            <strong>{privileges?.privilegeId || ""}</strong>
-                          </div>
-                          <div className={style.itemLeft}>
-                            {privileges?.title || ""}
-                          </div>
-                        </div>
-                      ))}
-                    </>
-                  </div>
+              data?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ?
+                (
+                  <div
+                    className={` ${style.marginTop} ${style.descriptionStyle}`}
+                    dangerouslySetInnerHTML={{ __html: data?.descriptiveContent?.content }}
+                  />
                 )
-              )
+                :
+                data?.privilegeDetails?.corePrivileges?.privilegesByCategories?.map(
+                  (categories, index) => (
+                    <div>
+                      <div className={style.categoryGrid}>
+                        <div className={style.itemLeft}>
+                          <strong>
+                            {categories?.category === null
+                              ? ""
+                              : categories?.category}
+                          </strong>
+                        </div>
+                      </div>
+                      <>
+                        {categories?.privileges?.map((privileges) => (
+                          <div className={style.privilegeCodeGrid}>
+                            <div className={style.itemLeft}>
+                              <strong>{privileges?.privilegeId || ""}</strong>
+                            </div>
+                            <div className={style.itemLeft}>
+                              {privileges?.title || ""}
+                            </div>
+                          </div>
+                        ))}
+                      </>
+                    </div>
+                  )
+                )
             )}
             {/* {selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges
                 ?.privilegesByCategories?.[0]?.privileges?.length !== 0 &&
@@ -1184,33 +1192,41 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
               : ""
               }`}</div>
             {selectedAdditionalPrivilegeForDisplay?.map((data) =>
-              data?.privilegeDetails?.corePrivileges?.privilegesByCategories?.map(
-                (categories, index) => (
-                  <div>
-                    <div className={style.categoryGrid}>
-                      <div className={style.itemLeft}>
-                        <strong>
-                          {categories?.category === null
-                            ? ""
-                            : categories?.category}
-                        </strong>
-                      </div>
-                    </div>
-                    <>
-                      {categories?.privileges?.map((privileges) => (
-                        <div className={style.privilegeCodeGrid}>
-                          <div className={style.itemLeft}>
-                            <strong>{privileges?.privilegeId || ""}</strong>
-                          </div>
-                          <div className={style.itemLeft}>
-                            {privileges?.title || ""}
-                          </div>
-                        </div>
-                      ))}
-                    </>
-                  </div>
+              data?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ?
+                (
+                  <div
+                    className={` ${style.marginTop} ${style.descriptionStyle}`}
+                    dangerouslySetInnerHTML={{ __html: data?.descriptiveContent?.content }}
+                  />
                 )
-              )
+                :
+                data?.privilegeDetails?.corePrivileges?.privilegesByCategories?.map(
+                  (categories, index) => (
+                    <div>
+                      <div className={style.categoryGrid}>
+                        <div className={style.itemLeft}>
+                          <strong>
+                            {categories?.category === null
+                              ? ""
+                              : categories?.category}
+                          </strong>
+                        </div>
+                      </div>
+                      <>
+                        {categories?.privileges?.map((privileges) => (
+                          <div className={style.privilegeCodeGrid}>
+                            <div className={style.itemLeft}>
+                              <strong>{privileges?.privilegeId || ""}</strong>
+                            </div>
+                            <div className={style.itemLeft}>
+                              {privileges?.title || ""}
+                            </div>
+                          </div>
+                        ))}
+                      </>
+                    </div>
+                  )
+                )
             )}
             {/* {selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges
               ?.privilegesByCategories?.[0]?.privileges?.length !== 0 &&
