@@ -685,7 +685,7 @@ const LocumStaffList = ({
       data: "Extend Locum Period",
       requiredValue: "boolean",
       onClick: onClickExtensiveLocumDialog,
-      conditionToShow: `data?.reAppointmentInitiated === false`,
+      // conditionToShow: `data?.reAppointmentInitiated === false`,
     },
     // {
     //   data: "Create Note",

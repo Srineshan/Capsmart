@@ -609,7 +609,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
         selectedPrivilegesForDisplayMultiple
       );
       return (
-        <>
+        <div className={style.privilegeRequestScroll}>
           <div className={style.padding}>
             <div className={style.cardTitle}>{`${allStaffPrivilege
               ?.filter((data) => data?.id === selectedPrivilege)
@@ -982,7 +982,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
                   </div> */}
               </div>
             )}
-        </>
+        </div>
       );
     }
   };

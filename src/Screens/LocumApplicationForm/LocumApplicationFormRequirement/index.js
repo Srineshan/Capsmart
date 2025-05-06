@@ -60,6 +60,9 @@ const LocumApplicationFormRequirement = () => {
     const [uploadFormSchema, setUploadFormSchema] = useState();
     const [selectedPrivilegeForDisplay, setSelectedPrivilegeForDisplay] =
         useState([]);
+
+    const [privilegeSetChangeYesOrNo, setPrivilegeSetChangeYesOrNo] = useState("");
+    const [additionalPrivilegeChangeYesOrNo, setAdditionalPrivilegeChangeYesOrNo] = useState("No");
     const [
         selectedAdditionalPrivilegeForDisplay,
         setSelectedAdditionalPrivilegeForDisplay,
@@ -107,6 +110,12 @@ const LocumApplicationFormRequirement = () => {
     useEffect(() => {
         getBasicForm();
     }, [cookie.get('entityId')])
+
+    useEffect(() => {
+        const data = basicForm?.forms?.[basicForm?.forms?.findIndex(data => data?.schemaCategory === "PrivilegeSelection")]?.data;
+        setPrivilegeSetChangeYesOrNo(data ? data.privilegeSetChangeYesOrNo : "");
+        setAdditionalPrivilegeChangeYesOrNo(data ? data.additionalPrivilegeChangeYesOrNo : "");
+    }, [basicForm]);
 
     useEffect(() => {
         if (basicForm && selectedPrivilegeForDisplay) {
@@ -983,10 +992,10 @@ const LocumApplicationFormRequirement = () => {
                             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
                                 <div>
                                     <div className={`${style.applicationCardStyle}`}>
-                                        <div className={`${style.privilegeTitleStyle} ${style.marginLeft}`}>Privileges for Extension</div>
+                                        <div className={`${style.privilegeTitleStyle} ${style.marginLeft}`}>Privileges for {basicForm?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'}</div>
                                         <div className={`${style.privilegeCard}`}>
                                             <div>
-                                                <div className={style.privilegeHeading}>
+                                                {/* <div className={style.privilegeHeading}>
                                                     <strong>Privilege Category</strong>
                                                 </div>
                                                 <div className={style.twoCol}>
@@ -1023,118 +1032,116 @@ const LocumApplicationFormRequirement = () => {
                                                             </div>
                                                         </div>
                                                     )}
-                                                </div>
-                                                <div className={`${style.privilegeHeading} ${style.marginTop}`}>
-                                                    <strong>Privilege Sets</strong>
-                                                </div>
-                                                <div className={style.twoCol}>
-                                                    <div
-                                                        className={`${style.privilegeContentCard} ${style.marginTop10}`}
-                                                    >
-                                                        <div className={`${style.privilegeHeading}`}>Current</div>
-                                                        {basicForm?.privileges?.priorObligatedPrivileges?.length ===
-                                                            0 ? (
-                                                            <>
-                                                                {basicForm?.privileges?.obligatedPrivileges?.map(
-                                                                    (data) => (
-                                                                        <div
-                                                                            className={`${style.privilegeTitleStyle}`}
-                                                                        // onClick={() => {
-                                                                        //     setShowCurrentPrivileges(true);
-                                                                        //     setCurrentPrivilegesCategory('Basic')
-                                                                        //     handleChange(data?.id);
-                                                                        // }}
-                                                                        >
-                                                                            {data?.privilegeSetTitle}
-                                                                        </div>
-                                                                    )
-                                                                )}
-                                                            </>
-                                                        ) : (
-                                                            <>
-                                                                {basicForm?.privileges?.priorObligatedPrivileges?.map(
-                                                                    (data) => (
-                                                                        <div
-                                                                            className={`${style.privilegeTitleStyle}`}
-                                                                        // onClick={() => {
-                                                                        //     setShowCurrentPrivileges(true);
-                                                                        //     setCurrentPrivilegesCategory('Basic')
-                                                                        //     handleChange(data?.id);
-                                                                        // }}
-                                                                        >
-                                                                            {data?.privilegeSetTitle}
-                                                                        </div>
-                                                                    )
-                                                                )}
-                                                            </>
-                                                        )}
-                                                    </div>
-                                                    {basicForm?.privileges?.priorObligatedPrivileges?.length !==
-                                                        0 && (
+                                                </div> */}
+                                                {(basicForm?.privileges?.priorObligatedPrivileges?.length !== 0 || basicForm?.privileges?.obligatedPrivileges?.length !== 0) && (
+                                                    <>
+                                                        <div className={`${style.privilegeHeading} ${style.marginTop10}`}>
+                                                            <strong>Privilege Sets</strong>
+                                                        </div>
+                                                        <div className={style.twoCol}>
                                                             <div
                                                                 className={`${style.privilegeContentCard} ${style.marginTop10}`}
                                                             >
-                                                                <div className={`${style.privilegeHeadingReappointment}`}>
-                                                                    Change for {` ${basicForm?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'}`}
-                                                                </div>
-                                                                {basicForm?.privileges?.obligatedPrivileges?.map(
-                                                                    (data) => (
-                                                                        <div
-                                                                            className={`${style.privilegeTitleStyle} `}
-                                                                        // onClick={() => {
-                                                                        //     setShowCurrentPrivileges(true);
-                                                                        //     setCurrentPrivilegesCategory('Basic')
-                                                                        //     handleChange(data?.id);
-                                                                        // }}
-                                                                        >
-                                                                            {data?.privilegeSetTitle}
-                                                                        </div>
-                                                                    )
-                                                                )}
-                                                            </div>
-                                                        )}
-                                                </div>
-                                                <div>
-                                                    <div className={`${style.privilegeHeading} ${style.marginTop}`}><strong>Additional Privileges</strong></div>
-                                                    <div className={style.twoCol}>
-                                                        <div className={`${style.privilegeContentCard} ${style.marginTop10}`}>
-                                                            <div className={`${style.privilegeHeading}`}>Current</div>
-                                                            {basicForm?.privileges?.priorAdditionalPrivileges?.length === 0 ? (
-                                                                <>
-                                                                    {basicForm?.privileges?.additionalPrivileges?.length === 0 ? (
-                                                                        <strong><div className={style.privilegeHeading}>None</div></strong>
+                                                                <div className={`${style.privilegeHeadingCurrent}`}>Current</div>
+                                                                {basicForm?.privileges?.priorObligatedPrivileges?.length === 0 ?
+                                                                    (
+                                                                        <div className={style.privilegeHeading}>Not Available</div>
                                                                     ) : (
                                                                         <>
+                                                                            {basicForm?.privileges?.priorObligatedPrivileges?.map(
+                                                                                (data) => (
+                                                                                    <div className={style.privilegeHeading}
+                                                                                    >
+                                                                                        {data?.privilegeSetTitle}
+                                                                                    </div>
+                                                                                )
+                                                                            )}
+                                                                        </>
+                                                                    )}
+                                                            </div>
+                                                            {privilegeSetChangeYesOrNo !== "" && (
+                                                                <div
+                                                                    className={`${style.privilegeContentChangeCard} ${style.marginTop10}`}
+                                                                >
+                                                                    <div className={`${style.privilegeHeadingReappointment}`}>
+                                                                        Change for Locum {basicForm?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'}
+                                                                    </div>
+                                                                    {privilegeSetChangeYesOrNo === "Yes" ? (
+                                                                        <>
+                                                                            <div className={style.privilegeHeading}>
+                                                                                Same Privileges Requested
+                                                                            </div>
+                                                                        </>
+                                                                    ) : (
+                                                                        <>
+                                                                            {basicForm?.privileges?.obligatedPrivileges?.map(
+                                                                                (data) => (
+                                                                                    <div
+                                                                                        className={`${style.privilegeHeading}`}
+                                                                                    >
+                                                                                        {data?.privilegeSetTitle}
+                                                                                    </div>
+                                                                                )
+                                                                            )}
+                                                                        </>
+                                                                    )}
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </>
+                                                )}
+                                                {(basicForm?.privileges?.priorAdditionalPrivileges?.length !== 0 || basicForm?.privileges?.additionalPrivileges?.length !== 0) && (
+                                                    <div>
+                                                        <div className={`${style.privilegeHeading} ${style.marginTop10}`}><strong>Additional Privileges</strong></div>
+                                                        <div className={style.twoCol}>
+                                                            <div className={`${style.privilegeContentCard} ${style.marginTop10}`}>
+                                                                <div className={`${style.privilegeHeadingCurrent}`}>Current</div>
+                                                                {basicForm?.privileges?.priorAdditionalPrivileges?.length === 0 ? (
+                                                                    <>
+                                                                        {basicForm?.privileges?.priorAdditionalPrivileges?.length === 0 ? (
+                                                                            <div className={style.privilegeHeading}>None</div>
+                                                                        ) : (
+                                                                            <>
+                                                                                {basicForm?.privileges?.additionalPrivileges?.map(data => (
+                                                                                    <div
+                                                                                        className={`${style.privilegeHeading} `}
+                                                                                    >{data?.privilegeSetTitle}</div>
+                                                                                ))}
+                                                                            </>
+                                                                        )}
+                                                                    </>
+                                                                ) : (
+                                                                    <>
+                                                                        {basicForm?.privileges?.priorAdditionalPrivileges?.map(data => (
+                                                                            <div
+                                                                                className={`${style.privilegeHeading} `}
+                                                                            >{data?.privilegeSetTitle}</div>
+                                                                        ))}
+                                                                    </>
+                                                                )}
+                                                            </div>
+                                                            {basicForm?.forms?.[basicForm?.forms?.findIndex(data => data?.schemaCategory === "PrivilegeSelection")]?.data?.additionalPrivilegeChangeYesOrNo !== '' && basicForm?.forms?.[basicForm?.forms?.findIndex(data => data?.schemaCategory === "PrivilegeSelection")]?.data?.additionalPrivilegeChangeYesOrNo !== undefined && (
+                                                                <div className={`${style.privilegeContentChangeCard} ${style.marginTop10}`}>
+                                                                    <div className={`${style.privilegeHeadingReappointment}`}>{additionalPrivilegeChangeYesOrNo === 'No' ? 'Privileges Requested' : `Change for Locum ${basicForm?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'}`}</div>
+                                                                    {additionalPrivilegeChangeYesOrNo === 'No' ? (
+                                                                        <div className={`${style.privilegeHeading}`}>None</div>
+                                                                    ) : (
+                                                                        <>
+                                                                            <div className={style.privilegeHeading}>
+                                                                                Additional Privilege Requested
+                                                                            </div>
                                                                             {basicForm?.privileges?.additionalPrivileges?.map(data => (
-                                                                                <div className={`${style.privilegeTitleStyle} ${style.cursorPointer}`}
-                                                                                // onClick={() => { setShowCurrentPrivileges(true); handleChangeAdditional(data?.id); setCurrentPrivilegesCategory('Additional') }}
+                                                                                <div
+                                                                                    className={`${style.privilegeHeadingWithHover} ${style.cursorPointer}`}
                                                                                 >{data?.privilegeSetTitle}</div>
                                                                             ))}
                                                                         </>
                                                                     )}
-                                                                </>
-                                                            ) : (
-                                                                <>
-                                                                    {basicForm?.privileges?.priorAdditionalPrivileges?.map(data => (
-                                                                        <div className={`${style.privilegeTitleStyle} ${style.cursorPointer}`}
-                                                                        // onClick={() => { setShowCurrentPrivileges(true); handleChangeAdditional(data?.id); setCurrentPrivilegesCategory('Additional') }}
-                                                                        >{data?.privilegeSetTitle}</div>
-                                                                    ))}
-                                                                </>
+                                                                </div>
                                                             )}
                                                         </div>
-                                                        {basicForm?.privileges?.priorAdditionalPrivileges?.length !== 0 && (
-                                                            <div className={`${style.privilegeContentCard} ${style.marginTop10}`}>
-                                                                <div className={`${style.privilegeHeadingReappointment}`}>Change for {` ${basicForm?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'}`}</div>
-                                                                {basicForm?.privileges?.additionalPrivileges?.map(data => (
-                                                                    <div className={`${style.privilegeTitleStyle} ${style.cursorPointer}`}
-                                                                    // onClick={() => { setShowCurrentPrivileges(true); handleChangeAdditional(data?.id); setCurrentPrivilegesCategory('Additional') }}
-                                                                    >{data?.privilegeSetTitle}</div>
-                                                                ))}
-                                                            </div>
-                                                        )}
                                                     </div>
-                                                </div>
+                                                )}
                                             </div>
                                         </div>
                                     </div>

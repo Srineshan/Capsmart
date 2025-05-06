@@ -23,6 +23,11 @@
   position: relative;
 }
 
+.privilegeRequestScroll {
+  height: 75vh;
+  overflow: scroll;
+}
+
 .indexHigh {
   z-index: 1100 !important;
 }
