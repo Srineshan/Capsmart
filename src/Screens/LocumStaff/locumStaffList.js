@@ -76,7 +76,7 @@ const LocumStaffList = ({
   const [rejectionListData, setRejectionListData] = useState([]);
   const [sortField, setSortField] = useState("DEFAULT");
   const [sortValue, setSortValue] = useState("DESCENDING");
-  const userDetailsFetchOption = JSON.parse(sessionStorage.getItem('user'));
+  const userDetailsFetchOption = (sessionStorage.getItem('user') !== "undefined" && sessionStorage.getItem('user')) ? JSON.parse(sessionStorage.getItem('user')) : {};
   const [searchTerm, setSearchTerm] = useState('');
   const [searchData, setSearchData] = useState([]);
   const [searchTermForTable, setSearchTermForTable] = useState('');
