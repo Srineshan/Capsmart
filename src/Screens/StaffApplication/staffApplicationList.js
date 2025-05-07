@@ -4537,7 +4537,7 @@ const StaffApplicationList = ({
 
   const applicantLocumActionData = [
     {
-      data: "View and Verify",
+      data: "View & Verify",
       requiredValue: "boolean",
       onClick: onClickViewAndVerifyLevel1Function,
     },
@@ -4717,7 +4717,7 @@ const StaffApplicationList = ({
 
   const applicationLocumActionData = [
     {
-      data: "Review and Approve",
+      data: "Review & Approve",
       requiredValue: "boolean",
       onClick: onClickViewAndVerifyCredFunction,
     },
