@@ -94,7 +94,7 @@ const LocumStaffList = ({
   let userSpecialty;
 
   const activeLocumHeaderValues = ["Locum Staff", "", "Locum Type", "Notes", "Docs", "Start Date", "End Date", "Days to Expiration", "Action"];
-  const expiredLocumHeaderValues = ["Locum Staff","", "Locum Type", "Notes", "Docs", "Last End Date", "Days Since Expired", "Action"];
+  const expiredLocumHeaderValues = ["Locum Staff", "", "Locum Type", "Notes", "Docs", "Last End Date", "Days Since Expired", "Action"];
 
 
   const activeLocumColSortValues = [false, false, false, false, false, , false, false, false, false];
@@ -186,7 +186,7 @@ const LocumStaffList = ({
 
   useEffect(() => {
     getActiveUserData(selectedTab);
-  }, [selectedTab, sortField, sortValue, page, totalCount, showLocumExtensiveDialog, searchTermForTable,limit]);
+  }, [selectedTab, sortField, sortValue, page, totalCount, showLocumExtensiveDialog, searchTermForTable, limit]);
 
   const getReFetchMetaData = (value) => {
     setReFetchMetaData(value);
@@ -711,7 +711,7 @@ const LocumStaffList = ({
   };
   const activeLocumActionsData = [
     {
-      data: "Extend Locum Period",
+      data: "Extend",
       requiredValue: "boolean",
       onClick: onClickExtensiveLocumDialog,
       conditionToShow: `data?.reAppointmentInitiated === false`,
@@ -739,7 +739,7 @@ const LocumStaffList = ({
 
   const expiredLocumActionsData = [
     {
-      data: "Reactivate Locum Staff",
+      data: "Reactivate",
       requiredValue: "boolean",
       onClick: onClickExtensiveLocumDialog,
       conditionToShow: `data?.reAppointmentInitiated === false`,
@@ -814,10 +814,10 @@ const LocumStaffList = ({
   return (
     <div className={style.margin20}>
       {isLoadingImage && (
-              <div className={style.loadingOverlay}>
-                <LoadingScreen />
-              </div>
-            )}
+        <div className={style.loadingOverlay}>
+          <LoadingScreen />
+        </div>
+      )}
       <div className={isExpanded ? style.bigCardGrid : style.smallCardGrid}>
         <div>
           <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>

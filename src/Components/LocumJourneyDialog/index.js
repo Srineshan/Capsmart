@@ -214,7 +214,12 @@ const LocumJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, img, conti
                                                         (data?.schemaCategory === 'ScheduleA' && hasMissingScheduleA) ||
                                                         (data?.schemaCategory === 'ScheduleB' && hasMissingScheduleB)
                                                     ) ? (
-                                                        <WarningIcon style={{ fontSize: 20, color: `#FF6562` }} />
+                                                        <Tooltip
+                                                            title="Some required fields / files were left blank."
+                                                            arrow
+                                                        >
+                                                            <WarningIcon style={{ fontSize: 20, color: `#FF6562` }} />
+                                                        </Tooltip>
                                                     ) : (!data?.acknowledged || errorSchema === data?.schemaCategory ||
                                                         (data?.schemaCategory === 'UploadYourDoc' && unFilledFields?.length !== 0) ||
                                                         (data?.schemaCategory === 'DemographicData' && demographicDataUnfilledFields?.length !== 0) ||
@@ -228,7 +233,12 @@ const LocumJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, img, conti
                                                         (data?.schemaCategory === 'MISCELLANEOUS_QUESTIONS' && MiscellaneousQuestionUnfilledFields?.length !== 0)
                                                     )
                                                         ? (
-                                                            <WarningIcon style={{ fontSize: 20, color: `#FFC107` }} />
+                                                            <Tooltip
+                                                                title="Some optional fields / files were left blank."
+                                                                arrow
+                                                            >
+                                                                <WarningIcon style={{ fontSize: 20, color: `#FFC107` }} />
+                                                            </Tooltip>
                                                         ) : (
                                                             <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A` }} />
                                                         )
