@@ -133,7 +133,7 @@ const StaffApplicationList = ({
   const [workModeType, setWorkModeType] = useState(() =>
     sessionStorage.getItem("workModeType") || ''
   );
-  const userDetailsFetchOption = JSON.parse(sessionStorage.getItem('user'));
+  const userDetailsFetchOption = (sessionStorage.getItem('user') !== "undefined" && sessionStorage.getItem('user')) ? JSON.parse(sessionStorage.getItem('user')) : {};
   let userDepartmentList;
   let userSpecialty;
   const [isLoadingImage, setIsLoadingImage] = useState(false);
@@ -933,7 +933,7 @@ const StaffApplicationList = ({
   useEffect(() => {
     if ((!showBulkApproveDialog && selectedTab === "level-5" && applicationType === "REAPPOINTMENT") || (!showBulkApproveDialog && selectedTab === "level-4" && applicationType === "LOCUM")) {
       const timer = setTimeout(() => {
-        console.log("setShowBulkApproveDialog",selectedTab)
+        console.log("setShowBulkApproveDialog", selectedTab)
         getWorkflowUserData();
       }, 30000);
 
@@ -941,7 +941,7 @@ const StaffApplicationList = ({
     }
     if ((!activeApplicationView && selectedTab === "level-5" && applicationType === "REAPPOINTMENT") || (!activeApplicationView && selectedTab === "level-4" && applicationType === "LOCUM")) {
       const timer = setTimeout(() => {
-        console.log("setShowBulkApproveDialog1111111111",selectedTab)
+        console.log("setShowBulkApproveDialog1111111111", selectedTab)
         getWorkflowUserData();
       }, 30000);
 
@@ -5592,7 +5592,7 @@ const StaffApplicationList = ({
                 )}
                 {((workModeType === "Staff Manager" && selectedTab === "level-3") || (workModeType === "Staff Manager" && selectedTab === "level-4") || (workModeType === "Staff Manager" && selectedTab === "level-5") || (workModeType === "Staff Manager" && selectedTab === "level-2" && applicationType === "LOCUM")) && (
                   <>
-                    {((workModeType === "Staff Manager" && selectedTab === "level-5")|| (workModeType === "Staff Manager" && selectedTab === "level-4" && applicationType === "LOCUM")) && (
+                    {((workModeType === "Staff Manager" && selectedTab === "level-5") || (workModeType === "Staff Manager" && selectedTab === "level-4" && applicationType === "LOCUM")) && (
                       <div
                         className={`${style.alignCenter} ${style.cursorPointer} ${style.marginRight20}`}
                         style={{
@@ -5779,7 +5779,7 @@ const StaffApplicationList = ({
                       actions={actions}
                       scrollStyle={style.contractScrollStyle}
                       tableSortValues={tableSortValues}
-                      heading={((selectedTab === "level-4" && applicationType === "REAPPOINTMENT") ||(selectedTab === "level-3" && applicationType === "LOCUM")) ? "At this time, there are no applications for MAC recommendation." : ((selectedTab === "level-5" && applicationType === "REAPPOINTMENT") ||(selectedTab === "level-4" && applicationType === "LOCUM")) ? "At this time, there are no applications for BOD Approval." : selectedTab === "clarificationsRequired" ? "At this time, there are no applications with clarification for you to work on." : "There are no Records for you to manage"}
+                      heading={((selectedTab === "level-4" && applicationType === "REAPPOINTMENT") || (selectedTab === "level-3" && applicationType === "LOCUM")) ? "At this time, there are no applications for MAC recommendation." : ((selectedTab === "level-5" && applicationType === "REAPPOINTMENT") || (selectedTab === "level-4" && applicationType === "LOCUM")) ? "At this time, there are no applications for BOD Approval." : selectedTab === "clarificationsRequired" ? "At this time, there are no applications with clarification for you to work on." : "There are no Records for you to manage"}
                       onClickFunction={() => { }}
                       getHandleSort={getHandleSort}
                       sortValue={{ sortBy: sortValue, sortByField: sortField }}
@@ -5863,7 +5863,7 @@ const StaffApplicationList = ({
                         )
                     )
                     .map((data) => data.id);
-            
+
                 if (applicationType === "REAPPOINTMENT") {
                   if (selectedTab === "level-3") {
                     return getFilteredIds("Credentialing Committee");
