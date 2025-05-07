@@ -11542,11 +11542,11 @@ const NewActiveApplication = ({
                             onClick={
                               isButtonDisabled ? undefined
                                 : () => {
-                                    if (applicationType === "LOCUM") {
-                                      getApplicationMoveToNext();
-                                    } else {
+                                    // if (applicationType === "LOCUM") {
+                                    //   getApplicationMoveToNext();
+                                    // } else {
                                       handleApplicationAccept();
-                                    }
+                                  //   }
                                   }
                             }
                           >

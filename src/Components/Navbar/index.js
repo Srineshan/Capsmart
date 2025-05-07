@@ -300,6 +300,7 @@ const Navbar = () => {
     cookie.remove("entityId", { path: "/" });
     cookie.remove("authorization", { path: "/" });
     sessionStorage.setItem('applicationCreationType', 'REAPPOINTMENT');
+    sessionStorage.removeItem('selectedTab');
     logout()
     navigate('/')
   }
@@ -393,7 +394,7 @@ const Navbar = () => {
             )
           } */}
           {workModeType !== "Entity Sys Admin" && (
-            <Link to={"/applications"} className={style.noFontStyle}>
+            <Link to={"/applications"}  onClick={() => sessionStorage.setItem('applicationCreationType', 'REAPPOINTMENT')} className={style.noFontStyle}>
               <div
                 className={`${style.menuStyle} ${window.location.pathname.includes("/applications") &&
                   style.activeMenuColor

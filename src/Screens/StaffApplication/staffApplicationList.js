@@ -57,6 +57,8 @@ import { Tooltip } from "@mui/material";
 import ReappointmentReportDialog from "./ReappointmentReportDialog";
 import Resend from './../../images/Resend.png';
 import ResendDisabled from './../../images/Resend-disabled.png';
+import sendBodDisabled from './../../images/BODLetter.png';
+import sendBod from './../../images/BODLetterActive.png';
 
 const StaffApplicationList = ({
   isLoading,
@@ -929,22 +931,23 @@ const StaffApplicationList = ({
   };
 
   useEffect(() => {
-    if (!showBulkApproveDialog && selectedTab === "level-5") {
+    if ((!showBulkApproveDialog && selectedTab === "level-5" && applicationType === "REAPPOINTMENT") || (!showBulkApproveDialog && selectedTab === "level-4" && applicationType === "LOCUM")) {
       const timer = setTimeout(() => {
-        console.log("setShowBulkApproveDialog")
+        console.log("setShowBulkApproveDialog",selectedTab)
         getWorkflowUserData();
       }, 30000);
 
       return () => clearTimeout(timer);
     }
-    if (!activeApplicationView && selectedTab === "level-5") {
+    if ((!activeApplicationView && selectedTab === "level-5" && applicationType === "REAPPOINTMENT") || (!activeApplicationView && selectedTab === "level-4" && applicationType === "LOCUM")) {
       const timer = setTimeout(() => {
-        console.log("setShowBulkApproveDialog1111111111")
+        console.log("setShowBulkApproveDialog1111111111",selectedTab)
         getWorkflowUserData();
       }, 30000);
 
       return () => clearTimeout(timer);
     }
+
   }, [showBulkApproveDialog, activeApplicationView]);
 
   const getBulkMoveDialogOpen = (value) => {
@@ -1133,9 +1136,12 @@ const StaffApplicationList = ({
         isDelegate = true;
         title = "Credentialing Committee Review";
       }
-    } else if (selectedTab === 'level-4') {
+    } else if (selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") {
       role = "Advisory Committee";
       title = "MAC Review";
+    } else if (selectedTab === 'level-4' && applicationType === "LOCUM") {
+      role = "Board";
+      title = "BOD Approval";
     } else if (selectedTab === 'level-5') {
       role = "Board";
       title = "BOD Approval";
@@ -3763,10 +3769,10 @@ const StaffApplicationList = ({
       action.push(true);
       pdfSendIcon.push(
         (data?.completionLetter) ?
-          <div className={style.justifyCenter}
+          <div className={`${style.justifyCenter} ${style.cursorPointer}`}
             onClick={() => onClickMoveToNextFunction(data.id)}
-          > <Tooltip arrow title={"Click to Send as Staff"}><img src={Resend} alt="" className={style.resentIcon} /></Tooltip></div> :
-          <div className={`${style.justifyCenter} ${style.disabled}`}> <Tooltip arrow title="Waiting for Approval"><img src={ResendDisabled} alt="" className={style.resentIcon} /></Tooltip></div>
+          > <Tooltip arrow title={"Click to Send Annual Reappointment Letter"}><img src={sendBod} alt="" className={style.resentIcon} /></Tooltip></div> :
+          <div className={`${style.justifyCenter} ${style.disabled}`}> <Tooltip arrow title="Waiting for Approval"><img src={sendBodDisabled} alt="" className={style.resentIcon} /></Tooltip></div>
       );
 
       console.log("tabledata" + tableData);
@@ -5586,7 +5592,7 @@ const StaffApplicationList = ({
                 )}
                 {((workModeType === "Staff Manager" && selectedTab === "level-3") || (workModeType === "Staff Manager" && selectedTab === "level-4") || (workModeType === "Staff Manager" && selectedTab === "level-5") || (workModeType === "Staff Manager" && selectedTab === "level-2" && applicationType === "LOCUM")) && (
                   <>
-                    {(workModeType === "Staff Manager" && selectedTab === "level-5") && (
+                    {((workModeType === "Staff Manager" && selectedTab === "level-5")|| (workModeType === "Staff Manager" && selectedTab === "level-4" && applicationType === "LOCUM")) && (
                       <div
                         className={`${style.alignCenter} ${style.cursorPointer} ${style.marginRight20}`}
                         style={{
@@ -5597,14 +5603,7 @@ const StaffApplicationList = ({
                           setShowBulkMoveDialog(true);
                         }}
                       >
-                        <Tooltip title={"Update BOD Move Status"} arrow>
-                          <UnsubscribeOutlinedIcon
-                            sx={{
-                              fontSize: 25,
-                              color: "#06617A",
-                            }}
-                          />
-                        </Tooltip>
+                        <Tooltip arrow title={"Click to Send Annual Reappointment Letter"}><img src={sendBod} alt="" className={style.resentIcon} /></Tooltip>
                       </div>
                     )}
                     <div
@@ -5751,6 +5750,7 @@ const StaffApplicationList = ({
                 getReFetchMetadata={getReFetchMetaData}
                 approvalnotesCommentsBoxDept={approvalnotesCommentsBoxDept}
                 showBulkApproveDialog={showBulkApproveDialog}
+                showBulkMoveDialog={showBulkMoveDialog}
                 searchTermForTable={searchTermForTable}
                 activeApplicationTask={activeApplicationTask}
                 totalCount={totalCount}
@@ -5779,7 +5779,7 @@ const StaffApplicationList = ({
                       actions={actions}
                       scrollStyle={style.contractScrollStyle}
                       tableSortValues={tableSortValues}
-                      heading={selectedTab === "level-4" ? "At this time, there are no applications for MAC recommendation." : selectedTab === "level-5" ? "At this time, there are no applications for BOD Approval." : selectedTab === "clarificationsRequired" ? "At this time, there are no applications with clarification for you to work on." : "There are no Records for you to manage"}
+                      heading={((selectedTab === "level-4" && applicationType === "REAPPOINTMENT") ||(selectedTab === "level-3" && applicationType === "LOCUM")) ? "At this time, there are no applications for MAC recommendation." : ((selectedTab === "level-5" && applicationType === "REAPPOINTMENT") ||(selectedTab === "level-4" && applicationType === "LOCUM")) ? "At this time, there are no applications for BOD Approval." : selectedTab === "clarificationsRequired" ? "At this time, there are no applications with clarification for you to work on." : "There are no Records for you to manage"}
                       onClickFunction={() => { }}
                       getHandleSort={getHandleSort}
                       sortValue={{ sortBy: sortValue, sortByField: sortField }}
@@ -5852,30 +5852,37 @@ const StaffApplicationList = ({
           showBulkApproveDialog && (
             <ApprovalBulkDialog
               getBulkApproveDialogOpen={getBulkApproveDialogOpen}
-              checkedIds={
-                selectedTab === "level-3"
-                  ? tableData.filter(data =>
-                    checkedIds.includes(data.id) &&
-                    data?.completedWorkflows?.some(workflow =>
-                      workflow?.role === "Credentialing Committee" && workflow?.meetingDate
-                    )
-                  ).map(data => data.id)
-                  : selectedTab === "level-4"
-                    ? tableData.filter(data =>
-                      checkedIds.includes(data.id) &&
-                      data?.completedWorkflows?.some(workflow =>
-                        workflow?.role === "Advisory Committee" && workflow?.meetingDate
-                      )
-                    ).map(data => data.id)
-                    : selectedTab === "level-5"
-                      ? tableData.filter(data =>
+              checkedIds={(() => {
+                const getFilteredIds = (role) =>
+                  tableData
+                    .filter(
+                      (data) =>
                         checkedIds.includes(data.id) &&
-                        data?.completedWorkflows?.some(workflow =>
-                          workflow?.role === "Board" && workflow?.meetingDate
+                        data?.completedWorkflows?.some(
+                          (workflow) => workflow?.role === role && workflow?.meetingDate
                         )
-                      ).map(data => data.id)
-                      : []
-              }
+                    )
+                    .map((data) => data.id);
+            
+                if (applicationType === "REAPPOINTMENT") {
+                  if (selectedTab === "level-3") {
+                    return getFilteredIds("Credentialing Committee");
+                  } else if (selectedTab === "level-4") {
+                    return getFilteredIds("Advisory Committee");
+                  } else if (selectedTab === "level-5") {
+                    return getFilteredIds("Board");
+                  }
+                } else if (applicationType === "LOCUM") {
+                  if (selectedTab === "level-2") {
+                    return getFilteredIds("Credentialing Committee");
+                  } else if (selectedTab === "level-3") {
+                    return getFilteredIds("Advisory Committee");
+                  } else if (selectedTab === "level-4") {
+                    return getFilteredIds("Board");
+                  }
+                }
+                return [];
+              })()}
               selectedTab={selectedTab}
               onClose={() => {
                 setShowBulkApproveDialog(false);
