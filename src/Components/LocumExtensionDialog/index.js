@@ -332,13 +332,13 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
     const fromDate = selectedTab === "ACTIVELOCUM"
       ? format(addDays(new Date(selectDataLocum?.tenure?.to), 1), 'yyyy-MM-dd')
       : selectedTab === "EXPIREDLOCUM" && customStartDate
-      ? format(new Date(customStartDate), 'yyyy-MM-dd')
-      : format(new Date(), 'yyyy-MM-dd');
+        ? format(new Date(customStartDate), 'yyyy-MM-dd')
+        : format(new Date(), 'yyyy-MM-dd');
     const toDate = selectedMonth === "Custom"
       ? format(new Date(customEndDate), 'yyyy-MM-dd')
       : selectedTab === "EXPIREDLOCUM"
-      ? format(new Date(customEndDate), 'yyyy-MM-dd')
-      : format(new Date(selectedMonth), 'yyyy-MM-dd');
+        ? format(new Date(customEndDate), 'yyyy-MM-dd')
+        : format(new Date(selectedMonth), 'yyyy-MM-dd');
     const coveredDetails = covererNameList?.map((data) => {
       const applicantData = selectApplicant?.find(optionData => optionData?.id === data);
       const fullName = `${applicantData?.applicant?.name?.firstName || ''} ${applicantData?.applicant?.name?.middleName || ''} ${applicantData?.applicant?.name?.lastName || ''}`.trim();
@@ -1174,7 +1174,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
         selectedPrivilegesForDisplayMultiple
       );
       return (
-        <>
+        <div className={style.privilegeRequestScroll}>
           <div className={style.padding}>
             <div className={style.cardTitle}>{`${allStaffPrivilege
               ?.filter((data) => data?.id === selectedPrivilege)
@@ -1560,7 +1560,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
               </div>
             )
           }
-        </>
+        </div>
       );
     }
   };
@@ -2702,15 +2702,15 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
         : null
       : addYears(currentDateNow, 1);
 
-      const isValidDateRange = () => {
-        if (selectedTab === "EXPIREDLOCUM") {
-          return customStartDate && customEndDate;
-        }
-        if (selectedMonth === "Custom") {
-          return customEndDate;
-        }
-        return selectedMonth;
-      };
+  const isValidDateRange = () => {
+    if (selectedTab === "EXPIREDLOCUM") {
+      return customStartDate && customEndDate;
+    }
+    if (selectedMonth === "Custom") {
+      return customEndDate;
+    }
+    return selectedMonth;
+  };
 
   return (
     <>
@@ -2785,7 +2785,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
                     </div>
                     <div className={`${style.twoColumnGridInner}`}>
                       <span className={`${style.rejectionTextStyle}`}>{selectedTab === "ACTIVELOCUM" ? "Days From Expiration :" : "Days Since Expiration :"}</span>
-                      <span className={`${style.rejectionTextStyle1}`}> {selectedTab === "ACTIVELOCUM"  ? `${daysRemaining} days`  : `${daysRemaining} days`}</span>
+                      <span className={`${style.rejectionTextStyle1}`}> {selectedTab === "ACTIVELOCUM" ? `${daysRemaining} days` : `${daysRemaining} days`}</span>
                     </div>
                     {/* <div className={`${style.twoColumnGridInner}`}>
            <span className={`${style.rejectionTextStyle}`}>OHIP Number :</span>
@@ -2849,7 +2849,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
                             required={false}
                           />
                         </div>
-                      )} 
+                      )}
                       {/* </div> */}
                       {/* <div> */}
                       {/* </div> */}
@@ -2905,8 +2905,8 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
                             : selectedMonth === "Custom"
                               ? ''
                               : selectedTab === "EXPIREDLOCUM"
-                              ? ''  // Leave blank since the CommonDateField will appear
-                              : "-"}
+                                ? ''  // Leave blank since the CommonDateField will appear
+                                : "-"}
                         </span>
 
                         {(selectedMonth === "Custom" || selectedTab === "EXPIREDLOCUM") && (
@@ -4134,7 +4134,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
                   }}
                   onClick={() => {
                     if (!isValidDateRange()) return;
-                    
+
                     if (!showSelectedPrivilegeLocum) {
                       onClickExtensiveRequest();
                     } else {

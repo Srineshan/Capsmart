@@ -475,8 +475,8 @@ const LocumApplicationFormRequirement = () => {
         }
     };
 
-    const handleSign = (type, basicOrAdditional, index = 0, isPrivilegeSpecificationType) => {
-        console.log('handleSignCheck', type, basicOrAdditional, index = 0, isPrivilegeSpecificationType)
+    const handleSign = (type, basicOrAdditional, index, isPrivilegeSpecificationType) => {
+        console.log('handleSignCheck', type, basicOrAdditional, index, isPrivilegeSpecificationType, indexForSign)
         if (isPrivilegeSpecificationType) {
             setSelectedPrivilegeForDisplay((prevData) => {
                 const temp = [...prevData];
