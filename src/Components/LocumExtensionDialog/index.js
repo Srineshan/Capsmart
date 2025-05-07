@@ -13,7 +13,7 @@ import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import Cookie from "universal-cookie";
 import jwt from "jwt-decode";
 import style from "./index.module.scss";
-import { format, differenceInDays ,addDays, addMonths, endOfMonth, parseISO, addYears,isValid } from "date-fns";
+import { format, differenceInDays, addDays, addMonths, endOfMonth, parseISO, addYears, isValid } from "date-fns";
 import { fileLoadingURL } from "../../utils/formatting";
 import LoadingScreen from "../LoadingScreen";
 import CommonCheckBox from "../CommonFields/CommonCheckBox";
@@ -26,7 +26,7 @@ import CommonDivider from "../CommonFields/CommonDivider";
 import DeleteIcon from "./../../images/deleteHcRow.png";
 import { useNavigate, useParams } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu";
-import DatalistInput from "react-datalist-input";
+import DatalistInput, { useComboboxControls } from "react-datalist-input";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import ESignature from "../../Components/ESignature";
@@ -36,6 +36,7 @@ import AdditionalPrivilegesDialog from "../../Screens/ReappointmentApplicationFo
 const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
   let cookie = new Cookie();
   let userDetails = cookie.get("user");
+  const { setValue, value } = useComboboxControls({ initialValue: "" });
   const users = jwt(userDetails);
   const [userRole, setUserRole] = useState("");
   const [formDetails, setFormDetails] = useState([]);
@@ -608,7 +609,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
         selectedPrivilegesForDisplayMultiple
       );
       return (
-        <>
+        <div className={style.privilegeRequestScroll}>
           <div className={style.padding}>
             <div className={style.cardTitle}>{`${allStaffPrivilege
               ?.filter((data) => data?.id === selectedPrivilege)
@@ -621,33 +622,41 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
               }`}</div>
 
             {selectedPrivilegeForDisplay?.map((data) =>
-              data?.privilegeDetails?.corePrivileges?.privilegesByCategories?.map(
-                (categories, index) => (
-                  <div>
-                    <div className={style.categoryGrid}>
-                      <div className={style.itemLeft}>
-                        <strong>
-                          {categories?.category === null
-                            ? ""
-                            : categories?.category}
-                        </strong>
-                      </div>
-                    </div>
-                    <>
-                      {categories?.privileges?.map((privileges) => (
-                        <div className={style.privilegeCodeGrid}>
-                          <div className={style.itemLeft}>
-                            <strong>{privileges?.privilegeId || ""}</strong>
-                          </div>
-                          <div className={style.itemLeft}>
-                            {privileges?.title || ""}
-                          </div>
-                        </div>
-                      ))}
-                    </>
-                  </div>
+              data?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ?
+                (
+                  <div
+                    className={` ${style.marginTop} ${style.descriptionStyle}`}
+                    dangerouslySetInnerHTML={{ __html: data?.descriptiveContent?.content }}
+                  />
                 )
-              )
+                :
+                data?.privilegeDetails?.corePrivileges?.privilegesByCategories?.map(
+                  (categories, index) => (
+                    <div>
+                      <div className={style.categoryGrid}>
+                        <div className={style.itemLeft}>
+                          <strong>
+                            {categories?.category === null
+                              ? ""
+                              : categories?.category}
+                          </strong>
+                        </div>
+                      </div>
+                      <>
+                        {categories?.privileges?.map((privileges) => (
+                          <div className={style.privilegeCodeGrid}>
+                            <div className={style.itemLeft}>
+                              <strong>{privileges?.privilegeId || ""}</strong>
+                            </div>
+                            <div className={style.itemLeft}>
+                              {privileges?.title || ""}
+                            </div>
+                          </div>
+                        ))}
+                      </>
+                    </div>
+                  )
+                )
             )}
             {/* {selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges
                 ?.privilegesByCategories?.[0]?.privileges?.length !== 0 &&
@@ -733,7 +742,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
                                 <div className={style.itemLeft}>
                                   {privileges?.title || ""}
                                 </div>
-                                <div className={style.floatRight}>
+                                <div className={`${style.floatRight}`}>
                                   <CommonRadio
                                     value={privileges?.response || ""}
                                     // onChange={(e) =>
@@ -747,7 +756,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
                                     // }
                                     radioValue={["NO", "YES"]}
                                     label={["No", "Yes"]}
-                                    readOnly
+                                    readOnly={true}
                                   />
                                 </div>
                                 {privileges?.response === "YES" &&
@@ -981,7 +990,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
                   </div> */}
               </div>
             )}
-        </>
+        </div>
       );
     }
   };
@@ -1183,33 +1192,41 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
               : ""
               }`}</div>
             {selectedAdditionalPrivilegeForDisplay?.map((data) =>
-              data?.privilegeDetails?.corePrivileges?.privilegesByCategories?.map(
-                (categories, index) => (
-                  <div>
-                    <div className={style.categoryGrid}>
-                      <div className={style.itemLeft}>
-                        <strong>
-                          {categories?.category === null
-                            ? ""
-                            : categories?.category}
-                        </strong>
-                      </div>
-                    </div>
-                    <>
-                      {categories?.privileges?.map((privileges) => (
-                        <div className={style.privilegeCodeGrid}>
-                          <div className={style.itemLeft}>
-                            <strong>{privileges?.privilegeId || ""}</strong>
-                          </div>
-                          <div className={style.itemLeft}>
-                            {privileges?.title || ""}
-                          </div>
-                        </div>
-                      ))}
-                    </>
-                  </div>
+              data?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ?
+                (
+                  <div
+                    className={` ${style.marginTop} ${style.descriptionStyle}`}
+                    dangerouslySetInnerHTML={{ __html: data?.descriptiveContent?.content }}
+                  />
                 )
-              )
+                :
+                data?.privilegeDetails?.corePrivileges?.privilegesByCategories?.map(
+                  (categories, index) => (
+                    <div>
+                      <div className={style.categoryGrid}>
+                        <div className={style.itemLeft}>
+                          <strong>
+                            {categories?.category === null
+                              ? ""
+                              : categories?.category}
+                          </strong>
+                        </div>
+                      </div>
+                      <>
+                        {categories?.privileges?.map((privileges) => (
+                          <div className={style.privilegeCodeGrid}>
+                            <div className={style.itemLeft}>
+                              <strong>{privileges?.privilegeId || ""}</strong>
+                            </div>
+                            <div className={style.itemLeft}>
+                              {privileges?.title || ""}
+                            </div>
+                          </div>
+                        ))}
+                      </>
+                    </div>
+                  )
+                )
             )}
             {/* {selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges
               ?.privilegesByCategories?.[0]?.privileges?.length !== 0 &&
@@ -1311,7 +1328,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
                                     // }
                                     radioValue={["NO", "YES"]}
                                     label={["No", "Yes"]}
-                                    readOnly
+                                    readOnly={true}
                                   />
                                 </div>
                                 {privileges?.response === "YES" &&
@@ -2584,55 +2601,55 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
     getIsOpen(false);
   };
 
- const getMonthOrDays = (startDateStr, endDateStr) => {
-  const startDate = new Date(startDateStr);
-  const endDate = new Date(endDateStr);
- 
-  // Ensure end date is after start date
-  if (endDate < startDate) return 0;
- 
-  const yearDiff = endDate.getFullYear() - startDate.getFullYear();
-  const monthDiff = endDate.getMonth() - startDate.getMonth();
-  const dayDiff = endDate.getDate() - startDate.getDate();
- 
-  let months = yearDiff * 12 + monthDiff;
-  if (dayDiff >= 0) {
-    months += 1;
+  const getMonthOrDays = (startDateStr, endDateStr) => {
+    const startDate = new Date(startDateStr);
+    const endDate = new Date(endDateStr);
+
+    // Ensure end date is after start date
+    if (endDate < startDate) return 0;
+
+    const yearDiff = endDate.getFullYear() - startDate.getFullYear();
+    const monthDiff = endDate.getMonth() - startDate.getMonth();
+    const dayDiff = endDate.getDate() - startDate.getDate();
+
+    let months = yearDiff * 12 + monthDiff;
+    if (dayDiff >= 0) {
+      months += 1;
+    }
+
+    // If less than 1 month
+    if (months <= 0) {
+      const diffInMs = endDate - startDate;
+      const days = Math.ceil(diffInMs / (1000 * 60 * 60 * 24));
+      return `${days} day(s)`;
+    }
+
+    return `${months}`;
   }
- 
-  // If less than 1 month
-  if (months <= 0) {
-    const diffInMs = endDate - startDate;
-    const days = Math.ceil(diffInMs / (1000 * 60 * 60 * 24));
-    return `${days} day(s)`;
-  }
- 
-  return `${months} month(s)`;
-}
- 
-// Examples:
-console.log(getMonthOrDays("2025-01-15", "2025-01-28")); // 13 day(s)
-const rawExpireDate = selectDataLocum?.tenure?.to ?? null;
-const ExpireDate = rawExpireDate ? parseISO(rawExpireDate) : null;
 
-// Validate date before using
-const isExpireDateValid = ExpireDate && isValid(ExpireDate);
-const isCustomEndDateValid = customEndDate && isValid(new Date(customEndDate));
+  // Examples:
+  console.log(getMonthOrDays("2025-01-15", "2025-01-28")); // 13 day(s)
+  const rawExpireDate = selectDataLocum?.tenure?.to ?? null;
+  const ExpireDate = rawExpireDate ? parseISO(rawExpireDate) : null;
 
-const startDateStr =
-  selectedTab === "ACTIVELOCUM" && isExpireDateValid
-    ? format(addDays(ExpireDate, 1), "yyyy-MM-dd")
-    : format(addDays(new Date(),1), "yyyy-MM-dd");
-const endDateStr =
-  selectedTab === "ACTIVELOCUM" || selectedTab === "EXPIREDLOCUM"
-    ? selectedMonth === "Custom" && isCustomEndDateValid
-      ? format(new Date(customEndDate), "yyyy-MM-dd")
-      : selectedMonth
-    : format(new Date(), "yyyy-MM-dd");
+  // Validate date before using
+  const isExpireDateValid = ExpireDate && isValid(ExpireDate);
+  const isCustomEndDateValid = customEndDate && isValid(new Date(customEndDate));
 
-// Now call the function safely
-const monthOptionsToView = getMonthOrDays(startDateStr, endDateStr);
-console.log("1111111111111111111111",getMonthOrDays("2025-04-30", "2025-05-30"),monthOptionsToView,selectedMonth,startDateStr,endDateStr); // 2 month(s)
+  const startDateStr =
+    selectedTab === "ACTIVELOCUM" && isExpireDateValid
+      ? format(addDays(ExpireDate, 1), "yyyy-MM-dd")
+      : format(addDays(new Date(), 1), "yyyy-MM-dd");
+  const endDateStr =
+    selectedTab === "ACTIVELOCUM" || selectedTab === "EXPIREDLOCUM"
+      ? selectedMonth === "Custom" && isCustomEndDateValid
+        ? format(new Date(customEndDate), "yyyy-MM-dd")
+        : selectedMonth
+      : format(new Date(), "yyyy-MM-dd");
+
+  // Now call the function safely
+  const monthOptionsToView = getMonthOrDays(startDateStr, endDateStr);
+  console.log("1111111111111111111111", getMonthOrDays("2025-04-30", "2025-05-30"), monthOptionsToView, selectedMonth, startDateStr, endDateStr); // 2 month(s)
 
 
   const getNext12MonthsFromCreatedDate = (createdDateStr) => {
@@ -2657,19 +2674,19 @@ console.log("1111111111111111111111",getMonthOrDays("2025-04-30", "2025-05-30"),
       value: 'Custom'
     });
 
-  return months;
-};
-const referenceDate =
-  selectedTab === "ACTIVELOCUM" && selectDataLocum?.tenure?.to
-    ? selectDataLocum.tenure.to
-    : new Date();
-const monthOptions = getNext12MonthsFromCreatedDate(referenceDate);
+    return months;
+  };
+  const referenceDate =
+    selectedTab === "ACTIVELOCUM" && selectDataLocum?.tenure?.to
+      ? selectDataLocum.tenure.to
+      : new Date();
+  const monthOptions = getNext12MonthsFromCreatedDate(referenceDate);
 
- const lastModifiedDate = formDetails?.lastModifiedDate;
- const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), "dd/MM/yyyy") : "-";
- const formattedExpiringDate = ExpireDate ? format(new Date(ExpireDate), "dd/MM/yyyy") : "-";
- const daysRemaining = ExpireDate ? differenceInDays(new Date(ExpireDate), new Date()) : null;
-//  const monthsList = getNext12MonthsFromCreatedDate(format(new Date(selectDataLocum?.tenure?.to), "dd/MM/yyyy"));
+  const lastModifiedDate = formDetails?.lastModifiedDate;
+  const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), "MMM dd, yyyy") : "-";
+  const formattedExpiringDate = ExpireDate ? format(new Date(ExpireDate), "MMM dd, yyyy") : "-";
+  const daysRemaining = ExpireDate ? differenceInDays(new Date(ExpireDate), new Date()) : null;
+  //  const monthsList = getNext12MonthsFromCreatedDate(format(new Date(selectDataLocum?.tenure?.to), "MMM dd, yyyy"));
   // const selectedMonthLabel = selectedMonth === "Custom"
   // ? "Custom End Date"
   // : monthsList.find(month => month?.value === selectedMonth)?.label || '';
@@ -2771,35 +2788,33 @@ const monthOptions = getNext12MonthsFromCreatedDate(referenceDate);
            <span className={`${style.rejectionTextStyle}`}>OHIP Number :</span>
            <span className={`${style.rejectionTextStyle1}`}>-</span>
           </div> */}
-         </div>
-        </div>
-       </div>
-       {showSelectedPrivilegeLocum === false && (
-        <div className={`${style.marginTop10}`}>
-         <div className={`${style.rejectionHeadingTextStyle}`}>
-          {selectedTab === "ACTIVELOCUM" ? `Locum Period Expiring On ${formattedExpiringDate} (${daysRemaining} Days)` : "New Locum Period"}
-         </div>
-         <div className={`${style.rejectionTextStyle}`}>
-          {selectedTab === "ACTIVELOCUM"
-            ? "Extend the Period & Privileges for "
-            : "Indicate the Period & Privileges for "}
-          <span className={style.rejectionHeadingTextStyle}>
-            {selectDataLocum?.applicant?.name?.lastName
-              ? selectDataLocum.applicant.name.lastName.charAt(0).toUpperCase() +
-                selectDataLocum.applicant.name.lastName.slice(1).toLowerCase()
-              : ""}
-            {", "}
-            {selectDataLocum?.applicant?.name?.firstName
-              ? selectDataLocum.applicant.name.firstName.charAt(0).toUpperCase() +
-                selectDataLocum.applicant.name.firstName.slice(1).toLowerCase()
-              : ""}
-          </span>
-          {selectedMonth && (
-            <span> By {monthOptionsToView}</span>
-          )}
-        </div>
-         <div>
-          {/* <CommonRadio
+                  </div>
+                </div>
+              </div>
+              {showSelectedPrivilegeLocum === false && (
+                <div className={`${style.marginTop10}`}>
+                  <div className={`${style.rejectionHeadingTextStyle}`}>
+                    {selectedTab === "ACTIVELOCUM" ? `Locum Period Expiring On ${formattedExpiringDate} (${daysRemaining} Days)` : "New Locum Period"}
+                  </div>
+                  <div className={`${style.rejectionTextStyle}`}>
+                    {selectedTab === "ACTIVELOCUM"
+                      ? "Extend the Period & Privileges for "
+                      : "Indicate the Period & Privileges for "}
+                    <span className={style.rejectionHeadingTextStyle}>
+                      {selectDataLocum?.applicant?.name?.lastName
+                        ? selectDataLocum.applicant.name.lastName.charAt(0).toUpperCase() +
+                        selectDataLocum.applicant.name.lastName.slice(1).toLowerCase()
+                        : ""}
+                      {", "}
+                      {selectDataLocum?.applicant?.name?.firstName
+                        ? selectDataLocum.applicant.name.firstName.charAt(0).toUpperCase() +
+                        selectDataLocum.applicant.name.firstName.slice(1).toLowerCase()
+                        : ""}
+                    </span>
+                    <span> By</span>
+                  </div>
+                  <div>
+                    {/* <CommonRadio
            className={style.leftAlign}
            value={processReappointment}
            onChange={(e) => setProcessReappointment(e.target.value)}
@@ -2840,9 +2855,9 @@ const monthOptions = getNext12MonthsFromCreatedDate(referenceDate);
                         <span className={`${style.rejectionTextStyle}`}>
                           {selectedTab === "ACTIVELOCUM"
                             ? (ExpireDate
-                              ? format(addDays(new Date(ExpireDate), 1), "dd/MM/yyyy")
+                              ? format(addDays(new Date(ExpireDate), 1), "MMM dd, yyyy")
                               : "N/A")
-                            : format(new Date(), "dd/MM/yyyy")}
+                            : format(new Date(), "MMM dd, yyyy")}
                         </span>
                       </div>
                       <div className={`${style.marginLeft} ${style.rejectionTextStyle}`}> To </div>
@@ -2850,10 +2865,10 @@ const monthOptions = getNext12MonthsFromCreatedDate(referenceDate);
                         End Date <br />
                         <span className={`${style.dateTextStyle}`}>
                           {selectedMonth && selectedMonth !== "Custom"
-                            ? format(new Date(selectedMonth), "dd/MM/yyyy")
+                            ? format(new Date(selectedMonth), "MMM dd, yyyy")
                             : selectedMonth === "Custom"
                               ? '' // Leave blank since the CommonDateField will appear
-                              : "dd/MM/yyyy"}
+                              : "-"}
                         </span>
 
                         {selectedMonth === "Custom" && (
@@ -2910,7 +2925,9 @@ const monthOptions = getNext12MonthsFromCreatedDate(referenceDate);
            label={["No, I do not want to have Privileges Extended for this Locum staff"]}
           /> */}
                   </div>
-                  <div className={`${style.marginTop10} ${style.noteHeadingTextStyle}`}>The maximum duration for a Locum Staff is 12 months</div>
+                  {monthOptionsToView === '12' && (
+                    <div className={`${style.marginTop10} ${style.noteHeadingTextStyle}`}>The maximum duration for a Locum Staff is 12 months</div>
+                  )}
                   <div className={`${style.flexCenter} ${style.marginTop10}`}>
                     <div className={`${style.fullWidth}`}>
                       <div className={`${style.fieldWrapper}`}>
@@ -2936,7 +2953,9 @@ const monthOptions = getNext12MonthsFromCreatedDate(referenceDate);
             /> */}
                         <DatalistInput
                           items={getItemsSingle(applicantOptions) || []}
+                          setValue={setValue}
                           onSelect={(item) => {
+                            setValue("");
                             setCovererName(item.label);
                             setCovererId(item.id);
                             setCovererNameList(prevCheckedIds => {
@@ -2949,8 +2968,8 @@ const monthOptions = getNext12MonthsFromCreatedDate(referenceDate);
                           }}
                           className={`${style.fullWidth} ${style.marginTop10}`}
                           maxLength={50}
-                          placeholder={`Select from privileged staff from ${departmentName}`}
-                          value={covererName}
+                          placeholder={`Select from Privileged Staff from ${departmentName}`}
+                          value={value}
                           required={true}
                           error={!covererName}
                           // warning={warningFields
@@ -3517,7 +3536,7 @@ const monthOptions = getNext12MonthsFromCreatedDate(referenceDate);
                         ) : (
                           <div>
                             <div className={`${style.cardTitle} ${style.marginTop}`}>
-                              Indicate the Privilege Sets that you would like to assign to this Locum Staff from your department?
+                              Indicate the Privilege Sets that you would like to assign to this Locum Staff from your Department?
                             </div>
                             <>
                               {/* <div className={`${style.cardTitle} ${style.marginTop}`}>
@@ -3578,7 +3597,7 @@ const monthOptions = getNext12MonthsFromCreatedDate(referenceDate);
                                 className={`${style.privilegeCardWithBorder} ${style.marginTop10}`}
                               >
                                 <div className={style.displayInRow}>
-                                  <div className={style.lableStyle}>Your Department / Division or Speciality : </div>
+                                  <div className={style.lableStyle}>Department / Division : </div>
                                   <div className={`${style.lableStyle} ${style.marginLeft}`}><strong>{`${departmentList?.filter((data) => data?.id === selectedDepartment)?.[0]?.departmentName?.name} ${(formDetails?.basicDetails?.departmentSpecialty?.specialty !== "" && formDetails?.basicDetails?.departmentSpecialty?.specialty !== undefined && formDetails?.basicDetails?.departmentSpecialty?.specialty !== null) ? '-' : ''} ${(formDetails?.basicDetails?.departmentSpecialty?.specialty !== "" && formDetails?.basicDetails?.departmentSpecialty?.specialty !== undefined && formDetails?.basicDetails?.departmentSpecialty?.specialty !== null) ? formDetails?.basicDetails?.departmentSpecialty?.specialty : ''}`}</strong></div>
                                 </div>
                                 <>
@@ -3586,7 +3605,7 @@ const monthOptions = getNext12MonthsFromCreatedDate(referenceDate);
                                     <>
                                       <Tooltip title={selectedPrivilegesForDisplayMultiple?.map((data) => data?.id)?.includes(data?.id) ? "Click to Remove" : "Click to View"} arrow>
                                         <div
-                                          className={`${style.privilegeConfirmationGrid} ${style.marginTop}`}
+                                          className={`${style.privilegeConfirmationGrid} ${style.marginTop10}`}
                                           onClick={selectedPrivilegesForDisplayMultiple
                                             ?.map((data) => data?.id)
                                             ?.includes(data?.id) ? () => {
@@ -3748,7 +3767,7 @@ const monthOptions = getNext12MonthsFromCreatedDate(referenceDate);
                               className={`${style.privilegeCardWithBorder} ${style.marginTop10}`}
                             >
                               <div className={style.displayInRow}>
-                                <div className={style.lableStyle}>Your Department / Division or Speciality : </div>
+                                <div className={style.lableStyle}>Department / Division : </div>
                                 <div className={`${style.lableStyle} ${style.marginLeft}`}><strong>{`${departmentList?.filter((data) => data?.id === selectedDepartment)?.[0]?.departmentName?.name} ${(formDetails?.basicDetails?.departmentSpecialty?.specialty !== "" && formDetails?.basicDetails?.departmentSpecialty?.specialty !== undefined && formDetails?.basicDetails?.departmentSpecialty?.specialty !== null) ? '-' : ''} ${(formDetails?.basicDetails?.departmentSpecialty?.specialty !== "" && formDetails?.basicDetails?.departmentSpecialty?.specialty !== undefined && formDetails?.basicDetails?.departmentSpecialty?.specialty !== null) ? formDetails?.basicDetails?.departmentSpecialty?.specialty : ''}`}</strong></div>
                               </div>
                               <>
@@ -3756,7 +3775,7 @@ const monthOptions = getNext12MonthsFromCreatedDate(referenceDate);
                                   <>
                                     <Tooltip title={selectedPrivilegesForDisplayMultiple?.map((data) => data?.id)?.includes(data?.id) ? "Click to Remove" : "Click to View"} arrow>
                                       <div
-                                        className={`${style.privilegeConfirmationGrid} ${style.marginTop}`}
+                                        className={`${style.privilegeConfirmationGrid} ${style.marginTop10}`}
                                         onClick={selectedPrivilegesForDisplayMultiple
                                           ?.map((data) => data?.id)
                                           ?.includes(data?.id) ? () => {
@@ -3998,7 +4017,7 @@ const monthOptions = getNext12MonthsFromCreatedDate(referenceDate);
                               {additionalStaffPrivilege?.map((data, index) => (
                                 <>
                                   <Tooltip title={selectedAdditionalPrivilegesForDisplayMultiple?.map(data => data?.id)?.includes(data?.id) ? "Click to Remove" : "Click to View"} arrow>
-                                    <div className={`${style.privilegeConfirmationGrid} ${style.verticalAlignCenter} ${style.marginTop}`}
+                                    <div className={`${style.privilegeConfirmationGrid} ${style.verticalAlignCenter} ${style.marginTop10}`}
                                       onClick={selectedAdditionalPrivilegesForDisplayMultiple?.map(data => data?.id)?.includes(data?.id) ? () => { handleDeleteSelectedAdditionalPrrivilege(data?.id) } : () => { setShowAdditionalPrivileges(true); handleChangeAdditional(data?.id) }}
                                     >
                                       {selectedAdditionalPrivilegesForDisplayMultiple?.map(data => data?.id)?.includes(data?.id) ? (
@@ -4095,7 +4114,7 @@ const monthOptions = getNext12MonthsFromCreatedDate(referenceDate);
                   }}
                 >
                   <div className={`${style.reviewButton}`}>
-                    {showSelectedPrivilegeLocum ? "Send By Email" : "Continue"}
+                    {showSelectedPrivilegeLocum ? "Send By Secured Email" : "Continue"}
                   </div>
                 </div>
               </Tooltip>
@@ -4260,7 +4279,7 @@ const monthOptions = getNext12MonthsFromCreatedDate(referenceDate);
             <div
               className={`${style.displayInRowRev} ${style.verticalAlignCenter} ${style.marginTop10}`}
             >
-              <Tooltip title={"Click to Continue"} arrow>
+              <Tooltip title={"Click to Select"} arrow>
                 <button
                   className={`${style.reappointmentButton} ${style.marginLeft}`}
                   // onClick={
@@ -4307,7 +4326,7 @@ const monthOptions = getNext12MonthsFromCreatedDate(referenceDate);
                   }
                   }
                 >
-                  CONTINUE
+                  SELECT
                 </button>
               </Tooltip>
             </div>
@@ -4340,7 +4359,7 @@ const monthOptions = getNext12MonthsFromCreatedDate(referenceDate);
             <div
               className={`${style.displayInRowRev} ${style.verticalAlignCenter} ${style.marginTop10}`}
             >
-              <Tooltip title={"Click to Continue"} arrow>
+              <Tooltip title={"Click to Select"} arrow>
                 <button
                   className={`${style.reappointmentButton} ${style.marginLeft} `}
                   onClick={
@@ -4367,7 +4386,7 @@ const monthOptions = getNext12MonthsFromCreatedDate(referenceDate);
                 //       ?.privileges))
                 // }
                 >
-                  CONTINUE
+                  SELECT
                 </button>
               </Tooltip>
             </div>

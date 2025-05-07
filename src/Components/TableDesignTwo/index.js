@@ -110,7 +110,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
     const availableSortValue = {
         // APPLICANT_NAME: applicationType === "NEW" ? 'Applicant Name' : "Staff for Reappointment",
         APPLICANT_NAME: ["Applicant Name", "Staff for Reappointment", "Locum Staff"],
-        APPLICANT_LAST_NAME: ["Staff for Reappointment", "Staff", "Applicant Name" , "Locum Staff"],
+        APPLICANT_LAST_NAME: ["Staff for Reappointment", "Staff", "Applicant Name", "Locum Staff"],
         DEPARTMENT: ["Dept / Division & Specialty", "Department"],
         STAFF_LAST_NAME: ['Staff Name'],
         APPLICANT_TYPE: ['Applicant Type', 'Type', 'Staff Type', 'Locum Type'],
@@ -401,6 +401,12 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                 document.removeEventListener("mousedown", handleClickOutside);
             };
         }, [ref]);
+    }
+
+    const differenceInDays = (date1, date2) => {
+        const oneDay = 1000 * 60 * 60 * 24;
+        const diffInTime = date2.getTime() - date1.getTime();
+        return Math.floor(diffInTime / oneDay);
     }
 
     return (
@@ -999,7 +1005,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                         ? eval(visibleActions[0]?.conditionToShow)
                                                             ? (
                                                                 <div
-                                                                    className={`${style.tableDataFontStyle} ${style.cursorPointer} ${visibleActions[0]?.isIndent ? style.marginLeft30 : ''}`}
+                                                                    className={`${style.tableDataFontStyleForButton} ${style.textHoverStyleForButton} ${style.cursorPointer} ${visibleActions[0]?.isIndent ? style.marginLeft30 : ''}`}
                                                                     onClick={() => {
                                                                         visibleActions[0]?.onClick(data);
                                                                         handleClose();
@@ -1010,9 +1016,12 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                                 </div>
                                                             )
                                                             : (
-                                                                <Tooltip title={'Click to Take Action'} arrow>
-                                                                    <MoreHorizIcon className={style.cursorPointer} onClick={(e) => handleClick(e)} aria-describedby={id} />
-                                                                </Tooltip>
+                                                                <div
+                                                                    className={`${style.tableDataFontStyleForButton} ${visibleActions[0]?.isIndent ? style.marginLeft30 : ''} ${style.disabledLook}`}
+                                                                    key={0}
+                                                                >
+                                                                    {visibleActions[0]?.data}
+                                                                </div>
                                                             )
                                                         : visibleActions?.length === 1 ? (
                                                             <Tooltip title={'Click to View'} arrow>
@@ -1054,18 +1063,16 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                                             </div>
                                                                         </React.Fragment>
                                                                     ) : actionsData?.conditionToShow !== undefined ? (
-                                                                        eval(actionsData?.conditionToShow) && (
-                                                                            <div
-                                                                                className={`${style.specificActionCard} ${style.cursorPointer} ${actionsData?.isIndent ? style.marginLeft30 : ''}`}
-                                                                                onClick={() => {
-                                                                                    actionsData?.onClick(data);
-                                                                                    handleClose();
-                                                                                }}
-                                                                                key={actionsIndex}
-                                                                            >
-                                                                                {actionsData.data}
-                                                                            </div>
-                                                                        )
+                                                                        <div
+                                                                            className={`${style.specificActionCard} ${style.cursorPointer} ${actionsData?.isIndent ? style.marginLeft30 : ''} ${!eval(actionsData?.conditionToShow) ? style.disabledLook : ''}`}
+                                                                            onClick={eval(actionsData?.conditionToShow) ? () => {
+                                                                                actionsData?.onClick(data);
+                                                                                handleClose();
+                                                                            } : () => { }}
+                                                                            key={actionsIndex}
+                                                                        >
+                                                                            {actionsData.data}
+                                                                        </div>
                                                                     ) : (
                                                                         <div
                                                                             className={`${style.specificActionCard} ${style.cursorPointer} ${actionsData?.isIndent ? style.marginLeft30 : ''}`}

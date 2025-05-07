@@ -361,6 +361,14 @@
     grid-column: span 3;
 }
 
+.applicantGrid> :nth-child(6) {
+    grid-column: span 3;
+}
+
+.applicantGrid> :nth-child(7) {
+    grid-column: span 3;
+}
+
 .homeMailingAddressGrid {
     display: grid;
     grid-template-columns: repeat(6, 1fr);

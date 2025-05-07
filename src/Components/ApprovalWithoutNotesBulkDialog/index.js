@@ -153,15 +153,16 @@ const BulkApproveDialog = ({ checkedIds, getBulkApproveDialogOpen, onClose, sele
 
   const checkApproveEnabled = () => {
     const hasValidComments = userRoleComments.trim() !== '';
+    const hasCheckedIds = checkedIds?.length > 0;
 
     if (uploadFileData.length > 0) {
       const allFilesHaveTitles = uploadFileData.every((_, index) =>
         documentTitle[index] && documentTitle[index].trim() !== ''
       );
 
-      setIsApproveEnabled(hasValidComments && allFilesHaveTitles);
+      setIsApproveEnabled(hasValidComments && allFilesHaveTitles && hasCheckedIds);
     } else {
-      setIsApproveEnabled(hasValidComments);
+      setIsApproveEnabled(hasValidComments && hasCheckedIds);
     }
   };
 
@@ -624,7 +625,7 @@ const BulkApproveDialog = ({ checkedIds, getBulkApproveDialogOpen, onClose, sele
                   opacity: isApproveEnabled ? 1 : 0.5
                 }}
                 onClick={onClickApproveMoveFunction}>
-                  <Tooltip title={isApproveEnabled ? "Click to Save" : ""} arrow>
+                  <Tooltip title={isApproveEnabled ? "Click to Save" : "Please select a valid applicant and provide appropriate notes."} arrow>
                 <div className={style.reviewButton}>Save</div></Tooltip>
               </div>
             </div>
