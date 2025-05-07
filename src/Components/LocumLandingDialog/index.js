@@ -311,7 +311,7 @@ const LocumLandingDialog = ({ getIsOpen, days }) => {
                   <span style={{ marginLeft: '20px' }}>Your Locum {basicForm?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'} Application</span>
                 </div>
                 <div className={`${style.descriptionStyle} ${style.marginTop10}`}>
-                  {basicForm?.reappointmentType === "Extension" ? `Locum Term for your current Privileges is expiring on ${basicForm?.priorCyclePeriod?.to ? format(new Date(basicForm?.priorCyclePeriod?.to || null), 'MMM dd, yyyy') : '-'}. Your department would like to extend your privileges for a new term ${format(new Date(basicForm?.cyclePeriod?.from || null), 'MMM dd, yyyy')} to ${format(new Date(basicForm?.cyclePeriod?.to || null), 'MMM dd, yyyy')}.` : `Your Locum term expired on ${basicForm?.priorCyclePeriod?.to ? format(new Date(basicForm?.priorCyclePeriod?.to || null), 'MMM dd, yyyy') : '-'}. Department would like to renew your Privileges for a new term ${format(new Date(basicForm?.cyclePeriod?.from || null), 'MMM dd, yyyy')} to ${format(new Date(basicForm?.cyclePeriod?.to || null), 'MMM dd, yyyy')}.`}
+                  {basicForm?.reappointmentType === "EXTENSION" ? `Locum Term for your current Privileges is expiring on ${basicForm?.priorCyclePeriod?.to ? format(new Date(basicForm?.priorCyclePeriod?.to || null), 'MMM dd, yyyy') : '-'}. Your department would like to extend your privileges for a new term ${format(new Date(basicForm?.cyclePeriod?.from || null), 'MMM dd, yyyy')} to ${format(new Date(basicForm?.cyclePeriod?.to || null), 'MMM dd, yyyy')}.` : `Your Locum term expired on ${basicForm?.priorCyclePeriod?.to ? format(new Date(basicForm?.priorCyclePeriod?.to || null), 'MMM dd, yyyy') : '-'}. The Department of ${basicForm?.basicDetails?.departmentSpecialty?.department} would like to renew your Privileges for a new term ${format(new Date(basicForm?.cyclePeriod?.from || null), 'MMM dd, yyyy')} to ${format(new Date(basicForm?.cyclePeriod?.to || null), 'MMM dd, yyyy')}.`}
                 </div>
                 {/* <div className={`${style.descriptionStyle} ${style.marginTop10}`}>
                   Processing of your Reappointment Application will now be a less burdensome activity.
@@ -453,23 +453,23 @@ const LocumLandingDialog = ({ getIsOpen, days }) => {
             Step-By-Step Guides and Tutorials
           </div>
           <div className={`${style.descriptionStyle} ${style.justifyCenter} ${style.marginTop}`}><strong>How Would You Like To Get Started?</strong></div>
-          <div className={`${style.descriptionStyle} ${style.justifyCenter} ${style.marginTop}`}>Select Your Preferred Guide for a Seamless Reappointment Application</div>
+          <div className={`${style.descriptionStyle} ${style.justifyCenter} ${style.marginTop}`}>{`Select Your Preferred Guide for a Seamless Locum ${basicForm?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'} Application`}</div>
           <div className={style.userGuideGrid}>
-            <div className={`${style.verticalAlignCenter} ${style.cursorPointer}`} onClick={() => window.open('https://xd.adobe.com/view/df41ec43-33b6-4fa1-9418-33d1cf1690f7-8a12/?fullscreen')}>
+            <div className={`${style.verticalAlignCenter} ${style.cursorPointer}`} onClick={() => window.open(basicForm?.reappointmentType === "EXTENSION" ? 'https://xd.adobe.com/view/bdfc27b0-ef87-4661-b3d1-4a4c28a10e33-e8af/?fullscreen' : 'https://xd.adobe.com/view/45fcfe64-b36e-44d7-9c6e-73b3559e0618-10af/?fullscreen')}>
               <img src="https://capm-prod-entity-mgmt-service.s3.ca-central-1.amazonaws.com/Interactive+guide.png"
                 alt="Interactive Guide" className={style.iconStyleUserGuide} />
             </div>
-            <div className={`${style.cursorPointer} ${style.marginTop}`} onClick={() => window.open('https://xd.adobe.com/view/df41ec43-33b6-4fa1-9418-33d1cf1690f7-8a12/?fullscreen')}>
+            <div className={`${style.cursorPointer} ${style.marginTop}`} onClick={() => window.open(basicForm?.reappointmentType === "EXTENSION" ? 'https://xd.adobe.com/view/bdfc27b0-ef87-4661-b3d1-4a4c28a10e33-e8af/?fullscreen' : 'https://xd.adobe.com/view/45fcfe64-b36e-44d7-9c6e-73b3559e0618-10af/?fullscreen')}>
               <p className={`${style.descriptionStyle} ${style.hoverText}`}>
                 <strong>Go through this Interactive Step-by-Step Training Guide</strong>
               </p>
               <p className={`${style.descriptionStyle} ${style.marginTop10} ${style.hoverText}`}>
-                This guide highlights all of the steps, allowing you to interact with the screens,
-                that you need to complete in order to successfully submit your Reappointment Application.
+                {`This guide highlights all of the steps, allowing you to interact with the screens,
+                that you need to complete in order to successfully submit your Locum ${basicForm?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'} Application.`}
               </p>
             </div>
           </div>
-          <div className={`${style.userGuideGrid}`}>
+          {/* <div className={`${style.userGuideGrid}`}>
             <div className={`${style.verticalAlignCenter} ${style.cursorPointer}`} onClick={() => window.open('https://capm-prod-entity-mgmt-service.s3.ca-central-1.amazonaws.com/Step-by-Step+User+Guide.pdf')}>
               <img src="https://capm-prod-entity-mgmt-service.s3.ca-central-1.amazonaws.com/User+guide.png"
                 alt="PDF Guide" className={style.iconStyleUserGuide} />
@@ -483,7 +483,7 @@ const LocumLandingDialog = ({ getIsOpen, days }) => {
                 successfully submit your Reappointment Application.
               </p>
             </div>
-          </div>
+          </div> */}
           <div className={style.spaceBetween}>
             <div></div>
             <div

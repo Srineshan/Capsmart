@@ -4559,36 +4559,43 @@ const NewActiveApplication = ({
                 >
                   {data?.privilegeSetTitle}
                 </div>
-                {data?.privilegeDetails?.corePrivileges?.privilegesByCategories?.map((categories, catIndex) => (
-                  <div key={catIndex} >
-                    <div className={`${style.flex}`}>
-                      <div className={style.itemLeft}>
-                        <strong>{categories?.category || ""}</strong>
-                      </div>
-                    </div>
-                    {categories?.privileges?.map((privilege, privIndex) => (
-                      <div key={privIndex} className={style.privilegeCodeGrid}>
+                {data?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ?
+                  (
+                    <div
+                      className={` ${style.marginTop} ${style.descriptionStyle}`}
+                      dangerouslySetInnerHTML={{ __html: data?.descriptiveContent?.content }}
+                    />
+                  )
+                  : data?.privilegeDetails?.corePrivileges?.privilegesByCategories?.map((categories, catIndex) => (
+                    <div key={catIndex} >
+                      <div className={`${style.flex}`}>
                         <div className={style.itemLeft}>
-                          <strong>{privilege?.privilegeId || ""}</strong>
+                          <strong>{categories?.category || ""}</strong>
                         </div>
-                        <div className={style.itemLeft}>{privilege?.title || ""}</div>
                       </div>
-                    ))}
+                      {categories?.privileges?.map((privilege, privIndex) => (
+                        <div key={privIndex} className={style.privilegeCodeGrid}>
+                          <div className={style.itemLeft}>
+                            <strong>{privilege?.privilegeId || ""}</strong>
+                          </div>
+                          <div className={style.itemLeft}>{privilege?.title || ""}</div>
+                        </div>
+                      ))}
 
-                  </div>
-                ))}
+                    </div>
+                  ))}
                 <div className={style.twoCol}>
                   {selectedPrivilegeForDisplay?.[0] && (
                     <>
                       <div>
                         <ESignature
-                          userName={
+                          userName={data?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ? selectedPrivilegeForDisplay?.[dataIndex]?.descriptiveContent?.esign?.name :
                             selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign?.name || ""
                           }
-                          encData={
+                          encData={data?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ? selectedPrivilegeForDisplay?.[dataIndex]?.descriptiveContent?.esign?.esign :
                             selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign?.esign || ""
                           }
-                          showData={!!selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign}
+                          showData={data?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ? !!selectedPrivilegeForDisplay?.[dataIndex]?.descriptiveContent?.esign : !!selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign}
                           showDatais={true}
                         />
                       </div>
@@ -4596,7 +4603,7 @@ const NewActiveApplication = ({
                         <div className={style.displayInRow}>
                           <div className={style.dateTitle}>Date:</div>
                           <div className={`${style.date} ${style.marginLeft}`}>
-                            {
+                            {data?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ? selectedPrivilegeForDisplay?.[dataIndex]?.descriptiveContent?.esign?.signedDate :
                               selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign?.signedDate ||
                               ""
                             }
@@ -4712,36 +4719,43 @@ const NewActiveApplication = ({
                   >
                     {data?.privilegeSetTitle}
                   </div>
-                  {data?.privilegeDetails?.corePrivileges?.privilegesByCategories?.map((categories, catIndex) => (
-                    <div key={catIndex} >
-                      <div className={`${style.flex}`}>
-                        <div className={style.itemLeft}>
-                          <strong>{categories?.category || ""}</strong>
-                        </div>
-                      </div>
-                      {categories?.privileges?.map((privilege, privIndex) => (
-                        <div key={privIndex} className={style.privilegeCodeGrid}>
+                  {data?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ?
+                    (
+                      <div
+                        className={` ${style.marginTop} ${style.descriptionStyle}`}
+                        dangerouslySetInnerHTML={{ __html: data?.descriptiveContent?.content }}
+                      />
+                    )
+                    : data?.privilegeDetails?.corePrivileges?.privilegesByCategories?.map((categories, catIndex) => (
+                      <div key={catIndex} >
+                        <div className={`${style.flex}`}>
                           <div className={style.itemLeft}>
-                            <strong>{privilege?.privilegeId || ""}</strong>
+                            <strong>{categories?.category || ""}</strong>
                           </div>
-                          <div className={style.itemLeft}>{privilege?.title || ""}</div>
                         </div>
-                      ))}
+                        {categories?.privileges?.map((privilege, privIndex) => (
+                          <div key={privIndex} className={style.privilegeCodeGrid}>
+                            <div className={style.itemLeft}>
+                              <strong>{privilege?.privilegeId || ""}</strong>
+                            </div>
+                            <div className={style.itemLeft}>{privilege?.title || ""}</div>
+                          </div>
+                        ))}
 
-                    </div>
-                  ))}
+                      </div>
+                    ))}
                   <div className={style.twoCol}>
                     {data && (
                       <>
                         <div>
                           <ESignature
-                            userName={
+                            userName={data?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ? data?.descriptiveContent?.esign?.name :
                               data?.privilegeDetails?.corePrivileges?.esign?.name || ""
                             }
-                            encData={
+                            encData={data?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ? data?.descriptiveContent?.esign?.esign :
                               data?.privilegeDetails?.corePrivileges?.esign?.esign || ""
                             }
-                            showData={!!data?.privilegeDetails?.corePrivileges?.esign}
+                            showData={data?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ? !!data?.descriptiveContent?.esign : !!data?.privilegeDetails?.corePrivileges?.esign}
                             showDatais={true}
                           />
                         </div>
@@ -4749,7 +4763,7 @@ const NewActiveApplication = ({
                           <div className={style.displayInRow}>
                             <div className={style.dateTitle}>Date:</div>
                             <div className={`${style.date} ${style.marginLeft}`}>
-                              {
+                              {data?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ? data?.descriptiveContent?.esign?.signedDate :
                                 data?.privilegeDetails?.corePrivileges?.esign?.signedDate ||
                                 ""
                               }
@@ -5065,13 +5079,13 @@ const NewActiveApplication = ({
                                 </span>
                               </div>
                               <div className={`${style.marginTop10} ${style.twoColumnGridInner2}`}>
-                              <span className={style.rightAlignTextStyle}>
-                                {applicationType === "REAPPOINTMENT"
-                                  ? "Reappointment Date:"
-                                  : applicationType === "LOCUM" && form?.reappointmentType === "EXTENSION"
-                                  ? "Extension Date:"
-                                  : "Renewal Date:"}
-                              </span>
+                                <span className={style.rightAlignTextStyle}>
+                                  {applicationType === "REAPPOINTMENT"
+                                    ? "Reappointment Date:"
+                                    : applicationType === "LOCUM" && form?.reappointmentType === "EXTENSION"
+                                      ? "Extension Date:"
+                                      : "Renewal Date:"}
+                                </span>
                                 <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>
                                   {/* {form?.createdDate} */}
                                   {reappointmentStartDate}
@@ -5147,11 +5161,11 @@ const NewActiveApplication = ({
                             Application Payment Status
                           </div>
                           {applicationType !== "LOCUM" && (
-                          <div className={style.cursorPointer}> Transaction ID:{" "}
-                          <Tooltip title="Click to View Transaction Details" arrow>
-                            <span className={`${style.marginTop10} ${style.paymentIDStyle}`} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(form?.payment?.invoice) }}>{form?.payment?.receiptId || "-"}</span>
-                          </Tooltip>
-                          </div>
+                            <div className={style.cursorPointer}> Transaction ID:{" "}
+                              <Tooltip title="Click to View Transaction Details" arrow>
+                                <span className={`${style.marginTop10} ${style.paymentIDStyle}`} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(form?.payment?.invoice) }}>{form?.payment?.receiptId || "-"}</span>
+                              </Tooltip>
+                            </div>
                           )}
                         </div>
                         <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.statusCardHeight} ${style.displayInCol}`}>
@@ -5192,16 +5206,16 @@ const NewActiveApplication = ({
                                 </span>
                                 <span className={`${style.cardTextNormalStyle}`}>
                                   {/* {form?.displayId || ""} */}
-                                  {applicationType === "LOCUM" ? "Locum":""} {form?.basicDetailReferences?.applicantType?.serviceProviderType || ""}
+                                  {applicationType === "LOCUM" ? "Locum" : ""} {form?.basicDetailReferences?.applicantType?.serviceProviderType || ""}
                                 </span>
                               </div>
                               <div className={`${style.marginTop10} ${style.twoColumnGridInner2}`}>
-                              <span className={style.rightAlignTextStyle}>
-                                {applicationType === "REAPPOINTMENT"
-                                  ? "Reappointment Date:"
-                                  : applicationType === "LOCUM" && form?.reappointmentType === "EXTENSION"
-                                  ? "Extension Date:"
-                                  : "Renewal Date:"}
+                                <span className={style.rightAlignTextStyle}>
+                                  {applicationType === "REAPPOINTMENT"
+                                    ? "Reappointment Date:"
+                                    : applicationType === "LOCUM" && form?.reappointmentType === "EXTENSION"
+                                      ? "Extension Date:"
+                                      : "Renewal Date:"}
                                 </span>
                                 <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>
                                   {/* {form?.createdDate} */}
@@ -5274,17 +5288,17 @@ const NewActiveApplication = ({
                         </div>
                         {(selectedTab === "level-1" && applicationType === "LOCUM") ? (
                           <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.statusCardHeight} ${style.displayInCol}`}>
-                          <div className={`${statusStyle} ${style.marginCenter}`}></div>
-                          <div className={style.greyDotTextStyle}>
-                            MSO Verification & Acceptance Status
+                            <div className={`${statusStyle} ${style.marginCenter}`}></div>
+                            <div className={style.greyDotTextStyle}>
+                              MSO Verification & Acceptance Status
+                            </div>
                           </div>
-                        </div>
                         ) : (
                           <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.statusCardHeight} ${style.displayInCol}`}>
-                          <div className={`${style.greenBigDotStyle} ${style.marginCenter}`}></div>
-                          <div className={style.greyDotTextStyle}>
-                            Overall Review Status
-                          </div>
+                            <div className={`${style.greenBigDotStyle} ${style.marginCenter}`}></div>
+                            <div className={style.greyDotTextStyle}>
+                              Overall Review Status
+                            </div>
                           </div>
                         )}
                       </div>
@@ -11542,12 +11556,12 @@ const NewActiveApplication = ({
                             onClick={
                               isButtonDisabled ? undefined
                                 : () => {
-                                    // if (applicationType === "LOCUM") {
-                                    //   getApplicationMoveToNext();
-                                    // } else {
-                                      handleApplicationAccept();
+                                  // if (applicationType === "LOCUM") {
+                                  //   getApplicationMoveToNext();
+                                  // } else {
+                                  handleApplicationAccept();
                                   //   }
-                                  }
+                                }
                             }
                           >
                             <Tooltip title={isButtonDisabled ? "" : "Click to Mark as Approved by BOD"} arrow>
