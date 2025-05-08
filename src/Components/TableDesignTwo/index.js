@@ -429,8 +429,8 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                         {searchField}
                     </div>
                     {
-                        !hidePagination && (totalCount || tableData?.length) > 10 &&
-                        <Pagination selectPage={getSelectedPage} totalCount={totalCount || tableData?.length} selectedPage={page || 1} onLimitChange={onLimitChange} />
+                        !hidePagination && (tableData?.length) > 10 &&
+                        <Pagination selectPage={getSelectedPage} totalCount={tableData?.length} selectedPage={page || 1} onLimitChange={onLimitChange} />
                     }
                 </div>
             </div>
@@ -850,7 +850,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                                         pointerEvents: 'auto',
                                                                         '& > *': { pointerEvents: 'none' },
                                                                         zIndex: 1,
-                                                                        width: "280px",
+                                                                        width: "320px",
                                                                         margin: "0 auto",
                                                                         padding: "8px",
                                                                         color: "white",

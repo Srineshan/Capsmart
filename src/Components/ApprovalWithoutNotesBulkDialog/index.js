@@ -173,7 +173,7 @@ const BulkApproveDialog = ({ checkedIds, getBulkApproveDialogOpen, onClose, sele
   };
 
   const onClickApproveMoveFunction = () => {
-    if (selectedTab === "level-5") {
+    if ((selectedTab === "level-5" && applicationType === "REAPPOINTMENT") || (selectedTab === "level-4" && applicationType === "LOCUM") ) {
       handleApplicationAccept(true);
     } else {
       handleApplicationApprove(true);
@@ -223,9 +223,12 @@ const BulkApproveDialog = ({ checkedIds, getBulkApproveDialogOpen, onClose, sele
         role = "Credentialing Committee";
         title = "Credentialing Committee User Review";
       }
-    } else if (selectedTab === 'level-4') {
+    } else if (selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") {
       role = "Advisory Committee";
       title = "MAC Review";
+    } else if (selectedTab === 'level-4' && applicationType === "LOCUM") {
+      role = "Board";
+      title = "BOD Approval";
     } else if (selectedTab === 'level-5') {
       role = "Board";
       title = "BOD Approval";
@@ -288,7 +291,7 @@ const BulkApproveDialog = ({ checkedIds, getBulkApproveDialogOpen, onClose, sele
         title = "Credentialing Committee Review"
       } else {
         role = "Credentialing Committee";
-        title = "Credentialing Committee Review"
+        title = "Credentialing Committee User Review"
       }
     }  else if (selectedTab === 'level-3' && applicationType !== "LOCUM") {
       if (workModeType === "Credentialing Committee") {
@@ -318,7 +321,7 @@ const BulkApproveDialog = ({ checkedIds, getBulkApproveDialogOpen, onClose, sele
       role = "Advisory Committee";
       title = "MAC Review";
     }  else if (selectedTab === 'level-4' && applicationType === "LOCUM") {
-      if (workModeType === "Advisory Committee") {
+      if (workModeType === "Board") {
         role = "Board";
         isDelegate = false;
         title = "Board Approval"

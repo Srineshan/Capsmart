@@ -300,6 +300,7 @@ const Navbar = () => {
     cookie.remove("entityId", { path: "/" });
     cookie.remove("authorization", { path: "/" });
     sessionStorage.setItem('applicationCreationType', 'REAPPOINTMENT');
+    sessionStorage.removeItem('selectedTab');
     logout()
     navigate('/')
   }
@@ -393,7 +394,7 @@ const Navbar = () => {
             )
           } */}
           {workModeType !== "Entity Sys Admin" && (
-            <Link to={"/applications"} className={style.noFontStyle}>
+            <Link to={"/applications"} onClick={() => sessionStorage.setItem('applicationCreationType', 'REAPPOINTMENT')} className={style.noFontStyle}>
               <div
                 className={`${style.menuStyle} ${window.location.pathname.includes("/applications") &&
                   style.activeMenuColor
@@ -800,6 +801,28 @@ const Navbar = () => {
                       )}
                     >
                       Step-By-Step Guide for Reappointment Application Review</div>
+                  </div>
+
+                ) : ""}
+                {workModeType === "Department Head" ? (
+                  <div
+                    className={style.noFontStyle1}
+                  >
+                    <div className={`${style.options1} ${style.cursorPointer}`}
+                      onClick={() => window.open('https://xd.adobe.com/view/45fcfe64-b36e-44d7-9c6e-73b3559e0618-10af/?fullscreen')}
+                    >
+                      Step-By-Step Guide for Locum Renewal Application Review</div>
+                  </div>
+
+                ) : ""}
+                {workModeType === "Department Head" ? (
+                  <div
+                    className={style.noFontStyle1}
+                  >
+                    <div className={`${style.options1} ${style.cursorPointer}`}
+                      onClick={() => window.open('https://xd.adobe.com/view/bdfc27b0-ef87-4661-b3d1-4a4c28a10e33-e8af/?fullscreen')}
+                    >
+                      Step-By-Step Guide for Locum Extension Application Review</div>
                   </div>
 
                 ) : ""}

@@ -34,7 +34,7 @@ import { formatFirstNameLastName } from "../../utils/formatting";
 import CommonSearchField from "../../Components/CommonFields/CommonSearchField";
 import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
-import { FALSE } from "sass";
+import LoadingScreen from "../../Components/LoadingScreen";
 
 const LocumStaffList = ({
   isLoading,
@@ -76,7 +76,7 @@ const LocumStaffList = ({
   const [rejectionListData, setRejectionListData] = useState([]);
   const [sortField, setSortField] = useState("DEFAULT");
   const [sortValue, setSortValue] = useState("DESCENDING");
-  const userDetailsFetchOption = JSON.parse(sessionStorage.getItem('user'));
+  const userDetailsFetchOption = (sessionStorage.getItem('user') !== "undefined" && sessionStorage.getItem('user')) ? JSON.parse(sessionStorage.getItem('user')) : {};
   const [searchTerm, setSearchTerm] = useState('');
   const [searchData, setSearchData] = useState([]);
   const [searchTermForTable, setSearchTermForTable] = useState('');
@@ -88,11 +88,13 @@ const LocumStaffList = ({
   const [searchCount, setSearchount] = useState(0);
   const [selectedDepartment, setSelectedDepartment] = useState("");
   const [selectedSpeciality, setSelectedSpeciality] = useState("");
+  const [limit, setLimit] = useState(9999);
+  const [isLoadingImage, setIsLoadingImage] = useState(false);
   // let userDepartmentList;
   let userSpecialty;
 
   const activeLocumHeaderValues = ["Locum Staff", "", "Locum Type", "Notes", "Docs", "Start Date", "End Date", "Days to Expiration", "Action"];
-  const expiredLocumHeaderValues = ["Locum Staff", "Locum Type", "Notes", "Docs", "Last End Date", "Days Since Expired", "Action"];
+  const expiredLocumHeaderValues = ["Locum Staff", "", "Locum Type", "Notes", "Docs", "Last End Date", "Days Since Expired", "Action"];
 
 
   const activeLocumColSortValues = [false, false, false, false, false, , false, false, false, false];
@@ -184,7 +186,7 @@ const LocumStaffList = ({
 
   useEffect(() => {
     getActiveUserData(selectedTab);
-  }, [selectedTab, sortField, sortValue, page, totalCount, showLocumExtensiveDialog, searchTermForTable]);
+  }, [selectedTab, sortField, sortValue, page, totalCount, showLocumExtensiveDialog, searchTermForTable, limit]);
 
   const getReFetchMetaData = (value) => {
     setReFetchMetaData(value);
@@ -195,6 +197,10 @@ const LocumStaffList = ({
   const getSelectedPage = (value) => {
     setPage(value);
   }
+
+  const handleLimitChange = (newLimit) => {
+    setLimit(newLimit);
+  };
 
   const onClickExtensiveLocumDialog = (data) => {
     getLocumExtensiveDialog(true);
@@ -325,17 +331,18 @@ const LocumStaffList = ({
       const userDepartmentListData =
         userDetailsFetchOption?.sites?.sites[0]?.departmentList?.departments[0]?.id;
 
-      let apiUrl = `application-management-service/staff?status=ACTIVE&type=LOCUM&noOfDays=30&isExpired=${selectedTab === "ACTIVELOCUM" ? false : true}&searchText=${searchTermForTable}`;
+      let apiUrl = `application-management-service/staff?status=ACTIVE&type=LOCUM&noOfDays=30&isExpired=${selectedTab === "ACTIVELOCUM" ? false : true}&searchText=${searchTermForTable}&isPaginationRequired=${limit === 9999 ? false : true}&limit=${limit}&offset=${page - 1}`;
 
       if (selectedDepartment) {
         apiUrl += `&departmentSpecialties=${selectedDepartment}`;
       }
-
+      setIsLoadingImage(true);
       const response = await GET(apiUrl);
 
       console.log("Application data", response?.data?.staffs);
       setTableData(response?.data?.staffs);
       setSearchount(response?.data?.numberOfElements)
+      setIsLoadingImage(false);
       // setSearchData(response?.data?.staffs.map(item => ({
       //   id: item.id,
       //   name: `${formatFirstNameLastName(item?.applicant?.name?.firstName, item?.applicant?.name?.lastName)}` || " ",
@@ -461,7 +468,7 @@ const LocumStaffList = ({
   let ExpiredDays = [];
   let startDate = [];
   let endDate = [];
-  let icon = [];
+  let iconStatus = [];
   let reappointDate = [];
 
   const getLocumActiveValues = () => {
@@ -488,7 +495,7 @@ const LocumStaffList = ({
     ExpiredDays = [];
     startDate = [];
     endDate = [];
-    icon = [];
+    iconStatus = [];
     reappointDate = [];
 
     tableData?.map((data) => {
@@ -496,11 +503,11 @@ const LocumStaffList = ({
         `${formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName)}` || " "
       );
       if (data?.reAppointmentInitiated === true) {
-        icon.push(
+        iconStatus.push(
           <img src={Renewed} alt="Renewed Icon" style={{ width: 20, height: 20 }} />
         );
       } else {
-        icon.push("");
+        iconStatus.push("");
       }
 
       reappointDate.push([
@@ -551,7 +558,7 @@ const LocumStaffList = ({
       { type: "text", value: applicantName },
       {
         type: "iconWithCount",
-        icon: icon,
+        icon: iconStatus,
         // value: reappointValue,
         hoverText: reappointDate,
         isShowHoverText: true,
@@ -614,6 +621,8 @@ const LocumStaffList = ({
     action = [];
     endDate = [];
     ExpiredDays = [];
+    iconStatus = [];
+    reappointDate = [];
 
     tableData?.map((data) => {
       dot.push(
@@ -629,6 +638,19 @@ const LocumStaffList = ({
       // applicantType.push(data?.providerType.serviceProviderType);
       applicantType.push(data?.basicDetailReferences?.applicantType?.serviceProviderType || "Doctor");
       // applicantId.push(data?.displayId);
+      if (data?.reAppointmentInitiated === true) {
+        iconStatus.push(
+          <img src={Renewed} alt="Renewed Icon" style={{ width: 20, height: 20 }} />
+        );
+      } else {
+        iconStatus.push("");
+      }
+
+      reappointDate.push([
+        data?.reAppointmentInitiated
+          ? ` Locum Renewal Request Sent on ${format(new Date(data?.reAppointmentSentDate), "dd/MM/yyyy")}`
+          : "Locum Renewal Not Sent",
+      ]);
       applicantId.push(data?.staffId || "123");
       notes.push("0");
       notesIcon.push(
@@ -636,7 +658,7 @@ const LocumStaffList = ({
       );
       docs.push("0/3");
       docsIcon.push(
-        <TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#FFCA27` }} />
+        <TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#b0a6a6` }} />
       );
       cr.push("-");
 
@@ -655,6 +677,13 @@ const LocumStaffList = ({
     return [
       // { type: "dot", value: dot },
       { type: "text", value: applicantName },
+      {
+        type: "iconWithCount",
+        icon: iconStatus,
+        // value: reappointValue,
+        hoverText: reappointDate,
+        isShowHoverText: true,
+      },
       // { type: "text", value: applicantId },
       { type: "text", value: applicantType },
       {
@@ -682,10 +711,10 @@ const LocumStaffList = ({
   };
   const activeLocumActionsData = [
     {
-      data: "Extend Locum Period",
+      data: "Extend",
       requiredValue: "boolean",
       onClick: onClickExtensiveLocumDialog,
-      // conditionToShow: `data?.reAppointmentInitiated === false`,
+      conditionToShow: `data?.reAppointmentInitiated === false`,
     },
     // {
     //   data: "Create Note",
@@ -710,7 +739,7 @@ const LocumStaffList = ({
 
   const expiredLocumActionsData = [
     {
-      data: "Reactivate Locum Staff",
+      data: "Reactivate",
       requiredValue: "boolean",
       onClick: onClickExtensiveLocumDialog,
       conditionToShow: `data?.reAppointmentInitiated === false`,
@@ -784,6 +813,11 @@ const LocumStaffList = ({
 
   return (
     <div className={style.margin20}>
+      {isLoadingImage && (
+        <div className={style.loadingOverlay}>
+          <LoadingScreen />
+        </div>
+      )}
       <div className={isExpanded ? style.bigCardGrid : style.smallCardGrid}>
         <div>
           <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
@@ -936,6 +970,7 @@ const LocumStaffList = ({
                     searchTermForTable={searchTermForTable}
                     searchCount={searchCount}
                     setSearchTermForTable={setSearchTermForTable}
+                    onLimitChange={handleLimitChange}
                   />
                 </div>
               </div>

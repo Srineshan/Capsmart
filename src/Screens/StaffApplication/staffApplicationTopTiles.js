@@ -494,7 +494,7 @@ const StaffApplicationTopTiles = (searchTermForTable) => {
   const applicationId = "66dc44ec788741fedc982b01";
   const [totalCountLocum, setTotalCountLocum] = useState(0);
   const workModeType = sessionStorage.getItem('workModeType')
-  const userDetailsFetchOption = JSON.parse(sessionStorage.getItem('user'));
+  const userDetailsFetchOption = (sessionStorage.getItem('user') !== "undefined" && sessionStorage.getItem('user')) ? JSON.parse(sessionStorage.getItem('user')) : {};
   const applicationType =
     sessionStorage.getItem('applicationCreationType')
   let userDepartmentList;
@@ -551,7 +551,7 @@ const StaffApplicationTopTiles = (searchTermForTable) => {
         if (type === 'NEW') {
           setNewCounts(response.data);
           console.log("setLocumCounts", response.data)
-        } 
+        }
         // else if (type === 'REAPPOINTMENT') {
         //   setReappointmentCounts(response.data);
         //   console.log("setLocumCounts", response.data)
@@ -666,7 +666,7 @@ const StaffApplicationTopTiles = (searchTermForTable) => {
     }
 
     // For Credentialing Committee, show only level-3 count
-    if (workModeType === "Credentialing Committee" && ( applicationType === "REAPPOINTMENT" ||applicationType === "NEW" )) {
+    if (workModeType === "Credentialing Committee" && (applicationType === "REAPPOINTMENT" || applicationType === "NEW")) {
       return (parseInt(countsObj['level-3']) || 0) + clarifications;
     }
 

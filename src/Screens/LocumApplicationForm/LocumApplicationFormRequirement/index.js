@@ -40,6 +40,7 @@ import CommonRadio from "../../../Components/CommonFields/CommonRadio";
 import ESignDialog from '../../../Components/ESignDialog';
 import ESignConfirmationDialog from '../../../Components/ESignConfirmation';
 import { dataLoadingGIF } from '../../../utils/formatting';
+import { Tooltip } from '@mui/material';
 
 const LocumApplicationFormRequirement = () => {
     let cookie = new Cookie();
@@ -72,7 +73,7 @@ const LocumApplicationFormRequirement = () => {
     const publicKey =
         "-----BEGIN PUBLIC KEY-----MIGeMA0GCSqGSIb3DQEBAQUAA4GMADCBiAKBgHA5SDu30/8uQAqqkQE0NuY4ePBptMGufG6AWnC/88YVLXi4thh7M8VU6kElVJkfXL5DwlfVnwPb08+PK1EcaOWWtp2gdQitkohjZLB9zVE+0OtRrzSc33wItf7Iwisi5dHPggHvfOp5fr+QYWFMa/kKYl3SgNo8fryeLbKKalmdAgMBAAE=-----END PUBLIC KEY-----";
     const [currentDate, setCurrentDate] = useState(
-        format(new Date(), "dd-MM-yyyy")
+        format(new Date(), "MMM dd, yyyy")
     );
     const [indexForSign, setIndexForSign] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
@@ -474,29 +475,15 @@ const LocumApplicationFormRequirement = () => {
         }
     };
 
-    const handleSign = (type, basicOrAdditional, index = 0) => {
-        if (basicOrAdditional === "Basic") {
+    const handleSign = (type, basicOrAdditional, index, isPrivilegeSpecificationType) => {
+        console.log('handleSignCheck', type, basicOrAdditional, index, isPrivilegeSpecificationType, indexForSign)
+        if (isPrivilegeSpecificationType) {
             setSelectedPrivilegeForDisplay((prevData) => {
                 const temp = [...prevData];
-                if (
-                    type === "Core" &&
-                    (temp[index].privilegeDetails.corePrivileges.esign === null ||
-                        temp[index].privilegeDetails.corePrivileges.esign === undefined)
+                if ((temp[index].descriptiveContent.esign === null ||
+                    temp[index].descriptiveContent.esign === undefined)
                 ) {
-                    temp[index].privilegeDetails.corePrivileges.esign = {
-                        esign: CryptoJS.AES.encrypt(
-                            name + new Date().toISOString(),
-                            publicKey
-                        ).toString(),
-                        name: name,
-                        signedDate: currentDate,
-                    };
-                } else if (
-                    type === "Restricted" &&
-                    (temp[index].privilegeDetails.restrictedPrivileges.esign === null ||
-                        temp[index].privilegeDetails.restrictedPrivileges.esign === undefined)
-                ) {
-                    temp[index].privilegeDetails.restrictedPrivileges.esign = {
+                    temp[index].descriptiveContent.esign = {
                         esign: CryptoJS.AES.encrypt(
                             name + new Date().toISOString(),
                             publicKey
@@ -509,39 +496,74 @@ const LocumApplicationFormRequirement = () => {
                 return temp;
             });
         } else {
-            setSelectedAdditionalPrivilegeForDisplay((prevData) => {
-                const temp = [...prevData];
-                if (
-                    type === "Core" &&
-                    (temp[index].privilegeDetails.corePrivileges.esign === null ||
-                        temp[index].privilegeDetails.corePrivileges.esign === undefined)
-                ) {
-                    temp[index].privilegeDetails.corePrivileges.esign = {
-                        esign: CryptoJS.AES.encrypt(
-                            name + new Date().toISOString(),
-                            publicKey
-                        ).toString(),
-                        name: name,
-                        signedDate: currentDate,
-                    };
-                } else if (
-                    type === "Restricted" &&
-                    (temp[index].privilegeDetails.restrictedPrivileges.esign === null ||
-                        temp[index].privilegeDetails.restrictedPrivileges.esign ===
-                        undefined)
-                ) {
-                    temp[index].privilegeDetails.restrictedPrivileges.esign = {
-                        esign: CryptoJS.AES.encrypt(
-                            name + new Date().toISOString(),
-                            publicKey
-                        ).toString(),
-                        name: name,
-                        signedDate: currentDate,
-                    };
-                }
+            if (basicOrAdditional === "Basic") {
+                setSelectedPrivilegeForDisplay((prevData) => {
+                    const temp = [...prevData];
+                    if (
+                        type === "Core" &&
+                        (temp[index].privilegeDetails.corePrivileges.esign === null ||
+                            temp[index].privilegeDetails.corePrivileges.esign === undefined)
+                    ) {
+                        temp[index].privilegeDetails.corePrivileges.esign = {
+                            esign: CryptoJS.AES.encrypt(
+                                name + new Date().toISOString(),
+                                publicKey
+                            ).toString(),
+                            name: name,
+                            signedDate: currentDate,
+                        };
+                    } else if (
+                        type === "Restricted" &&
+                        (temp[index].privilegeDetails.restrictedPrivileges.esign === null ||
+                            temp[index].privilegeDetails.restrictedPrivileges.esign === undefined)
+                    ) {
+                        temp[index].privilegeDetails.restrictedPrivileges.esign = {
+                            esign: CryptoJS.AES.encrypt(
+                                name + new Date().toISOString(),
+                                publicKey
+                            ).toString(),
+                            name: name,
+                            signedDate: currentDate,
+                        };
+                    }
 
-                return temp;
-            });
+                    return temp;
+                });
+            } else {
+                setSelectedAdditionalPrivilegeForDisplay((prevData) => {
+                    const temp = [...prevData];
+                    if (
+                        type === "Core" &&
+                        (temp[index].privilegeDetails.corePrivileges.esign === null ||
+                            temp[index].privilegeDetails.corePrivileges.esign === undefined)
+                    ) {
+                        temp[index].privilegeDetails.corePrivileges.esign = {
+                            esign: CryptoJS.AES.encrypt(
+                                name + new Date().toISOString(),
+                                publicKey
+                            ).toString(),
+                            name: name,
+                            signedDate: currentDate,
+                        };
+                    } else if (
+                        type === "Restricted" &&
+                        (temp[index].privilegeDetails.restrictedPrivileges.esign === null ||
+                            temp[index].privilegeDetails.restrictedPrivileges.esign ===
+                            undefined)
+                    ) {
+                        temp[index].privilegeDetails.restrictedPrivileges.esign = {
+                            esign: CryptoJS.AES.encrypt(
+                                name + new Date().toISOString(),
+                                publicKey
+                            ).toString(),
+                            name: name,
+                            signedDate: currentDate,
+                        };
+                    }
+
+                    return temp;
+                });
+            }
         }
     };
 
@@ -591,15 +613,15 @@ const LocumApplicationFormRequirement = () => {
                                     </div>
                                 )
                             )}
-                        {privilegeData?.privilegeDetails?.corePrivileges
+                        {((privilegeData?.privilegeDetails?.corePrivileges
                             ?.privilegesByCategories?.[0]?.privileges?.length !== 0 &&
                             privilegeData?.privilegeDetails?.corePrivileges
                                 ?.privilegesByCategories?.[0]?.privileges?.length !==
-                            undefined && (
+                            undefined) || (privilegeData?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" && privilegeData?.descriptiveContent?.content)) && (
                                 <div className={style.twoCol}>
-                                    <div onClick={() => handleSign("Core", isBasicOrAdditional, privilegeSetIndex)}>
+                                    <div onClick={() => handleSign("Core", isBasicOrAdditional, privilegeSetIndex, privilegeData?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT")}>
                                         <ESignature
-                                            userName={
+                                            userName={privilegeData?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ? privilegeData?.descriptiveContent?.esign !== null ? privilegeData?.descriptiveContent?.esign?.name : "" :
                                                 privilegeData?.privilegeDetails
                                                     ?.corePrivileges?.esign !== null
                                                     ? privilegeData?.privilegeDetails
@@ -607,19 +629,21 @@ const LocumApplicationFormRequirement = () => {
                                                     : ""
                                             }
                                             encData={
-                                                privilegeData?.privilegeDetails
-                                                    ?.corePrivileges?.esign !== null
-                                                    ? privilegeData?.privilegeDetails
-                                                        ?.corePrivileges?.esign?.esign
-                                                    : ""
+                                                privilegeData?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ? privilegeData?.descriptiveContent?.esign !== null ? privilegeData?.descriptiveContent?.esign?.esign : "" :
+                                                    privilegeData?.privilegeDetails
+                                                        ?.corePrivileges?.esign !== null
+                                                        ? privilegeData?.privilegeDetails
+                                                            ?.corePrivileges?.esign?.esign
+                                                        : ""
                                             }
                                             showData={
-                                                privilegeData?.privilegeDetails
-                                                    ?.corePrivileges?.esign !== null &&
+                                                privilegeData?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ? privilegeData?.descriptiveContent?.esign ? true : false :
                                                     privilegeData?.privilegeDetails
-                                                        ?.corePrivileges?.esign !== undefined
-                                                    ? true
-                                                    : false
+                                                        ?.corePrivileges?.esign !== null &&
+                                                        privilegeData?.privilegeDetails
+                                                            ?.corePrivileges?.esign !== undefined
+                                                        ? true
+                                                        : false
                                             }
                                             showDatais={true}
                                         />
@@ -628,11 +652,12 @@ const LocumApplicationFormRequirement = () => {
                                         <div className={style.displayInRow}>
                                             <div className={style.dateTitle}>Date: </div>
                                             <div className={`${style.date} ${style.marginLeft}`}>
-                                                {privilegeData?.privilegeDetails
-                                                    ?.corePrivileges?.esign !== null
-                                                    ? privilegeData?.privilegeDetails
-                                                        ?.corePrivileges?.esign?.signedDate
-                                                    : ""}
+                                                {privilegeData?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ? privilegeData?.descriptiveContent?.esign ? privilegeData?.descriptiveContent?.esign?.signedDate : "" :
+                                                    privilegeData?.privilegeDetails
+                                                        ?.corePrivileges?.esign !== null
+                                                        ? privilegeData?.privilegeDetails
+                                                            ?.corePrivileges?.esign?.signedDate
+                                                        : ""}
                                             </div>
                                         </div>
                                     </div>
@@ -878,7 +903,7 @@ const LocumApplicationFormRequirement = () => {
                                         onClick={getIsRestrictedValuesFilled(privilegeData?.privilegeDetails
                                             ?.restrictedPrivileges?.privilegesByCategories?.[0]
                                             ?.privileges) ? () => {
-                                                handleSign("Restricted", isBasicOrAdditional, privilegeSetIndex);
+                                                handleSign("Restricted", isBasicOrAdditional, privilegeSetIndex, privilegeData?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT");
                                             } : () => { }
                                         }
                                     >
@@ -1153,7 +1178,7 @@ const LocumApplicationFormRequirement = () => {
                                         </div>
                                     </div>
                                     <div className={style.marginTop}>
-                                        <WelcomeCard title={'Before you get started having the documents listed below will expedite the completion of your Locum Extension Application. You will be required to Sign Off on your Privileges that are listed for your new Locum Term.'} description={''} />
+                                        <WelcomeCard title={`Before you get started having the documents listed below will expedite the completion of your Locum ${basicForm?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'} Application. You will be required to Sign Off on your Privileges that are listed for your new Locum Term.`} description={''} />
                                     </div>
                                     <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
                                         <div className={style.titleTextStyle}> List of Documents to Complete this Application</div>
@@ -1185,7 +1210,10 @@ const LocumApplicationFormRequirement = () => {
                                         <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                                     </div>
                                     <div className={`${style.stickyContainer} ${isDoItLaterOpen ? style.hiddenStickyContainer : ""}`}>
-                                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => setIsDoItLaterOpen(true)}>DO IT LATER</div>
+                                        <Tooltip title={"Click to Open the Interactive Training Guide"} arrow>
+                                            <div className={`${style.userGuideButton} ${style.marginTop}`} onClick={() => window.open(basicForm?.reappointmentType === "EXTENSION" ? 'https://xd.adobe.com/view/bdfc27b0-ef87-4661-b3d1-4a4c28a10e33-e8af/?fullscreen' : 'https://xd.adobe.com/view/45fcfe64-b36e-44d7-9c6e-73b3559e0618-10af/?fullscreen')}>Interactive Step-by-Step Training Guide</div>
+                                        </Tooltip>
+                                        <div className={`${style.saveInProgress} ${style.marginTop10}`} onClick={() => setIsDoItLaterOpen(true)}>DO IT LATER</div>
                                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowPrivilegesForSign(true)}>GET STARTED NOW</div>
                                     </div>
                                 </div>
@@ -1205,7 +1233,7 @@ const LocumApplicationFormRequirement = () => {
                                 <div>
                                     <div className={Classes.DIALOG_BODY}>
                                         <div className={style.spaceBetween}>
-                                            <div className={style.heading}>Sign Off On The Privileges For Your Locum Extension Period</div>
+                                            <div className={style.heading}>{`Sign Off On The Privileges For Your Locum ${basicForm?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'} Period`}</div>
                                             <div className={style.displayInRow}>
                                                 <img
                                                     src={CrossPink}

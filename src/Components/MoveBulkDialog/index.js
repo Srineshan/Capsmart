@@ -25,14 +25,7 @@ const BulkMoveDialog = ({ checkedIds, getBulkApproveDialogOpen, onClose, selecte
   const [calendarStartForApproval, setCalendarStartForApproval] = useState(false);
   const [selectedDateForApproval, setSelectedDateForApproval] = useState(null);
   const workModeType = sessionStorage.getItem('workModeType')
-  const dropzoneStyle = {
-    width: "100%",
-    height: "auto",
-    borderWidth: 2,
-    borderColor: "rgb(102, 102, 102)",
-    borderStyle: "dashed",
-    borderRadius: 5,
-  };
+  const applicationType = sessionStorage.getItem('applicationCreationType') ?? 'REAPPOINTMENT';
 
   useEffect(() => {
     sessionStorage.setItem("fromSummary", false);
@@ -142,10 +135,13 @@ const BulkMoveDialog = ({ checkedIds, getBulkApproveDialogOpen, onClose, selecte
         role = "Credentialing Committee";
         title = "Credentialing Committee User Review";
       }
-    } else if (selectedTab === 'level-4') {
+    } else if (selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") {
       role = "Advisory Committee";
       title = "MAC Review";
-    } else if (selectedTab === 'level-5') {
+    } else if (selectedTab === 'level-4' && applicationType === "LOCUM") {
+      role = "Board";
+      title = "BOD Approval";
+    }else if (selectedTab === 'level-5') {
       role = "Board";
       title = "BOD Approval";
     } else if (selectedTab === 'level-1') {

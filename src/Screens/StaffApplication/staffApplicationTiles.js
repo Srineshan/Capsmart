@@ -6,7 +6,7 @@ import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
 import LoadingScreen from "../../Components/LoadingScreen";
 
-const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, getReFetchMetaData,approvalnotesCommentsBoxDept,showBulkApproveDialog,searchTermForTable,activeApplicationTask,totalCount }) => {
+const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, getReFetchMetaData,approvalnotesCommentsBoxDept,showBulkApproveDialog,searchTermForTable,activeApplicationTask,totalCount,showBulkMoveDialog }) => {
   const cookie = new Cookie();
   const userDetails = cookie.get('user');
   const [user, setUser] = useState();
@@ -172,7 +172,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
       console.log("refetcheddddddddddd",reFetchMetaData)
     // }
     // console.log("refetcheddddddddddd",reFetchMetaData)
-  }, [showBulkApproveDialog,approvalnotesCommentsBoxDept,searchTermForTable,activeApplicationTask]);
+  }, [showBulkApproveDialog,approvalnotesCommentsBoxDept,searchTermForTable,activeApplicationTask,showBulkMoveDialog]);
 
   // Handle user flow and role updates
   // useEffect(() => {
