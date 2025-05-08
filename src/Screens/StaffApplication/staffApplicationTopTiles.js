@@ -505,17 +505,17 @@ const StaffApplicationTopTiles = (searchTermForTable) => {
     userSpecialty = userDetailsFetchOption?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.serviceAreas?.[0]?.id;
     console.log("userSpecialty", userDepartmentList, userSpecialty)
     getTitleCountsLocum();
-  }, [applicationType, selectedTab, searchTermForTable])
+  }, [applicationType, selectedTab, searchTermForTable?.searchTermForTable])
 
   useEffect(() => {
     getTitleCountsLocum();
     getTitleCounts("REAPPOINTMENT");
-  }, [searchTermForTable])
+  }, [searchTermForTable?.searchTermForTable])
 
   useEffect(() => {
     // getTitleCounts(applicationCreationType);
     getUserRoleType(applicationCreationType)
-  }, [searchTermForTable, applicationCreationType]);
+  }, [applicationCreationType]);
 
   console.log("searchTermForTable", searchTermForTable?.searchTermForTable)
 
