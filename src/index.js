@@ -154,8 +154,8 @@ if (window.self === window.top) {
     // cookieSameSite="None"
     >
       <ErrorBoundary FallbackComponent={UnexpectedError} onError={logError}>
-      <ThemeProvider theme={theme}>
-        <App />
+        <ThemeProvider theme={theme}>
+          <App />
         </ThemeProvider>
       </ErrorBoundary>
     </AuthProvider >

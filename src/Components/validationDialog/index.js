@@ -33,9 +33,9 @@ const ValidationDialog = ({ getIsOpen, labelList, getSkipClicked }) => {
                 <div
                   className={`${style.description} ${style.marginTop10} ${style.marginLeft}`}
                   dangerouslySetInnerHTML={{
-                    __html: window.location.pathname.includes("reappointmentApplicationForm")
-                    ? data?.label?.label
-                    : data?.label
+                    __html: (window.location.pathname.includes("reappointmentApplicationForm") || window.location.pathname.includes("locumApplicationForm"))
+                      ? data?.label?.label
+                      : data?.label
                   }}
                 />
               </div>
@@ -51,10 +51,10 @@ const ValidationDialog = ({ getIsOpen, labelList, getSkipClicked }) => {
           ))}
           <p className={`${style.description} ${style.marginTop}`}>Do you want to skip or continue your data entry?</p>
           <div className={`${style.justifyCenter} ${style.displayInRow} ${style.marginTop}`}>
-          <Tooltip title={"Click to Continue and Proceed"} arrow>
-            <div className={`${style.saveInProgress}`} onClick={() => { getIsOpen(false); }}>CONTINUE</div> </Tooltip>
+            <Tooltip title={"Click to Continue and Proceed"} arrow>
+              <div className={`${style.saveInProgress}`} onClick={() => { getIsOpen(false); }}>CONTINUE</div> </Tooltip>
             <Tooltip title={"Click to Skip and Move Forward"} arrow>
-            <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { getIsOpen(false); getSkipClicked(true); }}>SKIP</div></Tooltip>
+              <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { getIsOpen(false); getSkipClicked(true); }}>SKIP</div></Tooltip>
           </div>
         </div>
 

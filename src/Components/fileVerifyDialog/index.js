@@ -545,15 +545,21 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                 }
 
                 setHasVerificationAttempted(true)
-                SuccessToaster2(
-                    documentStatus === "REJECT_AND_REPLACE_DOCUMENT"
-                      ? `${file?.documentType} Document Rejected & Replaced Successfully`
-                      : documentStatus === "REJECT_DOCUMENT"
-                      ? `${file?.documentType} Document Rejected Successfully`
-                      : documentStatus === "ACCEPT_DOCUMENT"
-                      ? `${file?.documentType} Document Accepted Successfully`
-                      : ""
-                  );
+               // Determine toaster message
+if (file?.isVerified) {
+    SuccessToaster2(`${file?.documentType} Document Verification Reverted Successfully`);
+} else {
+    SuccessToaster2(
+        documentStatus === "REJECT_AND_REPLACE_DOCUMENT"
+            ? `${file?.documentType} Document Rejected & Replaced Successfully`
+            : documentStatus === "REJECT_DOCUMENT"
+            ? `${file?.documentType} Document Rejected Successfully`
+            : documentStatus === "ACCEPT_DOCUMENT"
+            ? `${file?.documentType} Document Accepted Successfully`
+            : ""
+    );
+}
+
             })
             .catch((error) => {
                 console.log(error);

@@ -524,6 +524,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                 setBasicForm(response?.data)
                 SuccessToaster2("Updated Successfully");
                 getPreApplication();
+                updateProfileAddress();
                 // if (sessionStorage.getItem('fromSummary') === "true") {
                 //     navigate(-1);
                 // } else {
@@ -559,9 +560,13 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
 
     const updateProfileAddress = async () => {
         let addressData = applicantProfile;
-        addressData.contactAddress1 = basicForm?.forms?.[formIndex]?.data.contactAddress1 !== undefined ? basicForm?.forms?.[formIndex]?.data.contactAddress1 : null
-        addressData.contactAddress2 = basicForm?.forms?.[formIndex]?.data.contactAddress2 !== undefined ? basicForm?.forms?.[formIndex]?.data.contactAddress2 : null
-        addressData.contactAddress3 = basicForm?.forms?.[formIndex]?.data.contactAddress3 !== undefined ? basicForm?.forms?.[formIndex]?.data.contactAddress3 : null
+        addressData.name = basicForm?.basicDetails?.applicant?.name !== undefined ? basicForm?.basicDetails?.applicant?.name : null
+        addressData.dateOfBirth = basicForm?.basicDetails?.applicant?.dateOfBirth !== undefined ? basicForm?.basicDetails?.applicant?.dateOfBirth : null
+        addressData.ohipNumber = basicForm?.basicDetails?.applicant?.ohipNumber !== undefined ? basicForm?.basicDetails?.applicant?.ohipNumber : null
+        addressData.licenseNumber = basicForm?.basicDetails?.applicant?.licenseNumber !== undefined ? basicForm?.basicDetails?.applicant?.licenseNumber : null
+        addressData.contactAddress1 = basicForm?.forms?.[formIndex]?.data?.contactAddress1 !== undefined ? basicForm?.forms?.[formIndex]?.data?.contactAddress1 : null
+        addressData.contactAddress2 = basicForm?.forms?.[formIndex]?.data?.contactAddress2 !== undefined ? basicForm?.forms?.[formIndex]?.data?.contactAddress2 : null
+        addressData.contactAddress3 = basicForm?.forms?.[formIndex]?.data?.contactAddress3 !== undefined ? basicForm?.forms?.[formIndex]?.data?.contactAddress3 : null
         await PUT(`application-management-service/application/${applicationId}/profile`, addressData)
             .then(response => {
                 console.log(response)

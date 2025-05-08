@@ -4,7 +4,6 @@ import LocumStaffList from './locumStaffList';
 import NewActiveApplication from '../../Components/ViewVerifyScreen';
 import DepartmentTrackerDialog from '../../Components/DepartmentTrackerDialog';
 import LocumExtensionDialog from "../../Components/LocumExtensionDialog";
-import LocumExtensionReactiveDialog from "../../Components/LocumExtensionReactiveDialog";
 import LocumExtensionRequestDialog from "../../Components/LocumExtensionRequestDialog";
 import LocumExtensionReactiveRequestDialog from "../../Components/LocumExtensionReactiveRequestDialog";
 import NotesDialog from "../../Components/NotesDialog";
@@ -41,10 +40,6 @@ const LocumStaff = () => {
         setShowLocumExtensiveDialog(value);
     };
 
-    const getLocumExtensiveReactiveDialog = (value) => {
-        setShowLocumExtensiveReactiveDialog(value);
-    };
-
     const getLocumExtensiveRequestDialog = (value) => {
         setShowLocumExtensiveRequestDialog(value);
     };
@@ -73,10 +68,10 @@ const LocumStaff = () => {
                 staffView ={staffView}
                 getDeptTrackerDialog={getDeptTrackerDialog}
                 getLocumExtensiveDialog ={getLocumExtensiveDialog}
-                getLocumExtensiveReactiveDialog={getLocumExtensiveReactiveDialog}
                 getLocumExtensiveRequestDialog={getLocumExtensiveRequestDialog}
                 getLocumExtensiveReactiveRequestDialog={getLocumExtensiveReactiveRequestDialog}
                 getNotesDialog = {getNotesDialog}
+                showLocumExtensiveDialog= {showLocumExtensiveDialog}
             />
              {showDeptTrackerDialog && (
                 <DepartmentTrackerDialog isLoading={isLoading} getIsOpen={getDeptTrackerDialog} getActiveApplicationView={getActiveApplicationView}/>
@@ -86,9 +81,6 @@ const LocumStaff = () => {
             )}
               {showLocumExtensiveDialog && (
                 <LocumExtensionDialog isLoading={isLoading} getIsOpen={getLocumExtensiveDialog} selectedTab={selectedTab} getActiveApplicationView={getActiveApplicationView} />
-            )}
-            {showLocumExtensiveReactiveDialog && (
-                <LocumExtensionReactiveDialog isLoading={isLoading} getIsOpen={getLocumExtensiveReactiveDialog} selectedTab={selectedTab} getActiveApplicationView={getActiveApplicationView} />
             )}
             {showLocumExtensiveRequestDialog && (
                 <LocumExtensionRequestDialog isLoading={isLoading} getIsOpen={getLocumExtensiveRequestDialog} selectedTab={selectedTab} getActiveApplicationView={getActiveApplicationView} />

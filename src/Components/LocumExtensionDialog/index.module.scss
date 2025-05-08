@@ -18,29 +18,34 @@
 /* Second Dialog */
 .eSignDialog1 {
   height: 75%;
-  width: 70% !important;
+  width: 50% !important;
   z-index: 1100 !important;
   position: relative;
 }
 
-.indexHigh{
+.privilegeRequestScroll {
+  height: 75vh;
+  overflow: scroll;
+}
+
+.indexHigh {
   z-index: 1100 !important;
 }
 
 .eSignDialogBackground1 {
   background: #ffffff 0% 0% no-repeat padding-box;
-  padding: 20px 40px 0px 40px;
+  padding: 20px 40px 20px 40px;
   border-radius: 20px !important;
   z-index: 1100 !important;
   position: relative;
 }
 
 .hidden {
-      display: none !important;
-  }
+  display: none !important;
+}
 
 .unhidden {
-    display:block ;
+  display: block;
 }
 
 .spaceBetween {
@@ -48,12 +53,12 @@
   justify-content: space-between;
 }
 
-.flexCenter{
+.flexCenter {
   display: flex;
   align-items: center;
 }
 
-.notesVisibleText{
+.notesVisibleText {
   text-align: left;
   font: italic normal medium 16px/24px Proxima Nova;
   letter-spacing: 0px;
@@ -68,6 +73,15 @@
   color: #06617A;
   text-transform: capitalize;
   opacity: 1;
+}
+
+.heading1 {
+  font: normal normal bold 24px proxima-nova;
+  letter-spacing: 0px;
+  color: #06617A;
+  // text-transform: capitalize;
+  opacity: 1;
+  text-align: center;
 }
 
 .displayInRow {
@@ -154,7 +168,7 @@
   box-shadow: 0px 3px 18px #0F0B3129;
   border: 1px solid #0F0B3129;
   border-radius: 8px;
-  padding: 15px 0px;
+  padding: 10px 0px;
 }
 
 .marginLeftRight20 {
@@ -174,12 +188,29 @@
   opacity: 1;
 }
 
+.noteHeadingTextStyle {
+  text-align: left;
+  font: normal normal bold 16px proxima-nova;
+  letter-spacing: 0px;
+  color: #2C2C2C;
+  opacity: 1;
+}
+
 .rejectionTextStyle {
   text-align: left;
   font: normal normal medium 18px/34px proxima-nova !important;
   letter-spacing: 0px;
   color: #2C2C2C !important;
   text-transform: capitalize;
+  opacity: 1;
+}
+
+.dateTextStyle {
+  text-align: left;
+  font: normal normal medium 18px/34px proxima-nova !important;
+  letter-spacing: 0px;
+  color: #2C2C2C !important;
+  // text-transform: uppercase;
   opacity: 1;
 }
 
@@ -333,79 +364,80 @@
 }
 
 .leftAlign {
-    display: flex;
-    gap: 1rem; /* space between the radio buttons */
-    align-items: center;
-  }
-
-.halfWidth{
-    width: 50%;
+  display: flex;
+  gap: 1rem;
+  /* space between the radio buttons */
+  align-items: center;
 }
 
-.fullWidth{
-    width: 100%;
+.halfWidth {
+  width: 50%;
 }
 
-.flex{
-    display: flex;
+.fullWidth {
+  width: 100%;
+}
+
+.flex {
+  display: flex;
 }
 
 .privilegeCard {
-    background: #14358F00 0% 0% no-repeat padding-box;
-    // box-shadow: 0px 0px 8px #040B2014;
-    // border: 0.4000000059604645px solid #5087D9;
-    border-radius: 5px;
-    padding: 10px;
-    z-index: 99999 !important;
+  background: #14358F00 0% 0% no-repeat padding-box;
+  // box-shadow: 0px 0px 8px #040B2014;
+  // border: 0.4000000059604645px solid #5087D9;
+  border-radius: 5px;
+  padding: 10px;
+  z-index: 99999 !important;
 }
-  
+
 .privilegeHeading {
-    text-align: left;
-    font: normal normal medium 18px/24px proxima-nova;
-    letter-spacing: 0px;
-    color: #1D2437;
+  text-align: left;
+  font: normal normal medium 18px/24px proxima-nova;
+  letter-spacing: 0px;
+  color: #1D2437;
 }
 
 .twoCol {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
 }
 
 .privilegeContentCard {
-    background: #1D24370A 0% 0% no-repeat padding-box;
-    box-shadow: 0px 0px 8px #040B2014;
-    border-radius: 8px;
-    padding: 10px;
+  background: #1D24370A 0% 0% no-repeat padding-box;
+  box-shadow: 0px 0px 8px #040B2014;
+  border-radius: 8px;
+  padding: 10px;
 }
 
 .privilegeHeadingCurrent {
-    text-align: left;
-    font: italic normal bold 12px/17px proxima-nova !important;
-    letter-spacing: 0px;
-    color: #1D2437;
+  text-align: left;
+  font: italic normal bold 12px/17px proxima-nova !important;
+  letter-spacing: 0px;
+  color: #1D2437;
 }
 
 .privilegeContentChangeCard {
-    background: #F5F8F8 0% 0% no-repeat padding-box;
-    box-shadow: 0px 0px 8px #040B2014;
-    border-radius: 8px;
-    padding: 10px;
+  background: #F5F8F8 0% 0% no-repeat padding-box;
+  box-shadow: 0px 0px 8px #040B2014;
+  border-radius: 8px;
+  padding: 10px;
 }
 
 .privilegeHeadingReappointment {
-    text-align: left;
-    font: italic normal bold 12px/17px proxima-nova !important;
-    letter-spacing: 0px;
-    color: $primarycolor;
+  text-align: left;
+  font: italic normal bold 12px/17px proxima-nova !important;
+  letter-spacing: 0px;
+  color: $primarycolor;
 }
 
 .cardTitle {
-    text-align: left;
-    font: normal normal bold 20px/26px proxima-nova;
-    letter-spacing: 0px;
-    color: #454747;
-    // text-transform: capitalize;
+  text-align: left;
+  font: normal normal bold 20px/26px proxima-nova;
+  letter-spacing: 0px;
+  color: #454747;
+  // text-transform: capitalize;
 }
 
 .reappointmentButtonOutlined {
@@ -429,284 +461,290 @@
 }
 
 .markedAsText {
-    text-align: left;
-    font: italic normal medium $tabledatatext2 proxima-nova;
-    letter-spacing: 0px;
-    color: #1D2437;
+  text-align: left;
+  font: italic normal medium $tabledatatext2 proxima-nova;
+  letter-spacing: 0px;
+  color: #1D2437;
 }
 
 .yesText {
-    font: italic normal bold 18px/24px proxima-nova;
-    color: #14B15A;
+  font: italic normal bold 18px/24px proxima-nova;
+  color: #14B15A;
 }
 
 .noText {
-    font: italic normal bold 18px/24px proxima-nova;
-    color: #FF5555;
+  font: italic normal bold 18px/24px proxima-nova;
+  color: #FF5555;
 }
 
 .reappointmentButtonEdit {
-    background: $secondarycolor 0% 0% no-repeat padding-box;
-    border-radius: 8px;
-    border: 1px solid $buttonBorder;
-    padding: 10px 15px;
-    color: $primarycolor;
-    min-width: 200px;
-    font: normal normal bold 15px/15px proxima-nova;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    text-align: center;
+  background: $secondarycolor 0% 0% no-repeat padding-box;
+  border-radius: 8px;
+  border: 1px solid $buttonBorder;
+  padding: 10px 15px;
+  color: $primarycolor;
+  min-width: 200px;
+  font: normal normal bold 15px/15px proxima-nova;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  text-align: center;
 }
 
 .reappointmentButtonEdit:hover {
-    background: #DBE8EA 0% 0% no-repeat padding-box;
-    box-shadow: 0px 3px 12px #00000029;
-    border: 0.5px solid #06617A;
-    border-radius: 8px;
-    opacity: 1;
+  background: #DBE8EA 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 12px #00000029;
+  border: 0.5px solid #06617A;
+  border-radius: 8px;
+  opacity: 1;
 }
 
 .reappointmentButton {
-    background: $primarycolor 0% 0% no-repeat padding-box;
-    border-radius: 8px;
-    padding: 10px 15px;
-    color: #fff;
-    min-width: 120px !important;
-    font: normal normal bold 15px/15px proxima-nova;
-    cursor: pointer;
-    text-align: center;
+  background: $primarycolor 0% 0% no-repeat padding-box;
+  border-radius: 8px;
+  padding: 10px 15px;
+  color: #fff;
+  min-width: 120px !important;
+  font: normal normal bold 15px/15px proxima-nova;
+  cursor: pointer;
+  text-align: center;
 }
 
 .reappointmentButton:hover {
-    background: #044D61 0% 0% no-repeat padding-box;
-    box-shadow: 0px 3px 12px #00000052;
-    border-radius: 8px;
-    opacity: 1;
+  background: #044D61 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 12px #00000052;
+  border-radius: 8px;
+  opacity: 1;
 }
 
 .lableStyle {
-    text-align: left;
-    font: normal normal 500 15px/17px proxima-nova;
-    letter-spacing: 0px;
-    color: #2C2C2C;
-    // text-transform: capitalize;
-    opacity: 1;
-    margin-top: 5px;
-    max-width: 85%;
+  text-align: left;
+  font: normal normal 500 15px/17px proxima-nova;
+  letter-spacing: 0px;
+  color: #2C2C2C;
+  // text-transform: capitalize;
+  opacity: 1;
+  margin-top: 5px;
+  max-width: 85%;
 }
+
 .privilegeCardWithBorder {
-    background: $secondarycolor 0% 0% no-repeat padding-box;
-    box-shadow: 0px 0px 8px #040B2014;
-    border: 0.4000000059604645px solid #5087D9;
-    border-radius: 5px;
-    padding: 10px;
-    z-index: 99999 !important;
+  background: $secondarycolor 0% 0% no-repeat padding-box;
+  box-shadow: 0px 0px 8px #040B2014;
+  border: 0.4000000059604645px solid #5087D9;
+  border-radius: 5px;
+  padding: 10px;
+  z-index: 99999 !important;
 }
 
 .privilegeCategoryChips {
-    background: $secondarycolor 0% 0% no-repeat padding-box;
-    font: normal normal normal $labelvaluetext proxima-nova;
-    border: 1px solid $primarycolor;
-    border-radius: 23px;
-    padding: 5px 10px;
-    color: $primarycolor;
+  background: $secondarycolor 0% 0% no-repeat padding-box;
+  font: normal normal normal $labelvaluetext proxima-nova;
+  border: 1px solid $primarycolor;
+  border-radius: 23px;
+  padding: 5px 10px;
+  color: $primarycolor;
 }
 
 .privilegeCategoryChips:hover {
-    background: #DBE8EA 0% 0% no-repeat padding-box;
-    box-shadow: 0px 3px 12px #00000029;
-    border: 0.5px solid #06617A;
-    border-radius: 23px;
-    padding: 5px 10px;
-    opacity: 1;
+  background: #DBE8EA 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 12px #00000029;
+  border: 0.5px solid #06617A;
+  border-radius: 23px;
+  padding: 5px 10px;
+  opacity: 1;
 }
 
 .privilegeCategoryChipsSelected {
-    background: $primarycolor 0% 0% no-repeat padding-box;
-    border: 1px solid $primarycolor;
-    color: $secondarycolor;
+  background: $primarycolor 0% 0% no-repeat padding-box;
+  border: 1px solid $primarycolor;
+  color: $secondarycolor;
 }
 
 .privilegeWarningPart {
-    background: #FF555514 0% 0% no-repeat padding-box;
-    border: 1px solid #FF5555;
-    border-radius: 4px;
-    padding: 10px;
+  background: #FF555514 0% 0% no-repeat padding-box;
+  border: 1px solid #FF5555;
+  border-radius: 4px;
+  padding: 10px;
 }
 
 .privilegeWarningText {
-    text-align: left;
-    font: normal normal medium 20px/32px proxima-nova;
-    letter-spacing: 0px;
-    color: #1D2437;
+  text-align: left;
+  font: normal normal medium 20px/32px proxima-nova;
+  letter-spacing: 0px;
+  color: #1D2437;
 }
 
 .chipsContainer {
-    width: 100%;
-    padding: 5px;
-    display: flex;
-    flex-wrap: wrap;
-    grid-gap: 10px;
+  width: 100%;
+  padding: 5px;
+  display: flex;
+  flex-wrap: wrap;
+  grid-gap: 10px;
 }
 
 .privilegeConfirmationGrid {
-    display: grid;
-    grid-template-columns: 3% 84% 10%;
-    padding: 10px;
-    gap: 1%;
+  display: grid;
+  grid-template-columns: 3% 86% 10%;
+  padding: 10px;
+  gap: 1%;
 }
 
 .privilegeConfirmationGrid:hover {
-    background: #06617A14 0% 0% no-repeat padding-box;
-    border: 0.5px solid #9AAFB5;
-    padding: 10px;
-    border-radius: 4px;
-    cursor: pointer;
+  background: #06617A14 0% 0% no-repeat padding-box;
+  border: 0.5px solid #9AAFB5;
+  padding: 10px;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
 .iconBackgroundColorSelected {
-    background-color: #26C600;
-    border-radius: 4px;
-    height: 20px;
-    width: 20px;
+  background-color: #26C600;
+  border-radius: 4px;
+  height: 20px;
+  width: 20px;
 }
 
 .floatRight {
-    float: right;
+  float: right;
 }
 
 .addButton {
-    border: 0.5px solid $primarycolor;
-    border-radius: 5px;
-    width: auto;
-    background: $primarycolor 0% 0% no-repeat padding-box;
-    color: #FFFFFF;
-    font: normal normal normal 14px/18px proxima-nova;
-    cursor: pointer;
+  border: 0.5px solid $primarycolor;
+  border-radius: 5px;
+  width: auto;
+  background: $primarycolor 0% 0% no-repeat padding-box;
+  color: #FFFFFF;
+  font: normal normal normal 14px/18px proxima-nova;
+  cursor: pointer;
 }
 
 .displayInRowRev {
-    display: flex;
-    flex-direction: row-reverse;
+  display: flex;
+  flex-direction: row-reverse;
 }
 
 .hidden {
-    @media (max-width: 768px) {
-        display: none !important;
-    }
+  @media (max-width: 768px) {
+    display: none !important;
+  }
 }
 
 .padding {
-    padding: 20px;
+  padding: 20px;
 }
 
 .categoryGrid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
 }
 
 .itemLeft {
-    padding: 10px;
-    /* Inner padding for each line */
-    text-align: left;
+  padding: 10px;
+  /* Inner padding for each line */
+  text-align: left;
 }
 
 .privilegeCodeGrid {
-    display: grid;
-    grid-template-columns: 50px 1fr;
-    gap: 10px;
+  display: grid;
+  grid-template-columns: 50px 1fr;
+  gap: 10px;
 }
 
 .cardDescription {
-    text-align: left;
-    font: normal normal normal 18px/20px proxima-nova;
-    letter-spacing: 0px;
-    color: #2C2C2C;
-    // text-transform: capitalize;
+  text-align: left;
+  font: normal normal normal 18px/20px proxima-nova;
+  letter-spacing: 0px;
+  color: #2C2C2C;
+  // text-transform: capitalize;
 }
 
 .restrictedPrivilegeGrid {
-    display: grid;
-    grid-template-columns: 5% 75% 18%;
-    gap: 1%;
+  display: grid;
+  grid-template-columns: 5% 75% 18%;
+  gap: 1%;
 }
 
 .restrictedPrivilegeGrid> :nth-child(4) {
-    grid-column: 1 / -1;
+  grid-column: 1 / -1;
 }
 
 .restrictedPrivilegeGrid> :nth-child(5) {
-    grid-column: 1 / -1;
+  grid-column: 1 / -1;
 }
 
 .restrictedPrivilegeGrid> :nth-child(6) {
-    grid-column: 1 / -1;
+  grid-column: 1 / -1;
 }
 
 .uploadButton {
-    background: $secondarycolor 0% 0% no-repeat padding-box;
-    border: 0.4000000059604645px solid $primarycolor;
-    border-radius: 4px;
-    padding: 5px 10px;
+  background: $secondarycolor 0% 0% no-repeat padding-box;
+  border: 0.4000000059604645px solid $primarycolor;
+  border-radius: 4px;
+  padding: 5px 10px;
 }
 
 .uploadGrid {
-    display: grid;
-    grid-template-columns: 3% 80% 15%;
-    gap: 1%;
+  display: grid;
+  grid-template-columns: 3% 80% 15%;
+  gap: 1%;
 }
 
 .imgIcon {
-    height: 30px;
-    width: auto;
-    object-fit: contain;
+  height: 30px;
+  width: auto;
+  object-fit: contain;
 }
 
 .uploadText {
-    text-align: left !important;
-    font: normal normal bold 13px/20px proxima-nova;
-    letter-spacing: 0px;
-    color: #2C2C2C;
+  text-align: left !important;
+  font: normal normal bold 13px/20px proxima-nova;
+  letter-spacing: 0px;
+  color: #2C2C2C;
 }
 
 .uploadTextButton {
-    display: inline-block !important;
-    font: normal normal bold 13px/20px proxima-nova;
-    color: #2C2C2C;
-    border: 1px solid #2C2C2C;
-    border-radius: 4px;
-    padding: 5px;
-    text-align: center !important;
-    cursor: pointer;
+  display: inline-block !important;
+  font: normal normal bold 13px/20px proxima-nova;
+  color: #2C2C2C;
+  border: 1px solid #2C2C2C;
+  border-radius: 4px;
+  padding: 5px;
+  text-align: center !important;
+  cursor: pointer;
 }
 
 .fileDisplay {
-    padding: 0 10px;
-    background-color: $secondarycolor;
+  padding: 0 10px;
+  background-color: $secondarycolor;
 }
 
 .fileDisplayText {
-    font: normal normal normal $navbartext proxima-nova;
-    color: #2C2C2C;
+  font: normal normal normal $navbartext proxima-nova;
+  color: #2C2C2C;
 }
 
 .docTypeImgStyle {
-    height: 20px;
-    width: auto;
-    object-fit: contain;
-    cursor: pointer;
+  height: 20px;
+  width: auto;
+  object-fit: contain;
+  cursor: pointer;
 }
 
-.marginTopLess{
+.marginTopLess {
   margin-top: -20px;
+  box-sizing: border-box !important;
 }
 
-.marginTop30{
+.css-nxo287-MuiInputBase-input-MuiOutlinedInput-input {
+  box-sizing: border-box !important;
+}
+
+.marginTop30 {
   margin-top: 30px;
 }
 
-.marginLeft10{
+.marginLeft10 {
   margin-left: 10px;
 }
 
@@ -719,10 +757,10 @@
   cursor: not-allowed !important;
 }
 
-.disabledButton :hover {
-  opacity: 0.5 !important;
-  cursor: not-allowed !important;
-}
+// .disabledButton :hover {
+//   opacity: 0.5 !important;
+//   cursor: not-allowed !important;
+// }
 
 .dateTitle {
   text-align: left;
@@ -734,6 +772,61 @@
 .date {
   text-align: left;
   font: normal normal normal 17px/26px proxima-nova;
+  letter-spacing: 0px;
+  color: #2C2C2C;
+}
+
+.gridContainer2 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.gridRow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  align-items: center;
+  justify-content: center;
+}
+
+.gridItem1 {
+  display: flex;
+  gap: 0;
+  align-items: center;
+  margin-left: 20px;
+}
+
+.gridItem2 {
+  display: flex;
+  gap: 0;
+  align-items: center;
+  justify-content: center;
+}
+
+.twoColumnGridInner2 {
+  display: grid;
+  grid-template-columns: 55% 40%;
+  justify-items: center;
+  margin-left: 30px;
+}
+
+.reviewButtonStyle {
+  background: $primarycolor 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 6px #00000029;
+  border-radius: 8px;
+  opacity: 1;
+  padding: 10px 20px;
+  color: #fff;
+  font: normal normal bold 15px/15px proxima-nova;
+  text-align: center;
+  width: fit-content;
+  align-self: center;
+}
+
+.descriptionStyle {
+  text-align: left;
+  font: normal normal normal 15px/23px proxima-nova;
   letter-spacing: 0px;
   color: #2C2C2C;
 }

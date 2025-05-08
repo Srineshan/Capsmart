@@ -6,7 +6,7 @@ import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
 import LoadingScreen from "../../Components/LoadingScreen";
 
-const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, getReFetchMetaData,approvalnotesCommentsBoxDept,showBulkApproveDialog,searchTermForTable,activeApplicationTask,totalCount }) => {
+const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, getReFetchMetaData,approvalnotesCommentsBoxDept,showBulkApproveDialog,searchTermForTable,activeApplicationTask,totalCount,showBulkMoveDialog }) => {
   const cookie = new Cookie();
   const userDetails = cookie.get('user');
   const [user, setUser] = useState();
@@ -70,6 +70,10 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
       getTitleCounts();
     }
   }, [applicationType]);
+
+  useEffect(() => {
+    getTitleCounts(applicationType);
+  }, [searchTermForTable, applicationType]);
 
   useEffect(() => {
     if (userDetails !== undefined) {
@@ -156,10 +160,10 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
   }, [applicationType]);
 
   useEffect(() => {
-    if (applicationType === "LOCUM" || applicationType === "REAPPOINTMENT") {
+    if (applicationType === "LOCUM" || applicationType === "REAPPOINTMENT" || applicationType === "NEW") {
       setInitialTabSet(false);
     }
-  }, [applicationType]);
+  }, [applicationType,initialTabSet]);
 
   // Handle refetch metadata changes
   useEffect(() => {
@@ -168,7 +172,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
       console.log("refetcheddddddddddd",reFetchMetaData)
     // }
     // console.log("refetcheddddddddddd",reFetchMetaData)
-  }, [showBulkApproveDialog,approvalnotesCommentsBoxDept,searchTermForTable,activeApplicationTask]);
+  }, [showBulkApproveDialog,approvalnotesCommentsBoxDept,searchTermForTable,activeApplicationTask,showBulkMoveDialog]);
 
   // Handle user flow and role updates
   // useEffect(() => {
@@ -252,7 +256,10 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
       else if (workModeType === "Staff Manager") {
         initialTab = "level-1";
         // setInitialTabSet(false);
-      } else if ((workModeType === "Department Head" || workModeType === "Chief Of Staff") && applicationType === "REAPPOINTMENT" || applicationType === "NEW" ) {
+      } else if (workModeType === "Chief Of Staff" && applicationType === "NEW") {
+        initialTab = "level-3";
+        // setInitialTabSet(false);
+      } else if ((workModeType === "Department Head" || workModeType === "Chief Of Staff") && applicationType === "REAPPOINTMENT") {
         initialTab = "level-2";
         // setInitialTabSet(false);
       }  else if (workModeType === "Credentialing Committee User") {
@@ -261,12 +268,15 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
         initialTab = "level-2";
         // getSelectedTab(initialTab);
         // setInitialTabSet(false);
+      } else if (workModeType === "Chief Of Staff" && applicationType === "LOCUM") {
+        initialTab = "level-2";
+        // getSelectedTab(initialTab);
+        // setInitialTabSet(false);
       } else if (workModeType === "Credentialing Committee" && applicationType === "REAPPOINTMENT") {
         initialTab = "level-3";
         // getSelectedTab(initialTab);
       } else if (workModeType === "Credentialing Committee" && applicationType === "NEW") {
         initialTab = "level-3";
-        // getSelectedTab(initialTab);
       }  else {
         initialTab = isManagerOrChief
           ? "level-1"
@@ -339,10 +349,23 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
         label: "Privilege Extensions to Review",
       }));
     }
-    else if (workModeType === "Credentialing Committee") {
+
+    else if (workModeType === "Chief Of Staff" && applicationType === "LOCUM") {
+      filteredArray = baseUserFlowArray.filter(tile => tile.level === 'level-2').map(tile => ({
+        ...tile,
+        label: "Privilege Extensions to Review",
+      }));
+    }
+    else if (workModeType === "Credentialing Committee" && applicationType === "REAPPOINTMENT") {
       filteredArray = baseUserFlowArray.filter(tile => tile.level === 'level-3').map(tile => ({
         ...tile,
         label: "Reappointments To Review",
+      }));
+    }
+    else if (workModeType === "Credentialing Committee" && applicationType === "NEW") {
+      filteredArray = baseUserFlowArray.filter(tile => tile.level === 'level-3').map(tile => ({
+        ...tile,
+        label: "Applicants To Process",
       }));
     }
     else if (workModeType === "Credentialing Committee User") {

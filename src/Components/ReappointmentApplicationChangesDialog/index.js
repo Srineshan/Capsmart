@@ -114,7 +114,7 @@ const ReappointmentChangesDialog = ({ getIsOpen, getActiveApplicationView, selec
             <div className={Classes.DIALOG_BODY}>
               <div className={style.spaceBetween}>
                 <div className={`${style.heading}`}>
-                  Reappointment Application Data & Document Verification
+                  {applicationType === "LOCUM" ? `Locum ${formDetails?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'}` : 'Reappointment'} Application Data & Document Verification
                 </div>
 
                 <div className={style.displayInRow}>
@@ -153,8 +153,8 @@ const ReappointmentChangesDialog = ({ getIsOpen, getActiveApplicationView, selec
                             formDetails.basicDetails.applicant.name.firstName.slice(1).toLowerCase()
                             : ""}
                         </span>
-                          <span className={`${style.rejectionTextStyle}`}>
-                            {", "}{formDetails?.providerType?.serviceProviderType}
+                          <span className={`${style.rejectionTextStyle} ${style.marginLeft5}`}>
+                            {" "}{applicationType === "LOCUM" ? "Locum":""} {formDetails?.providerType?.serviceProviderType}
                           </span>
                         </div>
                         <div className={style.gridItem2}>
@@ -217,7 +217,7 @@ const ReappointmentChangesDialog = ({ getIsOpen, getActiveApplicationView, selec
                  Reappointment Application has updates and changes that require verification:
                 </div> */}
                     <div className={style.commentsNotesHeadingFontStyle}>
-                      Reappointment Application has been submitted with all required documents for processing.
+                      {applicationType === "LOCUM" ? `Locum ${formDetails?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'}` : 'Reappointment'} Application has been submitted with all required documents for processing.
                     </div>
                     {/* <div>
                     {formDetails?.formSchemas?.map((item, index) => (

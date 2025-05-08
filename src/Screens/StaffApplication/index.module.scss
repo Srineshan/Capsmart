@@ -1017,7 +1017,7 @@ body::-webkit-scrollbar {
   // grid-template-columns: 4% 20% 15% 14% 6% 6% 7% 7% 9% 5%;
   // grid-template-columns: 20% 15% 14% 6% 6% 8% 8% 7% 10%;
   // grid-template-columns: 20% 15% 14% 7% 8% 11% 12% 9%;
-  grid-template-columns: 5% 25% 12% 30% 6% 12% 5%;
+  grid-template-columns: 5% 19% 12% 30% 6% 12% 5% 5%;
   grid-gap: 1%;
 }
 
@@ -5335,4 +5335,9 @@ input[type="number"] {
   box-shadow: 0px 3px 6px #00000029;
   border-radius: 8px;
   opacity: 1;
+}
+
+.resentIcon {
+  height: 25px;
+  width: 25px;
 }

@@ -912,7 +912,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                     <div className={style.threeColForButton}>
                         <div></div>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
-                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleBackClick()}>BACK</div>
+                        {/* <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleBackClick()}>BACK</div> */}
                         <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleContinue()}>CONTINUE</div>
                     </div>
                 </div>
@@ -969,14 +969,14 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                     >
                         SKIP FOR NOW
                     </div> */}
-                        <div className={style.twoColForButton}>
-                            <div
+                        {/* <div className={style.twoColForButton}> */}
+                        {/* <div
                                 className={`${style.continue} ${style.marginTop10}`}
                                 onClick={() => handleBackClick()}
                             >
                                 BACK
-                            </div>
-                            {/* <div
+                            </div> */}
+                        {/* <div
                             className={`${style.continue} ${style.marginTop10}`}
                             onClick={
                                 // (basicForm?.forms?.[formIndex]?.data !== null &&
@@ -990,8 +990,8 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                         >
                             CONTINUE
                         </div> */}
-                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue()}>CONTINUE</div>
-                        </div>
+                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue()}>CONTINUE</div>
+                        {/* </div> */}
                     </div>
                     {/* <div className={style.marginTop}>
                             <ApplicationReferenceDocuments />

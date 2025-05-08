@@ -708,13 +708,13 @@ body::-webkit-scrollbar {
 
 .expiredLocumStaffGrid {
   display: grid;
-  grid-template-columns: 14% 12% 17% 6% 5% 16% 11% 11%;
+  grid-template-columns: 21% 4% 15% 6% 6% 16% 11% 14%;
   grid-gap: 1%;
 }
 
 .activeLocumStaffGrid {
   display: grid;
-  grid-template-columns: 15% 10% 13% 7% 7% 12% 12% 9% 6%;
+  grid-template-columns: 15% 6% 13% 6% 7% 13% 13% 9% 9%;
   grid-gap: 10px;
 }
 
@@ -3511,4 +3511,17 @@ input[type="number"] {
   box-shadow: 0px 3px 6px #00000029;
   border-radius: 8px;
   opacity: 1;
+}
+
+.loadingOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
 }

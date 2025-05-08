@@ -734,9 +734,12 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
           <div>
             <div className={Classes.DIALOG_BODY}>
               <div className={style.spaceBetween}>
-                <div className={`${style.heading}`}>
-                  {/* {userRoleTab} Review & Approval */}
-                  Staff Recommended with Comments for Reappointment
+                <div className={style.heading}>
+                  {`Staff Recommended with Comments for ${
+                    applicationType === "LOCUM"
+                      ? `${formDetails?.reappointmentType === "EXTENSION" ? "Locum Extension" : "Locum Renewal"}`
+                      : "Reappointment"
+                  }`}
                 </div>
                 <div className={style.displayInRow}>
                   <Tooltip arrow title={"Click to Close"}>
@@ -784,8 +787,8 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
                             formDetails.basicDetails.applicant.name.firstName.slice(1).toLowerCase()
                             : ""}
                         </span>
-                          <span className={`${style.rejectionTextStyle}`}>
-                            {", "}{formDetails?.providerType?.serviceProviderType}
+                          <span className={`${style.rejectionTextStyle} ${style.marginLeft4}`}>
+                          {" "} {applicationType === "LOCUM" ? "Locum":""} {formDetails?.providerType?.serviceProviderType}
                           </span>
                         </div>
                         <div className={`${style.gridItem2}`}>

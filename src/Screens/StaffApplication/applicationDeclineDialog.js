@@ -550,7 +550,13 @@ const ApplicationDecline = ({ getIsOpen, selectedTab, applicationType, getApplic
         <Dialog isOpen={getApplicationDeclineDialog} onClose={() => getApplicationDeclineDialog(false)} className={`${style.dialogStyle} ${style.dialogPaddingBottom}`}>
           <div className={`${style.eSignDialogBackground}`}>
             <div className={style.spaceBetween}>
-              <p className={style.heading1}>Staff Not Recommended for Reappointment</p>
+            <p className={style.heading1}>
+            {`Staff Not Recommended for ${
+              applicationType === "LOCUM"
+                ? `${formDetails?.reappointmentType === "EXTENSION" ? "Locum Extension" : "Locum Renewal"}`
+                : "Reappointment"
+            }`}
+          </p>
               <Icon icon="cross" size={20} className={style.crossStyle} onClick={() => getApplicationDeclineDialog(false)} />
             </div>
             <div>
@@ -582,9 +588,9 @@ const ApplicationDecline = ({ getIsOpen, selectedTab, applicationType, getApplic
                         {formDetails?.basicDetails?.applicant?.name?.firstName
                           ? formDetails.basicDetails.applicant.name.firstName.charAt(0).toUpperCase() +
                           formDetails.basicDetails.applicant.name.firstName.slice(1).toLowerCase()
-                          : ""}{", "}
+                          : ""}
                       </span>
-                      <div className={`${style.rejectionTextStyle} ${style.marginLeft2}`}>{formDetails?.providerType?.serviceProviderType}</div>
+                      <div className={`${style.rejectionTextStyle} ${style.marginLeft2}`}>{applicationType === "LOCUM" ? "Locum":""} {formDetails?.providerType?.serviceProviderType}</div>
                     </div>
                     <div className={`${style.twoColumnGridInner} ${style.displayInRowCenter}`}>
                       <span className={`${style.rejectionTextStyle}`}>Privilege Category:</span>
