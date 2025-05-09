@@ -128,47 +128,37 @@ const LocumExtensiveRequestDialog = ({ getIsOpen, tableDataValue, selectedTab })
     console.log("Converted files array:", filesArray);
     setFiles(filesArray);
 
-    const formData = new FormData();
-    let fileNameArray = [];
+    // const formData = new FormData();
+    // let fileNameArray = [];
 
-    filesArray.forEach(file => {
-      const fileInfo = {
-        "filePath": file.path || '',
-        "fileName": file.name,
-        "fileURL": "",
-        "fileType": file.type,
-        "classification": "",
-        "verified": true,
-        "valid": true,
-      };
-      fileNameArray.push(fileInfo);
-      formData.append('documents', file);
-    });
+    // event?.forEach(file => {
+    //   fileNameArray.push({ "fileName": file?.name });
+    //   formData.append('documents', file); // Append each file individually
+    // });
 
-    const blob = new Blob([JSON.stringify(fileNameArray)], {
-      type: "application/json"
-    });
-    formData.append('files', blob);
+    // formData.append('files', new Blob([JSON.stringify(fileNameArray)], {
+    //   type: "application/json"
+    // }));
 
-    try {
-      setIsLoadingImageDocs(true);
-      const response = await POST(`application-management-service/application/${selectDataLocum?.onGoingApplication?.id}/files/bulk?isLLMRequired=${false}`, formData);
-      console.log("API Response:", response);
-      SuccessToaster('File Uploaded Successfully');
-      console.log("Response data:", response?.data);
-      setUploadFileData(prevData => {
-        // Merge previous data with new data
-        return [...(prevData || []), ...(response?.data || [])];
-      });
-      setIsLoadingImageDocs(false);
-      console.log("Responseupload:", uploadFileData);
-      return response?.data;
-    } catch (error) {
-      ErrorToaster('File Upload Failed');
-      console.error("Error:", error);
-      setIsLoading(false);
-      return null;
-    }
+    // try {
+    //   setIsLoadingImageDocs(true);
+    //   const response = await POST(`application-management-service/application/${selectDataLocum?.onGoingApplication?.id}/files/bulk?isLLMRequired=${false}`, formData);
+    //   console.log("API Response:", response);
+    //   SuccessToaster('File Uploaded Successfully');
+    //   console.log("Response data:", response?.data);
+    //   setUploadFileData(prevData => {
+    //     // Merge previous data with new data
+    //     return [...(prevData || []), ...(response?.data || [])];
+    //   });
+    //   setIsLoadingImageDocs(false);
+    //   console.log("Responseupload:", uploadFileData);
+    //   return response?.data;
+    // } catch (error) {
+    //   ErrorToaster('File Upload Failed');
+    //   console.error("Error:", error);
+    //   setIsLoading(false);
+    //   return null;
+    // }
   };
 
   // const handleCheckboxChange = (checkboxName) => (event) => {
@@ -256,11 +246,7 @@ const LocumExtensiveRequestDialog = ({ getIsOpen, tableDataValue, selectedTab })
       };
     });
 
-    const files = (uploadFileData || []).map((item, index) => ({
-      ...item.file,
-      description: documentDesc[index] || "",
-      title: documentTitle[index] || "",
-    }));
+    const filesWithNotes = (files || []).map((item, index) => ({ "fileName": item?.name }));
 
     const temp = {
       requestType: 'LOCUM_RENEWAL_REQUEST',
@@ -284,7 +270,7 @@ const LocumExtensiveRequestDialog = ({ getIsOpen, tableDataValue, selectedTab })
           notes: {
             notes: userRoleComments
           },
-          files: files
+          files: filesWithNotes
         }
       ],
       requestedTo: [
@@ -308,12 +294,14 @@ const LocumExtensiveRequestDialog = ({ getIsOpen, tableDataValue, selectedTab })
     };
 
     const formData = new FormData();
-    formData.append('documents', uploadFileData);
+    files.forEach(file => {
+      console.log(file.name);
+      formData.append('documents', file);
+    });
     const blob = new Blob([JSON.stringify(temp)], {
       type: "application/json"
     });
     formData.append('requestDTO', blob);
-
     await POST(`application-management-service/application/request`, formData)
       .then((response) => {
         console.log(response?.data);
@@ -322,6 +310,8 @@ const LocumExtensiveRequestDialog = ({ getIsOpen, tableDataValue, selectedTab })
         console.log(error);
       });
   };
+
+  console.log(files, 'uploadFileData')
 
 
 
@@ -831,14 +821,14 @@ const LocumExtensiveRequestDialog = ({ getIsOpen, tableDataValue, selectedTab })
                     </>
 
                   </div>
-                  {uploadFileData.length > 0 && (
+                  {files?.length > 0 && (
                     <div>
-                      {uploadFileData.map((file, index) => (
+                      {files?.map((file, index) => (
                         <div key={index} className={`${style.alignItem} ${style.marginTop10}`}>
                           <div className={`${style.threeColumnGrid}`}>
                             <div className={`${style.displayInRow} ${style.referenceCardStyle}`}>
                               <DescriptionIcon className={style.docsIcon} />
-                              <div className={style.marginLeft20}>{file?.file?.fileName}</div>
+                              <div className={style.marginLeft20}>{file?.name}</div>
                             </div>
                             <div>
                               <CommonInputField

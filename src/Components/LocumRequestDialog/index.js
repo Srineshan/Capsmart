@@ -116,6 +116,82 @@ const LocumRequestDialog = ({ getIsOpen, selectedTab }) => {
   const [emailSendDialog, setEmailSendDialog] = useState(false);
   const prevDepartment = formDetails?.basicDetailReferences?.department?.id;
   const prevSpeciality = formDetails?.basicDetailReferences?.specialty?.id;
+  const referenceDate =
+    selectDataLocum?.locumRenewalDetails?.reappointmentType === "EXTENSION" && selectDataLocum?.locumRenewalDetails?.tenure?.from
+      ? selectDataLocum?.locumRenewalDetails?.tenure?.from
+      : new Date();
+
+  const getNext12MonthsFromCreatedDate = (createdDateStr) => {
+    const months = [];
+    const createdDate = new Date(createdDateStr);
+
+    for (let i = 1; i <= 12; i++) {
+      let futureDate = addMonths(createdDate, i);
+      futureDate = endOfMonth(futureDate);
+      // const oneDayBefore = subDays(futureDate, 1); // Go one day before the future "same day"
+
+      const label = `${i} ${i === 1 ? 'month' : 'months'}`;
+      const value = format(futureDate, 'yyyy-MM-dd');
+
+      months.push({ label, value });
+    }
+
+    // Add "Custom End Date" option
+    const now = new Date();
+    months.push({
+      label: 'Custom End Date',
+      value: 'Custom'
+    });
+
+    return months;
+  };
+
+  const monthOptions = getNext12MonthsFromCreatedDate(referenceDate);
+  const rawExpireDate = selectDataLocum?.staff?.tenure?.to ?? null;
+  const rawExpireDateRequest = selectDataLocum?.locumRenewalDetails?.tenure?.from ?? null;
+  const ExpireDate = rawExpireDate ? parseISO(rawExpireDate) : null;
+  const ExpireDateRequest = rawExpireDateRequest ? parseISO(rawExpireDateRequest) : null;
+
+  // Validate date before using
+  const isExpireDateValid = ExpireDate && isValid(ExpireDate);
+  const isCustomEndDateValid = customEndDate && isValid(new Date(customEndDate));
+
+  const startDateStr =
+    selectedTab === "ACTIVELOCUM" && isExpireDateValid
+      ? format(addDays(ExpireDate, 1), "yyyy-MM-dd")
+      : format(addDays(new Date(), 1), "yyyy-MM-dd");
+  const endDateStr =
+    selectedTab === "ACTIVELOCUM" || selectedTab === "EXPIREDLOCUM"
+      ? selectedMonth === "Custom" && isCustomEndDateValid
+        ? format(new Date(customEndDate), "yyyy-MM-dd")
+        : selectedMonth
+      : format(new Date(), "yyyy-MM-dd");
+
+  const lastModifiedDate = formDetails?.lastModifiedDate;
+  const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), "MMM dd, yyyy") : "-";
+  const formattedExpiringDate = ExpireDate ? format(new Date(ExpireDate), "MMM dd, yyyy") : "-";
+  const daysRemaining = ExpireDate ? Math.abs(differenceInDays(new Date(ExpireDate), new Date())) : null;
+  //  const monthsList = getNext12MonthsFromCreatedDate(format(new Date(selectDataLocum?.tenure?.to), "MMM dd, yyyy"));
+  // const selectedMonthLabel = selectedMonth === "Custom"
+  // ? "Custom End Date"
+  // : monthsList.find(month => month?.value === selectedMonth)?.label || '';
+  // const selectedMonthLabel = selectedMonth !== "Custom"
+  // ? monthsList.find(month => month.value === selectedMonth)?.label
+  // : "Custom End Date";
+  const currentDateNow = new Date();
+  const minDateValue =
+    selectDataLocum?.locumRenewalDetails?.reappointmentType === "EXTENSION"
+      ? ExpireDate
+        ? addDays(new Date(ExpireDate), 1)
+        : null
+      : currentDateNow;
+
+  const maxDateValue =
+    selectDataLocum?.locumRenewalDetails?.reappointmentType === "EXTENSION"
+      ? ExpireDate
+        ? addYears(new Date(ExpireDate), 1)
+        : null
+      : addYears(currentDateNow, 1);
   const [currentDate, setCurrentDate] = useState(
     format(new Date(), "dd-MM-yyyy")
   );
@@ -148,14 +224,15 @@ const LocumRequestDialog = ({ getIsOpen, selectedTab }) => {
   }, [selectDataLocum]);
 
   useEffect(() => {
-    const createdDate = new Date(referenceDate);
-    let futureDate = addMonths(createdDate, selectDataLocum?.locumRenewalDetails?.renewalDuration?.value);
-    futureDate = endOfMonth(futureDate);
-
-    setSelectedMonth(selectDataLocum?.locumRenewalDetails?.renewalDuration?.value === 0 ? 'Custom' : format(new Date(futureDate), 'yyyy-MM-dd'))
+    if (selectDataLocum) {
+      const createdDate = new Date(referenceDate);
+      let futureDate = addMonths(createdDate, selectDataLocum?.locumRenewalDetails?.renewalDuration?.value);
+      futureDate = endOfMonth(futureDate);
+      console.log(referenceDate, futureDate, 'futureDate', selectDataLocum, createdDate)
+      setSelectedMonth(!selectDataLocum?.locumRenewalDetails?.renewalDuration?.value ? 'Custom' : format(futureDate, 'yyyy-MM-dd'))
+    }
     // getPrivilegeCategory();
     // getformDetails()
-    console.log(referenceDate, futureDate, 'futureDate')
   }, [selectDataLocum, referenceDate]);
 
 
@@ -2668,86 +2745,10 @@ const LocumRequestDialog = ({ getIsOpen, selectedTab }) => {
 
   // Examples:
   console.log(getMonthOrDays("2025-01-15", "2025-01-28")); // 13 day(s)
-  const rawExpireDate = selectDataLocum?.staff?.tenure?.to ?? null;
-  const rawExpireDateRequest = selectDataLocum?.locumRenewalDetails?.tenure?.from ?? null;
-  const ExpireDate = rawExpireDate ? parseISO(rawExpireDate) : null;
-  const ExpireDateRequest = rawExpireDateRequest ? parseISO(rawExpireDateRequest) : null;
-
-  // Validate date before using
-  const isExpireDateValid = ExpireDate && isValid(ExpireDate);
-  const isCustomEndDateValid = customEndDate && isValid(new Date(customEndDate));
-
-  const startDateStr =
-    selectedTab === "ACTIVELOCUM" && isExpireDateValid
-      ? format(addDays(ExpireDate, 1), "yyyy-MM-dd")
-      : format(addDays(new Date(), 1), "yyyy-MM-dd");
-  const endDateStr =
-    selectedTab === "ACTIVELOCUM" || selectedTab === "EXPIREDLOCUM"
-      ? selectedMonth === "Custom" && isCustomEndDateValid
-        ? format(new Date(customEndDate), "yyyy-MM-dd")
-        : selectedMonth
-      : format(new Date(), "yyyy-MM-dd");
 
   // Now call the function safely
   const monthOptionsToView = getMonthOrDays(startDateStr, endDateStr);
   console.log("1111111111111111111111", getMonthOrDays("2025-04-30", "2025-05-30"), monthOptionsToView, selectedMonth, startDateStr, endDateStr); // 2 month(s)
-
-
-  const getNext12MonthsFromCreatedDate = (createdDateStr) => {
-    const months = [];
-    const createdDate = new Date(createdDateStr);
-
-    for (let i = 1; i <= 12; i++) {
-      let futureDate = addMonths(createdDate, i);
-      futureDate = endOfMonth(futureDate);
-      // const oneDayBefore = subDays(futureDate, 1); // Go one day before the future "same day"
-
-      const label = `${i} ${i === 1 ? 'month' : 'months'}`;
-      const value = format(futureDate, 'yyyy-MM-dd');
-
-      months.push({ label, value });
-    }
-
-    // Add "Custom End Date" option
-    const now = new Date();
-    months.push({
-      label: 'Custom End Date',
-      value: 'Custom'
-    });
-
-    return months;
-  };
-  const referenceDate =
-    selectDataLocum?.locumRenewalDetails?.reappointmentType === "EXTENSION" && selectDataLocum?.locumRenewalDetails?.tenure?.from
-      ? selectDataLocum?.locumRenewalDetails?.tenure?.from
-      : new Date();
-  const monthOptions = getNext12MonthsFromCreatedDate(referenceDate);
-
-  const lastModifiedDate = formDetails?.lastModifiedDate;
-  const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), "MMM dd, yyyy") : "-";
-  const formattedExpiringDate = ExpireDate ? format(new Date(ExpireDate), "MMM dd, yyyy") : "-";
-  const daysRemaining = ExpireDate ? Math.abs(differenceInDays(new Date(ExpireDate), new Date())) : null;
-  //  const monthsList = getNext12MonthsFromCreatedDate(format(new Date(selectDataLocum?.tenure?.to), "MMM dd, yyyy"));
-  // const selectedMonthLabel = selectedMonth === "Custom"
-  // ? "Custom End Date"
-  // : monthsList.find(month => month?.value === selectedMonth)?.label || '';
-  // const selectedMonthLabel = selectedMonth !== "Custom"
-  // ? monthsList.find(month => month.value === selectedMonth)?.label
-  // : "Custom End Date";
-  const currentDateNow = new Date();
-  const minDateValue =
-    selectDataLocum?.locumRenewalDetails?.reappointmentType === "EXTENSION"
-      ? ExpireDate
-        ? addDays(new Date(ExpireDate), 1)
-        : null
-      : currentDateNow;
-
-  const maxDateValue =
-    selectDataLocum?.locumRenewalDetails?.reappointmentType === "EXTENSION"
-      ? ExpireDate
-        ? addYears(new Date(ExpireDate), 1)
-        : null
-      : addYears(currentDateNow, 1);
 
   const isValidDateRange = () => {
     if (selectDataLocum?.locumRenewalDetails?.reappointmentType === "RENEWAL") {
