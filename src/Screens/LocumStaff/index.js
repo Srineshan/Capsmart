@@ -4,9 +4,8 @@ import LocumStaffList from './locumStaffList';
 import NewActiveApplication from '../../Components/ViewVerifyScreen';
 import DepartmentTrackerDialog from '../../Components/DepartmentTrackerDialog';
 import LocumExtensionDialog from "../../Components/LocumExtensionDialog";
-import LocumExtensionReactiveDialog from "../../Components/LocumExtensionReactiveDialog";
 import LocumExtensionRequestDialog from "../../Components/LocumExtensionRequestDialog";
-import LocumExtensionReactiveRequestDialog from "../../Components/LocumExtensionReactiveRequestDialog";
+import LocumRequestDialog from "../../Components/LocumRequestDialog";
 import NotesDialog from "../../Components/NotesDialog";
 
 const LocumStaff = () => {
@@ -16,9 +15,8 @@ const LocumStaff = () => {
     const [staffView, setStaffView] = useState(false);
     const [showDeptTrackerDialog, setShowDeptTrackerDialog] = useState(false);
     const [showLocumExtensiveDialog, setShowLocumExtensiveDialog] = useState(false);
-    const [showLocumExtensiveReactiveDialog, setShowLocumExtensiveReactiveDialog] = useState(false);
     const [showLocumExtensiveRequestDialog, setShowLocumExtensiveRequestDialog] = useState(false);
-    const [showLocumExtensiveReactiveRequestDialog, setShowLocumExtensiveReactiveRequestDialog] = useState(false);
+    const [showLocumRequestDialog, setShowLocumRequestDialog] = useState(false);
     const [showNotesDialog, setShowNotesDialog] = useState(false);
 
     const getSelectedTab = (value) => {
@@ -41,16 +39,12 @@ const LocumStaff = () => {
         setShowLocumExtensiveDialog(value);
     };
 
-    const getLocumExtensiveReactiveDialog = (value) => {
-        setShowLocumExtensiveReactiveDialog(value);
-    };
-
     const getLocumExtensiveRequestDialog = (value) => {
         setShowLocumExtensiveRequestDialog(value);
     };
 
-    const getLocumExtensiveReactiveRequestDialog = (value) => {
-        setShowLocumExtensiveReactiveRequestDialog(value);
+    const getLocumRequestDialog = (value) => {
+        setShowLocumRequestDialog(value);
     };
 
     const getNotesDialog = (value) => {
@@ -73,10 +67,10 @@ const LocumStaff = () => {
                 staffView ={staffView}
                 getDeptTrackerDialog={getDeptTrackerDialog}
                 getLocumExtensiveDialog ={getLocumExtensiveDialog}
-                getLocumExtensiveReactiveDialog={getLocumExtensiveReactiveDialog}
                 getLocumExtensiveRequestDialog={getLocumExtensiveRequestDialog}
-                getLocumExtensiveReactiveRequestDialog={getLocumExtensiveReactiveRequestDialog}
+                getLocumRequestDialog={getLocumRequestDialog}
                 getNotesDialog = {getNotesDialog}
+                showLocumExtensiveDialog= {showLocumExtensiveDialog}
             />
              {showDeptTrackerDialog && (
                 <DepartmentTrackerDialog isLoading={isLoading} getIsOpen={getDeptTrackerDialog} getActiveApplicationView={getActiveApplicationView}/>
@@ -87,14 +81,11 @@ const LocumStaff = () => {
               {showLocumExtensiveDialog && (
                 <LocumExtensionDialog isLoading={isLoading} getIsOpen={getLocumExtensiveDialog} selectedTab={selectedTab} getActiveApplicationView={getActiveApplicationView} />
             )}
-            {showLocumExtensiveReactiveDialog && (
-                <LocumExtensionReactiveDialog isLoading={isLoading} getIsOpen={getLocumExtensiveReactiveDialog} selectedTab={selectedTab} getActiveApplicationView={getActiveApplicationView} />
-            )}
             {showLocumExtensiveRequestDialog && (
                 <LocumExtensionRequestDialog isLoading={isLoading} getIsOpen={getLocumExtensiveRequestDialog} selectedTab={selectedTab} getActiveApplicationView={getActiveApplicationView} />
             )}
-            {showLocumExtensiveReactiveRequestDialog && (
-                <LocumExtensionReactiveRequestDialog isLoading={isLoading} getIsOpen={getLocumExtensiveReactiveRequestDialog} selectedTab={selectedTab} getActiveApplicationView={getActiveApplicationView} />
+            {showLocumRequestDialog && (
+                <LocumRequestDialog isLoading={isLoading} getIsOpen={getLocumRequestDialog} selectedTab={selectedTab} getActiveApplicationView={getActiveApplicationView} />
             )}
         </Fragment>
             )}

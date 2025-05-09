@@ -153,15 +153,16 @@ const BulkApproveDialog = ({ checkedIds, getBulkApproveDialogOpen, onClose, sele
 
   const checkApproveEnabled = () => {
     const hasValidComments = userRoleComments.trim() !== '';
+    const hasCheckedIds = checkedIds?.length > 0;
 
     if (uploadFileData.length > 0) {
       const allFilesHaveTitles = uploadFileData.every((_, index) =>
         documentTitle[index] && documentTitle[index].trim() !== ''
       );
 
-      setIsApproveEnabled(hasValidComments && allFilesHaveTitles);
+      setIsApproveEnabled(hasValidComments && allFilesHaveTitles && hasCheckedIds);
     } else {
-      setIsApproveEnabled(hasValidComments);
+      setIsApproveEnabled(hasValidComments && hasCheckedIds);
     }
   };
 
@@ -172,7 +173,7 @@ const BulkApproveDialog = ({ checkedIds, getBulkApproveDialogOpen, onClose, sele
   };
 
   const onClickApproveMoveFunction = () => {
-    if (selectedTab === "level-5") {
+    if ((selectedTab === "level-5" && applicationType === "REAPPOINTMENT") || (selectedTab === "level-4" && applicationType === "LOCUM") ) {
       handleApplicationAccept(true);
     } else {
       handleApplicationApprove(true);
@@ -222,9 +223,12 @@ const BulkApproveDialog = ({ checkedIds, getBulkApproveDialogOpen, onClose, sele
         role = "Credentialing Committee";
         title = "Credentialing Committee User Review";
       }
-    } else if (selectedTab === 'level-4') {
+    } else if (selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") {
       role = "Advisory Committee";
       title = "MAC Review";
+    } else if (selectedTab === 'level-4' && applicationType === "LOCUM") {
+      role = "Board";
+      title = "BOD Approval";
     } else if (selectedTab === 'level-5') {
       role = "Board";
       title = "BOD Approval";
@@ -287,9 +291,9 @@ const BulkApproveDialog = ({ checkedIds, getBulkApproveDialogOpen, onClose, sele
         title = "Credentialing Committee Review"
       } else {
         role = "Credentialing Committee";
-        title = "Credentialing Committee Review"
+        title = "Credentialing Committee User Review"
       }
-    }  else if (selectedTab === 'level-3') {
+    }  else if (selectedTab === 'level-3' && applicationType !== "LOCUM") {
       if (workModeType === "Credentialing Committee") {
         role = "Credentialing Committee";
         title = "Credentialing Committee Review";
@@ -304,9 +308,27 @@ const BulkApproveDialog = ({ checkedIds, getBulkApproveDialogOpen, onClose, sele
         role = "Credentialing Committee";
         title = "Credentialing Committee User Review";
       }
-    } else if (selectedTab === 'level-4') {
+    } else if (selectedTab === 'level-3' && applicationType === "LOCUM") {
+      if (workModeType === "Advisory Committee") {
+        role = "Advisory Committee";
+        isDelegate = false;
+        title = "MAC Review"
+      } else {
+        role = "Advisory Committee";
+        title = "MAC Review"
+      }
+    } else if (selectedTab === 'level-4' && applicationType !== "LOCUM") {
       role = "Advisory Committee";
       title = "MAC Review";
+    }  else if (selectedTab === 'level-4' && applicationType === "LOCUM") {
+      if (workModeType === "Board") {
+        role = "Board";
+        isDelegate = false;
+        title = "Board Approval"
+      } else {
+        role = "Board";
+        title = "Board Approval"
+      }
     } else if (selectedTab === 'level-5') {
       role = "Board";
       title = "BOD Approval";
@@ -359,8 +381,8 @@ const BulkApproveDialog = ({ checkedIds, getBulkApproveDialogOpen, onClose, sele
                     formDetails.basicDetails.applicant.name.firstName.slice(1).toLowerCase()
                     : ""}
                 </span>
-                  <span className={`${style.rejectionTextStyle}`}>
-                    {", "}{formDetails?.providerType?.serviceProviderType}
+                  <span className={`${style.rejectionTextStyle} ${style.marginLeft4}`}>
+                  {" "} {applicationType === "LOCUM" ? "Locum":""} {formDetails?.providerType?.serviceProviderType}
                   </span>
                 </div>
                 <div className={`${style.gridItem2}`}>
@@ -437,9 +459,9 @@ const BulkApproveDialog = ({ checkedIds, getBulkApproveDialogOpen, onClose, sele
           <div>
             <div className={style.templateHeader}>
               <div className={style.templateHeadertext}>
-                {selectedTab === "level-3"
+                {((selectedTab === "level-3" && applicationType === "REAPPOINTMENT") || (selectedTab === "level-2" && applicationType === "LOCUM"))
                   ? "Staff Reappointments Approved by the Cred. Comm." :
-                  selectedTab === "level-4"
+                  ((selectedTab === "level-4" && applicationType === "REAPPOINTMENT") || (selectedTab === "level-3" && applicationType === "LOCUM"))
                     ? "Staff Reappointments Approved by the MAC."
                     : "Staff Reappointments Approved by the BOD."}
               </div>
@@ -481,9 +503,9 @@ const BulkApproveDialog = ({ checkedIds, getBulkApproveDialogOpen, onClose, sele
               </div>
             )} */}
             <div className={`${style.marginTop10} ${style.commentsNotesHeadingFontStyle}`}>
-              {selectedTab === "level-3"
+              {((selectedTab === "level-3" && applicationType === "REAPPOINTMENT") || (selectedTab === "level-2" && applicationType === "LOCUM"))
                 ? "Notes /Comments By The Cred Comm*"
-                : selectedTab === "level-4"
+                : ((selectedTab === "level-4" && applicationType === "REAPPOINTMENT") || (selectedTab === "level-3" && applicationType === "LOCUM"))
                   ? "Notes /Comments By The MAC*"
                   : " Notes /Comments By The BOD*"}
             </div>
@@ -606,7 +628,7 @@ const BulkApproveDialog = ({ checkedIds, getBulkApproveDialogOpen, onClose, sele
                   opacity: isApproveEnabled ? 1 : 0.5
                 }}
                 onClick={onClickApproveMoveFunction}>
-                  <Tooltip title={isApproveEnabled ? "Click to Save" : ""} arrow>
+                  <Tooltip title={isApproveEnabled ? "Click to Save" : "Please select a valid applicant and provide appropriate notes."} arrow>
                 <div className={style.reviewButton}>Save</div></Tooltip>
               </div>
             </div>

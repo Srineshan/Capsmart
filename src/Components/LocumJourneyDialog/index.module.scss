@@ -58,9 +58,9 @@
 }
 
 .continue:hover {
-    background: #044D61 0% 0% no-repeat padding-box; 
-    box-shadow: 0px 3px 12px #00000052; 
-    border-radius: 8px; 
+    background: #044D61 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #00000052;
+    border-radius: 8px;
     opacity: 1;
 }
 
@@ -80,9 +80,9 @@
     transition: background-color 0.3s ease;
 }
 
-.saveInProgress:hover { 
+.saveInProgress:hover {
     background: #F1F6F7 0% 0% no-repeat padding-box;
-    box-shadow: 0px 3px 12px #00000052; 
+    box-shadow: 0px 3px 12px #00000052;
     border: 0.5px solid #9AAFB5;
     border-radius: 8px;
     opacity: 1;
@@ -126,7 +126,30 @@
     font: normal normal normal 18px/25px proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
-    opacity: 0.8;
+    opacity: 0.7;
+    width: auto;
+    word-wrap: break-word;
+    transition: color 0.3s ease, text-decoration 0.3s ease;
+}
+
+.completedItemsText:hover {
+    cursor: pointer;
+    opacity: 1;
+    width: auto;
+    word-wrap: break-word;
+}
+
+.completedItemsTextRed {
+    text-align: left;
+    font: normal normal bold 20px/25px proxima-nova;
+    letter-spacing: 0px;
+    color: $statusred !important;
+    opacity: 0.7;
+}
+
+.completedItemsTextRed:hover {
+    cursor: pointer;
+    opacity: 1;
 }
 
 .journeyImg {
@@ -153,4 +176,9 @@
     width: 22px;
     height: 22px;
     margin-left: 5px;
+}
+
+.disabledButton {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
 }

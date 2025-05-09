@@ -226,7 +226,7 @@ const Navbar = () => {
   };
 
   const sendEmail = (email) => {
-      window.location.href = `mailto:${email}`;
+    window.location.href = `mailto:${email}`;
   };
 
   const idTools = open ? "mouse-over-popover" : undefined;
@@ -300,6 +300,7 @@ const Navbar = () => {
     cookie.remove("entityId", { path: "/" });
     cookie.remove("authorization", { path: "/" });
     sessionStorage.setItem('applicationCreationType', 'REAPPOINTMENT');
+    sessionStorage.removeItem('selectedTab');
     logout()
     navigate('/')
   }
@@ -393,7 +394,7 @@ const Navbar = () => {
             )
           } */}
           {workModeType !== "Entity Sys Admin" && (
-            <Link to={"/applications"} className={style.noFontStyle}>
+            <Link to={"/applications"} onClick={() => sessionStorage.setItem('applicationCreationType', 'REAPPOINTMENT')} className={style.noFontStyle}>
               <div
                 className={`${style.menuStyle} ${window.location.pathname.includes("/applications") &&
                   style.activeMenuColor
@@ -420,7 +421,11 @@ const Navbar = () => {
             aria-owns={openStaff ? "mouse-over-popover" : undefined}
             aria-haspopup="true"
           >
-            <div className={`${style.menuStyle} ${style?.cursorPointer}`}>PRIVILEGED STAFF</div>
+            <div className={`${style.menuStyle} ${style?.cursorPointer} ${(window.location.pathname.includes("/locumStaff") || window.location.pathname.includes("/activeStaff")) &&
+              style.activeMenuColor
+              }`}>
+              <p>PRIVILEGED STAFF</p>
+            </div>
             <Popover
               id={"mouse-over-popover"}
               open={openStaff}
@@ -445,15 +450,15 @@ const Navbar = () => {
             >
               <div className={style.helpCardStyle}>
                 {/* {workModeType === "Department Head" || workModeType === "Credentialing Committee" ? ( */}
-                   <Link
-                   className={style.noFontStyle1}
-                   to={"/activeStaff"}
-                 >
-                   <div className={`${style.options1} ${style.cursorPointer} ${window.location.pathname.includes("/activeStaff")
-                  }`} 
-                   >
-                     Permanent Staff</div>
-                 </Link>
+                <Link
+                  className={style.noFontStyle1}
+                  to={"/activeStaff"}
+                >
+                  <div className={`${style.options1} ${style.cursorPointer} ${window.location.pathname.includes("/activeStaff")
+                    }`}
+                  >
+                    Permanent Staff</div>
+                </Link>
 
                 {/* ) : ""} */}
                 <Link
@@ -760,7 +765,7 @@ const Navbar = () => {
             aria-owns={openGuide ? "mouse-over-popover" : undefined}
             aria-haspopup="true"
           >
-            <div className={`${style.alignContent} ${style.iconSize1} ${style?.cursorPointer}`}><HelpOutlineOutlinedIcon fontSize="small"  sx={{ "&:hover": { color: "#06617A" } }}  /></div>
+            <div className={`${style.alignContent} ${style.iconSize1} ${style?.cursorPointer}`}><HelpOutlineOutlinedIcon fontSize="small" sx={{ "&:hover": { color: "#06617A" } }} /></div>
             <Popover
               id={"mouse-over-popover"}
               open={openGuide}
@@ -785,18 +790,40 @@ const Navbar = () => {
             >
               <div className={style.helpCardStyle}>
                 {workModeType === "Department Head" || workModeType === "Credentialing Committee" ? (
-                   <div
-                   className={style.noFontStyle1}
-                 >
-                   <div className={`${style.options1} ${style.cursorPointer}`} 
-                    onClick={() => window.open(
-                     workModeType === "Department Head"
-                       ? 'https://xd.adobe.com/view/f679ea78-f822-432c-85b2-07b5599aa84e-a32a/?fullscreen' 
-                       : 'https://xd.adobe.com/view/90b13ba5-0ca0-4681-8d9e-abd451dc2f38-c5e2/?fullscreen'
-                   )}
-                   >
-                     Step-By-Step Guide for Reappointment Application Review</div>
-                 </div>
+                  <div
+                    className={style.noFontStyle1}
+                  >
+                    <div className={`${style.options1} ${style.cursorPointer}`}
+                      onClick={() => window.open(
+                        workModeType === "Department Head"
+                          ? 'https://xd.adobe.com/view/f679ea78-f822-432c-85b2-07b5599aa84e-a32a/?fullscreen'
+                          : 'https://xd.adobe.com/view/90b13ba5-0ca0-4681-8d9e-abd451dc2f38-c5e2/?fullscreen'
+                      )}
+                    >
+                      Step-By-Step Guide for Reappointment Application Review</div>
+                  </div>
+
+                ) : ""}
+                {workModeType === "Department Head" ? (
+                  <div
+                    className={style.noFontStyle1}
+                  >
+                    <div className={`${style.options1} ${style.cursorPointer}`}
+                      onClick={() => window.open('https://xd.adobe.com/view/45fcfe64-b36e-44d7-9c6e-73b3559e0618-10af/?fullscreen')}
+                    >
+                      Step-By-Step Guide for Locum Renewal Application Review</div>
+                  </div>
+
+                ) : ""}
+                {workModeType === "Department Head" ? (
+                  <div
+                    className={style.noFontStyle1}
+                  >
+                    <div className={`${style.options1} ${style.cursorPointer}`}
+                      onClick={() => window.open('https://xd.adobe.com/view/bdfc27b0-ef87-4661-b3d1-4a4c28a10e33-e8af/?fullscreen')}
+                    >
+                      Step-By-Step Guide for Locum Extension Application Review</div>
+                  </div>
 
                 ) : ""}
                 <div
@@ -811,8 +838,8 @@ const Navbar = () => {
             className={`${style.logoutStyle} ${style.cursorPointer}`}
             onClick={() => handleLogout()}
           >
-             <Tooltip title={'Click to Logout'} arrow >
-            <div className={`${style.logOutTextStyle}`}>Logout</div>
+            <Tooltip title={'Click to Logout'} arrow >
+              <div className={`${style.logOutTextStyle}`}>Logout</div>
             </Tooltip>
           </div>
           {/* <img
@@ -823,8 +850,8 @@ const Navbar = () => {
           /> */}
           <div>
             <Tooltip title={'Click to Logout'} arrow >
-          <LogoutIcon className={`${style.logoutIcons} ${style.iconSize1}`} onClick={handleLogout} style={{ fontSize: 20 }} />
-          </Tooltip>
+              <LogoutIcon className={`${style.logoutIcons} ${style.iconSize1}`} onClick={handleLogout} style={{ fontSize: 20 }} />
+            </Tooltip>
           </div>
         </div>
       </div>

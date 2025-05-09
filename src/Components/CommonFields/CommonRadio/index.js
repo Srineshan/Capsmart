@@ -7,7 +7,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import style from './index.module.scss';
 
 
-const CommonRadio = ({ onChange, className, value, radioValue, label, required }) => {
+const CommonRadio = ({ onChange, className, value, radioValue, label, required, readOnly }) => {
   const contractStatus = sessionStorage.getItem('Selected Contract Status');
   const warningCheck = (value === '');
   const theme = createTheme({
@@ -40,7 +40,7 @@ const CommonRadio = ({ onChange, className, value, radioValue, label, required }
                     "&.Mui-checked": { color: "#06617A" },
                   }}
                   size="small"
-                  disabled={contractStatus === "ACTIVE" ? true : false}
+                  disabled={readOnly ? true : false}
                 />
               }
               label={label[index]}

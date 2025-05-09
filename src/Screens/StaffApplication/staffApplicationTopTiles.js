@@ -494,7 +494,7 @@ const StaffApplicationTopTiles = (searchTermForTable) => {
   const applicationId = "66dc44ec788741fedc982b01";
   const [totalCountLocum, setTotalCountLocum] = useState(0);
   const workModeType = sessionStorage.getItem('workModeType')
-  const userDetailsFetchOption = JSON.parse(sessionStorage.getItem('user'));
+  const userDetailsFetchOption = (sessionStorage.getItem('user') !== "undefined" && sessionStorage.getItem('user')) ? JSON.parse(sessionStorage.getItem('user')) : {};
   const applicationType =
     sessionStorage.getItem('applicationCreationType')
   let userDepartmentList;
@@ -504,12 +504,18 @@ const StaffApplicationTopTiles = (searchTermForTable) => {
     userDepartmentList = userDetailsFetchOption?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.id;
     userSpecialty = userDetailsFetchOption?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.serviceAreas?.[0]?.id;
     console.log("userSpecialty", userDepartmentList, userSpecialty)
-  }, [applicationType, selectedTab])
+    getTitleCountsLocum();
+  }, [applicationType, selectedTab, searchTermForTable?.searchTermForTable])
 
   useEffect(() => {
-    getTitleCounts(applicationCreationType);
+    getTitleCountsLocum();
+    getTitleCounts("REAPPOINTMENT");
+  }, [searchTermForTable?.searchTermForTable])
+
+  useEffect(() => {
+    // getTitleCounts(applicationCreationType);
     getUserRoleType(applicationCreationType)
-  }, [searchTermForTable, applicationCreationType]);
+  }, [applicationCreationType]);
 
   console.log("searchTermForTable", searchTermForTable?.searchTermForTable)
 
@@ -535,23 +541,25 @@ const StaffApplicationTopTiles = (searchTermForTable) => {
   const getTitleCounts = async (type) => {
     try {
       setIsLoading(true);
-      const positionTypeParam = applicationType === "LOCUM" ? `&positionType=${applicationType}` : "";
+      // const positionTypeParam = applicationType === "LOCUM" ? `&positionType=${applicationType}` : "&positionType=PERMANENT";
       let role = workModeType === "Credentialing Committee User" ? "Staff Manager" : workModeType;
       const response = await GET(
-        `application-management-service/application/workflowUser/meta?applicationCreationType=${type === "LOCUM" ? "REAPPOINTMENT" : type}&role=${role}&searchText=${searchTermForTable?.searchTermForTable}${positionTypeParam}`
+        `application-management-service/application/workflowUser/meta?applicationCreationType=${type === "LOCUM" ? "REAPPOINTMENT" : type}&role=${role}&searchText=${searchTermForTable?.searchTermForTable}&positionType=PERMANENT`
       );
-
+      setReappointmentCounts(response.data);
       if (response?.data) {
         if (type === 'NEW') {
           setNewCounts(response.data);
           console.log("setLocumCounts", response.data)
-        } else if (type === 'REAPPOINTMENT') {
-          setReappointmentCounts(response.data);
-          console.log("setLocumCounts", response.data)
-        } else if (type === 'LOCUM') {
-          setLocumCounts(response.data);
-          console.log("setLocumCounts1111", response.data)
         }
+        // else if (type === 'REAPPOINTMENT') {
+        //   setReappointmentCounts(response.data);
+        //   console.log("setLocumCounts", response.data)
+        // } 
+        // else if (type === 'LOCUM') {
+        //   setLocumCounts(response.data);
+        //   console.log("setLocumCounts1111", response.data)
+        // }
       }
     } catch (error) {
       console.error('Error fetching counts:', error);
@@ -564,13 +572,41 @@ const StaffApplicationTopTiles = (searchTermForTable) => {
     // if (type === "LOCUM") return;
 
     try {
-      const positionTypeParam = applicationType === "LOCUM" ? `&positionType=${applicationType}` : "";
+      const positionTypeParam = applicationType === "LOCUM" ? `&positionType=${applicationType}` : "&positionType=PERMANENT";
       const response = await GET(
         `application-management-service/applicantType/approvalFlow?applicantTypeId=${applicationId}&applicationCreationType=${type === "LOCUM" ? "REAPPOINTMENT" : type}${positionTypeParam}`
       );
       setUserFlow(response?.data?.approvalFlowMap);
     } catch (error) {
       console.error('Error fetching user role type:', error);
+    }
+  };
+
+  const getTitleCountsLocum = async () => {
+    try {
+      setIsLoading(true);
+      const positionTypeParam = applicationType === "LOCUM" ? `&positionType=${applicationType}` : "&positionType=PERMANENT";
+      let role = workModeType === "Credentialing Committee User" ? "Staff Manager" : workModeType;
+      const response = await GET(
+        `application-management-service/application/workflowUser/meta?applicationCreationType=REAPPOINTMENT&role=${role}&searchText=${searchTermForTable?.searchTermForTable}&positionType=LOCUM`
+      );
+      setLocumCounts(response.data);
+      // if (response?.data) {
+      //   if (type === 'NEW') {
+      //     setNewCounts(response.data);
+      //     console.log("setLocumCounts", response.data)
+      //   } else if (type === 'REAPPOINTMENT') {
+      //     setReappointmentCounts(response.data);
+      //     console.log("setLocumCounts", response.data)
+      //   } else if (type === 'LOCUM') {
+      //     setLocumCounts(response.data);
+      //     console.log("setLocumCounts1111", response.data)
+      //   }
+      // }
+    } catch (error) {
+      console.error('Error fetching counts:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -630,7 +666,7 @@ const StaffApplicationTopTiles = (searchTermForTable) => {
     }
 
     // For Credentialing Committee, show only level-3 count
-    if (workModeType === "Credentialing Committee") {
+    if (workModeType === "Credentialing Committee" && (applicationType === "REAPPOINTMENT" || applicationType === "NEW")) {
       return (parseInt(countsObj['level-3']) || 0) + clarifications;
     }
 

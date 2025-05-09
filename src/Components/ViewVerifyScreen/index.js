@@ -1504,9 +1504,12 @@ const NewActiveApplication = ({
         isDelegate = true;
         title = "Credentialing Committee Review";
       }
-    } else if (selectedTab === 'level-4') {
+    } else if (selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") {
       role = "Advisory Committee";
       title = "MAC Review";
+    } else if (selectedTab === 'level-4' && applicationType === "LOCUM") {
+      role = "Board";
+      title = "BOD Approval";
     } else if (selectedTab === 'level-5') {
       role = "Board";
       title = "BOD Approval";
@@ -3150,7 +3153,7 @@ const NewActiveApplication = ({
                         setSelectedFormId(form?.forms?.[4]?.id);
                       }}
                     >
-                    
+
                       {data?.file?.isVerified !== undefined &&
                         data?.file?.isVerified ? (
                         <>
@@ -3728,15 +3731,15 @@ const NewActiveApplication = ({
                   <div><strong>CME / CEU Transcript</strong></div>
                   <div className={style.leftAlign}>{form?.forms?.[formIndex]?.data?.cmeTranscripts?.file?.fileName}</div>
                   <Tooltip arrow title={"Click to View File"}>
-                  <img
-                    src={VerifiedImage}
-                    alt=""
-                    className={`${style.imgIcon} ${style.cursorPointer}`}
-                    onClick={() => {
-                      setShowFileDisplayDialog(true); setselectedFile(form?.forms?.[formIndex]?.data?.cmeTranscripts?.file);
-                    }
-                    }
-                  />
+                    <img
+                      src={VerifiedImage}
+                      alt=""
+                      className={`${style.imgIcon} ${style.cursorPointer}`}
+                      onClick={() => {
+                        setShowFileDisplayDialog(true); setselectedFile(form?.forms?.[formIndex]?.data?.cmeTranscripts?.file);
+                      }
+                      }
+                    />
                   </Tooltip>
                 </div>
               )}
@@ -3906,14 +3909,16 @@ const NewActiveApplication = ({
         return (
           <>
             <div>
-              <div>
-                <div className={style.cardTitle}>
-                  {allFormSchemas?.[index]?.formSchema?.schema?.properties?.isModulesForReAppointmentCompleted?.properties?.response?.label}
+              {form?.basicDetailReferences?.credentialingAndPrivilegingCategory?.type !== "LOCUM" && (
+                <div>
+                  <div className={style.cardTitle}>
+                    {allFormSchemas?.[index]?.formSchema?.schema?.properties?.isModulesForReAppointmentCompleted?.properties?.response?.label}
+                  </div>
+                  {form?.forms?.[formIndex]?.data?.isModulesForReAppointmentCompleted?.response !== undefined && (
+                    <div className={`${style.markedAsText} ${style.marginTop20}`}><strong>Marked as <span className={(form?.forms?.[formIndex]?.data?.isModulesForReAppointmentCompleted?.response === 'Yes' || form?.forms?.[formIndex]?.data?.isModulesForReAppointmentCompleted?.response === true) ? style.yesText : style.noText}>{form?.forms?.[formIndex]?.data?.isModulesForReAppointmentCompleted?.response === true ? 'Yes' : form?.forms?.[formIndex]?.data?.isModulesForReAppointmentCompleted?.response === false ? "No" : form?.forms?.[formIndex]?.data?.isModulesForReAppointmentCompleted?.response}</span></strong> on {(form?.forms?.[formIndex]?.data?.isModulesForReAppointmentCompleted?.date !== '' && form?.forms?.[formIndex]?.data?.isModulesForReAppointmentCompleted?.date !== undefined) ? format(new Date(form?.forms?.[formIndex]?.data?.isModulesForReAppointmentCompleted?.date), "MMM dd, yyyy") : ''}</div>
+                  )}
                 </div>
-                {form?.forms?.[formIndex]?.data?.isModulesForReAppointmentCompleted?.response !== undefined && (
-                  <div className={`${style.markedAsText} ${style.marginTop20}`}><strong>Marked as <span className={(form?.forms?.[formIndex]?.data?.isModulesForReAppointmentCompleted?.response === 'Yes' || form?.forms?.[formIndex]?.data?.isModulesForReAppointmentCompleted?.response === true) ? style.yesText : style.noText}>{form?.forms?.[formIndex]?.data?.isModulesForReAppointmentCompleted?.response === true ? 'Yes' : form?.forms?.[formIndex]?.data?.isModulesForReAppointmentCompleted?.response === false ? "No" : form?.forms?.[formIndex]?.data?.isModulesForReAppointmentCompleted?.response}</span></strong> on {(form?.forms?.[formIndex]?.data?.isModulesForReAppointmentCompleted?.date !== '' && form?.forms?.[formIndex]?.data?.isModulesForReAppointmentCompleted?.date !== undefined) ? format(new Date(form?.forms?.[formIndex]?.data?.isModulesForReAppointmentCompleted?.date), "MMM dd, yyyy") : ''}</div>
-                )}
-              </div>
+              )}
               <div className={`${style.marginTop20}`}>
                 <div className={style.cardTitle}>
                   {allFormSchemas?.[index]?.formSchema?.schema?.properties?.doYouPrescribeSuboxone?.properties?.response?.label}
@@ -3922,28 +3927,36 @@ const NewActiveApplication = ({
                   <div className={`${style.markedAsText} ${style.marginTop20}`}><strong>Marked as <span className={(form?.forms?.[formIndex]?.data?.doYouPrescribeSuboxone?.response === 'Yes' || form?.forms?.[formIndex]?.data?.doYouPrescribeSuboxone?.response === true) ? style.yesText : style.noText}>{form?.forms?.[formIndex]?.data?.doYouPrescribeSuboxone?.response === true ? 'Yes' : form?.forms?.[formIndex]?.data?.doYouPrescribeSuboxone?.response === false ? "No" : form?.forms?.[formIndex]?.data?.doYouPrescribeSuboxone?.response}</span></strong> on {(form?.forms?.[formIndex]?.data?.doYouPrescribeSuboxone?.date !== '' && form?.forms?.[formIndex]?.data?.doYouPrescribeSuboxone?.date !== undefined) ? format(new Date(form?.forms?.[formIndex]?.data?.doYouPrescribeSuboxone?.date), "MMM dd, yyyy") : ''}</div>
                 )}
               </div>
-              {(form?.basicDetails?.departmentSpecialty?.department === 'Women & Children' && form?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics') && (
-                <div className={`${style.marginTop20}`}>
-                  <div className={style.cardTitle}>
-                    {allFormSchemas?.[index]?.formSchema?.schema?.properties?.wishToBeMRP?.properties?.response?.label}
-                  </div>
-                  {form?.forms?.[formIndex]?.data?.wishToBeMRP?.response !== undefined && (
-                    <div className={`${style.markedAsText} ${style.marginTop20}`}><strong>Marked as <span className={(form?.forms?.[formIndex]?.data?.wishToBeMRP?.response === true || form?.forms?.[formIndex]?.data?.wishToBeMRP?.response === 'Yes') ? style.yesText : style.noText}>{form?.forms?.[formIndex]?.data?.wishToBeMRP?.response === true ? "Yes" : form?.forms?.[formIndex]?.data?.wishToBeMRP?.response === false ? 'No' : form?.forms?.[formIndex]?.data?.wishToBeMRP?.response}</span></strong> on {(form?.forms?.[formIndex]?.data?.wishToBeMRP?.date !== '' && form?.forms?.[formIndex]?.data?.wishToBeMRP?.date !== undefined) ? format(new Date(form?.forms?.[formIndex]?.data?.wishToBeMRP?.date), "MMM dd, yyyy") : ''}</div>
+              {form?.basicDetailReferences?.credentialingAndPrivilegingCategory?.type !== "LOCUM" && (
+                <div>
+                  {(form?.basicDetails?.departmentSpecialty?.department === 'Women & Children' && form?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics') && (
+                    <div className={`${style.marginTop20}`}>
+                      <div className={style.cardTitle}>
+                        {allFormSchemas?.[index]?.formSchema?.schema?.properties?.wishToBeMRP?.properties?.response?.label}
+                      </div>
+                      {form?.forms?.[formIndex]?.data?.wishToBeMRP?.response !== undefined && (
+                        <div className={`${style.markedAsText} ${style.marginTop20}`}><strong>Marked as <span className={(form?.forms?.[formIndex]?.data?.wishToBeMRP?.response === true || form?.forms?.[formIndex]?.data?.wishToBeMRP?.response === 'Yes') ? style.yesText : style.noText}>{form?.forms?.[formIndex]?.data?.wishToBeMRP?.response === true ? "Yes" : form?.forms?.[formIndex]?.data?.wishToBeMRP?.response === false ? 'No' : form?.forms?.[formIndex]?.data?.wishToBeMRP?.response}</span></strong> on {(form?.forms?.[formIndex]?.data?.wishToBeMRP?.date !== '' && form?.forms?.[formIndex]?.data?.wishToBeMRP?.date !== undefined) ? format(new Date(form?.forms?.[formIndex]?.data?.wishToBeMRP?.date), "MMM dd, yyyy") : ''}</div>
+                      )}
+                    </div>
                   )}
                 </div>
               )}
-              <div className={`${style.warningCard} ${style.marginTop20}`}>
-                <div className={style.cardTitle}>24 hours coverage of hospital patients, including those in the ER, is a requirement of Professional Staff responsibilities. The physician must provide an acceptable method to respond to hospital calls.</div>
-              </div>
-              <div className={style.marginTop20}>
-                <div className={style.lableReadOnlyStyleInPOD}><strong>{form?.coverageDetails?.providerType !== undefined ? form?.coverageDetails?.providerType : ''} : {form?.coverageDetails?.providerType !== "Department / Specialty Group" ? form?.coverageDetails?.providerDetails?.length !== 0 ? form?.coverageDetails?.providerDetails?.map(data => data?.name)?.join(', ') : '' : `${form?.basicDetails?.departmentSpecialty?.department} ${(form?.basicDetails?.departmentSpecialty?.specialty !== null && form?.basicDetails?.departmentSpecialty?.specialty !== undefined) ? `- ${form?.basicDetails?.departmentSpecialty?.specialty}` : ''}`}</strong></div>
-              </div>
-              {(form?.basicDetails?.departmentSpecialty?.department === 'Women & Children' && form?.basicDetails?.departmentSpecialty?.specialty === 'Obstetrics & Gynecology') && (
-                <div className={style.marginTop20}>
-                  <div className={`${style.cardTitle}`}>
-                    {`If you are practicing obstetrics, who covers your patients when you are not available?*`}
+              {form?.basicDetailReferences?.credentialingAndPrivilegingCategory?.type !== "LOCUM" && (
+                <div>
+                  <div className={`${style.warningCard} ${style.marginTop20}`}>
+                    <div className={style.cardTitle}>24 hours coverage of hospital patients, including those in the ER, is a requirement of Professional Staff responsibilities. The physician must provide an acceptable method to respond to hospital calls.</div>
                   </div>
-                  <div className={style.lableReadOnlyStyleInPOD}><strong>{form?.coverageDetails?.obstetricsProviderType !== undefined ? form?.coverageDetails?.obstetricsProviderType : ''} : {form?.coverageDetails?.obstetricsProviderType !== "Department / Specialty Group" ? form?.coverageDetails?.obstetricsProviderDetails?.length !== 0 ? form?.coverageDetails?.obstetricsProviderDetails?.map(data => data?.name)?.join(', ') : '' : `${form?.basicDetails?.departmentSpecialty?.department} ${(form?.basicDetails?.departmentSpecialty?.specialty !== null && form?.basicDetails?.departmentSpecialty?.specialty !== undefined) ? `- ${form?.basicDetails?.departmentSpecialty?.specialty}` : ''}`}</strong></div>
+                  <div className={style.marginTop20}>
+                    <div className={style.lableReadOnlyStyleInPOD}><strong>{form?.coverageDetails?.providerType !== undefined ? form?.coverageDetails?.providerType : ''} : {form?.coverageDetails?.providerType !== "Department / Specialty Group" ? form?.coverageDetails?.providerDetails?.length !== 0 ? form?.coverageDetails?.providerDetails?.map(data => data?.name)?.join(', ') : '' : `${form?.basicDetails?.departmentSpecialty?.department} ${(form?.basicDetails?.departmentSpecialty?.specialty !== null && form?.basicDetails?.departmentSpecialty?.specialty !== undefined) ? `- ${form?.basicDetails?.departmentSpecialty?.specialty}` : ''}`}</strong></div>
+                  </div>
+                  {(form?.basicDetails?.departmentSpecialty?.department === 'Women & Children' && form?.basicDetails?.departmentSpecialty?.specialty === 'Obstetrics & Gynecology') && (
+                    <div className={style.marginTop20}>
+                      <div className={`${style.cardTitle}`}>
+                        {`If you are practicing obstetrics, who covers your patients when you are not available?*`}
+                      </div>
+                      <div className={style.lableReadOnlyStyleInPOD}><strong>{form?.coverageDetails?.obstetricsProviderType !== undefined ? form?.coverageDetails?.obstetricsProviderType : ''} : {form?.coverageDetails?.obstetricsProviderType !== "Department / Specialty Group" ? form?.coverageDetails?.obstetricsProviderDetails?.length !== 0 ? form?.coverageDetails?.obstetricsProviderDetails?.map(data => data?.name)?.join(', ') : '' : `${form?.basicDetails?.departmentSpecialty?.department} ${(form?.basicDetails?.departmentSpecialty?.specialty !== null && form?.basicDetails?.departmentSpecialty?.specialty !== undefined) ? `- ${form?.basicDetails?.departmentSpecialty?.specialty}` : ''}`}</strong></div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -4231,7 +4244,7 @@ const NewActiveApplication = ({
                         className={`${style.privilegeContentChangeCard} ${style.marginTop10}`}
                       >
                         <div className={style.privilegeHeadingReappointment}>
-                          Change for Reappointment
+                          Change for {applicationType === "LOCUM" ? `Locum ${form?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'}` : 'Reappointment'}
                         </div>
                         <div className={style.privilegeHeading}>
                           {privilegeChangeYesOrNo === "Yes" ? (
@@ -4268,7 +4281,7 @@ const NewActiveApplication = ({
                         className={`${style.privilegeContentChangeCard} ${style.marginTop10}`}
                       >
                         <div className={style.privilegeHeadingReappointment}>
-                          Change for Reappointment
+                          Change for {applicationType === "LOCUM" ? `Locum ${form?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'}` : 'Reappointment'}
                         </div>
                         <div className={style.privilegeHeading}>
                           {form?.forms?.[formIndex]?.data?.departmentChangeYesOrNo === "No" ? (
@@ -4341,7 +4354,7 @@ const NewActiveApplication = ({
                             className={`${style.privilegeContentChangeCard} ${style.marginTop10}`}
                           >
                             <div className={`${style.privilegeHeadingReappointment}`}>
-                              Change for Reappointment
+                              Change for {applicationType === "LOCUM" ? `Locum ${form?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'}` : 'Reappointment'}
                             </div>
                             {privilegeSetChangeYesOrNo === "Yes" ? (
                               <>
@@ -4420,7 +4433,7 @@ const NewActiveApplication = ({
                         </div>
                         {form?.forms?.[formIndex]?.data?.additionalPrivilegeChangeYesOrNo !== '' && form?.forms?.[formIndex]?.data?.additionalPrivilegeChangeYesOrNo !== undefined && (
                           <div className={`${style.privilegeContentChangeCard} ${style.marginTop10}`}>
-                            <div className={`${style.privilegeHeadingReappointment}`}>{additionalPrivilegeChangeYesOrNo === 'No' ? 'Privileges Requested' : 'Change for Reappointment'}</div>
+                            <div className={`${style.privilegeHeadingReappointment}`}>{additionalPrivilegeChangeYesOrNo === 'No' ? 'Privileges Requested' : `Change for ${applicationType === "LOCUM" ? `Locum ${form?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'}` : 'Reappointment'}`}</div>
                             {additionalPrivilegeChangeYesOrNo === 'No' ? (
                               <div className={`${style.privilegeHeading}`}>None</div>
                             ) : (
@@ -4467,7 +4480,7 @@ const NewActiveApplication = ({
                             className={`${style.privilegeContentChangeCard} ${style.marginTop10}`}
                           >
                             <div className={style.privilegeHeadingReappointment}>
-                              Change for Reappointment
+                              Change for {applicationType === "LOCUM" ? `Locum ${form?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'}` : 'Reappointment'}
                             </div>
                             <div className={style.privilegeHeading}>
                               <div>
@@ -4490,35 +4503,39 @@ const NewActiveApplication = ({
                 </div>
               </div>
             </div>
-            <div className={`${style.cardTitle} ${style.marginTop30}`}>
-              Do you want to keep your current Privilege Category?
-            </div>
-            <div className={`${style.borderStyleTiles}`}></div>
-            {privilegeChangeYesOrNo !== '' && (
-              <div
-                className={`${style.marginTop10} ${style.marginLeft30}`}
-              >
-                <div className={style.privilegeHeading}>
-                  {privilegeChangeYesOrNo === "Yes" ? (
-                    <div className={`${style.fontSize}`}>
-                      {`Same as Before - ${form?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory}`}
-                    </div>
-                  ) : (
-                    <div className={`${style.privilegeHeading} ${style.marginTop10} ${style.fontSize}`}>
-                      Changed From {(form?.basicDetails?.priorPrivilegeCategory !== null && form?.basicDetails?.priorPrivilegeCategory?.name !== null)
-                        ? form?.basicDetails?.priorPrivilegeCategory
-                          ?.name
-                        : form?.basicDetails
-                          ?.credentialingPrivilegeCategory
-                          ?.credentialingCategory} To {" "}
-                      {
-                        form?.basicDetails
-                          ?.credentialingPrivilegeCategory
-                          ?.credentialingCategory
-                      }
-                    </div>
-                  )}
+            {form?.basicDetailReferences?.credentialingAndPrivilegingCategory?.type !== "LOCUM" && (
+              <div>
+                <div className={`${style.cardTitle} ${style.marginTop30}`}>
+                  Do you want to keep your current Privilege Category?
                 </div>
+                <div className={`${style.borderStyleTiles}`}></div>
+                {privilegeChangeYesOrNo !== '' && (
+                  <div
+                    className={`${style.marginTop10} ${style.marginLeft30}`}
+                  >
+                    <div className={style.privilegeHeading}>
+                      {privilegeChangeYesOrNo === "Yes" ? (
+                        <div className={`${style.fontSize}`}>
+                          {`Same as Before - ${form?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory}`}
+                        </div>
+                      ) : (
+                        <div className={`${style.privilegeHeading} ${style.marginTop10} ${style.fontSize}`}>
+                          Changed From {(form?.basicDetails?.priorPrivilegeCategory !== null && form?.basicDetails?.priorPrivilegeCategory?.name !== null)
+                            ? form?.basicDetails?.priorPrivilegeCategory
+                              ?.name
+                            : form?.basicDetails
+                              ?.credentialingPrivilegeCategory
+                              ?.credentialingCategory} To {" "}
+                          {
+                            form?.basicDetails
+                              ?.credentialingPrivilegeCategory
+                              ?.credentialingCategory
+                          }
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
             {/* <div className={`${style.cardTitle}  ${style.marginTop30}`}>
@@ -4528,7 +4545,7 @@ const NewActiveApplication = ({
               selectedPrivilegeForDisplay?.privilegeDetails?.corePrivileges) && (
                 <>
                   <div className={`${style.cardTitle} ${style.marginTop30}`}>
-                    Requested Privilege Sets for Reappointment
+                    Requested Privilege Sets for {applicationType === "LOCUM" ? `Application ${form?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'}` : 'Reappointment'}
                   </div>
                   <div className={`${style.borderStyleTiles}`}></div>
                 </>
@@ -4542,36 +4559,43 @@ const NewActiveApplication = ({
                 >
                   {data?.privilegeSetTitle}
                 </div>
-                {data?.privilegeDetails?.corePrivileges?.privilegesByCategories?.map((categories, catIndex) => (
-                  <div key={catIndex} >
-                    <div className={`${style.flex}`}>
-                      <div className={style.itemLeft}>
-                        <strong>{categories?.category || ""}</strong>
-                      </div>
-                    </div>
-                    {categories?.privileges?.map((privilege, privIndex) => (
-                      <div key={privIndex} className={style.privilegeCodeGrid}>
+                {data?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ?
+                  (
+                    <div
+                      className={` ${style.marginTop} ${style.descriptionStyle}`}
+                      dangerouslySetInnerHTML={{ __html: data?.descriptiveContent?.content }}
+                    />
+                  )
+                  : data?.privilegeDetails?.corePrivileges?.privilegesByCategories?.map((categories, catIndex) => (
+                    <div key={catIndex} >
+                      <div className={`${style.flex}`}>
                         <div className={style.itemLeft}>
-                          <strong>{privilege?.privilegeId || ""}</strong>
+                          <strong>{categories?.category || ""}</strong>
                         </div>
-                        <div className={style.itemLeft}>{privilege?.title || ""}</div>
                       </div>
-                    ))}
+                      {categories?.privileges?.map((privilege, privIndex) => (
+                        <div key={privIndex} className={style.privilegeCodeGrid}>
+                          <div className={style.itemLeft}>
+                            <strong>{privilege?.privilegeId || ""}</strong>
+                          </div>
+                          <div className={style.itemLeft}>{privilege?.title || ""}</div>
+                        </div>
+                      ))}
 
-                  </div>
-                ))}
+                    </div>
+                  ))}
                 <div className={style.twoCol}>
                   {selectedPrivilegeForDisplay?.[0] && (
                     <>
                       <div>
                         <ESignature
-                          userName={
+                          userName={data?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ? selectedPrivilegeForDisplay?.[dataIndex]?.descriptiveContent?.esign?.name :
                             selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign?.name || ""
                           }
-                          encData={
+                          encData={data?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ? selectedPrivilegeForDisplay?.[dataIndex]?.descriptiveContent?.esign?.esign :
                             selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign?.esign || ""
                           }
-                          showData={!!selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign}
+                          showData={data?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ? !!selectedPrivilegeForDisplay?.[dataIndex]?.descriptiveContent?.esign : !!selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign}
                           showDatais={true}
                         />
                       </div>
@@ -4579,7 +4603,7 @@ const NewActiveApplication = ({
                         <div className={style.displayInRow}>
                           <div className={style.dateTitle}>Date:</div>
                           <div className={`${style.date} ${style.marginLeft}`}>
-                            {
+                            {data?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ? selectedPrivilegeForDisplay?.[dataIndex]?.descriptiveContent?.esign?.signedDate :
                               selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign?.signedDate ||
                               ""
                             }
@@ -4695,36 +4719,43 @@ const NewActiveApplication = ({
                   >
                     {data?.privilegeSetTitle}
                   </div>
-                  {data?.privilegeDetails?.corePrivileges?.privilegesByCategories?.map((categories, catIndex) => (
-                    <div key={catIndex} >
-                      <div className={`${style.flex}`}>
-                        <div className={style.itemLeft}>
-                          <strong>{categories?.category || ""}</strong>
-                        </div>
-                      </div>
-                      {categories?.privileges?.map((privilege, privIndex) => (
-                        <div key={privIndex} className={style.privilegeCodeGrid}>
+                  {data?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ?
+                    (
+                      <div
+                        className={` ${style.marginTop} ${style.descriptionStyle}`}
+                        dangerouslySetInnerHTML={{ __html: data?.descriptiveContent?.content }}
+                      />
+                    )
+                    : data?.privilegeDetails?.corePrivileges?.privilegesByCategories?.map((categories, catIndex) => (
+                      <div key={catIndex} >
+                        <div className={`${style.flex}`}>
                           <div className={style.itemLeft}>
-                            <strong>{privilege?.privilegeId || ""}</strong>
+                            <strong>{categories?.category || ""}</strong>
                           </div>
-                          <div className={style.itemLeft}>{privilege?.title || ""}</div>
                         </div>
-                      ))}
+                        {categories?.privileges?.map((privilege, privIndex) => (
+                          <div key={privIndex} className={style.privilegeCodeGrid}>
+                            <div className={style.itemLeft}>
+                              <strong>{privilege?.privilegeId || ""}</strong>
+                            </div>
+                            <div className={style.itemLeft}>{privilege?.title || ""}</div>
+                          </div>
+                        ))}
 
-                    </div>
-                  ))}
+                      </div>
+                    ))}
                   <div className={style.twoCol}>
                     {data && (
                       <>
                         <div>
                           <ESignature
-                            userName={
+                            userName={data?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ? data?.descriptiveContent?.esign?.name :
                               data?.privilegeDetails?.corePrivileges?.esign?.name || ""
                             }
-                            encData={
+                            encData={data?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ? data?.descriptiveContent?.esign?.esign :
                               data?.privilegeDetails?.corePrivileges?.esign?.esign || ""
                             }
-                            showData={!!data?.privilegeDetails?.corePrivileges?.esign}
+                            showData={data?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ? !!data?.descriptiveContent?.esign : !!data?.privilegeDetails?.corePrivileges?.esign}
                             showDatais={true}
                           />
                         </div>
@@ -4732,7 +4763,7 @@ const NewActiveApplication = ({
                           <div className={style.displayInRow}>
                             <div className={style.dateTitle}>Date:</div>
                             <div className={`${style.date} ${style.marginLeft}`}>
-                              {
+                              {data?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ? data?.descriptiveContent?.esign?.signedDate :
                                 data?.privilegeDetails?.corePrivileges?.esign?.signedDate ||
                                 ""
                               }
@@ -4977,14 +5008,14 @@ const NewActiveApplication = ({
         closeClick={onClose}
       /> */}
         <ApplicationHeader
-          title={`${form?.creationType === "NEW" ? "New Application For" : "Reappointment Application For"} ${form?.basicDetails?.applicant?.name?.firstName !== undefined &&
+          title={`${form?.creationType === "NEW" ? "New Application For" : applicationType === "LOCUM" ? `Locum Application ${form?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'} For` : "Reappointment Application For"} ${form?.basicDetails?.applicant?.name?.firstName !== undefined &&
             form?.basicDetails?.applicant?.name?.lastName !== undefined
             ? formatFirstNameLastName(
               form?.basicDetails?.applicant?.name?.firstName,
               form?.basicDetails?.applicant?.name?.lastName
             )
             : "{First Name} {Last Name}"
-            }, ${form?.basicDetails?.applicant?.applicantType !== undefined
+            } ${applicationType === "LOCUM" ? "Locum" : ""} ${form?.basicDetails?.applicant?.applicantType !== undefined
               ? form?.basicDetails?.applicant?.applicantType
               : "{Applicant Type}"
             }`}
@@ -5008,7 +5039,7 @@ const NewActiveApplication = ({
               {(workModeType === 'Staff Manager') || (workModeType === 'Chief Of Staff') || (workModeType === 'Credentialing Committee') || (workModeType === 'Credentialing Committee User') || (workModeType === 'Department Head') ? (
                 <>
                   <div>
-                    {(selectedTab === "level-1" && applicationType === "REAPPOINTMENT") ? (
+                    {((selectedTab === "level-1" && applicationType === "REAPPOINTMENT")) ? (
                       <div className={style.grid5and2}>
                         <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth}`}>
                           <div className={style.flex}>
@@ -5049,7 +5080,11 @@ const NewActiveApplication = ({
                               </div>
                               <div className={`${style.marginTop10} ${style.twoColumnGridInner2}`}>
                                 <span className={style.rightAlignTextStyle}>
-                                  Reappointment Date:
+                                  {applicationType === "REAPPOINTMENT"
+                                    ? "Reappointment Date:"
+                                    : applicationType === "LOCUM" && form?.reappointmentType === "EXTENSION"
+                                      ? "Extension Date:"
+                                      : "Renewal Date:"}
                                 </span>
                                 <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>
                                   {/* {form?.createdDate} */}
@@ -5125,11 +5160,13 @@ const NewActiveApplication = ({
                           <div className={style.greyDotTextStyle}>
                             Application Payment Status
                           </div>
-                          <div className={style.cursorPointer}> Transaction ID:{" "}
-                            <Tooltip title="Click to View Transaction Details" arrow>
-                              <span className={`${style.marginTop10} ${style.paymentIDStyle}`} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(form?.payment?.invoice) }}>{form?.payment?.receiptId || "-"}</span>
-                            </Tooltip>
-                          </div>
+                          {applicationType !== "LOCUM" && (
+                            <div className={style.cursorPointer}> Transaction ID:{" "}
+                              <Tooltip title="Click to View Transaction Details" arrow>
+                                <span className={`${style.marginTop10} ${style.paymentIDStyle}`} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(form?.payment?.invoice) }}>{form?.payment?.receiptId || "-"}</span>
+                              </Tooltip>
+                            </div>
+                          )}
                         </div>
                         <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.statusCardHeight} ${style.displayInCol}`}>
                           <div className={`${statusStyle} ${style.marginCenter}`}></div>
@@ -5164,17 +5201,21 @@ const NewActiveApplication = ({
                                         form?.basicDetails?.applicant?.name?.lastName
                                       )
                                       : "{First Name} {Last Name}"
-                                  },{" "}
+                                  }{" "}
                                   {/* {form?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{","} */}
                                 </span>
                                 <span className={`${style.cardTextNormalStyle}`}>
                                   {/* {form?.displayId || ""} */}
-                                  {form?.basicDetailReferences?.applicantType?.serviceProviderType || ""}
+                                  {applicationType === "LOCUM" ? "Locum" : ""} {form?.basicDetailReferences?.applicantType?.serviceProviderType || ""}
                                 </span>
                               </div>
                               <div className={`${style.marginTop10} ${style.twoColumnGridInner2}`}>
                                 <span className={style.rightAlignTextStyle}>
-                                  Reappointment Date:
+                                  {applicationType === "REAPPOINTMENT"
+                                    ? "Reappointment Date:"
+                                    : applicationType === "LOCUM" && form?.reappointmentType === "EXTENSION"
+                                      ? "Extension Date:"
+                                      : "Renewal Date:"}
                                 </span>
                                 <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>
                                   {/* {form?.createdDate} */}
@@ -5202,8 +5243,8 @@ const NewActiveApplication = ({
                               <div className={`${style.emailTextBoldStyle}`}>
                                 {form?.basicDetails?.applicant?.cellPhone ? `+1 ${form?.basicDetails?.applicant?.cellPhone}` : ""}
                               </div>
-                              <div className={`${style.emailTextBoldStyle}`} onClick={() => sendEmail(form?.basicDetails?.applicant?.email?.officialEmail || "")} style={{ cursor: form?.basicDetails?.applicant?.email?.officialEmail ? 'pointer' : 'default' }}>
-                                {form?.basicDetails?.applicant?.email?.officialEmail || ""}
+                              <div className={`${style.emailTextBoldStyle}`}>
+                                <span className={style.cursorPointer} onClick={() => sendEmail(form?.basicDetails?.applicant?.email?.officialEmail || "")}>{form?.basicDetails?.applicant?.email?.officialEmail || ""}</span>
                               </div>
                               {/* <div className={`${style.emailTextBoldStyle} ${style.marginTop10}`}>
                                 {form?.basicDetails?.applicant?.email?.officialEmail || ""}
@@ -5245,12 +5286,21 @@ const NewActiveApplication = ({
                           </div> */}
                           </div>
                         </div>
-                        <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.statusCardHeight} ${style.displayInCol}`}>
-                          <div className={`${style.greenBigDotStyle} ${style.marginCenter}`}></div>
-                          <div className={style.greyDotTextStyle}>
-                            Overall Review Status
+                        {(selectedTab === "level-1" && applicationType === "LOCUM") ? (
+                          <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.statusCardHeight} ${style.displayInCol}`}>
+                            <div className={`${statusStyle} ${style.marginCenter}`}></div>
+                            <div className={style.greyDotTextStyle}>
+                              MSO Verification & Acceptance Status
+                            </div>
                           </div>
-                        </div>
+                        ) : (
+                          <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.statusCardHeight} ${style.displayInCol}`}>
+                            <div className={`${style.greenBigDotStyle} ${style.marginCenter}`}></div>
+                            <div className={style.greyDotTextStyle}>
+                              Overall Review Status
+                            </div>
+                          </div>
+                        )}
                       </div>
                     )}
 
@@ -5276,7 +5326,7 @@ const NewActiveApplication = ({
                                   className={`${style.displayInRow} ${style.verticalAlignCenter} `}
                                 >
                                   <div className={`${style.tableHeaderTextStyle} ${style.marginLeft20}`}>
-                                    Required Reappointment data and Proof of Documentation for July 1, 2025 and June 30, 2026
+                                    Required {applicationType === "LOCUM" ? `Application ${form?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'}` : 'Reappointment'} data and Proof of Documentation for July 1, 2025 and June 30, 2026
                                   </div>
                                 </div>
                               </div>
@@ -5297,7 +5347,7 @@ const NewActiveApplication = ({
                                     className={`${style.displayInRow} ${style.verticalAlignCenter} `}
                                   >
                                     <div className={`${style.tableHeaderTextStyle}`}>
-                                      Required Reappointment data and Proof of Documentation for July 1, 2025 and June 30, 2026
+                                      Required {applicationType === "LOCUM" ? `Application ${form?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'}` : 'Reappointment'} data and Proof of Documentation for July 1, 2025 and June 30, 2026
                                     </div>
                                   </div>
                                   <div
@@ -5464,12 +5514,12 @@ const NewActiveApplication = ({
                                               className={`${style.purpleButton} ${style.cursorPointer} `}
                                             >
                                               <Tooltip arrow title={"Click to Verify"}>
-                                              <div
-                                                className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                onClick={() => handleVerify()}
-                                              >
-                                                Verify
-                                              </div>
+                                                <div
+                                                  className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                                  onClick={() => handleVerify()}
+                                                >
+                                                  Verify
+                                                </div>
                                               </Tooltip>
                                             </div>
                                           ) : (
@@ -5520,29 +5570,29 @@ const NewActiveApplication = ({
                                         >
                                           {expand?.status && expand?.index === 0 ? (
                                             <Tooltip arrow title={"Click to Collapse Section"}>
-                                            <RemoveIcon
-                                              sx={{
-                                                fontSize: 20,
-                                                color: "#94979A",
-                                                cursor: "pointer",
-                                              }}
-                                              onClick={() =>
-                                                setExpand({ status: false, index: 0 })
-                                              }
-                                            />
+                                              <RemoveIcon
+                                                sx={{
+                                                  fontSize: 20,
+                                                  color: "#94979A",
+                                                  cursor: "pointer",
+                                                }}
+                                                onClick={() =>
+                                                  setExpand({ status: false, index: 0 })
+                                                }
+                                              />
                                             </Tooltip>
                                           ) : (
                                             <Tooltip arrow title={"Click to Expand Section"}>
-                                            <AddIcon
-                                              sx={{
-                                                fontSize: 20,
-                                                color: "#94979A",
-                                                cursor: "pointer",
-                                              }}
-                                              onClick={() =>
-                                                setExpand({ status: true, index: 0 })
-                                              }
-                                            />
+                                              <AddIcon
+                                                sx={{
+                                                  fontSize: 20,
+                                                  color: "#94979A",
+                                                  cursor: "pointer",
+                                                }}
+                                                onClick={() =>
+                                                  setExpand({ status: true, index: 0 })
+                                                }
+                                              />
                                             </Tooltip>
                                           )}{" "}
                                         </div>
@@ -6038,31 +6088,31 @@ const NewActiveApplication = ({
                                           >
                                             {expand?.status && expand?.index === index + 1 ? (
                                               <Tooltip arrow title={"Click to Collapse Section"}>
-                                              <RemoveIcon
-                                                sx={{
-                                                  fontSize: 20,
-                                                  color: "#94979A",
-                                                  cursor: "pointer",
-                                                }}
-                                                onClick={() => {
-                                                  setExpand({ status: false, index: 0 });
-                                                  setFormSchemaId("");
-                                                }}
-                                              />
+                                                <RemoveIcon
+                                                  sx={{
+                                                    fontSize: 20,
+                                                    color: "#94979A",
+                                                    cursor: "pointer",
+                                                  }}
+                                                  onClick={() => {
+                                                    setExpand({ status: false, index: 0 });
+                                                    setFormSchemaId("");
+                                                  }}
+                                                />
                                               </Tooltip>
                                             ) : (
                                               <Tooltip arrow title={"Click to Expand Section"}>
-                                              <AddIcon
-                                                sx={{
-                                                  fontSize: 20,
-                                                  color: "#94979A",
-                                                  cursor: "pointer",
-                                                }}
-                                                onClick={() => {
-                                                  setExpand({ status: true, index: index + 1 });
-                                                  setFormSchemaId(data?.id);
-                                                }}
-                                              />
+                                                <AddIcon
+                                                  sx={{
+                                                    fontSize: 20,
+                                                    color: "#94979A",
+                                                    cursor: "pointer",
+                                                  }}
+                                                  onClick={() => {
+                                                    setExpand({ status: true, index: index + 1 });
+                                                    setFormSchemaId(data?.id);
+                                                  }}
+                                                />
                                               </Tooltip>
                                             )}
                                           </div>
@@ -6148,12 +6198,12 @@ const NewActiveApplication = ({
                                                           form?.forms?.[index]?.status !== "APPROVED" ? (
                                                             <div className={`${style.purpleButton} ${style.cursorPointer}`}>
                                                               <Tooltip title="Click to Approve this Step" arrow>
-                                                              <div
-                                                                className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                                onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
-                                                              >
-                                                                Approve
-                                                              </div>
+                                                                <div
+                                                                  className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                                                  onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
+                                                                >
+                                                                  Approve
+                                                                </div>
                                                               </Tooltip>
                                                             </div>
                                                           ) : (
@@ -6594,12 +6644,12 @@ const NewActiveApplication = ({
                                                             form?.forms?.[index]?.status !== "APPROVED" ? (
                                                               <div className={`${style.purpleButton} ${style.cursorPointer}`}>
                                                                 <Tooltip title="Click to Verify" arrow>
-                                                                <div
-                                                                  className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                                  onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
-                                                                >
-                                                                  Verify
-                                                                </div>
+                                                                  <div
+                                                                    className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                                                    onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
+                                                                  >
+                                                                    Verify
+                                                                  </div>
                                                                 </Tooltip>
                                                               </div>
                                                             ) : (
@@ -6627,38 +6677,38 @@ const NewActiveApplication = ({
                                           >
                                             {expandAcknowledgement?.status &&
                                               expandAcknowledgement?.index === index ? (
-                                                <Tooltip title="Click to Collapse Acknowledgement" arrow>
-                                              <RemoveIcon
-                                                sx={{
-                                                  fontSize: 20,
-                                                  color: "#94979A",
-                                                  cursor: "pointer",
-                                                }}
-                                                onClick={() => {
-                                                  setExpandAcknowledgement({
-                                                    status: false,
-                                                    index: 0,
-                                                  });
-                                                  setFormSchemaId("");
-                                                }}
-                                              />
+                                              <Tooltip title="Click to Collapse Acknowledgement" arrow>
+                                                <RemoveIcon
+                                                  sx={{
+                                                    fontSize: 20,
+                                                    color: "#94979A",
+                                                    cursor: "pointer",
+                                                  }}
+                                                  onClick={() => {
+                                                    setExpandAcknowledgement({
+                                                      status: false,
+                                                      index: 0,
+                                                    });
+                                                    setFormSchemaId("");
+                                                  }}
+                                                />
                                               </Tooltip>
                                             ) : (
-                                                <Tooltip title="Click to Expand Acknowledgement" arrow>
-                                              <AddIcon
-                                                sx={{
-                                                  fontSize: 20,
-                                                  color: "#94979A",
-                                                  cursor: "pointer",
-                                                }}
-                                                onClick={() => {
-                                                  setExpandAcknowledgement({
-                                                    status: true,
-                                                    index: index,
-                                                  });
-                                                  setFormSchemaId(data?.id);
-                                                }}
-                                              />
+                                              <Tooltip title="Click to Expand Acknowledgement" arrow>
+                                                <AddIcon
+                                                  sx={{
+                                                    fontSize: 20,
+                                                    color: "#94979A",
+                                                    cursor: "pointer",
+                                                  }}
+                                                  onClick={() => {
+                                                    setExpandAcknowledgement({
+                                                      status: true,
+                                                      index: index,
+                                                    });
+                                                    setFormSchemaId(data?.id);
+                                                  }}
+                                                />
                                               </Tooltip>
                                             )}
                                           </div>
@@ -6798,7 +6848,7 @@ const NewActiveApplication = ({
                             <div className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderGridStyleCred1} `}>
 
                               <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                                <div className={`${style.tableHeaderTextStyleCred}`}> Required Reappointment data and Proof of Documentation for July 1, 2025 and June 30, 2026 </div>
+                                <div className={`${style.tableHeaderTextStyleCred}`}> Required {applicationType === "LOCUM" ? `Application ${form?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'}` : 'Reappointment'} data and Proof of Documentation for July 1, 2025 and June 30, 2026 </div>
                               </div>
 
                             </div>
@@ -6818,7 +6868,7 @@ const NewActiveApplication = ({
                                           {!form?.basicInformationStatus ? (
                                             <div className={`${style.purpleButton} ${style.cursorPointer} `}>
                                               <Tooltip title="Click to Approve this Step" arrow>
-                                              <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`} onClick={() => handleVerify()}>Approve</div></Tooltip>
+                                                <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`} onClick={() => handleVerify()}>Approve</div></Tooltip>
                                             </div>
                                           ) : (
                                             <div className={`${style.greenButton}  ${style.cursorPointer} `}>
@@ -6834,7 +6884,7 @@ const NewActiveApplication = ({
                                         <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>
                                           {
                                             (expand?.status && expand?.index === 0) ? (<Tooltip arrow title={"Click to Collapse Section"}><RemoveIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => setExpand({ status: false, index: 0 })} /></Tooltip>)
-                                              : (  <Tooltip title="Click to Expand Section" arrow><AddIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => setExpand({ status: true, index: 0 })} /></Tooltip>)
+                                              : (<Tooltip title="Click to Expand Section" arrow><AddIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => setExpand({ status: true, index: 0 })} /></Tooltip>)
                                           }                    </div>
                                       </div>
                                     </div>
@@ -7275,12 +7325,12 @@ const NewActiveApplication = ({
                                                               form?.forms?.[index]?.status !== "APPROVED" ? (
                                                                 <div className={`${style.purpleButton} ${style.cursorPointer}`}>
                                                                   <Tooltip title="Click to Approve this Step" arrow>
-                                                                  <div
-                                                                    className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                                    onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
-                                                                  >
-                                                                    Approve
-                                                                  </div>
+                                                                    <div
+                                                                      className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                                                      onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
+                                                                    >
+                                                                      Approve
+                                                                    </div>
                                                                   </Tooltip>
                                                                 </div>
                                                               ) : (
@@ -7367,12 +7417,12 @@ const NewActiveApplication = ({
                                                           form?.forms?.[index]?.status !== "APPROVED" ? (
                                                             <div className={`${style.purpleButton} ${style.cursorPointer}`}>
                                                               <Tooltip title="Click to Approve this Step" arrow>
-                                                              <div
-                                                                className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                                onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
-                                                              >
-                                                                Approve
-                                                              </div>
+                                                                <div
+                                                                  className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                                                  onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
+                                                                >
+                                                                  Approve
+                                                                </div>
                                                               </Tooltip>
                                                             </div>
                                                           ) : (
@@ -7703,12 +7753,12 @@ const NewActiveApplication = ({
                                                             form?.forms?.[index]?.status !== "APPROVED" ? (
                                                               <div className={`${style.purpleButton} ${style.cursorPointer}`}>
                                                                 <Tooltip title="Click to Approve this Step" arrow>
-                                                                <div
-                                                                  className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                                  onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
-                                                                >
-                                                                  Approve
-                                                                </div>
+                                                                  <div
+                                                                    className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                                                    onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
+                                                                  >
+                                                                    Approve
+                                                                  </div>
                                                                 </Tooltip>
                                                               </div>
                                                             ) : (
@@ -7739,8 +7789,8 @@ const NewActiveApplication = ({
                                       <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
                                         <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>
                                           {
-                                            (expandAcknowledgement?.status && expandAcknowledgement?.index === index) ? (  <Tooltip title="Click to Collapse Acknowledgement" arrow><RemoveIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => { setExpandAcknowledgement({ status: false, index: 0 }); setFormSchemaId('') }} /></Tooltip>)
-                                              : (  <Tooltip title="Click to Expand Acknowledgement" arrow><AddIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => { setExpandAcknowledgement({ status: true, index: index }); setFormSchemaId(data?.id) }} /></Tooltip>)
+                                            (expandAcknowledgement?.status && expandAcknowledgement?.index === index) ? (<Tooltip title="Click to Collapse Acknowledgement" arrow><RemoveIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => { setExpandAcknowledgement({ status: false, index: 0 }); setFormSchemaId('') }} /></Tooltip>)
+                                              : (<Tooltip title="Click to Expand Acknowledgement" arrow><AddIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => { setExpandAcknowledgement({ status: true, index: index }); setFormSchemaId(data?.id) }} /></Tooltip>)
                                           }
                                         </div>
                                       </div>
@@ -7854,7 +7904,7 @@ const NewActiveApplication = ({
                                 className={`${style.displayInRow} ${style.verticalAlignCenter} `}
                               >
                                 <div className={`${style.tableHeaderTextStyle}`}>
-                                  Required Reappointment data and Proof of Documentation for July 1, 2025 and June 30, 2026
+                                  Required {applicationType === "LOCUM" ? `Application ${form?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'}` : 'Reappointment'} data and Proof of Documentation for July 1, 2025 and June 30, 2026
                                 </div>
                               </div>
                               <div
@@ -8016,12 +8066,12 @@ const NewActiveApplication = ({
                                           className={`${style.purpleButton} ${style.cursorPointer} `}
                                         >
                                           <Tooltip title="Click to Approve this Step" arrow>
-                                          <div
-                                            className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                            onClick={() => handleVerify()}
-                                          >
-                                            Verify
-                                          </div>
+                                            <div
+                                              className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                              onClick={() => handleVerify()}
+                                            >
+                                              Verify
+                                            </div>
                                           </Tooltip>
                                         </div>
                                       ) : (
@@ -8072,29 +8122,29 @@ const NewActiveApplication = ({
                                     >
                                       {expand?.status && expand?.index === 0 ? (
                                         <Tooltip arrow title={"Click to Collapse Section"}>
-                                        <RemoveIcon
-                                          sx={{
-                                            fontSize: 20,
-                                            color: "#94979A",
-                                            cursor: "pointer",
-                                          }}
-                                          onClick={() =>
-                                            setExpand({ status: false, index: 0 })
-                                          }
-                                        />
+                                          <RemoveIcon
+                                            sx={{
+                                              fontSize: 20,
+                                              color: "#94979A",
+                                              cursor: "pointer",
+                                            }}
+                                            onClick={() =>
+                                              setExpand({ status: false, index: 0 })
+                                            }
+                                          />
                                         </Tooltip>
                                       ) : (
                                         <Tooltip arrow title={"Click to Expand Section"}>
-                                        <AddIcon
-                                          sx={{
-                                            fontSize: 20,
-                                            color: "#94979A",
-                                            cursor: "pointer",
-                                          }}
-                                          onClick={() =>
-                                            setExpand({ status: true, index: 0 })
-                                          }
-                                        />
+                                          <AddIcon
+                                            sx={{
+                                              fontSize: 20,
+                                              color: "#94979A",
+                                              cursor: "pointer",
+                                            }}
+                                            onClick={() =>
+                                              setExpand({ status: true, index: 0 })
+                                            }
+                                          />
                                         </Tooltip>
                                       )}{" "}
                                     </div>
@@ -8363,12 +8413,12 @@ const NewActiveApplication = ({
                                                           form?.forms?.[index]?.status !== "APPROVED" ? (
                                                             <div className={`${style.purpleButton} ${style.cursorPointer}`}>
                                                               <Tooltip title="Click to Approve this Step" arrow>
-                                                              <div
-                                                                className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                                onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
-                                                              >
-                                                                Verify
-                                                              </div>
+                                                                <div
+                                                                  className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                                                  onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
+                                                                >
+                                                                  Verify
+                                                                </div>
                                                               </Tooltip>
                                                             </div>
                                                           ) : (
@@ -8435,31 +8485,31 @@ const NewActiveApplication = ({
                                         >
                                           {expand?.status && expand?.index === index + 1 ? (
                                             <Tooltip arrow title={"Click to Collapse Section"}>
-                                            <RemoveIcon
-                                              sx={{
-                                                fontSize: 20,
-                                                color: "#94979A",
-                                                cursor: "pointer",
-                                              }}
-                                              onClick={() => {
-                                                setExpand({ status: false, index: 0 });
-                                                setFormSchemaId("");
-                                              }}
-                                            />
+                                              <RemoveIcon
+                                                sx={{
+                                                  fontSize: 20,
+                                                  color: "#94979A",
+                                                  cursor: "pointer",
+                                                }}
+                                                onClick={() => {
+                                                  setExpand({ status: false, index: 0 });
+                                                  setFormSchemaId("");
+                                                }}
+                                              />
                                             </Tooltip>
                                           ) : (
                                             <Tooltip arrow title={"Click to Expand Section"}>
-                                            <AddIcon
-                                              sx={{
-                                                fontSize: 20,
-                                                color: "#94979A",
-                                                cursor: "pointer",
-                                              }}
-                                              onClick={() => {
-                                                setExpand({ status: true, index: index + 1 });
-                                                setFormSchemaId(data?.id);
-                                              }}
-                                            />
+                                              <AddIcon
+                                                sx={{
+                                                  fontSize: 20,
+                                                  color: "#94979A",
+                                                  cursor: "pointer",
+                                                }}
+                                                onClick={() => {
+                                                  setExpand({ status: true, index: index + 1 });
+                                                  setFormSchemaId(data?.id);
+                                                }}
+                                              />
                                             </Tooltip>
                                           )}
                                         </div>
@@ -8638,12 +8688,12 @@ const NewActiveApplication = ({
                                                             form?.forms?.[index]?.status !== "APPROVED" ? (
                                                               <div className={`${style.purpleButton} ${style.cursorPointer}`}>
                                                                 <Tooltip title="Click to Approve this Step" arrow>
-                                                                <div
-                                                                  className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                                  onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
-                                                                >
-                                                                  Approve
-                                                                </div>
+                                                                  <div
+                                                                    className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                                                    onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
+                                                                  >
+                                                                    Approve
+                                                                  </div>
                                                                 </Tooltip>
                                                               </div>
                                                             ) : (
@@ -8671,38 +8721,38 @@ const NewActiveApplication = ({
                                           >
                                             {expandAcknowledgement?.status &&
                                               expandAcknowledgement?.index === index ? (
-                                                <Tooltip arrow title={"Click to Collapse Section"}>
-                                              <RemoveIcon
-                                                sx={{
-                                                  fontSize: 20,
-                                                  color: "#94979A",
-                                                  cursor: "pointer",
-                                                }}
-                                                onClick={() => {
-                                                  setExpandAcknowledgement({
-                                                    status: false,
-                                                    index: 0,
-                                                  });
-                                                  setFormSchemaId("");
-                                                }}
-                                              />
+                                              <Tooltip arrow title={"Click to Collapse Section"}>
+                                                <RemoveIcon
+                                                  sx={{
+                                                    fontSize: 20,
+                                                    color: "#94979A",
+                                                    cursor: "pointer",
+                                                  }}
+                                                  onClick={() => {
+                                                    setExpandAcknowledgement({
+                                                      status: false,
+                                                      index: 0,
+                                                    });
+                                                    setFormSchemaId("");
+                                                  }}
+                                                />
                                               </Tooltip>
                                             ) : (
                                               <Tooltip arrow title={"Click to Expand Section"}>
-                                              <AddIcon
-                                                sx={{
-                                                  fontSize: 20,
-                                                  color: "#94979A",
-                                                  cursor: "pointer",
-                                                }}
-                                                onClick={() => {
-                                                  setExpandAcknowledgement({
-                                                    status: true,
-                                                    index: index,
-                                                  });
-                                                  setFormSchemaId(data?.id);
-                                                }}
-                                              />
+                                                <AddIcon
+                                                  sx={{
+                                                    fontSize: 20,
+                                                    color: "#94979A",
+                                                    cursor: "pointer",
+                                                  }}
+                                                  onClick={() => {
+                                                    setExpandAcknowledgement({
+                                                      status: true,
+                                                      index: index,
+                                                    });
+                                                    setFormSchemaId(data?.id);
+                                                  }}
+                                                />
                                               </Tooltip>
                                             )}
                                           </div>
@@ -8842,7 +8892,7 @@ const NewActiveApplication = ({
                             <div className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderGridStyleCred1} `}>
 
                               <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                                <div className={`${style.tableHeaderTextStyleCred}`}> Required Reappointment data and Proof of Documentation for July 1, 2025 and June 30, 2026 </div>
+                                <div className={`${style.tableHeaderTextStyleCred}`}> Required {applicationType === "LOCUM" ? `Application ${form?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'}` : 'Reappointment'} data and Proof of Documentation for July 1, 2025 and June 30, 2026 </div>
                               </div>
 
                             </div>
@@ -8860,7 +8910,7 @@ const NewActiveApplication = ({
                                       {!form?.basicInformationStatus ? (
                                         <div className={`${style.purpleButton} ${style.cursorPointer} `}>
                                           <Tooltip title="Click to Approve this Step" arrow>
-                                          <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`} onClick={() => handleVerify()}>Approve</div></Tooltip>
+                                            <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`} onClick={() => handleVerify()}>Approve</div></Tooltip>
                                         </div>
                                       ) : (
                                         <div className={`${style.greenButton}  ${style.cursorPointer} `}>
@@ -9115,12 +9165,12 @@ const NewActiveApplication = ({
                                                           form?.forms?.[index]?.status !== "APPROVED" ? (
                                                             <div className={`${style.purpleButton} ${style.cursorPointer}`}>
                                                               <Tooltip title="Click to Approve this Step" arrow>
-                                                              <div
-                                                                className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                                onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
-                                                              >
-                                                                Approve
-                                                              </div>
+                                                                <div
+                                                                  className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                                                  onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
+                                                                >
+                                                                  Approve
+                                                                </div>
                                                               </Tooltip>
                                                             </div>
                                                           ) : (
@@ -9356,12 +9406,12 @@ const NewActiveApplication = ({
                                                             form?.forms?.[index]?.status !== "APPROVED" ? (
                                                               <div className={`${style.purpleButton} ${style.cursorPointer}`}>
                                                                 <Tooltip title="Click to Approve this Step" arrow>
-                                                                <div
-                                                                  className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                                  onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
-                                                                >
-                                                                  Approve
-                                                                </div>
+                                                                  <div
+                                                                    className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                                                    onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
+                                                                  >
+                                                                    Approve
+                                                                  </div>
                                                                 </Tooltip>
                                                               </div>
                                                             ) : (
@@ -9455,7 +9505,7 @@ const NewActiveApplication = ({
                               className={`${style.displayInRow} ${style.verticalAlignCenter} `}
                             >
                               <div className={`${style.tableHeaderTextStyle}`}>
-                                Required Reappointment data and Proof of Documentation for July 1, 2025 and June 30, 2026
+                                Required {applicationType === "LOCUM" ? `Application ${form?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'}` : 'Reappointment'} data and Proof of Documentation for July 1, 2025 and June 30, 2026
                               </div>
                             </div>
                             <div
@@ -9617,12 +9667,12 @@ const NewActiveApplication = ({
                                         className={`${style.purpleButton} ${style.cursorPointer} `}
                                       >
                                         <Tooltip arrow title={"Click to Verify"}>
-                                        <div
-                                          className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                          onClick={() => handleVerify()}
-                                        >
-                                          Verify
-                                        </div>
+                                          <div
+                                            className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                            onClick={() => handleVerify()}
+                                          >
+                                            Verify
+                                          </div>
                                         </Tooltip>
                                       </div>
                                     ) : (
@@ -9673,29 +9723,29 @@ const NewActiveApplication = ({
                                   >
                                     {expand?.status && expand?.index === 0 ? (
                                       <Tooltip arrow title={"Click to Collapse Section"}>
-                                      <RemoveIcon
-                                        sx={{
-                                          fontSize: 20,
-                                          color: "#94979A",
-                                          cursor: "pointer",
-                                        }}
-                                        onClick={() =>
-                                          setExpand({ status: false, index: 0 })
-                                        }
-                                      />
+                                        <RemoveIcon
+                                          sx={{
+                                            fontSize: 20,
+                                            color: "#94979A",
+                                            cursor: "pointer",
+                                          }}
+                                          onClick={() =>
+                                            setExpand({ status: false, index: 0 })
+                                          }
+                                        />
                                       </Tooltip>
                                     ) : (
                                       <Tooltip arrow title={"Click to Expand Section"}>
-                                      <AddIcon
-                                        sx={{
-                                          fontSize: 20,
-                                          color: "#94979A",
-                                          cursor: "pointer",
-                                        }}
-                                        onClick={() =>
-                                          setExpand({ status: true, index: 0 })
-                                        }
-                                      />
+                                        <AddIcon
+                                          sx={{
+                                            fontSize: 20,
+                                            color: "#94979A",
+                                            cursor: "pointer",
+                                          }}
+                                          onClick={() =>
+                                            setExpand({ status: true, index: 0 })
+                                          }
+                                        />
                                       </Tooltip>
                                     )}{" "}
                                   </div>
@@ -9843,31 +9893,31 @@ const NewActiveApplication = ({
                                         >
                                           {expand?.status && expand?.index === index + 1 ? (
                                             <Tooltip arrow title={"Click to Collapse Section"}>
-                                            <RemoveIcon
-                                              sx={{
-                                                fontSize: 20,
-                                                color: "#94979A",
-                                                cursor: "pointer",
-                                              }}
-                                              onClick={() => {
-                                                setExpand({ status: false, index: 0 });
-                                                setFormSchemaId("");
-                                              }}
-                                            />
+                                              <RemoveIcon
+                                                sx={{
+                                                  fontSize: 20,
+                                                  color: "#94979A",
+                                                  cursor: "pointer",
+                                                }}
+                                                onClick={() => {
+                                                  setExpand({ status: false, index: 0 });
+                                                  setFormSchemaId("");
+                                                }}
+                                              />
                                             </Tooltip>
                                           ) : (
                                             <Tooltip arrow title={"Click to Expand Section"}>
-                                            <AddIcon
-                                              sx={{
-                                                fontSize: 20,
-                                                color: "#94979A",
-                                                cursor: "pointer",
-                                              }}
-                                              onClick={() => {
-                                                setExpand({ status: true, index: index + 1 });
-                                                setFormSchemaId(data?.id);
-                                              }}
-                                            />
+                                              <AddIcon
+                                                sx={{
+                                                  fontSize: 20,
+                                                  color: "#94979A",
+                                                  cursor: "pointer",
+                                                }}
+                                                onClick={() => {
+                                                  setExpand({ status: true, index: index + 1 });
+                                                  setFormSchemaId(data?.id);
+                                                }}
+                                              />
                                             </Tooltip>
                                           )}
                                         </div>
@@ -10005,12 +10055,12 @@ const NewActiveApplication = ({
                                                         form?.forms?.[index]?.status !== "APPROVED" ? (
                                                           <div className={`${style.purpleButton} ${style.cursorPointer}`}>
                                                             <Tooltip title="Click to Verify" arrow>
-                                                            <div
-                                                              className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                              onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
-                                                            >
-                                                              Verify
-                                                            </div>
+                                                              <div
+                                                                className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                                                onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
+                                                              >
+                                                                Verify
+                                                              </div>
                                                             </Tooltip>
                                                           </div>
                                                         ) : (
@@ -10375,12 +10425,12 @@ const NewActiveApplication = ({
                                                               form?.forms?.[index]?.status !== "APPROVED" ? (
                                                                 <div className={`${style.purpleButton} ${style.cursorPointer}`}>
                                                                   <Tooltip title="Click to Approve this Step" arrow>
-                                                                  <div
-                                                                    className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                                    onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
-                                                                  >
-                                                                    Approve
-                                                                  </div>
+                                                                    <div
+                                                                      className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                                                      onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
+                                                                    >
+                                                                      Approve
+                                                                    </div>
                                                                   </Tooltip>
                                                                 </div>
                                                               ) : (
@@ -10416,38 +10466,38 @@ const NewActiveApplication = ({
                                         >
                                           {expandAcknowledgement?.status &&
                                             expandAcknowledgement?.index === index ? (
-                                              <Tooltip arrow title={"Click to Collapse Section"}>
-                                            <RemoveIcon
-                                              sx={{
-                                                fontSize: 20,
-                                                color: "#94979A",
-                                                cursor: "pointer",
-                                              }}
-                                              onClick={() => {
-                                                setExpandAcknowledgement({
-                                                  status: false,
-                                                  index: 0,
-                                                });
-                                                setFormSchemaId("");
-                                              }}
-                                            />
+                                            <Tooltip arrow title={"Click to Collapse Section"}>
+                                              <RemoveIcon
+                                                sx={{
+                                                  fontSize: 20,
+                                                  color: "#94979A",
+                                                  cursor: "pointer",
+                                                }}
+                                                onClick={() => {
+                                                  setExpandAcknowledgement({
+                                                    status: false,
+                                                    index: 0,
+                                                  });
+                                                  setFormSchemaId("");
+                                                }}
+                                              />
                                             </Tooltip>
                                           ) : (
                                             <Tooltip arrow title={"Click to Expand Section"}>
-                                            <AddIcon
-                                              sx={{
-                                                fontSize: 20,
-                                                color: "#94979A",
-                                                cursor: "pointer",
-                                              }}
-                                              onClick={() => {
-                                                setExpandAcknowledgement({
-                                                  status: true,
-                                                  index: index,
-                                                });
-                                                setFormSchemaId(data?.id);
-                                              }}
-                                            />
+                                              <AddIcon
+                                                sx={{
+                                                  fontSize: 20,
+                                                  color: "#94979A",
+                                                  cursor: "pointer",
+                                                }}
+                                                onClick={() => {
+                                                  setExpandAcknowledgement({
+                                                    status: true,
+                                                    index: index,
+                                                  });
+                                                  setFormSchemaId(data?.id);
+                                                }}
+                                              />
                                             </Tooltip>
                                           )}
                                         </div>
@@ -10687,13 +10737,13 @@ const NewActiveApplication = ({
                           // className={`${style.bigButtonStyle1} ${style.cursorPointer}`}
                           className={`${style.buttonCardStyle} ${isApproved ? style.cursorPointer : ''}`}
                           style={{ opacity: isApproved ? 1 : 0.5 }}>
-                          <Tooltip title={isApproved ? "Click to Send later to the Department Head after verification": ""} arrow>
+                          <Tooltip title={isApproved && applicationType === "REAPPOINTMENT" ? "Click to Send later to the Department Head after verification" : isApproved && applicationType === "LOCUM" ? "Click to Send later to the Cred Comm after verification" : ""} arrow>
                             <div
                               className={`${style.buttonTextStyle} ${style.alignCenter}`}
                               // onClick={onClickApprovalDeptFunction}
                               onClick={isApproved ? onClose : undefined}
                             >
-                              { applicationType === "REAPPOINTMENT" ? "Verified, send later to Department Head" : "Verified, send later to Cred Comm"}
+                              {applicationType === "REAPPOINTMENT" ? "Verified, send later to Department Head" : "Verified, send later to Cred Comm"}
                             </div>
                           </Tooltip>
                         </div>
@@ -10703,13 +10753,13 @@ const NewActiveApplication = ({
                           // className={`${style.bigButtonStyle1} ${style.cursorPointer}`}
                           className={`${style.bigButtonStyle1} ${isApproved ? style.cursorPointer : ''}`}
                           style={{ opacity: isApproved ? 1 : 0.5 }}>
-                          <Tooltip title={isApproved ? "Click to Send the verified application to the Department Head" : ""} arrow>
+                          <Tooltip title={isApproved && applicationType === "REAPPOINTMENT" ? "Click to Send the verified application to the Department Head" : isApproved && applicationType === "LOCUM" ? "Click to Send the verified application to the Cred Comm" : ""} arrow>
                             <div
                               className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
                               // onClick={onClickApprovalDeptFunction}
                               onClick={isApproved ? onClickApprovalDeptFunction : undefined}
                             >
-                              { applicationType === "REAPPOINTMENT" ? "Verified, Send to Department Head" : "Verified, Send to Cred Comm"}
+                              {applicationType === "REAPPOINTMENT" ? "Verified, Send to Department Head" : "Verified, Send to Cred Comm"}
                             </div>
                           </Tooltip>
                         </div>
@@ -11055,7 +11105,7 @@ const NewActiveApplication = ({
                       </div>
                     </div>
                   ) : (" ")}
-                  {((workModeType === 'Credentialing Committee' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" && isApproverCred === "Approve") || (workModeType === 'Credentialing Committee' && selectedTab === 'level-2' && applicationType === "LOCUM" && isApproverCred === "Approve")) ? (
+                  {((workModeType === 'Credentialing Committee' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" && isApproverCred === "Approve") || (workModeType === 'Credentialing Committee' && selectedTab === 'level-2' && applicationType === "LOCUM" && isApproverCred === "Approve") || (workModeType === 'Chief Of Staff' && selectedTab === 'level-2' && applicationType === "LOCUM" && isApproverCred === "Approve")) ? (
                     <div className={`${style.fixedBottom} ${approvalwithoutnotesCommentsBox || approvalnotesCommentsBox || approvalnotesCommentsBoxDept || showApplicationDeclineDialog || notesCommentsBox || reappointmentChangesCommentsBox ? style.hiddenStickyContainer : " "}`}>
                       {/* <div className={`${style.twoColumnGrid}`}> */}
                       <div className={`${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer}`}>
@@ -11142,7 +11192,7 @@ const NewActiveApplication = ({
                   </div>
                 </>) : ("")} */}
 
-                  {((workModeType === 'Credentialing Committee' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" && isApproverCred === "NotApproved") || (workModeType === 'Credentialing Committee' && selectedTab === 'level-2' && applicationType === "LOCUM" && isApproverCred === "NotApproved")) ? (<>
+                  {((workModeType === 'Credentialing Committee' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" && isApproverCred === "NotApproved") || (workModeType === 'Credentialing Committee' && selectedTab === 'level-2' && applicationType === "LOCUM" && isApproverCred === "NotApproved") || (workModeType === 'Chief Of Staff' && selectedTab === 'level-2' && applicationType === "LOCUM" && isApproverCred === "NotApproved")) ? (<>
                     <div>
                       <div className={`${style.textCardStyle} ${style.pendingTextStyle} ${style.alignCenter} ${style.padding30} ${style.marginBottom20}`}>
                         Pending Cred. Comm. Recommendation
@@ -11334,9 +11384,9 @@ const NewActiveApplication = ({
                           onClick={isButtonDisabled ? undefined : onClickCCDateSetFunction}
                         >
                           <Tooltip title={isButtonDisabled ? "" : "Click to Save your Changes"} arrow>
-                          <div className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop10} ${style.marginBottom10}`}>
-                            SAVE
-                          </div>
+                            <div className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop10} ${style.marginBottom10}`}>
+                              SAVE
+                            </div>
                           </Tooltip>
                         </div>
                       </div>
@@ -11387,9 +11437,9 @@ const NewActiveApplication = ({
                           onClick={isButtonDisabled ? undefined : onClickCCDateSetFunction}
                         >
                           <Tooltip title={isButtonDisabled ? "" : "Click to Save your Changes"} arrow>
-                          <div className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop10} ${style.marginBottom10}`}>
-                            SAVE
-                          </div>
+                            <div className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop10} ${style.marginBottom10}`}>
+                              SAVE
+                            </div>
                           </Tooltip>
                         </div>
                       </div>
@@ -11430,12 +11480,12 @@ const NewActiveApplication = ({
                         </div>
                         <div>
                           <div className={`${style.buttonCardStyle2} ${style.cursorPointer} ${style.marginTop10}`}>
-                          <Tooltip title={"Click to Mark as Not Recommended by MAC "} arrow>
-                            <div className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                              onClick={() => {
-                                setShowApplicationDeclineDialog(true);
-                              }}>NOT RECOMMENDED BY MAC</div>
-                              </Tooltip>
+                            <Tooltip title={"Click to Mark as Not Recommended by MAC "} arrow>
+                              <div className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                                onClick={() => {
+                                  setShowApplicationDeclineDialog(true);
+                                }}>NOT RECOMMENDED BY MAC</div>
+                            </Tooltip>
                           </div>
                           <div
                             className={`${style.bigButtonStyle2} ${isButtonDisabled ? undefined : style.cursorPointer}`}
@@ -11503,7 +11553,16 @@ const NewActiveApplication = ({
                           <div
                             className={`${style.bigButtonStyle2} ${isButtonDisabled ? undefined : style.cursorPointer}`}
                             style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
-                            onClick={isButtonDisabled ? undefined : handleApplicationAccept}
+                            onClick={
+                              isButtonDisabled ? undefined
+                                : () => {
+                                  // if (applicationType === "LOCUM") {
+                                  //   getApplicationMoveToNext();
+                                  // } else {
+                                  handleApplicationAccept();
+                                  //   }
+                                }
+                            }
                           >
                             <Tooltip title={isButtonDisabled ? "" : "Click to Mark as Approved by BOD"} arrow>
                               <div className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20}`}>
@@ -11793,23 +11852,23 @@ const NewActiveApplication = ({
                                 >
                                   {expandStates.section1 ? (
                                     <Tooltip title="Collapse Section" arrow>
-                                    <RemoveIcon
-                                      sx={{
-                                        fontSize: 20,
-                                        color: "#94979A",
-                                        cursor: "pointer",
-                                      }}
-                                    />
+                                      <RemoveIcon
+                                        sx={{
+                                          fontSize: 20,
+                                          color: "#94979A",
+                                          cursor: "pointer",
+                                        }}
+                                      />
                                     </Tooltip>
                                   ) : (
                                     <Tooltip title="Expand Section" arrow>
-                                    <AddIcon
-                                      sx={{
-                                        fontSize: 20,
-                                        color: "#94979A",
-                                        cursor: "pointer",
-                                      }}
-                                    />
+                                      <AddIcon
+                                        sx={{
+                                          fontSize: 20,
+                                          color: "#94979A",
+                                          cursor: "pointer",
+                                        }}
+                                      />
                                     </Tooltip>
                                   )}
                                 </div>
@@ -11820,13 +11879,13 @@ const NewActiveApplication = ({
                                 <div className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}>
                                   <div>Proof of Qualifications</div>
                                   <Tooltip title="Collapse Section" arrow>
-                                  <RemoveIcon
-                                    sx={{
-                                      fontSize: 20,
-                                      color: "#94979A",
-                                      cursor: "pointer",
-                                    }}
-                                  />
+                                    <RemoveIcon
+                                      sx={{
+                                        fontSize: 20,
+                                        color: "#94979A",
+                                        cursor: "pointer",
+                                      }}
+                                    />
                                   </Tooltip>
                                 </div>
                                 <div className={`${style.marginBottom20} ${style.clarificationCardStyle}`}>
@@ -11834,13 +11893,13 @@ const NewActiveApplication = ({
                                     <div className={`${style.greenDotStyle} ${style.buttonCenter}`}></div>
                                     <div className={`${style.sideHeadingFontStyle}`}>Queen's University Clarification Title To Address</div>
                                     <Tooltip title="Expand Section" arrow>
-                                    <AddIcon
-                                      sx={{
-                                        fontSize: 20,
-                                        color: "#94979A",
-                                        cursor: "pointer",
-                                      }}
-                                    />
+                                      <AddIcon
+                                        sx={{
+                                          fontSize: 20,
+                                          color: "#94979A",
+                                          cursor: "pointer",
+                                        }}
+                                      />
                                     </Tooltip>
                                   </div>
                                 </div>
@@ -11868,23 +11927,23 @@ const NewActiveApplication = ({
                                     >
                                       {expandStates.section2 ? (
                                         <Tooltip title="Collapse Section" arrow>
-                                        <RemoveIcon
-                                          sx={{
-                                            fontSize: 20,
-                                            color: "#94979A",
-                                            cursor: "pointer",
-                                          }}
-                                        />
+                                          <RemoveIcon
+                                            sx={{
+                                              fontSize: 20,
+                                              color: "#94979A",
+                                              cursor: "pointer",
+                                            }}
+                                          />
                                         </Tooltip>
                                       ) : (
                                         <Tooltip title="Expand Section" arrow>
-                                        <AddIcon
-                                          sx={{
-                                            fontSize: 20,
-                                            color: "#94979A",
-                                            cursor: "pointer",
-                                          }}
-                                        />
+                                          <AddIcon
+                                            sx={{
+                                              fontSize: 20,
+                                              color: "#94979A",
+                                              cursor: "pointer",
+                                            }}
+                                          />
                                         </Tooltip>
                                       )}
                                     </div>
@@ -11958,23 +12017,23 @@ const NewActiveApplication = ({
                                     >
                                       {expandStates.section3 ? (
                                         <Tooltip title="Collapse Section" arrow>
-                                        <RemoveIcon
-                                          sx={{
-                                            fontSize: 20,
-                                            color: "#94979A",
-                                            cursor: "pointer",
-                                          }}
-                                        />
+                                          <RemoveIcon
+                                            sx={{
+                                              fontSize: 20,
+                                              color: "#94979A",
+                                              cursor: "pointer",
+                                            }}
+                                          />
                                         </Tooltip>
                                       ) : (
                                         <Tooltip title="Expand Section" arrow>
-                                        <AddIcon
-                                          sx={{
-                                            fontSize: 20,
-                                            color: "#94979A",
-                                            cursor: "pointer",
-                                          }}
-                                        />
+                                          <AddIcon
+                                            sx={{
+                                              fontSize: 20,
+                                              color: "#94979A",
+                                              cursor: "pointer",
+                                            }}
+                                          />
                                         </Tooltip>
                                       )}
                                     </div>
@@ -12001,7 +12060,7 @@ const NewActiveApplication = ({
                         )}
                       </>
                     )}
-                    {applicationType === "REAPPOINTMENT" || applicationType === "LOCUM"  ? (
+                    {applicationType === "REAPPOINTMENT" || applicationType === "LOCUM" ? (
                       <>
                         {selectedTab === "level-4" || selectedTab === "level-5" || (selectedTab === "level-3" && applicationType === "LOCUM") ? (
                           <div className={`${style.cardLeftStyle} ${style.marginBottom20}`}>
@@ -12020,23 +12079,23 @@ const NewActiveApplication = ({
                                   >
                                     {expandStates.section4 ? (
                                       <Tooltip title="Collapse Section" arrow>
-                                      <RemoveIcon
-                                        sx={{
-                                          fontSize: 20,
-                                          color: "#94979A",
-                                          cursor: "pointer",
-                                        }}
-                                      />
+                                        <RemoveIcon
+                                          sx={{
+                                            fontSize: 20,
+                                            color: "#94979A",
+                                            cursor: "pointer",
+                                          }}
+                                        />
                                       </Tooltip>
                                     ) : (
                                       <Tooltip title="Expand Section" arrow>
-                                      <AddIcon
-                                        sx={{
-                                          fontSize: 20,
-                                          color: "#94979A",
-                                          cursor: "pointer",
-                                        }}
-                                      />
+                                        <AddIcon
+                                          sx={{
+                                            fontSize: 20,
+                                            color: "#94979A",
+                                            cursor: "pointer",
+                                          }}
+                                        />
                                       </Tooltip>
                                     )}
                                   </div>
@@ -12317,24 +12376,24 @@ const NewActiveApplication = ({
                                 >
                                   {expandStates.section1 ? (
                                     <Tooltip title="Collapse Section" arrow>
-                                    <RemoveIcon
-                                      sx={{
-                                        fontSize: 20,
-                                        color: "#94979A",
-                                        cursor: "pointer",
-                                      }}
-                                      onClick={() => setExpandStates((prev) => ({ ...prev, section6: false }))}
-                                    />
+                                      <RemoveIcon
+                                        sx={{
+                                          fontSize: 20,
+                                          color: "#94979A",
+                                          cursor: "pointer",
+                                        }}
+                                        onClick={() => setExpandStates((prev) => ({ ...prev, section6: false }))}
+                                      />
                                     </Tooltip>
                                   ) : (
                                     <Tooltip title="Expand Section" arrow>
-                                    <AddIcon
-                                      sx={{
-                                        fontSize: 20,
-                                        color: "#94979A",
-                                        cursor: "pointer",
-                                      }}
-                                    />
+                                      <AddIcon
+                                        sx={{
+                                          fontSize: 20,
+                                          color: "#94979A",
+                                          cursor: "pointer",
+                                        }}
+                                      />
                                     </Tooltip>
                                   )}
                                 </div>
@@ -12354,21 +12413,21 @@ const NewActiveApplication = ({
                                           <div className={`${style.headingRFCtextStyle}`}>{data?.title}</div>
                                           {isExpanded ? (
                                             <Tooltip title="Collapse Section" arrow>
-                                            <RemoveIcon
-                                              sx={{ fontSize: 20, color: "#94979A", cursor: "pointer" }}
-                                              onClick={() =>
-                                                setExpandStates((prev) => ({ ...prev, [`section6_${data.id}`]: false }))
-                                              }
-                                            />
+                                              <RemoveIcon
+                                                sx={{ fontSize: 20, color: "#94979A", cursor: "pointer" }}
+                                                onClick={() =>
+                                                  setExpandStates((prev) => ({ ...prev, [`section6_${data.id}`]: false }))
+                                                }
+                                              />
                                             </Tooltip>
                                           ) : (
                                             <Tooltip title="Expand Section" arrow>
-                                            <AddIcon
-                                              sx={{ fontSize: 20, color: "#94979A", cursor: "pointer" }}
-                                              onClick={() =>
-                                                setExpandStates((prev) => ({ ...prev, [`section6_${data.id}`]: true }))
-                                              }
-                                            />
+                                              <AddIcon
+                                                sx={{ fontSize: 20, color: "#94979A", cursor: "pointer" }}
+                                                onClick={() =>
+                                                  setExpandStates((prev) => ({ ...prev, [`section6_${data.id}`]: true }))
+                                                }
+                                              />
                                             </Tooltip>
                                           )}
                                         </div>
@@ -12389,21 +12448,21 @@ const NewActiveApplication = ({
                                                   </div>
                                                   {isExpandedData ? (
                                                     <Tooltip title="Collapse Section" arrow>
-                                                    <RemoveIcon
-                                                      sx={{ fontSize: 20, color: "#94979A", cursor: "pointer" }}
-                                                      onClick={() =>
-                                                        setExpandStates((prev) => ({ ...prev, [`section7_${data.id}_${index}`]: false }))
-                                                      }
-                                                    />
+                                                      <RemoveIcon
+                                                        sx={{ fontSize: 20, color: "#94979A", cursor: "pointer" }}
+                                                        onClick={() =>
+                                                          setExpandStates((prev) => ({ ...prev, [`section7_${data.id}_${index}`]: false }))
+                                                        }
+                                                      />
                                                     </Tooltip>
                                                   ) : (
                                                     <Tooltip title="Expand Section" arrow>
-                                                    <AddIcon
-                                                      sx={{ fontSize: 20, color: "#94979A", cursor: "pointer" }}
-                                                      onClick={() =>
-                                                        setExpandStates((prev) => ({ ...prev, [`section7_${data.id}_${index}`]: true }))
-                                                      }
-                                                    />
+                                                      <AddIcon
+                                                        sx={{ fontSize: 20, color: "#94979A", cursor: "pointer" }}
+                                                        onClick={() =>
+                                                          setExpandStates((prev) => ({ ...prev, [`section7_${data.id}_${index}`]: true }))
+                                                        }
+                                                      />
                                                     </Tooltip>
                                                   )}
                                                 </div>
@@ -12432,9 +12491,9 @@ const NewActiveApplication = ({
                                                         onClick={() => onClickDocumentClarificationFunction(clarification, data)}
                                                       >
                                                         <Tooltip title={"Click to Resolve Clarification"} arrow>
-                                                        <div className={`${style.buttonTextStyleDocs} ${style.alignCenter}`}>
-                                                          Resolve Clarification
-                                                        </div>
+                                                          <div className={`${style.buttonTextStyleDocs} ${style.alignCenter}`}>
+                                                            Resolve Clarification
+                                                          </div>
                                                         </Tooltip>
                                                       </div>
                                                       {/* <div className={`${style.bigButtonStyle1} ${style.cursorPointer}`}>
@@ -12547,7 +12606,7 @@ const NewActiveApplication = ({
                                                                 onClick={() => onClickResolveDialogFunction("unresolve", clarification, data)}
                                                               >
                                                                 <Tooltip title="Mark this Clarification as Unresolved" arrow>
-                                                                <div className={`${style.buttonTextStyle} ${style.alignCenter}`}>Un-Resolved</div>
+                                                                  <div className={`${style.buttonTextStyle} ${style.alignCenter}`}>Un-Resolved</div>
                                                                 </Tooltip>
                                                               </div>
                                                               <div
@@ -12555,7 +12614,7 @@ const NewActiveApplication = ({
                                                                 onClick={() => onClickResolveDialogFunction("resolve", clarification, data)}
                                                               >
                                                                 <Tooltip title="Click to Resolve this Clarification" arrow>
-                                                                <div className={`${style.bigButtonTextStyle} ${style.alignCenter}`}>Resolve</div></Tooltip>
+                                                                  <div className={`${style.bigButtonTextStyle} ${style.alignCenter}`}>Resolve</div></Tooltip>
                                                               </div>
 
                                                             </div>
@@ -12644,9 +12703,9 @@ const NewActiveApplication = ({
                     <>
                       <div className={`${style.buttonCardStyle2} ${style.cursorPointer}`}>
                         <Tooltip title="Reject this Application" arrow>
-                        <div className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                          onClick={() => { onClose(); }}>REJECT</div>
-                          </Tooltip>
+                          <div className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                            onClick={() => { onClose(); }}>REJECT</div>
+                        </Tooltip>
                       </div>
                       <div
                         className={`${style.bigButtonStyle2} ${style.cursorPointer}`}
@@ -12654,9 +12713,9 @@ const NewActiveApplication = ({
                         onClick={isButtonDisabled ? undefined : onClickApproveMoveFunction}
                       >
                         <Tooltip title={isButtonDisabled ? "" : "Click to Approve via MAC"} arrow>
-                        <div className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20}`}>
-                          MAC APPROVED
-                        </div>
+                          <div className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20}`}>
+                            MAC APPROVED
+                          </div>
                         </Tooltip>
                       </div>
                     </>
@@ -12665,12 +12724,12 @@ const NewActiveApplication = ({
                         {applicationType === "NEW" && (
                           <div className={`${style.bigButtonStyle1} ${style.cursorPointer}`}>
                             <Tooltip title="Click to Override and Grant Temporary Privileges" arrow>
-                            <div
-                              className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
-                            // onClick={onClickApprovalFunction}
-                            >
-                              OVERRIDE FOR TEMPORARY PRIVILEGES
-                            </div>
+                              <div
+                                className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                              // onClick={onClickApprovalFunction}
+                              >
+                                OVERRIDE FOR TEMPORARY PRIVILEGES
+                              </div>
                             </Tooltip>
                           </div>
                         )}
@@ -12840,12 +12899,12 @@ const NewActiveApplication = ({
                         className={`${style.bigButtonStyle2} ${style.cursorPointer}`}
                       >
                         <Tooltip title="Click to Save and View the Checklist" arrow>
-                        <div
-                          className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20} ${style.paddingButton}`}
-                          onClick={onClickCheckListFunction}
-                        >
-                          SAVE & VIEW CHECKLIST
-                        </div>
+                          <div
+                            className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20} ${style.paddingButton}`}
+                            onClick={onClickCheckListFunction}
+                          >
+                            SAVE & VIEW CHECKLIST
+                          </div>
                         </Tooltip>
                         <div className={`${style.marginTop20} ${style.marginBottom20}`}></div>
                       </div>
@@ -12853,11 +12912,11 @@ const NewActiveApplication = ({
                         className={`${style.buttonCardStyle2} ${style.cursorPointer} ${style.marginTop20} ${style.paddingButton}`}
                       >
                         <Tooltip title="Reject this Application" arrow>
-                        <div
-                          className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                          onClick={() => { onClose(); }}>
-                          REJECT
-                        </div>
+                          <div
+                            className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                            onClick={() => { onClose(); }}>
+                            REJECT
+                          </div>
                         </Tooltip>
                       </div>
                       <div
@@ -12871,15 +12930,15 @@ const NewActiveApplication = ({
                           onClick={isButtonDisabled ? undefined : onClickApproveMoveFunction}
                         >
                           <Tooltip title={isButtonDisabled ? "" : "Click to Approve as Board of Directors"} arrow>
-                          <div
-                            className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20}`}
-                          //  onClick={allTasksCompleted ? handleApplicationAccept : null}
-                          // onClick={onClickApproveMoveFunction}
-                          // style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
-                          // onClick={isButtonDisabled ? undefined : onClickApproveMoveFunction}
-                          >
-                            BOD APPROVED
-                          </div>
+                            <div
+                              className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20}`}
+                            //  onClick={allTasksCompleted ? handleApplicationAccept : null}
+                            // onClick={onClickApproveMoveFunction}
+                            // style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
+                            // onClick={isButtonDisabled ? undefined : onClickApproveMoveFunction}
+                            >
+                              BOD APPROVED
+                            </div>
                           </Tooltip>
                         </div>
                         <div className={style.marginBottom20}></div>
@@ -12890,12 +12949,12 @@ const NewActiveApplication = ({
                         {applicationType === "NEW" && (
                           <div className={`${style.bigButtonStyle1} ${style.cursorPointer}`}>
                             <Tooltip title="Click to Override and Grant Temporary Privileges" arrow>
-                            <div
-                              className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
-                            // onClick={onClickApprovalFunction}
-                            >
-                              OVERRIDE FOR TEMPORARY PRIVILEGES
-                            </div>
+                              <div
+                                className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                              // onClick={onClickApprovalFunction}
+                              >
+                                OVERRIDE FOR TEMPORARY PRIVILEGES
+                              </div>
                             </Tooltip>
                           </div>
                         )}
@@ -12915,6 +12974,7 @@ const NewActiveApplication = ({
                 getApplicationDeclineDialog={getApplicationDeclineDialog}
                 getActiveApplicationView={getActiveApplicationView}
                 selectedTab={selectedTab}
+                applicationType={applicationType}
               />
             )
           }
@@ -12949,27 +13009,27 @@ const NewActiveApplication = ({
                             className={`${style.purpleButton} ${style.cursorPointer}`}
                           >
                             <Tooltip title="Click to Verify" arrow>
-                            <div
-                              className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                              onClick={() => {
-                                handleDocVerify(selectedRow?.rowId);
-                                setShowDocVerifyDialog(false);
-                              }}
-                            >
-                              Verify
-                            </div>
+                              <div
+                                className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                onClick={() => {
+                                  handleDocVerify(selectedRow?.rowId);
+                                  setShowDocVerifyDialog(false);
+                                }}
+                              >
+                                Verify
+                              </div>
                             </Tooltip>
                           </div>
                         )}
                         <Tooltip title="Click to Close" arrow>
-                        <img
-                          src={CrossPink}
-                          alt="cross"
-                          className={`${style.crossStyleImg} ${style.cursorPointer} ${style.marginLeft20} `}
-                          onClick={() => {
-                            setShowDocVerifyDialog(false);
-                          }}
-                        />
+                          <img
+                            src={CrossPink}
+                            alt="cross"
+                            className={`${style.crossStyleImg} ${style.cursorPointer} ${style.marginLeft20} `}
+                            onClick={() => {
+                              setShowDocVerifyDialog(false);
+                            }}
+                          />
                         </Tooltip>
                       </div>
                     </div>
@@ -12984,14 +13044,14 @@ const NewActiveApplication = ({
                       className={`${style.justifyCenter} ${style.displayInRow} ${style.marginTop}`}
                     >
                       <Tooltip title="Click to Close" arrow>
-                      <div
-                        className={`${style.continue} ${style.marginLeft}`}
-                        onClick={() => {
-                          setShowDocVerifyDialog(false);
-                        }}
-                      >
-                        CLOSE
-                      </div>
+                        <div
+                          className={`${style.continue} ${style.marginLeft}`}
+                          onClick={() => {
+                            setShowDocVerifyDialog(false);
+                          }}
+                        >
+                          CLOSE
+                        </div>
                       </Tooltip>
                     </div>
                   </div>
@@ -13067,14 +13127,14 @@ const NewActiveApplication = ({
                   <div className={style.heading}>Selected Privilege Set</div>
                   <div className={style.displayInRow}>
                     <Tooltip title="Click to Close" arrow>
-                    <img
-                      src={CrossPink}
-                      alt="cross"
-                      className={`${style.crossStyleImg} ${style.cursorPointer} ${style.marginLeft} `}
-                      onClick={() => {
-                        setShowCurrentPrivileges(false);
-                      }}
-                    />
+                      <img
+                        src={CrossPink}
+                        alt="cross"
+                        className={`${style.crossStyleImg} ${style.cursorPointer} ${style.marginLeft} `}
+                        onClick={() => {
+                          setShowCurrentPrivileges(false);
+                        }}
+                      />
                     </Tooltip>
                   </div>
                 </div>

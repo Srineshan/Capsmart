@@ -187,10 +187,10 @@ const LocumJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, img, conti
                                             <div className={style.spaceBetween}>
                                                 <div className={style.displayInRow}>
                                                     <div>
-                                                        <div className={`${(!data?.acknowledged || errorSchema === data?.schemaCategory || (data?.schemaCategory === 'UploadYourDoc' && missingRequiredDocs?.length !== 0) || (data?.schemaCategory === 'DemographicData' && hasMandatoryTrueDemoGraphicData?.length !== 0) || (data?.schemaCategory === 'ProfessionalConduct' && hasMandatoryTrueprofessionalConduct?.length !== 0) || (data?.schemaCategory === 'CriminalHistory' && hasMandatoryTruecriminalHistory?.length !== 0) || (data?.schemaCategory === 'MedicalHistory' && hasMandatoryTruemedicalHistory?.length !== 0) || (data?.schemaCategory === 'PRIVILEGE_STATUS_AT_HOSPITAL' && hasMandatoryTrueprivilegeAtOtherHosiptal?.length !== 0) || (data?.schemaCategory === 'PATIENT_CONCERN_DISCLOSURE' && hasMandatoryTruepatientConern?.length !== 0) || (data?.schemaCategory === 'MEDICAL_DIRECTIVES' && hasMandatoryTruemedicalDirectives) || (data?.schemaCategory === 'CME' && hasMandatoryTrueCME) || (data?.schemaCategory === 'MISCELLANEOUS_QUESTIONS' && hasMandatoryTrueMiscellaneousQuestion?.length !== 0) || (data?.schemaCategory === 'ScheduleA' && hasMissingScheduleA) || (data?.schemaCategory === 'ScheduleB' && hasMissingScheduleB)) ? style.completedItemsTextRed : style.completedItemsText} ${disclosureList?.includes(data?.schemaCategory) ? style.marginLeft : ''}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/reappointmentApplicationForm/${applicationId}/${data?.formCategory}/${btoa(data?.schemaCategory)}`); getIsOpen(false) }}>{data?.title}</div>
+                                                        <div className={`${(!data?.acknowledged || errorSchema === data?.schemaCategory || (data?.schemaCategory === 'UploadYourDoc' && missingRequiredDocs?.length !== 0) || (data?.schemaCategory === 'DemographicData' && hasMandatoryTrueDemoGraphicData?.length !== 0) || (data?.schemaCategory === 'ProfessionalConduct' && hasMandatoryTrueprofessionalConduct?.length !== 0) || (data?.schemaCategory === 'CriminalHistory' && hasMandatoryTruecriminalHistory?.length !== 0) || (data?.schemaCategory === 'MedicalHistory' && hasMandatoryTruemedicalHistory?.length !== 0) || (data?.schemaCategory === 'PRIVILEGE_STATUS_AT_HOSPITAL' && hasMandatoryTrueprivilegeAtOtherHosiptal?.length !== 0) || (data?.schemaCategory === 'PATIENT_CONCERN_DISCLOSURE' && hasMandatoryTruepatientConern?.length !== 0) || (data?.schemaCategory === 'MEDICAL_DIRECTIVES' && hasMandatoryTruemedicalDirectives) || (data?.schemaCategory === 'CME' && hasMandatoryTrueCME) || (data?.schemaCategory === 'MISCELLANEOUS_QUESTIONS' && hasMandatoryTrueMiscellaneousQuestion?.length !== 0) || (data?.schemaCategory === 'ScheduleA' && hasMissingScheduleA) || (data?.schemaCategory === 'ScheduleB' && hasMissingScheduleB)) ? style.completedItemsTextRed : style.completedItemsText} ${disclosureList?.includes(data?.schemaCategory) ? style.marginLeft : ''}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/locumApplicationForm/${applicationId}/${data?.formCategory}/${btoa(data?.schemaCategory)}`); getIsOpen(false) }}>{data?.title}</div>
                                                         {(data?.schemaCategory === 'UploadYourDoc' && missingRequiredDocs?.length !== 0) && (
                                                             data?.unFilledFields?.filter(innerData => missingRequiredDocs?.includes(innerData))?.map((innerData, innerIndex) => (
-                                                                <div key={innerIndex} className={`${style.completedItemsTextRed} ${style.marginLeft}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/reappointmentApplicationForm/${applicationId}/Form/${btoa(data?.schemaCategory)}`); getIsOpen(false); }}>
+                                                                <div key={innerIndex} className={`${style.completedItemsTextRed} ${style.marginLeft}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/locumApplicationForm/${applicationId}/Form/${btoa(data?.schemaCategory)}`); getIsOpen(false); }}>
                                                                     {innerData}
                                                                 </div>
                                                             ))
@@ -214,7 +214,12 @@ const LocumJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, img, conti
                                                         (data?.schemaCategory === 'ScheduleA' && hasMissingScheduleA) ||
                                                         (data?.schemaCategory === 'ScheduleB' && hasMissingScheduleB)
                                                     ) ? (
-                                                        <WarningIcon style={{ fontSize: 20, color: `#FF6562` }} />
+                                                        <Tooltip
+                                                            title="Some required fields / files were left blank."
+                                                            arrow
+                                                        >
+                                                            <WarningIcon style={{ fontSize: 20, color: `#FF6562` }} />
+                                                        </Tooltip>
                                                     ) : (!data?.acknowledged || errorSchema === data?.schemaCategory ||
                                                         (data?.schemaCategory === 'UploadYourDoc' && unFilledFields?.length !== 0) ||
                                                         (data?.schemaCategory === 'DemographicData' && demographicDataUnfilledFields?.length !== 0) ||
@@ -228,7 +233,12 @@ const LocumJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, img, conti
                                                         (data?.schemaCategory === 'MISCELLANEOUS_QUESTIONS' && MiscellaneousQuestionUnfilledFields?.length !== 0)
                                                     )
                                                         ? (
-                                                            <WarningIcon style={{ fontSize: 20, color: `#FFC107` }} />
+                                                            <Tooltip
+                                                                title="Some optional fields / files were left blank."
+                                                                arrow
+                                                            >
+                                                                <WarningIcon style={{ fontSize: 20, color: `#FFC107` }} />
+                                                            </Tooltip>
                                                         ) : (
                                                             <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A` }} />
                                                         )
@@ -285,7 +295,7 @@ const LocumJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, img, conti
             </Dialog >
 
             {showSubmitDialog && (
-                <ApplicationSubmitDialog getIsOpen={getIsShowSubmitDialog} title={`Mission Accomplished! You're A Champion`} description={`Please note that the entire application process for full board approval may take up to 3 months to complete.`} />
+                <ApplicationSubmitDialog getIsOpen={getIsShowSubmitDialog} title={`Mission Accomplished! You're A Champion`} description={`We will notify you once your application has been approved.`} />
             )}
         </>
     )

@@ -29,11 +29,11 @@ import MenuIcon from "@mui/icons-material/Menu";
 import DatalistInput, { useComboboxControls } from "react-datalist-input";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
-import ESignature from "../../Components/ESignature";
+import ESignature from "../ESignature";
 import CancelIcon from '@mui/icons-material/Cancel';
 import AdditionalPrivilegesDialog from "../../Screens/ReappointmentApplicationForm/PrivilegeSelection/AdditionalPrivilegesDialog";
 
-const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
+const LocumRequestDialog = ({ getIsOpen, selectedTab }) => {
   let cookie = new Cookie();
   let userDetails = cookie.get("user");
   const { setValue, value } = useComboboxControls({ initialValue: "" });
@@ -47,7 +47,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
   const [applicationType, setApplicationType] = useState(() => sessionStorage.getItem("applicationCreationType") || "NEW");
   const [isLoadingImage, setIsLoadingImage] = useState(false);
   const [processReappointment, setProcessReappointment] = useState("Yes");
-  const [selectedMonth, setSelectedMonth] = useState("");
+  const [selectedMonth, setSelectedMonth] = useState("Custom");
   const [calendarStart, setCalendarStart] = useState(false);
   const [customEndDate, setCustomEndDate] = useState(null);
   const [customStartDate, setCustomStartDate] = useState(null);
@@ -93,7 +93,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
   const [isAdditionalPrivilegeCategoryChanging, setIsAdditionalPrivilegeCategoryChanging] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
   const [privilegeAtOtherHospitalIndex, setPrivilegeAtOtherHospitalIndex] = useState();
-  const departmentName = selectDataLocum?.basicDetailReferences?.department?.name;
+  const departmentName = selectDataLocum?.staff?.basicDetailReferences?.department?.name;
   const [
     selectedAdditionalPrivilegeForEdit,
     setSelectedAdditionalPrivilegeForEdit,
@@ -116,6 +116,82 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
   const [emailSendDialog, setEmailSendDialog] = useState(false);
   const prevDepartment = formDetails?.basicDetailReferences?.department?.id;
   const prevSpeciality = formDetails?.basicDetailReferences?.specialty?.id;
+  const referenceDate =
+    selectDataLocum?.locumRenewalDetails?.reappointmentType === "EXTENSION" && selectDataLocum?.locumRenewalDetails?.tenure?.from
+      ? selectDataLocum?.locumRenewalDetails?.tenure?.from
+      : new Date();
+
+  const getNext12MonthsFromCreatedDate = (createdDateStr) => {
+    const months = [];
+    const createdDate = new Date(createdDateStr);
+
+    for (let i = 1; i <= 12; i++) {
+      let futureDate = addMonths(createdDate, i);
+      futureDate = endOfMonth(futureDate);
+      // const oneDayBefore = subDays(futureDate, 1); // Go one day before the future "same day"
+
+      const label = `${i} ${i === 1 ? 'month' : 'months'}`;
+      const value = format(futureDate, 'yyyy-MM-dd');
+
+      months.push({ label, value });
+    }
+
+    // Add "Custom End Date" option
+    const now = new Date();
+    months.push({
+      label: 'Custom End Date',
+      value: 'Custom'
+    });
+
+    return months;
+  };
+
+  const monthOptions = getNext12MonthsFromCreatedDate(referenceDate);
+  const rawExpireDate = selectDataLocum?.staff?.tenure?.to ?? null;
+  const rawExpireDateRequest = selectDataLocum?.locumRenewalDetails?.tenure?.from ?? null;
+  const ExpireDate = rawExpireDate ? parseISO(rawExpireDate) : null;
+  const ExpireDateRequest = rawExpireDateRequest ? parseISO(rawExpireDateRequest) : null;
+
+  // Validate date before using
+  const isExpireDateValid = ExpireDate && isValid(ExpireDate);
+  const isCustomEndDateValid = customEndDate && isValid(new Date(customEndDate));
+
+  const startDateStr =
+    selectedTab === "ACTIVELOCUM" && isExpireDateValid
+      ? format(addDays(ExpireDate, 1), "yyyy-MM-dd")
+      : format(addDays(new Date(), 1), "yyyy-MM-dd");
+  const endDateStr =
+    selectedTab === "ACTIVELOCUM" || selectedTab === "EXPIREDLOCUM"
+      ? selectedMonth === "Custom" && isCustomEndDateValid
+        ? format(new Date(customEndDate), "yyyy-MM-dd")
+        : selectedMonth
+      : format(new Date(), "yyyy-MM-dd");
+
+  const lastModifiedDate = formDetails?.lastModifiedDate;
+  const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), "MMM dd, yyyy") : "-";
+  const formattedExpiringDate = ExpireDate ? format(new Date(ExpireDate), "MMM dd, yyyy") : "-";
+  const daysRemaining = ExpireDate ? Math.abs(differenceInDays(new Date(ExpireDate), new Date())) : null;
+  //  const monthsList = getNext12MonthsFromCreatedDate(format(new Date(selectDataLocum?.tenure?.to), "MMM dd, yyyy"));
+  // const selectedMonthLabel = selectedMonth === "Custom"
+  // ? "Custom End Date"
+  // : monthsList.find(month => month?.value === selectedMonth)?.label || '';
+  // const selectedMonthLabel = selectedMonth !== "Custom"
+  // ? monthsList.find(month => month.value === selectedMonth)?.label
+  // : "Custom End Date";
+  const currentDateNow = new Date();
+  const minDateValue =
+    selectDataLocum?.locumRenewalDetails?.reappointmentType === "EXTENSION"
+      ? ExpireDate
+        ? addDays(new Date(ExpireDate), 1)
+        : null
+      : currentDateNow;
+
+  const maxDateValue =
+    selectDataLocum?.locumRenewalDetails?.reappointmentType === "EXTENSION"
+      ? ExpireDate
+        ? addYears(new Date(ExpireDate), 1)
+        : null
+      : addYears(currentDateNow, 1);
   const [currentDate, setCurrentDate] = useState(
     format(new Date(), "dd-MM-yyyy")
   );
@@ -142,13 +218,22 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
     console.log("Found index:", index);
   }, [formDetails?.forms]);
 
-
   useEffect(() => {
     sessionStorage.setItem("fromSummary", false);
     getApplication();
+  }, [selectDataLocum]);
+
+  useEffect(() => {
+    if (selectDataLocum) {
+      const createdDate = new Date(referenceDate);
+      let futureDate = addMonths(createdDate, selectDataLocum?.locumRenewalDetails?.renewalDuration?.value);
+      futureDate = endOfMonth(futureDate);
+      console.log(referenceDate, futureDate, 'futureDate', selectDataLocum, createdDate)
+      setSelectedMonth(!selectDataLocum?.locumRenewalDetails?.renewalDuration?.value ? 'Custom' : format(futureDate, 'yyyy-MM-dd'))
+    }
     // getPrivilegeCategory();
     // getformDetails()
-  }, [selectDataLocum]);
+  }, [selectDataLocum, referenceDate]);
 
 
   useEffect(() => {
@@ -156,14 +241,14 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
     setSelectedPrivilegesForDisplayMultiple(
       formDetails?.privileges?.obligatedPrivileges
     );
-    staffLocumId = selectDataLocum?.onGoingApplication?.id
+    staffLocumId = selectDataLocum?.staff?.onGoingApplication?.id
     // departmentName = selectDataLocum?.basicDetailReferences?.department?.name
     console.log("staffLocumId", staffLocumId, departmentName)
   }, []);
 
   useEffect(() => {
     getStaffPrivilege();
-    const staffLocumId = selectDataLocum?.onGoingApplication?.id
+    const staffLocumId = selectDataLocum?.staff?.onGoingApplication?.id
     console.log("staffLocumIdssssss", staffLocumId, departmentName)
   }, [showSelectedPrivilegeLocum, privilegeSetChangeYesOrNo, selectedDepartment, selectedSpeciality]);
 
@@ -207,36 +292,53 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
     getAdditionalStaffPrivilege();
   }, [formDetails, selectedAdditionalDepartment, selectedAdditionalSpeciality]);
 
+  useEffect(() => {
+    const endDate = selectDataLocum?.locumRenewalDetails?.tenure?.to;
+    const startDate = selectDataLocum?.locumRenewalDetails?.tenure?.from;
+    if (endDate) {
+      setCustomEndDate(new Date(endDate));
+    }
+    if (startDate) {
+      setCustomStartDate(new Date(startDate));
+    }
+    // Set entire array of coveredDetails
+    const coveredDetails = selectDataLocum?.locumRenewalDetails?.coveredDetails || [];
+    setSelectApplicant(coveredDetails);
+    // Populate list of IDs for chips
+    const ids = coveredDetails.map(item => item.id);
+    setCovererNameList(ids);
+  }, [selectDataLocum]);
+
   let userDepartmentList;
   let userSpecialty;
   const userDetailsFetchOption = (sessionStorage.getItem('user') !== "undefined" && sessionStorage.getItem('user')) ? JSON.parse(sessionStorage.getItem('user')) : {};
 
-  useEffect(() => {
-    userDepartmentList = userDetailsFetchOption?.sites?.sites[0]?.departmentList?.departments[0]?.id;
-    userSpecialty = userDetailsFetchOption?.sites?.sites[0]?.departmentList?.departments[0]?.serviceAreas[0]?.id;
-    console.log("userSpecialty", userDepartmentList, userSpecialty)
-  }, [])
+  // useEffect(() => {
+  //   userDepartmentList = userDetailsFetchOption?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.id;
+  //   userSpecialty = userDetailsFetchOption?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.serviceAreas[0]?.id;
+  //   console.log("userSpecialty", userDepartmentList, userSpecialty)
+  // }, [])
 
   useEffect(() => {
     const fetchDepartmentStaffs = async () => {
       try {
-        const currentApplicantId = selectDataLocum?.applicant?.id;
-        const departmentId = selectDataLocum?.basicDetailReferences?.department?.id;
-        const applicantTypeId = selectDataLocum?.basicDetailReferences?.applicantType?.id;
+        const currentApplicantId = selectDataLocum?.staff?.applicant?.id;
+        const departmentId = selectDataLocum?.staff?.basicDetailReferences?.department?.id;
+        const applicantTypeId = selectDataLocum?.staff?.basicDetailReferences?.applicantType?.id;
         const response = await GET(
           `application-management-service/staff?status=ACTIVE&departmentId=${departmentId}&applicantTypeId=${applicantTypeId}&sortByField=STAFF_NAME`
         );
         console.log(response.data);
 
-        const filteredStaffs = response.data.staffs.filter(
-          (staff) => staff.applicant.id !== currentApplicantId
+        const filteredStaffs = response?.data?.staffs?.filter(
+          (staff) => staff?.applicant?.id !== currentApplicantId
         );
         setSelectApplicant(filteredStaffs)
         console.log("appselect", selectApplicant)
-        const options = filteredStaffs.map((staff) => ({
-          id: `${staff.id}`,
-          value: `${staff.applicant.name.firstName} ${staff.applicant.name.middleName} ${staff.applicant.name.lastName} ${staff?.basicDetailReferences?.specialty?.name !== undefined ? `- ${staff?.basicDetailReferences?.specialty?.name}` : ''}`,
-          label: `${staff.applicant.name.firstName} ${staff.applicant.name.middleName} ${staff.applicant.name.lastName} ${staff?.basicDetailReferences?.specialty?.name !== undefined ? `- ${staff?.basicDetailReferences?.specialty?.name}` : ''}`,
+        const options = filteredStaffs?.map((staff) => ({
+          id: `${staff?.id}`,
+          value: `${staff?.applicant?.name?.firstName} ${staff?.applicant?.name?.middleName} ${staff?.applicant?.name?.lastName} ${staff?.basicDetailReferences?.specialty?.name !== undefined ? `- ${staff?.basicDetailReferences?.specialty?.name}` : ''}`,
+          label: `${staff?.applicant?.name?.firstName} ${staff?.applicant?.name?.middleName} ${staff?.applicant?.name?.lastName} ${staff?.basicDetailReferences?.specialty?.name !== undefined ? `- ${staff?.basicDetailReferences?.specialty?.name}` : ''}`,
         }));
         setApplicantOptions(options);
         console.log(options)
@@ -254,15 +356,15 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
         const { data: privilege } = await GET(
           `entity-service/staffPrivilege/departmentAndServiceArea?departmentId=${selectedDepartment !== ""
             ? selectedDepartment
-            : selectDataLocum?.basicDetailReferences?.department?.id
-          }&serviceAreaId=${selectedSpeciality !== "" ? selectedSpeciality : selectDataLocum?.basicDetailReferences?.specialty?.id}`
+            : selectDataLocum?.staff?.basicDetailReferences?.department?.id
+          }&serviceAreaId=${selectedSpeciality !== "" ? selectedSpeciality : selectDataLocum?.staff?.basicDetailReferences?.specialty?.id}`
         );
         setStaffPrivilege(privilege);
       } else {
         const { data: privilege } = await GET(
           `entity-service/staffPrivilege/departmentAndServiceArea?departmentId=${selectedDepartment !== ""
             ? selectedDepartment
-            : selectDataLocum?.basicDetailReferences?.department?.id
+            : selectDataLocum?.staff?.basicDetailReferences?.department?.id
           }`
         );
         setStaffPrivilege(privilege);
@@ -296,11 +398,9 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
     setIsLoadingImage(true);
 
     try {
+      await reappointmentRequestApplication();
       await reappointmentApplication();
       await getActiveUserData();
-      // await getApplication();
-      // await handleSubmitPrivilegeSet();
-      // await handleSubmitAdditionalPrivilegeSet();
       setShowSelectedPrivilegeLocum(true);
     } catch (error) {
       console.error("Error in onClickExtensiveRequest:", error);
@@ -313,15 +413,17 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
 
   const getActiveUserData = async () => {
     try {
-      const url = `application-management-service/staff?status=ACTIVE&type=LOCUM&isExpired=${selectedTab === "ACTIVELOCUM" ? "false" : "true"}&noOfDays=30&isPaginationRequired=${limit === 9999 ? false : true}&limit=${limit}`;
-      const response = await GET(url);
-      const staffs = response?.data?.staffs || [];
+      const urls = ['PENDING', 'APPROVED'].map(status =>
+        `application-management-service/application/request?requestType=LOCUM_RENEWAL_REQUEST&status=${status}&isPaginationRequired=${limit === 9999 ? false : true}&limit=${limit}`
+      );
+      const responses = await Promise.all(urls.map(url => GET(url)));
+      const allStaffs = responses.flatMap(response => response?.data?.requests || []);
 
-      const filteredData = staffs.find(item => item?.id === id);
-      console.log("Filtered Application Data", filteredData);
+      const filteredData = allStaffs.find(item => item?.id === id);
+      console.log("Filtered Application Data11111111", filteredData);
       setSelectDataLocum(filteredData);
       console.log("applicationmanage", selectDataLocum)
-      return response?.data?.staffs;
+      return responses?.data?.staffs;
     } catch (error) {
       console.error("Error fetching applications:", error);
       return [];
@@ -329,14 +431,14 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
   };
 
   const reappointmentApplication = async () => {
-    const fromDate = selectedTab === "ACTIVELOCUM"
-      ? format(addDays(new Date(selectDataLocum?.tenure?.to), 1), 'yyyy-MM-dd')
-      : selectedTab === "EXPIREDLOCUM" && customStartDate
+    const fromDate = selectDataLocum?.locumRenewalDetails?.reappointmentType === "EXTENSION"
+      ? format(new Date(selectDataLocum?.locumRenewalDetails?.tenure?.from), 'yyyy-MM-dd')
+      : selectDataLocum?.locumRenewalDetails?.reappointmentType === "RENEWAL" && customStartDate
         ? format(new Date(customStartDate), 'yyyy-MM-dd')
         : format(new Date(), 'yyyy-MM-dd');
     const toDate = selectedMonth === "Custom"
       ? format(new Date(customEndDate), 'yyyy-MM-dd')
-      : selectedTab === "EXPIREDLOCUM"
+      : selectDataLocum?.locumRenewalDetails?.reappointmentType === "RENEWAL"
         ? format(new Date(customEndDate), 'yyyy-MM-dd')
         : format(new Date(selectedMonth), 'yyyy-MM-dd');
     const coveredDetails = covererNameList?.map((data) => {
@@ -358,7 +460,27 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
       coveredDetails: coveredDetails,
     };
 
-    await POST(`application-management-service/staff/${selectDataLocum?.id}/reappoint?positionType=LOCUM&reappointmentType=${selectedTab === "ACTIVELOCUM" ? "EXTENSION" : "RENEWAL"}&sendReappointmentInvite=false`, temp)
+    await POST(`application-management-service/staff/${selectDataLocum?.staff?.id}/reappoint?positionType=LOCUM&reappointmentType=${selectDataLocum?.locumRenewalDetails?.reappointmentType}&sendReappointmentInvite=false`, temp)
+      .then((response) => {
+        console.log(response?.data);
+        getActiveUserData();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const reappointmentRequestApplication = async () => {
+    const newFormData = new FormData();
+    newFormData.append(
+      "response",
+      new Blob([JSON.stringify({})], {
+        type: "application/json",
+      })
+    );
+    newFormData.append("documents", []);
+    await PUT(`application-management-service/application/request/${selectDataLocum?.id}/response?workflowAction=APPROVED`, newFormData
+    )
       .then((response) => {
         console.log(response?.data);
         getActiveUserData();
@@ -370,7 +492,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
 
   const sendEmail = async () => {
 
-    await POST(`application-management-service/application/${selectDataLocum?.onGoingApplication?.id}/sendEmail`)
+    await POST(`application-management-service/application/${selectDataLocum?.staff?.onGoingApplication?.id}/sendEmail`)
       .then((response) => {
         console.log(response?.data);
       })
@@ -1062,7 +1184,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
 
   const handleDeleteFile = async (files) => {
     await DELETE(
-      `application-management-service/application/${selectDataLocum?.onGoingApplication?.id}/files`,
+      `application-management-service/application/${selectDataLocum?.staff?.onGoingApplication?.id}/files`,
       files
     )
       .then((response) => {
@@ -1091,7 +1213,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
       formData.append("documents", file);
       try {
         const response = await POST(
-          `application-management-service/application/${selectDataLocum?.onGoingApplication?.id}/files?isLLMRequired=${formSchemaWholeObject?.requiredDocuments?.length !== 0
+          `application-management-service/application/${selectDataLocum?.staff?.onGoingApplication?.id}/files?isLLMRequired=${formSchemaWholeObject?.requiredDocuments?.length !== 0
             ? true
             : false
           }&schemaId=${formSchemaWholeObject?.id}`,
@@ -1104,7 +1226,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
             formSchemaWholeObject?.requiredDocuments?.length !== 0
           ) {
             await PUT(
-              `application-management-service/application/${selectDataLocum?.onGoingApplication?.id}/form/updateData`,
+              `application-management-service/application/${selectDataLocum?.staff?.onGoingApplication?.id}/form/updateData`,
               {
                 documentType:
                   response?.data?.classification !== null
@@ -1715,7 +1837,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
       };
       console.log(data);
       await PUT(
-        `application-management-service/application/${selectDataLocum?.onGoingApplication?.id}`,
+        `application-management-service/application/${selectDataLocum?.staff?.onGoingApplication?.id}`,
         data
       )
         .then((response) => {
@@ -1748,7 +1870,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
       };
       console.log(data);
       await PUT(
-        `application-management-service/application/${selectDataLocum?.onGoingApplication?.id}`,
+        `application-management-service/application/${selectDataLocum?.staff?.onGoingApplication?.id}`,
         data
       )
         .then((response) => {
@@ -1783,7 +1905,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
       acknowledged: true,
     };
     await PUT(
-      `application-management-service/application/${selectDataLocum?.onGoingApplication?.id}/form/${formDetails?.forms?.[formIndex]?.id}`,
+      `application-management-service/application/${selectDataLocum?.staff?.onGoingApplication?.id}/form/${formDetails?.forms?.[formIndex]?.id}`,
       temp
     )
       .then((response) => {
@@ -1846,7 +1968,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
   const getApplication = async () => {
     try {
       //  setIsLoadingImage(true);
-      const { data: formDetails } = await GET(`application-management-service/application/${selectDataLocum?.onGoingApplication?.id}`);
+      const { data: formDetails } = await GET(`application-management-service/application/${selectDataLocum?.staff?.onGoingApplication?.id}`);
       setFormDetails(formDetails);
       //  setIsLoadingImage(false);
     } catch (error) {
@@ -1978,7 +2100,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
           : formDetails?.privileges?.priorObligatedPrivileges,
       };
       console.log("data", temp);
-      await POST(`application-management-service/application/${selectDataLocum?.onGoingApplication?.id}/privileges`, temp);
+      await POST(`application-management-service/application/${selectDataLocum?.staff?.onGoingApplication?.id}/privileges`, temp);
     } else {
       if (!formDetails?.forms?.[formIndex]?.data?.privilegeSetChangeUpdated) {
         let temp = {
@@ -1988,7 +2110,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
           priorObligatedPrivileges: formDetails?.privileges?.obligatedPrivileges,
         };
         console.log("data", temp);
-        await POST(`application-management-service/application/${selectDataLocum?.onGoingApplication?.id}/privileges`, temp);
+        await POST(`application-management-service/application/${selectDataLocum?.staff?.onGoingApplication?.id}/privileges`, temp);
       } else {
         let temp = {
           obligatedPrivileges: formDetails?.privileges?.priorObligatedPrivileges,
@@ -1997,7 +2119,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
           priorObligatedPrivileges: formDetails?.privileges?.priorObligatedPrivileges,
         };
         console.log("data", temp);
-        await POST(`application-management-service/application/${selectDataLocum?.onGoingApplication?.id}/privileges`, temp);
+        await POST(`application-management-service/application/${selectDataLocum?.staff?.onGoingApplication?.id}/privileges`, temp);
       }
     }
     let temp = {
@@ -2041,7 +2163,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
       unFilledFields: formDetails?.forms?.[formIndex]?.unFilledFields,
       acknowledged: true,
     };
-    await PUT(`application-management-service/application/${selectDataLocum?.onGoingApplication?.id}/form/${formDetails?.forms?.[formIndex]?.id}`, temp).then(
+    await PUT(`application-management-service/application/${selectDataLocum?.staff?.onGoingApplication?.id}/form/${formDetails?.forms?.[formIndex]?.id}`, temp).then(
       (response) => {
         getApplication();
       },
@@ -2068,7 +2190,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
         priorObligatedPrivileges: formDetails?.privileges?.priorObligatedPrivileges,
       };
       console.log("data", temp);
-      await POST(`application-management-service/application/${selectDataLocum?.onGoingApplication?.id}/privileges`, temp);
+      await POST(`application-management-service/application/${selectDataLocum?.staff?.onGoingApplication?.id}/privileges`, temp);
     } else {
       if (!formDetails?.forms?.[formIndex]?.data?.additionalPrivilegeChangeUpdated) {
         let temp = {
@@ -2078,7 +2200,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
           priorObligatedPrivileges: formDetails?.privileges?.priorObligatedPrivileges,
         };
         console.log("data", temp);
-        await POST(`application-management-service/application/${selectDataLocum?.onGoingApplication?.id}/privileges`, temp);
+        await POST(`application-management-service/application/${selectDataLocum?.staff?.onGoingApplication?.id}/privileges`, temp);
       } else {
         let temp = {
           obligatedPrivileges: formDetails?.privileges?.obligatedPrivileges,
@@ -2087,7 +2209,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
           priorObligatedPrivileges: formDetails?.privileges?.priorObligatedPrivileges,
         };
         console.log("data", temp);
-        await POST(`application-management-service/application/${selectDataLocum?.onGoingApplication?.id}/privileges`, temp);
+        await POST(`application-management-service/application/${selectDataLocum?.staff?.onGoingApplication?.id}/privileges`, temp);
       }
     }
     let temp = {
@@ -2131,7 +2253,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
       unFilledFields: formDetails?.forms?.[formIndex]?.unFilledFields,
       acknowledged: true,
     };
-    await PUT(`application-management-service/application/${selectDataLocum?.onGoingApplication?.id}/form/${formDetails?.forms?.[formIndex]?.id}`, temp).then(
+    await PUT(`application-management-service/application/${selectDataLocum?.staff?.onGoingApplication?.id}/form/${formDetails?.forms?.[formIndex]?.id}`, temp).then(
       (response) => {
         getApplication();
       },
@@ -2317,7 +2439,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
       }
       data.basicDetails.regionalCallResponsibilities.regionalCallResponsibilities = selectedValue || "NA";
       console.log(data, "data");
-      await PUT(`application-management-service/application/${selectDataLocum?.onGoingApplication?.id}`, data)
+      await PUT(`application-management-service/application/${selectDataLocum?.staff?.onGoingApplication?.id}`, data)
         .then((response) => {
           console.log(response);
         })
@@ -2339,7 +2461,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
         data.basicDetails.regionalCallResponsibilities = {};
       }
       data.basicDetails.regionalCallResponsibilities.regionalCallResponsibilities = selectedValue || "NA";
-      await PUT(`application-management-service/application/${selectDataLocum?.onGoingApplication?.id}`, data)
+      await PUT(`application-management-service/application/${selectDataLocum?.staff?.onGoingApplication?.id}`, data)
         .then((response) => {
           console.log(response);
         })
@@ -2389,7 +2511,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
       unFilledFields: formDetails?.forms?.[formIndex]?.unFilledFields,
       acknowledged: true,
     };
-    await PUT(`application-management-service/application/${selectDataLocum?.onGoingApplication?.id}/form/${formDetails?.forms?.[formIndex]?.id}`, temp)
+    await PUT(`application-management-service/application/${selectDataLocum?.staff?.onGoingApplication?.id}/form/${formDetails?.forms?.[formIndex]?.id}`, temp)
       .then((response) => {
         console.log(response);
         getApplication();
@@ -2470,7 +2592,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
       //  priorAdditionalPrivileges: formDetails?.privileges?.priorAdditionalPrivileges,
       //  priorObligatedPrivileges: formDetails?.privileges?.priorObligatedPrivileges,
     };
-    await POST(`application-management-service/application/${selectDataLocum?.onGoingApplication?.id}`, temp)
+    await POST(`application-management-service/application/${selectDataLocum?.staff?.onGoingApplication?.id}`, temp)
       .then((response) => {
         getApplication();
       });
@@ -2492,7 +2614,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
           (data) => data?.privilegeCategory?.id === selectedPrivilegeCategory,
         )?.[0]?.privilegeCategory?.category;
       }
-      await PUT(`application-management-service/application/${selectDataLocum?.onGoingApplication?.id}`, data)
+      await PUT(`application-management-service/application/${selectDataLocum?.staff?.onGoingApplication?.id}`, data)
         .then((response) => {
           console.log(response);
         })
@@ -2506,7 +2628,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
           priorAdditionalPrivileges: formDetails?.privileges?.priorAdditionalPrivileges,
           priorObligatedPrivileges: formDetails?.privileges?.priorObligatedPrivileges,
         };
-        await POST(`application-management-service/application/${selectDataLocum?.onGoingApplication?.id}/privileges`, temp).then((response) => {
+        await POST(`application-management-service/application/${selectDataLocum?.staff?.onGoingApplication?.id}/privileges`, temp).then((response) => {
           getApplication();
         });
       }
@@ -2521,7 +2643,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
           data.basicDetails.credentialingPrivilegeCategory.credentialingCategory = data?.basicDetails?.priorPrivilegeCategory?.name;
         }
       }
-      await PUT(`application-management-service/application/${selectDataLocum?.onGoingApplication?.id}`, data)
+      await PUT(`application-management-service/application/${selectDataLocum?.staff?.onGoingApplication?.id}`, data)
         .then((response) => {
           console.log(response);
         })
@@ -2570,7 +2692,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
       unFilledFields: formDetails?.forms?.[formIndex]?.unFilledFields,
       acknowledged: true,
     };
-    await PUT(`application-management-service/application/${selectDataLocum?.onGoingApplication?.id}/form/${formDetails?.forms?.[formIndex]?.id}`, temp)
+    await PUT(`application-management-service/application/${selectDataLocum?.staff?.onGoingApplication?.id}/form/${formDetails?.forms?.[formIndex]?.id}`, temp)
       .then((response) => {
         console.log(response);
         getApplication();
@@ -2623,87 +2745,13 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
 
   // Examples:
   console.log(getMonthOrDays("2025-01-15", "2025-01-28")); // 13 day(s)
-  const rawExpireDate = selectDataLocum?.tenure?.to ?? null;
-  const ExpireDate = rawExpireDate ? parseISO(rawExpireDate) : null;
-
-  // Validate date before using
-  const isExpireDateValid = ExpireDate && isValid(ExpireDate);
-  const isCustomEndDateValid = customEndDate && isValid(new Date(customEndDate));
-
-  const startDateStr =
-    selectedTab === "ACTIVELOCUM" && isExpireDateValid
-      ? format(addDays(ExpireDate, 1), "yyyy-MM-dd")
-      : format(addDays(new Date(), 1), "yyyy-MM-dd");
-  const endDateStr =
-    selectedTab === "ACTIVELOCUM" || selectedTab === "EXPIREDLOCUM"
-      ? selectedMonth === "Custom" && isCustomEndDateValid
-        ? format(new Date(customEndDate), "yyyy-MM-dd")
-        : selectedMonth
-      : format(new Date(), "yyyy-MM-dd");
 
   // Now call the function safely
   const monthOptionsToView = getMonthOrDays(startDateStr, endDateStr);
   console.log("1111111111111111111111", getMonthOrDays("2025-04-30", "2025-05-30"), monthOptionsToView, selectedMonth, startDateStr, endDateStr); // 2 month(s)
 
-
-  const getNext12MonthsFromCreatedDate = (createdDateStr) => {
-    const months = [];
-    const createdDate = new Date(createdDateStr);
-
-    for (let i = 1; i <= 12; i++) {
-      let futureDate = addMonths(createdDate, i);
-      futureDate = endOfMonth(futureDate);
-      // const oneDayBefore = subDays(futureDate, 1); // Go one day before the future "same day"
-
-      const label = `${i} ${i === 1 ? 'month' : 'months'}`;
-      const value = format(futureDate, 'yyyy-MM-dd');
-
-      months.push({ label, value });
-    }
-
-    // Add "Custom End Date" option
-    const now = new Date();
-    months.push({
-      label: 'Custom End Date',
-      value: 'Custom'
-    });
-
-    return months;
-  };
-  const referenceDate =
-    selectedTab === "ACTIVELOCUM" && selectDataLocum?.tenure?.to
-      ? selectDataLocum.tenure.to
-      : new Date();
-  const monthOptions = getNext12MonthsFromCreatedDate(referenceDate);
-
-  const lastModifiedDate = formDetails?.lastModifiedDate;
-  const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), "MMM dd, yyyy") : "-";
-  const formattedExpiringDate = ExpireDate ? format(new Date(ExpireDate), "MMM dd, yyyy") : "-";
-  const daysRemaining = ExpireDate ? Math.abs(differenceInDays(new Date(ExpireDate), new Date())) : null;
-  //  const monthsList = getNext12MonthsFromCreatedDate(format(new Date(selectDataLocum?.tenure?.to), "MMM dd, yyyy"));
-  // const selectedMonthLabel = selectedMonth === "Custom"
-  // ? "Custom End Date"
-  // : monthsList.find(month => month?.value === selectedMonth)?.label || '';
-  // const selectedMonthLabel = selectedMonth !== "Custom"
-  // ? monthsList.find(month => month.value === selectedMonth)?.label
-  // : "Custom End Date";
-  const currentDateNow = new Date();
-  const minDateValue =
-    selectedTab === 'ACTIVELOCUM'
-      ? ExpireDate
-        ? addDays(new Date(ExpireDate), 1)
-        : null
-      : currentDateNow;
-
-  const maxDateValue =
-    selectedTab === 'ACTIVELOCUM'
-      ? ExpireDate
-        ? addYears(new Date(ExpireDate), 1)
-        : null
-      : addYears(currentDateNow, 1);
-
   const isValidDateRange = () => {
-    if (selectedTab === "EXPIREDLOCUM") {
+    if (selectDataLocum?.locumRenewalDetails?.reappointmentType === "RENEWAL") {
       return customStartDate && customEndDate;
     }
     if (selectedMonth === "Custom") {
@@ -2731,7 +2779,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
             <div className={Classes.DIALOG_BODY}>
               <div className={style.spaceBetween}>
                 <div className={`${style.heading}`}>
-                  {selectedTab === "ACTIVELOCUM"
+                  {selectDataLocum?.locumRenewalDetails?.reappointmentType === "EXTENSION"
                     ? "Locum Period & Privileges Extension"
                     : "Reactivate Locum Staff"}
                 </div>
@@ -2753,23 +2801,23 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
                   <div className={`${style.twoColumnGrid} ${style.marginLeftRight20} ${style.marginBottom10}`}>
                     <div className={`${style.displayInRow} ${style.displayInRowCenter}`}>
                       <span className={style.rejectionHeadingTextStyle}>
-                        {selectDataLocum?.applicant?.name?.lastName?.charAt(0).toUpperCase() +
-                          selectDataLocum?.applicant?.name?.lastName?.slice(1).toLowerCase()}
+                        {selectDataLocum?.staff?.applicant?.name?.lastName?.charAt(0).toUpperCase() +
+                          selectDataLocum?.staff?.applicant?.name?.lastName?.slice(1).toLowerCase()}
                         {", "}
-                        {selectDataLocum?.applicant?.name?.firstName
-                          ? selectDataLocum?.applicant?.name?.firstName.charAt(0).toUpperCase() +
-                          selectDataLocum?.applicant?.name?.firstName.slice(1).toLowerCase()
+                        {selectDataLocum?.staff?.applicant?.name?.firstName
+                          ? selectDataLocum?.staff?.applicant?.name?.firstName.charAt(0).toUpperCase() +
+                          selectDataLocum?.staff?.applicant?.name?.firstName.slice(1).toLowerCase()
                           : ""}
                       </span>
                       <div className={`${style.rejectionTextStyle} ${style.marginLeft2}`}>
-                        Locum {selectDataLocum?.basicDetailReferences?.applicantType?.serviceProviderType}
+                        Locum {selectDataLocum?.staff?.basicDetailReferences?.applicantType?.serviceProviderType}
                       </div>
                     </div>
                     <div className={`${style.displayInRow} ${style.displayInRowCenter}`}>
                       <span className={`${style.rejectionHeadingTextStyle}`}>
-                        {selectDataLocum?.basicDetailReferences?.department?.name || ""}
-                        {selectDataLocum?.basicDetailReferences?.specialty
-                          ? ` - ${selectDataLocum?.basicDetailReferences?.specialty?.name}`
+                        {selectDataLocum?.staff?.basicDetailReferences?.department?.name || ""}
+                        {selectDataLocum?.staff?.basicDetailReferences?.specialty
+                          ? ` - ${selectDataLocum?.staff?.basicDetailReferences?.specialty?.name}`
                           : ""}
                       </span>
                     </div>
@@ -2784,8 +2832,8 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
                       <span className={`${style.rejectionTextStyle1}`}>{formattedExpiringDate}</span>
                     </div>
                     <div className={`${style.twoColumnGridInner}`}>
-                      <span className={`${style.rejectionTextStyle}`}>{selectedTab === "ACTIVELOCUM" ? "Days From Expiration :" : "Days Since Expiration :"}</span>
-                      <span className={`${style.rejectionTextStyle1}`}> {selectedTab === "ACTIVELOCUM" ? `${daysRemaining} days` : `${daysRemaining} days`}</span>
+                      <span className={`${style.rejectionTextStyle}`}>{selectDataLocum?.locumRenewalDetails?.reappointmentType === "EXTENSION" ? "Days From Expiration :" : "Days Since Expiration :"}</span>
+                      <span className={`${style.rejectionTextStyle1}`}> {selectDataLocum?.locumRenewalDetails?.reappointmentType === "EXTENSION" ? `${daysRemaining} days` : `${daysRemaining} days`}</span>
                     </div>
                     {/* <div className={`${style.twoColumnGridInner}`}>
            <span className={`${style.rejectionTextStyle}`}>OHIP Number :</span>
@@ -2797,24 +2845,24 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
               {showSelectedPrivilegeLocum === false && (
                 <div className={`${style.marginTop10}`}>
                   <div className={`${style.rejectionHeadingTextStyle}`}>
-                    {selectedTab === "ACTIVELOCUM" ? `Locum Period Expiring On ${formattedExpiringDate} (${daysRemaining} Days)` : "New Locum Period"}
+                    {selectDataLocum?.locumRenewalDetails?.reappointmentType === "EXTENSION" ? `Locum Period Expiring On ${formattedExpiringDate} (${daysRemaining} Days)` : "New Locum Period"}
                   </div>
                   <div className={`${style.rejectionTextStyle} ${style.marginBottom10}`}>
-                    {selectedTab === "ACTIVELOCUM"
+                    {selectDataLocum?.locumRenewalDetails?.reappointmentType === "EXTENSION"
                       ? "Extend the Period & Privileges for "
                       : "The renewal Start & End Date for "}
                     <span className={style.rejectionHeadingTextStyle}>
-                      {selectDataLocum?.applicant?.name?.lastName
-                        ? selectDataLocum.applicant.name.lastName.charAt(0).toUpperCase() +
-                        selectDataLocum.applicant.name.lastName.slice(1).toLowerCase()
+                      {selectDataLocum?.staff?.applicant?.name?.lastName
+                        ? selectDataLocum?.staff?.applicant?.name?.lastName?.charAt(0).toUpperCase() +
+                        selectDataLocum?.staff?.applicant?.name?.lastName?.slice(1).toLowerCase()
                         : ""}
                       {", "}
-                      {selectDataLocum?.applicant?.name?.firstName
-                        ? selectDataLocum.applicant.name.firstName.charAt(0).toUpperCase() +
-                        selectDataLocum.applicant.name.firstName.slice(1).toLowerCase()
+                      {selectDataLocum?.staff?.applicant?.name?.firstName
+                        ? selectDataLocum?.staff?.applicant?.name?.firstName?.charAt(0).toUpperCase() +
+                        selectDataLocum?.staff?.applicant?.name?.firstName?.slice(1).toLowerCase()
                         : ""}
                     </span>
-                    {selectedTab === "ACTIVELOCUM" && <span> By </span>}
+                    {selectDataLocum?.locumRenewalDetails?.reappointmentType === "EXTENSION" && <span> By </span>}
                   </div>
                   <div>
                     {/* <CommonRadio
@@ -2826,7 +2874,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
           /> */}
                     <div className={`${style.flexCenter}`}>
                       {/* <div className={`${style.halfWidth}`}> */}
-                      {selectedTab === "ACTIVELOCUM" && (
+                      {selectDataLocum?.locumRenewalDetails?.reappointmentType === "EXTENSION" && (
                         <div className={`${style.halfWidth}`}>
                           <CommonSelectField
                             value={selectedMonth}
@@ -2853,9 +2901,9 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
                       {/* </div> */}
                       {/* <div> */}
                       {/* </div> */}
-                      <div className={`${selectedTab === "ACTIVELOCUM" ? style.marginLeft : ""} ${style.rejectionHeadingTextStyle}`}>
+                      <div className={`${selectDataLocum?.locumRenewalDetails?.reappointmentType === "EXTENSION" ? style.marginLeft : ""} ${style.rejectionHeadingTextStyle}`}>
                         Start Date <br />
-                        {selectedTab === "EXPIREDLOCUM" ? (
+                        {selectDataLocum?.locumRenewalDetails?.reappointmentType === "RENEWAL" ? (
                           <div className={`${style.marginTopLess}`}>
                             <CommonDateField
                               className={`${style.fullWidth}`}
@@ -2888,9 +2936,9 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
                           </div>
                         ) : (
                           <span className={`${style.rejectionTextStyle}`}>
-                            {selectedTab === "ACTIVELOCUM"
-                              ? (ExpireDate
-                                ? format(addDays(new Date(ExpireDate), 1), "MMM dd, yyyy")
+                            {selectDataLocum?.locumRenewalDetails?.reappointmentType === "EXTENSION"
+                              ? (ExpireDateRequest
+                                ? format(new Date(ExpireDateRequest), "MMM dd, yyyy")
                                 : "N/A")
                               : format(new Date(), "MMM dd, yyyy")}
                           </span>
@@ -2904,12 +2952,12 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
                             ? format(new Date(selectedMonth), "MMM dd, yyyy")
                             : selectedMonth === "Custom"
                               ? ''
-                              : selectedTab === "EXPIREDLOCUM"
+                              : selectDataLocum?.locumRenewalDetails?.reappointmentType === "RENEWAL"
                                 ? ''  // Leave blank since the CommonDateField will appear
                                 : "-"}
                         </span>
 
-                        {(selectedMonth === "Custom" || selectedTab === "EXPIREDLOCUM") && (
+                        {(selectedMonth === "Custom" || selectDataLocum?.locumRenewalDetails?.reappointmentType === "RENEWAL") && (
                           <div className={`${style.marginTopLess}`}>
                             <CommonDateField
                               className={`${style.fullWidth}`}
@@ -4504,4 +4552,4 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
   );
 };
 
-export default LocumExtensiveDialog;
+export default LocumRequestDialog;
