@@ -1023,7 +1023,8 @@ const OverRideRequestDialog = ({ getIsOpen, dateFormat, getActiveApplicationView
               </div> */}
                   <div
                     className={`${style.reviewButtonStyle} ${style.reviewButtonStyle}`}
-                    onClick={isApproveEnabled ? () => onClickApproveMoveFunction() : () => { }}
+                    // onClick={isApproveEnabled ? () => onClickApproveMoveFunction() : () => { }}
+                      onClick={isApproveEnabled ? () => onClose() : () => { }}
                     style={{ pointerEvents: isApproveEnabled ? 'auto' : 'none', opacity: isApproveEnabled ? 1 : 0.5 }}
                   >
                     <Tooltip title={isApproveEnabled ? "Click to Continue" : ""} arrow>

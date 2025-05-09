@@ -80,7 +80,9 @@ const StaffApplicationList = ({
   getTitleCounts,
   showNotesDialog,
   getDeptTrackerDialog,
-  getMdTrackerDialog
+  getMdTrackerDialog,
+  getOverRideRequestDialog,
+  getOverRideRequestApprovalDialog
 }) => {
   const PDFRef = createRef();
   const prevCompletionLettersRef = useRef([]);
@@ -975,6 +977,16 @@ const StaffApplicationList = ({
 
   const onClickDeptReviewDialog = (data) => {
     getApprovalNotesCommentBoxDept(true);
+    sessionStorage.setItem("applicationId", data?.id);
+  };
+
+    const onClickOverRideDialog = (data) => {
+    getOverRideRequestDialog(true);
+    sessionStorage.setItem("applicationId", data?.id);
+  };
+
+   const onClickOverRideApprovalDialog = (data) => {
+    getOverRideRequestApprovalDialog(true);
     sessionStorage.setItem("applicationId", data?.id);
   };
 
@@ -4546,6 +4558,16 @@ const StaffApplicationList = ({
       requiredValue: "boolean",
       onClick: onClickDeptReviewDialog,
       conditionToShow: `!data?.completedWorkflows?.find(wf => wf?.role === "Staff Manager")?.allFormsApproved === false`,
+    },
+    {
+      data: "Request Override",
+      requiredValue: "boolean",
+      onClick: onClickOverRideDialog,
+    },
+     {
+      data: "Request Override Approval",
+      requiredValue: "boolean",
+      onClick: onClickOverRideApprovalDialog,
     },
     { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog },
   ];

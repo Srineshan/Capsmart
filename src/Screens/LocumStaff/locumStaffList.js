@@ -257,7 +257,7 @@ const LocumStaffList = ({
     getRequestUserDataCount();
     // getActiveUserDataSearch();
     console.log("setSelectedDepartment", selectedDepartment)
-  }, [selectedDepartment, searchTermForTable]);
+  }, [selectedDepartment, searchTermForTable,showLocumRequestDialog]);
 
   // useEffect(() => {
   //   getActiveUserDataActiveCount();
