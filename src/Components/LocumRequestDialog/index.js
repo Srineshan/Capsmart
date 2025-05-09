@@ -219,10 +219,10 @@ const LocumRequestDialog = ({ getIsOpen, selectedTab }) => {
     const endDate = selectDataLocum?.locumRenewalDetails?.tenure?.to;
     const startDate = selectDataLocum?.locumRenewalDetails?.tenure?.from;
     if (endDate) {
-      setCustomStartDate(new Date(endDate));
+      setCustomEndDate(new Date(endDate));
     }
     if (startDate) {
-      setCustomEndDate(new Date(startDate));
+      setCustomStartDate(new Date(startDate));
     }
     // Set entire array of coveredDetails
     const coveredDetails = selectDataLocum?.locumRenewalDetails?.coveredDetails || [];
@@ -321,11 +321,9 @@ const LocumRequestDialog = ({ getIsOpen, selectedTab }) => {
     setIsLoadingImage(true);
 
     try {
-      // await reappointmentApplication();
+      await reappointmentRequestApplication();
+      await reappointmentApplication();
       await getActiveUserData();
-      // await getApplication();
-      // await handleSubmitPrivilegeSet();
-      // await handleSubmitAdditionalPrivilegeSet();
       setShowSelectedPrivilegeLocum(true);
     } catch (error) {
       console.error("Error in onClickExtensiveRequest:", error);
@@ -338,15 +336,17 @@ const LocumRequestDialog = ({ getIsOpen, selectedTab }) => {
 
   const getActiveUserData = async () => {
     try {
-      const url = `application-management-service/application/request?requestType=LOCUM_RENEWAL_REQUEST&status=PENDING&isPaginationRequired=${limit === 9999 ? false : true}&limit=${limit}`;
-      const response = await GET(url);
-      const staffs = response?.data?.requests || [];
+      const urls = ['PENDING', 'APPROVED'].map(status =>
+        `application-management-service/application/request?requestType=LOCUM_RENEWAL_REQUEST&status=${status}&isPaginationRequired=${limit === 9999 ? false : true}&limit=${limit}`
+      );
+      const responses = await Promise.all(urls.map(url => GET(url)));
+      const allStaffs = responses.flatMap(response => response?.data?.requests || []);
 
-      const filteredData = staffs.find(item => item?.id === id);
+      const filteredData = allStaffs.find(item => item?.id === id);
       console.log("Filtered Application Data11111111", filteredData);
       setSelectDataLocum(filteredData);
       console.log("applicationmanage", selectDataLocum)
-      return response?.data?.staffs;
+      return responses?.data?.staffs;
     } catch (error) {
       console.error("Error fetching applications:", error);
       return [];
@@ -354,14 +354,14 @@ const LocumRequestDialog = ({ getIsOpen, selectedTab }) => {
   };
 
   const reappointmentApplication = async () => {
-    const fromDate = selectedTab === "ACTIVELOCUM"
-      ? format(addDays(new Date(selectDataLocum?.tenure?.to), 1), 'yyyy-MM-dd')
-      : selectedTab === "EXPIREDLOCUM" && customStartDate
+    const fromDate = selectDataLocum?.locumRenewalDetails?.reappointmentType === "EXTENSION"
+      ? format(new Date(selectDataLocum?.locumRenewalDetails?.tenure?.from), 'yyyy-MM-dd')
+      : selectDataLocum?.locumRenewalDetails?.reappointmentType === "RENEWAL" && customStartDate
         ? format(new Date(customStartDate), 'yyyy-MM-dd')
         : format(new Date(), 'yyyy-MM-dd');
     const toDate = selectedMonth === "Custom"
       ? format(new Date(customEndDate), 'yyyy-MM-dd')
-      : selectedTab === "EXPIREDLOCUM"
+      : selectDataLocum?.locumRenewalDetails?.reappointmentType === "RENEWAL"
         ? format(new Date(customEndDate), 'yyyy-MM-dd')
         : format(new Date(selectedMonth), 'yyyy-MM-dd');
     const coveredDetails = covererNameList?.map((data) => {
@@ -383,7 +383,27 @@ const LocumRequestDialog = ({ getIsOpen, selectedTab }) => {
       coveredDetails: coveredDetails,
     };
 
-    await POST(`application-management-service/staff/${selectDataLocum?.id}/reappoint?positionType=LOCUM&reappointmentType=${selectedTab === "ACTIVELOCUM" ? "EXTENSION" : "RENEWAL"}&sendReappointmentInvite=false`, temp)
+    await POST(`application-management-service/staff/${selectDataLocum?.staff?.id}/reappoint?positionType=LOCUM&reappointmentType=${selectDataLocum?.locumRenewalDetails?.reappointmentType}&sendReappointmentInvite=false`, temp)
+      .then((response) => {
+        console.log(response?.data);
+        getActiveUserData();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const reappointmentRequestApplication = async () => {
+    const newFormData = new FormData();
+    newFormData.append(
+      "response",
+      new Blob([JSON.stringify({})], {
+        type: "application/json",
+      })
+    );
+    newFormData.append("documents", []);
+    await PUT(`application-management-service/application/request/${selectDataLocum?.id}/response?workflowAction=APPROVED`, newFormData
+    )
       .then((response) => {
         console.log(response?.data);
         getActiveUserData();
@@ -2649,7 +2669,7 @@ const LocumRequestDialog = ({ getIsOpen, selectedTab }) => {
   // Examples:
   console.log(getMonthOrDays("2025-01-15", "2025-01-28")); // 13 day(s)
   const rawExpireDate = selectDataLocum?.staff?.tenure?.to ?? null;
-  const rawExpireDateRequest = selectDataLocum?.locumRenewalDetails?.tenure?.to ?? null;
+  const rawExpireDateRequest = selectDataLocum?.locumRenewalDetails?.tenure?.from ?? null;
   const ExpireDate = rawExpireDate ? parseISO(rawExpireDate) : null;
   const ExpireDateRequest = rawExpireDateRequest ? parseISO(rawExpireDateRequest) : null;
 
@@ -2698,8 +2718,8 @@ const LocumRequestDialog = ({ getIsOpen, selectedTab }) => {
     return months;
   };
   const referenceDate =
-    selectDataLocum?.locumRenewalDetails?.reappointmentType === "EXTENSION" && selectDataLocum?.locumRenewalDetails?.tenure?.to
-      ? selectDataLocum?.locumRenewalDetails?.tenure?.to
+    selectDataLocum?.locumRenewalDetails?.reappointmentType === "EXTENSION" && selectDataLocum?.locumRenewalDetails?.tenure?.from
+      ? selectDataLocum?.locumRenewalDetails?.tenure?.from
       : new Date();
   const monthOptions = getNext12MonthsFromCreatedDate(referenceDate);
 

@@ -800,7 +800,11 @@ const LocumStaffList = ({
 
       reappointDate.push([
         data?.staff?.reAppointmentInitiated
-          ? ` Locum Extension Request Sent on ${format(new Date(data?.staff?.reAppointmentSentDate), "dd/MM/yyyy")}`
+          ? `Locum ${
+              data?.locumRenewalDetails?.reappointmentType === "EXTENSION"
+                ? "Extension"
+                : "Renewal"
+            } Request Sent on ${format(new Date(data?.staff?.reAppointmentSentDate), "dd/MM/yyyy")}`
           : "Locum Extension Not Sent",
       ]);
       applicantId.push(data?.staff?.status === "ACTIVE" ? "Active" : "Expired" || "");
@@ -838,7 +842,7 @@ const LocumStaffList = ({
 
       if (data?.staff?.tenure?.to) {
         const expiredDays = differenceInDays(new Date(data?.staff?.tenure?.to), new Date());
-        ExpiredDays.push(expiredDays.toString());
+        ExpiredDays.push(Math.abs(expiredDays).toString());
       } else {
         ExpiredDays.push("-");
       }
