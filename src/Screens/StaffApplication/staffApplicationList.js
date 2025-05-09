@@ -556,7 +556,7 @@ const StaffApplicationList = ({
     true,
     false,
     false,
-    false,
+    true,
     true,
     true,
     false

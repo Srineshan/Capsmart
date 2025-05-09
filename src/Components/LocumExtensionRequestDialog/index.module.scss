@@ -24,7 +24,7 @@
 
 .notesVisibleText{
   text-align: left;
-  font: italic normal medium 16px/24px Proxima Nova;
+  font: italic normal medium 16px/24px proxima-nova;
   letter-spacing: 0px;
   color: #737575;
   opacity: 1;
@@ -152,7 +152,7 @@
   font: normal normal medium 18px/34px proxima-nova !important;
   letter-spacing: 0px;
   color: #2C2C2C !important;
-  text-transform: capitalize;
+  // text-transform: capitalize;
   opacity: 1;
 }
 
@@ -468,7 +468,6 @@
     color: #2C2C2C;
     // text-transform: capitalize;
     opacity: 1;
-    margin-top: 5px;
     max-width: 85%;
 }
 .privilegeCardWithBorder {
@@ -677,8 +676,18 @@
 
 .marginTopLess{
   margin-top: -20px;
+  box-sizing: border-box !important;
 }
 
 .dateWidth {
   padding: 0px 10px;
+}
+
+.editorHeading{
+  text-align: left;
+font: normal normal bold 18px/24px proxima-nova;
+letter-spacing: 0px;
+color: #171A1A;
+text-transform: capitalize;
+opacity: 0.6;
 }

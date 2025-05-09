@@ -3,12 +3,13 @@ import TileApplication from '../../Components/TileApplication';
 import style from './index.module.scss';
 import { GET } from './../../Screens/dataSaver';
 
-const LocumStaffTiles = ({ getSelectedTab, selectedTab,reFetchMetaData,setReFetchMetaData,locumCount,locumexpireCount }) => {
+const LocumStaffTiles = ({ getSelectedTab, selectedTab,reFetchMetaData,setReFetchMetaData,locumCount,locumexpireCount,totalRequestCount }) => {
   const [counts, setCounts] = useState({
     LOCUM : 0,
     PERMANENT : 0,
     PROVISIONAL : 0,
   });
+  const workModeType = sessionStorage.getItem('workModeType')
 
   useEffect(() => {
     getTitleCounts();
@@ -38,6 +39,7 @@ const LocumStaffTiles = ({ getSelectedTab, selectedTab,reFetchMetaData,setReFetc
     <div className={`${style.tabs}`}>
       <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="ACTIVE LOCUMS" tileCount={locumCount} currentTile="ACTIVELOCUM" />
       <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="EXPIRED LOCUMS" tileCount={locumexpireCount} currentTile="EXPIREDLOCUM" />
+      {workModeType === "Department Head" && <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="REQUEST" tileCount={totalRequestCount} currentTile="REQUEST" />}
     </div>
   )
 }
