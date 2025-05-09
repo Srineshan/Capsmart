@@ -516,7 +516,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                                             actions={[]}
                                             // scrollStyle={style.contractScrollStyle}
                                             tableSortValues={[]}
-                                            heading={"There are no Record for you to manage"}
+                                            heading={"There are no Records for you to manage"}
                                             onClickFunction={() => { }}
                                         />
                                     ) : (
@@ -540,7 +540,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                                             actions={actions}
                                             // scrollStyle={style.contractScrollStyle}
                                             tableSortValues={[]}
-                                            heading={"There are no Record for you to manage"}
+                                            heading={"There are no Records for you to manage"}
                                             onClickFunction={() => { }}
                                             checkedIds={selectedIds?.map(data => data?.id)}
                                             handleCheckboxClick={handleCheckboxClick}

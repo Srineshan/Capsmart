@@ -1181,7 +1181,7 @@ const LocumStaffList = ({
                     actions={actions}
                     scrollStyle={style.contractScrollStyle}
                     tableSortValues={tableSortValues}
-                    heading={"There are no Record for you to manage"}
+                    heading={"There are no Records for you to manage"}
                     onClickFunction={() => { }}
                     getHandleSort={getHandleSort}
                     sortValue={{ sortBy: sortValue, sortByField: sortField }}
