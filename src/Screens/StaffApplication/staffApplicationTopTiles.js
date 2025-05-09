@@ -505,17 +505,17 @@ const StaffApplicationTopTiles = (searchTermForTable) => {
     userSpecialty = userDetailsFetchOption?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.serviceAreas?.[0]?.id;
     console.log("userSpecialty", userDepartmentList, userSpecialty)
     getTitleCountsLocum();
-  }, [applicationType, selectedTab, searchTermForTable])
+  }, [applicationType, selectedTab, searchTermForTable?.searchTermForTable])
 
   useEffect(() => {
     getTitleCountsLocum();
     getTitleCounts("REAPPOINTMENT");
-  }, [searchTermForTable])
+  }, [searchTermForTable?.searchTermForTable])
 
   useEffect(() => {
     // getTitleCounts(applicationCreationType);
     getUserRoleType(applicationCreationType)
-  }, [searchTermForTable, applicationCreationType]);
+  }, [applicationCreationType]);
 
   console.log("searchTermForTable", searchTermForTable?.searchTermForTable)
 
@@ -541,10 +541,10 @@ const StaffApplicationTopTiles = (searchTermForTable) => {
   const getTitleCounts = async (type) => {
     try {
       setIsLoading(true);
-      // const positionTypeParam = applicationType === "LOCUM" ? `&positionType=${applicationType}` : "";
+      // const positionTypeParam = applicationType === "LOCUM" ? `&positionType=${applicationType}` : "&positionType=PERMANENT";
       let role = workModeType === "Credentialing Committee User" ? "Staff Manager" : workModeType;
       const response = await GET(
-        `application-management-service/application/workflowUser/meta?applicationCreationType=${type === "LOCUM" ? "REAPPOINTMENT" : type}&role=${role}&searchText=${searchTermForTable?.searchTermForTable}`
+        `application-management-service/application/workflowUser/meta?applicationCreationType=${type === "LOCUM" ? "REAPPOINTMENT" : type}&role=${role}&searchText=${searchTermForTable?.searchTermForTable}&positionType=PERMANENT`
       );
       setReappointmentCounts(response.data);
       if (response?.data) {
@@ -572,7 +572,7 @@ const StaffApplicationTopTiles = (searchTermForTable) => {
     // if (type === "LOCUM") return;
 
     try {
-      const positionTypeParam = applicationType === "LOCUM" ? `&positionType=${applicationType}` : "";
+      const positionTypeParam = applicationType === "LOCUM" ? `&positionType=${applicationType}` : "&positionType=PERMANENT";
       const response = await GET(
         `application-management-service/applicantType/approvalFlow?applicantTypeId=${applicationId}&applicationCreationType=${type === "LOCUM" ? "REAPPOINTMENT" : type}${positionTypeParam}`
       );
@@ -585,7 +585,7 @@ const StaffApplicationTopTiles = (searchTermForTable) => {
   const getTitleCountsLocum = async () => {
     try {
       setIsLoading(true);
-      const positionTypeParam = applicationType === "LOCUM" ? `&positionType=${applicationType}` : "";
+      const positionTypeParam = applicationType === "LOCUM" ? `&positionType=${applicationType}` : "&positionType=PERMANENT";
       let role = workModeType === "Credentialing Committee User" ? "Staff Manager" : workModeType;
       const response = await GET(
         `application-management-service/application/workflowUser/meta?applicationCreationType=REAPPOINTMENT&role=${role}&searchText=${searchTermForTable?.searchTermForTable}&positionType=LOCUM`
