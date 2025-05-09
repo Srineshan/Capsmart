@@ -95,7 +95,7 @@ const LocumStaffList = ({
 
   const activeLocumHeaderValues = ["Locum Staff", "", "Locum Type", "Notes", "Docs", "Start Date", "End Date", "Days to Expiration", "Action"];
   const expiredLocumHeaderValues = ["Locum Staff", "", "Locum Type", "Notes", "Docs", "Last End Date", "Days Since Expired", "Action"];
-  const requestLocumHeaderValues = ["Locum Staff", "", "Staff Status","Locum Type", "Notes", "Request By", "End Date", "Days to Expiration", ""];
+  const requestLocumHeaderValues = ["Locum Staff", "", "Staff Status", "Locum Type", "Notes", "Request By", "End Date", "Days to Expiration", ""];
 
 
   const activeLocumColSortValues = [false, false, false, false, false, , false, false, false, false];
@@ -160,7 +160,7 @@ const LocumStaffList = ({
 
   useEffect(() => {
     setPage(1);
-  }, [selectedTab,selectedDepartment]);
+  }, [selectedTab, selectedDepartment]);
 
   const setUserDetails = async () => {
     const { data: userData } = await GET(`user-management-service/user/${users?.id}`);
@@ -359,48 +359,48 @@ const LocumStaffList = ({
     }
   };
 
-      const getActiveUserData = async () => {
-        try {
-          setIsLoadingImage(true);
-      
-          let apiUrl = "";
-      
-          if (selectedTab === "REQUEST") {
-            apiUrl = `application-management-service/application/request?requestType=LOCUM_RENEWAL_REQUEST&status=PENDING`;
-            if (selectedDepartment) {
-              apiUrl += `&departmentSpecialties=${selectedDepartment}`;
-            }
-          } else {
-            const isExpired = selectedTab === "ACTIVELOCUM" ? false : true;
-            const isPaginationRequired = limit === 9999 ? false : true;
-      
-            apiUrl = `application-management-service/staff?status=ACTIVE&type=LOCUM&noOfDays=30&isExpired=${isExpired}&searchText=${searchTermForTable}&isPaginationRequired=${isPaginationRequired}&limit=${limit}&offset=${page - 1}`;
-      
-            if (selectedDepartment) {
-              apiUrl += `&departmentSpecialties=${selectedDepartment}`;
-            }
-          }
-      
-          const response = await GET(apiUrl);
-      
-          if (selectedTab === "REQUEST") {
-            setTableData(response?.data?.requests || []);
-            setSearchCount(response?.data?.numberOfElements || 0);
-          } else {
-            setTableData(response?.data?.staffs || []);
-            setSearchCount(response?.data?.numberOfElements || 0);
-          }
-      
-          setIsLoadingImage(false);
-          console.log("tableData1234567890",tableData)
-          return response?.data || [];
-        } catch (error) {
-          console.error("Error fetching applications:", error);
-          setIsLoadingImage(false);
-          return [];
+  const getActiveUserData = async () => {
+    try {
+      setIsLoadingImage(true);
+
+      let apiUrl = "";
+
+      if (selectedTab === "REQUEST") {
+        apiUrl = `application-management-service/application/request?requestType=LOCUM_RENEWAL_REQUEST&status=PENDING`;
+        if (selectedDepartment) {
+          apiUrl += `&departmentSpecialties=${selectedDepartment}`;
         }
-      };
-  
+      } else {
+        const isExpired = selectedTab === "ACTIVELOCUM" ? false : true;
+        const isPaginationRequired = limit === 9999 ? false : true;
+
+        apiUrl = `application-management-service/staff?status=ACTIVE&type=LOCUM&noOfDays=30&isExpired=${isExpired}&searchText=${searchTermForTable}&isPaginationRequired=${isPaginationRequired}&limit=${limit}&offset=${page - 1}`;
+
+        if (selectedDepartment) {
+          apiUrl += `&departmentSpecialties=${selectedDepartment}`;
+        }
+      }
+
+      const response = await GET(apiUrl);
+
+      if (selectedTab === "REQUEST") {
+        setTableData(response?.data?.requests || []);
+        setSearchCount(response?.data?.numberOfElements || 0);
+      } else {
+        setTableData(response?.data?.staffs || []);
+        setSearchCount(response?.data?.numberOfElements || 0);
+      }
+
+      setIsLoadingImage(false);
+      console.log("tableData1234567890", tableData)
+      return response?.data || [];
+    } catch (error) {
+      console.error("Error fetching applications:", error);
+      setIsLoadingImage(false);
+      return [];
+    }
+  };
+
 
   const getHandleSort = (value, sortBy) => {
     if (sortBy === "ASCENDING") {
@@ -786,7 +786,7 @@ const LocumStaffList = ({
     reappointDate = [];
     requestBy = [];
 
-    tableData?.map((data,uniqueKey) => {
+    tableData?.map((data, uniqueKey) => {
       applicantName.push(
         `${formatFirstNameLastName(data?.staff?.applicant?.name?.firstName, data?.staff?.applicant?.name?.lastName)}` || " "
       );
@@ -892,7 +892,7 @@ const LocumStaffList = ({
       { type: "action", value: action },
     ];
   };
-  
+
   const activeLocumActionsData = [
     {
       data: "Extend",
@@ -910,7 +910,7 @@ const LocumStaffList = ({
 
   const activeLocumActionsSMData = [
     {
-      data: "Request For Locum Extension",
+      data: "Request Extension",
       requiredValue: "boolean",
       onClick: onClickExtensiveRequestLocumDialog,
       // conditionToShow: `data?.reAppointmentInitiated === false`,
@@ -940,7 +940,7 @@ const LocumStaffList = ({
 
   const expiredLocumActionsSMData = [
     {
-      data: "Request For Locum Reactivation",
+      data: "Request Reactivation",
       requiredValue: "boolean",
       onClick: onClickExtensiveRequestLocumDialog,
       // conditionToShow: `data?.reAppointmentInitiated === false`,
@@ -987,16 +987,16 @@ const LocumStaffList = ({
       : selectedTab === "EXPIREDLOCUM"
         ? expiredLocumHeaderValues
         : selectedTab === "REQUEST"
-        ? requestLocumHeaderValues
-        : activeLocumHeaderValues
+          ? requestLocumHeaderValues
+          : activeLocumHeaderValues
   let tableSortValues =
     selectedTab === "ACTIVELOCUM"
       ? activeLocumColSortValues
       : selectedTab === "EXPIREDLOCUM"
         ? expiredLocumColSortValues
         : selectedTab === "REQUEST"
-        ? requestLocumColSortValues
-        : activeLocumColSortValues
+          ? requestLocumColSortValues
+          : activeLocumColSortValues
   // let tableDataValues = selectedTab !== 'applicantsToProcess' ? getApplicantValues() : selectedTab === 'level-1' ? getApplicationValues() : selectedTab === 'level-1' ? getApplicationValues() : getApplicationValues();
   let tableDataValues =
     selectedTab === "ACTIVELOCUM"
@@ -1004,8 +1004,8 @@ const LocumStaffList = ({
       : selectedTab === "EXPIREDLOCUM"
         ? getExpiredLocumValues()
         : selectedTab === "REQUEST"
-        ? getLocumRequestValues()
-        : getLocumActiveValues()
+          ? getLocumRequestValues()
+          : getLocumActiveValues()
   let actions =
     selectedTab === "ACTIVELOCUM" && workModeType === "Staff Manager"
       ? activeLocumActionsSMData
@@ -1016,16 +1016,16 @@ const LocumStaffList = ({
           : selectedTab === "EXPIREDLOCUM" && workModeType === "Staff Manager"
             ? expiredLocumActionsSMData
             : selectedTab === "REQUEST"
-            ? requestLocumActionsData
-            : activeLocumActionsData
+              ? requestLocumActionsData
+              : activeLocumActionsData
   let gridStyle =
     selectedTab === "ACTIVELOCUM"
       ? style.activeLocumStaffGrid
       : selectedTab === "EXPIREDLOCUM"
         ? style.expiredLocumStaffGrid
         : selectedTab === "REQUEST"
-        ? style.requestLocumStaffGrid
-        : style.activeLocumStaffGrid
+          ? style.requestLocumStaffGrid
+          : style.activeLocumStaffGrid
 
   return (
     <div className={style.margin20}>

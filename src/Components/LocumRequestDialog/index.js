@@ -142,13 +142,21 @@ const LocumRequestDialog = ({ getIsOpen, selectedTab }) => {
     console.log("Found index:", index);
   }, [formDetails?.forms]);
 
-
   useEffect(() => {
     sessionStorage.setItem("fromSummary", false);
     getApplication();
+  }, [selectDataLocum]);
+
+  useEffect(() => {
+    const createdDate = new Date(referenceDate);
+    let futureDate = addMonths(createdDate, selectDataLocum?.locumRenewalDetails?.renewalDuration?.value);
+    futureDate = endOfMonth(futureDate);
+
+    setSelectedMonth(selectDataLocum?.locumRenewalDetails?.renewalDuration?.value === 0 ? 'Custom' : format(new Date(futureDate), 'yyyy-MM-dd'))
     // getPrivilegeCategory();
     // getformDetails()
-  }, [selectDataLocum]);
+    console.log(referenceDate, futureDate, 'futureDate')
+  }, [selectDataLocum, referenceDate]);
 
 
   useEffect(() => {
@@ -216,12 +224,12 @@ const LocumRequestDialog = ({ getIsOpen, selectedTab }) => {
     if (startDate) {
       setCustomEndDate(new Date(startDate));
     }
-     // Set entire array of coveredDetails
+    // Set entire array of coveredDetails
     const coveredDetails = selectDataLocum?.locumRenewalDetails?.coveredDetails || [];
     setSelectApplicant(coveredDetails);
-     // Populate list of IDs for chips
-     const ids = coveredDetails.map(item => item.id);
-     setCovererNameList(ids);
+    // Populate list of IDs for chips
+    const ids = coveredDetails.map(item => item.id);
+    setCovererNameList(ids);
   }, [selectDataLocum]);
 
   let userDepartmentList;
@@ -245,15 +253,15 @@ const LocumRequestDialog = ({ getIsOpen, selectedTab }) => {
         );
         console.log(response.data);
 
-        const filteredStaffs = response.data.staffs.filter(
-          (staff) => staff.applicant.id !== currentApplicantId
+        const filteredStaffs = response?.data?.staffs?.filter(
+          (staff) => staff?.applicant?.id !== currentApplicantId
         );
         setSelectApplicant(filteredStaffs)
         console.log("appselect", selectApplicant)
-        const options = filteredStaffs.map((staff) => ({
-          id: `${staff.id}`,
-          value: `${staff.applicant.name.firstName} ${staff.applicant.name.middleName} ${staff.applicant.name.lastName} ${staff?.basicDetailReferences?.specialty?.name !== undefined ? `- ${staff?.basicDetailReferences?.specialty?.name}` : ''}`,
-          label: `${staff.applicant.name.firstName} ${staff.applicant.name.middleName} ${staff.applicant.name.lastName} ${staff?.basicDetailReferences?.specialty?.name !== undefined ? `- ${staff?.basicDetailReferences?.specialty?.name}` : ''}`,
+        const options = filteredStaffs?.map((staff) => ({
+          id: `${staff?.id}`,
+          value: `${staff?.applicant?.name?.firstName} ${staff?.applicant?.name?.middleName} ${staff?.applicant?.name?.lastName} ${staff?.basicDetailReferences?.specialty?.name !== undefined ? `- ${staff?.basicDetailReferences?.specialty?.name}` : ''}`,
+          label: `${staff?.applicant?.name?.firstName} ${staff?.applicant?.name?.middleName} ${staff?.applicant?.name?.lastName} ${staff?.basicDetailReferences?.specialty?.name !== undefined ? `- ${staff?.basicDetailReferences?.specialty?.name}` : ''}`,
         }));
         setApplicantOptions(options);
         console.log(options)
@@ -2690,7 +2698,7 @@ const LocumRequestDialog = ({ getIsOpen, selectedTab }) => {
     return months;
   };
   const referenceDate =
-      selectDataLocum?.locumRenewalDetails?.reappointmentType === "EXTENSION" && selectDataLocum?.locumRenewalDetails?.tenure?.to
+    selectDataLocum?.locumRenewalDetails?.reappointmentType === "EXTENSION" && selectDataLocum?.locumRenewalDetails?.tenure?.to
       ? selectDataLocum?.locumRenewalDetails?.tenure?.to
       : new Date();
   const monthOptions = getNext12MonthsFromCreatedDate(referenceDate);
