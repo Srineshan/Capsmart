@@ -9,6 +9,7 @@ const LocumStaffTiles = ({ getSelectedTab, selectedTab,reFetchMetaData,setReFetc
     PERMANENT : 0,
     PROVISIONAL : 0,
   });
+  const workModeType = sessionStorage.getItem('workModeType')
 
   useEffect(() => {
     getTitleCounts();
@@ -38,7 +39,7 @@ const LocumStaffTiles = ({ getSelectedTab, selectedTab,reFetchMetaData,setReFetc
     <div className={`${style.tabs}`}>
       <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="ACTIVE LOCUMS" tileCount={locumCount} currentTile="ACTIVELOCUM" />
       <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="EXPIRED LOCUMS" tileCount={locumexpireCount} currentTile="EXPIREDLOCUM" />
-      <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="REQUEST" tileCount={totalRequestCount} currentTile="REQUEST" />
+      {workModeType === "Department Head" && <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="REQUEST" tileCount={totalRequestCount} currentTile="REQUEST" />}
     </div>
   )
 }
