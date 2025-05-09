@@ -113,6 +113,7 @@ const NewActiveApplication = ({
   getResolveDialog,
   showResolveDialog,
   getRequestOverrideDialog,
+  getOverRideRequestDialog,
   staffView,
   getPaymentDisplayBox,
   dataLevel
@@ -1202,6 +1203,10 @@ const NewActiveApplication = ({
 
   const onClickRequestOverrideDialogFunction = () => {
     getRequestOverrideDialog(true);
+  };
+
+  const onClickOverrideRequestDialogFunction = () => {
+    getOverRideRequestDialog(true);
   };
 
   const onClickNotesEditFunction = (logID, notesEdit, privateKey, File) => {
@@ -10764,6 +10769,24 @@ const NewActiveApplication = ({
                           </Tooltip>
                         </div>
                       </div>
+                      {workModeType === 'Staff Manager' && selectedTab === 'level-1' && applicationType === "LOCUM" && (
+                        <div className={`${style.marginTop20}`}>
+                        <div
+                          // className={`${style.bigButtonStyle1} ${style.cursorPointer}`}
+                          className={`${style.bigButtonStyle1} ${style.cursorPointer}`}
+                          style={{ opacity:  1  }}>
+                          <Tooltip title={"Click to Request for Override"} arrow>
+                            <div
+                              className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                              onClick={onClickOverrideRequestDialogFunction}
+                              // onClick={isApproved ? onClickApprovalDeptFunction : undefined}
+                            >
+                              REQUEST FOR OVERRIDE
+                            </div>
+                          </Tooltip>
+                        </div>
+                      </div>
+                      )}
                     </div>
                   ) : ("")}
                   {(applicationType === "NEW" && (selectedTab === "level-1" || selectedTab === "level-2" || selectedTab === "level-3")) ? (

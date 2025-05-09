@@ -2662,8 +2662,10 @@ const LocumRequestDialog = ({ getIsOpen, selectedTab }) => {
   console.log(getMonthOrDays("2025-01-15", "2025-01-28")); // 13 day(s)
   const rawExpireDate = selectDataLocum?.staff?.tenure?.to ?? null;
   const rawExpireDateRequest = selectDataLocum?.locumRenewalDetails?.tenure?.from ?? null;
+  const rawExpireDateRequestTo = selectDataLocum?.locumRenewalDetails?.tenure?.to ?? null;
   const ExpireDate = rawExpireDate ? parseISO(rawExpireDate) : null;
   const ExpireDateRequest = rawExpireDateRequest ? parseISO(rawExpireDateRequest) : null;
+  const ExpireDateRequestTo = rawExpireDateRequestTo ? parseISO(rawExpireDateRequestTo) : null;
 
   // Validate date before using
   const isExpireDateValid = ExpireDate && isValid(ExpireDate);
@@ -2726,20 +2728,29 @@ const LocumRequestDialog = ({ getIsOpen, selectedTab }) => {
   // const selectedMonthLabel = selectedMonth !== "Custom"
   // ? monthsList.find(month => month.value === selectedMonth)?.label
   // : "Custom End Date";
-  const currentDateNow = new Date();
-  const minDateValue =
-    selectDataLocum?.locumRenewalDetails?.reappointmentType === "EXTENSION"
-      ? ExpireDate
-        ? addDays(new Date(ExpireDate), 1)
-        : null
-      : currentDateNow;
+  // const currentDateNow = new Date(ExpireDateRequestTo);
+  // const minDateValue =
+  //   selectDataLocum?.locumRenewalDetails?.reappointmentType === "EXTENSION"
+  //     ? ExpireDateRequest
+  //       ? new Date(ExpireDateRequest)
+  //       : null
+  //     : currentDateNow;
 
-  const maxDateValue =
-    selectDataLocum?.locumRenewalDetails?.reappointmentType === "EXTENSION"
-      ? ExpireDate
-        ? addYears(new Date(ExpireDate), 1)
+  // const maxDateValue =
+  //   selectDataLocum?.locumRenewalDetails?.reappointmentType === "EXTENSION"
+  //     ? ExpireDateRequest
+  //       ? addYears(new Date(ExpireDateRequest), 1)
+  //       : null
+  //     : addYears(currentDateNow, 1);
+
+  const minDateValue =
+    ExpireDateRequest
+        ? new Date(ExpireDateRequest)
         : null
-      : addYears(currentDateNow, 1);
+
+  const maxDateValue = ExpireDateRequest
+        ? addYears(new Date(ExpireDateRequest), 1)
+        : null
 
   const isValidDateRange = () => {
     if (selectDataLocum?.locumRenewalDetails?.reappointmentType === "RENEWAL") {
