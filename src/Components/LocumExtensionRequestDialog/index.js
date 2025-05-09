@@ -281,7 +281,7 @@ const LocumExtensiveRequestDialog = ({ getIsOpen, tableDataValue, selectedTab })
               {
                 id: DepartmentId,
                 serviceAreaIds: [speciltyId],
-                serviceAreaSpecific: speciltyId ? true : false
+                serviceAreaSpecific: false
               }
             ],
             departmentSpecific: true
