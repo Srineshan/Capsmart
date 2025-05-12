@@ -13,7 +13,7 @@ import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import Cookie from "universal-cookie";
 import jwt from "jwt-decode";
 import style from "./index.module.scss";
-import { format, differenceInDays, addDays, addMonths, subDays, parseISO, addYears } from "date-fns";
+import { format, differenceInDays, addDays, addMonths, endOfMonth, parseISO, addYears } from "date-fns";
 import { fileLoadingURL } from "../../utils/formatting";
 import LoadingScreen from "../LoadingScreen";
 import CommonCheckBox from "../CommonFields/CommonCheckBox";
@@ -30,7 +30,7 @@ import DescriptionIcon from '@mui/icons-material/Description';
 import CancelIcon from '@mui/icons-material/Cancel';
 import DatalistInput from 'react-datalist-input';
 
-const LocumExtensiveRequestDialog = ({ getIsOpen, tableDataValue }) => {
+const LocumExtensiveRequestDialog = ({ getIsOpen, tableDataValue, selectedTab }) => {
   let cookie = new Cookie();
   let userDetails = cookie.get("user");
   const users = jwt(userDetails);
@@ -43,11 +43,10 @@ const LocumExtensiveRequestDialog = ({ getIsOpen, tableDataValue }) => {
   const [applicationType, setApplicationType] = useState(() => sessionStorage.getItem("applicationCreationType") || "NEW");
   const [isLoadingImage, setIsLoadingImage] = useState(false);
   const [processReappointment, setProcessReappointment] = useState("Yes");
-  const [selectedMonth, setSelectedMonth] = useState(format(new Date(), "dd MMMM yyyy"));
+  const [selectedMonth, setSelectedMonth] = useState("");
   const [calendarStart, setCalendarStart] = useState(false);
   const [customEndDate, setCustomEndDate] = useState(null);
-  const [customDate, setCustomDate] = useState(null);
-  //  const [customEndDate, setCustomEndDate] = useState<Date | null>(null);
+  const [customStartDate, setCustomStartDate] = useState(null);
   const [showSelectedPrivilegeLocum, setShowSelectedPrivilegeLocum] = useState(false);
   const [selectDataLocum, setSelectDataLocum] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState("");
@@ -64,8 +63,11 @@ const LocumExtensiveRequestDialog = ({ getIsOpen, tableDataValue }) => {
   const [covererNameList, setCovererNameList] = useState([]);
   const [covererName, setCovererName] = useState("");
   const [covererId, setCovererId] = useState("");
+  const [limit, setLimit] = useState(9999);
+  const departmentName = selectDataLocum?.basicDetailReferences?.department?.name;
   const [isChecked, setIsChecked] = useState("departmentHead");
   const workModeType = sessionStorage.getItem("workModeType");
+  const [selectedMonthLabel, setSelectedMonthLabel] = useState();
   let name = `${formDetails?.basicDetails?.applicant?.name?.firstName} ${formDetails?.basicDetails?.applicant?.name?.lastName} `;
   const dropzoneStyle = {
     width: "100%",
@@ -89,16 +91,6 @@ const LocumExtensiveRequestDialog = ({ getIsOpen, tableDataValue }) => {
   }, []);
 
   useEffect(() => {
-    if (selectedMonth === 'custom') {
-      setCustomDate(new Date());
-      console.log("selectedMonth", selectedMonth)
-    } else {
-      setCustomDate(null);
-      console.log("selectedMonthssssss", selectedMonth)
-    }
-  }, [selectedMonth]);
-
-  useEffect(() => {
     setSelectedDepartment(formDetails?.basicDetailReferences?.department?.id);
     setSelectedSpeciality(formDetails?.basicDetailReferences?.specialty?.id);
   }, [formDetails]);
@@ -115,7 +107,7 @@ const LocumExtensiveRequestDialog = ({ getIsOpen, tableDataValue }) => {
 
   const getActiveUserData = async () => {
     try {
-      const url = `application-management-service/staff?status=ACTIVE&type=LOCUM`;
+      const url = `application-management-service/staff?status=ACTIVE&type=LOCUM&isExpired=${selectedTab === "ACTIVELOCUM" ? "false" : "true"}&noOfDays=30&isPaginationRequired=${limit === 9999 ? false : true}&limit=${limit}`;
       const response = await GET(url);
       const staffs = response?.data?.staffs || [];
 
@@ -136,48 +128,37 @@ const LocumExtensiveRequestDialog = ({ getIsOpen, tableDataValue }) => {
     console.log("Converted files array:", filesArray);
     setFiles(filesArray);
 
-    const formData = new FormData();
-    let fileNameArray = [];
+    // const formData = new FormData();
+    // let fileNameArray = [];
 
-    filesArray.forEach(file => {
-      const fileInfo = {
-        "filePath": file.path || '',
-        "fileName": file.name,
-        "fileURL": "",
-        "fileType": file.type,
-        "classification": "",
-        "verified": true,
-        "valid": true,
-      };
-      fileNameArray.push(fileInfo);
-      formData.append('documents', file);
-    });
+    // event?.forEach(file => {
+    //   fileNameArray.push({ "fileName": file?.name });
+    //   formData.append('documents', file); // Append each file individually
+    // });
 
-    const blob = new Blob([JSON.stringify(fileNameArray)], {
-      type: "application/json"
-    });
-    formData.append('files', blob);
+    // formData.append('files', new Blob([JSON.stringify(fileNameArray)], {
+    //   type: "application/json"
+    // }));
 
-    try {
-      setIsLoadingImageDocs(true);
-      const response = await POST(`application-management-service/application/${selectDataLocum?.onGoingApplication?.id}/files/bulk?isLLMRequired=${false}`, formData);
-      console.log("API Response:", response);
-      SuccessToaster('File Uploaded Successfully');
-      console.log("Response data:", response?.data);
-      setUploadFileData(prevData => {
-        // Merge previous data with new data
-        return [...(prevData || []), ...(response?.data || [])];
-      });
-      console.log("...........11", uploadFileData)
-      setIsLoadingImageDocs(false);
-      console.log("...........11", uploadFileData)
-      return response?.data;
-    } catch (error) {
-      ErrorToaster('File Upload Failed');
-      console.error("Error:", error);
-      setIsLoading(false);
-      return null;
-    }
+    // try {
+    //   setIsLoadingImageDocs(true);
+    //   const response = await POST(`application-management-service/application/${selectDataLocum?.onGoingApplication?.id}/files/bulk?isLLMRequired=${false}`, formData);
+    //   console.log("API Response:", response);
+    //   SuccessToaster('File Uploaded Successfully');
+    //   console.log("Response data:", response?.data);
+    //   setUploadFileData(prevData => {
+    //     // Merge previous data with new data
+    //     return [...(prevData || []), ...(response?.data || [])];
+    //   });
+    //   setIsLoadingImageDocs(false);
+    //   console.log("Responseupload:", uploadFileData);
+    //   return response?.data;
+    // } catch (error) {
+    //   ErrorToaster('File Upload Failed');
+    //   console.error("Error:", error);
+    //   setIsLoading(false);
+    //   return null;
+    // }
   };
 
   // const handleCheckboxChange = (checkboxName) => (event) => {
@@ -205,14 +186,17 @@ const LocumExtensiveRequestDialog = ({ getIsOpen, tableDataValue }) => {
   const handleRemoveChip = (index) => {
     const updatedList = covererNameList.filter((_, i) => i !== index);
     setCovererNameList(updatedList);
+    if (updatedList.length === 0) {
+      setCovererName('');
+    }
   };
 
   useEffect(() => {
     const fetchDepartmentStaffs = async () => {
       try {
-        const currentApplicantId = formDetails?.applicant?.id;
-        const departmentId = formDetails?.basicDetailReferences?.department?.id;
-        const applicantTypeId = formDetails?.basicDetailReferences?.applicantType?.id;
+        const currentApplicantId = selectDataLocum?.applicant?.id;
+        const departmentId = selectDataLocum?.basicDetailReferences?.department?.id;
+        const applicantTypeId = selectDataLocum?.basicDetailReferences?.applicantType?.id;
         const response = await GET(
           `application-management-service/staff?status=ACTIVE&departmentId=${departmentId}&applicantTypeId=${applicantTypeId}&sortByField=STAFF_NAME`
         );
@@ -236,12 +220,19 @@ const LocumExtensiveRequestDialog = ({ getIsOpen, tableDataValue }) => {
     };
 
     fetchDepartmentStaffs();
-  }, [formDetails]);
+  }, [selectDataLocum]);
 
   const reappointmentRequestApplication = async () => {
-    const ExpireDate = selectDataLocum?.tenure?.to;
-    const fromDate = format(addDays(new Date(ExpireDate), 1), 'yyyy-MM-dd');
-    const toDate = format(new Date(selectedMonth), 'yyyy-MM-dd');
+    const fromDate = selectedTab === "ACTIVELOCUM"
+      ? format(addDays(new Date(selectDataLocum?.tenure?.to), 1), 'yyyy-MM-dd')
+      : selectedTab === "EXPIREDLOCUM" && customStartDate
+        ? format(new Date(customStartDate), 'yyyy-MM-dd')
+        : format(new Date(), 'yyyy-MM-dd');
+    const toDate = selectedMonth === "Custom"
+      ? format(new Date(customEndDate), 'yyyy-MM-dd')
+      : selectedTab === "EXPIREDLOCUM"
+        ? format(new Date(customEndDate), 'yyyy-MM-dd')
+        : format(new Date(selectedMonth), 'yyyy-MM-dd');
     const DepartmentId = selectDataLocum?.basicDetailReferences?.department?.id || "";
     const speciltyId = selectDataLocum?.basicDetailReferences?.specialty?.id || "";
 
@@ -255,11 +246,7 @@ const LocumExtensiveRequestDialog = ({ getIsOpen, tableDataValue }) => {
       };
     });
 
-    const files = (uploadFileData || []).map((item, index) => ({
-      ...item.file,
-      description: documentDesc[index] || "",
-      title: documentTitle[index] || "",
-    }));
+    const filesWithNotes = (files || []).map((item, index) => ({ "fileName": item?.name }));
 
     const temp = {
       requestType: 'LOCUM_RENEWAL_REQUEST',
@@ -272,13 +259,18 @@ const LocumExtensiveRequestDialog = ({ getIsOpen, tableDataValue }) => {
           to: toDate,
         },
         coveredDetails: coveredDetails,
+        reappointmentType: selectedTab === "ACTIVELOCUM" ? "EXTENSION" : "RENEWAL",
+        renewalDuration: {
+          value: selectedMonthLabel ? selectedMonthLabel : 0,
+          unit: 'MONTHS'
+        }
       },
       notes: [
         {
           notes: {
             notes: userRoleComments
           },
-          files: files
+          files: filesWithNotes
         }
       ],
       requestedTo: [
@@ -289,16 +281,29 @@ const LocumExtensiveRequestDialog = ({ getIsOpen, tableDataValue }) => {
               {
                 id: DepartmentId,
                 serviceAreaIds: [speciltyId],
-                serviceAreaSpecific: true
+                // serviceAreaSpecific: speciltyId ? true : false
+                serviceAreaSpecific:false
               }
             ],
             departmentSpecific: true
+          }),
+          ...(isChecked !== "departmentHead" && {
+            departmentSpecific: false
           }),
         }
       ],
     };
 
-    await POST(`application-management-service/application/request`, temp)
+    const formData = new FormData();
+    files.forEach(file => {
+      console.log(file.name);
+      formData.append('documents', file);
+    });
+    const blob = new Blob([JSON.stringify(temp)], {
+      type: "application/json"
+    });
+    formData.append('requestDTO', blob);
+    await POST(`application-management-service/application/request`, formData)
       .then((response) => {
         console.log(response?.data);
       })
@@ -307,12 +312,14 @@ const LocumExtensiveRequestDialog = ({ getIsOpen, tableDataValue }) => {
       });
   };
 
+  console.log(files, 'uploadFileData')
+
 
 
   const handleDateChange = (date, field) => {
     const formattedDate = format(new Date(date), "yyyy-MM-dd'T'00:00")
     setCustomEndDate(formattedDate);
-    setSelectedMonth(formattedDate);
+    // setSelectedMonth(formattedDate);
 
     setCalendarStart(false);
 
@@ -361,71 +368,6 @@ const LocumExtensiveRequestDialog = ({ getIsOpen, tableDataValue }) => {
   };
 
 
-  //   const checkApproveEnabled = () => {
-  //     const hasValidComments = userNotes.trim() !== '';
-
-  //     // Check if there are any uploaded files
-  //     if (uploadFileData.length > 0) {
-  //       // For files, check if all documents have titles
-  //       const allFilesHaveTitles = uploadFileData.every((_, index) =>
-  //         documentTitle[index] && documentTitle[index].trim() !== ''
-  //       );
-
-  //       setIsApproveEnabled(hasValidComments && allFilesHaveTitles);
-  //     } else {
-  //       // If no files are uploaded, only check for valid comments
-  //       setIsApproveEnabled(hasValidComments);
-  //     }
-  //   };
-
-  //  useEffect(() => {
-  //     if (formDetails !== undefined && formIndex !== undefined) {
-  //       setIsLoadingPage(false)
-  //       if (formDetails && !formSchema) {
-  //         getFormSchema();
-  //         getUploadFormSchema();
-  //         getPrivilegeCategory();
-  //       }
-  //       if (formDetails?.privileges?.obligatedPrivileges?.[0]?.id) {
-  //         setSelectedPrivilege(formDetails?.privileges?.obligatedPrivileges?.[0]?.id);
-  //       }
-  //       // if (formDetails?.privileges?.priorObligatedPrivileges?.length === 0 &&
-  //       //   formDetails?.privileges?.obligatedPrivileges?.length === 0) {
-  //       //   setIsPrivilegeSetChanging(true);
-  //       //   setPrivilegeSetChangeYesOrNo('No');
-  //       // }
-  //       setSelectedAdditionalPrivilegeForDisplay(
-  //         formDetails?.privileges?.additionalPrivileges
-  //       );
-  //       setSelectedPrivilegesForDisplayMultiple(
-  //         formDetails?.privileges?.obligatedPrivileges
-  //       );
-  //       if (!dontUpdatePrivilegeState && !isShowESignDialog && !isShowESignConfirmationDialog) {
-  //         setSelectedAdditionalPrivilegesForDisplayMultiple(
-  //           formDetails?.privileges?.additionalPrivileges
-  //         );
-  //         setSelectedPrivilegeForDisplay(formDetails?.privileges?.obligatedPrivileges);
-  //       }
-  //       setHospitalPrivilegeSet(formDetails?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges === null ? [] : formDetails?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges)
-  //       setSelectedValue(formDetails?.basicDetails?.regionalCallResponsibilities?.regionalCallResponsibilities !== undefined ? formDetails?.basicDetails?.regionalCallResponsibilities?.regionalCallResponsibilities : 'NA')
-  //       setNavigateURL(`/reappointmentApplicationForm/${id}/${formDetails?.forms[formIndex + 1]?.formCategory}/${btoa(formDetails?.forms[formIndex + 1]?.schemaCategory)}`);
-  //       if ((formDetails?.forms?.[formDetails?.forms?.findIndex(data => data?.schemaCategory === 'UploadYourDoc')]?.data?.setUpYourSignature?.file?.fileURL === undefined && formDetails?.forms?.[formDetails?.forms?.findIndex(data => data?.schemaCategory === 'UploadYourDoc')]?.data?.setUpYourSignature?.type?.text === undefined)) {
-  //         setDontUpdatePrivilegeState(true)
-  //         setIsShowESignDialog(true)
-  //       }
-  //       if (formDetails?.forms[formIndex]?.data !== null) {
-  //         setPrivilegeChangeYesOrNo(formDetails?.forms?.[formIndex]?.data?.privilegeChangeYesOrNo);
-  //         setDepartmentChangeYesOrNo(formDetails?.forms?.[formIndex]?.data?.departmentChangeYesOrNo);
-  //         setPrivilegeSetChangeYesOrNo(formDetails?.forms?.[formIndex]?.data?.privilegeSetChangeYesOrNo);
-  //         setAdditionalPrivilegeChangeYesOrNo(formDetails?.forms?.[formIndex]?.data?.additionalPrivilegeChangeYesOrNo)
-  //         setPrivilegeAtOtherHospitalYesOrNo(formDetails?.forms?.[formIndex]?.data?.privilegeAtOtherHospitalYesOrNo)
-  //       }
-  //     } else {
-  //       setIsLoadingPage(true);
-  //     }
-  //   }, [formDetails, formIndex]);
-
-
   const onClose = () => {
     getIsOpen(false);
   };
@@ -436,8 +378,9 @@ const LocumExtensiveRequestDialog = ({ getIsOpen, tableDataValue }) => {
     const createdDate = new Date(createdDateStr);
 
     for (let i = 1; i <= 12; i++) {
-      const futureDate = addMonths(createdDate, i);
-      const oneDayBefore = subDays(futureDate, 1); // Go one day before the future "same day"
+      let futureDate = addMonths(createdDate, i);
+      futureDate = endOfMonth(futureDate);
+      // const oneDayBefore = subDays(futureDate, 1); // Go one day before the future "same day"
 
       const label = `${i} ${i === 1 ? 'month' : 'months'}`;
       const value = format(futureDate, 'yyyy-MM-dd');
@@ -449,13 +392,16 @@ const LocumExtensiveRequestDialog = ({ getIsOpen, tableDataValue }) => {
     const now = new Date();
     months.push({
       label: 'Custom End Date',
-      value: format(now, 'yyyy-MM-dd')
+      value: 'Custom'
     });
 
     return months;
   };
-
-  const monthOptions = selectDataLocum?.tenure?.to ? getNext12MonthsFromCreatedDate(selectDataLocum?.tenure?.to) : [];
+  const referenceDate =
+    selectedTab === "ACTIVELOCUM" && selectDataLocum?.tenure?.to
+      ? selectDataLocum?.tenure?.to
+      : new Date();
+  const monthOptions = getNext12MonthsFromCreatedDate(referenceDate);
 
   const lastModifiedDate = formDetails?.lastModifiedDate;
   const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), "MM/dd/yyyy") : "-";
@@ -464,11 +410,42 @@ const LocumExtensiveRequestDialog = ({ getIsOpen, tableDataValue }) => {
     ? parseISO(selectDataLocum.tenure.to)
     : null;
 
-  const formattedExpiringDate = ExpireDate ? format(new Date(ExpireDate), "MM/dd/yyyy") : "-";
-  const daysRemaining = ExpireDate ? differenceInDays(new Date(ExpireDate), new Date()) : null;
+  const formattedExpiringDate = ExpireDate ? format(new Date(ExpireDate), "MMM dd, yyyy") : "-";
+  const daysRemaining = ExpireDate ? Math.abs(differenceInDays(new Date(ExpireDate), new Date())) : null;
+  const currentDateNow = new Date();
+  const minDateValue =
+    selectedTab === 'ACTIVELOCUM'
+      ? ExpireDate
+        ? addDays(new Date(ExpireDate), 1)
+        : null
+      : currentDateNow;
+
+  const maxDateValue =
+    selectedTab === 'ACTIVELOCUM'
+      ? ExpireDate
+        ? addYears(new Date(ExpireDate), 1)
+        : null
+      : addYears(currentDateNow, 1);
+
+  const isValidDateRange = () => {
+    if (selectedTab === "EXPIREDLOCUM") {
+      return customStartDate && customEndDate && userRoleComments;
+    }
+    if (selectedMonth === "Custom") {
+      return customEndDate && userRoleComments;
+    }
+    return selectedMonth && userRoleComments;
+  };
 
   return (
     <>
+      {isLoadingImageDocs && (
+        <div
+          className={`${style.verticalAlignCenter} ${style.justifyCenter} ${style.loadingOverlay}`}
+        >
+          <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
+        </div>
+      )}
       {isLoadingImage && (
         <div className={style.loadingOverlay}>
           <LoadingScreen />
@@ -485,7 +462,7 @@ const LocumExtensiveRequestDialog = ({ getIsOpen, tableDataValue }) => {
           <div>
             <div className={Classes.DIALOG_BODY}>
               <div className={style.spaceBetween}>
-                <div className={`${style.heading}`}>Request for Locum Period & Privileges Extension</div>
+                <div className={`${style.heading}`}>Request for Locum Period & Privileges {selectedTab === "ACTIVELOCUM" ? "Extension" : "Renewal"}</div>
                 <div className={style.displayInRow}>
                   <img
                     src={CrossPink}
@@ -509,109 +486,69 @@ const LocumExtensiveRequestDialog = ({ getIsOpen, tableDataValue }) => {
                           ? selectDataLocum?.applicant?.name?.firstName.charAt(0).toUpperCase() +
                           selectDataLocum?.applicant?.name?.firstName.slice(1).toLowerCase()
                           : ""}
-                        {", "}
-                        {/* {`${formatFirstNameLastName(formDetails?.basicDetail?.applicant?.name?.firstName, formDetails?.basicDetail?.applicant?.name?.lastName)}`} */}
-                        {/* {formDetails?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{","} */}
                       </span>
                       <div className={`${style.rejectionTextStyle} ${style.marginLeft2}`}>
-                        {selectDataLocum?.basicDetailReferences?.applicantType?.serviceProviderType}
+                        Locum {selectDataLocum?.basicDetailReferences?.applicantType?.serviceProviderType}
                       </div>
-                      {/* <span className={`${style.rejectionSubHeadingTextStyle} ${style.marginLeft20} ${style.alignCenter}`}>{formDetails?.displayId}</span> */}
                     </div>
-                    <div className={`${style.twoColumnGridInner} ${style.displayInRowCenter}`}>
-                      <span className={`${style.rejectionTextStyle}`}>Privilege Category:</span>
-                      <span className={`${style.rejectionTextStyle1}`}>
-                        {selectDataLocum?.basicDetailReferences?.credentialingAndPrivilegingCategory?.name || "-"}
+                    <div className={`${style.displayInRow} ${style.displayInRowCenter}`}>
+                      <span className={`${style.rejectionHeadingTextStyle}`}>
+                        {selectDataLocum?.basicDetailReferences?.department?.name || ""}
+                        {selectDataLocum?.basicDetailReferences?.specialty
+                          ? ` - ${selectDataLocum?.basicDetailReferences?.specialty?.name}`
+                          : ""}
                       </span>
                     </div>
-                    <div className={`${style.twoColumnGridInner}`}>
-                      <span className={`${style.rejectionTextStyle}`}>Department:</span>
-                      <span className={`${style.rejectionTextStyle1}`}>
-                        {selectDataLocum?.basicDetailReferences?.department?.name || "-"}
-                      </span>
-                    </div>
-                    {/* <div className={`${style.twoColumnGridInner}`}>
-                      <span className={`${style.rejectionTextStyle}`}>Application ID:</span>
-                      <span className={`${style.rejectionTextStyle1}`}>{formDetails?.displayId || "-"}</span>
-                    </div> */}
-                    {/* </div>
-              </div>
-              <div className={style.marginTop5}>
-                <div className={`${style.twoColumnGrid} ${style.marginLeftRight20} ${style.marginBottom10}`}> */}
-                    <div className={`${style.twoColumnGridInner}`}>
-                      <span className={`${style.rejectionTextStyle}`}>Division / Speciality:</span>
-                      <span className={`${style.rejectionTextStyle1}`}>
-                        {selectDataLocum?.basicDetailReferences?.specialty?.name || "-"}
-                      </span>
-                    </div>
-                    {/* <div className={`${style.twoColumnGridInner}`}>
-                    <span className={`${style.rejectionTextStyle}`}>Site Name:</span>
-                    <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetailReferences?.site || "-"}</span>
-                  </div> */}
                     {entity?.multiSiteEntity && (
                       <div className={`${style.twoColumnGridInner}`}>
                         <span className={`${style.rejectionTextStyle}`}>Site Name:</span>
                         <span className={`${style.rejectionTextStyle1}`}>{entity?.multiSiteEntity?.[0]?.name || "-"}</span>
                       </div>
                     )}
-                    {/* </div>
-              </div>
-              <div className={style.marginTop5}>
-                <div className={`${style.twoColumnGrid} ${style.marginLeftRight20} ${style.marginBottom10}`}> */}
                     <div className={`${style.twoColumnGridInner}`}>
                       <span className={`${style.rejectionTextStyle}`}>Expiration Date:</span>
                       <span className={`${style.rejectionTextStyle1}`}>{formattedExpiringDate}</span>
                     </div>
                     <div className={`${style.twoColumnGridInner}`}>
-                      <span className={`${style.rejectionTextStyle}`}>Days From Expiration :</span>
-                      {/* <span className={`${style.rejectionTextStyle1}`}>{format(new Date(formDetails?.lastModifiedDate), "MMM dd, yyyy")}</span> */}
-                      <span className={`${style.rejectionTextStyle1}`}>{daysRemaining}</span>
+                      <span className={`${style.rejectionTextStyle}`}>{selectedTab === "ACTIVELOCUM" ? "Days From Expiration :" : "Days Since Expiration :"}</span>
+                      <span className={`${style.rejectionTextStyle1}`}> {selectedTab === "ACTIVELOCUM" ? `${daysRemaining} days` : `${daysRemaining} days`}</span>
                     </div>
-                    <div className={`${style.twoColumnGridInner}`}>
-                      <span className={`${style.rejectionTextStyle}`}>CPSO Number :</span>
-                      {/* <span className={`${style.rejectionTextStyle1}`}>{format(new Date(formDetails?.lastModifiedDate), "MMM dd, yyyy")}</span> */}
-                      <span className={`${style.rejectionTextStyle1}`}>-</span>
-                    </div>
-                    <div className={`${style.twoColumnGridInner}`}>
-                      <span className={`${style.rejectionTextStyle}`}>OHIP Number :</span>
-                      {/* <span className={`${style.rejectionTextStyle1}`}>{format(new Date(formDetails?.lastModifiedDate), "MMM dd, yyyy")}</span> */}
-                      <span className={`${style.rejectionTextStyle1}`}>-</span>
-                    </div>
+                    {/* <div className={`${style.twoColumnGridInner}`}>
+           <span className={`${style.rejectionTextStyle}`}>OHIP Number :</span>
+           <span className={`${style.rejectionTextStyle1}`}>-</span>
+          </div> */}
                   </div>
                 </div>
               </div>
               {showSelectedPrivilegeLocum === false && (
                 <div className={`${style.marginTop10}`}>
                   <div className={`${style.rejectionHeadingTextStyle}`}>
-                    Locum Period Expiring On {formattedExpiringDate}, {daysRemaining} Days
+                    {selectedTab === "ACTIVELOCUM" ? `Locum Period Expiring On ${formattedExpiringDate} (${daysRemaining} Days)` : "New Locum Period"}
                   </div>
-                  <div className={`${style.rejectionTextStyle}`}>
-                    This is a request to extend the Period and Privileges for :{" "}
+                  <div className={`${style.rejectionTextStyle} ${style.marginBottom10}`}>
+                    {selectedTab === "ACTIVELOCUM"
+                      ? "This is a request to extend the Period and Privileges for "
+                      : "This is a request to renew the Period and Privileges for "}
                     <span className={style.rejectionHeadingTextStyle}>
-                      {selectDataLocum?.applicant?.name?.lastName?.charAt(0).toUpperCase() +
-                        selectDataLocum?.applicant?.name?.lastName?.slice(1).toLowerCase()}
+                      {selectDataLocum?.applicant?.name?.lastName
+                        ? selectDataLocum.applicant.name.lastName.charAt(0).toUpperCase() +
+                        selectDataLocum.applicant.name.lastName.slice(1).toLowerCase()
+                        : ""}
                       {", "}
                       {selectDataLocum?.applicant?.name?.firstName
-                        ? selectDataLocum?.applicant?.name?.firstName.charAt(0).toUpperCase() +
-                        selectDataLocum?.applicant?.name?.firstName.slice(1).toLowerCase()
+                        ? selectDataLocum.applicant.name.firstName.charAt(0).toUpperCase() +
+                        selectDataLocum.applicant.name.firstName.slice(1).toLowerCase()
                         : ""}
                     </span>
+                    {selectedTab === "ACTIVELOCUM" && <span> By </span>}
                   </div>
-                  <div>
-                    {/* <CommonRadio
-           className={style.leftAlign}
-           value={processReappointment}
-           onChange={(e) => setProcessReappointment(e.target.value)}
-           radioValue={["Yes"]}
-           label={["Yes, I would like to have this Locum Staff Privileges to be extended"]}
-          /> */}
-                    <div className={`${style.flexCenter}`}>
-                      {/* <div className={`${style.halfWidth}`}> */}
-                      {/* {selectedMonth !== format(new Date(), 'yyyy-MM') && ( */}
+                  <div className={`${style.flexCenter}`}>
+                    {/* <div className={`${style.halfWidth}`}> */}
+                    {selectedTab === "ACTIVELOCUM" && (
                       <div className={`${style.halfWidth}`}>
                         <CommonSelectField
                           value={selectedMonth}
-                          onChange={(e) => setSelectedMonth(e.target.value)}
+                          onChange={(e) => { setSelectedMonth(e.target.value); setSelectedMonthLabel(parseInt(monthOptions?.filter(data => data?.value === e.target.value)?.[0]?.label)) }}
                           // onChange={(e) => {
                           //   if (e.target.value === "Custom end Date") {
                           //     setSelectedMonth("Custom end Date");
@@ -622,46 +559,103 @@ const LocumExtensiveRequestDialog = ({ getIsOpen, tableDataValue }) => {
                           //   }
                           // }}
                           className={style.fullWidth}
-                          //  firstOptionLabel={""}
-                          //  firstOptionValue={""}
+                          firstOptionLabel={"Select Period"}
+                          firstOptionValue={""}
                           valueList={monthOptions.map((month) => month.value)}
                           labelList={monthOptions.map((month) => month.label)}
                           disabledList={monthOptions.map(() => false)}
                           required={false}
                         />
                       </div>
-                      {/* )} */}
-                      {/* </div> */}
-                      {/* <div> */}
-                      {/* </div> */}
-                      <div className={`${style.marginLeft} ${style.rejectionHeadingTextStyle}`}>
-                        Start Date <br />
-                        <span className={`${style.rejectionTextStyle}`}>
-                          {ExpireDate ? format(addDays(new Date(ExpireDate), 1), "dd MMM yyyy") : "N/A"}
-                        </span>
-                      </div>
-                      <div className={`${style.marginLeft} ${style.rejectionTextStyle}`}> To </div>
-                      <div className={`${style.marginLeft} ${style.rejectionHeadingTextStyle}`}>
-                        End Date <br />
-                        <span className={`${style.rejectionTextStyle}`}>
-                          {" "}
-                          {ExpireDate ? format(new Date(selectedMonth), "dd MMM yyyy") : "N/A"}{" "}
-                        </span>
-                      </div>
-                      {selectedMonth === format(new Date(), 'yyyy-MM-dd') && (
+                    )}
+                    {/* </div> */}
+                    {/* <div> */}
+                    {/* </div> */}
+                    <div className={`${selectedTab === "ACTIVELOCUM" ? style.marginLeft : ""} ${style.rejectionHeadingTextStyle}`}>
+                      Start Date <br />
+                      {selectedTab === "EXPIREDLOCUM" ? (
                         <div className={`${style.marginTopLess}`}>
                           <CommonDateField
-                            className={`${style.dateWidth} ${style.fullWidth}`}
+                            className={`${style.fullWidth}`}
+                            onChange={(date) => setCustomStartDate(date)}
+                            open={calendarStart}
+                            onOpen={() => setCalendarStart(true)}
+                            onClose={() => setCalendarStart(false)}
+                            minDate={minDateValue}
+                            maxDate={maxDateValue}
+                            value={customStartDate ? new Date(customStartDate) : null}
+                            InputProps={{
+                              style: {
+                                fontSize: 14,
+                                height: 30,
+                              },
+                            }}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                inputProps={{
+                                  ...params.inputProps,
+                                  placeholder: 'Enter Start Date',
+                                  readOnly: true
+                                }}
+                                variant="outlined"
+                                margin="normal"
+                              />
+                            )}
+                          />
+                        </div>
+                      ) : (
+                        <span className={`${style.rejectionTextStyle}`}>
+                          {selectedTab === "ACTIVELOCUM"
+                            ? (ExpireDate
+                              ? format(addDays(new Date(ExpireDate), 1), "MMM dd, yyyy")
+                              : "N/A")
+                            : format(new Date(), "MMM dd, yyyy")}
+                        </span>
+                      )}
+                    </div>
+                    <div className={`${style.marginLeft} ${style.rejectionTextStyle}`}> To </div>
+                    <div className={`${style.marginLeft} ${style.rejectionHeadingTextStyle}`}>
+                      End Date <br />
+                      <span className={`${style.dateTextStyle}`}>
+                        {selectedMonth && selectedMonth !== "Custom"
+                          ? format(new Date(selectedMonth), "MMM dd, yyyy")
+                          : selectedMonth === "Custom"
+                            ? ''
+                            : selectedTab === "EXPIREDLOCUM"
+                              ? ''  // Leave blank since the CommonDateField will appear
+                              : "-"}
+                      </span>
+
+                      {(selectedMonth === "Custom" || selectedTab === "EXPIREDLOCUM") && (
+                        <div className={`${style.marginTopLess}`}>
+                          <CommonDateField
+                            className={`${style.fullWidth}`}
                             onChange={(date) => handleDateChange(date)}
                             open={calendarStart}
                             onOpen={() => setCalendarStart(true)}
                             onClose={() => setCalendarStart(false)}
-
-                            // minDate={sub(new Date(), { years: 3 })}
-                            // maxDate={add(new Date(), { years: 3 })}
-                            minDate={ExpireDate}
-                            maxDate={ExpireDate ? addYears(new Date(ExpireDate), 1) : null}
-                            value={customDate ? format(customDate, 'yyyy-MM') : ''}
+                            minDate={minDateValue}
+                            maxDate={maxDateValue}
+                            // minDate={ExpireDate ? addDays(new Date(ExpireDate), 1) : null}
+                            // maxDate={ExpireDate ? addYears(new Date(ExpireDate), 1) : null}
+                            // minDate={
+                            //   selectedTab === "ACTIVELOCUM"
+                            //     ? (ExpireDate ? addDays(new Date(ExpireDate), 1) : null)
+                            //     : currentDate
+                            // }
+                            // maxDate={
+                            //   selectedTab === "ACTIVELOCUM"
+                            //     ? (ExpireDate ? addYears(new Date(ExpireDate), 1) : null)
+                            //     : addYears(currentDate, 1)
+                            // }
+                            value={customEndDate ? new Date(customEndDate) : null}
+                            InputProps={{
+                              style: {
+                                fontSize: 14,
+                                height: 30,
+                              },
+                            }}
                             renderInput={(params) => (
                               <TextField
                                 {...params}
@@ -672,21 +666,20 @@ const LocumExtensiveRequestDialog = ({ getIsOpen, tableDataValue }) => {
                                 }}
                                 variant="outlined"
                                 margin="normal"
-
                               />
-
                             )}
                           />
                         </div>
                       )}
                     </div>
-                    <div className={`${style.flexCenter}`}>
-                      <div className={`${style.fullWidth}`}>
-                        <div className={`${style.fieldWrapper}`}>
-                          <div className={`${style.lableStyle}`}>
-                            {'Coverage required for - Optional'}
-                          </div>
-                          {/* <CommonSelectField
+                  </div>
+                  <div className={`${style.flexCenter}`}>
+                    <div className={`${style.fullWidth}`}>
+                      <div className={`${style.fieldWrapper}`}>
+                        <div className={`${style.lableStyle} ${style.marginTop10}`}>
+                          {'Coverage Required For (Optional)'}
+                        </div>
+                        {/* <CommonSelectField
               value={covererName}
               onChange={(e) => setCovererName(e.target.value)}
               className={style.fullWidth}
@@ -703,194 +696,194 @@ const LocumExtensiveRequestDialog = ({ getIsOpen, tableDataValue }) => {
                   `Who covers your hospital patients when you are not available?`
                 )}
             /> */}
-                          <DatalistInput
-                            items={getItemsSingle(applicantOptions) || []}
-                            onSelect={(item) => {
-                              setCovererName(item.label);
-                              setCovererId(item.id);
-                              setCovererNameList(prevCheckedIds => {
-                                // return prevCheckedIds?.includes(item.id)
-                                //   ? prevCheckedIds.filter(checkedId => checkedId !== item.id)
-                                //   : [...prevCheckedIds, item.id];
-                                const filteredIds = (Array.isArray(prevCheckedIds) ? prevCheckedIds : []).filter((id) => id !== item.id);
-                                return [...filteredIds, item.id];
-                              });
-                            }}
-                            className={`${style.fullWidth} ${style.marginTop10}`}
-                            maxLength={50}
-                            placeholder={'Select from privilege staff'}
-                            value={covererName}
-                            required={true}
-                            error={!covererName}
-                          // warning={warningFields
-                          //   ?.map((data) => data?.label)
-                          //   ?.includes(
-                          //     `Who covers your hospital patients when you are not available?`
-                          //   )}
-                          />
-                        </div>
-                      </div>
-                      <div className={`${style.chipsContainer} ${style.marginTop30} ${style.marginLeft10}`}>
-                        {covererNameList?.map ? (
-                          covererNameList.map((data, index) => (
-                            <div key={index} className={`${style.privilegeCategoryChips} ${style.displayInRow}`}>
-                              {/* <div>{name}</div> */}
-                              {/* <div>{selectApplicant?.filter(optionData => optionData?.id === data)?.[0]?.applicant?.name?.firstName}</div>   */}
-                              <div>
-                                {selectApplicant?.filter(optionData => optionData?.id === data)?.[0]?.applicant?.name?.firstName}{" "}
-                                {selectApplicant?.filter(optionData => optionData?.id === data)?.[0]?.applicant?.name?.middleName}{" "}
-                                {selectApplicant?.filter(optionData => optionData?.id === data)?.[0]?.applicant?.name?.lastName}
-                              </div>
-
-                              <div
-                                className={`${style.verticalAlignCenter} ${style.marginLeft} ${style.cursorPointer}`}
-                                onClick={() => handleRemoveChip(index)} // Optional: Add a remove handler
-                              >
-                                <CancelIcon sx={{ color: '#06617A', fontSize: 20 }} />
-                              </div>
-                            </div>
-                          ))
-                        ) : null}
-                      </div>
-                    </div>
-                    <div className={`${style.marginTop10}`}>
-                      <CKEditor
-                        editor={ClassicEditor}
-                        data={userRoleComments}
-                        onChange={(event, editor) => {
-                          const data = editor.getData();
-                          setUserRoleComments(data);
-                        }}
-                        config={{
-                          placeholder: "Enter comments / notes",
-                          toolbar: {
-                            shouldNotGroupWhenFull: true,
-                            sticky: true,
-                            items: [
-                              'undo', 'redo',
-                              '|',
-                              'heading',
-                              '|',
-                              'fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor',
-                              '|',
-                              'bold', 'italic', 'strikethrough', 'subscript', 'superscript', 'code',
-                              '|',
-                              'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'
-                            ],
-                          },
-                          autoGrow: false,
-                        }}
-                        onReady={(editor) => {
-                          editor.editing.view.change((writer) => {
-                            writer.setStyle(
-                              "height",
-                              "150px",
-                              editor.editing.view.document.getRoot()
-                            );
-                          });
-                        }}
-                      />
-                    </div>
-                    <div className={`${style.marginTop} ${style.cursorPointer}`}>
-
-                      <>
-
-                        <Dropzone
-                          style={dropzoneStyle}
-                          onDrop={(acceptedFiles) => changeHandler(acceptedFiles)}
-                          accept={{
-                            'image/jpeg': [],
-                            'image/png': [],
-                            'image/jpg': [],
-                            'application/pdf': []
+                        <DatalistInput
+                          items={getItemsSingle(applicantOptions) || []}
+                          onSelect={(item) => {
+                            setCovererName(item.label);
+                            setCovererId(item.id);
+                            setCovererNameList(prevCheckedIds => {
+                              // return prevCheckedIds?.includes(item.id)
+                              //   ? prevCheckedIds.filter(checkedId => checkedId !== item.id)
+                              //   : [...prevCheckedIds, item.id];
+                              const filteredIds = (Array.isArray(prevCheckedIds) ? prevCheckedIds : []).filter((id) => id !== item.id);
+                              return [...filteredIds, item.id];
+                            });
                           }}
-                        >
-                          {({ getRootProps, getInputProps }) => (
-                            <>
-                              <section>
-                                <div {...getRootProps()}>
-                                  <input {...getInputProps()} />
-                                  <div className={style.uploadBorderStyle}>
-                                    <div className={`${style.spaceBetween} ${style.displayInRowCenter}`}>
-                                      <div className={style.uploadTextStyle}>
-                                        Upload any supporting documents
-                                      </div>
-                                      <div className={`${style.marginLeftRight20}`}>
-                                        Click To Upload
-                                      </div>
+                          className={`${style.fullWidth} ${style.marginTop10}`}
+                          maxLength={50}
+                          placeholder={`Select from Privileged Staff from ${departmentName}`}
+                          value={covererName}
+                          required={true}
+                          error={!covererName}
+                        // warning={warningFields
+                        //   ?.map((data) => data?.label)
+                        //   ?.includes(
+                        //     `Who covers your hospital patients when you are not available?`
+                        //   )}
+                        />
+                      </div>
+                    </div>
+                    <div className={`${style.chipsContainer} ${style.marginTop30} ${style.marginLeft10}`}>
+                      {covererNameList?.map ? (
+                        covererNameList.map((data, index) => (
+                          <div key={index} className={`${style.privilegeCategoryChips} ${style.displayInRow}`}>
+                            {/* <div>{name}</div> */}
+                            {/* <div>{selectApplicant?.filter(optionData => optionData?.id === data)?.[0]?.applicant?.name?.firstName}</div>   */}
+                            <div>
+                              {selectApplicant?.filter(optionData => optionData?.id === data)?.[0]?.applicant?.name?.firstName}{" "}
+                              {selectApplicant?.filter(optionData => optionData?.id === data)?.[0]?.applicant?.name?.middleName}{" "}
+                              {selectApplicant?.filter(optionData => optionData?.id === data)?.[0]?.applicant?.name?.lastName}
+                            </div>
+
+                            <div
+                              className={`${style.verticalAlignCenter} ${style.marginLeft} ${style.cursorPointer}`}
+                              onClick={() => handleRemoveChip(index)} // Optional: Add a remove handler
+                            >
+                              <CancelIcon sx={{ color: '#06617A', fontSize: 20 }} />
+                            </div>
+                          </div>
+                        ))
+                      ) : null}
+                    </div>
+                  </div>
+                  <div className={`${style.lableStyle} ${style.marginTop10}`}>Reason For Locum Staff {selectedTab === "ACTIVELOCUM" ? "Extension" : "Renewal"} Request & Any Changes To Privileges*</div>
+                  <div className={`${style.marginTop10}`}>
+                    <CKEditor
+                      editor={ClassicEditor}
+                      data={userRoleComments}
+                      onChange={(event, editor) => {
+                        const data = editor.getData();
+                        setUserRoleComments(data);
+                      }}
+                      config={{
+                        placeholder: "Enter Notes / Comments",
+                        toolbar: {
+                          shouldNotGroupWhenFull: true,
+                          sticky: true,
+                          items: [
+                            'undo', 'redo',
+                            '|',
+                            'heading',
+                            '|',
+                            'fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor',
+                            '|',
+                            'bold', 'italic', 'strikethrough', 'subscript', 'superscript', 'code',
+                            '|',
+                            'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'
+                          ],
+                        },
+                        autoGrow: false,
+                      }}
+                      onReady={(editor) => {
+                        editor.editing.view.change((writer) => {
+                          writer.setStyle(
+                            "height",
+                            "150px",
+                            editor.editing.view.document.getRoot()
+                          );
+                        });
+                      }}
+                    />
+                  </div>
+                  <div className={`${style.marginTop} ${style.cursorPointer}`}>
+
+                    <>
+
+                      <Dropzone
+                        style={dropzoneStyle}
+                        onDrop={(acceptedFiles) => changeHandler(acceptedFiles)}
+                        accept={{
+                          'image/jpeg': [],
+                          'image/png': [],
+                          'image/jpg': [],
+                          'application/pdf': []
+                        }}
+                      >
+                        {({ getRootProps, getInputProps }) => (
+                          <>
+                            <section>
+                              <div {...getRootProps()}>
+                                <input {...getInputProps()} />
+                                <div className={style.uploadBorderStyle}>
+                                  <div className={`${style.spaceBetween} ${style.displayInRowCenter}`}>
+                                    <div className={style.uploadTextStyle}>
+                                      Upload any supporting documents
+                                    </div>
+                                    <div className={`${style.marginLeftRight20}`}>
+                                      Click To Upload
                                     </div>
                                   </div>
                                 </div>
-                              </section>
-                            </>
-                          )}
-                        </Dropzone>
-                      </>
+                              </div>
+                            </section>
+                          </>
+                        )}
+                      </Dropzone>
+                    </>
 
-                    </div>
-                    {uploadFileData.length > 0 && (
-                      <div>
-                        {uploadFileData.map((file, index) => (
-                          <div key={index} className={`${style.alignItem} ${style.marginTop10}`}>
-                            <div className={`${style.threeColumnGrid}`}>
-                              <div className={`${style.displayInRow} ${style.referenceCardStyle}`}>
-                                <DescriptionIcon className={style.docsIcon} />
-                                <div className={style.marginLeft20}>{file?.file?.fileName}</div>
-                              </div>
-                              <div>
-                                <CommonInputField
-                                  value={documentTitle[index] || ""}
-                                  onChange={(e) => {
-                                    const newDocumentTitle = [...documentTitle];
-                                    newDocumentTitle[index] = e.target.value;
-                                    setDocumentTitle(newDocumentTitle);
-                                  }}
-                                  type="text"
-                                  placeholder="Title*"
-                                  className={style.referenceCardStyleDescription}
-                                />
-                              </div>
-                              <div>
-                                <CommonInputField
-                                  value={documentDesc[index] || ""}
-                                  onChange={(e) => {
-                                    const newDocumentDesc = [...documentDesc];
-                                    newDocumentDesc[index] = e.target.value;
-                                    setDocumentDesc(newDocumentDesc);
-                                  }}
-                                  type="text"
-                                  placeholder="Description (Optional)"
-                                  className={style.referenceCardStyleDescription}
-                                />
-                              </div>
+                  </div>
+                  {files?.length > 0 && (
+                    <div>
+                      {files?.map((file, index) => (
+                        <div key={index} className={`${style.alignItem} ${style.marginTop10}`}>
+                          <div className={`${style.threeColumnGrid}`}>
+                            <div className={`${style.displayInRow} ${style.referenceCardStyle}`}>
+                              <DescriptionIcon className={style.docsIcon} />
+                              <div className={style.marginLeft20}>{file?.name}</div>
+                            </div>
+                            <div>
+                              <CommonInputField
+                                value={documentTitle[index] || ""}
+                                onChange={(e) => {
+                                  const newDocumentTitle = [...documentTitle];
+                                  newDocumentTitle[index] = e.target.value;
+                                  setDocumentTitle(newDocumentTitle);
+                                }}
+                                type="text"
+                                placeholder="Title*"
+                                className={style.referenceCardStyleDescription}
+                              />
+                            </div>
+                            <div>
+                              <CommonInputField
+                                value={documentDesc[index] || ""}
+                                onChange={(e) => {
+                                  const newDocumentDesc = [...documentDesc];
+                                  newDocumentDesc[index] = e.target.value;
+                                  setDocumentDesc(newDocumentDesc);
+                                }}
+                                type="text"
+                                placeholder="Description (Optional)"
+                                className={style.referenceCardStyleDescription}
+                              />
                             </div>
                           </div>
-                        ))}
-                      </div>
-                    )}
-                    <div className={`${style.flexCenter}`}>
-                      <CommonCheckBox
-                        className={`${style.marginTop10}`}
-                        label="Send to Department Head / Chief"
-                        checked={isChecked === 'departmentHead'}
-                        onChange={handleCheckboxChange('departmentHead')}
-                      />
-
-                      <CommonCheckBox
-                        className={`${style.marginTop10}`}
-                        label="Send to COS / Deputy COS"
-                        checked={isChecked === 'cos'}
-                        onChange={handleCheckboxChange('cos')}
-                      />
+                        </div>
+                      ))}
                     </div>
-                    {/* <CommonRadio
+                  )}
+                  <div className={`${style.flexCenter}`}>
+                    <CommonCheckBox
+                      className={`${style.marginTop10}`}
+                      label="Send to Department Head / Chief"
+                      checked={isChecked === 'departmentHead'}
+                      onChange={handleCheckboxChange('departmentHead')}
+                    />
+
+                    <CommonCheckBox
+                      className={`${style.marginTop10}`}
+                      label="Send to COS / Deputy COS"
+                      checked={isChecked === 'cos'}
+                      onChange={handleCheckboxChange('cos')}
+                    />
+                  </div>
+                  {/* <CommonRadio
            className={style.leftAlign}
            value={processReappointment}
            onChange={(e) => setProcessReappointment(e.target.value)}
            radioValue={["No"]}
            label={["No, I do not want to have Privileges Extended for this Locum staff"]}
           /> */}
-                  </div>
                 </div>
               )}
             </div>
@@ -908,17 +901,14 @@ const LocumExtensiveRequestDialog = ({ getIsOpen, tableDataValue }) => {
                 //   opacity: isApproveEnabled ? 1 : 0.5
                 // }}
                 style={{
-                  pointerEvents: "auto",
-                  opacity: 1,
+                  pointerEvents: isValidDateRange() ? "auto" : "none",
+                  opacity: isValidDateRange() ? 1 : 0.5,
                 }}
                 onClick={() => {
-                  // if (!showSelectedPrivilegeLocum) {
-                  // setShowSelectedPrivilegeLocum(true);
-                  // reappointmentApplication();
-                  // } else {
-                  getIsOpen(false);
-                  reappointmentRequestApplication();
-                  // }
+                  if (isValidDateRange()) {
+                    getIsOpen(false);
+                    reappointmentRequestApplication();
+                  }
                 }}
               >
                 <div className={style.reviewButton}>Continue</div>

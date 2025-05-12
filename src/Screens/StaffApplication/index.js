@@ -20,6 +20,8 @@ import ClarificationRequestFromApplicantDialog from "../../Components/Clarificat
 import DocumentClarificationDialog from "../../Components/DocumentClarificationDialog";
 import ResolveDialog from "../../Components/ResolveDialog";
 import RequestOverrideDialog from "../../Components/RequestOverrideDialog";
+import OverrideRequestDialog from "../../Components/OverrideRequestDialog";
+import OverrideApprovalDialog from "../../Components/OverrideApprovalDialog";
 import IdleTimer from '../../Components/IdleTimer';
 import DepartmentTrackerDialog from '../../Components/DepartmentTrackerDialog'
 import PDFGenerateBox from '../../Components/PdfGenerate'
@@ -45,6 +47,8 @@ const StaffApplication = () => {
     const [showDocumentClarificationDialog, setShowDocumentClarificationDialog] = useState(false);
     const [showResolveDialog, setShowResolveDialog] = useState(false);
     const [showRequestOverrideDialog, setShowRequestOverrideDialog] = useState(false);
+    const [showOverRideRequestDialog, setShowOverRideRequestDialog] = useState(false);
+    const [showOverRideRequestApprovalDialog, setShowOverRideRequestApprovalDialog] = useState(false);
     const [showDeptTrackerDialog, setShowDeptTrackerDialog] = useState(false);
     const [showMdTrackerDialog, setShowMdTrackerDialog] = useState(false);
     const [showTimerDialog, setShowTimerDialog] = useState(false);
@@ -112,6 +116,14 @@ const StaffApplication = () => {
         setShowRequestOverrideDialog(value);
     };
 
+    const getOverRideRequestDialog = (value) => {
+        setShowOverRideRequestDialog(value);
+    };
+
+     const getOverRideRequestApprovalDialog = (value) => {
+        setShowOverRideRequestApprovalDialog(value);
+    };
+
     const getDeptTrackerDialog = (value) => {
         setShowDeptTrackerDialog(value);
     };
@@ -165,7 +177,7 @@ const StaffApplication = () => {
     return (
         <>
             {activeApplicationView ? (
-                <NewActiveApplication isLoading={isLoading} dataLevel={ccDateSetMode} ccMeetingDateSet={approveMeetDateSet} getloading={getloading} getSelectedTab={getSelectedTab} selectedTab={selectedTab} getActiveApplicationView={getActiveApplicationView} getApprovalNotesCommentBox={getApprovalNotesCommentBox} getApprovalwithoutNotesCommentBox={getApprovalwithoutNotesCommentBox} getActiveApplicationTask={getActiveApplicationTask} getEmailDialogBox={getEmailDialogBox} getApprovalNotesCommentBoxDept={getApprovalNotesCommentBoxDept} emailDialogBox={emailDialogBox} showTimerDialog={showTimerDialog} approvalnotesCommentsBox={approvalnotesCommentsBox} approvalwithoutnotesCommentsBox={approvalwithoutnotesCommentsBox} approvalnotesCommentsBoxDept={approvalnotesCommentsBoxDept} notesCommentsBox={notesCommentsBox} reappointmentChangesCommentsBox={reappointmentChangesCommentsBox} getNotesDialog={getNotesDialog} getClarificationRequestFromApplicantDialog={getClarificationRequestFromApplicantDialog} getDocumentClarificationDialog={getDocumentClarificationDialog} getResolveDialog={getResolveDialog} getRequestOverrideDialog={getRequestOverrideDialog} getStaffView={getStaffView} staffView={staffView} getPaymentDisplayBox={getPaymentDisplayBox} showClarificationRequestFromApplicantDialog={showClarificationRequestFromApplicantDialog} showDocumentClarificationDialog={showDocumentClarificationDialog} showNotesDialog={showNotesDialog} showResolveDialog={showResolveDialog} showRequestOverrideDialog={showRequestOverrideDialog} />
+                <NewActiveApplication isLoading={isLoading} dataLevel={ccDateSetMode} ccMeetingDateSet={approveMeetDateSet} getloading={getloading} getSelectedTab={getSelectedTab} selectedTab={selectedTab} getActiveApplicationView={getActiveApplicationView} getApprovalNotesCommentBox={getApprovalNotesCommentBox} getApprovalwithoutNotesCommentBox={getApprovalwithoutNotesCommentBox} getActiveApplicationTask={getActiveApplicationTask} getEmailDialogBox={getEmailDialogBox} getApprovalNotesCommentBoxDept={getApprovalNotesCommentBoxDept} emailDialogBox={emailDialogBox} showTimerDialog={showTimerDialog} approvalnotesCommentsBox={approvalnotesCommentsBox} approvalwithoutnotesCommentsBox={approvalwithoutnotesCommentsBox} approvalnotesCommentsBoxDept={approvalnotesCommentsBoxDept} notesCommentsBox={notesCommentsBox} reappointmentChangesCommentsBox={reappointmentChangesCommentsBox} getNotesDialog={getNotesDialog} getClarificationRequestFromApplicantDialog={getClarificationRequestFromApplicantDialog} getDocumentClarificationDialog={getDocumentClarificationDialog} getResolveDialog={getResolveDialog} getRequestOverrideDialog={getRequestOverrideDialog} getStaffView={getStaffView} staffView={staffView} getPaymentDisplayBox={getPaymentDisplayBox} showClarificationRequestFromApplicantDialog={showClarificationRequestFromApplicantDialog} showDocumentClarificationDialog={showDocumentClarificationDialog} showNotesDialog={showNotesDialog} showResolveDialog={showResolveDialog} showRequestOverrideDialog={showRequestOverrideDialog} getOverRideRequestDialog={getOverRideRequestDialog} getOverRideRequestApprovalDialog={getOverRideRequestApprovalDialog} />
             ) : credCommApplicationView ? (
                 <NewCredCommApplication getSelectedTab={getSelectedTab} selectedTab={selectedTab} getCredCommApplicationView={getCredCommApplicationView} />
             ) : (
@@ -200,6 +212,8 @@ const StaffApplication = () => {
                         getDocumentClarificationDialog={getDocumentClarificationDialog}
                         getResolveDialog={getResolveDialog}
                         getRequestOverrideDialog={getRequestOverrideDialog}
+                        getOverRideRequestDialog={getOverRideRequestDialog}
+                        getOverRideRequestApprovalDialog = {getOverRideRequestApprovalDialog}
                         //   getCCDateDialog={getCCDateDialog}
                         getDeptTrackerDialog={getDeptTrackerDialog}
                         getPdfGenerateBox={getPdfGenerateBox}
@@ -262,6 +276,16 @@ const StaffApplication = () => {
             {
                 showRequestOverrideDialog && (
                     <RequestOverrideDialog isLoading={isLoading} getIsOpen={getRequestOverrideDialog} getloading={getloading} getActiveApplicationView={getActiveApplicationView} />
+                )
+            }
+            {
+                showOverRideRequestDialog && (
+                    <OverrideRequestDialog isLoading={isLoading} getIsOpen={getOverRideRequestDialog} getloading={getloading} getActiveApplicationView={getActiveApplicationView} />
+                )
+            }
+             {
+                showOverRideRequestApprovalDialog && (
+                    <OverrideApprovalDialog isLoading={isLoading} getIsOpen={getOverRideRequestApprovalDialog} getloading={getloading} getActiveApplicationView={getActiveApplicationView} />
                 )
             }
             {/* {showCCDateDialog && (
