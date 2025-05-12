@@ -49,7 +49,9 @@ const LocumStaffList = ({
   getLocumRequestDialog,
   getNotesDialog,
   showLocumExtensiveDialog,
+  showLocumRequestDialog,
   showLocumExtensiveRequestDialog
+
 }) => {
   const PDFRef = createRef();
   const navigate = useNavigate();
@@ -195,7 +197,7 @@ const LocumStaffList = ({
 
   useEffect(() => {
     getActiveUserData(selectedTab);
-  }, [selectedTab, sortField, sortValue, page, totalCount, showLocumExtensiveDialog, searchTermForTable, limit, showLocumExtensiveRequestDialog]);
+  }, [selectedTab, sortField, sortValue, page, totalCount, showLocumExtensiveDialog, searchTermForTable, limit, showLocumExtensiveRequestDialog, showLocumRequestDialog]);
 
   const getReFetchMetaData = (value) => {
     setReFetchMetaData(value);
@@ -255,7 +257,7 @@ const LocumStaffList = ({
     getRequestUserDataCount();
     // getActiveUserDataSearch();
     console.log("setSelectedDepartment", selectedDepartment)
-  }, [selectedDepartment, searchTermForTable]);
+  }, [selectedDepartment, searchTermForTable, showLocumRequestDialog]);
 
   // useEffect(() => {
   //   getActiveUserDataActiveCount();
@@ -969,7 +971,7 @@ const LocumStaffList = ({
     //   // conditionToShow: `data?.reAppointmentInitiated === false`,
     // },
     {
-      data: `${tableData?.locumRenewalDetails?.reappointmentType === "EXTENSION" ? "Review to Extend" : "Review to Renew"}`,
+      data: "Review",
       requiredValue: "boolean",
       onClick: onClickRequestLocumDialog,
     },

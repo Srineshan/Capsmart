@@ -113,9 +113,11 @@ const NewActiveApplication = ({
   getResolveDialog,
   showResolveDialog,
   getRequestOverrideDialog,
+  getOverRideRequestDialog,
   staffView,
   getPaymentDisplayBox,
-  dataLevel
+  dataLevel,
+  getOverRideRequestApprovalDialog
 
 }) => {
   console.log("contract Type", contractType);
@@ -1204,6 +1206,10 @@ const NewActiveApplication = ({
     getRequestOverrideDialog(true);
   };
 
+  const onClickOverrideRequestDialogFunction = () => {
+    getOverRideRequestDialog(true);
+  };
+
   const onClickNotesEditFunction = (logID, notesEdit, privateKey, File) => {
     // getEditNotesDialog(true);
     setShowEditNotesDialog(true)
@@ -1252,6 +1258,10 @@ const NewActiveApplication = ({
 
   const onClickRejectFunction = () => {
     handleApplicationReject(true);
+  };
+
+  const onClickOverRideApprovalDialog = () => {
+    getOverRideRequestApprovalDialog(true);
   };
 
   const handleDeleteNote = async (noteID) => {
@@ -10760,6 +10770,75 @@ const NewActiveApplication = ({
                               onClick={isApproved ? onClickApprovalDeptFunction : undefined}
                             >
                               {applicationType === "REAPPOINTMENT" ? "Verified, Send to Department Head" : "Verified, Send to Cred Comm"}
+                            </div>
+                          </Tooltip>
+                        </div>
+                      </div>
+                      {workModeType === 'Staff Manager' && selectedTab === 'level-1' && applicationType === "LOCUM" && (
+                        <div className={`${style.marginTop20}`}>
+                        <div
+                          // className={`${style.bigButtonStyle1} ${style.cursorPointer}`}
+                          className={`${style.bigButtonStyle1} ${style.cursorPointer}`}
+                          style={{ opacity:  1  }}>
+                          <Tooltip title={"Click to Request for Override"} arrow>
+                            <div
+                              className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                              onClick={onClickOverrideRequestDialogFunction}
+                              // onClick={isApproved ? onClickApprovalDeptFunction : undefined}
+                            >
+                              REQUEST FOR OVERRIDE
+                            </div>
+                          </Tooltip>
+                        </div>
+                      </div>
+                      )}
+                    </div>
+                  ) : ("")}
+                   {((workModeType === 'Chief Of Staff' && selectedTab === 'OverrideRequest' && applicationType === "LOCUM")) ? (
+                    <div className={`${style.fixedBottom} ${approvalwithoutnotesCommentsBox || approvalnotesCommentsBox || approvalnotesCommentsBoxDept || showApplicationDeclineDialog || notesCommentsBox || reappointmentChangesCommentsBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
+                      <div className={`${style.twoColumnGrid}`}>
+                        <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
+                          <Tooltip title={"Click to Save Your Progress"} arrow>
+                            <div
+                              className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                              onClick={() => {
+                                onClose();
+                              }}
+                            >
+                              SAVE IN PROGRESS
+                            </div>
+                          </Tooltip>
+                        </div>
+                        <div
+                          className={`${style.buttonCardStyle} ${style.cursorPointer}`}
+                        >
+                          <Tooltip title={"Click to Reject"} arrow>
+                            <div
+                              className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                              // onClick={() => {
+                              //   setShowApplicationDeclineDialog(true);
+                              // }}
+                              onClick={() => {
+                                setShowApplicationDeclineDialog(true);
+                              }}
+                            >
+                              DECLINE OVERRIDE
+                            </div>
+                          </Tooltip>
+                        </div>
+                      </div>
+                      <div className={`${style.marginTop20}`}>
+                        <div
+                          // className={`${style.bigButtonStyle1} ${style.cursorPointer}`}
+                          className={`${style.bigButtonStyle1} ${style.cursorPointer}`}
+                          style={{ opacity: 1 }}>
+                          <Tooltip title={"Click to Override the Privileges"} arrow>
+                            <div
+                              className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                              // onClick={onClickApprovalDeptFunction}
+                              onClick={onClickOverRideApprovalDialog}
+                            >
+                              OVERRIDE FOR TEMPORARY PRIVILEGES
                             </div>
                           </Tooltip>
                         </div>
