@@ -48,8 +48,8 @@ const LocumStaffList = ({
   getLocumExtensiveRequestDialog,
   getLocumRequestDialog,
   getNotesDialog,
-  showLocumExtensiveDialog
-
+  showLocumExtensiveDialog,
+  showLocumExtensiveRequestDialog
 }) => {
   const PDFRef = createRef();
   const navigate = useNavigate();
@@ -195,7 +195,7 @@ const LocumStaffList = ({
 
   useEffect(() => {
     getActiveUserData(selectedTab);
-  }, [selectedTab, sortField, sortValue, page, totalCount, showLocumExtensiveDialog, searchTermForTable, limit]);
+  }, [selectedTab, sortField, sortValue, page, totalCount, showLocumExtensiveDialog, searchTermForTable, limit, showLocumExtensiveRequestDialog]);
 
   const getReFetchMetaData = (value) => {
     setReFetchMetaData(value);
@@ -290,9 +290,9 @@ const LocumStaffList = ({
       const userDepartmentListData =
         userDetailsFetchOption?.sites?.sites[0]?.departmentList?.departments[0]?.id;
 
-      let apiUrl = `application-management-service/application/request?requestType=LOCUM_RENEWAL_REQUEST&status=PENDING`;
+      let apiUrl = `application-management-service/application/request?requestType=LOCUM_RENEWAL_REQUEST&status=PENDING&role=${workModeType}`;
 
-      if (userDepartmentListData) {
+      if (userDepartmentListData && workModeType !== "Chief Of Staff") {
         apiUrl += `&departmentSpecialties=${userDepartmentListData}`;
       }
 
@@ -366,8 +366,8 @@ const LocumStaffList = ({
       let apiUrl = "";
 
       if (selectedTab === "REQUEST") {
-        apiUrl = `application-management-service/application/request?requestType=LOCUM_RENEWAL_REQUEST&status=PENDING`;
-        if (selectedDepartment) {
+        apiUrl = `application-management-service/application/request?requestType=LOCUM_RENEWAL_REQUEST&status=PENDING&role=${workModeType}`;
+        if (selectedDepartment && workModeType !== "Chief Of Staff") {
           apiUrl += `&departmentSpecialties=${selectedDepartment}`;
         }
       } else {
@@ -800,11 +800,10 @@ const LocumStaffList = ({
 
       reappointDate.push([
         data?.staff?.reAppointmentInitiated
-          ? `Locum ${
-              data?.locumRenewalDetails?.reappointmentType === "EXTENSION"
-                ? "Extension"
-                : "Renewal"
-            } Request Sent on ${format(new Date(data?.staff?.reAppointmentSentDate), "dd/MM/yyyy")}`
+          ? `Locum ${data?.locumRenewalDetails?.reappointmentType === "EXTENSION"
+            ? "Extension"
+            : "Renewal"
+          } Request Sent on ${format(new Date(data?.staff?.reAppointmentSentDate), "dd/MM/yyyy")}`
           : "Locum Extension Not Sent",
       ]);
       applicantId.push(data?.staff?.status === "ACTIVE" ? "Active" : "Expired" || "");
@@ -917,7 +916,7 @@ const LocumStaffList = ({
       data: "Request Extension",
       requiredValue: "boolean",
       onClick: onClickExtensiveRequestLocumDialog,
-      // conditionToShow: `data?.reAppointmentInitiated === false`,
+      conditionToShow: `data?.extensionRequested === false`,
     },
     // {
     //   data: "Create Note",
@@ -947,7 +946,7 @@ const LocumStaffList = ({
       data: "Request Reactivation",
       requiredValue: "boolean",
       onClick: onClickExtensiveRequestLocumDialog,
-      // conditionToShow: `data?.reAppointmentInitiated === false`,
+      conditionToShow: `data?.extensionRequested === false`,
     },
     // {
     //   data: "Send Reminder",
