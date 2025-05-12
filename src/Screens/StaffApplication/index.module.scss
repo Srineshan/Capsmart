@@ -967,6 +967,12 @@ body::-webkit-scrollbar {
   grid-gap: 1%;
 }
 
+.locumOverrideStaffGrid {
+  display: grid;
+  grid-template-columns: 22% 12% 7% 7% 5% 19% 14% 7%;
+  grid-gap: 1%;
+}
+
 
 .applicationStaffGrid {
   display: grid;

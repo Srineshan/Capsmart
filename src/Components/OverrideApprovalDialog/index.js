@@ -34,7 +34,7 @@ const OverRideApprovalDialog = ({ getIsOpen, getActiveApplicationView, dateForma
   const [userSelectRoleDept, setUserSelectRoleDept] = useState([]);
   const [selectedRoleDept, setSelectedRoleDept] = useState('');
   const [userRoleComments, setUserRoleComments] = useState('');
-  const [isChecked, setIsChecked] = useState({ isChecked1: false, isChecked2: false, isChecked3: false });
+  const [isChecked, setIsChecked] = useState(false);
   // const [isApproveEnabled, setIsApproveEnabled] = useState(false);
   const id = sessionStorage.getItem("applicationId");
   const componentRef = useRef(null);
@@ -79,6 +79,7 @@ const OverRideApprovalDialog = ({ getIsOpen, getActiveApplicationView, dateForma
   const [applicationType, setApplicationType] = useState(() =>
     sessionStorage.getItem('applicationCreationType') || 'NEW'
   );
+  const requestId = sessionStorage.getItem('requestId');
   const [logDetails, setLogDetails] = useState([]);
   // const isApproveEnabled = 
   //   // userRoleComments.trim() !== '' && 
@@ -250,7 +251,7 @@ const OverRideApprovalDialog = ({ getIsOpen, getActiveApplicationView, dateForma
   }
   
   const checkRequirements = () => {
-  return isChecked.isChecked1;
+  return isChecked
 };
 
 
@@ -507,33 +508,28 @@ const OverRideApprovalDialog = ({ getIsOpen, getActiveApplicationView, dateForma
 
   useEffect(() => {
     checkApproveEnabled();
-  }, [userRoleComments, documentTitle, selectedDateForDept, selectedRoleCred, selectedRoleDept, uploadFileData]);
+  }, [userRoleComments, documentTitle, uploadFileData, isChecked, isSigned]);
 
   const checkApproveEnabled = () => {
     const hasValidComments = userRoleComments.trim() !== '';
-    const hasValidMember = selectedRoleCred !== '';
-    const hasValidMemberDept = selectedRoleDept !== '';
     const isLocum = applicationType === "LOCUM";
 
-    // Check if there are any uploaded files
     if (uploadFileData.length > 0) {
-      // For files, check if all documents have titles
       const allFilesHaveTitles = uploadFileData.every((_, index) =>
         documentTitle[index] && documentTitle[index].trim() !== ''
       );
 
       if (isLocum) {
-        setIsApproveEnabled(hasValidMember && allFilesHaveTitles);
+        setIsApproveEnabled(hasValidComments && allFilesHaveTitles && isSigned);
       } else {
-        setIsApproveEnabled(hasValidMember && hasValidMemberDept && allFilesHaveTitles);
+        setIsApproveEnabled(hasValidComments && allFilesHaveTitles);
       }
     } else {
-     // If no files are uploaded
-    if (isLocum) {
-      setIsApproveEnabled(hasValidMember);
-    } else {
-      setIsApproveEnabled(hasValidMember && hasValidMemberDept);
-    }
+      if (isLocum) {
+        setIsApproveEnabled(hasValidComments && isSigned);
+      } else {
+        setIsApproveEnabled(hasValidComments);
+      }
     }
   };
 
@@ -542,124 +538,29 @@ const OverRideApprovalDialog = ({ getIsOpen, getActiveApplicationView, dateForma
     getIsOpen(false);
   };
 
-  // const onClickApproveMoveFunction = () => {
-  //   handleApplicationApprove(true);
-  //   getApplicationMoveToNext(true);
-  //   // handleApplicationApproveDate(true);
-  // }
-  const onClickApproveMoveFunction = () => {
-    handleApplicationApprove(true)
-      .then(() => {
-        return getApplicationMoveToNext(true);
-      })
-      .then(() => {
-        console.log('Application successfully moved to next step.');
-      })
-      .catch((error) => {
-        console.error('Error processing application:', error);
-      });
-  };
-
-  const handleApplicationApproveDate = async () => {
-    try {
-      // const payload = {
-      //   upcomingCredCommitteeMeetingDate: selectedDateForDept,
-      // };
-
-      // const temp = formDetails
-      // const payload = temp?.upcomingCredCommitteeMeetingDate
-      formDetails.upcomingCredCommitteeMeetingDate = selectedDateForDept;
-
-      await PUT(
-        `application-management-service/application/${id}`,
-        formDetails
-      );
-
-      await getApplication();
-      onClose();
-    } catch (error) {
-      console.error('Error approving application:', error);
-    }
-  };
-
-  const handleApplicationApprove = async () => {
-    let role;
-    let title;
-    const files = (uploadFileData || []).map((item, index) => ({
-      ...item.file,
-      description: documentDesc[index] || "",
-      title: documentTitle[index] || "",
-    }));
-    let isDelegate = true;
-    if (selectedTab === 'level-2') {
-      if (workModeType === "Department Head") {
-        title = "Dept. Head / Chief Review";
-      } else {
-        title = "Dept. Head / Chief Review";
-      }
-    } else if (selectedTab === 'level-3') {
-      if (workModeType === "Credentialing Committee") {
-        title = "Credentialing Committee Review";
-      } else if (workModeType === "Chief Of Staff") {
-        title = "Chief Of Staff Review";
-      }
-    } else if (selectedTab === 'level-4') {
-      title = "MAC Review";
-    } else if (selectedTab === 'level-5') {
-      title = "BOD Approval";
-    } else if (selectedTab === 'level-1') {
-      if (workModeType === "Staff Manager") {
-        role = "Staff Manager";
-        isDelegate = false;
-        title = "Staff Manager Verification";
-      } else {
-        role = "Staff Manager";
-        title = "Staff Manager Verification";
-      }
-    }
-
-    const payload = {
-      // notes: userRoleComments,
-      role: isDelegate ? role : "",
-      notes: {
-        notes: userRoleComments
-      },
-      title: title,
-      approvedDate: new Date().toISOString(),
-      // userDetail:{
-      //   id: selectedRoleCred,
-      //   role: "Credentialing Committee"
-      // } 
-      userDetail: [
-        {
-          id: selectedRoleCred,
-          name: {
-            firstName: firstName,
-            lastName: lastName,
-            middleName: middleName
+  const reappointmentRequestApplication = async () => {
+    const temp = {
+          notes: {
+            notes: userRoleComments
           },
-          role: "Credentialing Committee"
-        },
-        {
-          id: selectedRoleDept,
-          name: {
-            firstName: firstNameDept,
-            lastName: lastNameDept,
-            middleName: middleNameDept
-          },
-          role: "Department Head"
+          staffEsign: {
+            name : name,
+            signedDate : currentDate
+          }
         }
-      ],
-      files: files || [],
-      // upcomingCredCommitteeMeetingDate: selectedDateForDept || ''
-    };
 
-    await PUT(
-      `application-management-service/application/${id}/workflow/complete/APPROVED?isDelegate=${isDelegate}&approvalType=VERIFIED_AND_ACCEPTED`,
-      payload
+    const newFormData = new FormData();
+    newFormData.append(
+      "response",
+      new Blob([JSON.stringify({temp})], {
+        type: "application/json",
+      })
+    );
+    newFormData.append("documents", []);
+    await PUT(`application-management-service/application/request/${requestId}/response?workflowAction=APPROVED`, newFormData
     )
-      .then(response => {
-        console.log('successfull');
+      .then((response) => {
+        console.log(response?.data);
         onClose();
       })
       .catch((error) => {
@@ -667,104 +568,9 @@ const OverRideApprovalDialog = ({ getIsOpen, getActiveApplicationView, dateForma
       });
   };
 
-  const getApplicationMoveToNext = async () => {
-    let role;
-    let title;
-    const files = (uploadFileData || []).map((item, index) => ({
-      ...item.file,
-      description: documentDesc[index] || "",
-      title: documentTitle[index] || "",
-    }));
-    let isDelegate = true;
-    if (selectedTab === 'level-2') {
-      if (workModeType === "Department Head") {
-        title = "Dept. Head / Chief Review";
-      } else {
-        title = "Dept. Head / Chief Review";
-      }
-    } else if (selectedTab === 'level-3') {
-      if (workModeType === "Credentialing Committee") {
-        title = "Credentialing Committee Review";
-      } else if (workModeType === "Chief Of Staff") {
-        title = "Chief Of Staff Review";
-      }
-    } else if (selectedTab === 'level-4') {
-      title = "MAC Review";
-    } else if (selectedTab === 'level-5') {
-      title = "BOD Approval";
-    } else if (selectedTab === 'level-1') {
-      if (workModeType === "Staff Manager") {
-        role = "Staff Manager";
-        isDelegate = false;
-        title = "Staff Manager Verification";
-      } else {
-        role = "Staff Manager";
-        title = "Staff Manager Verification";
-      }
-    }
 
-
-    const payload = {
-      // notes: userRoleComments,
-      role: isDelegate ? role : "",
-      notes: {
-        notes: userRoleComments
-      },
-      title: title,
-      approvedDate: new Date().toISOString(),
-      userDetail: [
-        {
-          id: selectedRoleCred,
-          name: {
-            firstName: firstName,
-            lastName: lastName,
-            middleName: middleName
-          },
-          role: "Credentialing Committee"
-        },
-        {
-          id: selectedRoleDept,
-          name: {
-            firstName: firstNameDept,
-            lastName: lastNameDept,
-            middleName: middleNameDept
-          },
-          role: "Department Head"
-        }
-      ],
-      files: files,
-      //  upcomingCredCommitteeMeetingDate: selectedDateForDept || ""
-    };
-
-    await PUT(`application-management-service/application/${id}/workflow/move?workflowAction=APPROVED&isDelegate=${isDelegate}`, payload)
-      .then(response => {
-        console.log('successfull');
-        onClose();
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-
-  const handleDateChange = (date, field) => {
-    const formattedDate = date
-      ? format(new Date(date), "yyyy-MM-dd'T'HH:mm:ss'Z'")
-      : format(new Date(date), 'yyyy-MM-dd');
-
-    setSelectedDateForDept(formattedDate);
-
-
-    setCalendarStart(false);
-    // setIsButtonDisabled(false); 
-
-  };
-
-  const handleCheckboxChange = (checkboxName) => (event) => {
-    const newIsChecked = {
-      ...isChecked,
-      [checkboxName]: event.target.checked,
-    };
-    setIsChecked(newIsChecked);
+  const handleCheckboxChange = (event) => {
+    setIsChecked(event.target.checked);
   };
 
   const dynamicValues = {
@@ -945,8 +751,8 @@ const OverRideApprovalDialog = ({ getIsOpen, getActiveApplicationView, dateForma
                 <CommonCheckBox
                     className={`${style.marginTop}`}
                     label={formatLabel("I as the Chief of Staff recommend the Privilege Extension for {ApplicantName} as per the criteria and standards established by {EntityName}’s bylaws and policies. This Recommendation is contingent upon the fulfillment of all required qualifications and obligations as outlined in the medical staff bylaws.", dynamicValues)}
-                    checked={isChecked.isChecked1}
-                    onChange={handleCheckboxChange('isChecked1')}
+                    checked={isChecked}
+                    onChange={handleCheckboxChange}
                   />
                   <div className={style.twoCol}>
               <div
@@ -978,7 +784,7 @@ const OverRideApprovalDialog = ({ getIsOpen, getActiveApplicationView, dateForma
                   </div>
                   <div
                     className={`${style.reviewButtonStyle} ${isApproveEnabled ? style.cursorPointer : undefined} ${style.marginLeft}`}
-                    onClick={onClickApproveMoveFunction}
+                    onClick={reappointmentRequestApplication}
                     style={{
                       pointerEvents: isApproveEnabled ? 'auto' : 'none',
                       opacity: isApproveEnabled ? 1 : 0.5
