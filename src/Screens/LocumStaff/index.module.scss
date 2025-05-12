@@ -706,6 +706,12 @@ body::-webkit-scrollbar {
 //   grid-gap: 10px;
 // }
 
+.requestLocumStaffGrid {
+  display: grid;
+  grid-template-columns: 17% 4% 10% 10% 5% 13% 11% 9% 16%;
+  grid-gap: 1%;
+}
+
 .expiredLocumStaffGrid {
   display: grid;
   grid-template-columns: 21% 4% 15% 6% 6% 16% 11% 14%;
