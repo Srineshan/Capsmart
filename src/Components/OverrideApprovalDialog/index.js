@@ -544,6 +544,7 @@ const OverRideApprovalDialog = ({ getIsOpen, getActiveApplicationView, dateForma
             notes: userRoleComments
           },
           staffEsign: {
+            esign: encryptedText,
             name : name,
             signedDate : currentDate
           }
@@ -760,10 +761,11 @@ const OverRideApprovalDialog = ({ getIsOpen, getActiveApplicationView, dateForma
                 className={!checkRequirements() ? style.disabled : style.signatureContainer}
               >
                 <ESignature
-                  userName={isSigned ? name : ""}
+                  // userName={isSigned ? name : ""}
                   encData={isSigned ? encryptedText : ''}
                   showData={isSigned}
                   showDatais={true}
+                  alternateSignature={isSigned ? `${name}` : ""}
                 />
               </div>
               <div className={style.verticalAlignCenter}>
