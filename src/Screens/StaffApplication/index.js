@@ -7,6 +7,7 @@ import { Dialog, Classes } from '@blueprintjs/core';
 import ValidationDialog from '../../Components/validationDialog';
 import TaskStatusDialog from '../../Components/TaskStatusDialog';
 import NotesCommentDialog from '../../Components/NotesCommentDialog';
+import OverrideNotesDialog from '../../Components/OverrideNotesDialog';
 import ReappointmentApplicationChangesDialog from '../../Components/ReappointmentApplicationChangesDialog';
 import ApprovalWithNotesDialog from '../../Components/ApprovalWithNotesDialog';
 import ApprovalWithoutNotesDialog from '../../Components/ApprovalWithoutNotesDialog';
@@ -22,6 +23,7 @@ import ResolveDialog from "../../Components/ResolveDialog";
 import RequestOverrideDialog from "../../Components/RequestOverrideDialog";
 import OverrideRequestDialog from "../../Components/OverrideRequestDialog";
 import OverrideApprovalDialog from "../../Components/OverrideApprovalDialog";
+import OverrideDeclineDialog from "../../Components/OverrideDeclineDialog";
 import IdleTimer from '../../Components/IdleTimer';
 import DepartmentTrackerDialog from '../../Components/DepartmentTrackerDialog'
 import PDFGenerateBox from '../../Components/PdfGenerate'
@@ -35,6 +37,7 @@ const StaffApplication = () => {
     const [activeApplicationTask, setActiveApplicationTask] = useState(false);
     // const [activeApplicationTaskReappoint, setActiveApplicationTaskReappoint] = useState(false);
     const [notesCommentsBox, setNotesCommentBox] = useState(false);
+    const [overrideNotesCommentsBox, setOverrideNotesCommentBox] = useState(false);
     const [reappointmentChangesCommentsBox, setReappointmentChangesCommentsBox] = useState(false);
     const [approvalnotesCommentsBox, setApprovalNotesCommentBox] = useState(false);
     const [approvalwithoutnotesCommentsBox, setApprovalwithoutNotesCommentBox] = useState(false);
@@ -49,6 +52,7 @@ const StaffApplication = () => {
     const [showRequestOverrideDialog, setShowRequestOverrideDialog] = useState(false);
     const [showOverRideRequestDialog, setShowOverRideRequestDialog] = useState(false);
     const [showOverRideRequestApprovalDialog, setShowOverRideRequestApprovalDialog] = useState(false);
+    const [showOverRideRequestDeclineDialog, setShowOverRideRequestDeclineDialog] = useState(false);
     const [showDeptTrackerDialog, setShowDeptTrackerDialog] = useState(false);
     const [showMdTrackerDialog, setShowMdTrackerDialog] = useState(false);
     const [showTimerDialog, setShowTimerDialog] = useState(false);
@@ -124,6 +128,10 @@ const StaffApplication = () => {
         setShowOverRideRequestApprovalDialog(value);
     };
 
+     const getOverRideRequestDeclineDialog = (value) => {
+        setShowOverRideRequestDeclineDialog(value);
+    };
+
     const getDeptTrackerDialog = (value) => {
         setShowDeptTrackerDialog(value);
     };
@@ -143,6 +151,10 @@ const StaffApplication = () => {
 
     const getNotesCommentBox = (value) => {
         setNotesCommentBox(value);
+    }
+
+     const getOverrideNotesCommentBox = (value) => {
+        setOverrideNotesCommentBox(value);
     }
 
     const getPaymentDisplayBox = (value) => {
@@ -177,7 +189,7 @@ const StaffApplication = () => {
     return (
         <>
             {activeApplicationView ? (
-                <NewActiveApplication isLoading={isLoading} dataLevel={ccDateSetMode} ccMeetingDateSet={approveMeetDateSet} getloading={getloading} getSelectedTab={getSelectedTab} selectedTab={selectedTab} getActiveApplicationView={getActiveApplicationView} getApprovalNotesCommentBox={getApprovalNotesCommentBox} getApprovalwithoutNotesCommentBox={getApprovalwithoutNotesCommentBox} getActiveApplicationTask={getActiveApplicationTask} getEmailDialogBox={getEmailDialogBox} getApprovalNotesCommentBoxDept={getApprovalNotesCommentBoxDept} emailDialogBox={emailDialogBox} showTimerDialog={showTimerDialog} approvalnotesCommentsBox={approvalnotesCommentsBox} approvalwithoutnotesCommentsBox={approvalwithoutnotesCommentsBox} approvalnotesCommentsBoxDept={approvalnotesCommentsBoxDept} notesCommentsBox={notesCommentsBox} reappointmentChangesCommentsBox={reappointmentChangesCommentsBox} getNotesDialog={getNotesDialog} getClarificationRequestFromApplicantDialog={getClarificationRequestFromApplicantDialog} getDocumentClarificationDialog={getDocumentClarificationDialog} getResolveDialog={getResolveDialog} getRequestOverrideDialog={getRequestOverrideDialog} getStaffView={getStaffView} staffView={staffView} getPaymentDisplayBox={getPaymentDisplayBox} showClarificationRequestFromApplicantDialog={showClarificationRequestFromApplicantDialog} showDocumentClarificationDialog={showDocumentClarificationDialog} showNotesDialog={showNotesDialog} showResolveDialog={showResolveDialog} showRequestOverrideDialog={showRequestOverrideDialog} getOverRideRequestDialog={getOverRideRequestDialog} getOverRideRequestApprovalDialog={getOverRideRequestApprovalDialog} />
+                <NewActiveApplication isLoading={isLoading} dataLevel={ccDateSetMode} ccMeetingDateSet={approveMeetDateSet} getloading={getloading} getSelectedTab={getSelectedTab} selectedTab={selectedTab} getActiveApplicationView={getActiveApplicationView} getApprovalNotesCommentBox={getApprovalNotesCommentBox} getApprovalwithoutNotesCommentBox={getApprovalwithoutNotesCommentBox} getActiveApplicationTask={getActiveApplicationTask} getEmailDialogBox={getEmailDialogBox} getApprovalNotesCommentBoxDept={getApprovalNotesCommentBoxDept} emailDialogBox={emailDialogBox} showTimerDialog={showTimerDialog} approvalnotesCommentsBox={approvalnotesCommentsBox} approvalwithoutnotesCommentsBox={approvalwithoutnotesCommentsBox} approvalnotesCommentsBoxDept={approvalnotesCommentsBoxDept} notesCommentsBox={notesCommentsBox} reappointmentChangesCommentsBox={reappointmentChangesCommentsBox} getNotesDialog={getNotesDialog} getClarificationRequestFromApplicantDialog={getClarificationRequestFromApplicantDialog} getDocumentClarificationDialog={getDocumentClarificationDialog} getResolveDialog={getResolveDialog} getRequestOverrideDialog={getRequestOverrideDialog} getStaffView={getStaffView} staffView={staffView} getPaymentDisplayBox={getPaymentDisplayBox} showClarificationRequestFromApplicantDialog={showClarificationRequestFromApplicantDialog} showDocumentClarificationDialog={showDocumentClarificationDialog} showNotesDialog={showNotesDialog} showResolveDialog={showResolveDialog} showRequestOverrideDialog={showRequestOverrideDialog} getOverRideRequestDialog={getOverRideRequestDialog} getOverRideRequestApprovalDialog={getOverRideRequestApprovalDialog} getOverRideRequestDeclineDialog={getOverRideRequestDeclineDialog} />
             ) : credCommApplicationView ? (
                 <NewCredCommApplication getSelectedTab={getSelectedTab} selectedTab={selectedTab} getCredCommApplicationView={getCredCommApplicationView} />
             ) : (
@@ -191,6 +203,7 @@ const StaffApplication = () => {
                         getActiveApplicationTask={getActiveApplicationTask}
                         getCredCommApplicationView={getCredCommApplicationView}
                         getNotesCommentBox={getNotesCommentBox}
+                        getOverrideNotesCommentBox={getOverrideNotesCommentBox}
                         getReappointmentChangesCommentBox={getReappointmentChangesCommentBox}
                         getApprovalNotesCommentBox={getApprovalNotesCommentBox}
                         getApprovalwithoutNotesCommentBox={getApprovalwithoutNotesCommentBox}
@@ -214,6 +227,7 @@ const StaffApplication = () => {
                         getRequestOverrideDialog={getRequestOverrideDialog}
                         getOverRideRequestDialog={getOverRideRequestDialog}
                         getOverRideRequestApprovalDialog = {getOverRideRequestApprovalDialog}
+                        getOverRideRequestDeclineDialog={getOverRideRequestDeclineDialog}
                         //   getCCDateDialog={getCCDateDialog}
                         getDeptTrackerDialog={getDeptTrackerDialog}
                         getPdfGenerateBox={getPdfGenerateBox}
@@ -222,6 +236,9 @@ const StaffApplication = () => {
                         staffView={staffView}
                         ccDateSetMode={ccDateSetMode}
                         getMdTrackerDialog={getMdTrackerDialog}
+                        showOverRideRequestDialog={showOverRideRequestDialog}
+                        showOverRideRequestApprovalDialog={showOverRideRequestApprovalDialog}
+                        showOverRideRequestDeclineDialog={showOverRideRequestDeclineDialog}
                     />
                 </Fragment>
             )}
@@ -233,6 +250,9 @@ const StaffApplication = () => {
             )}
             {notesCommentsBox && (
                 <NotesCommentDialog isLoading={isLoading} getloading={getloading} getIsOpen={getNotesCommentBox} getActiveApplicationView={getActiveApplicationView} selectedTab={selectedTab} />
+            )}
+            {overrideNotesCommentsBox && (
+                <OverrideNotesDialog isLoading={isLoading} getloading={getloading} getIsOpen={getOverrideNotesCommentBox} getActiveApplicationView={getActiveApplicationView} selectedTab={selectedTab} />
             )}
             {reappointmentChangesCommentsBox && (
                 <ReappointmentApplicationChangesDialog isLoading={isLoading} getloading={getloading} getIsOpen={getReappointmentChangesCommentBox} selectedTab={selectedTab} getActiveApplicationView={getActiveApplicationView} />
@@ -286,6 +306,11 @@ const StaffApplication = () => {
              {
                 showOverRideRequestApprovalDialog && (
                     <OverrideApprovalDialog isLoading={isLoading} getIsOpen={getOverRideRequestApprovalDialog} getloading={getloading} getActiveApplicationView={getActiveApplicationView} />
+                )
+            }
+            {
+                showOverRideRequestDeclineDialog && (
+                    <OverrideDeclineDialog isLoading={isLoading} getIsOpen={getOverRideRequestDeclineDialog} getloading={getloading} getActiveApplicationView={getActiveApplicationView} />
                 )
             }
             {/* {showCCDateDialog && (
