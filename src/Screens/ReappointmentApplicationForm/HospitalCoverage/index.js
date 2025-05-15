@@ -167,6 +167,7 @@ const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
   };
 
   const getIsSaveInProgressOpen = (value) => {
+    handleSubmitApplicationReq("save");
     setIsSaveInProgressOpen(value);
   };
 
@@ -227,7 +228,7 @@ const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
     if (missingKeys?.length !== 0) {
       setShowValidationDialog(true);
     } else {
-      handleSubmitApplicationReq();
+      handleSubmitApplicationReq("continue");
     }
     setWarningFields(missingKeys);
     console.log("Metadata", missingKeys);
@@ -239,7 +240,7 @@ const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
       schemaId: basicForm?.forms?.[formIndex]?.schemaId,
       data: { whoCovers: whoCovers, whoCoversObstetrics: whoCoversObstetrics },
       unFilledFields: warningFields?.map((data) => data?.label),
-      acknowledged: data === "skipped" ? false : true,
+      acknowledged: data === "skipped" || data === "save" ? false : true,
     };
     await PUT(
       `application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`,
@@ -250,11 +251,13 @@ const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
         setBasicForm(response?.data);
         SuccessToaster("Application Updated Successfully");
         getPreApplication();
+      if (data !== "save") {
         if (sessionStorage.getItem("fromSummary") === "true") {
           navigate(-1);
         } else {
           navigate(navigateURL);
         }
+      }
       })
       .catch((error) => {
         console.log(error);

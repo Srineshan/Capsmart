@@ -147,6 +147,21 @@
     padding: 0px 15px;
 }
 
+
+.filterTypeGreenActive {
+    border: 1px solid #E8E9E9;
+    border-radius: 8px;
+    text-align: left;
+    font: normal normal bold 14px/28px proxima-nova;
+    letter-spacing: 0px;
+    color: #FFFFFF;
+    text-transform: capitalize;
+    opacity: 1;
+    padding: 0px 15px;
+    background-color: #14B15A;
+}
+
+
 .filterTypeGrey {
     border: 1px solid #E8E9E9;
     border-radius: 8px;
@@ -157,6 +172,19 @@
     text-transform: capitalize;
     opacity: 1;
     padding: 0px 15px;
+}
+
+.filterTypeGreyActive {
+    border: 1px solid #E8E9E9;
+    border-radius: 8px;
+    text-align: left;
+    font: normal normal bold 14px/28px proxima-nova;
+    letter-spacing: 0px;
+    color: #FFFFFF;
+    text-transform: capitalize;
+    opacity: 1;
+    padding: 0px 15px;
+    background-color: #737575;
 }
 
 .filterTypeRed {
@@ -170,6 +198,18 @@
     opacity: 1;
     padding: 0px 15px;
 }
+.filterTypeRedActive {
+    border: 1px solid #E8E9E9;
+    border-radius: 8px;
+    text-align: left;
+    font: normal normal bold 14px/28px proxima-nova;
+    letter-spacing: 0px;
+    color: #FFFFFF;
+    text-transform: capitalize;
+    opacity: 1;
+    padding: 0px 15px;
+    background-color: #FF6562;
+}
 
 .filterTypeLightGreen {
     border: 1px solid #E8E9E9;
@@ -182,6 +222,18 @@
     opacity: 1;
     padding: 0px 10px;
 }
+.filterTypeLightGreenActive {
+    border: 1px solid #E8E9E9;
+    border-radius: 8px;
+    text-align: left;
+    font: normal normal bold 14px/28px proxima-nova;
+    letter-spacing: 0px;
+    color: #FFFFFF;
+    // text-transform: capitalize;
+    opacity: 1;
+    padding: 0px 10px;
+    background-color: #8ED12B;
+}
 
 .filterTypeYellow {
     border: 1px solid #E8E9E9;
@@ -193,6 +245,19 @@
     text-transform: capitalize;
     opacity: 1;
     padding: 0px 15px;
+}
+
+.filterTypeYellowActive {
+    border: 1px solid #E8E9E9;
+    border-radius: 8px;
+    text-align: left;
+    font: normal normal bold 14px/28px proxima-nova;
+    letter-spacing: 0px;
+    color: #FFFFFF;
+    text-transform: capitalize;
+    opacity: 1;
+    padding: 0px 15px;
+    background-color: #FFC100;
 }
 
 .displayInRow {
