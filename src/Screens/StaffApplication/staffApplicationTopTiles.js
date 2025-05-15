@@ -690,10 +690,13 @@ const StaffApplicationTopTiles = (searchTermForTable) => {
     let newType;
     if (tab === 'NewApplicants') {
       newType = 'NEW';
+      sessionStorage.removeItem('selectedTab'); // Clear the sessionStorage
     } else if (tab === 'StaffReappointments') {
       newType = 'REAPPOINTMENT';
+       sessionStorage.removeItem('selectedTab'); // Clear the sessionStorage
     } else if (tab === 'LocumRenewalsApplicant') {
       newType = 'LOCUM';
+       sessionStorage.removeItem('selectedTab'); // Clear the sessionStorage
     }
 
     setSelectedTab(tab);
@@ -714,6 +717,8 @@ const StaffApplicationTopTiles = (searchTermForTable) => {
   useEffect(() => {
     setUserDetails();
   }, []);
+
+
 
   return (
     <div className={style.tabs}>

@@ -59,6 +59,7 @@ import Resend from './../../images/Resend.png';
 import ResendDisabled from './../../images/Resend-disabled.png';
 import sendBodDisabled from './../../images/BODLetter.png';
 import sendBod from './../../images/BODLetterActive.png';
+import Renewed from "./../../images/Renewed.png";
 
 const StaffApplicationList = ({
   isLoading,
@@ -80,7 +81,9 @@ const StaffApplicationList = ({
   getTitleCounts,
   showNotesDialog,
   getDeptTrackerDialog,
-  getMdTrackerDialog
+  getMdTrackerDialog,
+  getOverRideRequestDialog,
+  getOverRideRequestApprovalDialog
 }) => {
   const PDFRef = createRef();
   const prevCompletionLettersRef = useRef([]);
@@ -279,6 +282,7 @@ const StaffApplicationList = ({
   ] : [
     "",
     "Locum Staff",
+    "",
     // applicationType === "NEW" ? "Applicant ID" : "Staff ID",
     applicationType === "NEW" ? "Applicant Type" : "Locum Type",
     "Dept / Division & Specialty",
@@ -478,6 +482,17 @@ const StaffApplicationList = ({
     "Days to Expiration",
     "Action",
   ];
+
+  const locumOverrideValues = [
+    "Locum Staff Name",
+    "Locum Type",
+    "Docs",
+    "Notes",
+    "CR",
+    "Requested by",
+    "Last Updated",
+    "",
+  ];
   const approvedHeaderValues = [
     "",
     applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
@@ -522,10 +537,21 @@ const StaffApplicationList = ({
     false,
     true,
     false,
-  ] : [
+  ] :  applicationType === "REAPPOINTMENT" ? [
     false,
     true,
     // true,
+    true,
+    true,
+    false,
+    false,
+    false,
+    true,
+    false
+  ] : [
+    false,
+    true,
+    false,
     true,
     true,
     false,
@@ -660,6 +686,16 @@ const StaffApplicationList = ({
   ];
 
   const locumColSortValues = [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+  ];
+
+  const locumOverrideColSortValues = [
     false,
     false,
     false,
@@ -963,6 +999,11 @@ const StaffApplicationList = ({
     sessionStorage.setItem("applicationId", data?.id);
   };
 
+   const onClickNotesOverrideDialog = (data) => {
+    getNotesDialog(true);
+    sessionStorage.setItem("applicationId", data?.application?.id);
+  };
+
   const onClickNotesLocumDialog = (data) => {
     getLocumExtensiveDialog(true, tableData);
     sessionStorage.setItem("applicationId", data?.currentApplication?.id);
@@ -975,6 +1016,16 @@ const StaffApplicationList = ({
 
   const onClickDeptReviewDialog = (data) => {
     getApprovalNotesCommentBoxDept(true);
+    sessionStorage.setItem("applicationId", data?.id);
+  };
+
+    const onClickOverRideDialog = (data) => {
+    getOverRideRequestDialog(true);
+    sessionStorage.setItem("applicationId", data?.id);
+  };
+
+   const onClickOverRideApprovalDialog = (data) => {
+    getOverRideRequestApprovalDialog(true);
     sessionStorage.setItem("applicationId", data?.id);
   };
 
@@ -1043,6 +1094,21 @@ const StaffApplicationList = ({
     getActiveApplicationView(true);
   };
 
+  const onClickViewAndVerifyOverrideFunction = (data) => {
+    sessionStorage.setItem("applicationId", data?.application?.id);
+    sessionStorage.setItem("requestId", data?.id);
+    const isDepartmentHead = data?.completedWorkflows?.find(
+      (wf) => wf?.role === "Department Head"
+    )?.approverDetail?.name;
+
+    const isAuthorized =
+      isDepartmentHead?.firstName === userFirstName &&
+      isDepartmentHead?.lastName === userLastName;
+
+    getNotesCommentBox(isAuthorized);
+    getActiveApplicationView(true);
+  };
+
   const onClickViewAndVerifyCredFunction = (data) => {
     sessionStorage.setItem("applicationId", data?.id);
 
@@ -1092,6 +1158,12 @@ const StaffApplicationList = ({
     ActiveStaffApplication(data?.id)
     sessionStorage.setItem("applicationId", data?.id);
   };
+  
+  const onClickTileFunction = () => {
+    sessionStorage.removeItem('selectedTab');
+  };
+
+
 
 
   console.log("selectedTab", selectedTab)
@@ -1454,6 +1526,16 @@ const StaffApplicationList = ({
     try {
       let response;
       if (applicationType === "LOCUM") {
+        if (selectedTab === "OverrideRequest"){
+          setIsLoadingImage(true);
+        response = await GET(
+          `application-management-service/application/request?requestType=OVERRIDE_REQUEST&status=PENDING&role=Chief Of Staff`,
+        );
+        console.log("Application data", response?.data?.requests);
+        setTableData(response?.data?.requests);
+        setTotalCount(response?.data?.numberOfElements);
+        setIsLoadingImage(false);
+        } else{
         let role = workModeType === "Credentialing Committee User" ? "Staff Manager" : workModeType;
         const shouldIncludeAssignee = showAssignee &&
           (workModeType === "Department Head" ||
@@ -1473,6 +1555,7 @@ const StaffApplicationList = ({
         setIsLoadingImage(false);
         console.log("Application data length", response?.data?.numberOfElements);
         return response?.data?.applications || [];
+      }
       } else {
         let role = workModeType === "Credentialing Committee User" ? "Staff Manager" : workModeType;
         const shouldIncludeAssignee = showAssignee &&
@@ -1823,6 +1906,9 @@ const StaffApplicationList = ({
   let ccMember = [];
   let dhMember = [];
   let pdfSendIcon = [];
+  let requestBy = [];
+  let overRideIcon = [];
+  let hoverOverRide = [];
 
   const getApplicantValues = applicationType === "NEW" ? () => {
     dot = [];
@@ -1994,7 +2080,7 @@ const StaffApplicationList = ({
       },
       { type: "action", value: action },
     ];
-  } : () => {
+  } : applicationType === "REAPPOINTMENT" ? () => {
     dot = [];
     applicantName = [];
     applicantId = [];
@@ -2207,6 +2293,287 @@ const StaffApplicationList = ({
     return [
       { type: "dot", value: dot, tooltipValue: dotTooltipValues },
       { type: "text", value: applicantName },
+      // { type: "text", value: applicantId },
+      { type: "text", value: applicantType },
+      { type: "text", value: department },
+      {
+        type: "iconWithCount",
+        value: docs,
+        hoverText: docsHoverText,
+        isShowHoverText: true,
+        icon: docsIcon,
+      },
+      // { type: "dot", value: dataStatus },
+      // { "type": "iconWithCount", "value": disclosures, "hoverText": docsHoverText, 'isShowHoverText': true, "icon": docsIcon },
+      {
+        type: "textWithHover",
+        // type: "text",
+        value: crs,
+        hoverText: crsHoverText,
+        isShowHoverText: true,
+      },
+      {
+        type: "iconWithCountNotes",
+        value: notes,
+        hoverText: notesHoverText,
+        isShowHoverText: true,
+        icon: notesIcon,
+      },
+      // {
+      //   type: "iconWithCount",
+      //   value: taskListStatus,
+      //   icon: taskListDotColor
+      // },
+      // { type: "dot", value: taskListDotColor, tooltipValue: dotTooltipValues },
+      {
+        type: "text",
+        value: submitted,
+        // hoverText: lastUpdatedBy,
+        // isShowHoverText: true,
+      },
+      // {
+      //   type: "iconWithCount",
+      //   value: lastUpdated,
+      //   hoverText: lastUpdatedBy,
+      //   isShowHoverText: true,
+      // },
+      { type: "action", value: action },
+    ];
+  } : () => {
+    dot = [];
+    applicantName = [];
+    applicantId = [];
+    applicantType = [];
+    department = [];
+    docs = [];
+    docsHoverText = [];
+    docsIcon = [];
+    dataStatus = [];
+    // disclosures = [];
+    crs = [];
+    crsHoverText = [];
+    notes = [];
+    notesHoverText = [];
+    notesIcon = [];
+    lastUpdated = [];
+    lastUpdatedBy = [];
+    capManager = [];
+    taskListStatus = [];
+    taskListDotColor = [];
+    submitted = [];
+    action = [];
+    overRideIcon = [];
+    hoverOverRide = [];
+
+    tableData?.map((data) => {
+      // dot.push(
+      //   data?.currentLevelCompleted === false
+      //     ? "yellow"
+      //     : data?.currentLevelCompleted === true
+      //       ? "green"
+      //       : "grey"
+      // );
+
+      const workflow = data?.completedWorkflows?.find(workflow => (workflow?.role === "Staff Manager"));
+
+      // For debugging the userRole
+      // data?.completedWorkflows?.forEach((workflow, index) => {
+      //     const isRoleMatch = userRole?.includes(workflow.role);
+      //     console.log(`Workflow ${index}:`, {
+      //         workflowRole: workflow.role,
+      //         hasMatchingRole: isRoleMatch,
+      //         status: isRoleMatch ? workflow.currentLevelStatus : 'N/A'
+      //     });
+      // });
+
+      // Check currentLevelStatus and set color if workflow is found
+      if (workflow) {
+        const color = workflow?.currentLevelStatus === "IN_PROGRESS" ? "yellow"
+          : workflow?.currentLevelStatus === "COMPLETED" ? "green"
+            : "grey";
+        dot.push(color);
+        console.log("Matching workflow found:", {
+          role: workflow?.role,
+          status: workflow?.currentLevelStatus,
+          assignedColor: color
+        });
+      }
+      // applicantName.push(
+      //   ` ${data?.applicant?.name?.lastName.toUpperCase()}, ${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()}` ||
+      //   " "
+      // );
+      applicantName.push(
+        `${formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName)}` || " "
+      );
+      if (data?.overrideStatus === "APPROVED") {
+        overRideIcon.push(
+          <img src={Renewed} alt="Renewed Icon" style={{ width: 20, height: 20 }} />
+        );
+      } else if (data?.overrideStatus === "PENDING") {
+        overRideIcon.push(
+           <img src={Renewed} alt="Renewed Icon" style={{ width: 20, height: 20 }} />
+        );
+      } else {
+        overRideIcon.push("")
+      }
+      hoverOverRide.push([
+      "Temporary privilege granted"
+      ]);
+      // applicantId.push(data?.displayId);
+      applicantType.push(data?.providerType?.serviceProviderType);
+      department.push(
+        `${data?.basicDetails?.departmentSpecialty?.department || "-"} ${data?.basicDetails?.departmentSpecialty?.specialty ? ` / ${data.basicDetails.departmentSpecialty.specialty}` : ""}`
+      );
+      docs.push(data?.documents?.verifiedCount + "/" + data?.documents?.uploadedCount || "");
+      // docsHoverText.push([
+      //   "Immunization History Verification From PCP pending",
+      // ]);
+      const documentDetails = data?.documents?.documentDetails || [];
+      // const docHoverTextArray = documentDetails?.length > 0 ? documentDetails?.map(doc => doc?.shortName) : ["-"];
+      const docHoverTextArray = documentDetails?.length > 0
+        ? documentDetails?.map((doc, index) => {
+          const verifiedIndicator = doc?.documentStatus
+            ? <CircleIcon style={{ color: '#8ED12B', fontSize: '12px', marginRight: '5px' }} />
+            : <CircleIcon style={{ color: '#FFCA27', fontSize: '12px', marginRight: '5px' }} />;
+
+          return (
+            <div key={index} className={style.fullWidth}>
+              <span>
+                {verifiedIndicator} {doc?.shortName}
+              </span>
+              {index !== documentDetails.length - 1 && (
+                <hr style={{ margin: '5px 0 -10px 0px' }} />
+              )}
+            </div>
+          );
+        })
+        : ["-"];
+
+      docsHoverText.push(docHoverTextArray);
+      // docsIcon.push(
+      //   <TextSnippetOutlinedIcon
+      //     style={{ fontSize: 20, color: `#2C2C2C` }}
+      //   />
+      // );
+
+      if (data?.documents?.uploadedCount === 0 || data?.documents?.verifiedCount === 0) {
+        docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#b0a6a6' }} />);
+      } else if (data?.documents?.uploadedCount > data?.documents?.verifiedCount) {
+        docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#FEC106' }} />);
+      } else if (data?.documents?.uploadedCount === data?.documents?.verifiedCount) {
+        docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#00C07F' }} />);
+      }
+
+      // else if (data?.documents?.verifiedCount === 0) {
+      //   docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#94979A` }} />);
+      // } else {
+      //   docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#FEC106` }} />);
+      // }
+      // dataStatus.push(data?.dataStatus || "green");
+      // dataStatus.push(data?.dataStatus === "REVIEW_INPROGRESS"
+      //   ? "yellow"
+      //   : data?.status === "APPROVED"
+      //   ? "green"
+      //   : "grey");
+      // disclosures.push(data?.disclosures || '7/9');
+      // crs.push(data?.clarificationRequiredFor || "0");
+      // crsHoverText.push(["Ontario Medical Society"]);
+      const clarifications = data?.clarificationCount?.clarifications || [];
+      const crsHoverTextArray = clarifications?.length > 0
+        ? clarifications.map((clarification, index) => {
+          const verifiedIndicator = clarification?.status === "ACCEPTED"
+            ? <CircleIcon style={{ color: '#8ED12B', fontSize: '12px', marginRight: '5px' }} />
+            : clarification?.status === "REJECTED"
+              ? <CircleIcon style={{ color: '#FF6562', fontSize: '12px', marginRight: '5px' }} />
+              : clarification?.status === "RESPONDED"
+                ? <CircleIcon style={{ color: '#FFC100', fontSize: '12px', marginRight: '5px' }} />
+                : <CircleIcon style={{ color: '#B0A6A6', fontSize: '12px', marginRight: '5px' }} />;
+
+          return (
+            <div key={index} className={style.fullWidth}>
+              <span>
+                {verifiedIndicator} {clarification?.title}
+              </span>
+              {index !== clarifications.length - 1 && (
+                <hr style={{ margin: '5px 0 -10px 0px' }} />
+              )}
+            </div>
+          );
+        })
+        : ["-"];
+
+      crsHoverText.push(crsHoverTextArray);
+      // crs.push(data?.clarificationCount?.closedCount + "/" + data?.clarificationCount?.totalCount || "");
+      const closedCount = data?.clarificationCount?.closedCount ?? 0;
+      const totalCount = data?.clarificationCount?.totalCount ?? 0;
+
+      crs.push(closedCount === 0 && totalCount === 0 ? "-" : `${closedCount}/${totalCount}`);
+      const validNotes = data?.notesDetails?.filter(
+        log => log?.notes?.notes && (!log?.private || log?.user?.id === users?.id)
+      ) || [];
+      notes.push(validNotes?.length || "-");
+      notesIcon.push(
+        validNotes.length > 0 ? (
+          <NoteAltOutlinedIcon style={{ fontSize: 20, color: "#2C2C2C" }} />
+        ) : ("")
+      );
+      const notesHoverTextArray = validNotes?.length > 0
+        ? validNotes.map((note, index) => {
+          const text = note?.notes?.notes ? note?.notes?.notes.replace(/<[^>]*>/g, '') : '-';
+          const firstName = note?.user?.name?.firstName || '';
+          const title = note?.title;
+          const createdDate = format(new Date(note?.createdDate), "MMM dd, yyyy 'at' h:mm a") || '';
+          const noteContent = `${firstName}, ${title} ${createdDate}`;
+          return (
+            <div key={index}>
+              {note?.private && <span className={style.privateBorderText}>Private</span>}
+              {" "}{noteContent}
+              <div className={style.boldNotesText}>{text}</div>
+              {/* { validNotes?.length  && <hr style={{ borderColor: '#E0E0E0' }} />} */}
+              {index !== validNotes.length && (
+                <hr style={{ margin: '5px 0px -10px 0' }} />
+              )}
+            </div>
+          );
+        }).reverse()
+        : ["-"];
+      notesHoverText.push(notesHoverTextArray);
+      // if (data?.tasks?.completedCount === 0) {
+      //   taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#94979A` }} />);
+      // } else if (data?.tasks?.completedCount === data?.tasks?.totalCount) {
+      //   taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#00C07F` }} />);
+      // }  else {
+      //   taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#FEC106` }} />);
+      // }
+
+      // taskListStatus.push(data?.tasks?.completedCount + "/" + data?.tasks?.totalCount);
+
+      data?.logs?.forEach((log) => {
+        if (log?.workflowStatus === "SUBMITTED") {
+          submitted.push(format(new Date(log?.lastModifiedDate), "MM/dd/yyyy"));
+        }
+      });
+      // lastUpdated.push(
+      //   format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
+      // );
+      // lastUpdatedBy.push(["Last Updated By", data?.updatedBy?.name?.firstName]);
+      // const lastUpdatedDate = new Date(data?.lastModifiedDate);
+      // lastUpdated.push(isNaN(lastUpdatedDate.getTime()) ? 'Invalid Date' : format(lastUpdatedDate, 'MM-dd-yyyy'));
+      // capManager.push(data?.interviewDetails?.interviewedBy || '- ');
+      action.push(true);
+
+      console.log("tabledata" + tableData);
+    });
+
+    return [
+      { type: "dot", value: dot, tooltipValue: dotTooltipValues },
+      { type: "text", value: applicantName },
+      {
+        type: "iconWithCount",
+        icon: overRideIcon,
+        hoverText: hoverOverRide,
+        isShowHoverText: true,
+      },
       // { type: "text", value: applicantId },
       { type: "text", value: applicantType },
       { type: "text", value: department },
@@ -2695,7 +3062,7 @@ const StaffApplicationList = ({
       applicantName.push(
         `${formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName)}` || " "
       );
-      applicantType.push(data?.providerType.serviceProviderType);
+      applicantType.push(data?.providerType?.serviceProviderType ? data?.providerType?.serviceProviderType : "");
       // applicantId.push(data?.displayId);
       department.push(
         `${data?.basicDetails?.departmentSpecialty?.department || "-"}${data?.basicDetails?.departmentSpecialty?.specialty ? ` / ${data.basicDetails.departmentSpecialty.specialty}` : ""}`
@@ -4401,6 +4768,172 @@ const StaffApplicationList = ({
     ];
   };
 
+  const getLocumOverrideValues = () => {
+    applicantName = [];
+    applicantType = [];
+    clarificationTitle = [];
+    raisedBy = [];
+    createdOn = [];
+    lastUpdatedOn = [];
+    action = [];
+    docs = [];
+    docsHoverText = [];
+    docsIcon = [];
+    notes = [];
+    notesHoverText = [];
+    notesIcon = [];
+    requestBy = [];
+
+    tableData?.map((data,uniqueKey) => {
+      applicantName.push(
+        `${formatFirstNameLastName(data?.application?.applicant?.name?.firstName, data?.application?.applicant?.name?.lastName)}` || "-"
+      );
+      applicantType.push(data?.application?.providerType?.serviceProviderType || "-");
+       docs.push(data?.application?.documents?.verifiedCount + "/" + data?.application?.documents?.uploadedCount || "");
+      // docsHoverText.push([
+      //   "Immunization History Verification From PCP pending",
+      // ]);
+      const documentDetails = data?.application?.documents?.documentDetails || [];
+      // const docHoverTextArray = documentDetails?.length > 0 ? documentDetails?.map(doc => doc?.shortName) : ["-"];
+      const docHoverTextArray = documentDetails?.length > 0
+        ? documentDetails?.map((doc, index) => {
+          const verifiedIndicator = doc?.documentStatus
+            ? <CircleIcon style={{ color: '#8ED12B', fontSize: '12px', marginRight: '5px' }} />
+            : <CircleIcon style={{ color: '#FFCA27', fontSize: '12px', marginRight: '5px' }} />;
+
+          return (
+            <div key={index} className={style.fullWidth}>
+              <span>
+                {verifiedIndicator} {doc?.shortName}
+              </span>
+              {index !== documentDetails.length - 1 && (
+                <hr style={{ margin: '5px 0 -10px 0px' }} />
+              )}
+            </div>
+          );
+        })
+        : ["-"];
+
+      docsHoverText.push(docHoverTextArray);
+      // docsIcon.push(
+      //   <TextSnippetOutlinedIcon
+      //     style={{ fontSize: 20, color: `#2C2C2C` }}
+      //   />
+      // );
+
+      if (data?.application?.documents?.uploadedCount === 0 || data?.application?.documents?.verifiedCount === 0) {
+        docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#b0a6a6' }} />);
+      } else if (data?.application?.documents?.uploadedCount > data?.application?.documents?.verifiedCount) {
+        docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#FEC106' }} />);
+      } else if (data?.application?.documents?.uploadedCount === data?.application?.documents?.verifiedCount) {
+        docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#00C07F' }} />);
+      }
+
+      const validNotes = data?.application?.notesDetails?.filter(
+        log => log?.notes?.notes && (!log?.private || log?.user?.id === users?.id)
+      ) || [];
+      notes.push(validNotes?.length || "-");
+      notesIcon.push(
+        validNotes.length > 0 ? (
+          <NoteAltOutlinedIcon style={{ fontSize: 20, color: "#2C2C2C" }} />
+        ) : ("")
+      );
+      const notesHoverTextArray = validNotes?.length > 0
+        ? validNotes.map((note, index) => {
+          const text = note?.notes?.notes ? note?.notes?.notes.replace(/<[^>]*>/g, '') : '-';
+          const firstName = note?.user?.name?.firstName || '';
+          const title = note?.title;
+          const createdDate = format(new Date(note?.createdDate), "MMM dd, yyyy 'at' h:mm a") || '';
+          const noteContent = `${firstName}, ${title} ${createdDate}`;
+          return (
+            <div key={index}>
+              {note?.private && <span className={style.privateBorderText}>Private</span>}
+              {" "}{noteContent}
+              <div className={style.boldNotesText}>{text}</div>
+              {/* { validNotes?.length  && <hr style={{ borderColor: '#E0E0E0' }} />} */}
+              {index !== validNotes.length && (
+                <hr style={{ margin: '5px 0px -10px 0' }} />
+              )}
+            </div>
+          );
+        }).reverse()
+        : ["-"];
+      notesHoverText.push(notesHoverTextArray);
+ const closedCount = data?.application?.clarificationCount?.closedCount ?? 0;
+      const totalCount = data?.application?.clarificationCount?.totalCount ?? 0;
+
+      crs.push(closedCount === 0 && totalCount === 0 ? "-" : `${closedCount}/${totalCount}`);
+
+      const clarifications = data?.application?.clarificationCount?.clarifications || [];
+      const crsHoverTextArray = clarifications?.length > 0
+        ? clarifications.map((clarification, index) => {
+          const verifiedIndicator = clarification?.status === "ACCEPTED"
+            ? <CircleIcon style={{ color: '#8ED12B', fontSize: '12px', marginRight: '5px' }} />
+            : clarification?.status === "REJECTED"
+              ? <CircleIcon style={{ color: '#FF6562', fontSize: '12px', marginRight: '5px' }} />
+              : clarification?.status === "RESPONDED"
+                ? <CircleIcon style={{ color: '#FFC100', fontSize: '12px', marginRight: '5px' }} />
+                : <CircleIcon style={{ color: '#B0A6A6', fontSize: '12px', marginRight: '5px' }} />;
+
+          return (
+            <div key={index} className={style.fullWidth}>
+              <span>
+                {verifiedIndicator} {clarification?.title}
+              </span>
+              {index !== clarifications.length - 1 && (
+                <hr style={{ margin: '5px 0 -10px 0px' }} />
+              )}
+            </div>
+          );
+        })
+        : ["-"];
+      crsHoverText.push(crsHoverTextArray);
+       requestBy.push(
+              <div key={uniqueKey}>
+                {data?.requestedBy?.name?.firstName || "-"}
+                <br />
+                {format(new Date(data?.createdDate), 'MMM dd, yyyy')}
+              </div>
+            );
+     lastUpdated.push(
+        data?.lastModifiedDate
+          ? format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
+          : "-"
+      );
+      action.push(true);
+    });
+
+    return [
+      { type: "text", value: applicantName },
+      { type: "text", value: applicantType },
+       {
+        type: "iconWithCount",
+        value: docs,
+        hoverText: docsHoverText,
+        isShowHoverText: true,
+        icon: docsIcon,
+      },
+      {
+        type: "iconWithCountNotes",
+        value: notes,
+        hoverText: notesHoverText,
+        isShowHoverText: true,
+        icon: notesIcon,
+      },
+       {
+        // type: "countWithHover",
+        type: "textWithHover",
+        value: crs,
+        hoverText: crsHoverText,
+        isShowHoverText: true,
+      },
+      { type: "text", value: requestBy },
+      { type: "text", value: lastUpdated },
+      { type: "action", value: action },
+    ];
+  };
+
+
   const getLocumExpiredValues = () => {
     applicantName = [];
     applicantType = [];
@@ -4546,6 +5079,11 @@ const StaffApplicationList = ({
       requiredValue: "boolean",
       onClick: onClickDeptReviewDialog,
       conditionToShow: `!data?.completedWorkflows?.find(wf => wf?.role === "Staff Manager")?.allFormsApproved === false`,
+    },
+    {
+      data: "Request Override",
+      requiredValue: "boolean",
+      onClick: onClickOverRideDialog,
     },
     { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog },
   ];
@@ -4940,6 +5478,19 @@ const StaffApplicationList = ({
     },
   ];
 
+  const LocumOverrideActionsData = [
+    {
+      data: "Review To Override",
+      requiredValue: "boolean",
+      onClick: onClickViewAndVerifyOverrideFunction
+    },
+      {
+      data: "Create Note",
+      requiredValue: "boolean",
+      onClick: onClickNotesOverrideDialog,
+    },
+  ];
+
   const approvedActionsData = [
     {
       data: "Add as active staff",
@@ -4993,6 +5544,8 @@ const StaffApplicationList = ({
                           ? bodHeaderValues
                           : selectedTab === "LocumRenewals" && applicationType === "LOCUM"
                             ? locumHeaderValues
+                            : selectedTab === "OverrideRequest" && applicationType === "LOCUM"
+                            ? locumOverrideValues
                             : selectedTab === "clarificationsRequired"
                               ? clarificationHeaderValues
                               : selectedTab === "rejected"
@@ -5026,6 +5579,8 @@ const StaffApplicationList = ({
                           ? bodColSortValues
                           : selectedTab === "LocumRenewals" && applicationType === "LOCUM"
                             ? locumColSortValues
+                            : selectedTab === "OverrideRequest" && applicationType === "LOCUM"
+                            ? locumOverrideColSortValues
                             : selectedTab === "clarificationsRequired"
                               ? clarificationColSortValues
                               : selectedTab === "rejected"
@@ -5059,6 +5614,8 @@ const StaffApplicationList = ({
                           ? getBodValues()
                           : selectedTab === "LocumRenewals" && applicationType === "LOCUM"
                             ? getLocumValues()
+                             : selectedTab === "OverrideRequest" && applicationType === "LOCUM"
+                            ? getLocumOverrideValues()
                             : selectedTab === "clarificationsRequired"
                               ? getClarificationValues()
                               : selectedTab === "rejected"
@@ -5094,6 +5651,8 @@ const StaffApplicationList = ({
                             ? bodActionsData
                             : selectedTab === "LocumRenewals" && applicationType === "LOCUM"
                               ? departmentHeadActionsData
+                              : selectedTab === "OverrideRequest" && applicationType === "LOCUM"
+                              ? LocumOverrideActionsData
                               : selectedTab === "clarificationsRequired"
                                 ? clarificationActionsData
                                 : selectedTab === "rejected"
@@ -5107,6 +5666,8 @@ const StaffApplicationList = ({
       ? style.applicantStaffGrid
       : selectedTab === "level-1" && applicationType === "REAPPOINTMENT"
         ? style.applicantStaffReappointGrid
+        : selectedTab === "level-1" && applicationType === "LOCUM"
+        ? style.applicantLocumStaffGrid
         : selectedTab === "level-2" && (applicationType === "REAPPOINTMENT" || applicationType === "NEW")
           ? style.departmentHeadStaffGrid
           : selectedTab === "level-2" && applicationType === "LOCUM" && workModeType === "Staff Manager"
@@ -5135,6 +5696,8 @@ const StaffApplicationList = ({
                                   ? style.bodStaffReappointGrid
                                   : selectedTab === "LocumRenewals" && applicationType === "LOCUM"
                                     ? style.locumStaffGrid
+                                     : selectedTab === "OverrideRequest" && applicationType === "LOCUM"
+                                       ? style.locumOverrideStaffGrid
                                     : selectedTab === "clarificationsRequired" && applicationType === "NEW"
                                       ? style.applicantStaffGrid
                                       : selectedTab === "clarificationsRequired" && applicationType === "REAPPOINTMENT"
@@ -5554,6 +6117,7 @@ const StaffApplicationList = ({
                 applicationCreationType={applicationCreationType}
                 getApplicationCreationType={getApplicationCreationType}
                 searchTermForTable={searchTermForTable}
+                totalCount={totalCount}
               />
               <div className={`${style.spaceBetween} ${style.marginLeft} ${style.textAlign} `}>
                 {workModeType === "Credentialing Committee" || workModeType === "Department Head" || workModeType === "Chief Of Staff" ? (

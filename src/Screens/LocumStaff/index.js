@@ -53,41 +53,43 @@ const LocumStaff = () => {
 
     return (
         <>
-        {activeApplicationView ? (
-                < NewActiveApplication isLoading={isLoading} getSelectedTab={getSelectedTab} selectedTab={selectedTab} getActiveApplicationView={getActiveApplicationView} getStaffView={getStaffView} staffView = {staffView} />
+            {activeApplicationView ? (
+                < NewActiveApplication isLoading={isLoading} getSelectedTab={getSelectedTab} selectedTab={selectedTab} getActiveApplicationView={getActiveApplicationView} getStaffView={getStaffView} staffView={staffView} />
             ) : (
-        <Fragment>
-            <Navbar />
-            <LocumStaffList
-                isLoading={isLoading}
-                getSelectedTab={getSelectedTab}
-                selectedTab={selectedTab}
-                getActiveApplicationView={getActiveApplicationView}
-                getStaffView = {getStaffView}
-                staffView ={staffView}
-                getDeptTrackerDialog={getDeptTrackerDialog}
-                getLocumExtensiveDialog ={getLocumExtensiveDialog}
-                getLocumExtensiveRequestDialog={getLocumExtensiveRequestDialog}
-                getLocumRequestDialog={getLocumRequestDialog}
-                getNotesDialog = {getNotesDialog}
-                showLocumExtensiveDialog= {showLocumExtensiveDialog}
-            />
-             {showDeptTrackerDialog && (
-                <DepartmentTrackerDialog isLoading={isLoading} getIsOpen={getDeptTrackerDialog} getActiveApplicationView={getActiveApplicationView}/>
-            )}
-            {showNotesDialog && (
-                <NotesDialog isLoading={isLoading} getIsOpen={getNotesDialog} getActiveApplicationView={getActiveApplicationView} />
-            )}
-              {showLocumExtensiveDialog && (
-                <LocumExtensionDialog isLoading={isLoading} getIsOpen={getLocumExtensiveDialog} selectedTab={selectedTab} getActiveApplicationView={getActiveApplicationView} />
-            )}
-            {showLocumExtensiveRequestDialog && (
-                <LocumExtensionRequestDialog isLoading={isLoading} getIsOpen={getLocumExtensiveRequestDialog} selectedTab={selectedTab} getActiveApplicationView={getActiveApplicationView} />
-            )}
-            {showLocumRequestDialog && (
-                <LocumRequestDialog isLoading={isLoading} getIsOpen={getLocumRequestDialog} selectedTab={selectedTab} getActiveApplicationView={getActiveApplicationView} />
-            )}
-        </Fragment>
+                <Fragment>
+                    <Navbar />
+                    <LocumStaffList
+                        isLoading={isLoading}
+                        getSelectedTab={getSelectedTab}
+                        selectedTab={selectedTab}
+                        getActiveApplicationView={getActiveApplicationView}
+                        getStaffView={getStaffView}
+                        staffView={staffView}
+                        getDeptTrackerDialog={getDeptTrackerDialog}
+                        getLocumExtensiveDialog={getLocumExtensiveDialog}
+                        getLocumExtensiveRequestDialog={getLocumExtensiveRequestDialog}
+                        getLocumRequestDialog={getLocumRequestDialog}
+                        getNotesDialog={getNotesDialog}
+                        showLocumExtensiveDialog={showLocumExtensiveDialog}
+                        showLocumExtensiveRequestDialog={showLocumExtensiveRequestDialog}
+                        showLocumRequestDialog={showLocumRequestDialog}
+                    />
+                    {showDeptTrackerDialog && (
+                        <DepartmentTrackerDialog isLoading={isLoading} getIsOpen={getDeptTrackerDialog} getActiveApplicationView={getActiveApplicationView} />
+                    )}
+                    {showNotesDialog && (
+                        <NotesDialog isLoading={isLoading} getIsOpen={getNotesDialog} getActiveApplicationView={getActiveApplicationView} />
+                    )}
+                    {showLocumExtensiveDialog && (
+                        <LocumExtensionDialog isLoading={isLoading} getIsOpen={getLocumExtensiveDialog} selectedTab={selectedTab} getActiveApplicationView={getActiveApplicationView} />
+                    )}
+                    {showLocumExtensiveRequestDialog && (
+                        <LocumExtensionRequestDialog isLoading={isLoading} getIsOpen={getLocumExtensiveRequestDialog} selectedTab={selectedTab} getActiveApplicationView={getActiveApplicationView} />
+                    )}
+                    {showLocumRequestDialog && (
+                        <LocumRequestDialog isLoading={isLoading} getIsOpen={getLocumRequestDialog} selectedTab={selectedTab} getActiveApplicationView={getActiveApplicationView} />
+                    )}
+                </Fragment>
             )}
         </>
     )
