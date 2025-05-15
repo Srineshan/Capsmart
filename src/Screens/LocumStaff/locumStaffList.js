@@ -562,7 +562,7 @@ const LocumStaffList = ({
       );
         if (workModeType === "Staff Manager") {
         if (data?.extensionRequested === true) {
-          if (data?.reAppointmentInitiated === false && expiredDays < 110) {
+          if (data?.reAppointmentInitiated === false && expiredDays < 2) {
             iconStatus.push(
               <img src={RequestSendApplicationDelay} alt="RequestSendApplicationDelay Icon" style={{ width: 20, height: 20 }} />
             );
@@ -590,7 +590,7 @@ const LocumStaffList = ({
 
        if (workModeType === "Staff Manager") {
         if (data?.extensionRequested === true) {
-          if (data?.reAppointmentInitiated === false && expiredDays < 110) {
+          if (data?.reAppointmentInitiated === false && expiredDays < 2) {
             reappointDate.push(
               ["Locum Extension Request Not Acted On"]
             );
@@ -661,27 +661,27 @@ const LocumStaffList = ({
         ExpiredDays.push("-");
       }
 
-      if (expiredDays < 20) {
+      if (expiredDays < 7) {
         WarningIcon.push(
           <WarningAmberOutlinedIcon style={{ fontSize: 20, color: '#FF6562' }} />
         );
-      } else if (expiredDays >= 20 && expiredDays <= 50) {
+      } else if (expiredDays >= 7 && expiredDays <= 14) {
         WarningIcon.push(
           <WarningAmberOutlinedIcon style={{ fontSize: 20, color: '#EBB433' }} />
         );
-      } else if (expiredDays > 50) {
+      } else if (expiredDays > 14) {
         WarningIcon.push("");
       }
 
-       if (expiredDays < 20) {
+       if (expiredDays < 7) {
         WarningText.push(
           ["This Locum Staff Will Expire In Less Than 7 Days"]
         );
-      } else if (expiredDays >= 20 && expiredDays <= 50) {
+      } else if (expiredDays >= 7 && expiredDays <= 14) {
         WarningText.push(
           ["This Locum Staff Will Expire In Less Than 14 Days"]
         );
-      } else if (expiredDays > 50) {
+      } else if (expiredDays > 14) {
         WarningText.push([""]);
       }
 
