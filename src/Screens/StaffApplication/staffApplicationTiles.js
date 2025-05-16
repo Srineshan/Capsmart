@@ -306,7 +306,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
         } else if (applicationType === "REAPPOINTMENT") {
           label = "Reappointments To Process";
         } else if (applicationType === "LOCUM") {
-          label = "Renewals To Process";
+          label = "Applicants To Process";
         } else {
           label = value.tabDisplayName;
         }
@@ -345,7 +345,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
     else if (workModeType === "Credentialing Committee" && applicationType === "LOCUM") {
       filteredArray = baseUserFlowArray.filter(tile => tile.level === 'level-2').map(tile => ({
         ...tile,
-        label: "Privilege Extensions to Review",
+        label: "Locum Applications to Review",
       }));
     } 
     else if (workModeType === "Credentialing Committee" && applicationType === "REAPPOINTMENT") {
