@@ -157,6 +157,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
     }
 
     const getIsSaveInProgressOpen = (value) => {
+        handleContinue("save");
         setIsSaveInProgressOpen(value);
     }
 
@@ -304,7 +305,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
     }, [])
 
 
-    const handleContinue = async () => {
+    const handleContinue = async (data) => {
         // if (isSigned) {
         console.log(medicalDirectives)
         const totalCount = (allMedicalDirectives?.completed?.length || 0) +
@@ -336,6 +337,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                 console.log(response)
                 getPreApplication()
                 SuccessToaster("Application Updated Successfully");
+                if (data !== "save") {
                 if (sessionStorage.getItem('fromSummary') === "true") {
                     sessionStorage.removeItem('fromSummary')
                     navigate(-1);
@@ -344,6 +346,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                     navigate(navigateURL)
 
                 }
+            }
             })
             .catch((error) => {
                 console.log(error)

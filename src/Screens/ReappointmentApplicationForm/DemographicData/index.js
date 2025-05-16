@@ -340,6 +340,12 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
     };
 
     const getIsSaveInProgressOpen = (value) => {
+        if (value) {
+            handleSubmitApplicationReq("save")
+                .then(() => getAllMissingFields("save"))
+                .catch((error) => console.error("Error processing skip action:", error));
+        }
+        setUpdateFrom('');
         setIsSaveInProgressOpen(value);
     }
 
@@ -714,15 +720,17 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
         allMissingFields = allMissingKeys;
         hasMandatoryMissingFields = allMissingKeys?.find(field => field?.label?.mandatory === true);
 
-        if(data === "skipped"){
+        if(data === "skipped" || data === "save"){
             handleContactAddressSubmit();
+            if (data === "skipped") {
             if (sessionStorage.getItem('fromSummary') === "true") {
                 navigate(-1);
             } else {
                 navigate(navigateURL)
             }
         }
-     if (data !== "skipped"){
+        }
+     else {
         if (hasMandatoryMissingFields) {
             setShowValidationDialog(true);
         } else {

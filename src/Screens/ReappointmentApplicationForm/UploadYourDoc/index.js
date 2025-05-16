@@ -169,6 +169,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
     }
 
     const getIsSaveInProgressOpen = (value) => {
+        handleContinue("save");
         setIsSaveInProgressOpen(value);
     }
 
@@ -578,7 +579,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
 
     console.log(showRedBorderForESign, eSignInitial, eSignTitle)
 
-    const handleContinue = async (skip) => {
+    const handleContinue = async (data) => {
         if (tempValue?.table?.filter(data => data?.documentType === "")?.length !== 0 && tempValue?.table !== undefined) {
             ErrorToaster2('Please select the missing document type for the uploaded documents')
         }
@@ -588,7 +589,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                 schemaId: basicForm?.forms?.[formIndex]?.schemaId,
                 data: basicForm?.forms?.[formIndex]?.data,
                 unFilledFields: getMissingDocs()?.map(data => data?.document?.shortName),
-                acknowledged: skip === "skipped" ? false : true
+                acknowledged: data === "skipped" || data === "save" ? false : true
             }
             await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
                 .then(response => {
@@ -613,10 +614,12 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                         console.log(error)
                     });
             }
+            if (data !== "save") {
             if (sessionStorage.getItem('fromSummary') === "true") {
                 navigate(-1);
             } else {
                 navigate(navigateURL)
+            }
             }
             setIsLoading(false);
         }
@@ -921,7 +924,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                         <Tooltip title={"Click to Go Back to the Previous Step"} arrow>
                             <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleBackClick()}>BACK</div></Tooltip>
                         <Tooltip title={"Click to Proceed to the Next Step"} arrow>
-                            <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleContinue()}>CONTINUE</div></Tooltip>
+                            <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleContinue("continue")}>CONTINUE</div></Tooltip>
                     </div>
                 </div>
 
@@ -1003,7 +1006,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                             CONTINUE
                         </div> */}
                             <Tooltip title={"Click to Proceed to the Next Step"} arrow>
-                                <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue()}>CONTINUE</div></Tooltip>
+                                <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue("continue")}>CONTINUE</div></Tooltip>
                         </div>
                     </div>
                     {/* <div className={style.marginTop}>

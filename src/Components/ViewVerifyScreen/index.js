@@ -3847,7 +3847,8 @@ const NewActiveApplication = ({
                         <span>
                           <CommonCheckBox checked={form?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours < 25 ? false : form?.forms?.[formIndex]?.acknowledged}
                             // onChange={form?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours < 25 ? () => { } : (e) => handleIsChecked(e.target.checked)} 
-                            bigCheckbox={true} />
+                            bigCheckbox={true}
+                            cursorDefault={true} />
                         </span>
                       )}
                       <div

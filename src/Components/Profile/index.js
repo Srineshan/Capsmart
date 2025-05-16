@@ -9,7 +9,7 @@ import AddPhotoAlternateOutlinedIcon from '@mui/icons-material/AddPhotoAlternate
 import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
 import Papa from 'papaparse';
 import { GET, POST, PUT } from '../../Screens/dataSaver';
-import { ErrorToaster, SuccessToaster } from '../../utils/toaster';
+import { ErrorToaster, ErrorToaster2, SuccessToaster, SuccessToaster2 } from '../../utils/toaster';
 import { currentUser } from '../../utils/auth';
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
@@ -69,7 +69,7 @@ const Profile = () => {
         setProfilePicToDisplay(URL.createObjectURL(e.target.files[0]) || '');
         setFileName(e.target.files?.[0]?.name);
         setFile(e.target.files[0])
-        console.log(URL.createObjectURL(e.target.files[0]) || '', e.target.files[0], file)
+        console.log("files",URL.createObjectURL(e.target.files[0]) || '', e.target.files[0], file)
     };
 
     const getUser = async () => {
@@ -89,12 +89,12 @@ const Profile = () => {
             name: { ...userToSend.name, firstName: profile?.firstName, lastName: profile?.lastName }
         }))
             .then(response => {
-                SuccessToaster('User Modified Successfully');
+                SuccessToaster2('User Modified Successfully');
                 setValuesUpdated(true);
                 getUser();
             })
             .catch(error => {
-                ErrorToaster('Unexpected Error In Editing User');
+                ErrorToaster2('Unexpected Error In Editing User');
             })
     }
 
@@ -129,20 +129,20 @@ const Profile = () => {
             if (!isNewProfilePic) {
                 await PUT('user-management-service/user/profilePic', formData)
                     .then(response => {
-                        SuccessToaster('Profile Pic Updated Successfully');
+                        SuccessToaster2('Profile Pic Updated Successfully');
                         putUserWithProfilePic();
                     })
                     .catch(error => {
-                        ErrorToaster('Unexpected Error in Profile Pic Update');
+                        ErrorToaster2('Unexpected Error in Profile Pic Update');
                     })
             } else {
                 await POST('user-management-service/user/profilePic', formData)
                     .then(response => {
-                        SuccessToaster('Profile Pic Updated Successfully');
+                        SuccessToaster2('Profile Pic Updated Successfully');
                         putUserWithProfilePic();
                     })
                     .catch(error => {
-                        ErrorToaster('Unexpected Error in Profile Pic Update');
+                        ErrorToaster2('Unexpected Error in Profile Pic Update');
                     })
             }
         } else {
@@ -152,11 +152,11 @@ const Profile = () => {
                 name: { ...userToSend.name, firstName: profile?.firstName, lastName: profile?.lastName }
             }))
                 .then(response => {
-                    SuccessToaster('User Modified Successfully');
+                    SuccessToaster2('User Modified Successfully');
                     getUser();
                 })
                 .catch(error => {
-                    ErrorToaster('Unexpected Error In Editing User');
+                    ErrorToaster2('Unexpected Error In Editing User');
                 })
         }
     }
@@ -168,15 +168,15 @@ const Profile = () => {
 
     const changePassword = async () => {
         if (profile?.password === "") {
-            ErrorToaster('Enter Current Password');
+            ErrorToaster2('Enter Current Password');
             return;
         }
         if (profile?.newPassword === "") {
-            ErrorToaster('Enter New Password');
+            ErrorToaster2('Enter New Password');
             return;
         }
         if (profile?.confirmPassword === "") {
-            ErrorToaster('Enter Confirm Password');
+            ErrorToaster2('Enter Confirm Password');
             return;
         }
         if (validatePassword(profile?.newPassword) && validatePassword(profile?.confirmPassword)) {
@@ -191,16 +191,16 @@ const Profile = () => {
                 }
                 await PUT(`user-management-service/user/${user?.id}/changePassword`, JSON.stringify(data))
                     .then(response => {
-                        SuccessToaster('Password Changed Successfully');
+                        SuccessToaster2('Password Changed Successfully');
                     })
                     .catch(error => {
-                        ErrorToaster('Error in changing password');
+                        ErrorToaster2('Error in changing password');
                     })
             } else {
-                ErrorToaster('New Password and Confirm Password should be same');
+                ErrorToaster2('New Password and Confirm Password should be same');
             }
         } else {
-            ErrorToaster('The password must contain at least 8 characters, one upper case letter, one lower case letter, one digit, and one special character.');
+            ErrorToaster2('The password must contain at least 8 characters, one upper case letter, one lower case letter, one digit, and one special character.');
         }
 
 

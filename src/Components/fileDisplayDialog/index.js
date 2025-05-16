@@ -186,7 +186,7 @@ const FileDisplayDialog = ({ getIsOpen, file }) => {
                       color: "#06617A",
                     }}
                     className={style.cursorPointer}
-                    onClick={() => handleDownload(pdfUrl, file?.documentType)}
+                    onClick={() => handleDownload(pdfUrl, file?.documentType || file?.title)}
                   />
                 </Tooltip>
                 {!isExpanded ? (

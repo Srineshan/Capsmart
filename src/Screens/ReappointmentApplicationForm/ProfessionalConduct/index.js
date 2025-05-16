@@ -214,7 +214,7 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, getPreApplication }) => 
                     setBasicForm(response?.data)
                     SuccessToaster("Application Updated Successfully");
                     getPreApplication();
-                    if (actionType === "continue" || actionType === "skipped") {
+                    if (actionType !== "save") {
                     if (sessionStorage.getItem('fromSummary') === "true") {
                         navigate(-1);
                     }
