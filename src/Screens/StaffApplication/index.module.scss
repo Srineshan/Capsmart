@@ -996,9 +996,20 @@ body::-webkit-scrollbar {
   grid-gap: 1%;
 }
 
+.applicationStaffLocumGrid {
+  display: grid;
+  grid-template-columns: 2% 19% 4% 14% 18% 10% 6% 5% 6% 7%;
+  grid-gap: 1%;
+}
 .credUserStaffReappointGrid {
   display: grid;
   grid-template-columns: 5% 16% 10% 15% 10% 6% 5% 12% 10% 3%;
+  grid-gap: 1%;
+}
+
+.credUserStaffLocumGrid {
+  display: grid;
+  grid-template-columns: 5% 13% 4% 10% 10% 11% 6% 6% 12% 11% 3%;
   grid-gap: 1%;
 }
 
@@ -1018,6 +1029,12 @@ body::-webkit-scrollbar {
   grid-gap: 1%;
 }
 
+.macStaffLocumGrid {
+  display: grid;
+  grid-template-columns: 5% 18% 5% 13% 18% 7% 16% 16%;
+  grid-gap: 1%;
+}
+
 .bodStaffGrid {
   display: grid;
   // grid-template-columns: 13% 13% 18% 18% 10% 16% 7%;
@@ -1031,6 +1048,12 @@ body::-webkit-scrollbar {
   // grid-template-columns: 20% 15% 14% 6% 6% 8% 8% 7% 10%;
   // grid-template-columns: 20% 15% 14% 7% 8% 11% 12% 9%;
   grid-template-columns: 5% 19% 12% 30% 6% 12% 5% 5%;
+  grid-gap: 1%;
+}
+
+.bodStaffLocumGrid {
+  display: grid;
+  grid-template-columns: 5% 17% 4% 12% 20% 6% 19% 5% 5%;
   grid-gap: 1%;
 }
 

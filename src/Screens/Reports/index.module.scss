@@ -20,6 +20,10 @@
     margin-left: 5px;
 }
 
+.marginLeft30 {
+    margin-left: 30px;
+}
+
 .marginTop20 {
     margin-top: 20px !important;
 }
@@ -111,7 +115,7 @@
     border-radius: 8px;
     opacity: 1;
     padding: 10px;
-    display: none;
+    // display: none;
 }
 
 .displayInRow {
@@ -1828,15 +1832,28 @@
     grid-gap: 5px;
 }
 
-//   @media print {
-//     .reportBackgroundCard {
-//       padding: 20px !important;
-//     }
+.tabs {
+    display: flex;
+    flex-direction: row;
+}
 
-//     @page {
-//         margin-top: 50px; 
-//       }
-//   }
+.myReportsGrid {
+    display: grid;
+    grid-template-columns: 45% 13% 16% 16% 5%;
+    grid-gap: 1%;
+}
+
+.reportingTemplatesGrid {
+    display: grid;
+    grid-template-columns: 23% 10% 10% 15% 15% 15% 5%;
+    grid-gap: 1%;
+}
+
+.savedReportOutputsGrid {
+    display: grid;
+    grid-template-columns: 66% 15% 10% 5%;
+    grid-gap: 1%;
+}
 
 @media print {
     @page {
