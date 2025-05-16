@@ -235,8 +235,8 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         PROOF_OF_DOCUMENTATION_COMPLIANCE_FOR_CONTRACT_BASED_REQUIREMENTS: 'Proof of documentation compliance for contract based requirments',
         ACTIVITY_STATUS_TRACKER: `Status Of Activities/ Services By Service Provider For ${format(new Date(), 'MMMM yyyy')}`,
         PAYMENT_TRACKER: 'Payment Processing Status By Service Provider',
-        SUBMITTED_APPLICATIONS_REVIEW_SUMMARY: 'submittedApplicationsReviewSummary',
-        STAFF_REAPPOINTMENT_STATUS_SUMMARY: 'staffReappointmentStatusSummary'
+        SUBMITTED_APPLICATIONS_REVIEW_SUMMARY: 'Submitted Applications Review Summary',
+        STAFF_REAPPOINTMENT_STATUS_SUMMARY: 'Staff Reappointment Status Summary'
     }
 
     useEffect(() => {
@@ -266,30 +266,14 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
     // }
 
     useEffect(() => {
-        if (tabName === 'My Reports') {
-            getMyReports();
-        } else if (tabName === 'Saved Report Outputs') {
-            getSavedReports();
-        } else {
-            getStandardTemplates();
-        }
-    }, [tabName, reportType])
+        getMyReports();
+        getSavedReports();
+        getStandardTemplates();
+    }, [selectedTab, reportType])
 
     const getMyReports = async () => {
-        if (reportType === 'contractManagement') {
-            const { data: myReport } = await GET(`timesheet-management-service/report/myReport?userId=${currentUserDetails?.id}&category=TIMESHEET`);
-            setMyReports(myReport);
-            let temp = [...myReport] || [];
-            const { data: myReportContract } = await GET(`contract-managment-service/reports/myReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
-            myReportContract?.map(data => { temp.push(data) })
-            setMyReports(temp);
-        } else if (reportType === "contractCompliance") {
-            const { data: myReport } = await GET(`contract-managment-service/reports/myReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
-            setMyReports(myReport);
-        } else {
-            const { data: myReport } = await GET(`timesheet-management-service/report/myReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
-            setMyReports(myReport);
-        }
+        const { data: myReport } = await GET(`application-management-service/report/myReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
+        setMyReports(myReport);
     }
 
     console.log(myReports)
@@ -331,7 +315,26 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
     }
 
     const getMyReportsValues = () => {
+        const title = [];
+        const schedule = [];
+        const savedParams = [];
+        const lastUpdated = [];
+        const actions = [];
+        myReports?.map((data, index) => {
+            title.push(data?.report?.title)
+            schedule.push(data?.report?.schedule?.schedule);
+            savedParams.push('-');
+            lastUpdated.push(data?.lastUpdate ? format(new Date(data?.lastUpdate), "MM/dd/yyyy") : '-');
+            actions.push(true);
+        });
 
+        return [
+            { type: "text", value: title },
+            { type: "text", value: schedule },
+            { type: "text", value: savedParams },
+            { type: "text", value: lastUpdated },
+            { type: "action", value: actions },
+        ];
     }
 
     const getReportingTemplatesValues = () => {
@@ -343,7 +346,7 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         const lastUpdatedBy = [];
         const actions = [];
         standardTemplates?.map((data, index) => {
-            title.push(data?.title)
+            title.push(titleList[data?.title])
             type.push('Standard');
             lastRunBy.push('-');
             lastRunDateAndTime.push(data?.lastRun ? format(new Date(data?.lastRun), "MM/dd/yyyy") : '-');
@@ -378,12 +381,12 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
 
     let tableData =
         selectedTab === "MYREPORTS"
-            ? []
+            ? myReports
             : selectedTab === "REPORTINGTEMPLATES"
                 ? standardTemplates
                 : selectedTab === "SAVEDREPORTOUTPUTS"
                     ? []
-                    : []
+                    : myReports
 
     const getSelectedPage = (value) => {
         setPage(value);
@@ -547,7 +550,7 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
                             className={`${style.spaceBetween} ${style.marginLeft30} `}
                         >
                             <div className={`${style.tabs}`}>
-                                <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="My Reports" tileCount={0} currentTile="MYREPORTS" />
+                                <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="My Reports" tileCount={myReports?.length} currentTile="MYREPORTS" />
                                 <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="Reporting Templates" tileCount={standardTemplates?.length} currentTile="REPORTINGTEMPLATES" />
                                 <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="Saved Report Outputs" tileCount={0} currentTile="SAVEDREPORTOUTPUTS" />
                             </div>

@@ -58,6 +58,8 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
     const [selectedContractedServiceProviderToSend, setSelectedContractedServiceProviderToSend] = useState([]);
     const [selectedTimesheetInterval, setSelectedTimesheetInterval] = useState([]);
     const [timesheetIntervals, setTimesheetIntervals] = useState([]);
+    const [selectedPosition, setSelectedPosition] = useState('');
+    const [selectedApplicationType, setSelectedApplicationType] = useState('');
     const [user, setUsers] = useState([]);
     const [from, setFrom] = useState(startOfMonth(new Date()));
     const [to, setTo] = useState(endOfMonth(new Date()));
@@ -124,7 +126,9 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         selectedContractedServiceProviderToSend: selectedContractedServiceProviderToSend,
         initialValueSet: initialValueSet,
         selectedPrivilegeCategory: selectedPrivilegeCategory,
-        selectedPrivilegeCategoryToSend: selectedPrivilegeCategoryToSend
+        selectedPrivilegeCategoryToSend: selectedPrivilegeCategoryToSend,
+        selectedPosition: selectedPosition,
+        selectedApplicationType: selectedApplicationType
     };
 
     useEffect(() => {
@@ -282,9 +286,9 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
 
     useEffect(() => {
         getDataToUseInReport(dataToUseInReport);
-    }, [renewalreportingTimePeriod, selectedSites, selectedDepartments, contractContinuationPolicy, selectedContracts,
-        podType, contractStatus, reportingTimePeriod, selectedContractedServiceProvider,
-        selectedContractedServiceProviderToSend, from, to, initialValueSet, selectedTimesheetInterval]);
+    }, [renewalreportingTimePeriod, selectedSites, selectedDepartments, selectedPrivilegeCategory, selectedStaffType,
+        podType, contractStatus, reportingTimePeriod, selectedApplicationType,
+        selectedPosition, from, to, initialValueSet, selectedTimesheetInterval]);
 
     useEffect(() => {
         let tempDept = [];
@@ -402,7 +406,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         }, 2000);
         return () => clearTimeout(timer);
 
-    }, [defaultOption, selectedSites, selectedDepartments, selectedContractedServiceProvider, selectedContracts, selectedStaffType]);
+    }, [defaultOption, selectedSites, selectedDepartments, selectedContractedServiceProvider, selectedContracts, selectedStaffType, selectedPrivilegeCategory]);
 
     const encodeHashToPercent23 = (str) => {
         const parts = str.split('#');
@@ -798,6 +802,39 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                         {data?.category}
                                     </MenuItem>
                                 ))}
+                            </Select>
+                        </FormControl>
+
+                        <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                            <InputLabel id="demo-simple-select-standard-label3">Application Type</InputLabel>
+                            <Select
+                                labelId="demo-simple-select-standard-label3"
+                                id="demo-simple-select-standard3"
+                                value={selectedApplicationType}
+                                onChange={(e) => { setSelectedApplicationType(e.target.value) }}
+                                MenuProps={MenuProps}
+                                disabled={isMyReport || isLoading}
+                            >
+                                <MenuItem value={''} disabled={isMyReport || isLoading}>All</MenuItem>
+                                <MenuItem value={'NEW'} disabled={isMyReport || isLoading}>New Applicants</MenuItem>
+                                <MenuItem value={'REAPPOINTMENT'} disabled={isMyReport || isLoading}>Staff Reapointments</MenuItem>
+                                <MenuItem value={'LOCUM_RENEWAL'} disabled={isMyReport || isLoading}>Locum Applications</MenuItem>
+                            </Select>
+                        </FormControl>
+
+                        <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                            <InputLabel id="demo-simple-select-standard-label3">Position</InputLabel>
+                            <Select
+                                labelId="demo-simple-select-standard-label3"
+                                id="demo-simple-select-standard3"
+                                value={selectedPosition}
+                                onChange={(e) => { setSelectedPosition(e.target.value) }}
+                                MenuProps={MenuProps}
+                                disabled={isMyReport || isLoading}
+                            >
+                                <MenuItem value={''} disabled={isMyReport || isLoading}>All</MenuItem>
+                                <MenuItem value={'PERMANENT'} disabled={isMyReport || isLoading}>Permanent</MenuItem>
+                                <MenuItem value={'LOCUM'} disabled={isMyReport || isLoading}>Locum</MenuItem>
                             </Select>
                         </FormControl>
                         {/* <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
