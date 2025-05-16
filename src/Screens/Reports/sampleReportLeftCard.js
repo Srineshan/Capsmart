@@ -10,7 +10,7 @@ import TextField from '@mui/material/TextField';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, subMonths, addMonths,subYears,subDays, startOfQuarter, endOfQuarter, startOfYear, endOfYear, add, sub } from 'date-fns';
+import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, subMonths, addMonths, subYears, subDays, startOfQuarter, endOfQuarter, startOfYear, endOfYear, add, sub } from 'date-fns';
 import SaveReport from './saveReport';
 import { useParams } from 'react-router-dom';
 import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
@@ -48,6 +48,12 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
     const [departments, setDepartments] = useState([]);
     const [contracts, setContracts] = useState([]);
     const [selectedContracts, setSelectedContracts] = useState([]);
+    const [staffType, setStaffType] = useState([]);
+    const [selectedStaffType, setSelectedStaffType] = useState([]);
+    const [selectedStaffTypeToSend, setSelectedStaffTypeToSend] = useState([]);
+    const [privilegeCategory, setPrivilegeCategory] = useState([]);
+    const [selectedPrivilegeCategory, setSelectedPrivilegeCategory] = useState([]);
+    const [selectedPrivilegeCategoryToSend, setSelectedPrivilegeCategoryToSend] = useState([]);
     const [selectedContractedServiceProvider, setSelectedContractedServiceProvider] = useState([]);
     const [selectedContractedServiceProviderToSend, setSelectedContractedServiceProviderToSend] = useState([]);
     const [selectedTimesheetInterval, setSelectedTimesheetInterval] = useState([]);
@@ -58,14 +64,14 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
     const generateMonthYearOptions = () => {
         const startDate = subYears(new Date(), 1); // Start from one year ago
         const monthsList = [];
-      
+
         for (let i = 0; i < 24; i++) { // 12 previous months + 12 upcoming months
-          const date = addMonths(startDate, i);
-          monthsList.push(format(date, "MMMM yyyy")); // Format: March 2025
+            const date = addMonths(startDate, i);
+            monthsList.push(format(date, "MMMM yyyy")); // Format: March 2025
         }
-      
+
         return monthsList;
-      };
+    };
     const monthOptions = generateMonthYearOptions();
     const [selectedMonth, setSelectedMonth] = useState(format(new Date(), "MMMM yyyy")); // Default: Current month & year
     let reportFilter = JSON.parse(sessionStorage.getItem('reportFilter'));
@@ -102,7 +108,8 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         selectedSitesToSend: selectedSitesToSend,
         selectedDepartments: selectedDepartments,
         selectedDepartmentsToSend: selectedDepartmentsToSend,
-        contractContinuationPolicy: contractContinuationPolicy,
+        selectedStaffType: selectedStaffType,
+        selectedStaffTypeToSend: selectedStaffTypeToSend,
         sites: sites,
         contractStatus: contractStatus,
         selectedContracts: selectedContracts,
@@ -116,13 +123,16 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         selectedContractedServiceProvider: selectedContractedServiceProvider,
         selectedContractedServiceProviderToSend: selectedContractedServiceProviderToSend,
         initialValueSet: initialValueSet,
-        selectedTimesheetInterval: selectedTimesheetInterval
+        selectedPrivilegeCategory: selectedPrivilegeCategory,
+        selectedPrivilegeCategoryToSend: selectedPrivilegeCategoryToSend
     };
 
     useEffect(() => {
         setUserId(userDetail?.id);
         setUserDetails();
         getActivityLogger();
+        getStaffType();
+        getPrivilegeCategory();
         // getContractAndUserList();
         if (reportType === 'paymentProcessingStatusTracker') {
             getTimesheetIntervals()
@@ -142,7 +152,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         }
     }
 
-    console.log("222222222222222222222222222222",departments)
+    console.log("222222222222222222222222222222", departments)
 
     const getActivityLogger = async () => {
         const { data: user } = await GET(`user-management-service/user?userType=CONTRACTED_SERVICE_PROVIDER_USER`);
@@ -184,6 +194,20 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
     const getAllDeptList = async () => {
         const { data: deptList } = await GET(`entity-service/department/${dataToUseInReport?.selectedSites}`);
         setDepartments(deptList)
+    }
+
+    const getStaffType = async () => {
+        const { data: applicant } = await GET(
+            `entity-service/applicantType`
+        );
+        setStaffType(applicant)
+    }
+
+    const getPrivilegeCategory = async () => {
+        const { data: privilege } = await GET(
+            `entity-service/privilege`
+        );
+        setPrivilegeCategory(privilege);
     }
 
     const podTypes = ['Medical Staff Membership & Privileges',
@@ -357,12 +381,28 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         } else if (selectedContracts?.length >= 2 && selectedContracts.includes(defaultOption)) {
             setSelectedContracts(selectedContracts.filter(value => value !== defaultOption))
         }
+
+        if (selectedStaffType?.length === 0) {
+            if (staffType?.length !== 1) {
+                setSelectedStaffType([defaultOption]);
+            }
+        } else if (selectedStaffType?.length >= 2 && selectedStaffType.includes(defaultOption)) {
+            setSelectedStaffType(selectedStaffType.filter(value => value !== defaultOption))
+        }
+
+        if (selectedPrivilegeCategory?.length === 0) {
+            if (privilegeCategory?.length !== 1) {
+                setSelectedPrivilegeCategory([defaultOption]);
+            }
+        } else if (selectedPrivilegeCategory?.length >= 2 && selectedPrivilegeCategory.includes(defaultOption)) {
+            setSelectedPrivilegeCategory(selectedPrivilegeCategory.filter(value => value !== defaultOption))
+        }
         const timer = setTimeout(() => {
             setInitialValueSet(true);
         }, 2000);
         return () => clearTimeout(timer);
 
-    }, [defaultOption, selectedSites, selectedDepartments, selectedContractedServiceProvider, selectedContracts]);
+    }, [defaultOption, selectedSites, selectedDepartments, selectedContractedServiceProvider, selectedContracts, selectedStaffType]);
 
     const encodeHashToPercent23 = (str) => {
         const parts = str.split('#');
@@ -464,9 +504,45 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         setSelectedContractedServiceProviderToSend([]);
     };
 
+    const handleChangeStaffType = (event) => {
+        const {
+            target: { value },
+        } = event;
+        console.log(value[value?.length - 1], value)
+        if (value?.length >= 2 && value[value?.length - 1] === defaultOption) {
+            setSelectedStaffType([defaultOption]);
+            setSelectedStaffTypeToSend([]);
+        } else {
+            setSelectedStaffType(
+                typeof value === 'string' ? value.split(',') : value
+            );
+            setSelectedStaffTypeToSend(
+                typeof value === 'string' ? staffType?.filter(data => value.split(',')?.includes(data?.id))?.map(data => data) : staffType?.filter(data => value?.includes(data?.id))?.map(data => data),
+            );
+        }
+    }
+
+    const handleChangePrivilegeCategory = (event) => {
+        const {
+            target: { value },
+        } = event;
+        console.log(value[value?.length - 1], value)
+        if (value?.length >= 2 && value[value?.length - 1] === defaultOption) {
+            setSelectedPrivilegeCategory([defaultOption]);
+            setSelectedPrivilegeCategoryToSend([]);
+        } else {
+            setSelectedPrivilegeCategory(
+                typeof value === 'string' ? value.split(',') : value
+            );
+            setSelectedPrivilegeCategoryToSend(
+                typeof value === 'string' ? privilegeCategory?.filter(data => value.split(',')?.includes(data?.id))?.map(data => data) : privilegeCategory?.filter(data => value?.includes(data?.id))?.map(data => data),
+            );
+        }
+    }
+
     const handleMonthChange = (event) => {
         setSelectedMonth(event.target.value);
-      };
+    };
 
     const handleChangeContracts = (event) => {
         const {
@@ -524,12 +600,10 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         <div>
             <div className={`${style.leftCard} ${style.leftCardDisplay} ${style.marginTop20} ${style.bigCalendarLeftCardWidth}`}>
                 <div className={`${style.reporttypeLeftBackGround}`}>
-                  <div className={style.reportLeftTextStyle}>Save Parameter Selection As My Report</div>
+                    <div className={style.reportLeftTextStyle}>Save Parameter Selection As My Report</div>
                 </div>
                 {(reportType === "staffReappointmentsNotes" || reportType === "staffReappointments" ||
-                    reportType === "contractDocumentsOnFile" || reportType === "multiProviderContractsList" ||
-                    reportType === "contractsWithABusinessEntity" || reportType === "currentRemitToAddressForActiveContracts" ||
-                    reportType === 'nonCompliant' || reportType === "staffbyTypes" || reportType === "paymentProcessingStatusTracker" || reportType === "staffReappointmentTracker") ? (
+                    reportType === "submittedApplicationsReviewSummary" || reportType === "staffReappointmentTracker") ? (
                     <>
                         {/* {reportType === "staffReappointmentsNotes" && (
                             <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
@@ -573,21 +647,21 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 ))}
                             </Select>
                         </FormControl> */}
-                       <FormControl variant="standard" sx={{ m: 1, width: "250px", marginTop: "20px" }}>
-                        <InputLabel id="month-selector-label">Reporting Period</InputLabel>
-                        <Select
-                            labelId="month-selector-label"
-                            id="month-selector"
-                            value={selectedMonth}
-                            onChange={handleMonthChange}
-                            disabled={isMyReport || isLoading}
-                        >
-                            {monthOptions.map((month) => (
-                            <MenuItem key={month} value={month}>
-                                {month}
-                            </MenuItem>
-                            ))}
-                        </Select>
+                        <FormControl variant="standard" sx={{ m: 1, width: "250px", marginTop: "20px" }}>
+                            <InputLabel id="month-selector-label">Reporting Period</InputLabel>
+                            <Select
+                                labelId="month-selector-label"
+                                id="month-selector"
+                                value={selectedMonth}
+                                onChange={handleMonthChange}
+                                disabled={isMyReport || isLoading}
+                            >
+                                {monthOptions.map((month) => (
+                                    <MenuItem key={month} value={month}>
+                                        {month}
+                                    </MenuItem>
+                                ))}
+                            </Select>
                         </FormControl>
                         <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                             <InputLabel id="demo-multiple-name-label2" className={style.headingtextStyle}>Departments</InputLabel>
@@ -670,15 +744,15 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 labelId="demo-multiple-name-label2"
                                 id="demo-multiple-name2"
                                 multiple
-                                value={selectedDepartments}
-                                onChange={handleChangeDepartments}
+                                value={selectedStaffType}
+                                onChange={handleChangeStaffType}
                                 MenuProps={MenuProps}
                                 disabled={isMyReport || isLoading}
                             >
-                                {departments?.length >= 2 && (
+                                {staffType?.length >= 2 && (
                                     <MenuItem value={defaultOption} disabled={isMyReport || isLoading}>All</MenuItem>
                                 )}
-                                {departments?.map((data) => (
+                                {staffType?.map((data) => (
                                     // <MenuItem
                                     //     key={data?.dept?.id}
                                     //     value={data?.dept?.id}
@@ -690,7 +764,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                         value={data?.id}
                                         disabled={isMyReport || isLoading}
                                     >
-                                        {data?.departmentName?.name}
+                                        {data?.applicantType}
                                     </MenuItem>
                                 ))}
                             </Select>
@@ -701,15 +775,15 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 labelId="demo-multiple-name-label2"
                                 id="demo-multiple-name2"
                                 multiple
-                                value={selectedDepartments}
-                                onChange={handleChangeDepartments}
+                                value={selectedPrivilegeCategory}
+                                onChange={handleChangePrivilegeCategory}
                                 MenuProps={MenuProps}
                                 disabled={isMyReport || isLoading}
                             >
-                                {departments?.length >= 2 && (
+                                {privilegeCategory?.length >= 2 && (
                                     <MenuItem value={defaultOption} disabled={isMyReport || isLoading}>All Categories</MenuItem>
                                 )}
-                                {departments?.map((data) => (
+                                {privilegeCategory?.map((data) => (
                                     // <MenuItem
                                     //     key={data?.dept?.id}
                                     //     value={data?.dept?.id}
@@ -721,7 +795,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                         value={data?.id}
                                         disabled={isMyReport || isLoading}
                                     >
-                                        {data?.departmentName?.name}
+                                        {data?.category}
                                     </MenuItem>
                                 ))}
                             </Select>
