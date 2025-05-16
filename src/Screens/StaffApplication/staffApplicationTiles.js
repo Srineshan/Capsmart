@@ -415,6 +415,15 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
           tileCount={counts?.clarificationsRequired}
           currentTile="clarificationsRequired"
         />
+        {workModeType === "Credentialing Committee" && (
+        <TileApplication 
+          selectedTab={selectedTab} 
+          getSelectedTab={handleTabClick} 
+          tileLabel="Reviewed Applications" 
+          tileCount={totalCount}
+          currentTile="ReviewedApplications"
+        />
+      )}
       </>
       {/* )} */}
 

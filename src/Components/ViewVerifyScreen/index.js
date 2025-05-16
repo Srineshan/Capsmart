@@ -323,6 +323,11 @@ const NewActiveApplication = ({
     const BoardDate = form?.completedWorkflows?.find(
       (workflow) => workflow?.role === "Board"
     );
+    if (workModeType === "Staff Manager" && selectedTab === "level-2" && credentialingCommitteeDate?.meetingDate && applicationType === "LOCUM") {
+      setSelectedDateForReappoint(new Date(`${credentialingCommitteeDate?.meetingDate}T00:00`), "MMM dd, yyyy");
+      setSelectedDateForCC(new Date(`${credentialingCommitteeDate?.meetingDate}T00:00`), "MMM dd, yyyy");
+      setIsButtonDisabled(false);
+    }
     if (workModeType === "Staff Manager" && selectedTab === "level-3" && credentialingCommitteeDate?.meetingDate && applicationType === "REAPPOINTMENT") {
       setSelectedDateForReappoint(new Date(`${credentialingCommitteeDate?.meetingDate}T00:00`), "MMM dd, yyyy");
       setSelectedDateForCC(new Date(`${credentialingCommitteeDate?.meetingDate}T00:00`), "MMM dd, yyyy");
