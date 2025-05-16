@@ -309,7 +309,7 @@ const ApplicationDecline = ({ getIsOpen, selectedTab, applicationType, getApplic
           role = "Credentialing Committee";
           title = "Credentialing Committee Review"
         }
-      }  else if (selectedTab === 'level-3') {
+      }  else if (selectedTab === 'level-3' && applicationType !== "LOCUM") {
         if (workModeType === "Credentialing Committee") {
           role = "Credentialing Committee";
           title = "Credentialing Committee Review";
@@ -324,9 +324,15 @@ const ApplicationDecline = ({ getIsOpen, selectedTab, applicationType, getApplic
           role = "Credentialing Committee";
           title = "Credentialing Committee User Review";
         }
-      } else if (selectedTab === 'level-4') {
+      } else if (selectedTab === 'level-3' && applicationType === "LOCUM") {
+          role = "Advisory Committee";
+          title = "MAC Review";
+        } else if (selectedTab === 'level-4' && applicationType !== "LOCUM") {
         role = "Advisory Committee";
         title = "MAC Review";
+      }  else if (selectedTab === 'level-4' && applicationType === "LOCUM") {
+        role = "Board";
+        title = "BOD Approval";
       } else if (selectedTab === 'level-5') {
         role = "Board";
         title = "BOD Approval";
@@ -387,7 +393,7 @@ const ApplicationDecline = ({ getIsOpen, selectedTab, applicationType, getApplic
           role = "Credentialing Committee";
           title = "Credentialing Committee Review"
         }
-      }  else if (selectedTab === 'level-3') {
+      }  else if (selectedTab === 'level-3' && applicationType !== "LOCUM") {
         if (workModeType === "Credentialing Committee") {
           role = "Credentialing Committee";
           title = "Credentialing Committee Review";
@@ -402,9 +408,15 @@ const ApplicationDecline = ({ getIsOpen, selectedTab, applicationType, getApplic
           role = "Credentialing Committee";
           title = "Credentialing Committee User Review";
         }
-      } else if (selectedTab === 'level-4') {
+      } else if (selectedTab === 'level-3' && applicationType === "LOCUM") {
+          role = "Advisory Committee";
+          title = "MAC Review";
+        } else if (selectedTab === 'level-4' && applicationType !== "LOCUM") {
         role = "Advisory Committee";
         title = "MAC Review";
+      }  else if (selectedTab === 'level-4' && applicationType === "LOCUM") {
+        role = "Board";
+        title = "BOD Approval";
       } else if (selectedTab === 'level-5') {
         role = "Board";
         title = "BOD Approval";

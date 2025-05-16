@@ -203,3 +203,39 @@
     color: $primarycolor;
     opacity: 0.7;
 }
+
+.dropdownContainer {
+    // width: 200px;
+    // height: 85px;
+    background-color: $primarycolor;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    float: inline-end;
+}
+
+.dropdownItem {
+    text-align: left;
+    font: normal normal bold 14px/30px proxima-nova;
+    letter-spacing: 0.45px;
+    color: #F5F9FD;
+    opacity: 0.8;
+    margin-left: 10px;
+    cursor: auto;
+}
+
+.dropDownTextStyle {
+    text-align: left;
+    padding: 8px 16px;
+    font: normal normal normal 14px/18px proxima-nova;
+    letter-spacing: 0px;
+    color: #F5F9FD;
+    text-transform: capitalize;
+    opacity: 1;
+}
+
+.dropDownTextStyle:hover {
+    background: #044D61 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #00000052;
+    border-radius: 8px;
+    opacity: 1;
+}

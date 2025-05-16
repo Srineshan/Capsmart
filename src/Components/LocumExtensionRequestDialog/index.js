@@ -281,7 +281,8 @@ const LocumExtensiveRequestDialog = ({ getIsOpen, tableDataValue, selectedTab })
               {
                 id: DepartmentId,
                 serviceAreaIds: [speciltyId],
-                serviceAreaSpecific: speciltyId ? true : false
+                // serviceAreaSpecific: speciltyId ? true : false
+                serviceAreaSpecific:false
               }
             ],
             departmentSpecific: true
@@ -905,8 +906,8 @@ const LocumExtensiveRequestDialog = ({ getIsOpen, tableDataValue, selectedTab })
                 }}
                 onClick={() => {
                   if (isValidDateRange()) {
-                    getIsOpen(false);
                     reappointmentRequestApplication();
+                    getIsOpen(false);
                   }
                 }}
               >

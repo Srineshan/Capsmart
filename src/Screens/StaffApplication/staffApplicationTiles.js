@@ -268,7 +268,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
         // getSelectedTab(initialTab);
         // setInitialTabSet(false);
       } else if (workModeType === "Chief Of Staff" && applicationType === "LOCUM") {
-        initialTab = "level-2";
+        initialTab = "OverrideRequest";
         // getSelectedTab(initialTab);
         // setInitialTabSet(false);
       } else if (workModeType === "Credentialing Committee" && applicationType === "REAPPOINTMENT") {
@@ -306,7 +306,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
         } else if (applicationType === "REAPPOINTMENT") {
           label = "Reappointments To Process";
         } else if (applicationType === "LOCUM") {
-          label = "Renewals To Process";
+          label = "Applicants To Process";
         } else {
           label = value.tabDisplayName;
         }
@@ -345,16 +345,9 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
     else if (workModeType === "Credentialing Committee" && applicationType === "LOCUM") {
       filteredArray = baseUserFlowArray.filter(tile => tile.level === 'level-2').map(tile => ({
         ...tile,
-        label: "Privilege Extensions to Review",
+        label: "Locum Applications to Review",
       }));
-    }
-
-    else if (workModeType === "Chief Of Staff" && applicationType === "LOCUM") {
-      filteredArray = baseUserFlowArray.filter(tile => tile.level === 'level-2').map(tile => ({
-        ...tile,
-        label: "Privilege Extensions to Review",
-      }));
-    }
+    } 
     else if (workModeType === "Credentialing Committee" && applicationType === "REAPPOINTMENT") {
       filteredArray = baseUserFlowArray.filter(tile => tile.level === 'level-3').map(tile => ({
         ...tile,
@@ -392,6 +385,8 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
       )}
       {/* {applicationType !== "LOCUM" && ( */}
       <>
+       {!(workModeType === "Chief Of Staff" && applicationType === "LOCUM") && (
+        <>
         {getFilteredTiles().map(tile => (
           <TileApplication
             key={tile.level}
@@ -401,7 +396,18 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
             tileCount={tile.count}
             currentTile={tile.level}
           />
-        ))}
+            ))}
+          </>
+         )}
+         {workModeType === "Chief Of Staff" && applicationType === "LOCUM" && (
+        <TileApplication 
+          selectedTab={selectedTab} 
+          getSelectedTab={handleTabClick} 
+          tileLabel="Override Requests" 
+          tileCount={totalCount}
+          currentTile="OverrideRequest"
+        />
+      )}
         <TileApplication
           selectedTab={selectedTab}
           getSelectedTab={handleTabClick}
@@ -412,15 +418,6 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
       </>
       {/* )} */}
 
-      {/* {workModeType === "Department Head" && applicationType === "LOCUM" && (
-        <TileApplication 
-          selectedTab={selectedTab} 
-          getSelectedTab={handleTabClick} 
-          tileLabel="Renewals to Review" 
-          tileCount={totalCount}
-          currentTile="LocumRenewals"
-        />
-      )} */}
     </div>
   );
 };
