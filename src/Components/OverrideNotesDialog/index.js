@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback, useRef, useDebugValue } from "react";
 import { GET, PUT, POST, TenantID } from "../../Screens/dataSaver";
 import { Dialog, Classes } from "@blueprintjs/core";
 import CrossPink from "../../images/crossPink.png";
@@ -6,13 +6,14 @@ import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
 import style from "./index.module.scss";
 import CryptoJS from 'crypto-js';
-import { format } from 'date-fns';
+import { format , parseISO, differenceInDays} from 'date-fns';
 import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
 import { fileLoadingURL, FormatPhoneNumber, FormatPostalCode } from "../../utils/formatting";
 import LoadingScreen from "../LoadingScreen";
 import { Tooltip } from "@mui/material";
+import { Style } from "@mui/icons-material";
 
-const NotesCommentsDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, selectedTab }) => {
+const OverrideNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, selectedTab }) => {
   let cookie = new Cookie();
   let userDetails = cookie.get('user');
   const users = jwt(userDetails);
@@ -52,13 +53,23 @@ const NotesCommentsDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, 
   const [isApproverCred, setIsApproverCred] = useState(false);
   const [userFirstName, setUserFirstName] = useState('');
   const [userLastName, setUserLastName] = useState('');
+  const [userSelectOverideApplicant, setUserSelectOverideApplicant] = useState('');
   let approverDetails;
   let approverDetailsCred;
+  const rawExpireDate = userSelectOverideApplicant?.application?.priorCyclePeriod?.to ?? null;
+  const ExpireDate = rawExpireDate ? parseISO(rawExpireDate) : null;
+  const formattedExpiringDate = ExpireDate ? format(new Date(ExpireDate), "MMM dd, yyyy") : "-";
+  const daysRemaining = ExpireDate ? Math.abs(differenceInDays(new Date(ExpireDate), new Date())) : null;
 
   useEffect(() => {
     getApplicationEntity();
     getLog();
   }, [applicationType]);
+
+  useEffect (() => {
+    getRequestUserData()
+    console.log("userSelectOverideApplicant",userSelectOverideApplicant)
+  },[])
 
   useEffect(() => {
     sessionStorage.setItem("fromSummary", false);
@@ -243,6 +254,23 @@ const NotesCommentsDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, 
     }
   };
 
+   const getRequestUserData = async () => {
+      try {
+        let response;
+          response = await GET(
+            `application-management-service/application/request?requestType=OVERRIDE_REQUEST&status=PENDING&role=Chief Of Staff`,
+          );
+          const requests = response?.data?.requests || [];
+          const filteredRequest = requests.find(item => item?.application?.id === id);
+          console.log("Filtered Application Data", filteredRequest);
+          setUserSelectOverideApplicant(filteredRequest);      
+      }
+      catch (error) {
+        console.error("Error fetching applications:", error);
+        return [];
+      }
+    };
+  
   // const checkRequirements = () => {
   //   return userRole.includes('Chief Of Staff')
   //     ? isChecked.isChecked1
@@ -453,11 +481,7 @@ const NotesCommentsDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, 
             <div className={Classes.DIALOG_BODY}>
               <div className={style.spaceBetween}>
                 <div className={style.heading}>
-                  {`Staff ${
-                    applicationType === "LOCUM"
-                      ? `${formDetails?.reappointmentType === "EXTENSION" ? "Locum Extension" : "Locum Renewal"}`
-                      : "Reappointment"
-                  } for Review & Approval`}
+                  Chief of Staff Review & Approval for Override Request
                 </div>
                 <div className={style.displayInRow}>
                   <Tooltip title={"Click to Close"} arrow>
@@ -472,109 +496,70 @@ const NotesCommentsDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, 
                   </Tooltip>
                 </div>
               </div>
+              <div className={`${style.headingLocum} ${style.marginTop10}`}>
+                  Review Locum Staff for Privilege {userSelectOverideApplicant?.locumRenewalDetails?.reappointmentType === "EXTENSION" ? "Extension" : "Renewal"}
+                </div>
               <div ref={componentRef} className={`${style.pagebreak}`}>
                 
                 <div className={`${style.rejectionBorderStyle} ${style.declineBorderStyle} ${style.marginTop10}`}>
-                  <div className={`${style.marginTop10} ${style.displayInRowCenter}`}>
-                    <div className={`${style.gridContainer2} ${style.marginLeftRight20} ${style.marginBottom10}`}>
-                      <div className={`${style.gridRow}`}>
-                        <div className={style.gridItem1}><span className={style.rejectionHeadingTextStyle}>
-                          {formDetails?.basicDetails?.applicant?.name?.lastName?.charAt(0).toUpperCase() +
-                            formDetails?.basicDetails?.applicant?.name?.lastName?.slice(1).toLowerCase()}{", "}
-                          {formDetails?.basicDetails?.applicant?.name?.firstName
-                            ? formDetails.basicDetails.applicant.name.firstName.charAt(0).toUpperCase() +
-                            formDetails.basicDetails.applicant.name.firstName.slice(1).toLowerCase()
-                            : ""}
-                        </span>
-                          <span className={`${style.rejectionTextStyle} ${style.marginLeft4}`}>
-                          {" "} {applicationType === "LOCUM" ? "Locum":""} {formDetails?.providerType?.serviceProviderType}
-                          </span>
-                        </div>
-                        <div className={`${style.gridItem2}`}>
-                          <span className={`${style.rejectionHeadingTextStyle}`}>
-                            {formDetails?.basicDetails?.departmentSpecialty?.department || ""}
-                            {formDetails?.basicDetails?.departmentSpecialty?.specialty
-                              ? ` - ${formDetails.basicDetails.departmentSpecialty.specialty}`
-                              : ""}
-                          </span>
-                        </div>
-                        <div className={`${style.twoColumnGridInner2} `}>
-                          <span className={`${style.rejectionTextStyle}`}>Privilege Category:</span>
-                          <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || "-"}</span>
-                        </div>
-                      </div>
-                      <div className={style.gridRow}>
-                        {
-                          entity?.multiSiteEntity && (
-                            <div className={`${style.twoColumnGridInner}`}>
-                              <span className={`${style.rejectionTextStyle}`}>Site Name:</span>
-                              <span className={`${style.rejectionTextStyle1}`}>
-                                {entity?.multiSiteEntity?.[0]?.name || "-"}
-                              </span>
-                            </div>
-                          )
-                        }
-                        <div className={`${style.twoColumnGridInner}`}>
-                          <span className={`${style.rejectionTextStyle}`}>Submission Date:</span>
-                          <span className={`${style.rejectionTextStyle1}`}>{formattedSubmissionDate}</span>
-                        </div>
-                        <div className={`${style.twoColumnGridInner}`}>
-                          <span className={`${style.rejectionTextStyle}`}>Last Updated :</span>
-                          <span className={`${style.rejectionTextStyle1}`}>{formattedDate}</span>
-                        </div>
-                        <div className={`${style.twoColumnGridInner2}`}>
-                          <span className={`${style.rejectionTextStyle}`}>Last Updated by:</span>
-                          <span className={`${style.rejectionTextStyle1}`}>
-                            {formDetails?.basicDetails?.applicant?.name?.firstName
-                              ? formDetails?.updatedBy?.name?.firstName.charAt(0).toUpperCase() +
-                              formDetails?.updatedBy?.name?.firstName.slice(1).toLowerCase()
-                              : ""}{formDetails?.updatedBy?.name?.lastName?.toUpperCase()}, {formDetails?.updatedBy?.title?.title}
-                          </span>
-                        </div>
-                      </div>
+                <div className={style.marginTop10}>
+                <div className={`${style.twoColumnGrid} ${style.marginLeftRight20} ${style.marginBottom10}`}>
+                    <div className={`${style.displayInRow} ${style.displayInRowCenter}`}>
+                    <span className={style.rejectionHeadingTextStyle}>
+                        {userSelectOverideApplicant?.application?.applicant?.name?.lastName?.charAt(0).toUpperCase() +
+                        userSelectOverideApplicant?.application?.applicant?.name?.lastName?.slice(1).toLowerCase()}
+                        {", "}
+                        {userSelectOverideApplicant?.application?.applicant?.name?.firstName
+                        ? userSelectOverideApplicant?.application?.applicant?.name?.firstName.charAt(0).toUpperCase() +
+                        userSelectOverideApplicant?.application?.applicant?.name?.firstName.slice(1).toLowerCase()
+                        : ""}
+                    </span>
+                    <div className={`${style.rejectionTextStyle} ${style.marginLeft2}`}>
+                        Locum {userSelectOverideApplicant?.application?.basicDetailReferences?.applicantType?.serviceProviderType}
                     </div>
-                  </div>
+                    </div>
+                    <div className={`${style.displayInRow} ${style.displayInRowCenter}`}>
+                    <span className={`${style.rejectionHeadingTextStyle}`}>
+                        {userSelectOverideApplicant?.application?.basicDetailReferences?.department?.name || ""}
+                        {userSelectOverideApplicant?.application?.basicDetailReferences?.specialty
+                        ? ` - ${userSelectOverideApplicant?.application?.basicDetailReferences?.specialty?.name}`
+                        : ""}
+                    </span>
+                    </div>
+                    {entity?.multiSiteEntity && (
+                    <div className={`${style.twoColumnGridInner}`}>
+                        <span className={`${style.rejectionTextStyle}`}>Site Name:</span>
+                        <span className={`${style.rejectionTextStyle1}`}>{entity?.multiSiteEntity?.[0]?.name || "-"}</span>
+                    </div>
+                    )}
+                    <div className={`${style.twoColumnGridInner}`}>
+                    <span className={`${style.rejectionTextStyle}`}>Expiration Date:</span>
+                    <span className={`${style.rejectionTextStyle1}`}>{formattedExpiringDate}</span>
+                    </div>
+                    <div className={`${style.twoColumnGridInner}`}>
+                    <span className={`${style.rejectionTextStyle}`}>{userSelectOverideApplicant?.locumRenewalDetails?.reappointmentType === "EXTENSION" ? "Days From Expiration :" : "Days Since Expiration :"}</span>
+                    <span className={`${style.rejectionTextStyle1}`}> {userSelectOverideApplicant?.locumRenewalDetails?.reappointmentType === "EXTENSION" ? `${daysRemaining} days` : `${daysRemaining} days`}</span>
+                    </div>
+                    {/* <div className={`${style.twoColumnGridInner}`}>
+        <span className={`${style.rejectionTextStyle}`}>OHIP Number :</span>
+        <span className={`${style.rejectionTextStyle1}`}>-</span>
+        </div> */}
                 </div>
-                {logDetails?.logs?.filter(log => log.role && log.notes).map((log, index) => (
-                  <>
-                    <div className={style.marginTop}>
-                      <div className={style.commentsNotesHeadingFontStyle}>
-                        {log.title} Comments & Notes
-                        {/* Staff Manager Comments & Notes */}
-                      </div>
-                      <hr color="grey" size="2"></hr>
-                      <div>
-                        <div className={style.commentsNotesFontStyle}>
-                          {/* Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy. */}
-                          <div dangerouslySetInnerHTML={{ __html: (log.notes) }} />
-                        </div>
-                      </div>
-                    </div>
-                  </>
-                ))}
-                {((workModeType === "Department Head") || (workModeType === "Chief Of Staff")) &&
-                  <>
-                    {/* <div className={`${style.marginTop} ${style.credDateTextStyle}`}>
-               Upcoming Credentials Committee Meeting Date: {upcomingCredCommitteeMeetingDate}
-               </div> */}
-
+                </div>
+            </div>
                     <div className={`${style.marginTop} ${style.credDateTextStyle}`}>
-                      Assigned Credentials Committee: {
-                        formDetails?.completedWorkflows
-                          ?.find(workflow => workflow.role === "Credentialing Committee")
-                          ?.approverDetail?.name
-                          ? `${formDetails?.completedWorkflows
-                            .find(workflow => workflow.role === "Credentialing Committee")
-                            ?.approverDetail?.name?.firstName} ${formDetails?.completedWorkflows
-                              .find(workflow => workflow.role === "Credentialing Committee")
-                              ?.approverDetail?.name?.lastName}, Credentialing Committee`
-                          : "No approver found"
-                      }
+                      Override Request Reason From Staff Manager
                     </div>
-                  </>
-                }
+                    <hr color="grey" size="2"></hr>
+                    {userSelectOverideApplicant?.notes?.length > 0 && (
+                    userSelectOverideApplicant?.notes?.map((note, index) => (
+                        <div key={note?.id || index} className={`${style.marginTop10}`}>
+                        <div className={style.commentsNotesFontStyle} dangerouslySetInnerHTML={{ __html: note?.notes?.notes || '' }} />
+                        </div>
+                    ))
+                    )}
                 <div className={`${style.marginTop} ${style.reviewButtonContainer}`} onClick={() => getIsOpen(false)}>
-                  {workModeType === "Department Head" ? <Tooltip title={"Click to Start the Review Process"} arrow><div className={style.reviewButton}>START REVIEW</div></Tooltip> : <Tooltip title={"Click to Continue to the Next Step"} arrow> <div className={style.reviewButton}>CONTINUE</div></Tooltip>}
+                 <Tooltip title={"Click to Start the Review Process"} arrow><div className={style.reviewButton}>REVIEW FOR OVERRIDE</div></Tooltip>
                 </div>
               </div>
             </div>
@@ -585,6 +570,6 @@ const NotesCommentsDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, 
   );
 };
 
-export default NotesCommentsDialog;
+export default OverrideNotesDialog;
 
 

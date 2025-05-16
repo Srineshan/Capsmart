@@ -95,6 +95,7 @@ const ReportTypeOverview = () => {
     const [isNonCompliantReportTileClicked, setIsNonCompliantReportTileClicked] = useState(false);
     const [activityTrackServices, setActivityTrackServices] = useState([]);
     const [paymentTrackValues, setPaymentTrackValues] = useState();
+    const [submittedApplicationValues, setSubmittedApplicationValues] = useState();
     const [selectedPaymentTab, setSelectedPaymentTab] = useState('Payment Processed');
     const [tableDataStatus, setTableDataStatus] = useState([]);
     const [applicationType, setApplicationType] = useState(() =>
@@ -106,6 +107,7 @@ const ReportTypeOverview = () => {
     let cookie = new Cookie();
     let userDetails = cookie.get('user');
     const userDetail = jwt(userDetails);
+    let workModeType = sessionStorage.getItem('workModeType')
     let months = { '1': 'Jan', '2': 'Feb', '3': 'March', '4': 'April', '5': 'May', '6': 'June', '7': 'July', '8': 'Aug', '9': 'Sep', '10': 'Oct', '11': 'Nov', '12': 'Dec' };
     const podTypes = ['Medical Staff Membership & Privileges',
         'Primary Speciality Board Certification',
@@ -187,74 +189,41 @@ const ReportTypeOverview = () => {
     }, [])
 
     useEffect(() => {
-        if (dataToUseInReport?.initialValueSet && (dataToUseInReport?.selectedSites?.length !== 1 ? !dataToUseInReport?.selectedSites.includes('') : true) && (dataToUseInReport?.selectedDepartments?.length !== 1 ? !dataToUseInReport?.selectedDepartments.includes('') : true) && (dataToUseInReport?.selectedContractedServiceProvider?.length !== 1 ? !dataToUseInReport?.selectedContractedServiceProvider.includes('') : true) && (dataToUseInReport?.selectedContracts?.length !== 1 ? !dataToUseInReport?.selectedContracts.includes('') : true)) {
+        if (dataToUseInReport?.initialValueSet && ((dataToUseInReport?.selectedDepartments?.length !== 1 ? !dataToUseInReport?.selectedDepartments.includes('') : true) && (dataToUseInReport?.selectedStaffType?.length !== 1 ? !dataToUseInReport?.selectedStaffType.includes('') : true) && (dataToUseInReport?.selectedPrivilegeCategory?.length !== 1 ? !dataToUseInReport?.selectedPrivilegeCategory.includes('') : true))) {
             getUpdatedValuesWithParams();
         }
-        // }, [selectedPodTypeFromTile, dataToUseInReport])
-    }, [selectedPodTypeFromTile, dataToUseInReport?.from, dataToUseInReport?.to, dataToUseInReport?.selectedContracts, dataToUseInReport?.selectedContractedServiceProvider, dataToUseInReport?.selectedSites, dataToUseInReport?.selectedDepartments, dataToUseInReport?.renewalreportingTimePeriod, dataToUseInReport?.contractContinuationPolicy, dataToUseInReport?.contractStatus, dataToUseInReport?.initialValueSet, dataToUseInReport?.selectedTimesheetInterval])
+        console.log(dataToUseInReport, 'dataToUseInReport', (dataToUseInReport?.initialValueSet && ((dataToUseInReport?.selectedDepartments?.length !== 1 ? !dataToUseInReport?.selectedDepartments.includes('') : true) && (dataToUseInReport?.selectedStaffType?.length !== 1 ? !dataToUseInReport?.selectedStaffType.includes('') : true) && (dataToUseInReport?.selectedPrivilegeCategory?.length !== 1 ? !dataToUseInReport?.selectedPrivilegeCategory.includes('') : true))))
+    }, [dataToUseInReport?.from, dataToUseInReport?.to, dataToUseInReport?.selectedPrivilegeCategory, dataToUseInReport?.selectedStaffType, dataToUseInReport?.selectedSites, dataToUseInReport?.selectedDepartments, dataToUseInReport?.renewalreportingTimePeriod, dataToUseInReport?.contractContinuationPolicy, dataToUseInReport?.contractStatus, dataToUseInReport?.initialValueSet, dataToUseInReport?.selectedTimesheetInterval])
 
     useEffect(() => {
         setApexStackedBarChartDisplay(<ApexStackedBarChart stackedSeries={stackedSeries} stackedCategories={stackedCategories} />);
     }, [stackedCategories, stackedSeries])
 
     const getUpdatedValuesWithParams = () => {
-        if (reportType === 'staffReappointmentsNotes') {
-            getContractRenewalReportWithParameters();
-        }
-        if (reportType === 'staffReappointments') {
-            getOneTimeContractWithParameters();
-        }
-        if (reportType === 'locumStaffRenewalNotes' || reportType === 'locumStaffRenewal') {
-            setIsLoading(false);
-        }
-        if (reportType === 'contractDocumentsOnFile') {
-            getContractDocumentsOnFile();
-        }
-        if (reportType === 'multiProviderContractsList') {
-            getMultiProviderContractsList();
-        }
-        if (reportType === 'contractsWithABusinessEntity') {
-            getContractsWithABusinessEntity();
-        }
-        if (reportType === 'currentRemitToAddressForActiveContracts') {
-            getCurrentRemitToAddressForActiveContracts();
-        }
-        if (reportType === 'nonCompliant') {
-            getNonCompliantContractReportTile();
-        }
-        if (reportType === 'activitiesOrServices') {
-            getAcvityAndServicesWithParameter();
-        }
-        if (reportType === 'addOnActivities') {
-            getAddOnServicesWithParameter();
-        }
-        if (reportType === 'nonCompliant' && isNonCompliantReportTileClicked) {
-            setSelectedPodTypeFromTile(dataToUseInReport?.podType)
-            getNonCompliantContractReport();
-        }
-        if (reportType === 'paymentsProcessingSummary') {
-            getPayments();
-        }
-        if (reportType === 'compensationCostAnalysis') {
-            getCompensationCostAnalysis();
-        }
-        if (reportType === 'timesheetProcessingSummary') {
-            getTimesheetProcessingSummary('withParameter');
-        }
-        if (reportType === 'listingOfTimesheetsNotPaid') {
-            getListingOfTimesheetNotPaid('withParameter');
-        }
-        if (reportType === 'staffReappointmentTracker') {
-            getSubmittedTimesheetsPaymentStatus('withParameter');
-        }
-        if (reportType === 'locumStaffRenewalStatusTracker') {
-            getSubmittedTimesheetsPaymentStatus('withParameter');
-        }
-        if (reportType === 'staffbyTypes') {
-            getContractTrackValues()
-        }
-        if (reportType === 'paymentProcessingStatusTracker') {
-            getPaymentTrackValues()
+        switch (reportType) {
+            case 'submittedApplicationsReviewSummary':
+                getSubmittedApplications();
+                break;
+            case 'staffReappointmentsNotes':
+                getContractRenewalReportWithParameters();
+                break;
+            case 'staffReappointments':
+                getOneTimeContractWithParameters();
+                break;
+            case 'locumStaffRenewalNotes':
+            case 'locumStaffRenewal':
+                setIsLoading(false);
+                break;
+            case 'staffReappointmentTracker':
+            case 'locumStaffRenewalStatusTracker':
+                getSubmittedTimesheetsPaymentStatus('withParameter');
+                break;
+            case 'staffbyTypes':
+                getContractTrackValues();
+                break;
+            default:
+                // Optional: handle unknown reportType
+                break;
         }
     }
 
@@ -792,6 +761,24 @@ const ReportTypeOverview = () => {
             setIsLoading(true)
             const { data: data } = await GET(`timesheet-management-service/report/myReport/trackPayments?id=${myReportId}`);
             setPaymentTrackValues(data);
+        }
+        setIsLoading(false)
+    }
+
+    const getSubmittedApplications = async () => {
+        console.log('enteredInNewReport')
+        if (!isMyReport) {
+            if (dataToUseInReport?.selectedDepartments !== undefined && dataToUseInReport?.selectedPrivilegeCategory !== undefined && dataToUseInReport?.selectedStaffType !== undefined) {
+                setIsLoading(true)
+                // if (dataToUseInReport?.selectedTimesheetInterval !== '') {
+                const { data: data } = await GET(`application-management-service/report/submittedApplications?applicantTypeId=${[dataToUseInReport?.selectedContractedServiceProvider]}&privilegingCategoryId=${[dataToUseInReport?.selectedContractedServiceProvider]}&departmentSpecialties=${[dataToUseInReport?.selectedContractedServiceProvider]}&applicationCurrentLevel=${workModeType}&applicationcreationType=${'REAPPOINTMENT'}&positionType=${'LOCUM'}`);
+                setPaymentTrackValues(data);
+                // }
+            }
+        } else {
+            setIsLoading(true)
+            const { data: data } = await GET(`timesheet-management-service/report/myReport/trackPayments?id=${myReportId}`);
+            setSubmittedApplicationValues(data);
         }
         setIsLoading(false)
     }
@@ -2398,6 +2385,33 @@ const ReportTypeOverview = () => {
 
                                                             </div>
                                                         ) : reportType === "locumStaffRenewalStatusTracker" ? (
+                                                            <div className={style.marginTop20}>
+                                                                {staffReappointmentTrackerData?.timesheetPayment?.length !== 0 ? (
+                                                                    <>
+                                                                        {/* <ReportsTable
+                                                                            tableType={''}
+                                                                            tableHeader={['Timesheet Name', 'Period', 'Contractor', 'Site/ Dept', 'Billable Hours', 'Non Billable Hours', 'Submission Date', 'Current Status', 'Status Date', 'Payment Status', 'Payment Amount', 'Payment Date']}
+                                                                            tableValue={staffReappointmentTrackerData?.timesheetPayment}
+                                                                            activitiesServicesValues={getSubmittedTimesheetsPaymentStatusValues()}
+                                                                            styleName={style.grid12}
+                                                                        /> */}
+                                                                        <TableTwo
+                                                                            tableHeaderValues={headerValuesStatus}
+                                                                            tableDataValues={getTableValues()}
+                                                                            tableData={tableData}
+                                                                            gridStyle={style.permanentStaffGrid}
+                                                                            tableSortValues={colSortValues}
+                                                                            heading={"There are no record to display"}
+                                                                            className={`${style.tableRow} ${style.reportSection}`}
+                                                                        />
+                                                                    </>
+                                                                ) : (
+                                                                    <ReportNoDataBox heading={'Based on the parameters selected and applied, there were NO RECORDS found to include in the report.'}
+                                                                        subHeading={'Try again by changing some of the parameters on the left. If there are any qualifying records, the report will get displayed.'} />
+                                                                )}
+
+                                                            </div>
+                                                        ) : reportType === "submittedApplicationsReviewSummary" ? (
                                                             <div className={style.marginTop20}>
                                                                 {staffReappointmentTrackerData?.timesheetPayment?.length !== 0 ? (
                                                                     <>

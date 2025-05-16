@@ -702,7 +702,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
         </div>
         <div className={`${style.bigCardStyle1} ${style.marginTop5}`}>
           <div className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginLeftRight20} ${style.marginBottom10}`}>
-            <Tooltip title={selectedReappointmentStatus === "SENT" || selectedReappointmentStatus === "RE_SENT" ? "Click to Remove Filter" :"Click to Filter Sent Applications"} arrow>
+            <Tooltip title={selectedReappointmentStatus === "SENT" || selectedReappointmentStatus === "RE_SENT" ? "Click to Remove Filter" : "Click to Filter Sent Applications"} arrow>
               <div className={`${style.filterTypeGreen} ${style.marginBottom5} ${style.cursorPointer}`} onClick={() => selectedReappointmentStatus ? setSelectedReappointmentStatus("") : setSelectedReappointmentStatus(["SENT", "RE_SENT"])}>
                 Sent {tableData?.filter(data => (data?.reappointmentStatus === "SENT" || data?.reappointmentStatus === "RE_SENT"))?.length}
               </div>
@@ -714,7 +714,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
               </div>
             </Tooltip>
             {/* <div className={style.verticalBorder}></div> */}
-            <Tooltip title={selectedReappointmentStatus === "RE_SENT" ? "Click to Remove Filter" :"Click to Filter Reminders Sent Applications"} arrow>
+            <Tooltip title={selectedReappointmentStatus === "RE_SENT" ? "Click to Remove Filter" : "Click to Filter Reminders Sent Applications"} arrow>
               <div className={`${style.filterTypeGrey} ${style.marginLeft30} ${style.marginBottom5} ${style.cursorPointer}`} onClick={() => selectedReappointmentStatus ? setSelectedReappointmentStatus("") : setSelectedReappointmentStatus("RE_SENT")}>
                 Reminders Sent {tableData?.filter(data => data?.reappointmentStatus === "RE_SENT")?.length}
               </div>
@@ -908,7 +908,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
                   <div
                     className={`${style.continue} ${style.marginTop} ${style.marginLeft}`}
                     onClick={() => {
-                      if (isDataAvailable  && checkedIds?.length > 0) {
+                      if (isDataAvailable && checkedIds?.length > 0) {
                         if (selectedReappointmentStatus === "SENT" || selectedReappointmentStatus === "RE_SENT") {
                           reappointmentApplicationResendbulk();
                         } else {
@@ -916,7 +916,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
                         }
                       }
                     }}
-                    disabled={!isDataAvailable  && checkedIds?.length === 0 }
+                    disabled={!isDataAvailable && checkedIds?.length === 0}
                     style={{ opacity: isDataAvailable && checkedIds?.length > 0 ? 1 : 0.5 }}
 
                   >
