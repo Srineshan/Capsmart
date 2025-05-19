@@ -1855,6 +1855,12 @@
     grid-gap: 1%;
 }
 
+.borderStyleTiles {
+    background: $tableheadhover 0% 0% no-repeat padding-box;
+    height: 2px;
+}
+
+
 @media print {
     @page {
         margin-top: 20px;

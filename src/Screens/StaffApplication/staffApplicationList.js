@@ -157,6 +157,9 @@ const StaffApplicationList = ({
   const [departmentList, setDepartmentList] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState('');
   const [selectedServiceArea, setSelectedServiceArea] = useState("");
+  const [filterCCReview, setFilterCCReview] = useState(0);
+  const [filterCCNotReview, setFilterCCNotReview] = useState(0);
+
   const selectedDepartmentName = departmentList?.find(data => data?.id === selectedDepartment)?.departmentName?.name;
   const selectedServiceAreaName =
     departmentList?.serviceAreas?.find(serviceArea =>
@@ -1647,7 +1650,69 @@ const StaffApplicationList = ({
       return [];
     }
   };
+useEffect(() => {
+  const fetchData = async () => {
+    if (workModeType === "Credentialing Committee") {
+      const role = "Credentialing Committee"; // Since workModeType is already this
+      // const shouldIncludeAssignee =
+      //   showAssignee &&
+      //   (workModeType === "Department Head" ||
+      //     workModeType === "Chief Of Staff" ||
+      //     workModeType === "Credentialing Committee");
 
+      // const assignedUserIdsParam = shouldIncludeAssignee ? `&assignedUserIds=${users?.id}` : "";
+      const departmentParam =
+        selectedDepartment || selectedServiceArea
+          ? `&departmentSpecialties=${selectedDepartment}%23${selectedServiceArea}`
+          : "";
+
+      const positionTypeParam =
+        applicationType === "LOCUM"
+          ? `&positionType=${applicationType}`
+          : "&positionType=PERMANENT";
+
+      const selectedTabCC =
+        applicationType === "LOCUM"
+          ? `level-2`
+          : "level-3";
+
+      const applicationCreationType =
+        applicationType === "LOCUM" ? "REAPPOINTMENT" : applicationType;
+
+      try {
+        const response = await GET(
+          `application-management-service/application/workflowUser?tab=${selectedTabCC}&sortBy=${sortValue}&sortByField=${sortField}${positionTypeParam}&limit=${limit}&offset=${
+            page - 1
+          }&role=${role}&searchText=${searchTermForTable}&applicationCreationType=${applicationCreationType}&isPaginationRequired=${
+            limit === 9999 ? false : true
+          }${departmentParam}`
+        );
+
+        let applications = response?.data?.applications || [];
+
+        const notReviewed = applications?.filter(app => {
+          const ccWorkflow = app?.completedWorkflows?.find(wf => wf?.role === "Credentialing Committee");
+          return ccWorkflow && ccWorkflow?.approvalType === null;
+        });
+
+        setFilterCCNotReview(notReviewed?.length);
+
+        const reviewed = applications?.filter(app => {
+          const ccWorkflow = app?.completedWorkflows?.find(wf => wf?.role === "Credentialing Committee");
+          return ccWorkflow && ccWorkflow?.approvalType;
+        });
+
+        setFilterCCReview(reviewed?.length);
+      } catch (error) {
+        console.error("Error fetching applications:", error);
+      }
+    }
+  };
+
+  fetchData();
+}, [workModeType, showAssignee, users?.id, selectedDepartment, selectedServiceArea, applicationType, selectedTab, sortValue, sortField, limit, page, searchTermForTable]);
+
+ 
   const getWorkflowUserData = async () => {
     try {
       let response;
@@ -1674,9 +1739,23 @@ const StaffApplicationList = ({
         response = await GET(
           `application-management-service/application/workflowUser?tab=${selectedTab}&sortBy=${sortValue}&sortByField=${sortField}${positionTypeParam}&limit=${limit}&offset=${page - 1}&role=${role}&searchText=${searchTermForTable}&applicationCreationType=${applicationType === "LOCUM" ? "REAPPOINTMENT" : applicationType}&isPaginationRequired=${limit === 9999 ? false : true}${departmentParam}${assignedUserIdsParam}`
         );
+        let applications = response?.data?.applications || [];
+
+        if (selectedTab === "level-2" && workModeType === "Credentialing Committee") {
+          applications = applications?.filter(app => {
+            const ccWorkflow = app?.completedWorkflows?.find(wf => wf?.role === "Credentialing Committee");
+            // setShowAssignee(true)
+            return ccWorkflow && ccWorkflow?.approvalType === null;
+          });
+        } else if (selectedTab === "ReviewedApplications" && workModeType === "Credentialing Committee") {
+           applications = applications?.filter(app => {
+           const ccWorkflow = app?.completedWorkflows?.find(wf => wf?.role === "Credentialing Committee");
+           setShowAssignee(false)
+           return ccWorkflow && ccWorkflow?.approvalType});
+        }
         console.log("Application data", response?.data?.applications);
-        setTableData(response?.data?.applications);
-        setTotalCount(response?.data?.numberOfElements);
+        setTableData(applications);
+        setTotalCount(applications?.length);
         setSearchount(response?.data?.numberOfElements)
         setReFetchMetaData(true);
         setIsLoadingImage(false);
@@ -1696,9 +1775,26 @@ const StaffApplicationList = ({
         response = await GET(
           `application-management-service/application/workflowUser?tab=${selectedTab}&sortBy=${sortValue}&sortByField=${sortField}&applicationCreationType=${applicationType}&limit=${limit}&offset=${page - 1}&role=${role}&searchText=${searchTermForTable}&isPaginationRequired=${limit === 9999 ? false : true}${departmentParam}${assignedUserIdsParam}${positionTypeParam}`
         );
-        console.log("Application data", response?.data?.applications);
-        setTableData(response?.data?.applications);
-        setTotalCount(response?.data?.numberOfElements);
+
+        let applications = response?.data?.applications || [];
+
+        if (selectedTab === "level-3" && workModeType === "Credentialing Committee") {
+          applications = applications?.filter(app => {
+            const ccWorkflow = app?.completedWorkflows?.find(wf => wf?.role === "Credentialing Committee");
+            console.log("Application dataaaaaaaaaaaaaaaaa",ccWorkflow);
+            // setShowAssignee(true)
+            return ccWorkflow && ccWorkflow?.approvalType === null;
+          });
+        } else if (selectedTab === "ReviewedApplications" && workModeType === "Credentialing Committee") {
+          setShowAssignee(false)
+          applications = applications?.filter(app => {
+            const ccWorkflow = app?.completedWorkflows?.find(wf => wf?.role === "Credentialing Committee");
+             console.log("Application dataaaaaaaaaaaaaaaaa",ccWorkflow);
+           return ccWorkflow && ccWorkflow?.approvalType});
+        }
+        // console.log("Application dataaaaaaaaaaaaaaaaa",applications);
+        setTableData(applications);
+        setTotalCount(applications?.length);
         setSearchount(response?.data?.numberOfElements)
         setReFetchMetaData(true);
         setIsLoadingImage(false);
@@ -6586,6 +6682,14 @@ const StaffApplicationList = ({
     { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog },
   ];
 
+    const reviewedApplicationActionData = [
+    {
+      data: "View",
+      requiredValue: "boolean",
+      onClick: onClickViewAndVerifyCredFunction,
+    }
+  ];
+
 
   const macActionsData = applicationType === "NEW" ? [
     // {
@@ -6852,9 +6956,13 @@ const StaffApplicationList = ({
           ? credUserHeaderValues
           : selectedTab === "level-2" && applicationType === "LOCUM" && workModeType === "Credentialing Committee"
             ? applicationHeaderValues
+            : selectedTab === "ReviewedApplications" && applicationType === "LOCUM" && workModeType === "Credentialing Committee"
+            ? applicationHeaderValues
             : selectedTab === "level-2" && applicationType === "LOCUM" && workModeType === "Chief Of Staff"
               ? applicationHeaderValues
               : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Credentialing Committee"
+                ? applicationHeaderValues
+                : selectedTab === "ReviewedApplications" && applicationType === "REAPPOINTMENT" && workModeType === "Credentialing Committee"
                 ? applicationHeaderValues
                 : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Staff Manager"
                   ? credUserHeaderValues
@@ -6887,9 +6995,13 @@ const StaffApplicationList = ({
           ? credUserColSortValues
           : selectedTab === "level-2" && applicationType === "LOCUM" && workModeType === "Credentialing Committee"
             ? applicationColSortValues
+            : selectedTab === "ReviewedApplications" && applicationType === "LOCUM" && workModeType === "Credentialing Committee"
+            ? applicationColSortValues
             : selectedTab === "level-2" && applicationType === "LOCUM" && workModeType === "Chief Of Staff"
               ? applicationColSortValues
               : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Credentialing Committee"
+                ? applicationColSortValues
+                : selectedTab === "ReviewedApplications" && applicationType === "REAPPOINTMENT" && workModeType === "Credentialing Committee"
                 ? applicationColSortValues
                 : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Staff Manager"
                   ? credUserColSortValues
@@ -6922,9 +7034,13 @@ const StaffApplicationList = ({
           ? getCredUserValues()
           : selectedTab === "level-2" && applicationType === "LOCUM" && workModeType === "Credentialing Committee"
             ? getApplicationValues()
+            : selectedTab === "ReviewedApplications" && applicationType === "LOCUM" && workModeType === "Credentialing Committee"
+            ? getApplicationValues()
             : selectedTab === "level-2" && applicationType === "LOCUM" && workModeType === "Chief Of Staff"
               ? getApplicationValues()
               : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Credentialing Committee"
+                ? getApplicationValues()
+                : selectedTab === "ReviewedApplications" && applicationType === "REAPPOINTMENT" && workModeType === "Credentialing Committee"
                 ? getApplicationValues()
                 : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Staff Manager"
                   ? getCredUserValues()
@@ -6959,10 +7075,14 @@ const StaffApplicationList = ({
             ? credUserActionsData
             : selectedTab === "level-2" && applicationType === "LOCUM" && workModeType === "Credentialing Committee"
               ? applicationActionsData
+              : selectedTab === "ReviewedApplications" && applicationType === "LOCUM" && workModeType === "Credentialing Committee"
+              ? reviewedApplicationActionData
               : selectedTab === "level-2" && applicationType === "LOCUM" && workModeType === "Chief Of Staff"
                 ? applicationLocumActionData
                 : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Credentialing Committee"
                   ? applicationActionsData
+                  : selectedTab === "ReviewedApplications" && applicationType === "REAPPOINTMENT" && workModeType === "Credentialing Committee"
+                  ? reviewedApplicationActionData
                   : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Staff Manager"
                     ? credUserActionsData
                     : selectedTab === "level-3" && applicationType === "LOCUM" && workModeType === "Staff Manager"
@@ -6998,11 +7118,15 @@ const StaffApplicationList = ({
             ? style.credUserStaffLocumGrid
             : selectedTab === "level-2" && applicationType === "LOCUM" && workModeType === "Credentialing Committee"
               ? style.applicationStaffLocumGrid
+              : selectedTab === "ReviewedApplications" && applicationType === "LOCUM" && workModeType === "Credentialing Committee"
+              ? style.applicationStaffLocumGrid
               : selectedTab === "level-2" && applicationType === "LOCUM" && workModeType === "Chief Of Staff"
                 ? style.applicationStaffReappointGrid
                 : selectedTab === "level-3" && applicationType === "NEW"
                   ? style.applicationStaffGrid
                   : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Credentialing Committee"
+                    ? style.applicationStaffReappointGrid
+                    : selectedTab === "ReviewedApplications" && applicationType === "REAPPOINTMENT" && workModeType === "Credentialing Committee"
                     ? style.applicationStaffReappointGrid
                     : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Staff Manager"
                       ? style.credUserStaffReappointGrid
@@ -7642,8 +7766,8 @@ const StaffApplicationList = ({
                 searchTermForTable={searchTermForTable}
                 activeApplicationTask={activeApplicationTask}
                 totalCount={totalCount}
-              // applicationCreationType={applicationCreationType}
-              // getApplicationCreationType = {getApplicationCreationType}
+                filterCCReview={filterCCReview}
+                filterCCNotReview = {filterCCNotReview}
               />
             </div>
             <div className={`${style.bigCardStyle}`}>

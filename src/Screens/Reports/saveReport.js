@@ -218,19 +218,18 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
                 },
                 "lastUpdated": format(new Date(), 'yyyy-MM-dd'),
                 "filters": {
-                    'reportingTimePeriod': dataToUseInReport?.reportingTimePeriod,
                     'startDate': dataToUseInReport?.from,
                     'endDate': dataToUseInReport?.to,
-                    'staffType': dataToUseInReport?.selectedStaffType?.[0] !== '' ? dataToUseInReport?.selectedStaffType : [],
-                    'users': dataToUseInReport?.selectedContractedServiceProvider?.[0] !== '' ? dataToUseInReport?.selectedContractedServiceProvider : [],
+                    'applicantTypeId': dataToUseInReport?.selectedStaffType?.[0] !== '' ? dataToUseInReport?.selectedStaffType : [],
                     'sites': dataToUseInReport?.selectedSites?.[0] !== '' ? dataToUseInReport?.selectedSites : [],
-                    'departments': dataToUseInReport?.selectedDepartments?.[0] !== '' ? dataToUseInReport?.selectedDepartments : [],
+                    'departmentSpecialties': dataToUseInReport?.selectedDepartments?.[0] !== '' ? dataToUseInReport?.selectedDepartments : [],
                     'privilegeCategory': dataToUseInReport?.selectedPrivilegeCategory !== '' ? dataToUseInReport?.selectedPrivilegeCategory : '',
-                    'contractStatus': dataToUseInReport?.contractStatus,
-                    "positionType": [dataToUseInReport?.selectedPosition],
-                    "applicationcreationType": [dataToUseInReport?.selectedApplicationType],
+                    "positionType": dataToUseInReport?.selectedPosition !== "" ? [dataToUseInReport?.selectedPosition] : [],
+                    "applicationCreationType": dataToUseInReport?.selectedApplicationType !== "" ? [dataToUseInReport?.selectedApplicationType] : [],
                     "contractNames": [''],
-                    "intervals": decodeURIComponent(dataToUseInReport?.selectedTimesheetInterval).split(',')
+                    "intervals": decodeURIComponent(dataToUseInReport?.selectedTimesheetInterval).split(','),
+                    "applicationCurrentLevel": sessionStorage.getItem('workModeType'),
+                    // "staffReappointmentStatus": [dataToUseInReport?.selectedApplicationType]
                 },
                 "private": isPrivate
             }
