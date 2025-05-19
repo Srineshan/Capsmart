@@ -904,12 +904,16 @@ const LocumExtensiveRequestDialog = ({ getIsOpen, tableDataValue, selectedTab })
                   pointerEvents: isValidDateRange() ? "auto" : "none",
                   opacity: isValidDateRange() ? 1 : 0.5,
                 }}
-                onClick={() => {
-                  if (isValidDateRange()) {
-                    reappointmentRequestApplication();
+                onClick={async () => {
+                if (isValidDateRange()) {
+                  try {
+                    await reappointmentRequestApplication();
                     getIsOpen(false);
+                  } catch (error) {
+                    console.error("Error in reappointment request:", error);
                   }
-                }}
+                }
+              }}
               >
                 <div className={style.reviewButton}>Continue</div>
               </div>

@@ -6,7 +6,7 @@ import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
 import LoadingScreen from "../../Components/LoadingScreen";
 
-const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, getReFetchMetaData, approvalnotesCommentsBoxDept, showBulkApproveDialog, searchTermForTable, activeApplicationTask, totalCount, showBulkMoveDialog }) => {
+const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, getReFetchMetaData, approvalnotesCommentsBoxDept, showBulkApproveDialog, searchTermForTable, activeApplicationTask, totalCount, showBulkMoveDialog, filterCCNotReview, filterCCReview }) => {
   const cookie = new Cookie();
   const userDetails = cookie.get('user');
   const [user, setUser] = useState();
@@ -85,7 +85,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
     try {
       const role = workModeType === "Credentialing Committee User" ? "Staff Manager" : workModeType;
       const applicationCreationType = applicationType === "LOCUM" ? "REAPPOINTMENT" : applicationType;
-      const positionTypeParam = applicationType === "LOCUM" ? `&positionType=${applicationType}` : "";
+      const positionTypeParam = applicationType === "LOCUM" ? `&positionType=${applicationType}` : "&positionType=PERMANENT";
       const response = await GET(
         `application-management-service/application/workflowUser/meta?role=${role}&searchText=${searchTermForTable}&applicationCreationType=${applicationCreationType}${positionTypeParam}`
       );
@@ -141,6 +141,8 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
     // Append positionType only if LOCUM
     if (applicationType === "LOCUM") {
       url += `&positionType=${applicationType}`;
+    } else {
+      url += `&positionType=PERMANENT`;
     }
 
     try {
@@ -299,6 +301,8 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
 
     const baseUserFlowArray = Object.entries(UserFlowType).map(([key, value], index) => {
       let label;
+      const levelKey = `level-${key}`;
+
 
       if (currentRoleIndex === index) {
         if (applicationType === "NEW") {
@@ -316,7 +320,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
 
       return {
         label: label,
-        count: counts?.[`level-${key}`],
+          count: workModeType === "Credentialing Committee" ? filterCCNotReview : counts?.[levelKey],
         level: `level-${key}`,
       };
     });
@@ -419,8 +423,8 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
         <TileApplication 
           selectedTab={selectedTab} 
           getSelectedTab={handleTabClick} 
-          tileLabel="Reviewed Applications" 
-          tileCount={totalCount}
+          tileLabel="CC Review Completed" 
+          tileCount={filterCCReview}
           currentTile="ReviewedApplications"
         />
       )}

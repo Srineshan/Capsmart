@@ -157,6 +157,9 @@ const StaffApplicationList = ({
   const [departmentList, setDepartmentList] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState('');
   const [selectedServiceArea, setSelectedServiceArea] = useState("");
+  const [filterCCReview, setFilterCCReview] = useState(0);
+  const [filterCCNotReview, setFilterCCNotReview] = useState(0);
+
   const selectedDepartmentName = departmentList?.find(data => data?.id === selectedDepartment)?.departmentName?.name;
   const selectedServiceAreaName =
     departmentList?.serviceAreas?.find(serviceArea =>
@@ -1647,7 +1650,69 @@ const StaffApplicationList = ({
       return [];
     }
   };
+useEffect(() => {
+  const fetchData = async () => {
+    if (workModeType === "Credentialing Committee") {
+      const role = "Credentialing Committee"; // Since workModeType is already this
+      // const shouldIncludeAssignee =
+      //   showAssignee &&
+      //   (workModeType === "Department Head" ||
+      //     workModeType === "Chief Of Staff" ||
+      //     workModeType === "Credentialing Committee");
 
+      // const assignedUserIdsParam = shouldIncludeAssignee ? `&assignedUserIds=${users?.id}` : "";
+      const departmentParam =
+        selectedDepartment || selectedServiceArea
+          ? `&departmentSpecialties=${selectedDepartment}%23${selectedServiceArea}`
+          : "";
+
+      const positionTypeParam =
+        applicationType === "LOCUM"
+          ? `&positionType=${applicationType}`
+          : "&positionType=PERMANENT";
+
+      const selectedTabCC =
+        applicationType === "LOCUM"
+          ? `level-2`
+          : "level-3";
+
+      const applicationCreationType =
+        applicationType === "LOCUM" ? "REAPPOINTMENT" : applicationType;
+
+      try {
+        const response = await GET(
+          `application-management-service/application/workflowUser?tab=${selectedTabCC}&sortBy=${sortValue}&sortByField=${sortField}${positionTypeParam}&limit=${limit}&offset=${
+            page - 1
+          }&role=${role}&searchText=${searchTermForTable}&applicationCreationType=${applicationCreationType}&isPaginationRequired=${
+            limit === 9999 ? false : true
+          }${departmentParam}`
+        );
+
+        let applications = response?.data?.applications || [];
+
+        const notReviewed = applications?.filter(app => {
+          const ccWorkflow = app?.completedWorkflows?.find(wf => wf?.role === "Credentialing Committee");
+          return ccWorkflow && ccWorkflow?.approvalType === null;
+        });
+
+        setFilterCCNotReview(notReviewed?.length);
+
+        const reviewed = applications?.filter(app => {
+          const ccWorkflow = app?.completedWorkflows?.find(wf => wf?.role === "Credentialing Committee");
+          return ccWorkflow && ccWorkflow?.approvalType;
+        });
+
+        setFilterCCReview(reviewed?.length);
+      } catch (error) {
+        console.error("Error fetching applications:", error);
+      }
+    }
+  };
+
+  fetchData();
+}, [workModeType, showAssignee, users?.id, selectedDepartment, selectedServiceArea, applicationType, selectedTab, sortValue, sortField, limit, page, searchTermForTable]);
+
+ 
   const getWorkflowUserData = async () => {
     try {
       let response;
@@ -6619,7 +6684,7 @@ const StaffApplicationList = ({
 
     const reviewedApplicationActionData = [
     {
-      data: "view",
+      data: "View",
       requiredValue: "boolean",
       onClick: onClickViewAndVerifyCredFunction,
     }
@@ -7701,8 +7766,8 @@ const StaffApplicationList = ({
                 searchTermForTable={searchTermForTable}
                 activeApplicationTask={activeApplicationTask}
                 totalCount={totalCount}
-              // applicationCreationType={applicationCreationType}
-              // getApplicationCreationType = {getApplicationCreationType}
+                filterCCReview={filterCCReview}
+                filterCCNotReview = {filterCCNotReview}
               />
             </div>
             <div className={`${style.bigCardStyle}`}>
