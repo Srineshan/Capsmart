@@ -595,9 +595,17 @@ const LocumStaffList = ({
               ["Locum Extension Request Not Acted On"]
             );
           } else if (data?.reAppointmentInitiated === false) {
-            reappointDate.push(
-              ["Locum Extension Request Sent To DOH / COS"]
-            );
+              const requests = data?.requests;
+                if (requests && requests?.length > 0) {
+                const lastRequest = requests[requests?.length - 1];
+                const role = lastRequest?.requestedTo?.[0]?.role || "Unknown Role";
+                const createdDate = lastRequest?.createdDate
+                ? format(new Date(lastRequest?.createdDate), "MMM dd, yyyy hh:mm a")
+                : "-";
+              reappointDate.push([`Locum Extension Request Sent To ${role} On ${createdDate}`]);
+            } else {
+              reappointDate.push(["Locum Extension Request Sent"]);
+            }
           } else if (data?.reAppointmentInitiated === true) {
             reappointDate.push(
               ["Locum Extension Application Sent"]
@@ -808,9 +816,17 @@ const LocumStaffList = ({
        if (workModeType === "Staff Manager") {
         if (data?.extensionRequested === true) {
           if (data?.reAppointmentInitiated === false) {
-            reappointDate.push(
-              ["Locum Renewal Request Sent To DOH / COS"]
-            );
+            const requests = data?.requests;
+              if (requests && requests?.length > 0) {
+              const lastRequest = requests[requests?.length - 1];
+              const role = lastRequest?.requestedTo?.[0]?.role || "Unknown Role";
+              const createdDate = lastRequest?.createdDate
+              ? format(new Date(lastRequest?.createdDate), "MMM dd, yyyy hh:mm a")
+              : "-";
+            reappointDate.push([`Locum Renewal Request Sent To ${role} On ${createdDate}`]);
+          } else {
+            reappointDate.push(["Locum Renewal Request Sent"]);
+          }
           } else if (data?.reAppointmentInitiated === true) {
             reappointDate.push(
               ["Locum Renewal Application Sent"]
@@ -932,7 +948,7 @@ const LocumStaffList = ({
           ? `Locum ${data?.locumRenewalDetails?.reappointmentType === "EXTENSION"
             ? "Extension"
             : "Renewal"
-          } Request Sent on ${format(new Date(data?.staff?.reAppointmentSentDate), "dd/MM/yyyy")}`
+          } Request Sent on ${format(new Date(data?.createdDate), "dd/MM/yyyy")}`
           : "Locum Extension Not Sent",
       ]);
       applicantId.push(data?.staff?.status === "ACTIVE" ? "Active" : "Expired" || "");
