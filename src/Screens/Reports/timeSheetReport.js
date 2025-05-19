@@ -10,7 +10,7 @@ import { GET } from '../dataSaver';
 import { format } from 'date-fns';
 import { formatInTimeZone } from 'date-fns-tz';
 import { currentUser } from '../../utils/auth';
-import { siteTimeZone } from '../../utils/formatting';
+import { corsUrl, siteTimeZone } from '../../utils/formatting';
 import ReportNoDataBox from '../../Components/ReusableSmallComponents/reportNoDataBox';
 import TileApplication from '../../Components/TileApplication';
 import TableTwo from '../../Components/TableDesignTwo';
@@ -54,6 +54,7 @@ export const Run = ({ link }) => {
 const TimeSheetReports = ({ getShowSampleReport }) => {
     const navigate = useNavigate();
     const [selectedTab, setSelectedTab] = useState('REPORTINGTEMPLATES');
+    const [selectedTopTab, setSelectedTopTab] = useState('');
     const [tabName, setTabName] = useState('Standard Report Templates');
     const { reportType } = useParams();
     const [myReports, setMyReports] = useState([]);
@@ -95,6 +96,32 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
     const onClickRunReport = (data) => {
         navigate(`/reportTypeOverview/${routeList[data?.subCategory]}`);
     }
+
+    const onClickMyReport = (data) => {
+        showMyReport(data)
+    }
+
+    const onClickDownloadReport = async (data) => {
+        try {
+            const proxyUrl = `${corsUrl}${encodeURIComponent(data?.savedReport?.reportDoc?.fileURL)}`;
+
+            const response = await fetch(proxyUrl);
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "savedReport.pdf";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            window.URL.revokeObjectURL(url); // cleanup
+        } catch (err) {
+            console.error("Download failed:", err);
+        }
+    }
+
     let savedReportsActions = [{
         data: "Delete",
         requiredValue: "boolean",
@@ -102,7 +129,7 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
     }, {
         data: "Download",
         requiredValue: "boolean",
-        onClick: onClickRunReport,
+        onClick: onClickDownloadReport,
     }, {
         data: "Print",
         requiredValue: "boolean",
@@ -120,7 +147,7 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
     let myReportsActions = [{
         data: "View Report",
         requiredValue: "boolean",
-        onClick: onClickRunReport,
+        onClick: onClickMyReport,
     }]
     let actions = selectedTab === "MYREPORTS"
         ? myReportsActions
@@ -139,6 +166,17 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
                     : style.myReportsGrid
     const PDFRef = createRef();
     const componentRef = useRef(null);
+
+    const availableParentList = {
+        allStaffMembers: 'Privileged Staff',
+        permanentStaff: 'Privileged Staff',
+        locumStaff: 'Privileged Staff',
+        allApplications: 'Staff Applications',
+        newApplicants: 'Staff Applications',
+        staffReappointments: 'Staff Applications',
+        locumExtensionOrRenewal: 'Staff Applications',
+        savedReportsArchive: 'System Administration'
+    }
 
     const availableCategories = {
         servicesOrActivities: 'SERVICES_ACTIVITIES',
@@ -279,7 +317,7 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
     console.log(myReports)
 
     const getSavedReports = async () => {
-        const { data: savedReport } = await GET(`timesheet-management-service/report/savedReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
+        const { data: savedReport } = await GET(`application-management-service/report/savedReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
         setSavedReports(savedReport);
     }
 
@@ -346,7 +384,7 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         const lastUpdatedBy = [];
         const actions = [];
         standardTemplates?.map((data, index) => {
-            title.push(titleList[data?.title])
+            title.push(data?.title)
             type.push('Standard');
             lastRunBy.push('-');
             lastRunDateAndTime.push(data?.lastRun ? format(new Date(data?.lastRun), "MM/dd/yyyy") : '-');
@@ -367,7 +405,23 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
     }
 
     const getSavedReportOutputsValues = () => {
+        const title = [];
+        const period = [];
+        const savedOn = [];
+        const actions = [];
+        savedReports?.map((data, index) => {
+            title.push(data?.savedReport?.reportName)
+            period.push(data?.report?.schedule?.schedule);
+            savedOn.push(data?.savedReport?.runDate ? format(new Date(data?.savedReport?.runDate), "MMM dd, yyyy") : '-');
+            actions.push(true);
+        });
 
+        return [
+            { type: "text", value: title },
+            { type: "text", value: period },
+            { type: "text", value: savedOn },
+            { type: "action", value: actions },
+        ];
     }
 
     let tableDataValues =
@@ -385,7 +439,7 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
             : selectedTab === "REPORTINGTEMPLATES"
                 ? standardTemplates
                 : selectedTab === "SAVEDREPORTOUTPUTS"
-                    ? []
+                    ? savedReports
                     : myReports
 
     const getSelectedPage = (value) => {
@@ -550,9 +604,17 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
                             className={`${style.spaceBetween} ${style.marginLeft30} `}
                         >
                             <div className={`${style.tabs}`}>
+                                <TileApplication selectedTab={selectedTopTab} getSelectedTab={() => { }} tileLabel={availableParentList[reportType]} tileCount={myReports?.length + standardTemplates?.length + savedReports?.length} currentTile="" />
+                            </div>
+                        </div>
+                        <div className={`${style.borderStyleTiles} ${style.marginLeft30}`}></div>
+                        <div
+                            className={`${style.spaceBetween} ${style.marginLeft30} ${style.marginTop10} `}
+                        >
+                            <div className={`${style.tabs}`}>
                                 <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="My Reports" tileCount={myReports?.length} currentTile="MYREPORTS" />
                                 <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="Reporting Templates" tileCount={standardTemplates?.length} currentTile="REPORTINGTEMPLATES" />
-                                <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="Saved Report Outputs" tileCount={0} currentTile="SAVEDREPORTOUTPUTS" />
+                                <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="Saved Report Outputs" tileCount={savedReports?.length} currentTile="SAVEDREPORTOUTPUTS" />
                             </div>
                         </div>
                     </div>

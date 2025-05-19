@@ -545,7 +545,7 @@ const Navbar = () => {
               </div>
             )
           } */}
-          {/* <div>
+          <div>
             <div
               className={`${style.menuStyle} ${(window.location.pathname.includes("/reports") ||
                 window.location.pathname.includes("/reportTypeOverview") ||
@@ -629,19 +629,19 @@ const Navbar = () => {
                       >
                         <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`}>Locum Extension / Renewals</div>
                       </Link>
-                      <div className={`${style.dropdownItem}`}>System Administration</div>
+                      {/* <div className={`${style.dropdownItem}`}>System Administration</div>
                       <Link
                         to={"/reports/savedReportsArchive"}
                         className={style.noFontStyle}
                       >
                         <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`}>Saved Reports Archive</div>
-                      </Link>
+                      </Link> */}
                     </div>
                   </Link>
                 </div>
               </Popover>
             </div>
-          </div> */}
+          </div>
           {/* )} */}
 
           {isEntityLevelAdmin && (

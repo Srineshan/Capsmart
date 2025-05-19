@@ -238,19 +238,16 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         //     }
         // }
         if (reportFilter) {
-            const encodedArray = reportFilter?.intervals.map(encodeHashToPercent23);
+            const encodedArray = reportFilter?.intervals?.map(encodeHashToPercent23);
             console.log(encodedArray, 'encodedArray', reportFilter?.intervals)
             setFrom(new Date(reportFilter?.startDate));
             setTo(new Date(reportFilter?.endDate));
-            setSelectedContracts(reportFilter?.contracts);
-            setSelectedSites(reportFilter?.sites);
-            setSelectedDepartments(reportFilter?.departments);
-            setReportingTimePeriod(reportFilter?.reportingTimePeriod);
-            setSelectedContractedServiceProvider(reportFilter?.users);
-            setContractContinuationPolicy(reportFilter?.contractPolicyType !== "" ? reportFilter?.contractPolicyType : 'ALL');
-            setContractStatus(reportFilter?.contractStatus);
-            setRenewalreportingTimePeriod(reportFilter?.renewalDays)
-            setSelectedTimesheetInterval(reportFilter?.intervals ? encodedArray : [])
+            // setSelectedSites(reportFilter?.sites);
+            // setSelectedDepartments(reportFilter?.departmentSpecialties);
+            setSelectedStaffType(reportFilter?.applicantTypeId ? reportFilter?.applicantTypeId : [])
+            setSelectedPrivilegeCategory(reportFilter?.privilegingCategoryId ? reportFilter?.privilegingCategoryId : [])
+            setSelectedPosition(reportFilter?.positionType ? reportFilter?.positionType?.[0] : '')
+            setSelectedApplicationType(reportFilter?.applicationCreationType ? reportFilter?.applicationCreationType?.[0] : '')
         }
     }, [currentUserDetails])
 
@@ -651,7 +648,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 ))}
                             </Select>
                         </FormControl> */}
-                        <FormControl variant="standard" sx={{ m: 1, width: "250px", marginTop: "20px" }}>
+                        {/* <FormControl variant="standard" sx={{ m: 1, width: "250px", marginTop: "20px" }}>
                             <InputLabel id="month-selector-label">Reporting Period</InputLabel>
                             <Select
                                 labelId="month-selector-label"
@@ -666,7 +663,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                     </MenuItem>
                                 ))}
                             </Select>
-                        </FormControl>
+                        </FormControl> */}
                         <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                             <InputLabel id="demo-multiple-name-label2" className={style.headingtextStyle}>Departments</InputLabel>
                             <Select
@@ -682,12 +679,6 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                     <MenuItem value={defaultOption} disabled={isMyReport || isLoading}>All</MenuItem>
                                 )}
                                 {departments?.map((data) => (
-                                    // <MenuItem
-                                    //     key={data?.dept?.id}
-                                    //     value={data?.dept?.id}
-                                    // >
-                                    //     {`${data?.site?.siteName?.siteName} - ${data?.dept?.departmentName?.name}`}
-                                    // </MenuItem>
                                     <MenuItem
                                         key={data?.id}
                                         value={data?.id}
@@ -698,20 +689,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 ))}
                             </Select>
                         </FormControl>
-                        {/* <CommonSelectField
-                            label="Departments"
-                            value={selectedDepartments}
-                            onChange={handleChangeDepartments}
-                            firstOptionLabel={departments?.length >= 2 ? "All" : ""}
-                            firstOptionValue={defaultOption}
-                            valueList={departments?.map((data) => data?.id)}
-                            labelList={departments?.map((data) => data?.departmentName?.name)}
-                            disabledList={departments?.map(() => isMyReport || isLoading)}
-                            disabledSelect={isMyReport || isLoading}
-                            multiple={true}
-                            // widthValue="250px"
-                        /> */}
-                        <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                        {/* <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                             <InputLabel id="demo-multiple-name-label2" className={style.headingtextStyle}>Division / Speciality</InputLabel>
                             <Select
                                 labelId="demo-multiple-name-label2"
@@ -726,12 +704,6 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                     <MenuItem value={defaultOption} disabled={isMyReport || isLoading}>All</MenuItem>
                                 )}
                                 {departments?.map((data) => (
-                                    // <MenuItem
-                                    //     key={data?.dept?.id}
-                                    //     value={data?.dept?.id}
-                                    // >
-                                    //     {`${data?.site?.siteName?.siteName} - ${data?.dept?.departmentName?.name}`}
-                                    // </MenuItem>
                                     <MenuItem
                                         key={data?.id}
                                         value={data?.id}
@@ -741,7 +713,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                     </MenuItem>
                                 ))}
                             </Select>
-                        </FormControl>
+                        </FormControl> */}
                         <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                             <InputLabel id="demo-multiple-name-label2" className={style.headingtextStyle}>Staff Type</InputLabel>
                             <Select
