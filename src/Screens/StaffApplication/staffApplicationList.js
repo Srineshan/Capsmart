@@ -159,6 +159,7 @@ const StaffApplicationList = ({
   const [selectedServiceArea, setSelectedServiceArea] = useState("");
   const [filterCCReview, setFilterCCReview] = useState(0);
   const [filterCCNotReview, setFilterCCNotReview] = useState(0);
+  const [recordUpdate, setRecordUpdate] = useState(false);
 
   const selectedDepartmentName = departmentList?.find(data => data?.id === selectedDepartment)?.departmentName?.name;
   const selectedServiceAreaName =
@@ -890,6 +891,64 @@ const StaffApplicationList = ({
   //   'level-2' :0,
   // });
 
+  const isValidSingleCheckedId = (id) => {
+  const getFilteredIds = (role) =>
+    tableData
+      .filter(
+        (data) =>
+          data?.id === id &&
+          data?.completedWorkflows?.some(
+            (workflow) => workflow?.role === role && workflow?.meetingDate
+          )
+      )
+      .map((data) => data?.id);
+
+  if (applicationType === "REAPPOINTMENT") {
+    if (selectedTab === "level-3") {
+      return getFilteredIds("Credentialing Committee")?.includes(id);
+    } else if (selectedTab === "level-4") {
+      return getFilteredIds("Advisory Committee")?.includes(id);
+    } else if (selectedTab === "level-5") {
+      return getFilteredIds("Board")?.includes(id);
+    }
+  } else if (applicationType === "LOCUM") {
+    if (selectedTab === "level-2") {
+      return getFilteredIds("Credentialing Committee")?.includes(id);
+    } else if (selectedTab === "level-3") {
+      return getFilteredIds("Advisory Committee")?.includes(id);
+    } else if (selectedTab === "level-4") {
+      return getFilteredIds("Board")?.includes(id);
+    }
+  }
+
+  return false;
+};
+
+const isValidSingleCheckedIdMove = (id) => {
+  const getFilteredIds = (role) =>
+    tableData
+      .filter(
+        (data) =>
+          data?.id === id &&
+          data?.completedWorkflows?.some(
+            (workflow) => workflow?.role === role && workflow?.approvalType
+          )
+      )
+      .map((data) => data?.id);
+
+  if (applicationType === "REAPPOINTMENT") {
+     if (selectedTab === "level-5") {
+      return getFilteredIds("Board")?.includes(id);
+    }
+  } else if (applicationType === "LOCUM") {
+     if (selectedTab === "level-4") {
+      return getFilteredIds("Board")?.includes(id);
+    }
+  }
+
+  return false;
+};
+
   const transformedOptions = departmentList?.flatMap((department) => {
     const departmentEntry = {
       value: department?.id,
@@ -1362,11 +1421,13 @@ const StaffApplicationList = ({
     await PUT(`application-management-service/application/${id}/workflow/move?workflowAction=APPROVED&isDelegate=${isDelegate}`, temp)
       .then(response => {
         console.log('successfull')
+        setRecordUpdate(true)
       })
       .catch((error) => {
         console.log(error)
       });
     getWorkflowUserData();
+    setRecordUpdate(false)
   }
   const getApplicationMoveToNext = async (id) => {
     // let role;
@@ -6801,7 +6862,7 @@ useEffect(() => {
       data: (workModeType === "Department Head") || (workModeType === "Credentialing Committee") || (workModeType === "Chief Of Staff") ? "View" : "Update BOD Approval Status",
       requiredValue: "boolean",
       onClick: onClickViewAndVerifyApproveFromBODFunction,
-      conditionToShow: `data?.completedWorkflows?.find((wf) => wf?.role === "Board")?.meetingDate`,
+      conditionToShow: `data?.completedWorkflows?.find((wf) => wf?.role === "Board")?.meetingDate && !data?.completedWorkflows?.find((wf) => wf?.role === "Board")?.approvalType`,
     },
     // {
     //   data: "Go to Task List",
@@ -7608,11 +7669,24 @@ useEffect(() => {
                       <div
                         className={`${style.alignCenter} ${style.cursorPointer} ${style.marginRight20}`}
                         style={{
-                          pointerEvents: checkedIds?.length > 0 ? "auto" : "none",
-                          opacity: checkedIds?.length > 0 ? 1 : 0.5,
+                          pointerEvents:
+                            checkedIds?.length > 1 ||
+                            (checkedIds?.length === 1 && isValidSingleCheckedIdMove(checkedIds[0]))
+                              ? "auto"
+                              : "none",
+                          opacity:
+                            checkedIds?.length > 1 ||
+                            (checkedIds?.length === 1 && isValidSingleCheckedIdMove(checkedIds[0]))
+                              ? 1
+                              : 0.5,
                         }}
-                        onClick={() => {
-                          setShowBulkMoveDialog(true);
+                         onClick={() => {
+                          if (
+                            checkedIds?.length > 1 ||
+                            (checkedIds?.length === 1 && isValidSingleCheckedIdMove(checkedIds[0]))
+                          ) {
+                            setShowBulkMoveDialog(true);
+                          }
                         }}
                       >
                         <Tooltip arrow title={"Click to Send Annual Reappointment Letter"}><img src={sendBod} alt="" className={style.resentIcon} /></Tooltip>
@@ -7620,13 +7694,26 @@ useEffect(() => {
                     )}
                     <div
                       className={`${style.alignCenter} ${style.cursorPointer} ${style.marginRight20}`}
-                      style={{
-                        pointerEvents: checkedIds?.length > 0 ? "auto" : "none",
-                        opacity: checkedIds?.length > 0 ? 1 : 0.5,
-                      }}
-                      onClick={() => {
-                        setShowBulkApproveDialog(true);
-                      }}
+                       style={{
+                          pointerEvents:
+                            checkedIds?.length > 1 ||
+                            (checkedIds?.length === 1 && isValidSingleCheckedId(checkedIds[0]))
+                              ? "auto"
+                              : "none",
+                          opacity:
+                            checkedIds?.length > 1 ||
+                            (checkedIds?.length === 1 && isValidSingleCheckedId(checkedIds[0]))
+                              ? 1
+                              : 0.5,
+                        }}
+                        onClick={() => {
+                          if (
+                            checkedIds?.length > 1 ||
+                            (checkedIds?.length === 1 && isValidSingleCheckedId(checkedIds[0]))
+                          ) {
+                            setShowBulkApproveDialog(true);
+                          }
+                        }}
                     >
                       <Tooltip title={((selectedTab === "level-3" && applicationType === "REAPPOINTMENT") || (selectedTab === "level-2" && applicationType === "LOCUM")) ? "Update CC Approval Status" : ((selectedTab === "level-4" && applicationType === "REAPPOINTMENT") || (selectedTab === "level-3" && applicationType === "LOCUM")) ? "Update MAC Approval Status" : "Update BOD Approval Status"} arrow>
                         <PeopleOutlinedIcon
@@ -7768,6 +7855,7 @@ useEffect(() => {
                 totalCount={totalCount}
                 filterCCReview={filterCCReview}
                 filterCCNotReview = {filterCCNotReview}
+                recordUpdate={recordUpdate}
               />
             </div>
             <div className={`${style.bigCardStyle}`}>
