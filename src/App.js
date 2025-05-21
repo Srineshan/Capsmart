@@ -896,6 +896,7 @@ const App = ({ props }) => {
     // const navigate = useNavigate();
     const fetchData = () => {
       console.log('login route', Auth())
+      const initialRoute = sessionStorage.getItem("initialRoute");
       if (Auth()) {
         console.log('login route')
         let roles = jwt(Auth())?.roles?.split(",");
@@ -912,7 +913,13 @@ const App = ({ props }) => {
             setShowDialog(true);
           }
         }
-        if (roles?.length === 1) {
+
+        if (roles?.length === 1 && sessionStorage?.getItem('initialRoute') !== undefined && sessionStorage?.getItem('initialRoute') !== 'undefined' && sessionStorage?.getItem('initialRoute') !== null) {
+            sessionStorage.setItem("workModeType", roles[0]);
+             window.location.href = `${initialRoute}`;
+            sessionStorage?.removeItem('initialRoute')
+        }
+       else  if (roles?.length === 1 ) {
           sessionStorage.setItem("workModeType", roles[0]);
           let isAppUser =
             roles?.includes("Approver") ||
