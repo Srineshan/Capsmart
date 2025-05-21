@@ -8,6 +8,7 @@ import PrintOutlinedIcon from '@mui/icons-material/PrintOutlined';
 import CachedOutlinedIcon from '@mui/icons-material/CachedOutlined';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import ZoomOutMapIcon from '@mui/icons-material/ZoomOutMap';
+import html2pdf from "html2pdf.js";
 import Popover from '@mui/material/Popover';
 import { useParams } from 'react-router-dom';
 import UserLogo1 from './../../images/userLogo3.png';
@@ -26,6 +27,7 @@ import SaveReport from './saveReport';
 import { format } from 'date-fns';
 
 import style from './index.module.scss';
+import { POST } from '../dataSaver';
 
 const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, refToUse, getIsDownloadClicked, isNoData }) => {
     const { reportType } = useParams();
@@ -47,7 +49,10 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
     const [anchorElFullscreen, setAnchorElFullscreen] = useState(null);
     const openFullscreen = Boolean(anchorElFullscreen);
     const [anchorElInfo, setAnchorElInfo] = useState(null);
+    const [reportName, setReportName] = useState('');
+    const [reportDescription, setReportDescription] = useState('');
     const openInfo = Boolean(anchorElInfo);
+    const [isLoading, setIsLoading] = useState(true);
 
     const reportTitleList = {
         // staffReappointmentsNotes: 'Upcoming Contract Renewals',
@@ -75,11 +80,113 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
         contractsWithABusinessEntity: 'Contracts With A Business Entity',
         currentRemitToAddressForActiveContracts: 'Current Remit To Address For Active Contracts',
         activityStatusTracker: `Status Of Activities/ Services By Service Provider For ${format(new Date(), 'MMMM yyyy')}`,
-        paymentProcessingStatusTracker: 'Payment Processing Status By Service Provider'
+        paymentProcessingStatusTracker: 'Payment Processing Status By Service Provider',
+        submittedApplicationsReviewSummary: 'Submitted Applications Review Summary'
+    }
+
+    const availableCategories = {
+        servicesOrActivities: 'SERVICES_ACTIVITIES',
+        contractManagement: 'CONTRACT_MANAGEMENT',
+        contractCompliance: 'CONTRACT_COMPLIANCE',
+        contractPerformance: 'CONTRACT_PERFORMANCE',
+        payments: 'PAYMENT',
+        timesheets: 'TIMESHEET',
+        reviewsApprovals: 'REVIEWS_APPROVALS',
+        systemAdministrative: 'SYSTEM_ADMINISTRATIVE',
+        allStaffMembers: 'ALL_STAFF',
+        savedReportsArchive: '',
+        staffReappointments: 'STAFF_REAPPOINTMENT',
+        newApplicants: 'NEW_APPLICANT',
+        allApplications: 'ALL_APPLICATION',
+        locumStaff: 'LOCUM_STAFF',
+        permanentStaff: 'PERMANENT_STAFF',
+        locumExtensionOrRenewal: 'LOCUM_EXTENSION_OR_RENEWAL',
+        submittedApplicationsReviewSummary: 'STAFF_REAPPOINTMENT'
+    }
+
+    const typeList = {
+        'activitiesOrServices': 'ACTIVITES_SERVICES_LOG_SUMMARY',
+        'addOnActivities': 'ADDON_ACTIVITES_SERVICES_LOG_SUMMARY',
+        'scheduledActivity': '',
+        'staffReappointmentsNotes': 'UPCOMING_CONTRACT_RENEWALS',
+        'staffReappointments': 'ONE_TIME_CONTRACT',
+        'complianceStatus': '',
+        'nonCompliant': '',
+        'paidConsultingHours': '',
+        'scheduledActivityByContract': '',
+        'paymentsProcessingSummary': 'PAYMENT_PROCESSING_SUMMARY',
+        'compensationCostAnalysis': 'COST_REPORT_FOR_CONTRACTED_SERVICES_PERFORMED',
+        'timeAndPaymentLog': 'TIME_AND_PAYEMENT_LOG_FOR_CONTRACTED_SERVICES',
+        'siteDepartmentSpecificContractorSummary': 'SITE_DEPARTMENT_SPECIFIC_CONTRACTOR_SUMMARY',
+        'timesheetProcessingSummary': 'TIMESHEET_PROCESSING_SUMMARY',
+        'listingOfTimesheetsNotPaid': 'LISTING_OF_TIMESHEETS_NOTPAID',
+        'staffReappointmentTracker': 'SUBMITTED_TIMESHEETS_PAYMENT_STATUS',
+        'contractDocumentsOnFile': 'CONTRACT_DOCUMENT_ON_FILE',
+        'contractsWithABusinessEntity': 'CONTRACT_WITH_BUSINESS_ENTITY',
+        'multiProviderContractsList': 'MULTI_PROVIDER_CONTRACT',
+        'currentRemitToAddressForActiveContracts': 'CURRENT_REMIT_TO_ADDRESS',
+        'activityStatusTracker': 'ACTIVITY_STATUS_TRACKER',
+        'paymentProcessingStatusTracker': 'PAYMENT_TRACKER',
+        'submittedApplicationsReviewSummary': 'SUBMITTED_APPLICATIONS_REVIEW_SUMMARY'
     }
 
     const getSaveReportDialog = (value) => {
         setShowSaveReport(value);
+    }
+
+    const handleDownload = () => {
+        setShowSaveReportOutput(false)
+        const element = refToUse.current;
+        const opt = {
+            margin: 0.5,
+            filename: "savedReport.pdf",
+            image: { type: "jpeg", quality: 0.98 },
+            html2canvas: {
+                scale: 2,
+                useCORS: true,
+                logging: true,
+            },
+            jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
+            pagebreak: { mode: ["avoid-all", "css", "legacy"] },
+        };
+
+        html2pdf().set(opt).from(element).outputPdf("blob").then((pdfBlob) => {
+            addSavedReport(pdfBlob)
+        });
+
+    }
+
+    const addSavedReport = async (pdfBlob) => {
+        let data = {
+            reportName: reportName,
+            reportNotes: reportDescription,
+            runDate: new Date(),
+            reportDoc: {
+                fileName: "savedReport.pdf"
+            },
+            category: availableCategories[reportType],
+            type: typeList[reportType],
+            owner: (sessionStorage.getItem('user') && sessionStorage.getItem('user') !== 'undefined') ? JSON.parse(sessionStorage.getItem('user')) : {}
+        }
+        const formData = new FormData();
+        if (pdfBlob !== null) {
+            const blob = new Blob([pdfBlob], { type: `application/pdf` });
+            formData.append('savedReport', new Blob([JSON.stringify(data)], {
+                type: "application/json"
+            }));
+            formData.append('savedReportFile', blob, "savedReport.pdf");
+
+            let uploadedFile = {};
+            try {
+                const response = await POST(`application-management-service/report/savedReport/`, formData);
+                console.log(response?.data);
+                uploadedFile = response?.data?.file;
+                setShowReportSavedDialog(true);
+            } catch (error) {
+                console.error(error);
+                return null;
+            }
+        };
     }
 
     return (
@@ -119,7 +226,7 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                             <Icon icon="star" size={20} color="#D3D3D3" className={style.marginLeft} />
                             <Icon icon="star" size={20} color="#D3D3D3" className={style.marginLeft} />
                         </div> */}
-                        {/* <div className={`${style.iconPadding} ${style.cursorPointer} ${style.marginLeft20}`}
+                        <div className={`${style.iconPadding} ${style.cursorPointer} ${style.marginLeft20}`}
                             onMouseEnter={(e) => setAnchorElRefresh(e.currentTarget)} onMouseLeave={() => setAnchorElRefresh(null)} aria-owns={openRefresh ? 'mouse-over-popover' : undefined}
                             aria-haspopup="true">
                             <img src={ReportsRefresh} alt="" className={`${style.reportsActions} ${style.marginTop5}`} onClick={() => { setShowReportRefreshingDialog(true); window.location.reload() }} />
@@ -139,7 +246,7 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                             >
                                 <div className={style.popoverStyle}>Click To Refresh This Report</div>
                             </Popover>
-                        </div> */}
+                        </div>
                         {/* <div className={`${style.iconPadding} ${style.cursorPointer}`}>
                             <ShareOutlinedIcon style={{color:"#2C2C2C"}} onClick={() => setShowShareDialog(true)} />
                         </div> */}
@@ -164,10 +271,10 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                                 <div className={style.popoverStyle}>Click To Schedule This Report</div>
                             </Popover>
                         </div> */}
-                        {/* <div className={`${style.iconPadding} ${style.cursorPointer}`} onClick={() => setShowSaveReportOutput(true)}
+                        <div className={`${style.iconPadding} ${style.cursorPointer}`}
                             onMouseEnter={(e) => setAnchorElSave(e.currentTarget)} onMouseLeave={() => setAnchorElSave(null)} aria-owns={openSave ? 'mouse-over-popover' : undefined}
                             aria-haspopup="true">
-                            <SaveOutlinedIcon style={{ color: "#2C2C2C" }} />
+                            <img src={ReportsSchedule} alt="" className={`${style.reportsActions} ${style.marginTop5}`} onClick={() => setShowSaveReportOutput(true)} />
                             <Popover
                                 id={'mouse-over-popover'}
                                 sx={{
@@ -184,7 +291,7 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                             >
                                 <div className={style.popoverStyle}>Click to Save this Report</div>
                             </Popover>
-                        </div> */}
+                        </div>
                         <div className={`${style.iconPadding} ${style.cursorPointer} ${isNoData && style.disabledCursor}`} onClick={() => !isNoData ? getIsDownloadClicked(true) : {}}
                             onMouseEnter={(e) => !isNoData ? setAnchorElDownload(e.currentTarget) : {}} onMouseLeave={() => !isNoData ? setAnchorElDownload(null) : {}} aria-owns={openDownload ? 'mouse-over-popover' : undefined}
                             aria-haspopup="true">
@@ -267,16 +374,16 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                             <div className={`${style.marginTop20} ${style.recipientsDataHeight}`}>
                                 <div className={style.displayInCol}>
                                     <label for="standard-basic" className={style.saveReportLabelStyle}>Report Output Name</label>
-                                    <TextField id="standard-basic" variant="standard" value="Report Name - ABC" className={`${style.threeColWidth} ${style.saveReportFieldStyle} ${style.marginTop10}`} />
+                                    <TextField id="standard-basic" variant="standard" value={reportName} className={`${style.threeColWidth} ${style.saveReportFieldStyle} ${style.marginTop10}`} onChange={(e) => setReportName(e.target.value)} />
                                 </div>
                                 <div className={style.marginTop20}>
                                     <label for="description" className={`${style.saveReportLabelStyle}`}>Report Output Notes</label>
-                                    <TextArea id="description" rows={5} placeholder="Enter Notes" className={`${style.fullWidth} ${style.saveReportFieldStyle} ${style.marginTop10}`} />
+                                    <TextArea id="description" rows={5} placeholder="Enter Notes" className={`${style.fullWidth} ${style.saveReportFieldStyle} ${style.marginTop10}`} value={reportDescription} onChange={(e) => setReportDescription(e.target.value)} />
                                 </div>
                             </div>
                             <div>
                                 <div className={`${style.justifyCenter} ${style.marginTop20}`}>
-                                    <button className={`${style.saveButtonStyle} ${style.marginLeft20} ${style.cursorPointer} `} onClick={() => { setShowReportSavedDialog(true); setShowSaveReportOutput(false) }}>Save</button>
+                                    <button className={`${style.saveButtonStyle} ${style.marginLeft20} ${style.cursorPointer} `} onClick={() => { handleDownload(); }}>Save</button>
                                 </div>
                             </div>
                         </div>

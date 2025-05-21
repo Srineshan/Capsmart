@@ -1855,31 +1855,35 @@
     grid-gap: 1%;
 }
 
-@media print {
-    @page {
-        margin-top: 20px;
-    }
-
-    .printContainer {
-        page-break-inside: avoid;
-    }
-
-    .printContainer>* {
-        page-break-before: auto;
-        page-break-inside: avoid;
-    }
-
-    .reportBackgroundCard {
-        padding: 20px !important;
-    }
-
-    .tableRow {
-        page-break-inside: avoid;
-        /* Ensure table rows do not split across pages */
-    }
-
-    .reportSection {
-        page-break-before: always;
-        /* Force sections to start on a new page if needed */
-    }
+.borderStyleTiles {
+    background: $tableheadhover 0% 0% no-repeat padding-box;
+    height: 2px;
 }
+
+
+// @media print {
+//     @page {
+//         margin-top: 20px;
+//     }
+
+//     .printContainer {
+//         page-break-inside: avoid;
+//     }
+
+//     .printContainer>* {
+//         page-break-before: auto;
+//         page-break-inside: avoid;
+//     }
+
+//     .reportBackgroundCard {
+//         padding: 20px !important;
+//     }
+
+//     .tableRow {
+//         page-break-inside: avoid;
+//     }
+
+//     .reportSection {
+//         page-break-before: always;
+//     }
+// }

@@ -189,11 +189,11 @@ const ReportTypeOverview = () => {
     }, [])
 
     useEffect(() => {
-        if (dataToUseInReport?.initialValueSet && ((dataToUseInReport?.selectedDepartments?.length !== 1 ? !dataToUseInReport?.selectedDepartments.includes('') : true) && (dataToUseInReport?.selectedStaffType?.length !== 1 ? !dataToUseInReport?.selectedStaffType.includes('') : true) && (dataToUseInReport?.selectedPrivilegeCategory?.length !== 1 ? !dataToUseInReport?.selectedPrivilegeCategory.includes('') : true))) {
+        if (dataToUseInReport?.initialValueSet && ((dataToUseInReport?.selectedDepartments?.length !== 1 ? !dataToUseInReport?.selectedDepartments?.includes('') : true) && (dataToUseInReport?.selectedStaffType?.length !== 1 ? !dataToUseInReport?.selectedStaffType?.includes('') : true) && (dataToUseInReport?.selectedPrivilegeCategory?.length !== 1 ? !dataToUseInReport?.selectedPrivilegeCategory?.includes('') : true))) {
             getUpdatedValuesWithParams();
         }
         console.log(dataToUseInReport, 'dataToUseInReport', (dataToUseInReport?.initialValueSet && ((dataToUseInReport?.selectedDepartments?.length !== 1 ? !dataToUseInReport?.selectedDepartments.includes('') : true) && (dataToUseInReport?.selectedStaffType?.length !== 1 ? !dataToUseInReport?.selectedStaffType.includes('') : true) && (dataToUseInReport?.selectedPrivilegeCategory?.length !== 1 ? !dataToUseInReport?.selectedPrivilegeCategory.includes('') : true))))
-    }, [dataToUseInReport?.from, dataToUseInReport?.to, dataToUseInReport?.selectedPrivilegeCategory, dataToUseInReport?.selectedStaffType, dataToUseInReport?.selectedSites, dataToUseInReport?.selectedDepartments, dataToUseInReport?.renewalreportingTimePeriod, dataToUseInReport?.contractContinuationPolicy, dataToUseInReport?.contractStatus, dataToUseInReport?.initialValueSet, dataToUseInReport?.selectedTimesheetInterval])
+    }, [dataToUseInReport?.from, dataToUseInReport?.to, dataToUseInReport?.selectedPrivilegeCategory, dataToUseInReport?.selectedStaffType, dataToUseInReport?.selectedSites, dataToUseInReport?.selectedDepartments, dataToUseInReport?.renewalreportingTimePeriod, dataToUseInReport?.selectedPosition, dataToUseInReport?.selectedApplicationType, dataToUseInReport?.initialValueSet, dataToUseInReport?.selectedTimesheetInterval])
 
     useEffect(() => {
         setApexStackedBarChartDisplay(<ApexStackedBarChart stackedSeries={stackedSeries} stackedCategories={stackedCategories} />);
@@ -300,7 +300,8 @@ const ReportTypeOverview = () => {
         multiProviderContractsList: 'Multi Provider Contracts List',
         contractsWithABusinessEntity: 'Contracts With A Business Entity',
         currentRemitToAddressForActiveContracts: 'Current Remit To Address For Active Contracts',
-        paymentProcessingStatusTracker: 'Payment Processing Status By Service Provider'
+        paymentProcessingStatusTracker: 'Payment Processing Status By Service Provider',
+        submittedApplicationsReviewSummary: 'Submitted Applications Review Summary'
     }
 
     const handlePrint = useReactToPrint({
@@ -768,16 +769,42 @@ const ReportTypeOverview = () => {
     const getSubmittedApplications = async () => {
         console.log('enteredInNewReport')
         if (!isMyReport) {
-            if (dataToUseInReport?.selectedDepartments !== undefined && dataToUseInReport?.selectedPrivilegeCategory !== undefined && dataToUseInReport?.selectedStaffType !== undefined) {
-                setIsLoading(true)
-                // if (dataToUseInReport?.selectedTimesheetInterval !== '') {
-                const { data: data } = await GET(`application-management-service/report/submittedApplications?applicantTypeId=${[dataToUseInReport?.selectedContractedServiceProvider]}&privilegingCategoryId=${[dataToUseInReport?.selectedContractedServiceProvider]}&departmentSpecialties=${[dataToUseInReport?.selectedContractedServiceProvider]}&applicationCurrentLevel=${workModeType}&applicationcreationType=${'REAPPOINTMENT'}&positionType=${'LOCUM'}`);
-                setPaymentTrackValues(data);
-                // }
+            const queryParams = new URLSearchParams({
+            });
+
+            if (dataToUseInReport?.selectedStaffType) {
+                queryParams.append('applicantTypeId', dataToUseInReport?.selectedStaffType);
             }
+
+            if (dataToUseInReport?.selectedPrivilegeCategory) {
+                queryParams.append('privilegingCategoryId', dataToUseInReport?.selectedPrivilegeCategory);
+            }
+
+            if (dataToUseInReport?.selectedDepartments) {
+                queryParams.append('departmentSpecialties', dataToUseInReport?.selectedDepartments);
+            }
+
+            if (dataToUseInReport?.selectedApplicationType) {
+                queryParams.append('applicationcreationType', dataToUseInReport?.selectedApplicationType);
+            }
+
+            if (dataToUseInReport?.selectedPosition) {
+                queryParams.append('positionType', dataToUseInReport?.selectedPosition);
+            }
+
+            if (dataToUseInReport?.from) {
+                queryParams.append('startDate', dataToUseInReport?.from);
+            }
+
+            if (dataToUseInReport?.to) {
+                queryParams.append('endDate', dataToUseInReport?.to);
+            }
+            setIsLoading(true)
+            const { data: data } = await GET(`application-management-service/report/submittedApplications?${queryParams.toString()}&applicationCurrentLevel=${workModeType}`);
+            setSubmittedApplicationValues(data);
         } else {
             setIsLoading(true)
-            const { data: data } = await GET(`timesheet-management-service/report/myReport/trackPayments?id=${myReportId}`);
+            const { data: data } = await GET(`application-management-service/report/myReport/submittedApplications?id=${myReportId}`);
             setSubmittedApplicationValues(data);
         }
         setIsLoading(false)
@@ -1790,21 +1817,12 @@ const ReportTypeOverview = () => {
                                     <tbody>
                                         <div className={style.justifyCenter}>
                                             <div className={style.marginTop20}>
-                                                {reportType === "paymentsProcessingSummary" && (
-                                                    <div className={`${style.entityNameBolderStyle} ${style.textAlignCenter} ${style.marginTop5} `}>
-                                                        {dataToUseInReport?.selectedContractsToSend?.map(data => data?.contractName?.contractName).join(', ')}
-                                                    </div>
-                                                )}
                                                 <div className={`${style.entityNameBolderStyle} ${style.textAlignCenter} ${style.marginTop5} `}>
                                                     {reportTitleList[reportType]}
                                                 </div>
-                                                {/* {(reportType !== "staffReappointmentsNotes" && reportType !== "staffReappointments" &&
-                                                    reportType !== "contractDocumentsOnFile" && reportType !== "multiProviderContractsList" &&
-                                                    reportType !== "contractsWithABusinessEntity" && reportType !== "currentRemitToAddressForActiveContracts" &&
-                                                    reportType !== "activityStatusTracker" && reportType !== 'paymentProcessingStatusTracker' &&
-                                                    dataToUseInReport?.reportingTimePeriod !== "") && (
-                                                        <div className={`${style.reportRunByTextStyle} ${style.textAlignCenter} ${style.marginTop5} `}>Reporting Period used for this report : {dataToUseInReport?.reportingTimePeriod} ({dataToUseInReport?.fromToDisplay} to {dataToUseInReport?.toToDisplay}) </div>
-                                                    )} */}
+                                                {(dataToUseInReport?.reportingTimePeriod !== "") && (
+                                                    <div className={`${style.reportRunByTextStyle} ${style.textAlignCenter} ${style.marginTop5} `}>Reporting Period used for this report : {dataToUseInReport?.reportingTimePeriod} ({dataToUseInReport?.fromToDisplay} to {dataToUseInReport?.toToDisplay}) </div>
+                                                )}
                                                 {/* {(reportType === "paymentProcessingStatusTracker") && (
                                                     <div>
                                                         <div className={`${style.reportRunByTextStyle} ${style.textAlignCenter} ${style.marginTop5} `}>Timesheet Interval used for this report : {dataToUseInReport?.selectedTimesheetInterval?.map(data => data.split("%23")?.map(innerData => `${format(new Date(innerData), 'MMM dd yyyy')}`)).join(', ') || 'All Timesheet Intervals'} </div>
@@ -1823,9 +1841,7 @@ const ReportTypeOverview = () => {
                                             <div className={`${style.marginTop20} ${style.reportTypeParamsBackground}`}>
                                                 <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop5} `}>Reporting Parameters Applied</div>
                                                 {(reportType === "staffReappointmentsNotes" || reportType === "staffReappointments" ||
-                                                    reportType === "contractDocumentsOnFile" || reportType === "multiProviderContractsList" ||
-                                                    reportType === "contractsWithABusinessEntity" || reportType === "currentRemitToAddressForActiveContracts" ||
-                                                    reportType === "staffbyTypes" || reportType === "paymentProcessingStatusTracker" || reportType === "staffReappointmentTracker") ? (
+                                                    reportType === "submittedApplicationsReviewSummary" || reportType === "staffReappointmentTracker") ? (
                                                     <div className={`${style.grid4} ${style.marginTop20} `}>
                                                         {/* {reportType === "staffReappointmentsNotes" && (
                                                         <div>
@@ -1847,11 +1863,19 @@ const ReportTypeOverview = () => {
                                                         </div>
                                                         <div>
                                                             <div className={`${style.reportRunByParamStyle} ${style.marginTop5} `}>STAFF TYPE </div>
-                                                            <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedContractsToSend?.map(data => data?.contractName?.contractName).join(', ') || 'All Staff Type'}</div>
+                                                            <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedStaffTypeToSend?.map(data => data?.applicantType).join(', ') || 'All Staff Type'}</div>
                                                         </div>
                                                         <div>
                                                             <div className={`${style.reportRunByParamStyle} ${style.marginTop5} `}>PRIVILEGE CATEGORY </div>
-                                                            <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedContractsToSend?.map(data => data?.contractName?.contractName).join(', ') || 'All Categories'}</div>
+                                                            <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedPrivilegeCategoryToSend?.map(data => data?.category).join(', ') || 'All Categories'}</div>
+                                                        </div>
+                                                        <div>
+                                                            <div className={`${style.reportRunByParamStyle} ${style.marginTop5} `}>POSITION </div>
+                                                            <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedPosition || 'All Positions'}</div>
+                                                        </div>
+                                                        <div>
+                                                            <div className={`${style.reportRunByParamStyle} ${style.marginTop5} `}>APPLICATION TYPE</div>
+                                                            <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedApplicationType || 'All Application Type'}</div>
                                                         </div>
                                                         {(reportType === "contractDocumentsOnFile" || reportType === "multiProviderContractsList" ||
                                                             reportType === "contractsWithABusinessEntity") && (
@@ -2413,23 +2437,10 @@ const ReportTypeOverview = () => {
                                                             </div>
                                                         ) : reportType === "submittedApplicationsReviewSummary" ? (
                                                             <div className={style.marginTop20}>
-                                                                {staffReappointmentTrackerData?.timesheetPayment?.length !== 0 ? (
+                                                                {submittedApplicationValues?.length !== 0 ? (
                                                                     <>
-                                                                        {/* <ReportsTable
-                                                                            tableType={''}
-                                                                            tableHeader={['Timesheet Name', 'Period', 'Contractor', 'Site/ Dept', 'Billable Hours', 'Non Billable Hours', 'Submission Date', 'Current Status', 'Status Date', 'Payment Status', 'Payment Amount', 'Payment Date']}
-                                                                            tableValue={staffReappointmentTrackerData?.timesheetPayment}
-                                                                            activitiesServicesValues={getSubmittedTimesheetsPaymentStatusValues()}
-                                                                            styleName={style.grid12}
-                                                                        /> */}
-                                                                        <TableTwo
-                                                                            tableHeaderValues={headerValuesStatus}
-                                                                            tableDataValues={getTableValues()}
-                                                                            tableData={tableData}
-                                                                            gridStyle={style.permanentStaffGrid}
-                                                                            tableSortValues={colSortValues}
-                                                                            heading={"There are no record to display"}
-                                                                            className={`${style.tableRow} ${style.reportSection}`}
+                                                                        <ReportsApplicantTable
+                                                                            tableData={submittedApplicationValues}
                                                                         />
                                                                     </>
                                                                 ) : (

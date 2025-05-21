@@ -6,22 +6,23 @@ import Popover from '@mui/material/Popover';
 import TemplateIcon from './../../images/templateIcon.png';
 import style from './index.module.scss';
 import { Link, useParams } from 'react-router-dom';
-import { GET } from '../dataSaver';
+import { DELETE, GET } from '../dataSaver';
 import { format } from 'date-fns';
 import { formatInTimeZone } from 'date-fns-tz';
 import { currentUser } from '../../utils/auth';
-import { siteTimeZone } from '../../utils/formatting';
+import { corsUrl, siteTimeZone } from '../../utils/formatting';
 import ReportNoDataBox from '../../Components/ReusableSmallComponents/reportNoDataBox';
 import TileApplication from '../../Components/TileApplication';
 import TableTwo from '../../Components/TableDesignTwo';
+import FileDisplayDialog from '../../Components/fileDisplayDialog';
 
 export const Run = ({ link }) => {
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
-
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
     };
+
 
     const handleClose = () => {
         setAnchorEl(null);
@@ -54,6 +55,7 @@ export const Run = ({ link }) => {
 const TimeSheetReports = ({ getShowSampleReport }) => {
     const navigate = useNavigate();
     const [selectedTab, setSelectedTab] = useState('REPORTINGTEMPLATES');
+    const [selectedTopTab, setSelectedTopTab] = useState('');
     const [tabName, setTabName] = useState('Standard Report Templates');
     const { reportType } = useParams();
     const [myReports, setMyReports] = useState([]);
@@ -69,7 +71,8 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
     const [page, setPage] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
     const [limit, setLimit] = useState(9999);
-
+    const [selectedFile, setselectedFile] = useState(false);
+    const [showFileDisplayDialog, setShowFileDisplayDialog] = useState(false);
     const myReportsColSortValues = [false, false, false, false, false];
     const reportingTemplateColSortValues = [false, false, false, false, false, false, false, false, false];
     const savedReportsColSortValues = [false, false, false, false, false, false, false, false, false, false];
@@ -95,22 +98,78 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
     const onClickRunReport = (data) => {
         navigate(`/reportTypeOverview/${routeList[data?.subCategory]}`);
     }
+
+    const onClickMyReport = (data) => {
+        showMyReport(data)
+    }
+
+    const onClickDownloadReport = async (data) => {
+        try {
+            const proxyUrl = `${corsUrl}${encodeURIComponent(data?.savedReport?.reportDoc?.fileURL)}`;
+
+            const response = await fetch(proxyUrl);
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "savedReport.pdf";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            window.URL.revokeObjectURL(url); // cleanup
+        } catch (err) {
+            console.error("Download failed:", err);
+        }
+    }
+
+    const onClickPrintPDF = (data) => {
+        const printWindow = window.open(`${corsUrl}${encodeURIComponent(data?.savedReport?.reportDoc?.fileURL)}`, "_blank");
+        if (printWindow) {
+            printWindow.focus();
+
+            // Wait until PDF is fully loaded before calling print
+            printWindow.onload = () => {
+                printWindow.print();
+            };
+        } else {
+            alert("Popup blocked! Please allow popups for this site.");
+        }
+    };
+
+    const onClickDeleteReport = async (data) => {
+        await DELETE(`application-management-service/report/savedReport/${data?.id}`)
+            .then((response) => {
+                getSavedReports();
+            })
+    }
+
+    const onClickViewReport = (data) => {
+        setselectedFile(data?.savedReport?.reportDoc);
+        setShowFileDisplayDialog(true);
+    }
+
     let savedReportsActions = [{
+        data: "View",
+        requiredValue: "boolean",
+        onClick: onClickViewReport,
+    }, {
         data: "Delete",
         requiredValue: "boolean",
-        onClick: onClickRunReport,
+        onClick: onClickDeleteReport,
     }, {
         data: "Download",
         requiredValue: "boolean",
-        onClick: onClickRunReport,
+        onClick: onClickDownloadReport,
     }, {
         data: "Print",
         requiredValue: "boolean",
-        onClick: onClickRunReport,
+        onClick: onClickPrintPDF,
     }, {
         data: "Share",
         requiredValue: "boolean",
-        onClick: onClickRunReport,
+        onClick: onClickPrintPDF,
     }]
     let reportingTemplatesActions = [{
         data: "Run Report",
@@ -120,7 +179,7 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
     let myReportsActions = [{
         data: "View Report",
         requiredValue: "boolean",
-        onClick: onClickRunReport,
+        onClick: onClickMyReport,
     }]
     let actions = selectedTab === "MYREPORTS"
         ? myReportsActions
@@ -139,6 +198,17 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
                     : style.myReportsGrid
     const PDFRef = createRef();
     const componentRef = useRef(null);
+
+    const availableParentList = {
+        allStaffMembers: 'Privileged Staff',
+        permanentStaff: 'Privileged Staff',
+        locumStaff: 'Privileged Staff',
+        allApplications: 'Staff Applications',
+        newApplicants: 'Staff Applications',
+        staffReappointments: 'Staff Applications',
+        locumExtensionOrRenewal: 'Staff Applications',
+        savedReportsArchive: 'System Administration'
+    }
 
     const availableCategories = {
         servicesOrActivities: 'SERVICES_ACTIVITIES',
@@ -235,9 +305,27 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         PROOF_OF_DOCUMENTATION_COMPLIANCE_FOR_CONTRACT_BASED_REQUIREMENTS: 'Proof of documentation compliance for contract based requirments',
         ACTIVITY_STATUS_TRACKER: `Status Of Activities/ Services By Service Provider For ${format(new Date(), 'MMMM yyyy')}`,
         PAYMENT_TRACKER: 'Payment Processing Status By Service Provider',
-        SUBMITTED_APPLICATIONS_REVIEW_SUMMARY: 'submittedApplicationsReviewSummary',
-        STAFF_REAPPOINTMENT_STATUS_SUMMARY: 'staffReappointmentStatusSummary'
+        SUBMITTED_APPLICATIONS_REVIEW_SUMMARY: 'Submitted Applications Review Summary',
+        STAFF_REAPPOINTMENT_STATUS_SUMMARY: 'Staff Reappointment Status Summary'
     }
+
+    const availableScheduleValue = {
+        ONETIME: 'One Time',
+        EVERYWEEKDAY: 'Every Weekday',
+        WEEKLY: 'Weekly',
+        MONTHLY: 'Monthly',
+        QUARTELY: 'Quaterly',
+        ANNUALY: 'Annualy'
+    }
+
+    const filterLabels = {
+        departmentSpecialties: "Department",
+        positionType: "Position",
+        applicationCreationType: "Application Type",
+        applicantTypeId: "Staff Type",
+        privilegingCategoryId: "Privilege Category",
+        startDate: "Reporting Time Period", // represents start + end together
+    };
 
     useEffect(() => {
         sessionStorage.removeItem('reportFilter');
@@ -266,36 +354,51 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
     // }
 
     useEffect(() => {
-        if (tabName === 'My Reports') {
-            getMyReports();
-        } else if (tabName === 'Saved Report Outputs') {
-            getSavedReports();
-        } else {
-            getStandardTemplates();
+        getMyReports();
+        getSavedReports();
+        getStandardTemplates();
+    }, [selectedTab, reportType])
+
+    const getFilterSummary = (filters) => {
+        let count = 0;
+        const labels = [];
+
+        // Special handling for startDate + endDate
+        if (filters.startDate && filters.endDate) {
+            count += 1;
+            labels.push(filterLabels.startDate);
         }
-    }, [tabName, reportType])
+
+        const excludeKeys = ["startDate", "endDate", "applicationCurrentLevel"];
+
+        for (const [key, value] of Object.entries(filters)) {
+            if (excludeKeys.includes(key)) continue;
+
+            const hasValue = Array.isArray(value)
+                ? value.length > 0
+                : value !== null && value !== undefined && value !== "";
+
+            if (hasValue && filterLabels[key]) {
+                count += 1;
+                labels.push(filterLabels[key]);
+            }
+        }
+
+        return {
+            count,
+            labels
+        };
+    }
 
     const getMyReports = async () => {
-        if (reportType === 'contractManagement') {
-            const { data: myReport } = await GET(`timesheet-management-service/report/myReport?userId=${currentUserDetails?.id}&category=TIMESHEET`);
-            setMyReports(myReport);
-            let temp = [...myReport] || [];
-            const { data: myReportContract } = await GET(`contract-managment-service/reports/myReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
-            myReportContract?.map(data => { temp.push(data) })
-            setMyReports(temp);
-        } else if (reportType === "contractCompliance") {
-            const { data: myReport } = await GET(`contract-managment-service/reports/myReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
-            setMyReports(myReport);
-        } else {
-            const { data: myReport } = await GET(`timesheet-management-service/report/myReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
-            setMyReports(myReport);
-        }
+        const { data: myReport } = await GET(`application-management-service/report/myReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
+        setMyReports(myReport);
     }
 
     console.log(myReports)
 
     const getSavedReports = async () => {
-        const { data: savedReport } = await GET(`timesheet-management-service/report/savedReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
+        const { data: savedReport } = await GET(`application-management-service/report/savedReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
         setSavedReports(savedReport);
     }
 
@@ -312,26 +415,38 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         setIsExpanded(value);
     }
 
-    const getScheduleValue = (value) => {
-        if (value === 'ONETIME') {
-            return 'One Time';
-        } else if (value === 'EVERYWEEKDAY') {
-            return 'Every Weekday';
-        } else if (value === 'WEEKLY') {
-            return 'Weekly';
-        } else if (value === 'MONTHLY') {
-            return 'Monthly';
-        } else if (value === 'QUARTELY') {
-            return 'Quaterly';
-        } else if (value === 'ANNUALY') {
-            return 'Annualy';
-        } else {
-            return '';
-        }
+    const getIsShowFileDialog = (value) => {
+        setShowFileDisplayDialog(value);
     }
 
     const getMyReportsValues = () => {
+        const title = [];
+        const schedule = [];
+        const savedParams = [];
+        const savedParamHoverText = [];
+        const lastUpdated = [];
+        const actions = [];
+        myReports?.map((data, index) => {
+            title.push(data?.report?.title)
+            schedule.push(availableScheduleValue[data?.report?.schedule?.schedule]);
+            savedParams.push(getFilterSummary(data?.report?.filters)?.count);
+            // const remindTooltipValue = reminderCount >= 0 ? (
+            //     <div>
+            //       <div>{reminderText}</div>
+            //       <div>{reminderDates}</div>
+            //     </div>
+            //   ) : null;
+            lastUpdated.push(data?.report?.lastUpdated ? format(new Date(data?.report?.lastUpdated), "MMM dd, yyyy") : '-');
+            actions.push(true);
+        });
 
+        return [
+            { type: "text", value: title },
+            { type: "text", value: schedule },
+            { type: "text", value: savedParams },
+            { type: "text", value: lastUpdated },
+            { type: "action", value: actions },
+        ];
     }
 
     const getReportingTemplatesValues = () => {
@@ -346,9 +461,9 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
             title.push(data?.title)
             type.push('Standard');
             lastRunBy.push('-');
-            lastRunDateAndTime.push(data?.lastRun ? format(new Date(data?.lastRun), "MM/dd/yyyy") : '-');
+            lastRunDateAndTime.push(data?.lastRun ? format(new Date(data?.lastRun), "MMM dd, yyyy") : '-');
             lastUpdatedBy.push('-');
-            lastUpdated.push(data?.lastUpdate ? format(new Date(data?.lastUpdate), "MM/dd/yyyy") : '-');
+            lastUpdated.push(data?.lastUpdate ? format(new Date(data?.lastUpdate), "MMM dd, yyyy") : '-');
             actions.push(true);
         });
 
@@ -364,7 +479,23 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
     }
 
     const getSavedReportOutputsValues = () => {
+        const title = [];
+        const period = [];
+        const savedOn = [];
+        const actions = [];
+        savedReports?.map((data, index) => {
+            title.push(data?.savedReport?.reportName)
+            period.push(data?.report?.schedule?.schedule);
+            savedOn.push(data?.savedReport?.runDate ? format(new Date(data?.savedReport?.runDate), "MMM dd, yyyy") : '-');
+            actions.push(true);
+        });
 
+        return [
+            { type: "text", value: title },
+            { type: "text", value: period },
+            { type: "text", value: savedOn },
+            { type: "action", value: actions },
+        ];
     }
 
     let tableDataValues =
@@ -378,12 +509,12 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
 
     let tableData =
         selectedTab === "MYREPORTS"
-            ? []
+            ? myReports
             : selectedTab === "REPORTINGTEMPLATES"
                 ? standardTemplates
                 : selectedTab === "SAVEDREPORTOUTPUTS"
-                    ? []
-                    : []
+                    ? savedReports
+                    : myReports
 
     const getSelectedPage = (value) => {
         setPage(value);
@@ -547,9 +678,17 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
                             className={`${style.spaceBetween} ${style.marginLeft30} `}
                         >
                             <div className={`${style.tabs}`}>
-                                <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="My Reports" tileCount={0} currentTile="MYREPORTS" />
+                                <TileApplication selectedTab={selectedTopTab} getSelectedTab={() => { }} tileLabel={availableParentList[reportType]} tileCount={(myReports?.length || 0) + (standardTemplates?.length || 0) + (savedReports?.length || 0)} currentTile="" />
+                            </div>
+                        </div>
+                        <div className={`${style.borderStyleTiles} ${style.marginLeft30}`}></div>
+                        <div
+                            className={`${style.spaceBetween} ${style.marginLeft30} ${style.marginTop10} `}
+                        >
+                            <div className={`${style.tabs}`}>
+                                <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="My Reports" tileCount={myReports?.length} currentTile="MYREPORTS" />
                                 <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="Reporting Templates" tileCount={standardTemplates?.length} currentTile="REPORTINGTEMPLATES" />
-                                <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="Saved Report Outputs" tileCount={0} currentTile="SAVEDREPORTOUTPUTS" />
+                                <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="Saved Report Outputs" tileCount={savedReports?.length} currentTile="SAVEDREPORTOUTPUTS" />
                             </div>
                         </div>
                     </div>
@@ -584,6 +723,12 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
                     </div>
                 </div>
             </div>
+            {showFileDisplayDialog && (
+                <FileDisplayDialog
+                    getIsOpen={getIsShowFileDialog}
+                    file={selectedFile}
+                />
+            )}
         </div >
     )
 }
