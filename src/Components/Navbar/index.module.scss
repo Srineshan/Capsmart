@@ -170,6 +170,10 @@
     align-items: center;
 }
 
+.marginTopAuto {
+    margin-top: auto;
+}
+
 .logoutStyle:hover {
     background-color: #F0F2F5;
     color: $primarycolor;
@@ -231,6 +235,7 @@
     color: #F5F9FD;
     text-transform: capitalize;
     opacity: 1;
+    min-width: 200px;
 }
 
 .dropDownTextStyle:hover {
@@ -238,4 +243,8 @@
     box-shadow: 0px 3px 12px #00000052;
     border-radius: 8px;
     opacity: 1;
+}
+
+.menuWidth {
+    width: 200px;
 }

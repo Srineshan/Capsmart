@@ -603,8 +603,8 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                 <div className={`${style.reporttypeLeftBackGround}`}>
                     <div className={`${style.reportLeftTextStyle} ${style.cursorPointer}`} onClick={() => setShowSaveReport(true)}>Save Parameter Selection As My Report</div>
                 </div>
-                {(reportType === "staffReappointmentsNotes" || reportType === "staffReappointments" ||
-                    reportType === "submittedApplicationsReviewSummary" || reportType === "staffReappointmentTracker") ? (
+                {(reportType === "staffReappointmentsNotes" || reportType === "staffReappointments" || reportType === "locumRenewalOrExtensionApplicationsSummary" || reportType === "privilegedStaffSummary" ||
+                    reportType === "submittedApplicationsReviewSummary" || reportType === "staffReappointmentTracker" || reportType === "ohipBillingNumbersByCareProvider") ? (
                     <>
                         {/* {reportType === "staffReappointmentsNotes" && (
                             <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
@@ -841,25 +841,26 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 ))}
                             </Select>
                         </FormControl>
+                        {reportType === "submittedApplicationsReviewSummary" && (
+                            <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                                <InputLabel id="demo-simple-select-standard-label3">Application Type</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-standard-label3"
+                                    id="demo-simple-select-standard3"
+                                    value={selectedApplicationType}
+                                    onChange={(e) => { setSelectedApplicationType(e.target.value) }}
+                                    MenuProps={MenuProps}
+                                    disabled={isMyReport || isLoading}
+                                >
+                                    <MenuItem value={''} disabled={isMyReport || isLoading}>All</MenuItem>
+                                    <MenuItem value={'NEW'} disabled={isMyReport || isLoading}>New Applicants</MenuItem>
+                                    <MenuItem value={'REAPPOINTMENT'} disabled={isMyReport || isLoading}>Staff Reapointments</MenuItem>
+                                    <MenuItem value={'LOCUM_RENEWAL'} disabled={isMyReport || isLoading}>Locum Applications</MenuItem>
+                                </Select>
+                            </FormControl>
+                        )}
 
-                        <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                            <InputLabel id="demo-simple-select-standard-label3">Application Type</InputLabel>
-                            <Select
-                                labelId="demo-simple-select-standard-label3"
-                                id="demo-simple-select-standard3"
-                                value={selectedApplicationType}
-                                onChange={(e) => { setSelectedApplicationType(e.target.value) }}
-                                MenuProps={MenuProps}
-                                disabled={isMyReport || isLoading}
-                            >
-                                <MenuItem value={''} disabled={isMyReport || isLoading}>All</MenuItem>
-                                <MenuItem value={'NEW'} disabled={isMyReport || isLoading}>New Applicants</MenuItem>
-                                <MenuItem value={'REAPPOINTMENT'} disabled={isMyReport || isLoading}>Staff Reapointments</MenuItem>
-                                <MenuItem value={'LOCUM_RENEWAL'} disabled={isMyReport || isLoading}>Locum Applications</MenuItem>
-                            </Select>
-                        </FormControl>
-
-                        <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                        {/* <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                             <InputLabel id="demo-simple-select-standard-label3">Position</InputLabel>
                             <Select
                                 labelId="demo-simple-select-standard-label3"
@@ -873,7 +874,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 <MenuItem value={'PERMANENT'} disabled={isMyReport || isLoading}>Permanent</MenuItem>
                                 <MenuItem value={'LOCUM'} disabled={isMyReport || isLoading}>Locum</MenuItem>
                             </Select>
-                        </FormControl>
+                        </FormControl> */}
                         {/* <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                             <InputLabel id="demo-multiple-name-label5" className={style.headingtextStyle}>Contract</InputLabel>
                             <Select

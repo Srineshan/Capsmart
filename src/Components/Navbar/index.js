@@ -22,7 +22,8 @@ import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import HelpOutlineOutlinedIcon from '@mui/icons-material/HelpOutlineOutlined';
 import LogoutIcon from '@mui/icons-material/Logout';
 import axios from "axios";
-
+import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
 import style from "./index.module.scss";
 import { useDescope } from "@descope/react-sdk";
 import { Tooltip } from "@mui/material";
@@ -85,6 +86,8 @@ const Navbar = () => {
   const [isSystemAdministrationAvailable, setIsSystemAdministrationAvailable] =
     useState(false);
   const [isSupportAvailable, setIsSupportAvailable] = useState(false);
+  const [showStaffApplicationMenu, setShowStaffApplicationMenu] = useState(false);
+  const [showAllStaffMenu, setShowAllStaffMenu] = useState(false);
   // let selectedWorkingMode = sessionStorage.getItem("SelectedWorkingMode");
   const workModeType = sessionStorage.getItem('workModeType')
 
@@ -585,50 +588,96 @@ const Navbar = () => {
                     className={style.noFontStyle}
                   >
                     <div className={`${style.dropdownContainer}`}>
-                      <div className={`${style.dropdownItem}`}>Privileged Staff</div>
-                      <Link
-                        to={"/reports/allStaffMembers"}
-                        className={style.noFontStyle}
-                      >
-                        <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`}>All Staff Members</div>
-                      </Link>
-                      <Link
-                        to={"/reports/permanentStaff"}
-                        className={style.noFontStyle}
-                      >
-                        <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`}>Permanent Staff</div>
-                      </Link>
-                      <Link
-                        to={"/reports/locumStaff"}
-                        className={style.noFontStyle}
-                      >
-                        <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`}>Locum Staff</div>
-                      </Link>
-                      <div className={`${style.dropdownItem}`}>Staff Applications</div>
-                      <Link
-                        to={"/reports/allApplications"}
-                        className={style.noFontStyle}
-                      >
-                        <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`}>All Applications</div>
-                      </Link>
-                      <Link
-                        to={"/reports/newApplicants"}
-                        className={style.noFontStyle}
-                      >
-                        <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`}>New Applicants</div>
-                      </Link>
-                      <Link
-                        to={"/reports/staffReappointments"}
-                        className={style.noFontStyle}
-                      >
-                        <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`}>Staff Reappointments</div>
-                      </Link>
-                      <Link
-                        to={"/reports/locumExtensionOrRenewal"}
-                        className={style.noFontStyle}
-                      >
-                        <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`}>Locum Extension / Renewals</div>
-                      </Link>
+                      <div className={style.menuWidth}>
+                        <div className={style.spaceBetween}>
+                          <div className={`${style.dropdownItem}`}>Privileged Staff</div>
+                          <div className={style.marginTopAuto}>
+                            {showAllStaffMenu ? (
+                              <RemoveIcon
+                                sx={{ fontSize: 20, color: "#F5F9FD", cursor: "pointer", marginRight: '10px' }}
+                                onClick={() =>
+                                  setShowAllStaffMenu(false)
+                                } />
+                            ) : (
+                              <AddIcon
+                                sx={{ fontSize: 20, color: "#F5F9FD", cursor: "pointer", marginRight: '10px' }}
+                                onClick={() =>
+                                  setShowAllStaffMenu(true)
+                                } />
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      {showAllStaffMenu && (
+                        <>
+                          <Link
+                            to={"/reports/allStaffMembers"}
+                            className={style.noFontStyle}
+                          >
+                            <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`}>All Staff Members</div>
+                          </Link>
+                          <Link
+                            to={"/reports/permanentStaff"}
+                            className={style.noFontStyle}
+                          >
+                            <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`}>Permanent Staff</div>
+                          </Link>
+                          <Link
+                            to={"/reports/locumStaff"}
+                            className={style.noFontStyle}
+                          >
+                            <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`}>Locum Staff</div>
+                          </Link>
+                        </>
+                      )}
+                      <div>
+                        <div className={style.spaceBetween}>
+                          <div className={`${style.dropdownItem}`}>Staff Applications</div>
+                          <div className={style.marginTopAuto}>
+                            {showStaffApplicationMenu ? (
+                              <RemoveIcon
+                                sx={{ fontSize: 20, color: "#F5F9FD", cursor: "pointer", marginRight: '10px' }}
+                                onClick={() =>
+                                  setShowStaffApplicationMenu(false)
+                                } />
+                            ) : (
+                              <AddIcon
+                                sx={{ fontSize: 20, color: "#F5F9FD", cursor: "pointer", marginRight: '10px' }}
+                                onClick={() =>
+                                  setShowStaffApplicationMenu(true)
+                                } />
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      {showStaffApplicationMenu && (
+                        <>
+                          <Link
+                            to={"/reports/allApplications"}
+                            className={style.noFontStyle}
+                          >
+                            <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`}>All Applications</div>
+                          </Link>
+                          <Link
+                            to={"/reports/newApplicants"}
+                            className={style.noFontStyle}
+                          >
+                            <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`}>New Applicants</div>
+                          </Link>
+                          <Link
+                            to={"/reports/staffReappointments"}
+                            className={style.noFontStyle}
+                          >
+                            <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`}>Reappointments</div>
+                          </Link>
+                          <Link
+                            to={"/reports/locumExtensionOrRenewal"}
+                            className={style.noFontStyle}
+                          >
+                            <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`}>Locum Extension / Renewals</div>
+                          </Link>
+                        </>
+                      )}
                       <div className={`${style.dropdownItem}`}>System Administration</div>
                       <Link
                         to={"/reports/savedReportsArchive"}

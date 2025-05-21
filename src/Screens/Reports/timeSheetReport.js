@@ -64,7 +64,7 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
     const currentUserDetails = currentUser();
     const [isExpanded, setIsExpanded] = useState(true);
     const myReportsHeaderValues = ["Report Title", "Schedule", "Saved Parameters", "Last Updated", "Action"];
-    const reportingTemplateHeaderValues = ["Template Title", "Type", "Last Run by", "Last Run Date/ Time", "Last Updated by", "Last Updated", "Action"];
+    const reportingTemplateHeaderValues = ["Report Template Title", "Type", "Last Run by", "Last Run Date/ Time", "Last Updated by", "Last Updated", "Action"];
     const savedReportsHeaderValues = ["Saved Report", "Reporting Period", "Saved On", "Action"];
     const [sortField, setSortField] = useState("DEFAULT");
     const [sortValue, setSortValue] = useState("DESCENDING");
@@ -172,12 +172,12 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         onClick: onClickPrintPDF,
     }]
     let reportingTemplatesActions = [{
-        data: "Run Report",
+        data: "Run",
         requiredValue: "boolean",
         onClick: onClickRunReport,
     }]
     let myReportsActions = [{
-        data: "View Report",
+        data: "Run",
         requiredValue: "boolean",
         onClick: onClickMyReport,
     }]
@@ -200,14 +200,14 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
     const componentRef = useRef(null);
 
     const availableParentList = {
-        allStaffMembers: 'Privileged Staff',
-        permanentStaff: 'Privileged Staff',
-        locumStaff: 'Privileged Staff',
-        allApplications: 'Staff Applications',
-        newApplicants: 'Staff Applications',
-        staffReappointments: 'Staff Applications',
-        locumExtensionOrRenewal: 'Staff Applications',
-        savedReportsArchive: 'System Administration'
+        allStaffMembers: 'All Staff Members',
+        permanentStaff: 'Permanent Staff',
+        locumStaff: 'Locum Staff',
+        allApplications: 'All Applications',
+        newApplicants: 'New Applicants',
+        staffReappointments: 'Reappointments',
+        locumExtensionOrRenewal: 'Locum Extension / Renewal',
+        savedReportsArchive: 'Saved Reports Archive'
     }
 
     const availableCategories = {
@@ -253,7 +253,13 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         ACTIVITY_STATUS_TRACKER: 'activityStatusTracker',
         PAYMENT_TRACKER: 'paymentProcessingStatusTracker',
         SUBMITTED_APPLICATIONS_REVIEW_SUMMARY: 'submittedApplicationsReviewSummary',
-        STAFF_REAPPOINTMENT_STATUS_SUMMARY: 'staffReappointmentStatusSummary'
+        DETAILED_PRIVILEGED_STAFF_SUMMARY: 'detailedPrivilegedStaffSummary',
+        OHIP_BILLING_NUMBERS_BY_CARE_PROVIDER: 'ohipBillingNumbersByCareProvider',
+        PRIVILEGED_STAFF_SUMMARY: 'privilegedStaffSummary',
+        CURRENT_NOTES_SUMMARY: 'currentNotesSummary',
+        STAFF_REAPPOINTMENT_STATUS_SUMMARY: 'staffReappointmentStatusSummary',
+        LOCUM_RENEWAL_OR_EXTENSION_APPLICATIONS_SUMMARY: 'locumRenewalOrExtensionApplicationsSummary',
+        DECLINED_OR_NOT_RENEWED_STAFF_SUMMARY: 'declinedOrNotRenewedStaffSumary'
     }
     const descriptionList = {
         ACTIVITES_SERVICES_LOG_SUMMARY: 'Activities/ Services Log Status Summary',
@@ -315,7 +321,7 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         WEEKLY: 'Weekly',
         MONTHLY: 'Monthly',
         QUARTELY: 'Quaterly',
-        ANNUALY: 'Annualy'
+        ANNUALY: 'Annually'
     }
 
     const filterLabels = {
@@ -421,13 +427,15 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
 
     const getMyReportsValues = () => {
         const title = [];
+        const titleHover = [];
         const schedule = [];
         const savedParams = [];
         const savedParamHoverText = [];
         const lastUpdated = [];
         const actions = [];
         myReports?.map((data, index) => {
-            title.push(data?.report?.title)
+            title.push(data?.report?.title);
+            titleHover.push(data?.report?.description)
             schedule.push(availableScheduleValue[data?.report?.schedule?.schedule]);
             savedParams.push(getFilterSummary(data?.report?.filters)?.count);
             // const remindTooltipValue = reminderCount >= 0 ? (
@@ -441,7 +449,7 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         });
 
         return [
-            { type: "text", value: title },
+            { type: "text", value: title, tooltipValueText: titleHover },
             { type: "text", value: schedule },
             { type: "text", value: savedParams },
             { type: "text", value: lastUpdated },
@@ -451,6 +459,7 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
 
     const getReportingTemplatesValues = () => {
         const title = [];
+        const titleHover = [];
         const type = [];
         const lastRunDateAndTime = [];
         const lastRunBy = [];
@@ -459,6 +468,7 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         const actions = [];
         standardTemplates?.map((data, index) => {
             title.push(data?.title)
+            titleHover.push(data?.description)
             type.push('Standard');
             lastRunBy.push('-');
             lastRunDateAndTime.push(data?.lastRun ? format(new Date(data?.lastRun), "MMM dd, yyyy") : '-');
@@ -468,7 +478,7 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         });
 
         return [
-            { type: "text", value: title },
+            { type: "text", value: title, tooltipValueText: titleHover },
             { type: "text", value: type },
             { type: "text", value: lastRunBy },
             { type: "text", value: lastRunDateAndTime },
@@ -480,18 +490,20 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
 
     const getSavedReportOutputsValues = () => {
         const title = [];
+        const titleHover = [];
         const period = [];
         const savedOn = [];
         const actions = [];
         savedReports?.map((data, index) => {
             title.push(data?.savedReport?.reportName)
+            titleHover.push(data?.savedReport?.reportNotes)
             period.push(data?.report?.schedule?.schedule);
             savedOn.push(data?.savedReport?.runDate ? format(new Date(data?.savedReport?.runDate), "MMM dd, yyyy") : '-');
             actions.push(true);
         });
 
         return [
-            { type: "text", value: title },
+            { type: "text", value: title, tooltipValueText: titleHover },
             { type: "text", value: period },
             { type: "text", value: savedOn },
             { type: "action", value: actions },
@@ -678,7 +690,7 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
                             className={`${style.spaceBetween} ${style.marginLeft30} `}
                         >
                             <div className={`${style.tabs}`}>
-                                <TileApplication selectedTab={selectedTopTab} getSelectedTab={() => { }} tileLabel={availableParentList[reportType]} tileCount={(myReports?.length || 0) + (standardTemplates?.length || 0) + (savedReports?.length || 0)} currentTile="" />
+                                <TileApplication selectedTab={selectedTopTab} getSelectedTab={() => { }} tileLabel={`Reports Accross ${availableParentList[reportType]}`} currentTile="" />
                             </div>
                         </div>
                         <div className={`${style.borderStyleTiles} ${style.marginLeft30}`}></div>

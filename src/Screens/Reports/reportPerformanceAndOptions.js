@@ -81,7 +81,10 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
         currentRemitToAddressForActiveContracts: 'Current Remit To Address For Active Contracts',
         activityStatusTracker: `Status Of Activities/ Services By Service Provider For ${format(new Date(), 'MMMM yyyy')}`,
         paymentProcessingStatusTracker: 'Payment Processing Status By Service Provider',
-        submittedApplicationsReviewSummary: 'Submitted Applications Review Summary'
+        submittedApplicationsReviewSummary: 'Submitted Applications Review Summary',
+        ohipBillingNumbersByCareProvider: 'OHIP Billing Numbers By Care Provider',
+        privilegedStaffSummary: 'Privileged Staff Summary',
+        locumRenewalOrExtensionApplicationsSummary: 'Locum Renewal / Extension Applications Summary'
     }
 
     const availableCategories = {
@@ -101,7 +104,10 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
         locumStaff: 'LOCUM_STAFF',
         permanentStaff: 'PERMANENT_STAFF',
         locumExtensionOrRenewal: 'LOCUM_EXTENSION_OR_RENEWAL',
-        submittedApplicationsReviewSummary: 'STAFF_REAPPOINTMENT'
+        submittedApplicationsReviewSummary: 'STAFF_REAPPOINTMENT',
+        ohipBillingNumbersByCareProvider: 'ALL_STAFF',
+        privilegedStaffSummary: 'ALL_STAFF',
+        locumRenewalOrExtensionApplicationsSummary: 'LOCUM_EXTENSION_OR_RENEWAL'
     }
 
     const typeList = {
@@ -127,7 +133,10 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
         'currentRemitToAddressForActiveContracts': 'CURRENT_REMIT_TO_ADDRESS',
         'activityStatusTracker': 'ACTIVITY_STATUS_TRACKER',
         'paymentProcessingStatusTracker': 'PAYMENT_TRACKER',
-        'submittedApplicationsReviewSummary': 'SUBMITTED_APPLICATIONS_REVIEW_SUMMARY'
+        'submittedApplicationsReviewSummary': 'SUBMITTED_APPLICATIONS_REVIEW_SUMMARY',
+        'ohipBillingNumbersByCareProvider': 'OHIP_BILLING_NUMBERS_BY_CARE_PROVIDER',
+        'privilegedStaffSummary': 'PRIVILEGED_STAFF_SUMMARY',
+        'locumRenewalOrExtensionApplicationsSummary': 'DECLINED_OR_NOT_RENEWED_STAFF_SUMMARY'
     }
 
     const getSaveReportDialog = (value) => {
@@ -158,7 +167,7 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
 
     const addSavedReport = async (pdfBlob) => {
         let data = {
-            reportName: reportName,
+            reportName: reportTitleList[reportType],
             reportNotes: reportDescription,
             runDate: new Date(),
             reportDoc: {
@@ -374,11 +383,11 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                             <div className={`${style.marginTop20} ${style.recipientsDataHeight}`}>
                                 <div className={style.displayInCol}>
                                     <label for="standard-basic" className={style.saveReportLabelStyle}>Report Output Name</label>
-                                    <TextField id="standard-basic" variant="standard" value={reportName} className={`${style.threeColWidth} ${style.saveReportFieldStyle} ${style.marginTop10}`} onChange={(e) => setReportName(e.target.value)} />
+                                    <TextField id="standard-basic" variant="standard" value={reportTitleList[reportType]} className={`${style.threeColWidth} ${style.saveReportFieldStyle} ${style.marginTop10}`} />
                                 </div>
                                 <div className={style.marginTop20}>
                                     <label for="description" className={`${style.saveReportLabelStyle}`}>Report Output Notes</label>
-                                    <TextArea id="description" rows={5} placeholder="Enter Notes" className={`${style.fullWidth} ${style.saveReportFieldStyle} ${style.marginTop10}`} value={reportDescription} onChange={(e) => setReportDescription(e.target.value)} />
+                                    <TextArea id="description" rows={5} placeholder="Indicate why you’re saving this report output" className={`${style.fullWidth} ${style.saveReportFieldStyle} ${style.marginTop10}`} value={reportDescription} onChange={(e) => setReportDescription(e.target.value)} />
                                 </div>
                             </div>
                             <div>
