@@ -52,8 +52,8 @@ const SideBar = ({ children, isExpanded, getIsExpanded, refetchUserValues, updat
             </div>
         ) : (
             <>
-                <UserCard getIsExpanded={getIsExpanded} updateProfileData={updateProfileData} />
-                <div className={style.marginTop20}>{children}</div>
+                {/* <UserCard getIsExpanded={getIsExpanded} updateProfileData={updateProfileData} /> */}
+                <div className={style.marginTop10}>{children}</div>
             </>
         )
     )

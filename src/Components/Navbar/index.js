@@ -27,6 +27,12 @@ import RemoveIcon from "@mui/icons-material/Remove";
 import style from "./index.module.scss";
 import { useDescope } from "@descope/react-sdk";
 import { Tooltip } from "@mui/material";
+import SMimgHover from "../../images/StaffManagerHover.svg";
+import COSimgHover from "../../images/ChiefofStaffHover.svg";
+import CCimgHover from "../../images/CredentialingCommitteeHover.svg";
+import HODimgHover from "../../images/HeadofDepartmentHover.svg";
+import SAimgHover from "../../images/SystemAdminHover.svg";
+import DoctorAnime from '../../images/doctorAnime.png';
 // import { Logout } from "../../utils/auth";
 
 const useStyles = makeStyles((theme) => ({
@@ -44,6 +50,7 @@ const Navbar = () => {
   const [showMenu, setShowMenu] = useState(false);
   const [screenCapture, setScreenCapture] = useState("");
   let cookie = new Cookies();
+  let userDetails = cookie.get('user');
   const [showToolsMenu, setShowToolsMenu] = useState(false);
   const [showReportsMenu, setShowReportsMenu] = useState(false);
   const [isContractManager, setIsContractManager] = useState(false);
@@ -90,6 +97,18 @@ const Navbar = () => {
   const [showAllStaffMenu, setShowAllStaffMenu] = useState(false);
   // let selectedWorkingMode = sessionStorage.getItem("SelectedWorkingMode");
   const workModeType = sessionStorage.getItem('workModeType')
+  const [currentUserDetails, setCurrentUserDetails] = useState();
+  const [user, setUser] = useState();
+  const [userId, setUserId] = useState();
+
+  const roleIcons = {
+  "Staff Manager": SMimgHover,
+  "Department Head": HODimgHover,
+  "Chief Of Staff": COSimgHover,
+  "Credentialing Committee": CCimgHover,
+  "Entity Sys Admin": SAimgHover,
+};
+const roleImage = roleIcons[workModeType] || SMimgHover;
 
   useEffect(() => {
     if (currentUserRoles?.includes("Activity Logger")) {
@@ -151,6 +170,26 @@ const Navbar = () => {
   useEffect(() => {
     setLogo(sessionStorage?.getItem("logo"));
   }, [sessionStorage?.getItem("logo")]);
+
+  useEffect(() => {
+    console.log('inside the func call useeffect', user?.id);
+    if (userId !== undefined && userId !== '') {
+        setUserDetails();
+    }
+}, [userId])
+
+ useEffect(() => {
+    if (user?.id !== undefined) {
+        console.log('inside func call useEffect 1', user?.id)
+        setUserId(user?.id);
+    }
+}, [user])
+
+useEffect(() => {
+    if (userDetails !== undefined) {
+        setUser(jwt(userDetails));
+    }
+}, [userDetails])
 
 
   useEffect(() => {
@@ -296,6 +335,12 @@ const Navbar = () => {
     }
   }, []);
 
+    const setUserDetails = async () => {
+          const { data: userData } = await GET(`user-management-service/user/${userId}`);
+          setCurrentUserDetails(userData);
+          console.log('users', userData)
+      }
+
   const classes = useStyles();
 
   const handleLogout = () => {
@@ -353,6 +398,9 @@ const Navbar = () => {
     }
   };
 
+  const handleWorkModeSelection = () => {
+        window.location.pathname = "/"
+    };
   // console.log(selectedWorkingMode);
 
   return (
@@ -369,6 +417,22 @@ const Navbar = () => {
               className={style.sanmateoLogo}
             />
           </div>
+         <div className={style.container}>
+          <div className={style.roleSection}>
+            <img src={roleImage} alt="" className={style.roleIcon} />
+            <div className={style.roleLabel}>{workModeType}</div>
+          </div>
+          {currentUserDetails?.roles?.length > 1 && (
+            <Tooltip title={"Click to Switch Workspace"} arrow>
+              <div
+                className={style.workSpaceSwitchTextStyle}
+                onClick={handleWorkModeSelection}
+              >
+                Switch <br /> Workspaces
+              </div>
+            </Tooltip>
+          )}
+        </div>
           {/* <div
             className={`${style.menuStyle} ${window.location.pathname.includes(homeLink) && !window.location.pathname.includes('contractsWithABusinessEntity') &&
               style.activeMenuColor
@@ -792,6 +856,11 @@ const Navbar = () => {
         </div>
 
         <div className={`${style.displayInRow} ${style.centerAlignCenter}`}>
+          <Tooltip title={"Go to Your Profile Page"} arrow>
+         <Link to={'/profile'} >
+           <img src={currentUserDetails?.profilePic?.file?.fileURL ? currentUserDetails?.profilePic?.file?.fileURL : DoctorAnime} className={style.userLogo} />
+          </Link>
+          </Tooltip>
           {/* {!window.location.pathname.includes('reportTypeOverview') && (
                     <>
                         <img src={File} alt="print" className={style.icons} />

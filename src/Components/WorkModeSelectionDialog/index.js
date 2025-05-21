@@ -44,8 +44,17 @@ const WorkModeDialog = ({ getIsOpen }) => {
   const handleWorkModeSelection = (role) => {
     setWorkModeType(role);
     sessionStorage.setItem("workModeType", role);
-    window.location.pathname = "/applications"
+    const initialRoute = sessionStorage.getItem("initialRoute");
+    if (initialRoute && initialRoute !== undefined && initialRoute !== 'undefined' && initialRoute !== null) {
+      console.log("pathnameee",initialRoute)
+      window.location.href = `${initialRoute}`;
+      sessionStorage?.removeItem('initialRoute')
+    } else {
+      window.location.pathname = "/applications";
+    }
+    sessionStorage?.removeItem('initialRoute');
   };
+
 
   const handleWorkModeSelectionSys = (role) => {
     setWorkModeType(role);

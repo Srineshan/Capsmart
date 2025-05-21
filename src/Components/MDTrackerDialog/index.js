@@ -18,9 +18,11 @@ import CommonSearchField from "../CommonFields/CommonSearchField";
 import { useNavigate } from "react-router-dom";
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import PrintOutlinedIcon from "@mui/icons-material/PrintOutlined";
+import { useReactToPrint } from "react-to-print";
 import { Tooltip } from "@mui/material";
 
 const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
+  const tableRef = useRef(null);
   let cookie = new Cookie();
   let userDetails = cookie.get('user');
   const users = jwt(userDetails);
@@ -67,7 +69,14 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
   const [selectedMedicalDirective, setSelectedMedicalDirective] = useState();
   const [selectedMedicalDirectiveList, setSelectedMedicalDirectiveList] = useState();
   const [selectedApplicant, setSelectedApplicant] = useState();
-
+  const reactToPrintContent = useCallback(() => {
+    return tableRef.current;
+  }, []);
+  const handlePrintClick = useReactToPrint({
+    content: reactToPrintContent,
+    documentTitle: "Staff Application",
+    removeAfterPrint: true,
+  });
   const transformedOptions = departmentList?.flatMap((department) => {
     const departmentEntry = {
       value: department?.id,
@@ -618,7 +627,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
       >
         <div>
           {!displayInnerList ? (
-            <div className={Classes.DIALOG_BODY}>
+            <div ref={tableRef} className={Classes.DIALOG_BODY}>
               <div className={style.spaceBetween}>
                 <div>
                   <div className={`${style.heading}`}>
@@ -627,7 +636,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                   </div>
                   <div className={style.currentStatusText}>{`Current status as of ${format(new Date(), 'MMM dd, yyyy')}`}</div>
                 </div>
-                <div className={style.displayInRow}>
+                <div className={`${style.displayInRow} ${style.noPrint}`}>
                   {selectedDepartment && (
                     <div className={`${style.filterBackground} ${style.displayInRow}`}>
                       <div className={`${style.filtertextStyle} ${style.marginRight5}`}>Filter by {selectedDepartmentName}</div>
@@ -676,11 +685,25 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                       />
                     </Tooltip>
                   </div>
+                  <div
+                    className={`${style.alignCenter
+                      } ${style.cursorPointer} ${style.marginLeft10}`}
+                  >
+                    <Tooltip title='Print Data' arrow >
+                      <PrintOutlinedIcon
+                        sx={{
+                          fontSize: 25,
+                          color: "#06617A",
+                        }}
+                        onClick={handlePrintClick}
+                      />
+                    </Tooltip>
+                  </div>
                   <Tooltip arrow title={"Close"}>
                     <img
                       src={CrossPink}
                       alt="cross"
-                      className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft}`}
+                      className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft10}`}
                       onClick={() => {
                         getIsOpen(false);
                       }}
@@ -689,7 +712,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                 </div>
               </div>
               {showFilter && (
-                <div className={style.departmentContainer}>
+                <div className={`${style.departmentContainer}`}>
                   <div>
                     <CommonSelectField
                       value={selectedDepartment}
@@ -746,7 +769,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                             </div>
                             </Tooltip>
                           </div>
-                          <div className={style.marginLeftAuto}>
+                          <div className={`${style.marginLeftAuto} ${style.noPrint}`}>
                             <CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} placeholder={currentTab === "ByApplicants" ? 'Search By Applicant Name' : 'Search By MD Name'} />
                           </div>
                         </div>
@@ -779,7 +802,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
               </div>
             </div>
           ) : (
-            <div className={Classes.DIALOG_BODY}>
+            <div ref={tableRef} className={Classes.DIALOG_BODY}>
               <div className={style.spaceBetween}>
                 <div>
                   <div className={`${style.heading}`}>
@@ -796,7 +819,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                     </div>
                   </div>
                 </div>
-                <div className={style.displayInRow}>
+                <div className={`${style.displayInRow} ${style.noPrint}`}>
                   {selectedDepartment && (
                     <div className={`${style.filterBackground} ${style.displayInRow}`}>
                       <div className={`${style.filtertextStyle} ${style.marginRight5}`}>Filter by {selectedDepartmentName}</div>
@@ -845,6 +868,20 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                       />
                     </Tooltip>
                   </div> */}
+                  <div
+                    className={`${style.alignCenter
+                      } ${style.cursorPointer} ${style.marginLeft10}`}
+                  >
+                    <Tooltip title='Print Data' arrow >
+                      <PrintOutlinedIcon
+                        sx={{
+                          fontSize: 25,
+                          color: "#06617A",
+                        }}
+                        onClick={handlePrintClick}
+                      />
+                    </Tooltip>
+                  </div>
                   <Tooltip arrow title={"Close"}>
                     <img
                       src={CrossPink}
