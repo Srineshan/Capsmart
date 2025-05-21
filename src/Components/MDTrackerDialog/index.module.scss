@@ -60,6 +60,10 @@
   margin-left: 5px;
 }
 
+.marginLeft10 {
+  margin-left: 10px;
+}
+
 .marginTop10 {
   margin-top: 10px;
 }
@@ -260,4 +264,10 @@
   padding: 5px 20px;
   cursor: pointer;
   border: 1px solid $primarycolor;
+}
+
+@media print {
+  .noPrint {
+    display: none !important;
+  }
 }
