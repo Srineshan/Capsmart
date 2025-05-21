@@ -39,7 +39,7 @@ const ApplicationSubmitDialog = ({ getIsOpen, title, description }) => {
                     </div>
                     <p className={`${style.description} ${style.marginTop}`}>{description}</p>
                     <div className={`${style.justifyCenter} ${style.displayInRow} ${style.marginTop}`}>
-                        <Tooltip title={"Click to Logout"} arrow>
+                        <Tooltip title={"Click Okay to Logout"} arrow>
                             <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { handleLogout(); }}>OKAY</div></Tooltip>
                     </div>
                 </div>
