@@ -350,9 +350,9 @@ const NewActiveApplication = ({
       setSelectedDateForBod(new Date(`${BoardDate?.meetingDate}T00:00`), "MMM dd, yyyy");
       setIsButtonDisabled(false);
     }
-    if (workModeType === "Staff Manager" && selectedTab === "level-5" && BoardDate?.approvalType) {
-      setIsButtonDisabled(true);
-    }
+    // if (workModeType === "Staff Manager" && selectedTab === "level-5" && BoardDate?.approvalType) {
+    //   setIsButtonDisabled(true);
+    // }
   }, [workModeType, selectedTab, form]);
 
 

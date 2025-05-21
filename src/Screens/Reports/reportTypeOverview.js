@@ -96,6 +96,9 @@ const ReportTypeOverview = () => {
     const [activityTrackServices, setActivityTrackServices] = useState([]);
     const [paymentTrackValues, setPaymentTrackValues] = useState();
     const [submittedApplicationValues, setSubmittedApplicationValues] = useState();
+    const [locumRenewalOrExtensionApplicationValues, setLocumRenewalOrExtensionApplicationValues] = useState();
+    const [ohipBillingNumbersByCareProviderValues, setOhipBillingNumbersByCareProviderValues] = useState();
+    const [privilegedStaffSummaryValues, setPrivilegedStaffSummaryValues] = useState();
     const [selectedPaymentTab, setSelectedPaymentTab] = useState('Payment Processed');
     const [tableDataStatus, setTableDataStatus] = useState([]);
     const [applicationType, setApplicationType] = useState(() =>
@@ -204,6 +207,15 @@ const ReportTypeOverview = () => {
             case 'submittedApplicationsReviewSummary':
                 getSubmittedApplications();
                 break;
+            case 'ohipBillingNumbersByCareProvider':
+                getOHIPBillingNumbersByCareProvider();
+                break;
+            case 'privilegedStaffSummary':
+                getPrivilegedStaffSummary();
+                break;
+            case 'locumRenewalOrExtensionApplicationsSummary':
+                getLocumRenewalOrExtensionApplication();
+                break;
             case 'staffReappointmentsNotes':
                 getContractRenewalReportWithParameters();
                 break;
@@ -301,7 +313,10 @@ const ReportTypeOverview = () => {
         contractsWithABusinessEntity: 'Contracts With A Business Entity',
         currentRemitToAddressForActiveContracts: 'Current Remit To Address For Active Contracts',
         paymentProcessingStatusTracker: 'Payment Processing Status By Service Provider',
-        submittedApplicationsReviewSummary: 'Submitted Applications Review Summary'
+        submittedApplicationsReviewSummary: 'Submitted Applications Review Summary',
+        ohipBillingNumbersByCareProvider: 'OHIP Billing Numbers By Care Provider',
+        privilegedStaffSummary: 'Privileged Staff Summary',
+        locumRenewalOrExtensionApplicationsSummary: 'Locum Renewal / Extension Applications Summary'
     }
 
     const handlePrint = useReactToPrint({
@@ -767,7 +782,6 @@ const ReportTypeOverview = () => {
     }
 
     const getSubmittedApplications = async () => {
-        console.log('enteredInNewReport')
         if (!isMyReport) {
             const queryParams = new URLSearchParams({
             });
@@ -788,8 +802,12 @@ const ReportTypeOverview = () => {
                 queryParams.append('applicationcreationType', dataToUseInReport?.selectedApplicationType);
             }
 
-            if (dataToUseInReport?.selectedPosition) {
-                queryParams.append('positionType', dataToUseInReport?.selectedPosition);
+            if (dataToUseInReport?.from) {
+                queryParams.append('startDate', dataToUseInReport?.from);
+            }
+
+            if (dataToUseInReport?.to) {
+                queryParams.append('endDate', dataToUseInReport?.to);
             }
             setIsLoading(true)
             const { data: data } = await GET(`application-management-service/report/submittedApplications?${queryParams.toString()}&applicationCurrentLevel=${workModeType}`);
@@ -798,6 +816,113 @@ const ReportTypeOverview = () => {
             setIsLoading(true)
             const { data: data } = await GET(`application-management-service/report/myReport/submittedApplications?id=${myReportId}`);
             setSubmittedApplicationValues(data);
+        }
+        setIsLoading(false)
+    }
+
+    const getOHIPBillingNumbersByCareProvider = async () => {
+        if (!isMyReport) {
+            const queryParams = new URLSearchParams({
+            });
+
+            if (dataToUseInReport?.selectedStaffType) {
+                queryParams.append('applicantTypeId', dataToUseInReport?.selectedStaffType);
+            }
+
+            if (dataToUseInReport?.selectedPrivilegeCategory) {
+                queryParams.append('privilegingCategoryId', dataToUseInReport?.selectedPrivilegeCategory);
+            }
+
+            if (dataToUseInReport?.selectedDepartments) {
+                queryParams.append('departmentSpecialties', dataToUseInReport?.selectedDepartments);
+            }
+
+
+            // if (dataToUseInReport?.from) {
+            //     queryParams.append('startDate', dataToUseInReport?.from);
+            // }
+
+            // if (dataToUseInReport?.to) {
+            //     queryParams.append('endDate', dataToUseInReport?.to);
+            // }
+            setIsLoading(true)
+            const { data: data } = await GET(`application-management-service/report/ohipBillingNumberByCareProvider?${queryParams.toString()}`);
+            setOhipBillingNumbersByCareProviderValues(data);
+        } else {
+            setIsLoading(true)
+            const { data: data } = await GET(`application-management-service/report/myReport/ohipBillingNumberByCareProvider?id=${myReportId}`);
+            setOhipBillingNumbersByCareProviderValues(data);
+        }
+        setIsLoading(false)
+    }
+
+    const getPrivilegedStaffSummary = async () => {
+        if (!isMyReport) {
+            const queryParams = new URLSearchParams({
+            });
+
+            if (dataToUseInReport?.selectedStaffType) {
+                queryParams.append('applicantTypeId', dataToUseInReport?.selectedStaffType);
+            }
+
+            if (dataToUseInReport?.selectedPrivilegeCategory) {
+                queryParams.append('privilegingCategoryId', dataToUseInReport?.selectedPrivilegeCategory);
+            }
+
+            if (dataToUseInReport?.selectedDepartments) {
+                queryParams.append('departmentSpecialties', dataToUseInReport?.selectedDepartments);
+            }
+
+
+            // if (dataToUseInReport?.from) {
+            //     queryParams.append('startDate', dataToUseInReport?.from);
+            // }
+
+            // if (dataToUseInReport?.to) {
+            //     queryParams.append('endDate', dataToUseInReport?.to);
+            // }
+            setIsLoading(true)
+            const { data: data } = await GET(`application-management-service/report/privilegedStaffs?${queryParams.toString()}`);
+            setPrivilegedStaffSummaryValues(data);
+        } else {
+            setIsLoading(true)
+            const { data: data } = await GET(`application-management-service/report/myReport/privilegedStaffs?id=${myReportId}`);
+            setPrivilegedStaffSummaryValues(data);
+        }
+        setIsLoading(false)
+    }
+
+    const getLocumRenewalOrExtensionApplication = async () => {
+        if (!isMyReport) {
+            const queryParams = new URLSearchParams({
+            });
+
+            if (dataToUseInReport?.selectedStaffType) {
+                queryParams.append('applicantTypeId', dataToUseInReport?.selectedStaffType);
+            }
+
+            if (dataToUseInReport?.selectedPrivilegeCategory) {
+                queryParams.append('privilegingCategoryId', dataToUseInReport?.selectedPrivilegeCategory);
+            }
+
+            if (dataToUseInReport?.selectedDepartments) {
+                queryParams.append('departmentSpecialties', dataToUseInReport?.selectedDepartments);
+            }
+
+            // if (dataToUseInReport?.from) {
+            //     queryParams.append('startDate', dataToUseInReport?.from);
+            // }
+
+            // if (dataToUseInReport?.to) {
+            //     queryParams.append('endDate', dataToUseInReport?.to);
+            // }
+            setIsLoading(true)
+            const { data: data } = await GET(`application-management-service/report/locumRenewalOrExtensionApplications?${queryParams.toString()}&applicationCurrentLevel=${workModeType}`);
+            setLocumRenewalOrExtensionApplicationValues(data);
+        } else {
+            setIsLoading(true)
+            const { data: data } = await GET(`application-management-service/report/myReport/locumRenewalOrExtensionApplications?id=${myReportId}`);
+            setLocumRenewalOrExtensionApplicationValues(data);
         }
         setIsLoading(false)
     }
@@ -1033,6 +1158,100 @@ const ReportTypeOverview = () => {
                 type: "text",
                 value: lastUpdated
             },
+        ];
+    };
+
+    const headerValuesOHIP = [
+        "No.",
+        "Staff Name",
+        "CPSO License",
+        "OHIP",
+        "Privilege Type",
+        "Department",
+        "Speciality / Service Area"
+    ];
+    const colSortValuesOHIP = [false, false, false, false, false, false, false];
+
+    const getOHIPTableValues = () => {
+        const No = [];
+        const staffName = [];
+        const cpsoLicense = [];
+        const department = [];
+        const ohip = [];
+        const specialtyServiceArea = [];
+        const privilegeType = [];
+
+        ohipBillingNumbersByCareProviderValues?.map((data, index) => {
+            No.push(index + 1 + ".")
+            staffName.push(
+                `${formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName)}` || " "
+            );
+
+            ohip.push(data?.applicant?.ohipNumber);
+            cpsoLicense.push(data?.applicant?.licenseNumber);
+            department.push(
+                `${data?.basicDetailReferences?.department?.name || "-"}`
+            );
+            specialtyServiceArea.push(data?.basicDetailReferences?.specialty?.name ? `${data?.basicDetailReferences?.specialty?.name}` : "")
+            privilegeType.push(data?.basicDetailReferences?.credentialingAndPrivilegingCategory?.name)
+
+        });
+
+        return [
+            { type: "text", value: No },
+            { type: "text", value: staffName },
+            { type: "text", value: cpsoLicense },
+            { type: "text", value: ohip },
+            { type: "text", value: privilegeType },
+            { type: "text", value: department },
+            { type: "text", value: specialtyServiceArea },
+        ];
+    };
+
+    const headerValuesPrivilegedStaffs = [
+        "No.",
+        "Staff Name",
+        "CPSO License",
+        "OHIP",
+        "Privilege Type",
+        "Department",
+        "Start Date"
+    ];
+    const colSortValuesPrivilegedStaffs = [false, false, false, false, false, false, false];
+
+    const getPrivilegedStaffsTableValues = () => {
+        const No = [];
+        const staffName = [];
+        const cpsoLicense = [];
+        const department = [];
+        const ohip = [];
+        const startDate = [];
+        const privilegeType = [];
+
+        privilegedStaffSummaryValues?.map((data, index) => {
+            No.push(index + 1 + ".")
+            staffName.push(
+                `${formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName)}` || " "
+            );
+
+            ohip.push(data?.applicant?.ohipNumber);
+            cpsoLicense.push(data?.applicant?.licenseNumber);
+            department.push(
+                `${data?.basicDetailReferences?.department?.name || "-"} ${data?.basicDetailReferences?.specialty?.name ? ` / ${data?.basicDetailReferences?.specialty?.name}` : ""}`
+            );
+            startDate.push(data?.initialApprovalDate ? format(new Date(data?.initialApprovalDate), 'MMM dd, yyyy') : "")
+            privilegeType.push(data?.basicDetailReferences?.credentialingAndPrivilegingCategory?.name)
+
+        });
+
+        return [
+            { type: "text", value: No },
+            { type: "text", value: staffName },
+            { type: "text", value: cpsoLicense },
+            { type: "text", value: ohip },
+            { type: "text", value: privilegeType },
+            { type: "text", value: department },
+            { type: "text", value: startDate },
         ];
     };
 
@@ -1809,21 +2028,12 @@ const ReportTypeOverview = () => {
                                     <tbody>
                                         <div className={style.justifyCenter}>
                                             <div className={style.marginTop20}>
-                                                {reportType === "paymentsProcessingSummary" && (
-                                                    <div className={`${style.entityNameBolderStyle} ${style.textAlignCenter} ${style.marginTop5} `}>
-                                                        {dataToUseInReport?.selectedContractsToSend?.map(data => data?.contractName?.contractName).join(', ')}
-                                                    </div>
-                                                )}
                                                 <div className={`${style.entityNameBolderStyle} ${style.textAlignCenter} ${style.marginTop5} `}>
                                                     {reportTitleList[reportType]}
                                                 </div>
-                                                {/* {(reportType !== "staffReappointmentsNotes" && reportType !== "staffReappointments" &&
-                                                    reportType !== "contractDocumentsOnFile" && reportType !== "multiProviderContractsList" &&
-                                                    reportType !== "contractsWithABusinessEntity" && reportType !== "currentRemitToAddressForActiveContracts" &&
-                                                    reportType !== "activityStatusTracker" && reportType !== 'paymentProcessingStatusTracker' &&
-                                                    dataToUseInReport?.reportingTimePeriod !== "") && (
-                                                        <div className={`${style.reportRunByTextStyle} ${style.textAlignCenter} ${style.marginTop5} `}>Reporting Period used for this report : {dataToUseInReport?.reportingTimePeriod} ({dataToUseInReport?.fromToDisplay} to {dataToUseInReport?.toToDisplay}) </div>
-                                                    )} */}
+                                                {(dataToUseInReport?.reportingTimePeriod !== "") && (
+                                                    <div className={`${style.reportRunByTextStyle} ${style.textAlignCenter} ${style.marginTop5} `}>Reporting Period used for this report : {dataToUseInReport?.reportingTimePeriod} ({dataToUseInReport?.fromToDisplay} to {dataToUseInReport?.toToDisplay}) </div>
+                                                )}
                                                 {/* {(reportType === "paymentProcessingStatusTracker") && (
                                                     <div>
                                                         <div className={`${style.reportRunByTextStyle} ${style.textAlignCenter} ${style.marginTop5} `}>Timesheet Interval used for this report : {dataToUseInReport?.selectedTimesheetInterval?.map(data => data.split("%23")?.map(innerData => `${format(new Date(innerData), 'MMM dd yyyy')}`)).join(', ') || 'All Timesheet Intervals'} </div>
@@ -1841,8 +2051,8 @@ const ReportTypeOverview = () => {
                                         <div className={`${style.marginTop20}`}>
                                             <div className={`${style.marginTop20} ${style.reportTypeParamsBackground}`}>
                                                 <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop5} `}>Reporting Parameters Applied</div>
-                                                {(reportType === "staffReappointmentsNotes" || reportType === "staffReappointments" ||
-                                                    reportType === "submittedApplicationsReviewSummary" || reportType === "staffReappointmentTracker") ? (
+                                                {(reportType === "staffReappointmentsNotes" || reportType === "staffReappointments" || reportType === "locumRenewalOrExtensionApplicationsSummary" || reportType === "privilegedStaffSummary" ||
+                                                    reportType === "submittedApplicationsReviewSummary" || reportType === "staffReappointmentTracker" || reportType === "ohipBillingNumbersByCareProvider") ? (
                                                     <div className={`${style.grid4} ${style.marginTop20} `}>
                                                         {/* {reportType === "staffReappointmentsNotes" && (
                                                         <div>
@@ -1870,7 +2080,17 @@ const ReportTypeOverview = () => {
                                                             <div className={`${style.reportRunByParamStyle} ${style.marginTop5} `}>PRIVILEGE CATEGORY </div>
                                                             <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedPrivilegeCategoryToSend?.map(data => data?.category).join(', ') || 'All Categories'}</div>
                                                         </div>
-                                                        {(reportType === "contractDocumentsOnFile" || reportType === "multiProviderContractsList" ||
+                                                        {/* <div>
+                                                            <div className={`${style.reportRunByParamStyle} ${style.marginTop5} `}>POSITION </div>
+                                                            <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedPosition || 'All Positions'}</div>
+                                                        </div> */}
+                                                        {reportType === "submittedApplicationsReviewSummary" && (
+                                                            <div>
+                                                                <div className={`${style.reportRunByParamStyle} ${style.marginTop5} `}>APPLICATION TYPE</div>
+                                                                <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedApplicationType || 'All Application Type'}</div>
+                                                            </div>
+                                                        )}
+                                                        {/* {(reportType === "contractDocumentsOnFile" || reportType === "multiProviderContractsList" ||
                                                             reportType === "contractsWithABusinessEntity") && (
                                                                 <div>
                                                                     <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Contract Status</div>
@@ -1882,7 +2102,7 @@ const ReportTypeOverview = () => {
                                                                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Contracted Service Provider </div>
                                                                 <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedContractedServiceProviderToSend?.map(data => `${data?.name?.firstName} ${data?.name?.lastName}`).join(', ') || 'All Contracted Service Providers'}</div>
                                                             </div>
-                                                        )}
+                                                        )} */}
                                                         {/* {reportType === "staffReappointmentsNotes" && (
                                                         <div>
                                                             <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Contract Continuation Policy</div>
@@ -2393,6 +2613,7 @@ const ReportTypeOverview = () => {
                                                                             tableSortValues={colSortValues}
                                                                             heading={"There are no records to display"}
                                                                             className={`${style.tableRow} ${style.reportSection}`}
+                                                                            hidePagination={true}
                                                                         />
                                                                     </>
                                                                 ) : (
@@ -2420,6 +2641,49 @@ const ReportTypeOverview = () => {
                                                                             tableSortValues={colSortValues}
                                                                             heading={"There are no records to display"}
                                                                             className={`${style.tableRow} ${style.reportSection}`}
+                                                                            hidePagination={true}
+                                                                        />
+                                                                    </>
+                                                                ) : (
+                                                                    <ReportNoDataBox heading={'Based on the parameters selected and applied, there were NO RECORDS found to include in the report.'}
+                                                                        subHeading={'Try again by changing some of the parameters on the left. If there are any qualifying records, the report will get displayed.'} />
+                                                                )}
+
+                                                            </div>
+                                                        ) : reportType === "ohipBillingNumbersByCareProvider" ? (
+                                                            <div className={style.marginTop20}>
+                                                                {ohipBillingNumbersByCareProviderValues?.length !== 0 ? (
+                                                                    <>
+                                                                        <TableTwo
+                                                                            tableHeaderValues={headerValuesOHIP}
+                                                                            tableDataValues={getOHIPTableValues()}
+                                                                            tableData={ohipBillingNumbersByCareProviderValues}
+                                                                            gridStyle={style.ohipGrid}
+                                                                            tableSortValues={colSortValuesOHIP}
+                                                                            heading={"There are no record to display"}
+                                                                            className={`${style.tableRow} ${style.reportSection}`}
+                                                                            hidePagination={true}
+                                                                        />
+                                                                    </>
+                                                                ) : (
+                                                                    <ReportNoDataBox heading={'Based on the parameters selected and applied, there were NO RECORDS found to include in the report.'}
+                                                                        subHeading={'Try again by changing some of the parameters on the left. If there are any qualifying records, the report will get displayed.'} />
+                                                                )}
+
+                                                            </div>
+                                                        ) : reportType === "privilegedStaffSummary" ? (
+                                                            <div className={style.marginTop20}>
+                                                                {privilegedStaffSummaryValues?.length !== 0 ? (
+                                                                    <>
+                                                                        <TableTwo
+                                                                            tableHeaderValues={headerValuesPrivilegedStaffs}
+                                                                            tableDataValues={getPrivilegedStaffsTableValues()}
+                                                                            tableData={privilegedStaffSummaryValues}
+                                                                            gridStyle={style.ohipGrid}
+                                                                            tableSortValues={colSortValuesOHIP}
+                                                                            heading={"There are no record to display"}
+                                                                            className={`${style.tableRow} ${style.reportSection}`}
+                                                                            hidePagination={true}
                                                                         />
                                                                     </>
                                                                 ) : (
@@ -2434,6 +2698,20 @@ const ReportTypeOverview = () => {
                                                                     <>
                                                                         <ReportsApplicantTable
                                                                             tableData={submittedApplicationValues}
+                                                                        />
+                                                                    </>
+                                                                ) : (
+                                                                    <ReportNoDataBox heading={'Based on the parameters selected and applied, there were NO RECORDS found to include in the report.'}
+                                                                        subHeading={'Try again by changing some of the parameters on the left. If there are any qualifying records, the report will get displayed.'} />
+                                                                )}
+
+                                                            </div>
+                                                        ) : reportType === "locumRenewalOrExtensionApplicationsSummary" ? (
+                                                            <div className={style.marginTop20}>
+                                                                {locumRenewalOrExtensionApplicationValues?.length !== 0 ? (
+                                                                    <>
+                                                                        <ReportsApplicantTable
+                                                                            tableData={locumRenewalOrExtensionApplicationValues}
                                                                         />
                                                                     </>
                                                                 ) : (
