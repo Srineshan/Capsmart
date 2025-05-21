@@ -640,19 +640,47 @@ const LocumStaffList = ({
       applicantId.push(data?.staffId || "123");
 
       applicantType.push(data?.basicDetailReferences?.applicantType?.serviceProviderType || "Doctor");
-      docs.push("0/3");
-      docsIcon.push(
-        <TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#b0a6a6` }} />
-      );
+      // docs.push(data?.documents?.length + "/" + data?.documents?.length || "");
+      // docsIcon.push(
+      //   <TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#00C07F` }} />
+      // );
       crsHoverText.push(["Ontario Medical Society", "Ontario Medical Society"]);
       notes.push("0");
       notesIcon.push(
         <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#2C2C2C` }} />
       );
-      notesHoverText.push([
-        "June 13 00:00, Nina Grealy",
-        "Lorem ipsum dolor sit amet, consetetur sadipscing.",
-      ]);
+     if (data?.documents?.length === 0) {
+        docs.push("-");
+        docsIcon.push("");
+        docsHoverText.push("");
+      } else {
+        docs.push(data?.documents?.length + "/" + data?.documents?.length);
+
+        docsIcon.push(
+          <TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#00C07F` }} />
+        );
+
+        const documentDetails = data?.documents || [];
+
+        const docHoverTextArray = documentDetails.map((doc, index) => {
+          const verifiedIndicator = doc?.documentStatus
+            ? <CircleIcon style={{ color: '#8ED12B', fontSize: '12px', marginRight: '5px' }} />
+            : <CircleIcon style={{ color: '#FFCA27', fontSize: '12px', marginRight: '5px' }} />;
+
+          return (
+            <div key={index} className={style.fullWidth}>
+              <span>
+                {verifiedIndicator} {doc?.shortName}
+              </span>
+              {index !== documentDetails.length - 1 && (
+                <hr style={{ margin: '5px 0px -10px 0' }} />
+              )}
+            </div>
+          );
+        });
+
+        docsHoverText.push(docHoverTextArray);
+      }
       startDate.push(
         data?.tenure?.from
           ? format(new Date(data?.tenure?.from), "MMM dd, yyyy")
@@ -722,8 +750,8 @@ const LocumStaffList = ({
       {
         type: "iconWithCount",
         value: docs,
-        // hoverText: docsHoverText,
-        // isShowHoverText: true,
+        hoverText: docsHoverText,
+        isShowHoverText: true,
         icon: docsIcon,
       },
       {
@@ -849,10 +877,38 @@ const LocumStaffList = ({
       notesIcon.push(
         <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#2C2C2C` }} />
       );
-      docs.push("0/3");
-      docsIcon.push(
-        <TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#b0a6a6` }} />
-      );
+      if (data?.documents?.length === 0) {
+        docs.push("-");
+        docsIcon.push("");
+        docsHoverText.push("");
+      } else {
+        docs.push(data?.documents?.length + "/" + data?.documents?.length);
+
+        docsIcon.push(
+          <TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#00C07F` }} />
+        );
+
+        const documentDetails = data?.documents || [];
+
+        const docHoverTextArray = documentDetails.map((doc, index) => {
+          const verifiedIndicator = doc?.documentStatus
+            ? <CircleIcon style={{ color: '#8ED12B', fontSize: '12px', marginRight: '5px' }} />
+            : <CircleIcon style={{ color: '#FFCA27', fontSize: '12px', marginRight: '5px' }} />;
+
+          return (
+            <div key={index} className={style.fullWidth}>
+              <span>
+                {verifiedIndicator} {doc?.shortName}
+              </span>
+              {index !== documentDetails.length - 1 && (
+                <hr style={{ margin: '5px 0px -10px 0' }} />
+              )}
+            </div>
+          );
+        });
+
+        docsHoverText.push(docHoverTextArray);
+      }
       cr.push("-");
 
       cos.push("grey");
@@ -889,6 +945,8 @@ const LocumStaffList = ({
       {
         type: "iconWithCount",
         value: docs,
+        hoverText: docsHoverText,
+        isShowHoverText: true,
         icon: docsIcon,
       },
       {

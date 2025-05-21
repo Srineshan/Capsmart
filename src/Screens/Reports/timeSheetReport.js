@@ -6,7 +6,7 @@ import Popover from '@mui/material/Popover';
 import TemplateIcon from './../../images/templateIcon.png';
 import style from './index.module.scss';
 import { Link, useParams } from 'react-router-dom';
-import { GET } from '../dataSaver';
+import { DELETE, GET } from '../dataSaver';
 import { format } from 'date-fns';
 import { formatInTimeZone } from 'date-fns-tz';
 import { currentUser } from '../../utils/auth';
@@ -14,14 +14,15 @@ import { corsUrl, siteTimeZone } from '../../utils/formatting';
 import ReportNoDataBox from '../../Components/ReusableSmallComponents/reportNoDataBox';
 import TileApplication from '../../Components/TileApplication';
 import TableTwo from '../../Components/TableDesignTwo';
+import FileDisplayDialog from '../../Components/fileDisplayDialog';
 
 export const Run = ({ link }) => {
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
-
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
     };
+
 
     const handleClose = () => {
         setAnchorEl(null);
@@ -63,14 +64,15 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
     const currentUserDetails = currentUser();
     const [isExpanded, setIsExpanded] = useState(true);
     const myReportsHeaderValues = ["Report Title", "Schedule", "Saved Parameters", "Last Updated", "Action"];
-    const reportingTemplateHeaderValues = ["Template Title", "Type", "Last Run by", "Last Run Date/ Time", "Last Updated by", "Last Updated", "Action"];
+    const reportingTemplateHeaderValues = ["Report Template Title", "Type", "Last Run by", "Last Run Date/ Time", "Last Updated by", "Last Updated", "Action"];
     const savedReportsHeaderValues = ["Saved Report", "Reporting Period", "Saved On", "Action"];
     const [sortField, setSortField] = useState("DEFAULT");
     const [sortValue, setSortValue] = useState("DESCENDING");
     const [page, setPage] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
     const [limit, setLimit] = useState(9999);
-
+    const [selectedFile, setselectedFile] = useState(false);
+    const [showFileDisplayDialog, setShowFileDisplayDialog] = useState(false);
     const myReportsColSortValues = [false, false, false, false, false];
     const reportingTemplateColSortValues = [false, false, false, false, false, false, false, false, false];
     const savedReportsColSortValues = [false, false, false, false, false, false, false, false, false, false];
@@ -122,10 +124,40 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         }
     }
 
+    const onClickPrintPDF = (data) => {
+        const printWindow = window.open(`${corsUrl}${encodeURIComponent(data?.savedReport?.reportDoc?.fileURL)}`, "_blank");
+        if (printWindow) {
+            printWindow.focus();
+
+            // Wait until PDF is fully loaded before calling print
+            printWindow.onload = () => {
+                printWindow.print();
+            };
+        } else {
+            alert("Popup blocked! Please allow popups for this site.");
+        }
+    };
+
+    const onClickDeleteReport = async (data) => {
+        await DELETE(`application-management-service/report/savedReport/${data?.id}`)
+            .then((response) => {
+                getSavedReports();
+            })
+    }
+
+    const onClickViewReport = (data) => {
+        setselectedFile(data?.savedReport?.reportDoc);
+        setShowFileDisplayDialog(true);
+    }
+
     let savedReportsActions = [{
+        data: "View",
+        requiredValue: "boolean",
+        onClick: onClickViewReport,
+    }, {
         data: "Delete",
         requiredValue: "boolean",
-        onClick: onClickRunReport,
+        onClick: onClickDeleteReport,
     }, {
         data: "Download",
         requiredValue: "boolean",
@@ -133,19 +165,19 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
     }, {
         data: "Print",
         requiredValue: "boolean",
-        onClick: onClickRunReport,
+        onClick: onClickPrintPDF,
     }, {
         data: "Share",
         requiredValue: "boolean",
-        onClick: onClickRunReport,
+        onClick: onClickPrintPDF,
     }]
     let reportingTemplatesActions = [{
-        data: "Run Report",
+        data: "Run",
         requiredValue: "boolean",
         onClick: onClickRunReport,
     }]
     let myReportsActions = [{
-        data: "View Report",
+        data: "Run",
         requiredValue: "boolean",
         onClick: onClickMyReport,
     }]
@@ -168,14 +200,14 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
     const componentRef = useRef(null);
 
     const availableParentList = {
-        allStaffMembers: 'Privileged Staff',
-        permanentStaff: 'Privileged Staff',
-        locumStaff: 'Privileged Staff',
-        allApplications: 'Staff Applications',
-        newApplicants: 'Staff Applications',
-        staffReappointments: 'Staff Applications',
-        locumExtensionOrRenewal: 'Staff Applications',
-        savedReportsArchive: 'System Administration'
+        allStaffMembers: 'All Staff Members',
+        permanentStaff: 'Permanent Staff',
+        locumStaff: 'Locum Staff',
+        allApplications: 'All Applications',
+        newApplicants: 'New Applicants',
+        staffReappointments: 'Reappointments',
+        locumExtensionOrRenewal: 'Locum Extension / Renewal',
+        savedReportsArchive: 'Saved Reports Archive'
     }
 
     const availableCategories = {
@@ -221,7 +253,13 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         ACTIVITY_STATUS_TRACKER: 'activityStatusTracker',
         PAYMENT_TRACKER: 'paymentProcessingStatusTracker',
         SUBMITTED_APPLICATIONS_REVIEW_SUMMARY: 'submittedApplicationsReviewSummary',
-        STAFF_REAPPOINTMENT_STATUS_SUMMARY: 'staffReappointmentStatusSummary'
+        DETAILED_PRIVILEGED_STAFF_SUMMARY: 'detailedPrivilegedStaffSummary',
+        OHIP_BILLING_NUMBERS_BY_CARE_PROVIDER: 'ohipBillingNumbersByCareProvider',
+        PRIVILEGED_STAFF_SUMMARY: 'privilegedStaffSummary',
+        CURRENT_NOTES_SUMMARY: 'currentNotesSummary',
+        STAFF_REAPPOINTMENT_STATUS_SUMMARY: 'staffReappointmentStatusSummary',
+        LOCUM_RENEWAL_OR_EXTENSION_APPLICATIONS_SUMMARY: 'locumRenewalOrExtensionApplicationsSummary',
+        DECLINED_OR_NOT_RENEWED_STAFF_SUMMARY: 'declinedOrNotRenewedStaffSumary'
     }
     const descriptionList = {
         ACTIVITES_SERVICES_LOG_SUMMARY: 'Activities/ Services Log Status Summary',
@@ -277,6 +315,24 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         STAFF_REAPPOINTMENT_STATUS_SUMMARY: 'Staff Reappointment Status Summary'
     }
 
+    const availableScheduleValue = {
+        ONETIME: 'One Time',
+        EVERYWEEKDAY: 'Every Weekday',
+        WEEKLY: 'Weekly',
+        MONTHLY: 'Monthly',
+        QUARTELY: 'Quaterly',
+        ANNUALY: 'Annually'
+    }
+
+    const filterLabels = {
+        departmentSpecialties: "Department",
+        positionType: "Position",
+        applicationCreationType: "Application Type",
+        applicantTypeId: "Staff Type",
+        privilegingCategoryId: "Privilege Category",
+        startDate: "Reporting Time Period", // represents start + end together
+    };
+
     useEffect(() => {
         sessionStorage.removeItem('reportFilter');
         sessionStorage.removeItem('myReportContent');
@@ -309,6 +365,37 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         getStandardTemplates();
     }, [selectedTab, reportType])
 
+    const getFilterSummary = (filters) => {
+        let count = 0;
+        const labels = [];
+
+        // Special handling for startDate + endDate
+        if (filters.startDate && filters.endDate) {
+            count += 1;
+            labels.push(filterLabels.startDate);
+        }
+
+        const excludeKeys = ["startDate", "endDate", "applicationCurrentLevel"];
+
+        for (const [key, value] of Object.entries(filters)) {
+            if (excludeKeys.includes(key)) continue;
+
+            const hasValue = Array.isArray(value)
+                ? value.length > 0
+                : value !== null && value !== undefined && value !== "";
+
+            if (hasValue && filterLabels[key]) {
+                count += 1;
+                labels.push(filterLabels[key]);
+            }
+        }
+
+        return {
+            count,
+            labels
+        };
+    }
+
     const getMyReports = async () => {
         const { data: myReport } = await GET(`application-management-service/report/myReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
         setMyReports(myReport);
@@ -334,40 +421,35 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         setIsExpanded(value);
     }
 
-    const getScheduleValue = (value) => {
-        if (value === 'ONETIME') {
-            return 'One Time';
-        } else if (value === 'EVERYWEEKDAY') {
-            return 'Every Weekday';
-        } else if (value === 'WEEKLY') {
-            return 'Weekly';
-        } else if (value === 'MONTHLY') {
-            return 'Monthly';
-        } else if (value === 'QUARTELY') {
-            return 'Quaterly';
-        } else if (value === 'ANNUALY') {
-            return 'Annualy';
-        } else {
-            return '';
-        }
+    const getIsShowFileDialog = (value) => {
+        setShowFileDisplayDialog(value);
     }
 
     const getMyReportsValues = () => {
         const title = [];
+        const titleHover = [];
         const schedule = [];
         const savedParams = [];
+        const savedParamHoverText = [];
         const lastUpdated = [];
         const actions = [];
         myReports?.map((data, index) => {
-            title.push(data?.report?.title)
-            schedule.push(data?.report?.schedule?.schedule);
-            savedParams.push('-');
-            lastUpdated.push(data?.lastUpdate ? format(new Date(data?.lastUpdate), "MM/dd/yyyy") : '-');
+            title.push(data?.report?.title);
+            titleHover.push(data?.report?.description)
+            schedule.push(availableScheduleValue[data?.report?.schedule?.schedule]);
+            savedParams.push(getFilterSummary(data?.report?.filters)?.count);
+            // const remindTooltipValue = reminderCount >= 0 ? (
+            //     <div>
+            //       <div>{reminderText}</div>
+            //       <div>{reminderDates}</div>
+            //     </div>
+            //   ) : null;
+            lastUpdated.push(data?.report?.lastUpdated ? format(new Date(data?.report?.lastUpdated), "MMM dd, yyyy") : '-');
             actions.push(true);
         });
 
         return [
-            { type: "text", value: title },
+            { type: "text", value: title, tooltipValueText: titleHover },
             { type: "text", value: schedule },
             { type: "text", value: savedParams },
             { type: "text", value: lastUpdated },
@@ -377,6 +459,7 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
 
     const getReportingTemplatesValues = () => {
         const title = [];
+        const titleHover = [];
         const type = [];
         const lastRunDateAndTime = [];
         const lastRunBy = [];
@@ -385,16 +468,17 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         const actions = [];
         standardTemplates?.map((data, index) => {
             title.push(data?.title)
+            titleHover.push(data?.description)
             type.push('Standard');
             lastRunBy.push('-');
-            lastRunDateAndTime.push(data?.lastRun ? format(new Date(data?.lastRun), "MM/dd/yyyy") : '-');
+            lastRunDateAndTime.push(data?.lastRun ? format(new Date(data?.lastRun), "MMM dd, yyyy") : '-');
             lastUpdatedBy.push('-');
-            lastUpdated.push(data?.lastUpdate ? format(new Date(data?.lastUpdate), "MM/dd/yyyy") : '-');
+            lastUpdated.push(data?.lastUpdate ? format(new Date(data?.lastUpdate), "MMM dd, yyyy") : '-');
             actions.push(true);
         });
 
         return [
-            { type: "text", value: title },
+            { type: "text", value: title, tooltipValueText: titleHover },
             { type: "text", value: type },
             { type: "text", value: lastRunBy },
             { type: "text", value: lastRunDateAndTime },
@@ -406,18 +490,20 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
 
     const getSavedReportOutputsValues = () => {
         const title = [];
+        const titleHover = [];
         const period = [];
         const savedOn = [];
         const actions = [];
         savedReports?.map((data, index) => {
             title.push(data?.savedReport?.reportName)
+            titleHover.push(data?.savedReport?.reportNotes)
             period.push(data?.report?.schedule?.schedule);
             savedOn.push(data?.savedReport?.runDate ? format(new Date(data?.savedReport?.runDate), "MMM dd, yyyy") : '-');
             actions.push(true);
         });
 
         return [
-            { type: "text", value: title },
+            { type: "text", value: title, tooltipValueText: titleHover },
             { type: "text", value: period },
             { type: "text", value: savedOn },
             { type: "action", value: actions },
@@ -604,7 +690,7 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
                             className={`${style.spaceBetween} ${style.marginLeft30} `}
                         >
                             <div className={`${style.tabs}`}>
-                                <TileApplication selectedTab={selectedTopTab} getSelectedTab={() => { }} tileLabel={availableParentList[reportType]} tileCount={myReports?.length + standardTemplates?.length + savedReports?.length} currentTile="" />
+                                <TileApplication selectedTab={selectedTopTab} getSelectedTab={() => { }} tileLabel={`Reports Accross ${availableParentList[reportType]}`} currentTile="" />
                             </div>
                         </div>
                         <div className={`${style.borderStyleTiles} ${style.marginLeft30}`}></div>
@@ -649,6 +735,12 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
                     </div>
                 </div>
             </div>
+            {showFileDisplayDialog && (
+                <FileDisplayDialog
+                    getIsOpen={getIsShowFileDialog}
+                    file={selectedFile}
+                />
+            )}
         </div >
     )
 }

@@ -63,7 +63,7 @@ const AntSwitch = styled(Switch)(({ theme }) => ({
     },
 }));
 
-const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
+const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType, setIsLoading }) => {
     const currentUserData = currentUser();
     let myReportContent = JSON.parse(sessionStorage.getItem('myReportContent'))
     const [isPrivate, setIsPrivate] = useState(false);
@@ -221,13 +221,12 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
                     'startDate': dataToUseInReport?.from,
                     'endDate': dataToUseInReport?.to,
                     'applicantTypeId': dataToUseInReport?.selectedStaffType?.[0] !== '' ? dataToUseInReport?.selectedStaffType : [],
-                    'sites': dataToUseInReport?.selectedSites?.[0] !== '' ? dataToUseInReport?.selectedSites : [],
+                    // 'sites': dataToUseInReport?.selectedSites?.[0] !== '' ? dataToUseInReport?.selectedSites : [],
                     'departmentSpecialties': dataToUseInReport?.selectedDepartments?.[0] !== '' ? dataToUseInReport?.selectedDepartments : [],
-                    'privilegeCategory': dataToUseInReport?.selectedPrivilegeCategory !== '' ? dataToUseInReport?.selectedPrivilegeCategory : '',
+                    'privilegingCategoryId': dataToUseInReport?.selectedPrivilegeCategory !== '' ? dataToUseInReport?.selectedPrivilegeCategory : '',
                     "positionType": dataToUseInReport?.selectedPosition !== "" ? [dataToUseInReport?.selectedPosition] : [],
                     "applicationCreationType": dataToUseInReport?.selectedApplicationType !== "" ? [dataToUseInReport?.selectedApplicationType] : [],
-                    "contractNames": [''],
-                    "intervals": decodeURIComponent(dataToUseInReport?.selectedTimesheetInterval).split(','),
+                    // "intervals": decodeURIComponent(dataToUseInReport?.selectedTimesheetInterval).split(','),
                     "applicationCurrentLevel": sessionStorage.getItem('workModeType'),
                     // "staffReappointmentStatus": [dataToUseInReport?.selectedApplicationType]
                 },
