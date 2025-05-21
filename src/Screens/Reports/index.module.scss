@@ -1861,31 +1861,29 @@
 }
 
 
-@media print {
-    @page {
-        margin-top: 20px;
-    }
+// @media print {
+//     @page {
+//         margin-top: 20px;
+//     }
 
-    .printContainer {
-        page-break-inside: avoid;
-    }
+//     .printContainer {
+//         page-break-inside: avoid;
+//     }
 
-    .printContainer>* {
-        page-break-before: auto;
-        page-break-inside: avoid;
-    }
+//     .printContainer>* {
+//         page-break-before: auto;
+//         page-break-inside: avoid;
+//     }
 
-    .reportBackgroundCard {
-        padding: 20px !important;
-    }
+//     .reportBackgroundCard {
+//         padding: 20px !important;
+//     }
 
-    .tableRow {
-        page-break-inside: avoid;
-        /* Ensure table rows do not split across pages */
-    }
+//     .tableRow {
+//         page-break-inside: avoid;
+//     }
 
-    .reportSection {
-        page-break-before: always;
-        /* Force sections to start on a new page if needed */
-    }
-}
+//     .reportSection {
+//         page-break-before: always;
+//     }
+// }

@@ -791,6 +791,14 @@ const ReportTypeOverview = () => {
             if (dataToUseInReport?.selectedPosition) {
                 queryParams.append('positionType', dataToUseInReport?.selectedPosition);
             }
+
+            if (dataToUseInReport?.from) {
+                queryParams.append('startDate', dataToUseInReport?.from);
+            }
+
+            if (dataToUseInReport?.to) {
+                queryParams.append('endDate', dataToUseInReport?.to);
+            }
             setIsLoading(true)
             const { data: data } = await GET(`application-management-service/report/submittedApplications?${queryParams.toString()}&applicationCurrentLevel=${workModeType}`);
             setSubmittedApplicationValues(data);
@@ -1809,21 +1817,12 @@ const ReportTypeOverview = () => {
                                     <tbody>
                                         <div className={style.justifyCenter}>
                                             <div className={style.marginTop20}>
-                                                {reportType === "paymentsProcessingSummary" && (
-                                                    <div className={`${style.entityNameBolderStyle} ${style.textAlignCenter} ${style.marginTop5} `}>
-                                                        {dataToUseInReport?.selectedContractsToSend?.map(data => data?.contractName?.contractName).join(', ')}
-                                                    </div>
-                                                )}
                                                 <div className={`${style.entityNameBolderStyle} ${style.textAlignCenter} ${style.marginTop5} `}>
                                                     {reportTitleList[reportType]}
                                                 </div>
-                                                {/* {(reportType !== "staffReappointmentsNotes" && reportType !== "staffReappointments" &&
-                                                    reportType !== "contractDocumentsOnFile" && reportType !== "multiProviderContractsList" &&
-                                                    reportType !== "contractsWithABusinessEntity" && reportType !== "currentRemitToAddressForActiveContracts" &&
-                                                    reportType !== "activityStatusTracker" && reportType !== 'paymentProcessingStatusTracker' &&
-                                                    dataToUseInReport?.reportingTimePeriod !== "") && (
-                                                        <div className={`${style.reportRunByTextStyle} ${style.textAlignCenter} ${style.marginTop5} `}>Reporting Period used for this report : {dataToUseInReport?.reportingTimePeriod} ({dataToUseInReport?.fromToDisplay} to {dataToUseInReport?.toToDisplay}) </div>
-                                                    )} */}
+                                                {(dataToUseInReport?.reportingTimePeriod !== "") && (
+                                                    <div className={`${style.reportRunByTextStyle} ${style.textAlignCenter} ${style.marginTop5} `}>Reporting Period used for this report : {dataToUseInReport?.reportingTimePeriod} ({dataToUseInReport?.fromToDisplay} to {dataToUseInReport?.toToDisplay}) </div>
+                                                )}
                                                 {/* {(reportType === "paymentProcessingStatusTracker") && (
                                                     <div>
                                                         <div className={`${style.reportRunByTextStyle} ${style.textAlignCenter} ${style.marginTop5} `}>Timesheet Interval used for this report : {dataToUseInReport?.selectedTimesheetInterval?.map(data => data.split("%23")?.map(innerData => `${format(new Date(innerData), 'MMM dd yyyy')}`)).join(', ') || 'All Timesheet Intervals'} </div>
@@ -1869,6 +1868,14 @@ const ReportTypeOverview = () => {
                                                         <div>
                                                             <div className={`${style.reportRunByParamStyle} ${style.marginTop5} `}>PRIVILEGE CATEGORY </div>
                                                             <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedPrivilegeCategoryToSend?.map(data => data?.category).join(', ') || 'All Categories'}</div>
+                                                        </div>
+                                                        <div>
+                                                            <div className={`${style.reportRunByParamStyle} ${style.marginTop5} `}>POSITION </div>
+                                                            <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedPosition || 'All Positions'}</div>
+                                                        </div>
+                                                        <div>
+                                                            <div className={`${style.reportRunByParamStyle} ${style.marginTop5} `}>APPLICATION TYPE</div>
+                                                            <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedApplicationType || 'All Application Type'}</div>
                                                         </div>
                                                         {(reportType === "contractDocumentsOnFile" || reportType === "multiProviderContractsList" ||
                                                             reportType === "contractsWithABusinessEntity") && (
