@@ -772,7 +772,7 @@ const App = ({ props }) => {
         method: "GET",
         headers: {
           "Authorization": `Bearer ${authorization}`,
-          "X-subdomain": 'cmh-hospital',
+          "X-subdomain": 'master',
         },
       };
     console.log(requestHeader, 'requestHeader')
@@ -812,7 +812,7 @@ const App = ({ props }) => {
         "Content-Type": "application/json",
         "X-tenantID": id,
         "Authorization": `Bearer ${authorization}`,
-        "X-subdomain": 'cmh-hospital',
+        "X-subdomain": 'master',
       },
     }
     fetch(`${baseUrl()}/user-management-service/auth/login`, requestOptions)
@@ -915,11 +915,11 @@ const App = ({ props }) => {
         }
 
         if (roles?.length === 1 && sessionStorage?.getItem('initialRoute') !== undefined && sessionStorage?.getItem('initialRoute') !== 'undefined' && sessionStorage?.getItem('initialRoute') !== null) {
-            sessionStorage.setItem("workModeType", roles[0]);
-             window.location.href = `${initialRoute}`;
-            sessionStorage?.removeItem('initialRoute')
+          sessionStorage.setItem("workModeType", roles[0]);
+          window.location.href = `${initialRoute}`;
+          sessionStorage?.removeItem('initialRoute')
         }
-       else  if (roles?.length === 1 ) {
+        else if (roles?.length === 1) {
           sessionStorage.setItem("workModeType", roles[0]);
           let isAppUser =
             roles?.includes("Approver") ||
