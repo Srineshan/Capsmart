@@ -24,7 +24,7 @@ const LocumStaff = () => {
             const query = new URLSearchParams(window.location.search);
             const selectTabValue = query.get("selectTabValue");
             const staffId = query.get("staffId");
-            const path = window.location.pathname;
+            const requestId = query.get("requestId");
             console.log(selectTabValue, 'sessionDetails');
             if (!selectTabValue) {
                 console.error("No session_id found in URL");
@@ -32,7 +32,7 @@ const LocumStaff = () => {
             } else {
                 setSelectedTab(selectTabValue)
             }
-            if (!staffId) {
+            if (!requestId && !staffId) {
                 console.error("No session_id found in URL");
                 return;
             } else if (selectTabValue === "ACTIVELOCUM" && staffId){
@@ -41,9 +41,9 @@ const LocumStaff = () => {
             } else if (selectTabValue === "EXPIREDLOCUM" && staffId){
                 setShowLocumExtensiveDialog(true)
                 sessionStorage.setItem("applicationId", staffId);
-            } else if (selectTabValue === "REQUEST" && staffId){
+            } else if (selectTabValue === "REQUEST" && requestId){
                 setShowLocumRequestDialog(true)
-                sessionStorage.setItem("applicationId", staffId);
+                sessionStorage.setItem("applicationId", requestId);
             }
         };
         fetchSessionDetails();
