@@ -84,7 +84,9 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
         submittedApplicationsReviewSummary: 'Submitted Applications Review Summary',
         ohipBillingNumbersByCareProvider: 'OHIP Billing Numbers By Care Provider',
         privilegedStaffSummary: 'Privileged Staff Summary',
-        locumRenewalOrExtensionApplicationsSummary: 'Locum Renewal / Extension Applications Summary'
+        locumRenewalOrExtensionApplicationsSummary: 'Locum Renewal / Extension Applications Summary',
+        careProviderCareerMilestoneSummary: 'Care Providers Career Milestone Summary',
+        declinedOrNotRenewedStaffSummary: 'Declined Or Not Renewed Staff Summary'
     }
 
     const availableCategories = {
@@ -107,7 +109,9 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
         submittedApplicationsReviewSummary: 'STAFF_REAPPOINTMENT',
         ohipBillingNumbersByCareProvider: 'ALL_STAFF',
         privilegedStaffSummary: 'ALL_STAFF',
-        locumRenewalOrExtensionApplicationsSummary: 'LOCUM_EXTENSION_OR_RENEWAL'
+        locumRenewalOrExtensionApplicationsSummary: 'LOCUM_EXTENSION_OR_RENEWAL',
+        careProviderCareerMilestoneSummary: 'PERMANENT_STAFF',
+        declinedOrNotRenewedStaffSummary: 'LOCUM_EXTENSION_OR_RENEWAL'
     }
 
     const typeList = {
@@ -136,7 +140,9 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
         'submittedApplicationsReviewSummary': 'SUBMITTED_APPLICATIONS_REVIEW_SUMMARY',
         'ohipBillingNumbersByCareProvider': 'OHIP_BILLING_NUMBERS_BY_CARE_PROVIDER',
         'privilegedStaffSummary': 'PRIVILEGED_STAFF_SUMMARY',
-        'locumRenewalOrExtensionApplicationsSummary': 'DECLINED_OR_NOT_RENEWED_STAFF_SUMMARY'
+        'locumRenewalOrExtensionApplicationsSummary': 'DECLINED_OR_NOT_RENEWED_STAFF_SUMMARY',
+        'careProviderCareerMilestoneSummary': 'CARE_PROVIDER_CAREER_MILESTONE_SUMMARY',
+        'declinedOrNotRenewedStaffSummary': 'DECLINED_OR_NOT_RENEWED_STAFF_SUMMARY'
     }
 
     const getSaveReportDialog = (value) => {

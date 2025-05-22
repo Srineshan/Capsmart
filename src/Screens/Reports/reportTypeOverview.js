@@ -8,7 +8,7 @@ import ReportHeader from './reportHeader';
 import ReportFooter from './reportFooter';
 import { useParams } from 'react-router-dom';
 import { useReactToPrint } from "react-to-print";
-import { format } from 'date-fns';
+import { addYears, format } from 'date-fns';
 import { FullScreen, useFullScreenHandle } from "react-full-screen";
 import { toPDF } from '../../Components/ConvertToPdf';
 import LoadingScreen from '../../Components/LoadingScreen';
@@ -39,6 +39,7 @@ import { formatFirstNameLastName } from "../../utils/formatting";
 import TrackTable from '../../Components/TrackTable';
 import TableTwo from "../../Components/TableDesignTwo"
 import ReportsStaffTable from '../../Components/ReportStaffbyType';
+import ReportsApplicantWithAllDataTable from '../../Components/ReportApplicantWithAllData';
 
 const ReportTypeOverview = () => {
     const location = useLocation();
@@ -97,7 +98,9 @@ const ReportTypeOverview = () => {
     const [paymentTrackValues, setPaymentTrackValues] = useState();
     const [submittedApplicationValues, setSubmittedApplicationValues] = useState();
     const [locumRenewalOrExtensionApplicationValues, setLocumRenewalOrExtensionApplicationValues] = useState();
+    const [declinedOrNotRenewedStaffSummaryValues, setDeclinedOrNotRenewedStaffSummaryValues] = useState();
     const [ohipBillingNumbersByCareProviderValues, setOhipBillingNumbersByCareProviderValues] = useState();
+    const [careProviderCareerMilestoneValues, setCareProviderCareerMilestoneValues] = useState();
     const [privilegedStaffSummaryValues, setPrivilegedStaffSummaryValues] = useState();
     const [selectedPaymentTab, setSelectedPaymentTab] = useState('Payment Processed');
     const [tableDataStatus, setTableDataStatus] = useState([]);
@@ -196,7 +199,7 @@ const ReportTypeOverview = () => {
             getUpdatedValuesWithParams();
         }
         console.log(dataToUseInReport, 'dataToUseInReport', (dataToUseInReport?.initialValueSet && ((dataToUseInReport?.selectedDepartments?.length !== 1 ? !dataToUseInReport?.selectedDepartments.includes('') : true) && (dataToUseInReport?.selectedStaffType?.length !== 1 ? !dataToUseInReport?.selectedStaffType.includes('') : true) && (dataToUseInReport?.selectedPrivilegeCategory?.length !== 1 ? !dataToUseInReport?.selectedPrivilegeCategory.includes('') : true))))
-    }, [dataToUseInReport?.from, dataToUseInReport?.to, dataToUseInReport?.selectedPrivilegeCategory, dataToUseInReport?.selectedStaffType, dataToUseInReport?.selectedSites, dataToUseInReport?.selectedDepartments, dataToUseInReport?.renewalreportingTimePeriod, dataToUseInReport?.selectedPosition, dataToUseInReport?.selectedApplicationType, dataToUseInReport?.initialValueSet, dataToUseInReport?.selectedTimesheetInterval])
+    }, [dataToUseInReport?.from, dataToUseInReport?.to, dataToUseInReport?.selectedPrivilegeCategory, dataToUseInReport?.selectedStaffType, dataToUseInReport?.selectedSites, dataToUseInReport?.selectedDepartments, dataToUseInReport?.renewalreportingTimePeriod, dataToUseInReport?.selectedPosition, dataToUseInReport?.selectedApplicationType, dataToUseInReport?.initialValueSet, dataToUseInReport?.selectedTimesheetInterval, dataToUseInReport?.selectedReappointmentStatus])
 
     useEffect(() => {
         setApexStackedBarChartDisplay(<ApexStackedBarChart stackedSeries={stackedSeries} stackedCategories={stackedCategories} />);
@@ -210,11 +213,17 @@ const ReportTypeOverview = () => {
             case 'ohipBillingNumbersByCareProvider':
                 getOHIPBillingNumbersByCareProvider();
                 break;
+            case 'careProviderCareerMilestoneSummary':
+                getCareProviderCareerMilestone();
+                break;
             case 'privilegedStaffSummary':
                 getPrivilegedStaffSummary();
                 break;
             case 'locumRenewalOrExtensionApplicationsSummary':
                 getLocumRenewalOrExtensionApplication();
+                break;
+            case 'declinedOrNotRenewedStaffSummary':
+                getDeclinedOrNotRenewedStaffSummary();
                 break;
             case 'staffReappointmentsNotes':
                 getContractRenewalReportWithParameters();
@@ -316,7 +325,9 @@ const ReportTypeOverview = () => {
         submittedApplicationsReviewSummary: 'Submitted Applications Review Summary',
         ohipBillingNumbersByCareProvider: 'OHIP Billing Numbers By Care Provider',
         privilegedStaffSummary: 'Privileged Staff Summary',
-        locumRenewalOrExtensionApplicationsSummary: 'Locum Renewal / Extension Applications Summary'
+        locumRenewalOrExtensionApplicationsSummary: 'Locum Renewal / Extension Applications Summary',
+        careProviderCareerMilestoneSummary: 'Care Providers Career Milestone Summary',
+        declinedOrNotRenewedStaffSummary: 'Declined Or Not Renewed Staff Summary'
     }
 
     const handlePrint = useReactToPrint({
@@ -856,6 +867,52 @@ const ReportTypeOverview = () => {
         setIsLoading(false)
     }
 
+    const getCareProviderCareerMilestone = async () => {
+        let chartData = []
+        if (!isMyReport) {
+            const queryParams = new URLSearchParams({
+            });
+
+            if (dataToUseInReport?.selectedStaffType) {
+                queryParams.append('applicantTypeId', dataToUseInReport?.selectedStaffType);
+            }
+
+            if (dataToUseInReport?.selectedPrivilegeCategory) {
+                queryParams.append('privilegingCategoryId', dataToUseInReport?.selectedPrivilegeCategory);
+            }
+
+            if (dataToUseInReport?.selectedDepartments) {
+                queryParams.append('departmentSpecialties', dataToUseInReport?.selectedDepartments);
+            }
+
+
+            // if (dataToUseInReport?.from) {
+            //     queryParams.append('startDate', dataToUseInReport?.from);
+            // }
+
+            // if (dataToUseInReport?.to) {
+            //     queryParams.append('endDate', dataToUseInReport?.to);
+            // }
+            setIsLoading(true)
+            const { data: data } = await GET(`application-management-service/report/careProvidersMileStoneReport?${queryParams.toString()}`);
+            setCareProviderCareerMilestoneValues(data);
+            chartData = data?.staffCountByMilestone
+        } else {
+            setIsLoading(true)
+            const { data: data } = await GET(`application-management-service/report/myReport/careProvidersMileStoneReport?id=${myReportId}`);
+            setCareProviderCareerMilestoneValues(data);
+            chartData = data?.staffCountByMilestone
+        }
+        if (chartData?.paymentContracts?.length !== 0 && chartData !== undefined) {
+            setBarChartSeries([{
+                'data': chartData?.map(data => data?.staffCount),
+                'name': 'Doctors'
+            }])
+            setBarChartCategories(chartData?.map(data => data?.years));
+        }
+        setIsLoading(false)
+    }
+
     const getPrivilegedStaffSummary = async () => {
         if (!isMyReport) {
             const queryParams = new URLSearchParams({
@@ -923,6 +980,45 @@ const ReportTypeOverview = () => {
             setIsLoading(true)
             const { data: data } = await GET(`application-management-service/report/myReport/locumRenewalOrExtensionApplications?id=${myReportId}`);
             setLocumRenewalOrExtensionApplicationValues(data);
+        }
+        setIsLoading(false)
+    }
+
+    const getDeclinedOrNotRenewedStaffSummary = async () => {
+        if (!isMyReport) {
+            const queryParams = new URLSearchParams({
+            });
+
+            if (dataToUseInReport?.selectedStaffType) {
+                queryParams.append('applicantTypeId', dataToUseInReport?.selectedStaffType);
+            }
+
+            if (dataToUseInReport?.selectedPrivilegeCategory) {
+                queryParams.append('privilegingCategoryId', dataToUseInReport?.selectedPrivilegeCategory);
+            }
+
+            if (dataToUseInReport?.selectedDepartments) {
+                queryParams.append('departmentSpecialties', dataToUseInReport?.selectedDepartments);
+            }
+
+            if (dataToUseInReport?.selectedReappointmentStatus) {
+                queryParams.append('staffReappointmentStatus', dataToUseInReport?.selectedReappointmentStatus);
+            }
+
+            // if (dataToUseInReport?.from) {
+            //     queryParams.append('startDate', dataToUseInReport?.from);
+            // }
+
+            // if (dataToUseInReport?.to) {
+            //     queryParams.append('endDate', dataToUseInReport?.to);
+            // }
+            setIsLoading(true)
+            const { data: data } = await GET(`application-management-service/report/declinedOrNotRenewedStaffs?${queryParams.toString()}`);
+            setDeclinedOrNotRenewedStaffSummaryValues(data);
+        } else {
+            setIsLoading(true)
+            const { data: data } = await GET(`application-management-service/report/myReport/declinedOrNotRenewedStaffs?id=${myReportId}`);
+            setDeclinedOrNotRenewedStaffSummaryValues(data);
         }
         setIsLoading(false)
     }
@@ -1205,6 +1301,56 @@ const ReportTypeOverview = () => {
             { type: "text", value: privilegeType },
             { type: "text", value: department },
             { type: "text", value: specialtyServiceArea },
+        ];
+    };
+
+    const headerValuesMilestone = [
+        "No.",
+        "Staff Name",
+        "Staff Type",
+        "Category",
+        "Department",
+        "Division",
+        "Career Start Date",
+        "Milestone Date"
+    ];
+    const colSortValuesMilestone = [false, false, false, false, false, false, false, false];
+
+    const getMilestoneTableValues = (data, years) => {
+        const No = [];
+        const staffName = [];
+        const staffType = [];
+        const department = [];
+        const category = [];
+        const specialtyServiceArea = [];
+        const careerStartDate = [];
+        const milestoneDate = [];
+
+        data?.map((data, index) => {
+            No.push(index + 1 + ".")
+            staffName.push(
+                `${formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName)}` || " "
+            );
+
+            staffType.push(data?.basicDetailReferences?.applicantType?.serviceProviderType);
+            category.push(data?.basicDetailReferences?.credentialingAndPrivilegingCategory?.name);
+            department.push(
+                `${data?.basicDetailReferences?.department?.name || "-"}`
+            );
+            specialtyServiceArea.push(data?.basicDetailReferences?.specialty?.name ? `${data?.basicDetailReferences?.specialty?.name}` : "")
+            careerStartDate.push(data?.initialApprovalDate ? format(new Date(data?.initialApprovalDate), 'MMM dd, yyyy') : '-')
+            milestoneDate.push(data?.initialApprovalDate ? format(addYears(new Date(data?.initialApprovalDate), years), 'MMM dd, yyyy') : '-')
+        });
+
+        return [
+            { type: "text", value: No },
+            { type: "text", value: staffName },
+            { type: "text", value: staffType },
+            { type: "text", value: category },
+            { type: "text", value: department },
+            { type: "text", value: specialtyServiceArea },
+            { type: "text", value: careerStartDate },
+            { type: "text", value: milestoneDate },
         ];
     };
 
@@ -2052,7 +2198,8 @@ const ReportTypeOverview = () => {
                                             <div className={`${style.marginTop20} ${style.reportTypeParamsBackground}`}>
                                                 <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop5} `}>Reporting Parameters Applied</div>
                                                 {(reportType === "staffReappointmentsNotes" || reportType === "staffReappointments" || reportType === "locumRenewalOrExtensionApplicationsSummary" || reportType === "privilegedStaffSummary" ||
-                                                    reportType === "submittedApplicationsReviewSummary" || reportType === "staffReappointmentTracker" || reportType === "ohipBillingNumbersByCareProvider") ? (
+                                                    reportType === "submittedApplicationsReviewSummary" || reportType === "staffReappointmentTracker" || reportType === "ohipBillingNumbersByCareProvider" || reportType === "careProviderCareerMilestoneSummary" ||
+                                                    reportType === "declinedOrNotRenewedStaffSummary") ? (
                                                     <div className={`${style.grid4} ${style.marginTop20} `}>
                                                         {/* {reportType === "staffReappointmentsNotes" && (
                                                         <div>
@@ -2088,6 +2235,12 @@ const ReportTypeOverview = () => {
                                                             <div>
                                                                 <div className={`${style.reportRunByParamStyle} ${style.marginTop5} `}>APPLICATION TYPE</div>
                                                                 <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedApplicationType || 'All Application Type'}</div>
+                                                            </div>
+                                                        )}
+                                                        {reportType === "declinedOrNotRenewedStaffSummary" && (
+                                                            <div>
+                                                                <div className={`${style.reportRunByParamStyle} ${style.marginTop5} `}>Locum Application Status</div>
+                                                                <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedReappointmentStatus || 'All Applications'}</div>
                                                             </div>
                                                         )}
                                                         {/* {(reportType === "contractDocumentsOnFile" || reportType === "multiProviderContractsList" ||
@@ -2671,6 +2824,40 @@ const ReportTypeOverview = () => {
                                                                 )}
 
                                                             </div>
+                                                        ) : reportType === "careProviderCareerMilestoneSummary" ? (
+                                                            <>
+                                                                <div>
+                                                                    <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} `}>Career Milestone Achieved</div>
+                                                                    <div className={style.marginTop20}>
+                                                                        <ApexBarChart series={barChartSeries} categories={barChartCategories} reportingPeriod={`${format(new Date(dataToUseInReport?.from || new Date()), 'MMM d')} to ${format(new Date(dataToUseInReport?.to || new Date()), 'MMM d')} `} yAxisTitle="Doctors" xAxisTitle="Years" />
+                                                                    </div>
+                                                                </div>
+                                                                {careProviderCareerMilestoneValues?.staffListByMilestone?.map((data, index) => (
+                                                                    <>
+                                                                        <div className={`${style.tableTitleTextStyle} ${style.marginTop20}`}>{`${data?.years} Year Career Longevity Milestone (${data?.staffs?.length})`}</div>
+                                                                        <div>
+                                                                            {data?.staffs?.length !== 0 ? (
+                                                                                <>
+                                                                                    <TableTwo
+                                                                                        tableHeaderValues={headerValuesMilestone}
+                                                                                        tableDataValues={getMilestoneTableValues(data?.staffs, data?.years)}
+                                                                                        tableData={data?.staffs}
+                                                                                        gridStyle={style.milestoneGrid}
+                                                                                        tableSortValues={colSortValuesMilestone}
+                                                                                        heading={"There are no record to display"}
+                                                                                        className={`${style.tableRow} ${style.reportSection}`}
+                                                                                        hidePagination={true}
+                                                                                    />
+                                                                                </>
+                                                                            ) : (
+                                                                                <ReportNoDataBox heading={'Based on the parameters selected and applied, there were NO RECORDS found to include in the report.'}
+                                                                                    subHeading={'Try again by changing some of the parameters on the left. If there are any qualifying records, the report will get displayed.'} />
+                                                                            )}
+
+                                                                        </div>
+                                                                    </>
+                                                                ))}
+                                                            </>
                                                         ) : reportType === "privilegedStaffSummary" ? (
                                                             <div className={style.marginTop20}>
                                                                 {privilegedStaffSummaryValues?.length !== 0 ? (
@@ -2696,7 +2883,7 @@ const ReportTypeOverview = () => {
                                                             <div className={style.marginTop20}>
                                                                 {submittedApplicationValues?.length !== 0 ? (
                                                                     <>
-                                                                        <ReportsApplicantTable
+                                                                        <ReportsApplicantWithAllDataTable
                                                                             tableData={submittedApplicationValues}
                                                                         />
                                                                     </>
@@ -2710,8 +2897,23 @@ const ReportTypeOverview = () => {
                                                             <div className={style.marginTop20}>
                                                                 {locumRenewalOrExtensionApplicationValues?.length !== 0 ? (
                                                                     <>
-                                                                        <ReportsApplicantTable
+                                                                        <ReportsApplicantWithAllDataTable
                                                                             tableData={locumRenewalOrExtensionApplicationValues}
+                                                                        />
+                                                                    </>
+                                                                ) : (
+                                                                    <ReportNoDataBox heading={'Based on the parameters selected and applied, there were NO RECORDS found to include in the report.'}
+                                                                        subHeading={'Try again by changing some of the parameters on the left. If there are any qualifying records, the report will get displayed.'} />
+                                                                )}
+
+                                                            </div>
+                                                        ) : reportType === "declinedOrNotRenewedStaffSummary" ? (
+                                                            <div className={style.marginTop20}>
+                                                                {declinedOrNotRenewedStaffSummaryValues?.length !== 0 ? (
+                                                                    <>
+                                                                        <ReportsApplicantWithAllDataTable
+                                                                            tableData={declinedOrNotRenewedStaffSummaryValues}
+                                                                            declinedReport={true}
                                                                         />
                                                                     </>
                                                                 ) : (
@@ -2836,7 +3038,7 @@ const ReportTypeOverview = () => {
                                                             //             </div>
                                                             //         </div>
                                                             //     </>
-                                                            // ) 
+                                                            // )
                                                             :
                                                             // (reportType === "staffReappointmentsNotes") ? (
                                                             //     (individualContract?.length !== 0 || multipleContract?.length !== 0) ? (
