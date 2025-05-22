@@ -1305,7 +1305,7 @@
 
 .reportRunByParamStyle {
     text-align: left;
-    font: normal normal bold 16px/13px proxima-nova;
+    font: normal normal bold 16px/18px proxima-nova;
     letter-spacing: 0px;
     color: #253240;
     text-transform: uppercase;
@@ -1838,6 +1838,12 @@
     grid-gap: 1%;
 }
 
+.milestoneGrid {
+    display: grid;
+    grid-template-columns: 3% 15% 11% 11% 15% 15% 11% 11%;
+    grid-gap: 1%;
+}
+
 .tabs {
     display: flex;
     flex-direction: row;
@@ -1866,6 +1872,13 @@
     height: 2px;
 }
 
+.tableTitleTextStyle {
+    text-align: left;
+    font: normal normal bold 16px/24px proxima-nova;
+    letter-spacing: 0px;
+    color: $textgrey;
+    text-transform: capitalize;
+}
 
 // @media print {
 //     @page {

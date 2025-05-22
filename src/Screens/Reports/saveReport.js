@@ -228,7 +228,7 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType, setIsL
                     "applicationCreationType": dataToUseInReport?.selectedApplicationType !== "" ? [dataToUseInReport?.selectedApplicationType] : [],
                     // "intervals": decodeURIComponent(dataToUseInReport?.selectedTimesheetInterval).split(','),
                     "applicationCurrentLevel": sessionStorage.getItem('workModeType'),
-                    // "staffReappointmentStatus": [dataToUseInReport?.selectedApplicationType]
+                    "staffReappointmentStatus": dataToUseInReport?.selectedReappointmentStatus ? [dataToUseInReport?.selectedReappointmentStatus] : []
                 },
                 "private": isPrivate
             }
