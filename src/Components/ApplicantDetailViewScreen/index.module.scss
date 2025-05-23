@@ -1,0 +1,279 @@
+@import "../../index.scss";
+
+.marginLeftRight50 {
+  margin: 0 50px !important;
+}
+
+.marginTop10 {
+  margin-top: 10px !important;
+}
+
+.marginTop5 {
+  margin-top: 5px !important;
+}
+
+.marginLeft10 {
+  margin-left: 10px !important;
+}
+
+.marginTop20 {
+  margin-top: 20px !important;
+}
+
+.marginLeftRight20 {
+  margin: 0 10px !important;
+}
+
+.marginBottom20 {
+  margin-bottom: 20px !important;
+}
+
+.padding10{
+    padding: 10px;
+}
+
+.padding30 {
+    padding: 30px !important;
+}
+
+.cursorPointer {
+  cursor: pointer;
+}
+
+.displayInRow {
+  display: flex;
+  flex-direction: row;
+}
+
+.alignItemCenter{
+    align-items: center;
+}
+
+.verticalAlignCenter {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.LogoIcon{
+  height: 20px;
+  width: 20px;
+}
+
+.spaceBetweenCol{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.grid2to1 {
+  display: grid;
+  grid-template-columns: 74% 25%;
+  grid-gap: 1%;
+}
+
+.headerTextStyle{
+text-align: left;
+font: normal normal 600 12px/24px proxima-nova;
+letter-spacing: 1.2px;
+color: #9AAFB5;
+text-transform: uppercase;
+opacity: 1;
+}
+
+.cardLeftStyle {
+  background: #FFFFFF 0% 0% no-repeat padding-box;
+  box-shadow: 0px 5px 20px #52575D29;
+  border: 0.4000000059604645px solid #E0E1FB;
+  border-radius: 12px;
+  opacity: 1;
+  height: auto;
+  padding: 10px;
+}
+
+.bigCalendarLeftCardWidth {
+  margin-right: 15px;
+}
+
+.flex {
+  display: flex;
+}
+
+.grip3{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-gap: 10px;
+}
+
+.spaceBetween{
+    display: flex;
+    justify-content: space-between;
+    // display: grid;
+    // grid-template-columns: 100% 39%;
+    // grid-gap: 5%;
+}
+
+.photoBorderStyle {
+  width: 93px;
+  height: 89px;
+}
+.profileImage {
+  width: 93px;
+  height: 89px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.twoColumnGrid1 {
+  display: grid;
+  grid-template-columns: 45% 50%;
+  grid-gap: 10px;
+}
+
+.textAlignLeft {
+  text-align: left !important;
+}
+
+.cardTextBoldStyle {
+  text-align: left;
+  font: normal normal 600 $tabledatatext1 proxima-nova;
+  letter-spacing: 0px;
+  color: $textgrey;
+  text-transform: capitalize;
+  opacity: 1;
+}
+
+.tableHeaderHeadingTextStyle1 {
+  text-align: left;
+  font: normal normal normal 18px/23px proxima-nova;
+  letter-spacing: 0px;
+  color: #06617A;
+  opacity: 1;
+  text-transform: capitalize;
+}
+
+.cardTextNormalStyle {
+  text-align: left;
+  font: normal normal medium 16px/23px proxima-nova;
+  letter-spacing: 0px;
+  color: black;
+  text-transform: capitalize;
+  opacity: 0.6;
+}
+
+.twoColumnGridInner2 {
+  display: grid;
+  grid-template-columns: 45% 45%;
+  grid-gap: 10px;
+  justify-items: start;
+}
+
+.rightAlignTextStyle {
+  text-align: right;
+  font: normal normal medium 16px/23px proxima-nova;
+  letter-spacing: 0px;
+  color: #2C2C2C;
+  text-transform: capitalize;
+  opacity: 0.8;
+}
+
+.leftAlignTextStyle {
+  text-align: left;
+  font: normal normal medium 16px/23px proxima-nova;
+  letter-spacing: 0px;
+  color: $textcolor;
+  text-transform: uppercase;
+  opacity: 1;
+}
+
+.emailTextBoldStyle {
+  text-align: start;
+  font: normal normal 400 16px/20px proxima-nova;
+  letter-spacing: 0px;
+  color: #2C2C2C;
+  opacity: 1;
+}
+
+.tableDataFontStyle1 {
+  font: normal normal normal $tabledatatext1 proxima-nova;
+  letter-spacing: 0px;
+  color: #52575d;
+  text-align: left;
+}
+
+.notesIcon {
+  color: $primarycolor
+}
+
+.documentTextStyle{
+    text-align: left;
+    font: normal normal bold 20px/26px proxima-nova;
+    letter-spacing: 0px;
+    color: #52575D;
+    text-transform: capitalize;
+    opacity: 1;
+}
+
+.documentSubHeadingStyle{
+    text-align: left;
+    font: italic normal normal 16px/30px proxima-nova;
+    letter-spacing: 0px;
+    color: #171A1A;
+    opacity: 0.6;
+}
+
+.documentCurrentBackGround{
+    background: rgba(232, 233, 233, 0.5) 0% 0% no-repeat padding-box;
+    border-radius: 8px;
+    // opacity: 0.5;
+    padding: 5px;
+    height: 70px;
+}
+
+.innerTextDocumentStyle{
+    text-align: left;
+    font: normal normal bold 16px/19px proxima-nova;
+    letter-spacing: 0px;
+    color: #737575;
+    text-transform: capitalize;
+    opacity: 1;
+}
+
+.countStyle{
+    text-align: left;
+    font: normal normal bold 24px/29px proxima-nova;
+    letter-spacing: 0px;
+    color: #52575D;
+    opacity: 1;
+}
+
+.documentViewGrid {
+  display: grid;
+  grid-template-columns: 15% 29% 13% 13% 13% 10%;
+  grid-gap: 10px;
+}
+
+.appointmntViewGrid {
+  display: grid;
+  grid-template-columns: 15% 7% 20% 11% 7% 5% 17% 11%;
+  grid-gap: 10px;
+}
+
+.medicalDirectiveViewGrid {
+  display: grid;
+  grid-template-columns: 5% 37% 9% 6% 14% 12% 10%;
+  grid-gap: 10px;
+}
+
+.loadingOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
