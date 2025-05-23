@@ -16,7 +16,7 @@ import UserLogo4 from './../../images/userLogo6.png';
 import Search from './../../images/search.png';
 import BlueChevronLeft from './../../images/blueChevronLeft.png';
 import style from './index.module.scss';
-import { TenantID, POST, GET } from '../dataSaver';
+import { TenantID, POST, GET, PUT } from '../dataSaver';
 import { format } from 'date-fns';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import { currentUser } from '../../utils/auth';
@@ -66,6 +66,7 @@ const AntSwitch = styled(Switch)(({ theme }) => ({
 const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType, setIsLoading }) => {
     const currentUserData = currentUser();
     let myReportContent = JSON.parse(sessionStorage.getItem('myReportContent'))
+    const myReportId = sessionStorage.getItem('myReportId')
     const [isPrivate, setIsPrivate] = useState(false);
     const [isDeliveryScheduled, setIsDeliveryScheduled] = useState(false);
     const [reportName, setReportName] = useState('');
@@ -174,7 +175,7 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType, setIsL
 
     useEffect(() => {
         if (myReportContent) {
-            setIsReadOnly(true)
+            // setIsReadOnly(true)
             setReportName(myReportContent?.title)
             setIsPrivate(myReportContent?.private)
             setIsDeliveryScheduled(myReportContent?.schedule?.isdeliveryScheduled)
@@ -235,14 +236,26 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType, setIsL
         }
         console.log(data, 'dataInConsole')
         if (reportName !== '' && reportDescription !== '') {
-            await POST('application-management-service/report/myReport/', JSON.stringify(data))
-                .then(response => {
-                    SuccessToaster('Report Saved Successfully');
-                })
-                .catch(error => {
-                    ErrorToaster('Unexpected Error');
-                })
-            getSaveReportDialog(false);
+            if (myReportContent) {
+                await PUT(`application-management-service/report/myReport/${myReportId}`, JSON.stringify(data))
+                    .then(response => {
+                        SuccessToaster('Report Updated Successfully');
+                    })
+                    .catch(error => {
+                        ErrorToaster('Unexpected Error');
+                    })
+                getSaveReportDialog(false);
+            }
+            else {
+                await POST('application-management-service/report/myReport/', JSON.stringify(data))
+                    .then(response => {
+                        SuccessToaster('Report Saved Successfully');
+                    })
+                    .catch(error => {
+                        ErrorToaster('Unexpected Error');
+                    })
+                getSaveReportDialog(false);
+            }
         } else {
             ErrorToaster('All Fields are Mandatory');
         }

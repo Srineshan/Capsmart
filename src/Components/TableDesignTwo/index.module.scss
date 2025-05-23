@@ -552,3 +552,10 @@
     opacity: 0.5;
     cursor: not-allowed !important;
 }
+
+@media print{
+
+  .tableData {
+    page-break-inside: avoid;
+  }
+}

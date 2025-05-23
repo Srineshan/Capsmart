@@ -102,13 +102,13 @@ const Navbar = () => {
   const [userId, setUserId] = useState();
 
   const roleIcons = {
-  "Staff Manager": SMimgHover,
-  "Department Head": HODimgHover,
-  "Chief Of Staff": COSimgHover,
-  "Credentialing Committee": CCimgHover,
-  "Entity Sys Admin": SAimgHover,
-};
-const roleImage = roleIcons[workModeType] || SMimgHover;
+    "Staff Manager": SMimgHover,
+    "Department Head": HODimgHover,
+    "Chief Of Staff": COSimgHover,
+    "Credentialing Committee": CCimgHover,
+    "Entity Sys Admin": SAimgHover,
+  };
+  const roleImage = roleIcons[workModeType] || SMimgHover;
 
   useEffect(() => {
     if (currentUserRoles?.includes("Activity Logger")) {
@@ -174,22 +174,22 @@ const roleImage = roleIcons[workModeType] || SMimgHover;
   useEffect(() => {
     console.log('inside the func call useeffect', user?.id);
     if (userId !== undefined && userId !== '') {
-        setUserDetails();
+      setUserDetails();
     }
-}, [userId])
+  }, [userId])
 
- useEffect(() => {
+  useEffect(() => {
     if (user?.id !== undefined) {
-        console.log('inside func call useEffect 1', user?.id)
-        setUserId(user?.id);
+      console.log('inside func call useEffect 1', user?.id)
+      setUserId(user?.id);
     }
-}, [user])
+  }, [user])
 
-useEffect(() => {
+  useEffect(() => {
     if (userDetails !== undefined) {
-        setUser(jwt(userDetails));
+      setUser(jwt(userDetails));
     }
-}, [userDetails])
+  }, [userDetails])
 
 
   useEffect(() => {
@@ -335,11 +335,11 @@ useEffect(() => {
     }
   }, []);
 
-    const setUserDetails = async () => {
-          const { data: userData } = await GET(`user-management-service/user/${userId}`);
-          setCurrentUserDetails(userData);
-          console.log('users', userData)
-      }
+  const setUserDetails = async () => {
+    const { data: userData } = await GET(`user-management-service/user/${userId}`);
+    setCurrentUserDetails(userData);
+    console.log('users', userData)
+  }
 
   const classes = useStyles();
 
@@ -399,8 +399,8 @@ useEffect(() => {
   };
 
   const handleWorkModeSelection = () => {
-        window.location.pathname = "/"
-    };
+    window.location.pathname = "/"
+  };
   // console.log(selectedWorkingMode);
 
   return (
@@ -417,22 +417,22 @@ useEffect(() => {
               className={style.sanmateoLogo}
             />
           </div>
-         <div className={style.container}>
-          <div className={style.roleSection}>
-            <img src={roleImage} alt="" className={style.roleIcon} />
-            <div className={style.roleLabel}>{workModeType}</div>
+          <div className={style.container}>
+            <div className={style.roleSection}>
+              <img src={roleImage} alt="" className={style.roleIcon} />
+              <div className={style.roleLabel}>{workModeType}</div>
+            </div>
+            {currentUserDetails?.roles?.length > 1 && (
+              <Tooltip title={"Click to Switch Workspace"} arrow>
+                <div
+                  className={style.workSpaceSwitchTextStyle}
+                  onClick={handleWorkModeSelection}
+                >
+                  Switch <br /> Workspaces
+                </div>
+              </Tooltip>
+            )}
           </div>
-          {currentUserDetails?.roles?.length > 1 && (
-            <Tooltip title={"Click to Switch Workspace"} arrow>
-              <div
-                className={style.workSpaceSwitchTextStyle}
-                onClick={handleWorkModeSelection}
-              >
-                Switch <br /> Workspaces
-              </div>
-            </Tooltip>
-          )}
-        </div>
           {/* <div
             className={`${style.menuStyle} ${window.location.pathname.includes(homeLink) && !window.location.pathname.includes('contractsWithABusinessEntity') &&
               style.activeMenuColor
@@ -857,9 +857,9 @@ useEffect(() => {
 
         <div className={`${style.displayInRow} ${style.centerAlignCenter}`}>
           <Tooltip title={"Go to Your Profile Page"} arrow>
-         <Link to={'/profile'} >
-           <img src={currentUserDetails?.profilePic?.file?.fileURL ? currentUserDetails?.profilePic?.file?.fileURL : DoctorAnime} className={style.userLogo} />
-          </Link>
+            <Link to={'/profile'} >
+              <img src={currentUserDetails?.profilePic?.file?.fileURL ? currentUserDetails?.profilePic?.file?.fileURL : DoctorAnime} className={style.userLogo} />
+            </Link>
           </Tooltip>
           {/* {!window.location.pathname.includes('reportTypeOverview') && (
                     <>

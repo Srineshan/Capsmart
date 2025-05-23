@@ -258,6 +258,7 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         PRIVILEGED_STAFF_SUMMARY: 'privilegedStaffSummary',
         CURRENT_NOTES_SUMMARY: 'currentNotesSummary',
         STAFF_REAPPOINTMENT_STATUS_SUMMARY: 'staffReappointmentStatusSummary',
+        REAPPOINTMENT_APPLICATIONS_NOT_YET_STARTED_SUMMARY: 'reappointmentApplicationNotStarted',
         LOCUM_RENEWAL_OR_EXTENSION_APPLICATIONS_SUMMARY: 'locumRenewalOrExtensionApplicationsSummary',
         DECLINED_OR_NOT_RENEWED_STAFF_SUMMARY: 'declinedOrNotRenewedStaffSummary',
         CARE_PROVIDER_CAREER_MILESTONE_SUMMARY: 'careProviderCareerMilestoneSummary',
