@@ -44,7 +44,7 @@ const LocumStaffList = ({
   getSelectedTab,
   selectedTab,
   getTitleCounts,
-  getActiveApplicationView,
+  getApplicantDetailsViewScreen,
   getStaffView,
   getDeptTrackerDialog,
   getLocumExtensiveDialog,
@@ -177,10 +177,9 @@ const LocumStaffList = ({
   }
 
   const onClickViewAndVerifyFunction = (data) => {
-    getActiveApplicationView(true);
-    sessionStorage.setItem("applicationId", data?.currentApplication?.id);
-    console.log("id", data?.currentApplication?.id)
-    getStaffView(true);
+    getApplicantDetailsViewScreen(true);
+    sessionStorage.setItem("applicationId", data);
+    console.log("id", data)
   };
 
   const onClickReappointmentFunction = (data) => {
@@ -559,9 +558,18 @@ const LocumStaffList = ({
 
     tableData?.map((data) => {
       const expiredDays = differenceInDays(new Date(data?.tenure?.to), new Date());
+      // applicantName.push(
+      //   `${formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName)}` || " "
+      // );
       applicantName.push(
-        `${formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName)}` || " "
-      );
+  <div
+      key={data.id}
+      className={`${style.justifyCenter} ${style.cursorPointer}`}
+      onClick={() => onClickViewAndVerifyFunction(data.id)}
+    >
+      {formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName) || " "}
+    </div>
+  );
       applicantDept.push([data?.basicDetailReferences?.department?.name ? data?.basicDetailReferences?.department?.name : "-"]);
         // if (workModeType === "Staff Manager") {
         if (data?.extensionRequested === true) {
