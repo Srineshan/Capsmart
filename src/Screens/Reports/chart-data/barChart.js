@@ -1,7 +1,7 @@
 import React from 'react';
 import Chart from 'react-apexcharts';
 
-const ApexBarChart = ({ series, categories, reportingPeriod, yAxisTitle }) => {
+const ApexBarChart = ({ series, categories, reportingPeriod, yAxisTitle, xAxisTitle }) => {
 
     const chartData = {
         series: series,
@@ -20,7 +20,7 @@ const ApexBarChart = ({ series, categories, reportingPeriod, yAxisTitle }) => {
                     endingShape: 'rounded'
                 },
             },
-            colors: ["#3B30AA"],
+            colors: ["#06617A"],
             dataLabels: {
                 enabled: false
             },
@@ -30,6 +30,16 @@ const ApexBarChart = ({ series, categories, reportingPeriod, yAxisTitle }) => {
                 colors: ['transparent']
             },
             xaxis: {
+                title: {
+                    text: xAxisTitle,
+                    style: {
+                        color: '#b3b3b3',
+                        fontSize: '15px',
+                        fontFamily: 'Helvetica, Arial, sans-serif',
+                        fontWeight: 400,
+                        cssClass: 'apexcharts-xaxis-label',
+                    },
+                },
                 categories: categories,
                 labels: {
                     show: true,
@@ -64,7 +74,7 @@ const ApexBarChart = ({ series, categories, reportingPeriod, yAxisTitle }) => {
                 }
             },
             title: {
-                text: `Time Period Selected - ${reportingPeriod}`,
+                // text: `Time Period Selected - ${reportingPeriod}`,
                 align: 'center',
                 style: {
                     color: '#b3b3b3',

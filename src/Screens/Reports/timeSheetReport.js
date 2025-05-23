@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { createRef, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Reject from './../../images/reject-report.png';
 import SideBar from '../../Components/Sidebar';
@@ -6,20 +6,23 @@ import Popover from '@mui/material/Popover';
 import TemplateIcon from './../../images/templateIcon.png';
 import style from './index.module.scss';
 import { Link, useParams } from 'react-router-dom';
-import { GET } from '../dataSaver';
+import { DELETE, GET } from '../dataSaver';
 import { format } from 'date-fns';
 import { formatInTimeZone } from 'date-fns-tz';
 import { currentUser } from '../../utils/auth';
-import { siteTimeZone } from '../../utils/formatting';
+import { corsUrl, siteTimeZone } from '../../utils/formatting';
 import ReportNoDataBox from '../../Components/ReusableSmallComponents/reportNoDataBox';
+import TileApplication from '../../Components/TileApplication';
+import TableTwo from '../../Components/TableDesignTwo';
+import FileDisplayDialog from '../../Components/fileDisplayDialog';
 
 export const Run = ({ link }) => {
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
-
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
     };
+
 
     const handleClose = () => {
         setAnchorEl(null);
@@ -51,6 +54,8 @@ export const Run = ({ link }) => {
 
 const TimeSheetReports = ({ getShowSampleReport }) => {
     const navigate = useNavigate();
+    const [selectedTab, setSelectedTab] = useState('REPORTINGTEMPLATES');
+    const [selectedTopTab, setSelectedTopTab] = useState('');
     const [tabName, setTabName] = useState('Standard Report Templates');
     const { reportType } = useParams();
     const [myReports, setMyReports] = useState([]);
@@ -58,6 +63,153 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
     const [standardTemplates, setStandardTemplates] = useState([]);
     const currentUserDetails = currentUser();
     const [isExpanded, setIsExpanded] = useState(true);
+    const myReportsHeaderValues = ["Report Title", "Schedule", "Saved Parameters", "Last Updated", "Action"];
+    const reportingTemplateHeaderValues = ["Report Template Title", "Type", "Last Run by", "Last Run Date/ Time", "Last Updated by", "Last Updated", "Action"];
+    const savedReportsHeaderValues = ["Saved Report", "Reporting Period", "Saved On", "Action"];
+    const [sortField, setSortField] = useState("DEFAULT");
+    const [sortValue, setSortValue] = useState("DESCENDING");
+    const [page, setPage] = useState(1);
+    const [totalCount, setTotalCount] = useState(0);
+    const [limit, setLimit] = useState(9999);
+    const [selectedFile, setselectedFile] = useState(false);
+    const [showFileDisplayDialog, setShowFileDisplayDialog] = useState(false);
+    const myReportsColSortValues = [false, false, false, false, false];
+    const reportingTemplateColSortValues = [false, false, false, false, false, false, false, false, false];
+    const savedReportsColSortValues = [false, false, false, false, false, false, false, false, false, false];
+
+    let tableHeaderValues =
+        selectedTab === "MYREPORTS"
+            ? myReportsHeaderValues
+            : selectedTab === "REPORTINGTEMPLATES"
+                ? reportingTemplateHeaderValues
+                : selectedTab === "SAVEDREPORTOUTPUTS"
+                    ? savedReportsHeaderValues
+                    : myReportsHeaderValues
+    let tableSortValues =
+        selectedTab === "MYREPORTS"
+            ? myReportsColSortValues
+            : selectedTab === "REPORTINGTEMPLATES"
+                ? reportingTemplateColSortValues
+                : selectedTab === "SAVEDREPORTOUTPUTS"
+                    ? savedReportsColSortValues
+                    : myReportsColSortValues
+    // let tableDataValues = selectedTab !== 'applicantsToProcess' ? getApplicantValues() : selectedTab === 'level-1' ? getApplicationValues() : selectedTab === 'level-1' ? getApplicationValues() : getApplicationValues();
+
+    const onClickRunReport = (data) => {
+        navigate(`/reportTypeOverview/${routeList[data?.subCategory]}`);
+    }
+
+    const onClickMyReport = (data) => {
+        showMyReport(data)
+    }
+
+    const onClickDownloadReport = async (data) => {
+        try {
+            const proxyUrl = `${corsUrl}${encodeURIComponent(data?.savedReport?.reportDoc?.fileURL)}`;
+
+            const response = await fetch(proxyUrl);
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "savedReport.pdf";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            window.URL.revokeObjectURL(url); // cleanup
+        } catch (err) {
+            console.error("Download failed:", err);
+        }
+    }
+
+    const onClickPrintPDF = (data) => {
+        const printWindow = window.open(`${corsUrl}${encodeURIComponent(data?.savedReport?.reportDoc?.fileURL)}`, "_blank");
+        if (printWindow) {
+            printWindow.focus();
+
+            // Wait until PDF is fully loaded before calling print
+            printWindow.onload = () => {
+                printWindow.print();
+            };
+        } else {
+            alert("Popup blocked! Please allow popups for this site.");
+        }
+    };
+
+    const onClickDeleteReport = async (data) => {
+        await DELETE(`application-management-service/report/savedReport/${data?.id}`)
+            .then((response) => {
+                getSavedReports();
+            })
+    }
+
+    const onClickViewReport = (data) => {
+        setselectedFile(data?.savedReport?.reportDoc);
+        setShowFileDisplayDialog(true);
+    }
+
+    let savedReportsActions = [{
+        data: "View",
+        requiredValue: "boolean",
+        onClick: onClickViewReport,
+    }, {
+        data: "Delete",
+        requiredValue: "boolean",
+        onClick: onClickDeleteReport,
+    }, {
+        data: "Download",
+        requiredValue: "boolean",
+        onClick: onClickDownloadReport,
+    }, {
+        data: "Print",
+        requiredValue: "boolean",
+        onClick: onClickPrintPDF,
+    }, {
+        data: "Share",
+        requiredValue: "boolean",
+        onClick: onClickPrintPDF,
+    }]
+    let reportingTemplatesActions = [{
+        data: "Run",
+        requiredValue: "boolean",
+        onClick: onClickRunReport,
+    }]
+    let myReportsActions = [{
+        data: "Run",
+        requiredValue: "boolean",
+        onClick: onClickMyReport,
+    }]
+    let actions = selectedTab === "MYREPORTS"
+        ? myReportsActions
+        : selectedTab === "REPORTINGTEMPLATES"
+            ? reportingTemplatesActions
+            : selectedTab === "SAVEDREPORTOUTPUTS"
+                ? savedReportsActions
+                : myReportsActions
+    let gridStyle =
+        selectedTab === "MYREPORTS"
+            ? style.myReportsGrid
+            : selectedTab === "REPORTINGTEMPLATES"
+                ? style.reportingTemplatesGrid
+                : selectedTab === "SAVEDREPORTOUTPUTS"
+                    ? style.savedReportOutputsGrid
+                    : style.myReportsGrid
+    const PDFRef = createRef();
+    const componentRef = useRef(null);
+
+    const availableParentList = {
+        allStaffMembers: 'All Staff Members',
+        permanentStaff: 'Permanent Staff',
+        locumStaff: 'Locum Staff',
+        allApplications: 'All Applications',
+        newApplicants: 'New Applicants',
+        staffReappointments: 'Reappointments',
+        locumExtensionOrRenewal: 'Locum Extension / Renewal',
+        savedReportsArchive: 'Saved Reports Archive'
+    }
+
     const availableCategories = {
         servicesOrActivities: 'SERVICES_ACTIVITIES',
         contractManagement: 'CONTRACT_MANAGEMENT',
@@ -67,6 +219,14 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         timesheets: 'TIMESHEET',
         reviewsApprovals: 'REVIEWS_APPROVALS',
         systemAdministrative: 'SYSTEM_ADMINISTRATIVE',
+        allStaffMembers: 'ALL_STAFF',
+        savedReportsArchive: '',
+        staffReappointments: 'STAFF_REAPPOINTMENT',
+        newApplicants: 'NEW_APPLICANT',
+        allApplications: 'ALL_APPLICATION',
+        locumStaff: 'LOCUM_STAFF',
+        permanentStaff: 'PERMANENT_STAFF',
+        locumExtensionOrRenewal: 'LOCUM_EXTENSION_OR_RENEWAL'
     }
 
     const routeList = {
@@ -91,7 +251,17 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         MULTI_PROVIDER_CONTRACT: 'multiProviderContractsList',
         PROOF_OF_DOCUMENTATION_COMPLIANCE_FOR_CONTRACT_BASED_REQUIREMENTS: 'nonCompliant',
         ACTIVITY_STATUS_TRACKER: 'activityStatusTracker',
-        PAYMENT_TRACKER: 'paymentProcessingStatusTracker'
+        PAYMENT_TRACKER: 'paymentProcessingStatusTracker',
+        SUBMITTED_APPLICATIONS_REVIEW_SUMMARY: 'submittedApplicationsReviewSummary',
+        DETAILED_PRIVILEGED_STAFF_SUMMARY: 'detailedPrivilegedStaffSummary',
+        OHIP_BILLING_NUMBERS_BY_CARE_PROVIDER: 'ohipBillingNumbersByCareProvider',
+        PRIVILEGED_STAFF_SUMMARY: 'privilegedStaffSummary',
+        CURRENT_NOTES_SUMMARY: 'currentNotesSummary',
+        STAFF_REAPPOINTMENT_STATUS_SUMMARY: 'staffReappointmentStatusSummary',
+        LOCUM_RENEWAL_OR_EXTENSION_APPLICATIONS_SUMMARY: 'locumRenewalOrExtensionApplicationsSummary',
+        DECLINED_OR_NOT_RENEWED_STAFF_SUMMARY: 'declinedOrNotRenewedStaffSummary',
+        CARE_PROVIDER_CAREER_MILESTONE_SUMMARY: 'careProviderCareerMilestoneSummary',
+        CARE_PROVIDERS_SUMMARY: 'careProvidersSummary'
     }
     const descriptionList = {
         ACTIVITES_SERVICES_LOG_SUMMARY: 'Activities/ Services Log Status Summary',
@@ -115,7 +285,9 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         MULTI_PROVIDER_CONTRACT: 'Multi Provider Contracts List',
         PROOF_OF_DOCUMENTATION_COMPLIANCE_FOR_CONTRACT_BASED_REQUIREMENTS: 'Proof of documentation compliance for contract based requirments',
         ACTIVITY_STATUS_TRACKER: `Status Of Activities/ Services By Service Provider For ${format(new Date(), 'MMMM yyyy')}`,
-        PAYMENT_TRACKER: 'Payment Processing Status By Service Provider'
+        PAYMENT_TRACKER: 'Payment Processing Status By Service Provider',
+        SUBMITTED_APPLICATIONS_REVIEW_SUMMARY: 'submittedApplicationsReviewSummary',
+        STAFF_REAPPOINTMENT_STATUS_SUMMARY: 'staffReappointmentStatusSummary'
     }
 
     const titleList = {
@@ -140,8 +312,28 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         MULTI_PROVIDER_CONTRACT: 'Multi Provider Contracts List',
         PROOF_OF_DOCUMENTATION_COMPLIANCE_FOR_CONTRACT_BASED_REQUIREMENTS: 'Proof of documentation compliance for contract based requirments',
         ACTIVITY_STATUS_TRACKER: `Status Of Activities/ Services By Service Provider For ${format(new Date(), 'MMMM yyyy')}`,
-        PAYMENT_TRACKER: 'Payment Processing Status By Service Provider'
+        PAYMENT_TRACKER: 'Payment Processing Status By Service Provider',
+        SUBMITTED_APPLICATIONS_REVIEW_SUMMARY: 'Submitted Applications Review Summary',
+        STAFF_REAPPOINTMENT_STATUS_SUMMARY: 'Staff Reappointment Status Summary'
     }
+
+    const availableScheduleValue = {
+        ONETIME: 'One Time',
+        EVERYWEEKDAY: 'Every Weekday',
+        WEEKLY: 'Weekly',
+        MONTHLY: 'Monthly',
+        QUARTELY: 'Quaterly',
+        ANNUALY: 'Annually'
+    }
+
+    const filterLabels = {
+        departmentSpecialties: "Department",
+        positionType: "Position",
+        applicationCreationType: "Application Type",
+        applicantTypeId: "Staff Type",
+        privilegingCategoryId: "Privilege Category",
+        startDate: "Reporting Time Period", // represents start + end together
+    };
 
     useEffect(() => {
         sessionStorage.removeItem('reportFilter');
@@ -170,79 +362,196 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
     // }
 
     useEffect(() => {
-        if (tabName === 'My Reports') {
-            getMyReports();
-        } else if (tabName === 'Saved Report Outputs') {
-            getSavedReports();
-        } else {
-            getStandardTemplates();
+        getMyReports();
+        getSavedReports();
+        getStandardTemplates();
+    }, [selectedTab, reportType])
+
+    const getFilterSummary = (filters) => {
+        let count = 0;
+        const labels = [];
+
+        // Special handling for startDate + endDate
+        if (filters.startDate && filters.endDate) {
+            count += 1;
+            labels.push(filterLabels.startDate);
         }
-    }, [tabName, reportType])
+
+        const excludeKeys = ["startDate", "endDate", "applicationCurrentLevel"];
+
+        for (const [key, value] of Object.entries(filters)) {
+            if (excludeKeys.includes(key)) continue;
+
+            const hasValue = Array.isArray(value)
+                ? value.length > 0
+                : value !== null && value !== undefined && value !== "";
+
+            if (hasValue && filterLabels[key]) {
+                count += 1;
+                labels.push(filterLabels[key]);
+            }
+        }
+
+        return {
+            count,
+            labels
+        };
+    }
 
     const getMyReports = async () => {
-        if (reportType === 'contractManagement') {
-            const { data: myReport } = await GET(`timesheet-management-service/report/myReport?userId=${currentUserDetails?.id}&category=TIMESHEET`);
-            setMyReports(myReport);
-            let temp = [...myReport] || [];
-            const { data: myReportContract } = await GET(`contract-managment-service/reports/myReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
-            myReportContract?.map(data => { temp.push(data) })
-            setMyReports(temp);
-        } else if (reportType === "contractCompliance") {
-            const { data: myReport } = await GET(`contract-managment-service/reports/myReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
-            setMyReports(myReport);
-        } else {
-            const { data: myReport } = await GET(`timesheet-management-service/report/myReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
-            setMyReports(myReport);
-        }
+        const { data: myReport } = await GET(`application-management-service/report/myReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
+        setMyReports(myReport);
     }
 
     console.log(myReports)
 
     const getSavedReports = async () => {
-        const { data: savedReport } = await GET(`timesheet-management-service/report/savedReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
+        const { data: savedReport } = await GET(`application-management-service/report/savedReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
         setSavedReports(savedReport);
     }
 
+    const getSelectedTab = (value) => {
+        setSelectedTab(value);
+    }
+
     const getStandardTemplates = async () => {
-        if (reportType === 'contractManagement') {
-            const { data: standardTemplates } = await GET(`timesheet-management-service/report/standardTemplates?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
-            const { data: standardTemplatesContract } = await GET(`contract-managment-service/reports/standardTemplates?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
-            let temp = standardTemplates || [];
-            standardTemplatesContract?.map(data => {
-                temp.push(data)
-            })
-            console.log(temp)
-            setStandardTemplates(temp);
-        } else if (reportType === "contractCompliance") {
-            const { data: standardTemplates } = await GET(`contract-managment-service/reports/standardTemplates?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
-            setStandardTemplates(standardTemplates);
-        } else {
-            const { data: standardTemplates } = await GET(`timesheet-management-service/report/standardTemplates?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
-            setStandardTemplates(standardTemplates);
-        }
+        const { data: standardTemplates } = await GET(`application-management-service/report/standardTemplates?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
+        setStandardTemplates(standardTemplates);
     }
 
     const getIsExpanded = (value) => {
         setIsExpanded(value);
     }
 
-    const getScheduleValue = (value) => {
-        if (value === 'ONETIME') {
-            return 'One Time';
-        } else if (value === 'EVERYWEEKDAY') {
-            return 'Every Weekday';
-        } else if (value === 'WEEKLY') {
-            return 'Weekly';
-        } else if (value === 'MONTHLY') {
-            return 'Monthly';
-        } else if (value === 'QUARTELY') {
-            return 'Quaterly';
-        } else if (value === 'ANNUALY') {
-            return 'Annualy';
-        } else {
-            return '';
-        }
+    const getIsShowFileDialog = (value) => {
+        setShowFileDisplayDialog(value);
     }
+
+    const getMyReportsValues = () => {
+        const title = [];
+        const titleHover = [];
+        const schedule = [];
+        const savedParams = [];
+        const savedParamHoverText = [];
+        const lastUpdated = [];
+        const actions = [];
+        myReports?.map((data, index) => {
+            title.push(data?.report?.title);
+            titleHover.push(data?.report?.description)
+            schedule.push(availableScheduleValue[data?.report?.schedule?.schedule]);
+            savedParams.push(getFilterSummary(data?.report?.filters)?.count);
+            // const remindTooltipValue = reminderCount >= 0 ? (
+            //     <div>
+            //       <div>{reminderText}</div>
+            //       <div>{reminderDates}</div>
+            //     </div>
+            //   ) : null;
+            lastUpdated.push(data?.report?.lastUpdated ? format(new Date(data?.report?.lastUpdated), "MMM dd, yyyy") : '-');
+            actions.push(true);
+        });
+
+        return [
+            { type: "text", value: title, tooltipValueText: titleHover },
+            { type: "text", value: schedule },
+            { type: "text", value: savedParams },
+            { type: "text", value: lastUpdated },
+            { type: "action", value: actions },
+        ];
+    }
+
+    const getReportingTemplatesValues = () => {
+        const title = [];
+        const titleHover = [];
+        const type = [];
+        const lastRunDateAndTime = [];
+        const lastRunBy = [];
+        const lastUpdated = [];
+        const lastUpdatedBy = [];
+        const actions = [];
+        standardTemplates?.map((data, index) => {
+            title.push(data?.title)
+            titleHover.push(data?.description)
+            type.push('Standard');
+            lastRunBy.push('-');
+            lastRunDateAndTime.push(data?.lastRun ? format(new Date(data?.lastRun), "MMM dd, yyyy") : '-');
+            lastUpdatedBy.push('-');
+            lastUpdated.push(data?.lastUpdate ? format(new Date(data?.lastUpdate), "MMM dd, yyyy") : '-');
+            actions.push(true);
+        });
+
+        return [
+            { type: "text", value: title, tooltipValueText: titleHover },
+            { type: "text", value: type },
+            { type: "text", value: lastRunBy },
+            { type: "text", value: lastRunDateAndTime },
+            { type: "text", value: lastUpdatedBy },
+            { type: "text", value: lastUpdated },
+            { type: "action", value: actions },
+        ];
+    }
+
+    const getSavedReportOutputsValues = () => {
+        const title = [];
+        const titleHover = [];
+        const period = [];
+        const savedOn = [];
+        const actions = [];
+        savedReports?.map((data, index) => {
+            title.push(data?.savedReport?.reportName)
+            titleHover.push(data?.savedReport?.reportNotes)
+            period.push(data?.report?.schedule?.schedule);
+            savedOn.push(data?.savedReport?.runDate ? format(new Date(data?.savedReport?.runDate), "MMM dd, yyyy") : '-');
+            actions.push(true);
+        });
+
+        return [
+            { type: "text", value: title, tooltipValueText: titleHover },
+            { type: "text", value: period },
+            { type: "text", value: savedOn },
+            { type: "action", value: actions },
+        ];
+    }
+
+    let tableDataValues =
+        selectedTab === "MYREPORTS"
+            ? getMyReportsValues()
+            : selectedTab === "REPORTINGTEMPLATES"
+                ? getReportingTemplatesValues()
+                : selectedTab === "SAVEDREPORTOUTPUTS"
+                    ? getSavedReportOutputsValues()
+                    : getMyReportsValues()
+
+    let tableData =
+        selectedTab === "MYREPORTS"
+            ? myReports
+            : selectedTab === "REPORTINGTEMPLATES"
+                ? standardTemplates
+                : selectedTab === "SAVEDREPORTOUTPUTS"
+                    ? savedReports
+                    : myReports
+
+    const getSelectedPage = (value) => {
+        setPage(value);
+    }
+
+    const handleLimitChange = (newLimit) => {
+        setLimit(newLimit);
+    };
+
+    const getHandleSort = (value, sortBy) => {
+        if (sortBy === "ASCENDING") {
+            setSortField(value);
+            setSortValue("DESCENDING");
+        } else if (sortBy === "DESCENDING") {
+            setSortField("DEFAULT");
+            setSortValue("ASCENDING");
+        } else if (sortBy === "NONE") {
+            setSortField(value);
+            setSortValue("ASCENDING");
+        }
+    };
+
+    console.log(tableDataValues, 'tableDataValues')
     return (
         <div className={style.margin20}>
             <div className={isExpanded ? style.bigCardGrid : style.smallCardGrid}>
@@ -251,7 +560,7 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
                         <div></div>
                     </SideBar>
                 </div>
-                <div className={style.bigCardStyle}>
+                {/* <div className={style.bigCardStyle}>
                     <div className={style.paginationCol}>
                         <div className={` ${style.titleStyle} ${style.margin20}`}>
                             {reportType === 'servicesOrActivities' ? 'Services / Activities Log Reports'
@@ -265,28 +574,6 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
                                                             : reportType === 'systemAdministration' ? 'System Administration'
                                                                 : ""}
                         </div>
-                        {/* <div className={`${style.spaceBetween} ${style.margin20}`}>
-                            <div className={style.displayInRow}>
-                                <p className={style.paginationStyle}>1 - 10 of 200<span className={`${style.marginLeft20} ${style.leftChevronColor}`}>&lt;</span> </p>
-                                <img src={ChevronRight} className={style.roundChevron} />
-                            </div>
-                            <select
-                                name="sort"
-                                id="sort"
-                                className={style.selectFieldWidth}>
-                                <option value="Sort By" >
-                                    Sort By
-                                </option>
-                            </select>
-                            <select
-                                name="action"
-                                id="action"
-                                className={style.selectFieldWidth}>
-                                <option value="Action" >
-                                    Action
-                                </option>
-                            </select>
-                        </div> */}
                     </div>
                     <div className={style.reportsBorderStyle}></div>
                     <div className={`${style.reportsMargin20} ${style.spaceBetween} ${style.borderBottomReportsStyle}`}>
@@ -322,8 +609,6 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
                                 <p className={style.headingStyle}>Report Title</p>
                                 <p className={style.headingStyle}>Description</p>
                                 <p className={style.headingStyle}>Last Run Date/ Time</p>
-                                {/* <p className={style.headingStyle}>Last Updated By</p> */}
-                                {/* <p className={style.headingStyle}>Owner</p> */}
                                 <p className={style.headingStyle}>Last Updated</p>
                             </div>
                             <div className={style.scrollStyle}>
@@ -332,269 +617,14 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
                                         <div className={style.tableDataReportsFontStyle}>{index + 1}</div>
                                         <Link to={`/reportTypeOverview/${routeList[data?.subCategory]}`} className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>{titleList[data?.title]}</div></Link>
                                         <div className={style.tableDataReportsFontStyle}>{descriptionList[data?.description]}</div>
-                                        {/* <div className={style.tableDataReportsFontStyle}>{data?.lastRun !== null ? format(getZonedTime(new Date(data?.lastRun)), 'd MMM yyyy HH:mm z') : '-'} </div> */}
                                         <div className={style.tableDataReportsFontStyle}>{data?.lastRun !== null ? formatInTimeZone(new Date(data?.lastRun), siteTimeZone(), 'd MMM yyyy HH:mm') : '-'} </div>
-                                        {/* <div className={style.tableDataReportsFontStyle}>{currentUserDetails?.fullName}</div> */}
                                         <div className={style.tableDataReportsFontStyle}>{data?.lastUpdate !== null ? format(new Date(`${data?.lastUpdate}T00:00`), 'd MMM yyyy') : '-'}</div>
                                         <Link to={`/reportTypeOverview/${routeList[data?.subCategory]}`} className={style.linkStyle}>
                                             <Run />
                                         </Link>
                                     </div>
                                 ))}
-                                {/* {reportType === 'contractManagement' && (
-                                    <div className={style.scrollStyle}>
-                                        <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
-                                            <div className={style.tableDataReportsFontStyle}>1</div>
-                                            <Link to="/reportTypeOverview/staffReappointmentsNotes" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Upcoming Contract Renewals</div></Link>
-                                            <div className={style.tableDataReportsFontStyle}>Upcoming Contract Renewals</div>
-                                            <div className={style.tableDataReportsFontStyle}>{formatInTimeZone(new Date(), 'America/New_York', 'd MMM yyyy HH:mm')} </div>
-                                            <div className={style.tableDataReportsFontStyle}>{format(new Date(), 'd MMM yyyy')}</div>
-                                            <Link to={"/reportTypeOverview/staffReappointmentsNotes"} className={style.linkStyle}>
-                                                <Run />
-                                            </Link>
-                                        </div>
-                                        <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
-                                            <div className={style.tableDataReportsFontStyle}>2</div>
-                                            <Link to="/reportTypeOverview/staffReappointments" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>List of One Time Contracts that will Terminate on Expiration</div></Link>
-                                            <div className={style.tableDataReportsFontStyle}>List of One Time Contracts that will Terminate on Expiration</div>
-                                            <div className={style.tableDataReportsFontStyle}>{formatInTimeZone(new Date(), 'America/New_York', 'd MMM yyyy HH:mm')} </div>
-                                            <div className={style.tableDataReportsFontStyle}>{formatInTimeZone(new Date(), 'America/New_York', 'd MMM yyyy')}</div>
-                                            <Link to={"/reportTypeOverview/staffReappointments"} className={style.linkStyle}>
-                                                <Run />
-                                            </Link>
-                                        </div>
-                                        <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
-                                            <div className={style.tableDataReportsFontStyle}>3</div>
-                                            <Link to="/reportTypeOverview/contractDocumentsOnFile" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Contract Documents On File</div></Link>
-                                            <div className={style.tableDataReportsFontStyle}>Contract Documents On File</div>
-                                            <div className={style.tableDataReportsFontStyle}>{formatInTimeZone(new Date(), 'America/New_York', 'd MMM yyyy HH:mm')} </div>
-                                            <div className={style.tableDataReportsFontStyle}>{format(new Date(), 'd MMM yyyy')}</div>
-                                            <Link to={"/reportTypeOverview/contractDocumentsOnFile"} className={style.linkStyle}>
-                                                <Run />
-                                            </Link>
-                                        </div>
-                                        <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
-                                            <div className={style.tableDataReportsFontStyle}>4</div>
-                                            <Link to="/reportTypeOverview/multiProviderContractsList" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Multi Provider Contracts List</div></Link>
-                                            <div className={style.tableDataReportsFontStyle}>Multi Provider Contracts List</div>
-                                            <div className={style.tableDataReportsFontStyle}>{formatInTimeZone(new Date(), 'America/New_York', 'd MMM yyyy HH:mm')} </div>
-                                            <div className={style.tableDataReportsFontStyle}>{formatInTimeZone(new Date(), 'America/New_York', 'd MMM yyyy')}</div>
-                                            <Link to={"/reportTypeOverview/multiProviderContractsList"} className={style.linkStyle}>
-                                                <Run />
-                                            </Link>
-                                        </div>
-                                        <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
-                                            <div className={style.tableDataReportsFontStyle}>5</div>
-                                            <Link to="/reportTypeOverview/contractsWithABusinessEntity" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Contracts With A Business Entity</div></Link>
-                                            <div className={style.tableDataReportsFontStyle}>Contracts With A Business Entity</div>
-                                            <div className={style.tableDataReportsFontStyle}>{formatInTimeZone(new Date(), 'America/New_York', 'd MMM yyyy HH:mm')} </div>
-                                            <div className={style.tableDataReportsFontStyle}>{format(new Date(), 'd MMM yyyy')}</div>
-                                            <Link to={"/reportTypeOverview/contractsWithABusinessEntity"} className={style.linkStyle}>
-                                                <Run />
-                                            </Link>
-                                        </div>
-                                        <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
-                                            <div className={style.tableDataReportsFontStyle}>6</div>
-                                            <Link to="/reportTypeOverview/currentRemitToAddressForActiveContracts" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Current Remit To Address For Active Contracts</div></Link>
-                                            <div className={style.tableDataReportsFontStyle}>Current Remit To Address For Active Contracts</div>
-                                            <div className={style.tableDataReportsFontStyle}>{formatInTimeZone(new Date(), 'America/New_York', 'd MMM yyyy HH:mm')} </div>
-                                            <div className={style.tableDataReportsFontStyle}>{formatInTimeZone(new Date(), 'America/New_York', 'd MMM yyyy')}</div>
-                                            <Link to={"/reportTypeOverview/currentRemitToAddressForActiveContracts"} className={style.linkStyle}>
-                                                <Run />
-                                            </Link>
-                                        </div>
-                                    </div>
-                                )} */}
                             </div>
-                            {/* {reportType === 'servicesOrActivities' ? (
-                                <div className={style.scrollStyle}>
-                                    <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
-                                        <div className={style.tableDataReportsFontStyle}>1</div>
-                                        <Link to="/reportTypeOverview/activitiesOrServices" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Activities/ Services Log Status Summary</div></Link>
-                                        <div className={style.tableDataReportsFontStyle}>Activities/ Services Log Status Summary</div>
-                                        <div className={style.tableDataReportsFontStyle}>Jan 1 2022, 14:20 </div>
-                                        <div className={style.tableDataReportsFontStyle}>Carlos C</div>
-                                        <div className={style.tableDataReportsFontStyle}>Jan 1 2022</div>
-                                        <Link to={"/reportTypeOverview/activitiesOrServices"} className={style.linkStyle}>
-                                            <Run />
-                                        </Link>
-                                    </div>
-                                    <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
-                                        <div className={style.tableDataReportsFontStyle}>2</div>
-                                        <Link to="/reportTypeOverview/addOnActivities" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Add On Activities/ Services Requests Status Summary</div></Link>
-                                        <div className={style.tableDataReportsFontStyle}>Add On Activities/ Services Requests Status Summary</div>
-                                        <div className={style.tableDataReportsFontStyle}>Feb 11 2022, 18:09 </div>
-                                        <div className={style.tableDataReportsFontStyle}>Carlos C</div>
-                                        <div className={style.tableDataReportsFontStyle}>Feb 11 2022</div>
-                                        <Link to={"/reportTypeOverview/addOnActivities"} className={style.linkStyle}>
-                                            <Run />
-                                        </Link>
-                                    </div>
-                                </div>
-                            ) : reportType === 'contractManagement' ? (
-                                <div className={style.scrollStyle}>
-                                    <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
-                                        <div className={style.tableDataReportsFontStyle}>1</div>
-                                        <Link to="/reportTypeOverview/staffReappointmentsNotes" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Upcoming Contract Renewals</div></Link>
-                                        <div className={style.tableDataReportsFontStyle}>Upcoming Contract Renewals</div>
-                                        <div className={style.tableDataReportsFontStyle}>Jan 1 2022, 14:20 </div>
-                                        <div className={style.tableDataReportsFontStyle}>Carlos C</div>
-                                        <div className={style.tableDataReportsFontStyle}>Jan 1 2022</div>
-                                        <Link to={"/reportTypeOverview/staffReappointmentsNotes"} className={style.linkStyle}>
-                                            <Run />
-                                        </Link>
-                                    </div>
-                                    <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
-                                        <div className={style.tableDataReportsFontStyle}>2</div>
-                                        <Link to="/reportTypeOverview/staffReappointments" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>List of One Time Contracts that will Terminate on Expiration</div></Link>
-                                        <div className={style.tableDataReportsFontStyle}>List of One Time Contracts that will Terminate on Expiration</div>
-                                        <div className={style.tableDataReportsFontStyle}>Jan 1 2022, 14:20 </div>
-                                        <div className={style.tableDataReportsFontStyle}>Carlos C</div>
-                                        <div className={style.tableDataReportsFontStyle}>Jan 1 2022</div>
-                                        <Link to={"/reportTypeOverview/staffReappointments"} className={style.linkStyle}>
-                                            <Run />
-                                        </Link>
-                                    </div>
-                                </div>
-                            ) : reportType === 'contractCompliance' ? (
-                                <div className={style.scrollStyle}>
-                                    <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
-                                        <div className={style.tableDataReportsFontStyle}>2</div>
-                                        <Link to="/reportTypeOverview/nonCompliant" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>List Of Contracts That Are Non Compliant With Proof Of Documentation Requirement</div></Link>
-                                        <div className={style.tableDataReportsFontStyle}>List Of Contracts That Are Non Compliant With Proof Of Documentation Requirement</div>
-                                        <div className={style.tableDataReportsFontStyle}>Feb 11 2022, 18:09 </div>
-                                        <div className={style.tableDataReportsFontStyle}>Carlos C</div>
-                                        <div className={style.tableDataReportsFontStyle}>Feb 11 2022</div>
-                                        <Link to={"/reportTypeOverview/nonCompliant"} className={style.linkStyle}>
-                                            <Run />
-                                        </Link>
-                                    </div>
-                                </div>
-                            ) : reportType === 'contractPerformance' ? (
-                                <div className={style.scrollStyle}>
-                                    <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
-                                        <div className={style.tableDataReportsFontStyle}>1</div>
-                                        <Link to="/reportTypeOverview/complianceStatus" className={style.linkStyle}>
-                                        <div className={style.tableDataReportsFontStyle}>Paid Consulting Hours & Billing Productivity Index by Contractor</div>
-                                        </Link>
-                                        <div className={style.tableDataReportsFontStyle}>Paid Consulting Hours & Billing Productivity Index by Contractor</div>
-                                        <div className={style.tableDataReportsFontStyle}>Jan 1 2022, 14:20 </div>
-                                        <div className={style.tableDataReportsFontStyle}>Carlos C</div>
-                                        <div className={style.tableDataReportsFontStyle}>Jan 1 2022</div>
-                                        <Link to={"/reportTypeOverview/complianceStatus"} className={style.linkStyle}>
-                                            <Run />
-                                        </Link>
-                                    </div>
-                                    <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
-                                        <div className={style.tableDataReportsFontStyle}>2</div>
-                                        <Link to="/reportTypeOverview/scheduledActivityByContract" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Scheduled Activity/ Services - forecasted to actual by contract</div></Link>
-                                        <div className={style.tableDataReportsFontStyle}>Scheduled Activity/ Services - forecasted to actual by contract</div>
-                                        <div className={style.tableDataReportsFontStyle}>Jan 1 2022, 14:20  </div>
-                                        <div className={style.tableDataReportsFontStyle}>Carlos C</div>
-                                        <div className={style.tableDataReportsFontStyle}>Jan 1 2022</div>
-                                        <Link to={"/reportTypeOverview/scheduledActivityByContract"} className={style.linkStyle}>
-                                            <Run />
-                                        </Link>
-                                    </div>
-                                </div>
-                            ) : reportType === 'payments' ? (
-                                <div className={style.scrollStyle}>
-                                    <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
-                                        <div className={style.tableDataReportsFontStyle}>1</div>
-                                        <Link to="/reportTypeOverview/paymentsProcessingSummary" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Payments Processing Summary</div></Link>
-                                        <div className={style.tableDataReportsFontStyle}>This report provides a comprehensive summary of statistics with regards to status of payments being made to contracted service providers</div>
-                                        <div className={style.tableDataReportsFontStyle}>{format(new Date(), 'MMM d yyyy, H:m')} </div>
-                                        <div className={style.tableDataReportsFontStyle}>{currentUserDetails?.fullName}</div>
-                                        <div className={style.tableDataReportsFontStyle}>{format(new Date(), 'MMM d yyyy')} </div>
-                                        <Link to={"/reportTypeOverview/paymentsProcessingSummary"} className={style.linkStyle}>
-                                            <Run />
-                                        </Link>
-                                    </div>
-                                    <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
-                                        <div className={style.tableDataReportsFontStyle}>2</div>
-                                        <Link to="/reportTypeOverview/compensationCostAnalysis" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Compensation Cost Analysis</div></Link>
-                                        <div className={style.tableDataReportsFontStyle}>This report provides a comprehensive summary of statistics with regards to status of payments being made to contracted service providers</div>
-                                        <div className={style.tableDataReportsFontStyle}>{format(new Date(), 'MMM d yyyy, H:m')} </div>
-                                        <div className={style.tableDataReportsFontStyle}>{currentUserDetails?.fullName}</div>
-                                        <div className={style.tableDataReportsFontStyle}>{format(new Date(), 'MMM d yyyy')} </div>
-                                        <Link to={"/reportTypeOverview/compensationCostAnalysis"} className={style.linkStyle}>
-                                            <Run />
-                                        </Link>
-                                    </div>
-                                </div>
-                            ) : reportType === 'timesheets' ? (
-                                <div className={style.scrollStyle}>
-                                    <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
-                                        <div className={style.tableDataReportsFontStyle}>1</div>
-                                        <Link to="/reportTypeOverview/timesheetProcessingSummary" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Timesheet Processing Summary</div></Link>
-                                        <div className={style.tableDataReportsFontStyle}>Timesheet Processing Summary</div>
-                                        <div className={style.tableDataReportsFontStyle}>{format(new Date(), 'MMM d yyyy, H:m')} </div>
-                                        <div className={style.tableDataReportsFontStyle}>{currentUserDetails?.fullName}</div>
-                                        <div className={style.tableDataReportsFontStyle}>{format(new Date(), 'MMM d yyyy')} </div>
-                                        <Link to={"/reportTypeOverview/timesheetProcessingSummary"} className={style.linkStyle}>
-                                            <Run />
-                                        </Link>
-                                    </div>
-                                    <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
-                                        <div className={style.tableDataReportsFontStyle}>2</div>
-                                        <Link to="/reportTypeOverview/listingOfTimesheetsNotPaid" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Listing Of Timesheets Not Paid</div></Link>
-                                        <div className={style.tableDataReportsFontStyle}>Listing Of Timesheets Not Paid</div>
-                                        <div className={style.tableDataReportsFontStyle}>{format(new Date(), 'MMM d yyyy, H:m')} </div>
-                                        <div className={style.tableDataReportsFontStyle}>{currentUserDetails?.fullName}</div>
-                                        <div className={style.tableDataReportsFontStyle}>{format(new Date(), 'MMM d yyyy')} </div>
-                                        <Link to={"/reportTypeOverview/listingOfTimesheetsNotPaid"} className={style.linkStyle}>
-                                            <Run />
-                                        </Link>
-                                    </div>
-                                    <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
-                                        <div className={style.tableDataReportsFontStyle}>3</div>
-                                        <Link to="/reportTypeOverview/staffReappointmentTracker" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Submitted Timesheets Payment Status</div></Link>
-                                        <div className={style.tableDataReportsFontStyle}>Submitted Timesheets Payment Status</div>
-                                        <div className={style.tableDataReportsFontStyle}>{format(new Date(), 'MMM d yyyy, H:m')} </div>
-                                        <div className={style.tableDataReportsFontStyle}>{currentUserDetails?.fullName}</div>
-                                        <div className={style.tableDataReportsFontStyle}>{format(new Date(), 'MMM d yyyy')} </div>
-                                        <Link to={"/reportTypeOverview/staffReappointmentTracker"} className={style.linkStyle}>
-                                            <Run />
-                                        </Link>
-                                    </div>
-                                </div>
-                            ) : (
-                                <div className={style.scrollStyle}>
-                                    <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
-                                        <div className={style.tableDataReportsFontStyle}>1</div>
-                                        <Link to="/reportTypeOverview/activitiesOrServices" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Activities/ Services Log Status Summary</div></Link>
-                                        <div className={style.tableDataReportsFontStyle}>Activities/ Services Log Status Summary</div>
-                                        <div className={style.tableDataReportsFontStyle}>Jan 1 2022, 14:20 </div>
-                                        <div className={style.tableDataReportsFontStyle}>Carlos C</div>
-                                        <div className={style.tableDataReportsFontStyle}>Jan 1 2022</div>
-                                        <Link to={"/reportTypeOverview/activitiesOrServices"} className={style.linkStyle}>
-                                            <Run />
-                                        </Link>
-                                    </div>
-                                    <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
-                                        <div className={style.tableDataReportsFontStyle}>2</div>
-                                        <Link to="/reportTypeOverview/addOnActivities" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Add On Activities/ Services Requests Status Summary</div></Link>
-                                        <div className={style.tableDataReportsFontStyle}>Add On Activities/ Services Requests Status Summary</div>
-                                        <div className={style.tableDataReportsFontStyle}>Feb 11 2022, 18:09 </div>
-                                        <div className={style.tableDataReportsFontStyle}>Carlos C</div>
-                                        <div className={style.tableDataReportsFontStyle}>Feb 11 2022</div>
-                                        <Link to={"/reportTypeOverview/addOnActivities"} className={style.linkStyle}>
-                                            <Run />
-                                        </Link>
-                                    </div>
-                                    <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
-                                        <div className={style.tableDataReportsFontStyle}>3</div>
-                                        <Link to="/reportTypeOverview/scheduledActivity" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Scheduled Activity/ Services - forcasted to actual</div></Link>
-                                        <div className={style.tableDataReportsFontStyle}>Scheduled Activity/ Services - forcasted to actual</div>
-                                        <div className={style.tableDataReportsFontStyle}>Feb 15 2022, 03:40 </div>
-                                        <div className={style.tableDataReportsFontStyle}>Carlos C</div>
-                                        <div className={style.tableDataReportsFontStyle}>Feb 15 2022</div>
-                                        <Link to={"/reportTypeOverview/scheduledActivity"} className={style.linkStyle}>
-                                            <Run />
-                                        </Link>
-                                    </div>
-                                </div>
-                            )} */}
                         </div>
                     ) : tabName === "My Reports" ? (
                         <div className={`${style.marginLeft20} ${style.marginTop20}`}>
@@ -622,7 +652,6 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
                                         <div onClick={() => showMyReport(data)}>
                                             <Run />
                                         </div>
-                                        {/* <div className={`${style.reportStyle} ${style.blueCard} ${style.cursorPointer}`}>Run</div> */}
                                     </div>
                                 )) : (
                                     <ReportNoDataBox heading={'There are no scheduled reports for you to run.'}
@@ -656,9 +685,65 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
                             </div>
                         </div>
                     ) : ''}
+                </div> */}
+                <div>
+                    <div>
+                        <div
+                            className={`${style.spaceBetween} ${style.marginLeft30} `}
+                        >
+                            <div className={`${style.tabs}`}>
+                                <TileApplication selectedTab={selectedTopTab} getSelectedTab={() => { }} tileLabel={`Reports Accross ${availableParentList[reportType]}`} currentTile="" />
+                            </div>
+                        </div>
+                        <div className={`${style.borderStyleTiles} ${style.marginLeft30}`}></div>
+                        <div
+                            className={`${style.spaceBetween} ${style.marginLeft30} ${style.marginTop10} `}
+                        >
+                            <div className={`${style.tabs}`}>
+                                <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="My Reports" tileCount={myReports?.length} currentTile="MYREPORTS" />
+                                <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="Reporting Templates" tileCount={standardTemplates?.length} currentTile="REPORTINGTEMPLATES" />
+                                <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="Saved Report Outputs" tileCount={savedReports?.length} currentTile="SAVEDREPORTOUTPUTS" />
+                            </div>
+                        </div>
+                    </div>
+                    <div className={`${style.bigCardStyle}`}>
+                        <div ref={componentRef}>
+                            <div
+                                className={`${style.reduceMarginTop10} ${style.margin20} staffApplicationList`}
+                                ref={PDFRef}
+                            >
+                                <TableTwo
+                                    tableHeaderValues={tableHeaderValues}
+                                    tableDataValues={tableDataValues}
+                                    tableData={tableData}
+                                    gridStyle={gridStyle}
+                                    actions={actions}
+                                    scrollStyle={style.contractScrollStyle}
+                                    tableSortValues={tableSortValues}
+                                    heading={"There are no Record for you to manage"}
+                                    onClickFunction={() => { }}
+                                    getHandleSort={getHandleSort}
+                                    sortValue={{ sortBy: sortValue, sortByField: sortField }}
+                                    getSelectedPage={getSelectedPage}
+                                    totalCount={totalCount}
+                                    page={page}
+                                    searchTermForTable={""}
+                                    searchCount={0}
+                                    setSearchTermForTable={() => { }}
+                                    onLimitChange={handleLimitChange}
+                                />
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
+            {showFileDisplayDialog && (
+                <FileDisplayDialog
+                    getIsOpen={getIsShowFileDialog}
+                    file={selectedFile}
+                />
+            )}
+        </div >
     )
 }
 

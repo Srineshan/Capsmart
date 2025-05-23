@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import Navbar from '../../Components/Navbar';
 import LocumStaffList from './locumStaffList';
 import NewActiveApplication from '../../Components/ViewVerifyScreen';
@@ -18,6 +18,52 @@ const LocumStaff = () => {
     const [showLocumExtensiveRequestDialog, setShowLocumExtensiveRequestDialog] = useState(false);
     const [showLocumRequestDialog, setShowLocumRequestDialog] = useState(false);
     const [showNotesDialog, setShowNotesDialog] = useState(false);
+
+    useEffect(() => {
+        const fetchSessionDetails = async () => {
+            const query = new URLSearchParams(window.location.search);
+            const selectTabValue = query.get("selectTabValue");
+            const staffId = query.get("staffId");
+            const requestId = query.get("requestId");
+            console.log(selectTabValue, 'sessionDetails');
+            if (!selectTabValue) {
+                console.error("No session_id found in URL");
+                return;
+            } else {
+                setSelectedTab(selectTabValue)
+            }
+            if (!requestId && !staffId) {
+                console.error("No session_id found in URL");
+                return;
+            } else if (selectTabValue === "ACTIVELOCUM" && staffId){
+                setShowLocumExtensiveDialog(true)
+                sessionStorage.setItem("applicationId", staffId);
+            } else if (selectTabValue === "EXPIREDLOCUM" && staffId){
+                setShowLocumExtensiveDialog(true)
+                sessionStorage.setItem("applicationId", staffId);
+            } else if (selectTabValue === "REQUEST" && requestId){
+                setShowLocumRequestDialog(true)
+                sessionStorage.setItem("applicationId", requestId);
+            }
+        };
+        fetchSessionDetails();
+    }, []);
+
+    useEffect(() => {
+        if (showLocumRequestDialog) {
+            setTimeout (() => {
+            const path = window.location.pathname;
+            window.history.replaceState(null, '', path);
+            }, 2000 )
+        }
+         if (showLocumExtensiveDialog) {
+            setTimeout (() => {
+            const path = window.location.pathname;
+            window.history.replaceState(null, '', path);
+            }, 2000 )
+        }
+    }, [showLocumRequestDialog,showLocumExtensiveDialog]);
+
 
     const getSelectedTab = (value) => {
         setSelectedTab(value);

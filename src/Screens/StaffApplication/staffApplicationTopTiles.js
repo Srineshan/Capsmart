@@ -478,7 +478,7 @@ import { GET } from './../../Screens/dataSaver';
 import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
 
-const StaffApplicationTopTiles = (searchTermForTable) => {
+const StaffApplicationTopTiles = (searchTermForTable,totalCount) => {
   const cookie = new Cookie();
   const userDetails = cookie.get('user');
   const [user, setUser] = useState();
@@ -492,25 +492,30 @@ const StaffApplicationTopTiles = (searchTermForTable) => {
   const [currentRoleIndex, setCurrentRoleIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const applicationId = "66dc44ec788741fedc982b01";
-  const [totalCountLocum, setTotalCountLocum] = useState(0);
+  const [totalCountLocumOverride, setTotalCountLocumOverride] = useState(0);
   const workModeType = sessionStorage.getItem('workModeType')
   const userDetailsFetchOption = (sessionStorage.getItem('user') !== "undefined" && sessionStorage.getItem('user')) ? JSON.parse(sessionStorage.getItem('user')) : {};
   const applicationType =
     sessionStorage.getItem('applicationCreationType')
   let userDepartmentList;
   let userSpecialty;
-
   useEffect(() => {
     userDepartmentList = userDetailsFetchOption?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.id;
     userSpecialty = userDetailsFetchOption?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.serviceAreas?.[0]?.id;
     console.log("userSpecialty", userDepartmentList, userSpecialty)
-    getTitleCountsLocum();
+    getTitleCountsLocum("LOCUM");
   }, [applicationType, selectedTab, searchTermForTable?.searchTermForTable])
 
   useEffect(() => {
-    getTitleCountsLocum();
+    getTitleCountsLocum("LOCUM");
     getTitleCounts("REAPPOINTMENT");
   }, [searchTermForTable?.searchTermForTable])
+
+   useEffect(() => {
+   if(workModeType === "Chief Of Staff"){
+    getRequestData()
+   }
+  }, [workModeType])
 
   useEffect(() => {
     // getTitleCounts(applicationCreationType);
@@ -565,6 +570,20 @@ const StaffApplicationTopTiles = (searchTermForTable) => {
       console.error('Error fetching counts:', error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const getRequestData = async () => {
+    try {
+     const response = await GET(
+          `application-management-service/application/request?requestType=OVERRIDE_REQUEST&status=PENDING&role=Chief Of Staff`,
+        );
+      setTotalCountLocumOverride(response?.data?.numberOfElements)
+      console.log("setLocumCounts",totalCountLocumOverride)
+      return response?.data?.request || [];
+    } catch (error) {
+      console.error("Error fetching applications:", error);
+      return [];
     }
   };
 
@@ -650,7 +669,7 @@ const StaffApplicationTopTiles = (searchTermForTable) => {
     }
   }, [userDetails])
 
-  const calculateVisibleCounts = (countsObj) => {
+  const calculateVisibleCounts = (countsObj, workModeType, applicationType) => {
     if (!countsObj) return 0;
 
     // Add clarifications
@@ -665,13 +684,12 @@ const StaffApplicationTopTiles = (searchTermForTable) => {
       return (parseInt(countsObj['level-2']) || 0) + clarifications;
     }
 
-    // For Credentialing Committee, show only level-3 count
-    if (workModeType === "Credentialing Committee" && (applicationType === "REAPPOINTMENT" || applicationType === "NEW")) {
+    // For Credentialing Committee, show counts based on application type
+    if (workModeType === "Credentialing Committee") {
+      if (applicationType === "LOCUM") {
+        return (parseInt(countsObj['level-2']) || 0) + clarifications;
+      }
       return (parseInt(countsObj['level-3']) || 0) + clarifications;
-    }
-
-    if (workModeType === "Credentialing Committee" && applicationType === "LOCUM") {
-      return (parseInt(countsObj['level-2']) || 0) + clarifications;
     }
 
     if (workModeType === "Credentialing Committee User") {
@@ -725,7 +743,7 @@ const StaffApplicationTopTiles = (searchTermForTable) => {
       <TopTileApplication
         selectedTab={selectedTab}
         getSelectedTab={getSelectedTab}
-        tileCount={calculateVisibleCounts(newCounts)}
+        tileCount={calculateVisibleCounts(newCounts, workModeType, "NEW")}
         tileLabel="New Applicants"
         currentTile="NewApplicants"
         isLoading={isLoading}
@@ -733,7 +751,7 @@ const StaffApplicationTopTiles = (searchTermForTable) => {
       <TopTileApplication
         selectedTab={selectedTab}
         getSelectedTab={getSelectedTab}
-        tileCount={calculateVisibleCounts(reappointmentCounts)}
+        tileCount={calculateVisibleCounts(reappointmentCounts, workModeType, "REAPPOINTMENT")}
         tileLabel="Staff Reappointments"
         currentTile="StaffReappointments"
         isLoading={isLoading}
@@ -742,8 +760,10 @@ const StaffApplicationTopTiles = (searchTermForTable) => {
         <TopTileApplication
           selectedTab={selectedTab}
           getSelectedTab={getSelectedTab}
-          tileLabel="Locum Renewals"
-          tileCount={calculateVisibleCounts(locumCounts)}
+          tileLabel="Locum Applicants"
+          tileCount={workModeType === "Chief Of Staff" 
+            ? totalCountLocumOverride 
+            : calculateVisibleCounts(locumCounts, workModeType, "LOCUM")}
           currentTile="LocumRenewalsApplicant"
           isLoading={isLoading}
         />

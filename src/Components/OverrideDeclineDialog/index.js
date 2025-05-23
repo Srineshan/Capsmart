@@ -23,7 +23,7 @@ import { fileLoadingURL, FormatPhoneNumber, FormatPostalCode } from "../../utils
 import LoadingScreen from "../LoadingScreen";
 import { Tooltip } from "@mui/material";
 
-const OverRideApprovalDialog = ({ getIsOpen, getActiveApplicationView, dateFormat, selectedTab }) => {
+const OverRideDeclineDialog = ({ getIsOpen, getActiveApplicationView, dateFormat, selectedTab }) => {
   let cookie = new Cookie();
   let userDetails = cookie.get('user');
   const users = jwt(userDetails);
@@ -85,28 +85,10 @@ const OverRideApprovalDialog = ({ getIsOpen, getActiveApplicationView, dateForma
   const ExpireDate = rawExpireDate ? parseISO(rawExpireDate) : null;
   const formattedExpiringDate = ExpireDate ? format(new Date(ExpireDate), "MMM dd, yyyy") : "-";
   const daysRemaining = ExpireDate ? Math.abs(differenceInDays(new Date(ExpireDate), new Date())) : null
-  // const isApproveEnabled = 
-  //   // userRoleComments.trim() !== '' && 
-  // selectedDateForDept !== null && 
-  // selectedRoleCred !== '' &&
-  // documentTitle !== '';
-
-  // useEffect(() => {
-  //   if (dateFormat) {
-  //     setCurrentDate(format(new Date(), dateFormat));
-  //   }
-  // }, [dateFormat]);
-
-  const onClicksignFunction = () => {
-    setTodayDate();
-    handleSignatureClick();
-  };
 
   useEffect(() => {
     getApplicantType();
     getApplicationUserRole();
-    // getApplicationChief();
-    getApplicationUserRoleDept();
     console.log("selectedRoleCred" + JSON.stringify(selectedRoleCred))
     console.log("selectedRoleDept" + JSON.stringify(selectedRoleDept))
   }, [formDetails])
@@ -242,22 +224,12 @@ const OverRideApprovalDialog = ({ getIsOpen, getActiveApplicationView, dateForma
     }
   };
 
-
-  // useEffect(() => {
-  //   checkApproveEnabled();
-  // }, [isChecked, userRoleComments, isSigned]);
-
   const getApplicantType = async () => {
     const { data: applicant } = await GET(
       `entity-service/applicantType`
     );
     setApplicantType(applicant);
   }
-  
-  const checkRequirements = () => {
-  return isChecked
-};
-
 
   useEffect(() => {
     setUserDetails();
@@ -327,157 +299,6 @@ const OverRideApprovalDialog = ({ getIsOpen, getActiveApplicationView, dateForma
     }
   };
 
-
-  // const getApplicationUserRoleDept = async () => {
-  //   const applicantfirstName = formDetails?.basicDetails?.applicant?.name?.firstName
-  //   const applicantlastName = formDetails?.basicDetails?.applicant?.name?.lastName
-  //   const applicantDepartmentId = formDetails?.basicDetailReferences?.department?.id
-  //   // const applicantDepartmentId = "66dc4b370e34d3372e43f009"
-  //   const applicantSpecialtyId = formDetails?.basicDetailReferences?.specialty?.id
-  //   try {
-  //     const { data: basicFormRole } = await GET(`user/role?role=Department Head`);
-
-  //     const filteredRoles = basicFormRole.filter(
-  //       (user) => !(user?.name?.firstName === applicantfirstName && user?.name?.lastName === applicantlastName)
-  //     );
-  //     setUserSelectRoleDept(filteredRoles);
-  //   } catch (error) {
-  //     console.error('Error fetching application:', error);
-  //   }
-  // };
-
-  // const getApplicationUserRoleDept = async () => {
-  //   try {
-  //     const applicantfirstName = formDetails?.basicDetails?.applicant?.name?.firstName
-  //     const applicantlastName = formDetails?.basicDetails?.applicant?.name?.lastName
-  //     const applicantDepartmentId = formDetails?.basicDetailReferences?.department?.id
-  //     const applicantSpecialtyId = formDetails?.basicDetailReferences?.specialty?.id
-  //     const applicantEmailId = formDetails?.basicDetails?.applicant?.email?.officialEmail
-
-  //     const { data: basicFormRole } = await GET(`user/role?role=Department Head`);
-
-  //     const filteredRoles = basicFormRole.filter((user) => {
-  //       const departmentList = user?.sites?.sites?.[0]?.departmentList?.departments || [];
-  //       console.log("departmentList1111", departmentList);
-
-  //       return departmentList.some((department) => {
-  //         const isDepartmentMatch = department?.id === applicantDepartmentId;
-  //         console.log("matchedId", isDepartmentMatch);
-  //         console.log("applicantDepartmentId",applicantDepartmentId)
-
-  //         if (!isDepartmentMatch) return false;
-
-  //         if (department?.serviceAreaSpecific) {
-  //           return department?.serviceAreas?.some(
-  //             (area) => area?.id === applicantSpecialtyId
-  //           );
-  //         }
-  //         return true;
-  //       });
-  //     });
-
-  //     console.log("filteredRolessss", filteredRoles);
-  //     console.log("applicantName",applicantfirstName)
-  //     console.log("applicantName",applicantlastName)
-  //     const deptDataMember = filteredRoles.filter(
-  //             (user) => !(user?.name?.firstName === applicantfirstName && user?.name?.lastName === applicantlastName)
-  //           );
-  //     const { data: basicFormRoleCos } = await GET(`user/role?role=Chief Of Staff`);
-  //     const { data: basicRole } = await GET(`user?email=${applicantEmailId}`);
-  //     const combinedData = [...deptDataMember, ...basicFormRoleCos];
-  //     // return setUserSelectRoleDept(deptDataMember);
-
-  //     const uniqueUsers = combinedData?.filter((user, index, self) => 
-  //       index === self.findIndex((u) => u?.id === user?.id)
-  //     );
-  //     setUserSelectRoleDept(uniqueUsers);
-  //     // setUserSelectRoleDept(combinedData);
-
-  //   } catch (error) {
-  //     console.error("Error fetching application user role:", error);
-  //     return [];
-  //   }
-  // };  
-
-  const getApplicationUserRoleDept = async () => {
-    try {
-      setIsLoadingImage(true);
-      const applicantFirstName = formDetails?.basicDetails?.applicant?.name?.firstName;
-      const applicantLastName = formDetails?.basicDetails?.applicant?.name?.lastName;
-      const applicantDepartmentId = formDetails?.basicDetailReferences?.department?.id;
-      const applicantSpecialtyId = formDetails?.basicDetailReferences?.specialty?.id;
-      const applicantEmailId = formDetails?.basicDetails?.applicant?.email?.officialEmail;
-
-      const { data: basicFormRole } = await GET(`user/role?role=Department Head`);
-      const { data: basicFormRoleCos } = await GET(`user/role?role=Chief Of Staff`);
-
-      const { data: basicRole } = await GET(`user?email=${applicantEmailId}`);
-      const user = basicRole?.[0];
-
-      const isDepartmentHead = user?.roles?.some(role => role?.roleName === "Department Head");
-
-      console.log("isDepartmentHead:", isDepartmentHead);
-
-      let userRolesData = [];
-
-      if (isDepartmentHead) {
-        // const { data: basicFormRoleCos } = await GET(`user/role?role=Chief Of Staff`);
-        userRolesData = basicFormRoleCos.filter(
-          user => !(
-            user?.name?.firstName?.toLowerCase() === applicantFirstName?.toLowerCase() &&
-            user?.name?.lastName?.toLowerCase() === applicantLastName?.toLowerCase()
-          )
-        );
-        setIsUser(true)
-      } else {
-        userRolesData = basicFormRole;
-
-        userRolesData = userRolesData.filter(user => {
-          const departmentList = user?.sites?.sites?.[0]?.departmentList?.departments || [];
-          return departmentList.some(department => {
-            const isDepartmentMatch = department?.id === applicantDepartmentId;
-            if (!isDepartmentMatch) return false;
-            if (department?.serviceAreaSpecific) {
-              return department?.serviceAreas?.some(
-                (area) => area?.id === applicantSpecialtyId
-              );
-            }
-            return true;
-          });
-        });
-
-        userRolesData = [...userRolesData, ...basicFormRoleCos];
-
-        userRolesData = userRolesData?.filter((user, index, self) =>
-          index === self.findIndex((u) => u?.id === user?.id)
-        );
-
-        userRolesData = userRolesData.filter(
-          user => !(
-            user?.name?.firstName?.toLowerCase() === applicantFirstName?.toLowerCase() &&
-            user?.name?.lastName?.toLowerCase() === applicantLastName?.toLowerCase()
-          )
-        );
-        setIsUser(false)
-      }
-
-      setUserSelectRoleDept(userRolesData);
-      setIsLoadingImage(false);
-    } catch (error) {
-      console.error("Error fetching application user role:", error);
-    }
-  };
-
-  // const getApplicationChief = async () => {
-  //   try {
-  //     setIsLoadingImage(true);
-  //     const { data: basicFormRoleCos } = await GET(`user/role?role=Chief Of Staff`);
-  //     console.log(basicFormRoleCos)
-  //   } catch (error) {
-  //     console.error('Error fetching application:', error);
-  //   }
-  // };
-
   const getApplication = async () => {
     try {
       setIsLoadingImage(true);
@@ -489,27 +310,6 @@ const OverRideApprovalDialog = ({ getIsOpen, getActiveApplicationView, dateForma
     }
   };
 
-  // const checkRequirements = () => {
-  //   return userRole.includes('Chief Of Staff')
-  //     ? isChecked.isChecked1
-  //     : (isChecked.isChecked2 && isChecked.isChecked3);
-  // };
-
-  const handleSignatureClick = () => {
-    {
-      setIsSigned(!isSigned);
-      setIsEdited(true);
-    }
-  };
-
-  // const checkApproveEnabled = () => {
-  //   const hasValidComments = userRoleComments.trim() !== '';
-
-
-  //     setIsApproveEnabled(isChecked.isChecked1 && hasValidComments);
-
-  // };
-
   useEffect(() => {
     checkApproveEnabled();
   }, [userRoleComments, documentTitle, uploadFileData, isChecked, isSigned]);
@@ -518,19 +318,19 @@ const OverRideApprovalDialog = ({ getIsOpen, getActiveApplicationView, dateForma
     const hasValidComments = userRoleComments.trim() !== '';
     const isLocum = applicationType === "LOCUM";
 
-    if (uploadFileData.length > 0) {
-      const allFilesHaveTitles = uploadFileData.every((_, index) =>
+    if (files.length > 0) {
+      const allFilesHaveTitles = files.every((_, index) =>
         documentTitle[index] && documentTitle[index].trim() !== ''
       );
 
       if (isLocum) {
-        setIsApproveEnabled(hasValidComments && allFilesHaveTitles && isSigned);
+        setIsApproveEnabled(hasValidComments && allFilesHaveTitles);
       } else {
         setIsApproveEnabled(hasValidComments && allFilesHaveTitles);
       }
     } else {
       if (isLocum) {
-        setIsApproveEnabled(hasValidComments && isSigned);
+        setIsApproveEnabled(hasValidComments);
       } else {
         setIsApproveEnabled(hasValidComments);
       }
@@ -542,27 +342,26 @@ const OverRideApprovalDialog = ({ getIsOpen, getActiveApplicationView, dateForma
     getIsOpen(false);
   };
 
-  const reappointmentRequestApplication = async () => {
+  const OverRideRequestApplication = async () => {
     const temp = {
           notes: {
             notes: userRoleComments
-          },
-          staffEsign: {
-            esign: encryptedText,
-            name : name,
-            signedDate : currentDate
           }
         }
 
     const newFormData = new FormData();
+    files.forEach(file => {
+      console.log(file.name);
+      newFormData.append('documents', file);
+    });
     newFormData.append(
       "response",
       new Blob([JSON.stringify({temp})], {
         type: "application/json",
       })
     );
-    newFormData.append("documents", []);
-    await PUT(`application-management-service/application/request/${requestId}/response?workflowAction=APPROVED`, newFormData
+    // newFormData.append("documents", []);
+    await PUT(`application-management-service/application/request/${requestId}/response?workflowAction=REJECTED`, newFormData
     )
       .then((response) => {
         console.log(response?.data);
@@ -571,24 +370,7 @@ const OverRideApprovalDialog = ({ getIsOpen, getActiveApplicationView, dateForma
       .catch((error) => {
         console.log(error);
       });
-  };
-
-
-  const handleCheckboxChange = (event) => {
-    setIsChecked(event.target.checked);
-  };
-
-  const dynamicValues = {
-    ApplicantName: `${formDetails?.basicDetails?.applicant?.name?.firstName || ''} ${formDetails?.basicDetails?.applicant?.name?.lastName || ''}`,
-    EntityName: "Cambridge memorial Hospital",
-  };
-
-  const formatLabel = (template, values) =>
-    template.replace(/{(.*?)}/g, (_, key) => values[key] || '');
-
-  // if (!userRole?.includes('Credentialing Committee') && !userRole?.includes('Chief Of Staff')) {
-  //   return null;
-  // }
+  }
 
   const lastModifiedDate = formDetails?.lastModifiedDate;
   const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), "MM/dd/yyyy") : "-";
@@ -626,7 +408,7 @@ const OverRideApprovalDialog = ({ getIsOpen, getActiveApplicationView, dateForma
                     applicationType === "LOCUM"
                       ? `${formDetails?.reappointmentType === "EXTENSION" ? "Extension" : "Renewal"}`
                       : "Reappointment"
-                  } Override Approval by Chief Of Staff`}
+                  } Override Rejection By Chief Of Staff`}
                 </div>
                 <div className={style.displayInRow}>
                 <Tooltip title="Click to Close" arrow>
@@ -680,25 +462,12 @@ const OverRideApprovalDialog = ({ getIsOpen, getActiveApplicationView, dateForma
                         <span className={`${style.rejectionTextStyle}`}>{formDetails?.reappointmentType === "EXTENSION" ? "Days From Expiration :" : "Days Since Expiration :"}</span>
                         <span className={`${style.rejectionTextStyle1}`}> {formDetails?.reappointmentType === "EXTENSION" ? `${daysRemaining} days` : `${daysRemaining} days`}</span>
                         </div>
-                        {/* <div className={`${style.twoColumnGridInner}`}>
-            <span className={`${style.rejectionTextStyle}`}>OHIP Number :</span>
-            <span className={`${style.rejectionTextStyle1}`}>-</span>
-            </div> */}
                     </div>
                     </div>
                 </div>
-                {/* <div className={`${style.marginTop} ${style.commentsNotesHeadingFontStyle}`}>
-            Provide notes, if any, for the Department Head regarding this application(Optional)
-            </div> */}
                 <div className={`${style.marginTop} ${style.commentsNotesHeadingFontStyle}`}>
-                  Notes for Override Approval *
+                  Enter your Notes / Comments for declining this Override Request *
                 </div>
-                {/* <CommonTextField
-                className={`${style.commentsNotesFontStyle} ${style.notesBorderStyle}`}
-                value={userRoleComments}
-                onChange={(e) => setUserRoleComments(e.target.value)}
-                placeholder="Enter comments and notes here"
-              /> */}
                 <div className={`${style.marginTop10}`}>
                   <CKEditor
                     editor={ClassicEditor}
@@ -737,36 +506,83 @@ const OverRideApprovalDialog = ({ getIsOpen, getActiveApplicationView, dateForma
                     }}
                   />
                 </div>
-                <CommonCheckBox
-                    className={`${style.marginTop}`}
-                    label={formatLabel("I as the Chief of Staff recommend the Privilege Extension for {ApplicantName} as per the criteria and standards established by {EntityName}’s bylaws and policies. This Recommendation is contingent upon the fulfillment of all required qualifications and obligations as outlined in the medical staff bylaws.", dynamicValues)}
-                    checked={isChecked}
-                    onChange={handleCheckboxChange}
-                  />
-                  <div className={style.twoCol}>
-              <div
-                onClick={!checkRequirements() ? () => { } : onClicksignFunction}
-                className={!checkRequirements() ? style.disabled : style.signatureContainer}
-              >
-                <ESignature
-                  // userName={isSigned ? name : ""}
-                  encData={isSigned ? encryptedText : ''}
-                  showData={isSigned}
-                  showDatais={true}
-                  alternateSignature={isSigned ? `${name}` : ""}
-                />
-              </div>
-              <div className={style.verticalAlignCenter}>
-                <div className={style.displayInRow} onClick={setTodayDate}>
-                  <div className={style.dateTitle}>Date: </div>
-                  <div className={`${style.date} ${style.marginLeft}`}>
-                    {isSigned
-                      ? currentDate
-                      : ""}
-                  </div>
+                 <div className={`${style.marginTop} ${style.cursorPointer}`}>
+                
+                <>
+
+                    <Dropzone
+                    style={dropzoneStyle}
+                    onDrop={(acceptedFiles) => changeHandler(acceptedFiles)}
+                    accept={{
+                        'image/jpeg': [],
+                        'image/png': [],
+                        'image/jpg': [],
+                        'application/pdf': []
+                    }}
+                    >
+                    {({ getRootProps, getInputProps }) => (
+                        <>
+                        <section>
+                            <div {...getRootProps()}>
+                            <input {...getInputProps()} />
+                            <div className={style.uploadBorderStyle}>
+                                <div className={`${style.spaceBetween} ${style.displayInRowCenter}`}>
+                                <div className={style.uploadTextStyle}>
+                                    Upload any supporting documents
+                                </div>
+                                <div className={`${style.marginLeftRight20}`}>
+                                    Click To Upload
+                                </div>
+                                </div>
+                            </div>
+                            </div>
+                        </section>
+                        </>
+                    )}
+                    </Dropzone>
+                </>
+
                 </div>
-              </div>
-            </div>
+                {files?.length > 0 && (
+                <div>
+                    {files?.map((file, index) => (
+                    <div key={index} className={`${style.alignItem} ${style.marginTop10}`}>
+                        <div className={`${style.threeColumnGrid}`}>
+                        <div className={`${style.displayInRow} ${style.referenceCardStyle}`}>
+                            <DescriptionIcon className={style.docsIcon} />
+                            <div className={style.marginLeft20}>{file?.name}</div>
+                        </div>
+                        <div>
+                            <CommonInputField
+                            value={documentTitle[index] || ""}
+                            onChange={(e) => {
+                                const newDocumentTitle = [...documentTitle];
+                                newDocumentTitle[index] = e.target.value;
+                                setDocumentTitle(newDocumentTitle);
+                            }}
+                            type="text"
+                            placeholder="Title*"
+                            className={style.referenceCardStyleDescription}
+                            />
+                        </div>
+                        <div>
+                            <CommonInputField
+                            value={documentDesc[index] || ""}
+                            onChange={(e) => {
+                                const newDocumentDesc = [...documentDesc];
+                                newDocumentDesc[index] = e.target.value;
+                                setDocumentDesc(newDocumentDesc);
+                            }}
+                            type="text"
+                            placeholder="Description (Optional)"
+                            className={style.referenceCardStyleDescription}
+                            />
+                        </div>
+                        </div>
+                    </div>
+                    ))}
+                </div>
+                )}
                 <div className={`${style.marginTop}  ${style.reviewButtonContainer}`}>
                   <div className={` ${style.cursorPointer}`} onClick={() => getIsOpen(false)}>
                   <Tooltip title="Click to Close" arrow>
@@ -774,14 +590,14 @@ const OverRideApprovalDialog = ({ getIsOpen, getActiveApplicationView, dateForma
                   </div>
                   <div
                     className={`${style.reviewButtonStyle} ${isApproveEnabled ? style.cursorPointer : undefined} ${style.marginLeft}`}
-                    onClick={reappointmentRequestApplication}
+                    onClick={OverRideRequestApplication}
                     style={{
                       pointerEvents: isApproveEnabled ? 'auto' : 'none',
                       opacity: isApproveEnabled ? 1 : 0.5
                     }}
                   >
-                    <Tooltip title={isApproveEnabled ? "Click to Send Application for Review" : ""}arrow>
-                    <div className={style.reviewButton}>OVERRIDE</div>
+                    <Tooltip title={isApproveEnabled ? "Click to reject Application from Override" : ""}arrow>
+                    <div className={style.reviewButton}>Continue</div>
                     </Tooltip>
                   </div>
                 </div>
@@ -794,4 +610,4 @@ const OverRideApprovalDialog = ({ getIsOpen, getActiveApplicationView, dateForma
   );
 };
 
-export default OverRideApprovalDialog;
+export default OverRideDeclineDialog;

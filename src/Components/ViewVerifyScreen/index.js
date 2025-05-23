@@ -117,7 +117,8 @@ const NewActiveApplication = ({
   staffView,
   getPaymentDisplayBox,
   dataLevel,
-  getOverRideRequestApprovalDialog
+  getOverRideRequestApprovalDialog,
+  getOverRideRequestDeclineDialog
 
 }) => {
   console.log("contract Type", contractType);
@@ -322,6 +323,11 @@ const NewActiveApplication = ({
     const BoardDate = form?.completedWorkflows?.find(
       (workflow) => workflow?.role === "Board"
     );
+    if (workModeType === "Staff Manager" && selectedTab === "level-2" && credentialingCommitteeDate?.meetingDate && applicationType === "LOCUM") {
+      setSelectedDateForReappoint(new Date(`${credentialingCommitteeDate?.meetingDate}T00:00`), "MMM dd, yyyy");
+      setSelectedDateForCC(new Date(`${credentialingCommitteeDate?.meetingDate}T00:00`), "MMM dd, yyyy");
+      setIsButtonDisabled(false);
+    }
     if (workModeType === "Staff Manager" && selectedTab === "level-3" && credentialingCommitteeDate?.meetingDate && applicationType === "REAPPOINTMENT") {
       setSelectedDateForReappoint(new Date(`${credentialingCommitteeDate?.meetingDate}T00:00`), "MMM dd, yyyy");
       setSelectedDateForCC(new Date(`${credentialingCommitteeDate?.meetingDate}T00:00`), "MMM dd, yyyy");
@@ -344,6 +350,9 @@ const NewActiveApplication = ({
       setSelectedDateForBod(new Date(`${BoardDate?.meetingDate}T00:00`), "MMM dd, yyyy");
       setIsButtonDisabled(false);
     }
+    // if (workModeType === "Staff Manager" && selectedTab === "level-5" && BoardDate?.approvalType) {
+    //   setIsButtonDisabled(true);
+    // }
   }, [workModeType, selectedTab, form]);
 
 
@@ -1263,6 +1272,11 @@ const NewActiveApplication = ({
   const onClickOverRideApprovalDialog = () => {
     getOverRideRequestApprovalDialog(true);
   };
+
+  const onClickOverRideDeclineDialog = () => {
+    getOverRideRequestDeclineDialog(true);
+  };
+
 
   const handleDeleteNote = async (noteID) => {
 
@@ -10778,14 +10792,17 @@ const NewActiveApplication = ({
                       {workModeType === 'Staff Manager' && selectedTab === 'level-1' && applicationType === "LOCUM" && (
                         <div className={`${style.marginTop20}`}>
                         <div
-                          // className={`${style.bigButtonStyle1} ${style.cursorPointer}`}
-                          className={`${style.bigButtonStyle1} ${style.cursorPointer}`}
-                          style={{ opacity:  1  }}>
-                          <Tooltip title={"Click to Request for Override"} arrow>
+                          className={`${style.bigButtonStyle1} ${form?.overrideStatus === "NA" ? style.cursorPointer : ""}`}
+                          style={{ opacity: form?.overrideStatus === "NA" ? 1 : 0.5 }}
+                        >
+                          <Tooltip
+                            title={form?.overrideStatus === "NA" ? "Click to Request for Override" : ""}
+                            arrow
+                          >
                             <div
                               className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
-                              onClick={onClickOverrideRequestDialogFunction}
-                              // onClick={isApproved ? onClickApprovalDeptFunction : undefined}
+                              onClick={form?.overrideStatus === "NA" ? onClickOverrideRequestDialogFunction : undefined}
+                              // style={{ pointerEvents: form?.extensionRequested === "NA" ? "auto" : "none" }} // prevents click if NA
                             >
                               REQUEST FOR OVERRIDE
                             </div>
@@ -10820,7 +10837,7 @@ const NewActiveApplication = ({
                               //   setShowApplicationDeclineDialog(true);
                               // }}
                               onClick={() => {
-                                setShowApplicationDeclineDialog(true);
+                                onClickOverRideDeclineDialog();
                               }}
                             >
                               DECLINE OVERRIDE

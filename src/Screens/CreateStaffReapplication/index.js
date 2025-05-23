@@ -913,7 +913,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
                   <div
                     className={`${style.continue} ${style.marginTop} ${style.marginLeft}`}
                     onClick={() => {
-                      if (isDataAvailable  && checkedIds?.length > 0) {
+                      if (isDataAvailable && checkedIds?.length > 0) {
                         if (selectedReappointmentStatus === "SENT" || selectedReappointmentStatus === "RE_SENT") {
                           reappointmentApplicationResendbulk();
                         } else {
@@ -921,7 +921,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
                         }
                       }
                     }}
-                    disabled={!isDataAvailable  && checkedIds?.length === 0 }
+                    disabled={!isDataAvailable && checkedIds?.length === 0}
                     style={{ opacity: isDataAvailable && checkedIds?.length > 0 ? 1 : 0.5 }}
 
                   >
