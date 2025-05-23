@@ -271,3 +271,12 @@
     display: none !important;
   }
 }
+
+@media print {
+
+  .byMedicalDirectiveGrid {
+  display: grid;
+  grid-template-columns: 3% 4% 9% 30% 29% 11% 10%;
+  grid-gap: 0.5%;
+}
+}
