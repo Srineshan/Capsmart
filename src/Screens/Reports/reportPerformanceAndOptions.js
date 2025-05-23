@@ -83,7 +83,10 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
         paymentProcessingStatusTracker: 'Payment Processing Status By Service Provider',
         submittedApplicationsReviewSummary: 'Submitted Applications Review Summary',
         ohipBillingNumbersByCareProvider: 'OHIP Billing Numbers By Care Provider',
+        reappointmentApplicationNotStarted: 'Reappointment Application Not Yet Started Summary',
         privilegedStaffSummary: 'Privileged Staff Summary',
+        currentNotesSummary: 'Current Notes Summary',
+        staffReappointmentStatusSummary: 'Staff Reappointment Status Summary',
         locumRenewalOrExtensionApplicationsSummary: 'Locum Renewal / Extension Applications Summary',
         careProviderCareerMilestoneSummary: 'Care Providers Career Milestone Summary',
         declinedOrNotRenewedStaffSummary: 'Declined Or Not Renewed Staff Summary'
@@ -108,7 +111,10 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
         locumExtensionOrRenewal: 'LOCUM_EXTENSION_OR_RENEWAL',
         submittedApplicationsReviewSummary: 'STAFF_REAPPOINTMENT',
         ohipBillingNumbersByCareProvider: 'ALL_STAFF',
+        reappointmentApplicationNotStarted: 'STAFF_REAPPOINTMENT',
         privilegedStaffSummary: 'ALL_STAFF',
+        currentNotesSummary: 'ALL_STAFF',
+        staffReappointmentStatusSummary: 'STAFF_REAPPOINTMENT',
         locumRenewalOrExtensionApplicationsSummary: 'LOCUM_EXTENSION_OR_RENEWAL',
         careProviderCareerMilestoneSummary: 'PERMANENT_STAFF',
         declinedOrNotRenewedStaffSummary: 'LOCUM_EXTENSION_OR_RENEWAL'
@@ -139,7 +145,10 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
         'paymentProcessingStatusTracker': 'PAYMENT_TRACKER',
         'submittedApplicationsReviewSummary': 'SUBMITTED_APPLICATIONS_REVIEW_SUMMARY',
         'ohipBillingNumbersByCareProvider': 'OHIP_BILLING_NUMBERS_BY_CARE_PROVIDER',
+        'reappointmentApplicationNotStarted': 'REAPPOINTMENT_APPLICATIONS_NOT_YET_STARTED_SUMMARY',
         'privilegedStaffSummary': 'PRIVILEGED_STAFF_SUMMARY',
+        'currentNotesSummary': 'CURRENT_NOTES_SUMMARY',
+        'staffReappointmentStatusSummary': 'STAFF_REAPPOINTMENT_STATUS_SUMMARY',
         'locumRenewalOrExtensionApplicationsSummary': 'DECLINED_OR_NOT_RENEWED_STAFF_SUMMARY',
         'careProviderCareerMilestoneSummary': 'CARE_PROVIDER_CAREER_MILESTONE_SUMMARY',
         'declinedOrNotRenewedStaffSummary': 'DECLINED_OR_NOT_RENEWED_STAFF_SUMMARY'
@@ -263,7 +272,7 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                             </Popover>
                         </div>
                         {/* <div className={`${style.iconPadding} ${style.cursorPointer}`}>
-                            <ShareOutlinedIcon style={{color:"#2C2C2C"}} onClick={() => setShowShareDialog(true)} />
+                            <ShareOutlinedIcon style={{ color: "#2C2C2C" }} onClick={() => setShowShareDialog(true)} />
                         </div> */}
                         {/* <div className={`${style.iconPadding} ${style.cursorPointer} ${isNoData && style.disabledCursor}`}
                             onMouseEnter={(e) => !isNoData ? setAnchorElSchedule(e.currentTarget) : {}} onMouseLeave={() => !isNoData ? setAnchorElSchedule(null) : {}} aria-owns={openSchedule ? 'mouse-over-popover' : undefined}
@@ -428,7 +437,7 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                         <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => setShowShareDialog(false)} />
                     </div>
                     <div className={style.extensionBorder}></div>
-                    <div className={style.spaceBetween}>
+                    {/* <div className={style.spaceBetween}>
                         <div className={style.displayInRow}>
                             <p className={`${style.mailBoldText} ${style.marginTop20} ${style.blueText}`}>Registered Users</p>
                             <div className={`${style.taskCountStyle} ${style.marginTop20} ${style.marginLeft20}`}>20</div>
@@ -440,7 +449,7 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                             </div>
                         </div>
                     </div>
-                    <div className={`${style.extensionBorder} ${style.marginTop10}`}></div>
+                    <div className={`${style.extensionBorder} ${style.marginTop10}`}></div> */}
                     <div className={`${style.padding10}`}>
                         <div>
                             <div className={style.padding10}>

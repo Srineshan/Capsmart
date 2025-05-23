@@ -1838,9 +1838,21 @@
     grid-gap: 1%;
 }
 
+.statusTrackerGrid {
+    display: grid;
+    grid-template-columns: 3% 17% 15% 25% 19% 15%;
+    grid-gap: 1%;
+}
+
 .milestoneGrid {
     display: grid;
     grid-template-columns: 3% 15% 11% 11% 15% 15% 11% 11%;
+    grid-gap: 1%;
+}
+
+.notStartedGrid {
+    display: grid;
+    grid-template-columns: 3% 25% 13% 11% 15% 15% 11%;
     grid-gap: 1%;
 }
 
