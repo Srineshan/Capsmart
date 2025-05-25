@@ -100,6 +100,10 @@ const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicati
                     />
                 );
             case "datepicker":
+                const minDate =
+        field.name === "expiry_date" && changedData?.test_date
+            ? new Date(changedData.test_date)
+            : null;
                 return (
                     <CommonDateField
                         className={style.fullWidth}
@@ -111,6 +115,7 @@ const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicati
                             setChangedData({ ...changedData, [field.name]: format(new Date(newValue), "yyyy-MM-dd'T'00:00") });
                             setIsEdited(true)
                         }}
+                        minDate={minDate}
                         InputProps={{
                             style: {
                                 fontSize: 14,
