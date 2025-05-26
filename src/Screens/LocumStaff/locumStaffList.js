@@ -105,7 +105,7 @@ const LocumStaffList = ({
 
   const activeLocumColSortValues = [true, false, true, true, false, , false, false, false, false];
   const expiredLocumColSortValues = [true, false, true, true, false, false, false, false, false, false];
-  const requestLocumColSortValues = [true, false, false, true, true, false, false, false, false, false];
+  const requestLocumColSortValues = [false, false, false, false, false, false, false, false, false, false];
 
   const [isPrintClicked, setIsPrintClicked] = useState(false);
   const [isExpanded, setIsExpanded] = useState(true);
