@@ -227,7 +227,11 @@ opacity: 1;
     border-radius: 8px;
     // opacity: 0.5;
     padding: 5px;
-    height: 70px;
+    // height: 70px;
+}
+
+.alignSelfEnd{
+  align-items: self-end !important;
 }
 
 .innerTextDocumentStyle{
@@ -247,6 +251,23 @@ opacity: 1;
     opacity: 1;
 }
 
+.countStyleRed{
+    text-align: left;
+    font: normal normal bold 24px/29px proxima-nova;
+    letter-spacing: 0px;
+    color: #FF6562;
+    opacity: 1;
+}
+
+.countStyleYellow{
+    text-align: left;
+    font: normal normal bold 24px/29px proxima-nova;
+    letter-spacing: 0px;
+    color: #FFC100;
+    opacity: 1;
+}
+
+
 .documentViewGrid {
   display: grid;
   grid-template-columns: 15% 29% 13% 13% 13% 10%;
@@ -263,6 +284,14 @@ opacity: 1;
   display: grid;
   grid-template-columns: 5% 37% 9% 6% 14% 12% 10%;
   grid-gap: 10px;
+}
+
+.requiredTextStyle{
+text-align: right;
+font: normal normal normal 16px/30px Proxima Nova;
+letter-spacing: 0px;
+color: #171A1A;
+opacity: 1;
 }
 
 .loadingOverlay {

@@ -263,6 +263,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading})
   let mdStatus = [];
   let mdID = [];
   let attestationDate = [];
+  let dotTooltipValues = [];
 
   const getDocsTableValues = () => {
     documentType = [];
@@ -298,6 +299,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading})
    const getAppointmentTableValues = () => {
     appointmentCycle = [];
     dot = [];
+    dotTooltipValues = [];
     privilegeCategory = [];
     approvedPrivileges = [];
     notes = [];
@@ -313,6 +315,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading})
           : data?.capManagerStatus === "REJECTED" ? "red"
             : "grey";
         dot.push(color);
+        dotTooltipValues.push(color === "yellow" ? "Application completed on CAPManager" : color === "green" ? "Application was manually entered by MSO" : color === "red" ? "Application not in CAPManager" :"" )
       privilegeCategory.push(data?.privilegeCategory)
       approvedPrivileges.push(data?.approvedPrivileges)
       notes.push(data?.notes)
@@ -326,7 +329,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading})
 
     return [
       { type: "text", value: appointmentCycle },
-      { type: "dot", value: dot },
+      { type: "dot", value: dot ,tooltipValue: dotTooltipValues},
       { type: "text", value: privilegeCategory },
       { type: "text", value: approvedPrivileges },
       { type: "iconWithCount", value: notes,icon: notesIcon, },
@@ -637,12 +640,18 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading})
                        <div className={`${style.countStyle}`}>5</div>
                     </div>
                     <div className={`${style.documentCurrentBackGround} ${style.spaceBetweenCol}`}>
-                        <div className={`${style.innerTextDocumentStyle}`}>To Be Renewed </div>
-                        <div className={`${style.countStyle}`}>5</div>
+                        <div className={`${style.innerTextDocumentStyle}`}>To Be Renewed  </div>
+                        <div className={`${style.spaceBetween} ${style.alignSelfEnd}`}>
+                          <div className={`${style.countStyleRed}`}>8</div>
+                            <div>
+                                <div className={`${style.requiredTextStyle}`}>Required <span className={`${style.marginLeft10} ${style.countStyleYellow}`}>3</span></div>
+                                <div className={`${style.requiredTextStyle}`}>Recommended <span className={`${style.marginLeft10}  ${style.countStyleRed}`}>5</span></div>
+                            </div>
+                       </div>
                     </div>
                     <div className={`${style.documentCurrentBackGround} ${style.spaceBetweenCol}`}>
                         <div className={`${style.innerTextDocumentStyle}`}>Expired </div>
-                        <div className={`${style.countStyle}`}>5</div>
+                        <div className={`${style.countStyleRed}`}>5</div>
                     </div>
                 </div>
                 <div className={`${style.bigCardStyle}`}>
@@ -782,11 +791,11 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading})
                     </div>
                     <div className={`${style.documentCurrentBackGround} ${style.spaceBetweenCol}`}>
                         <div className={`${style.innerTextDocumentStyle}`}>To Review & Attest </div>
-                        <div className={`${style.countStyle}`}>5</div>
+                        <div className={`${style.countStyleYellow}`}>5</div>
                     </div>
                     <div className={`${style.documentCurrentBackGround} ${style.spaceBetweenCol}`}>
                         <div className={`${style.innerTextDocumentStyle}`}>Attestations Past Due </div>
-                        <div className={`${style.countStyle}`}>3</div>
+                        <div className={`${style.countStyleRed}`}>3</div>
                     </div>
                 </div>
                 <div className={`${style.bigCardStyle}`}>

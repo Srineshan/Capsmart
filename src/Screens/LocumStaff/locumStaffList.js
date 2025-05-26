@@ -98,9 +98,9 @@ const LocumStaffList = ({
   // let userDepartmentList;
   let userSpecialty;
 
-  const activeLocumHeaderValues = ["Locum Staff", "", "Locum Type", "Notes", "Docs", "Start Date", "End Date", "Days to Expiration", "Action"];
-  const expiredLocumHeaderValues = ["Locum Staff", "", "Locum Type", "Notes", "Docs", "Last End Date", "Days Since Expired", "Action"];
-  const requestLocumHeaderValues = ["Locum Staff", "", "Staff Status", "Locum Type", "Notes", "Request By", "End Date", "Days to Expiration", ""];
+  const activeLocumHeaderValues = ["Locum Staff", "", "Locum Type", "Department", "Docs", "Start Date", "End Date", "Days to Expiration", "Action"];
+  const expiredLocumHeaderValues = ["Locum Staff", "", "Locum Type", "Department", "Docs", "Last End Date", "Days Since Expired", "Action"];
+  const requestLocumHeaderValues = ["Locum Staff", "", "Staff Status", "Locum Type", "Department", "Request By", "End Date", "Days to Expiration", ""];
 
 
   const activeLocumColSortValues = [false, false, false, false, false, , false, false, false, false];
@@ -161,7 +161,7 @@ const LocumStaffList = ({
 
   useEffect(() => {
     setUserDetails();
-  }, [users?.id])
+  }, [users?.id,selectedTab,applicationType,selectedDepartment])
 
   useEffect(() => {
     setPage(1);
@@ -199,7 +199,7 @@ const LocumStaffList = ({
 
   useEffect(() => {
     getActiveUserData();
-  }, [selectedTab, sortField, sortValue, page, totalCount, showLocumExtensiveDialog, searchTermForTable, limit, showLocumExtensiveRequestDialog, showLocumRequestDialog]);
+  }, [selectedTab, sortField, sortValue, page, totalCount, showLocumExtensiveDialog, searchTermForTable, limit, showLocumExtensiveRequestDialog, showLocumRequestDialog, selectedDepartment]);
 
   const getReFetchMetaData = (value) => {
     setReFetchMetaData(value);
@@ -269,11 +269,11 @@ const LocumStaffList = ({
   const getActiveUserDataActiveCount = async () => {
     try {
       const userDepartmentListData =
-        userDetailsFetchOption?.sites?.sites[0]?.departmentList?.departments[0]?.id;
+        userDetailsFetchOption?.sites?.sites[0]?.departmentList?.departments?.[0]?.id;
 
       let apiUrl = `application-management-service/staff?status=ACTIVE&type=LOCUM&noOfDays=30&isExpired=false&searchText=${searchTermForTable}`;
 
-      if (userDepartmentListData) {
+      if (userDepartmentListData  && workModeType === "Department Head") {
         apiUrl += `&departmentSpecialties=${userDepartmentListData}`;
       }
 
@@ -292,11 +292,11 @@ const LocumStaffList = ({
   const getRequestUserDataCount = async () => {
     try {
       const userDepartmentListData =
-        userDetailsFetchOption?.sites?.sites[0]?.departmentList?.departments[0]?.id;
+        userDetailsFetchOption?.sites?.sites[0]?.departmentList?.departments?.[0]?.id;
 
       let apiUrl = `application-management-service/application/request?requestType=LOCUM_RENEWAL_REQUEST&status=PENDING&role=${workModeType}`;
 
-      if (userDepartmentListData && workModeType !== "Chief Of Staff") {
+      if (userDepartmentListData && workModeType === "Department Head") {
         apiUrl += `&departmentSpecialties=${userDepartmentListData}`;
       }
 
@@ -315,11 +315,11 @@ const LocumStaffList = ({
   const getActiveUserDataExpireCount = async () => {
     try {
       const userDepartmentListData =
-        userDetailsFetchOption?.sites?.sites[0]?.departmentList?.departments[0]?.id;
+        userDetailsFetchOption?.sites?.sites[0]?.departmentList?.departments?.[0]?.id;
 
       let apiUrl = `application-management-service/staff?status=ACTIVE&type=LOCUM&noOfDays=30&isExpired=true&searchText=${searchTermForTable}`;
 
-      if (userDepartmentListData) {
+      if (userDepartmentListData  && workModeType === "Department Head") {
         apiUrl += `&departmentSpecialties=${userDepartmentListData}`;
       }
 
@@ -337,11 +337,11 @@ const LocumStaffList = ({
   const getActiveUserDataSearch = async (signal) => {
     try {
       const userDepartmentListData =
-        userDetailsFetchOption?.sites?.sites[0]?.departmentList?.departments[0]?.id;
+        userDetailsFetchOption?.sites?.sites[0]?.departmentList?.departments?.[0]?.id;
 
       let apiUrl = `application-management-service/staff?status=ACTIVE&type=LOCUM&noOfDays=30&isExpired=${selectedTab === "ACTIVELOCUM" ? false : true}&searchText=${searchTerm}`;
 
-      if (selectedDepartment) {
+      if (selectedDepartment  && workModeType === "Department Head") {
         apiUrl += `&departmentSpecialties=${selectedDepartment}`;
       }
 
@@ -377,10 +377,11 @@ const LocumStaffList = ({
       } else {
         const isExpired = selectedTab === "ACTIVELOCUM" ? false : true;
         const isPaginationRequired = limit === 9999 ? false : true;
-
+        const userDepartmentListData =
+        userDetailsFetchOption?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.id;           
         apiUrl = `application-management-service/staff?status=ACTIVE&type=LOCUM&noOfDays=30&isExpired=${isExpired}&searchText=${searchTermForTable}&isPaginationRequired=${isPaginationRequired}&limit=${limit}&offset=${page - 1}`;
 
-        if (selectedDepartment) {
+        if (selectedDepartment  && workModeType === "Department Head" ) {
           apiUrl += `&departmentSpecialties=${selectedDepartment}`;
         }
       }
@@ -525,6 +526,7 @@ const LocumStaffList = ({
   let WarningIcon = [];
   let WarningText = [];
   let applicantDept = [];
+  let deptSpecialty = [];
 
   const getLocumActiveValues = () => {
     dot = [];
@@ -555,6 +557,7 @@ const LocumStaffList = ({
     WarningIcon = [];
     WarningText = [];
     applicantDept=[];
+    deptSpecialty = [];
 
     tableData?.map((data) => {
       const expiredDays = differenceInDays(new Date(data?.tenure?.to), new Date());
@@ -562,15 +565,21 @@ const LocumStaffList = ({
       //   `${formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName)}` || " "
       // );
       applicantName.push(
-  <div
-      key={data.id}
-      className={`${style.justifyCenter} ${style.cursorPointer}`}
-      onClick={() => onClickViewAndVerifyFunction(data.id)}
-    >
-      {formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName) || " "}
-    </div>
-  );
+      <div
+          key={data.id}
+          className={`${style.justifyCenter} ${style.cursorPointer}`}
+          // onClick={() => onClickViewAndVerifyFunction(data.id)}
+        >
+          {formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName) || " "}
+        </div>
+      );
       applicantDept.push([data?.basicDetailReferences?.department?.name ? data?.basicDetailReferences?.department?.name : "-"]);
+      department.push(
+        `${data?.basicDetailReferences?.department?.name || "-"}`
+      );
+      deptSpecialty.push(
+        data?.basicDetailReferences?.specialty?.name ?? "-"
+      );
         // if (workModeType === "Staff Manager") {
         if (data?.extensionRequested === true) {
           if (data?.reAppointmentInitiated === false && expiredDays < 2) {
@@ -748,7 +757,7 @@ const LocumStaffList = ({
 
     return [
       // { type: "dot", value: dot, tooltipValue: dotTooltipValues },
-      { type: "text", value: applicantName ,tooltipValueText: applicantDept},
+      { type: "text", value: applicantName},
       {
         type: "iconWithCount",
         icon: iconStatus,
@@ -758,14 +767,14 @@ const LocumStaffList = ({
       },
       // { type: "text", value: applicantId },
       { type: "text", value: applicantType },
-      // { type: "text", value: department },
-      {
-        type: "iconWithCount",
-        value: notes,
-        // hoverText: notesHoverText,
-        // isShowHoverText: true,
-        icon: notesIcon,
-      },
+      { type: "text", value: department , tooltipValueText:deptSpecialty},
+      // {
+      //   type: "iconWithCount",
+      //   value: notes,
+      //   // hoverText: notesHoverText,
+      //   // isShowHoverText: true,
+      //   icon: notesIcon,
+      // },
       {
         type: "iconWithCount",
         value: docs,
@@ -821,6 +830,7 @@ const LocumStaffList = ({
     ExpiredDays = [];
     iconStatus = [];
     reappointDate = [];
+    deptSpecialty = [];
 
     tableData?.map((data) => {
       dot.push(
@@ -830,12 +840,27 @@ const LocumStaffList = ({
             ? "green"
             : "grey"
       );
+      // applicantName.push(
+      //   `${formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName)}` || " "
+      // );
       applicantName.push(
-        `${formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName)}` || " "
+      <div
+          key={data.id}
+          className={`${style.justifyCenter} ${style.cursorPointer}`}
+          // onClick={() => onClickViewAndVerifyFunction(data.id)}
+        >
+          {formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName) || " "}
+        </div>
       );
       applicantDept.push([data?.basicDetailReferences?.department?.name ? data?.basicDetailReferences?.department?.name : "-"]);
       // applicantType.push(data?.providerType.serviceProviderType);
       applicantType.push(data?.basicDetailReferences?.applicantType?.serviceProviderType || "Doctor");
+      department.push(
+        `${data?.basicDetailReferences?.department?.name || "-"}`
+      );
+       deptSpecialty.push(
+        data?.basicDetailReferences?.specialty?.name ?? "-"
+      );
       // applicantId.push(data?.displayId);
       // if (workModeType === "Staff Manager") {
         if (data?.extensionRequested === true) {
@@ -952,7 +977,7 @@ const LocumStaffList = ({
 
     return [
       // { type: "dot", value: dot },
-      { type: "text", value: applicantName,tooltipValueText: applicantDept },
+      { type: "text", value: applicantName },
       {
         type: "iconWithCount",
         icon: iconStatus,
@@ -962,13 +987,14 @@ const LocumStaffList = ({
       },
       // { type: "text", value: applicantId },
       { type: "text", value: applicantType },
-      {
-        type: "iconWithCount",
-        value: notes,
-        // hoverText: notesHoverText,
-        // isShowHoverText: true,
-        icon: notesIcon,
-      },
+      { type: "text", value: department , tooltipValueText:deptSpecialty},
+      // {
+      //   type: "iconWithCount",
+      //   value: notes,
+      //   // hoverText: notesHoverText,
+      //   // isShowHoverText: true,
+      //   icon: notesIcon,
+      // },
       {
         type: "iconWithCount",
         value: docs,
@@ -1015,10 +1041,20 @@ const LocumStaffList = ({
     iconStatus = [];
     reappointDate = [];
     requestBy = [];
+    deptSpecialty = [];
 
     tableData?.map((data, uniqueKey) => {
+      // applicantName.push(
+      //   `${formatFirstNameLastName(data?.staff?.applicant?.name?.firstName, data?.staff?.applicant?.name?.lastName)}` || " "
+      // );
       applicantName.push(
-        `${formatFirstNameLastName(data?.staff?.applicant?.name?.firstName, data?.staff?.applicant?.name?.lastName)}` || " "
+      <div
+          key={data.id}
+          className={`${style.justifyCenter} ${style.cursorPointer}`}
+          // onClick={() => onClickViewAndVerifyFunction(data.id)}
+        >
+          {formatFirstNameLastName(data?.staff?.applicant?.name?.firstName, data?.staff?.applicant?.name?.lastName) || " "}
+        </div>
       );
       applicantDept.push([data?.staff?.basicDetailReferences?.department?.name ? data?.staff?.basicDetailReferences?.department?.name : "-"]);
       if (data?.staff?.reAppointmentInitiated === true) {
@@ -1040,6 +1076,12 @@ const LocumStaffList = ({
       applicantId.push(data?.staff?.status === "ACTIVE" ? "Active" : "Expired" || "");
 
       applicantType.push(data?.staff?.basicDetailReferences?.applicantType?.serviceProviderType || "Doctor");
+       department.push(
+        `${data?.staff?.basicDetailReferences?.department?.name || "-"}`
+      );
+      deptSpecialty.push(
+        data?.staff?.basicDetailReferences?.specialty?.name ?? "-"
+      );
       // docs.push("0/3");
       // docsIcon.push(
       //   <TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#b0a6a6` }} />
@@ -1087,7 +1129,7 @@ const LocumStaffList = ({
 
     return [
       // { type: "dot", value: dot, tooltipValue: dotTooltipValues },
-      { type: "text", value: applicantName,tooltipValueText: applicantDept },
+      { type: "text", value: applicantName },
       {
         type: "iconWithCount",
         icon: iconStatus,
@@ -1097,14 +1139,14 @@ const LocumStaffList = ({
       },
       { type: "text", value: applicantId },
       { type: "text", value: applicantType },
-      // // { type: "text", value: department },
-      {
-        type: "iconWithCount",
-        value: notes,
-        // hoverText: notesHoverText,
-        // isShowHoverText: true,
-        icon: notesIcon,
-      },
+      { type: "text", value: department,tooltipValueText : deptSpecialty },
+      // {
+      //   type: "iconWithCount",
+      //   value: notes,
+      //   // hoverText: notesHoverText,
+      //   // isShowHoverText: true,
+      //   icon: notesIcon,
+      // },
       { type: "text", value: requestBy },
       // {
       //   type: "iconWithCount",

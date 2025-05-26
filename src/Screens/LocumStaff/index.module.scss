@@ -708,19 +708,19 @@ body::-webkit-scrollbar {
 
 .requestLocumStaffGrid {
   display: grid;
-  grid-template-columns: 17% 4% 10% 10% 5% 13% 11% 9% 16%;
+  grid-template-columns: 14% 3% 8% 9% 14% 11% 11% 9% 13%;
   grid-gap: 1%;
 }
 
 .expiredLocumStaffGrid {
   display: grid;
-  grid-template-columns: 21% 4% 15% 6% 6% 16% 11% 14%;
+  grid-template-columns: 15% 4% 12% 17% 6% 15% 9% 15%;
   grid-gap: 1%;
 }
 
 .activeLocumStaffGrid {
   display: grid;
-  grid-template-columns: 15% 6% 13% 6% 7% 13% 13% 9% 9%;
+  grid-template-columns: 15% 3% 11% 15% 6% 11% 11% 9% 10%;
   grid-gap: 10px;
 }
 
