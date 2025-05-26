@@ -124,7 +124,15 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType, setIsL
         'currentRemitToAddressForActiveContracts': 'TIMESHEET',
         'activityStatusTracker': 'TIMESHEET',
         'paymentProcessingStatusTracker': 'PAYMENT',
-        'submittedApplicationsReviewSummary': 'STAFF_REAPPOINTMENT'
+        'submittedApplicationsReviewSummary': 'STAFF_REAPPOINTMENT',
+        'ohipBillingNumbersByCareProvider': 'ALL_STAFF',
+        'reappointmentApplicationNotStarted': 'STAFF_REAPPOINTMENT',
+        'privilegedStaffSummary': 'ALL_STAFF',
+        'currentNotesSummary': 'ALL_STAFF',
+        'staffReappointmentStatusSummary': 'STAFF_REAPPOINTMENT',
+        'locumRenewalOrExtensionApplicationsSummary': 'LOCUM_EXTENSION_OR_RENEWAL',
+        'careProviderCareerMilestoneSummary': 'PERMANENT_STAFF',
+        'declinedOrNotRenewedStaffSummary': 'LOCUM_EXTENSION_OR_RENEWAL'
     }
 
     // const type = (reportType === 'activitiesOrServices' ?
@@ -156,7 +164,15 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType, setIsL
         'currentRemitToAddressForActiveContracts': 'CURRENT_REMIT_TO_ADDRESS',
         'activityStatusTracker': 'ACTIVITY_STATUS_TRACKER',
         'paymentProcessingStatusTracker': 'PAYMENT_TRACKER',
-        'submittedApplicationsReviewSummary': 'SUBMITTED_APPLICATIONS_REVIEW_SUMMARY'
+        'submittedApplicationsReviewSummary': 'SUBMITTED_APPLICATIONS_REVIEW_SUMMARY',
+        'ohipBillingNumbersByCareProvider': 'OHIP_BILLING_NUMBERS_BY_CARE_PROVIDER',
+        'reappointmentApplicationNotStarted': 'REAPPOINTMENT_APPLICATIONS_NOT_YET_STARTED_SUMMARY',
+        'privilegedStaffSummary': 'PRIVILEGED_STAFF_SUMMARY',
+        'currentNotesSummary': 'CURRENT_NOTES_SUMMARY',
+        'staffReappointmentStatusSummary': 'STAFF_REAPPOINTMENT_STATUS_SUMMARY',
+        'locumRenewalOrExtensionApplicationsSummary': 'DECLINED_OR_NOT_RENEWED_STAFF_SUMMARY',
+        'careProviderCareerMilestoneSummary': 'CARE_PROVIDER_CAREER_MILESTONE_SUMMARY',
+        'declinedOrNotRenewedStaffSummary': 'DECLINED_OR_NOT_RENEWED_STAFF_SUMMARY'
     }
 
     const filters = {
