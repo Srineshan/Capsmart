@@ -14,7 +14,7 @@ import CommonDateField from '../CommonFields/CommonDateField';
 import { TextField, Tooltip } from '@mui/material';
 import { PUT } from '../../Screens/dataSaver';
 import { useParams } from 'react-router-dom';
-import { format } from 'date-fns';
+import { format, isValid, parseISO } from 'date-fns';
 
 const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicationDocumentId, getPreApplication, applicationIdFromEdit }) => {
     const [isContinue, setIsContinue] = useState(false);
@@ -104,17 +104,34 @@ const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicati
         field.name === "expiry_date" && changedData?.test_date
             ? new Date(changedData.test_date)
             : null;
+
+                 const dateValue = changedData?.[field?.name] 
+        ? parseISO(changedData[field.name])
+        : null;
                 return (
                     <CommonDateField
                         className={style.fullWidth}
                         open={calendarStart}
                         onOpen={() => setCalendarStart(true)}
                         onClose={() => setCalendarStart(false)}
-                        value={changedData?.[field?.name]}
-                        onChange={(newValue) => {
-                            setChangedData({ ...changedData, [field.name]: format(new Date(newValue), "yyyy-MM-dd'T'00:00") });
-                            setIsEdited(true)
-                        }}
+                       value={dateValue}
+            onChange={(newValue) => {
+                if (newValue && isValid(newValue)) {
+                    // Format to backend-compatible string (yyyy-MM-dd'T'00:00)
+                    const backendFormattedDate = format(newValue, "yyyy-MM-dd'T'00:00");
+                    setChangedData({ 
+                        ...changedData, 
+                        [field.name]: backendFormattedDate 
+                    });
+                } else {
+                    // Clear the field if invalid
+                    setChangedData({ 
+                        ...changedData, 
+                        [field.name]: null 
+                    });
+                }
+                setIsEdited(true);
+            }}
                         minDate={minDate}
                         InputProps={{
                             style: {
@@ -127,10 +144,16 @@ const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicati
                                 {...params}
                                 inputProps={{
                                     ...params.inputProps,
-                                    placeholder: '',
+                                    placeholder: 'DD/MM/YYYY',
                                 }}
                                 color={""}
                                 fullWidth
+                                           error={changedData?.[field.name] && !isValid(parseISO(changedData[field.name]))}
+                    helperText={
+                        changedData?.[field.name] && !isValid(parseISO(changedData[field.name]))
+                            ? "Invalid date"
+                            : ""
+                    }
                             />
                         )}
                         label={field.label}
