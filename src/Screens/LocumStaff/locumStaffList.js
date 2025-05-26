@@ -103,8 +103,8 @@ const LocumStaffList = ({
   const requestLocumHeaderValues = ["Locum Staff", "", "Staff Status", "Locum Type", "Department", "Request By", "End Date", "Days to Expiration", ""];
 
 
-  const activeLocumColSortValues = [false, false, false, false, false, , false, false, false, false];
-  const expiredLocumColSortValues = [false, false, false, false, false, false, false, false, false, false];
+  const activeLocumColSortValues = [true, false, true, true, false, , false, false, false, false];
+  const expiredLocumColSortValues = [true, false, true, true, false, false, false, false, false, false];
   const requestLocumColSortValues = [false, false, false, false, false, false, false, false, false, false];
 
   const [isPrintClicked, setIsPrintClicked] = useState(false);
@@ -196,6 +196,10 @@ const LocumStaffList = ({
   useEffect(() => {
     getRejectionCounts();
   }, [applicationType]);
+
+   useEffect(() => {
+    setSortField("DEFAULT");
+  }, [selectedTab]);
 
   useEffect(() => {
     getActiveUserData();
@@ -379,7 +383,7 @@ const LocumStaffList = ({
         const isPaginationRequired = limit === 9999 ? false : true;
         const userDepartmentListData =
         userDetailsFetchOption?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.id;           
-        apiUrl = `application-management-service/staff?status=ACTIVE&type=LOCUM&noOfDays=30&isExpired=${isExpired}&searchText=${searchTermForTable}&isPaginationRequired=${isPaginationRequired}&limit=${limit}&offset=${page - 1}`;
+        apiUrl = `application-management-service/staff?status=ACTIVE&type=LOCUM&noOfDays=30&isExpired=${isExpired}&searchText=${searchTermForTable}&isPaginationRequired=${isPaginationRequired}&limit=${limit}&offset=${page - 1}&sortBy=${sortValue}&sortByField=${sortField}`;
 
         if (selectedDepartment  && workModeType === "Department Head" ) {
           apiUrl += `&departmentSpecialties=${selectedDepartment}`;
