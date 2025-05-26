@@ -12,7 +12,7 @@ const ReportFooter = () => {
             <div className={style.spaceBetween}>
                 <div>
                     {/* <div className={style.poweredByTextStyle}>Powered By</div> */}
-                    <img src={HapiCare} alt="poweredBy" className={style.reportFooterLogoApplicant} />
+                    <img src={HapiCare} alt="poweredBy" className={`${style.reportFooterLogoApplicant} ${style.marginTop10}`} />
                 </div>
                 {/* <div id='content'>
                     <div className={`${style.reportFooterTextStyle}`} id="pageFooter"></div>

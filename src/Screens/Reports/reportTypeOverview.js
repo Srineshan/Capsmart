@@ -852,77 +852,77 @@ const ReportTypeOverview = () => {
     }
 
     const getOHIPBillingNumbersByCareProvider = async (signal) => {
-        if (!isMyReport) {
-            const queryParams = new URLSearchParams({
-            });
+        // if (!isMyReport) {
+        const queryParams = new URLSearchParams({
+        });
 
-            if (dataToUseInReport?.selectedStaffType) {
-                queryParams.append('applicantTypeId', dataToUseInReport?.selectedStaffType);
-            }
-
-            if (dataToUseInReport?.selectedPrivilegeCategory) {
-                queryParams.append('privilegingCategoryId', dataToUseInReport?.selectedPrivilegeCategory);
-            }
-
-            if (dataToUseInReport?.selectedDepartments) {
-                queryParams.append('departmentSpecialties', dataToUseInReport?.selectedDepartments);
-            }
-
-
-            // if (dataToUseInReport?.from) {
-            //     queryParams.append('startDate', dataToUseInReport?.from);
-            // }
-
-            // if (dataToUseInReport?.to) {
-            //     queryParams.append('endDate', dataToUseInReport?.to);
-            // }
-            setIsLoading(true)
-            const { data: data } = await GET(`application-management-service/report/ohipBillingNumberByCareProvider?${queryParams.toString()}`, { signal });
-            setOhipBillingNumbersByCareProviderValues(data);
-        } else {
-            setIsLoading(true)
-            const { data: data } = await GET(`application-management-service/report/myReport/ohipBillingNumberByCareProvider?id=${myReportId}`);
-            setOhipBillingNumbersByCareProviderValues(data);
+        if (dataToUseInReport?.selectedStaffType) {
+            queryParams.append('applicantTypeId', dataToUseInReport?.selectedStaffType);
         }
+
+        if (dataToUseInReport?.selectedPrivilegeCategory) {
+            queryParams.append('privilegingCategoryId', dataToUseInReport?.selectedPrivilegeCategory);
+        }
+
+        if (dataToUseInReport?.selectedDepartments) {
+            queryParams.append('departmentSpecialties', dataToUseInReport?.selectedDepartments);
+        }
+
+
+        // if (dataToUseInReport?.from) {
+        //     queryParams.append('startDate', dataToUseInReport?.from);
+        // }
+
+        // if (dataToUseInReport?.to) {
+        //     queryParams.append('endDate', dataToUseInReport?.to);
+        // }
+        setIsLoading(true)
+        const { data: data } = await GET(`application-management-service/report/ohipBillingNumberByCareProvider?${queryParams.toString()}`, { signal });
+        setOhipBillingNumbersByCareProviderValues(data);
+        // } else {
+        //     setIsLoading(true)
+        //     const { data: data } = await GET(`application-management-service/report/myReport/ohipBillingNumberByCareProvider?id=${myReportId}`);
+        //     setOhipBillingNumbersByCareProviderValues(data);
+        // }
         setIsLoading(false)
     }
 
     const getReappointmentApplicationNotYetStarted = async (signal) => {
         let chartData = []
-        if (!isMyReport) {
-            const queryParams = new URLSearchParams({
-            });
+        // if (!isMyReport) {
+        const queryParams = new URLSearchParams({
+        });
 
-            if (dataToUseInReport?.selectedStaffType) {
-                queryParams.append('applicantTypeId', dataToUseInReport?.selectedStaffType);
-            }
-
-            if (dataToUseInReport?.selectedPrivilegeCategory) {
-                queryParams.append('privilegingCategoryId', dataToUseInReport?.selectedPrivilegeCategory);
-            }
-
-            if (dataToUseInReport?.selectedDepartments) {
-                queryParams.append('departmentSpecialties', dataToUseInReport?.selectedDepartments);
-            }
-
-
-            // if (dataToUseInReport?.from) {
-            //     queryParams.append('startDate', dataToUseInReport?.from);
-            // }
-
-            // if (dataToUseInReport?.to) {
-            //     queryParams.append('endDate', dataToUseInReport?.to);
-            // }
-            setIsLoading(true)
-            const { data: data } = await GET(`application-management-service/report/staff/reappointmentNotStarted?${queryParams.toString()}`, { signal });
-            setReappointmentNotStartedValues(data);
-            chartData = data?.staffByApplicantType
-        } else {
-            setIsLoading(true)
-            const { data: data } = await GET(`application-management-service/report/staff/myReport/reappointmentNotStarted?id=${myReportId}`);
-            setReappointmentNotStartedValues(data);
-            chartData = data?.staffByApplicantType
+        if (dataToUseInReport?.selectedStaffType) {
+            queryParams.append('applicantTypeId', dataToUseInReport?.selectedStaffType);
         }
+
+        if (dataToUseInReport?.selectedPrivilegeCategory) {
+            queryParams.append('privilegingCategoryId', dataToUseInReport?.selectedPrivilegeCategory);
+        }
+
+        if (dataToUseInReport?.selectedDepartments) {
+            queryParams.append('departmentSpecialties', dataToUseInReport?.selectedDepartments);
+        }
+
+
+        // if (dataToUseInReport?.from) {
+        //     queryParams.append('startDate', dataToUseInReport?.from);
+        // }
+
+        // if (dataToUseInReport?.to) {
+        //     queryParams.append('endDate', dataToUseInReport?.to);
+        // }
+        setIsLoading(true)
+        const { data: data } = await GET(`application-management-service/report/staff/reappointmentNotStarted?${queryParams.toString()}`, { signal });
+        setReappointmentNotStartedValues(data);
+        chartData = data?.staffByApplicantType
+        // } else {
+        //     setIsLoading(true)
+        //     const { data: data } = await GET(`application-management-service/report/staff/myReport/reappointmentNotStarted?id=${myReportId}`);
+        //     setReappointmentNotStartedValues(data);
+        //     chartData = data?.staffByApplicantType
+        // }
         if (chartData?.paymentContracts?.length !== 0 && chartData !== undefined) {
             setBarChartSeries([{
                 'data': chartData?.map(data => data?.fullPrivileges + data?.temporaryPrivileges),
@@ -935,40 +935,40 @@ const ReportTypeOverview = () => {
 
     const getCareProviderCareerMilestone = async (signal) => {
         let chartData = []
-        if (!isMyReport) {
-            const queryParams = new URLSearchParams({
-            });
+        // if (!isMyReport) {
+        const queryParams = new URLSearchParams({
+        });
 
-            if (dataToUseInReport?.selectedStaffType) {
-                queryParams.append('applicantTypeId', dataToUseInReport?.selectedStaffType);
-            }
-
-            if (dataToUseInReport?.selectedPrivilegeCategory) {
-                queryParams.append('privilegingCategoryId', dataToUseInReport?.selectedPrivilegeCategory);
-            }
-
-            if (dataToUseInReport?.selectedDepartments) {
-                queryParams.append('departmentSpecialties', dataToUseInReport?.selectedDepartments);
-            }
-
-
-            // if (dataToUseInReport?.from) {
-            //     queryParams.append('startDate', dataToUseInReport?.from);
-            // }
-
-            // if (dataToUseInReport?.to) {
-            //     queryParams.append('endDate', dataToUseInReport?.to);
-            // }
-            setIsLoading(true)
-            const { data: data } = await GET(`application-management-service/report/careProvidersMileStoneReport?${queryParams.toString()}`, { signal });
-            setCareProviderCareerMilestoneValues(data);
-            chartData = data?.staffCountByMilestone
-        } else {
-            setIsLoading(true)
-            const { data: data } = await GET(`application-management-service/report/myReport/careProvidersMileStoneReport?id=${myReportId}`);
-            setCareProviderCareerMilestoneValues(data);
-            chartData = data?.staffCountByMilestone
+        if (dataToUseInReport?.selectedStaffType) {
+            queryParams.append('applicantTypeId', dataToUseInReport?.selectedStaffType);
         }
+
+        if (dataToUseInReport?.selectedPrivilegeCategory) {
+            queryParams.append('privilegingCategoryId', dataToUseInReport?.selectedPrivilegeCategory);
+        }
+
+        if (dataToUseInReport?.selectedDepartments) {
+            queryParams.append('departmentSpecialties', dataToUseInReport?.selectedDepartments);
+        }
+
+
+        // if (dataToUseInReport?.from) {
+        //     queryParams.append('startDate', dataToUseInReport?.from);
+        // }
+
+        // if (dataToUseInReport?.to) {
+        //     queryParams.append('endDate', dataToUseInReport?.to);
+        // }
+        setIsLoading(true)
+        const { data: data } = await GET(`application-management-service/report/careProvidersMileStoneReport?${queryParams.toString()}`, { signal });
+        setCareProviderCareerMilestoneValues(data);
+        chartData = data?.staffCountByMilestone
+        // } else {
+        //     setIsLoading(true)
+        //     const { data: data } = await GET(`application-management-service/report/myReport/careProvidersMileStoneReport?id=${myReportId}`);
+        //     setCareProviderCareerMilestoneValues(data);
+        //     chartData = data?.staffCountByMilestone
+        // }
         if (chartData?.paymentContracts?.length !== 0 && chartData !== undefined) {
             setBarChartSeries([{
                 'data': chartData?.map(data => data?.staffCount),
@@ -980,187 +980,187 @@ const ReportTypeOverview = () => {
     }
 
     const getPrivilegedStaffSummary = async (signal) => {
-        if (!isMyReport) {
-            const queryParams = new URLSearchParams({
-            });
+        // if (!isMyReport) {
+        const queryParams = new URLSearchParams({
+        });
 
-            if (dataToUseInReport?.selectedStaffType) {
-                queryParams.append('applicantTypeId', dataToUseInReport?.selectedStaffType);
-            }
-
-            if (dataToUseInReport?.selectedPrivilegeCategory) {
-                queryParams.append('privilegingCategoryId', dataToUseInReport?.selectedPrivilegeCategory);
-            }
-
-            if (dataToUseInReport?.selectedDepartments) {
-                queryParams.append('departmentSpecialties', dataToUseInReport?.selectedDepartments);
-            }
-
-
-            // if (dataToUseInReport?.from) {
-            //     queryParams.append('startDate', dataToUseInReport?.from);
-            // }
-
-            // if (dataToUseInReport?.to) {
-            //     queryParams.append('endDate', dataToUseInReport?.to);
-            // }
-            setIsLoading(true)
-            const { data: data } = await GET(`application-management-service/report/privilegedStaffs?${queryParams.toString()}`, { signal });
-            setPrivilegedStaffSummaryValues(data);
-        } else {
-            setIsLoading(true)
-            const { data: data } = await GET(`application-management-service/report/myReport/privilegedStaffs?id=${myReportId}`);
-            setPrivilegedStaffSummaryValues(data);
+        if (dataToUseInReport?.selectedStaffType) {
+            queryParams.append('applicantTypeId', dataToUseInReport?.selectedStaffType);
         }
+
+        if (dataToUseInReport?.selectedPrivilegeCategory) {
+            queryParams.append('privilegingCategoryId', dataToUseInReport?.selectedPrivilegeCategory);
+        }
+
+        if (dataToUseInReport?.selectedDepartments) {
+            queryParams.append('departmentSpecialties', dataToUseInReport?.selectedDepartments);
+        }
+
+
+        // if (dataToUseInReport?.from) {
+        //     queryParams.append('startDate', dataToUseInReport?.from);
+        // }
+
+        // if (dataToUseInReport?.to) {
+        //     queryParams.append('endDate', dataToUseInReport?.to);
+        // }
+        setIsLoading(true)
+        const { data: data } = await GET(`application-management-service/report/privilegedStaffs?${queryParams.toString()}`, { signal });
+        setPrivilegedStaffSummaryValues(data);
+        // } else {
+        //     setIsLoading(true)
+        //     const { data: data } = await GET(`application-management-service/report/myReport/privilegedStaffs?id=${myReportId}`);
+        //     setPrivilegedStaffSummaryValues(data);
+        // }
         setIsLoading(false)
     }
 
     const getStaffReappointmentStatusSummary = async (signal) => {
-        if (!isMyReport) {
-            const queryParams = new URLSearchParams({
-            });
+        // if (!isMyReport) {
+        const queryParams = new URLSearchParams({
+        });
 
-            if (dataToUseInReport?.selectedStaffType) {
-                queryParams.append('applicantTypeId', dataToUseInReport?.selectedStaffType);
-            }
-
-            if (dataToUseInReport?.selectedPrivilegeCategory) {
-                queryParams.append('privilegingCategoryId', dataToUseInReport?.selectedPrivilegeCategory);
-            }
-
-            if (dataToUseInReport?.selectedDepartments) {
-                queryParams.append('departmentSpecialties', dataToUseInReport?.selectedDepartments);
-            }
-
-
-            // if (dataToUseInReport?.from) {
-            //     queryParams.append('startDate', dataToUseInReport?.from);
-            // }
-
-            // if (dataToUseInReport?.to) {
-            //     queryParams.append('endDate', dataToUseInReport?.to);
-            // }
-            setIsLoading(true)
-            const { data: data } = await GET(`application-management-service/report/staffReappointmentStatusDetails?${queryParams.toString()}`, { signal });
-            setStaffReappointmentStatusSummaryValues(data);
-        } else {
-            setIsLoading(true)
-            const { data: data } = await GET(`application-management-service/report/myReport/staffReappointmentStatusDetails?id=${myReportId}`);
-            setStaffReappointmentStatusSummaryValues(data);
+        if (dataToUseInReport?.selectedStaffType) {
+            queryParams.append('applicantTypeId', dataToUseInReport?.selectedStaffType);
         }
+
+        if (dataToUseInReport?.selectedPrivilegeCategory) {
+            queryParams.append('privilegingCategoryId', dataToUseInReport?.selectedPrivilegeCategory);
+        }
+
+        if (dataToUseInReport?.selectedDepartments) {
+            queryParams.append('departmentSpecialties', dataToUseInReport?.selectedDepartments);
+        }
+
+
+        // if (dataToUseInReport?.from) {
+        //     queryParams.append('startDate', dataToUseInReport?.from);
+        // }
+
+        // if (dataToUseInReport?.to) {
+        //     queryParams.append('endDate', dataToUseInReport?.to);
+        // }
+        setIsLoading(true)
+        const { data: data } = await GET(`application-management-service/report/staffReappointmentStatusDetails?${queryParams.toString()}`, { signal });
+        setStaffReappointmentStatusSummaryValues(data);
+        // } else {
+        //     setIsLoading(true)
+        //     const { data: data } = await GET(`application-management-service/report/myReport/staffReappointmentStatusDetails?id=${myReportId}`);
+        //     setStaffReappointmentStatusSummaryValues(data);
+        // }
         setIsLoading(false)
     }
 
     const getCurrentApplicationNotesSummary = async (signal) => {
-        if (!isMyReport) {
-            const queryParams = new URLSearchParams({
-            });
+        // if (!isMyReport) {
+        const queryParams = new URLSearchParams({
+        });
 
-            if (dataToUseInReport?.selectedStaffType) {
-                queryParams.append('applicantTypeId', dataToUseInReport?.selectedStaffType);
-            }
-
-            if (dataToUseInReport?.selectedPrivilegeCategory) {
-                queryParams.append('privilegingCategoryId', dataToUseInReport?.selectedPrivilegeCategory);
-            }
-
-            if (dataToUseInReport?.selectedDepartments) {
-                queryParams.append('departmentSpecialties', dataToUseInReport?.selectedDepartments);
-            }
-
-            if (dataToUseInReport?.selectedApplicationType) {
-                queryParams.append('applicationcreationType', dataToUseInReport?.selectedApplicationType);
-            }
-
-            // if (dataToUseInReport?.from) {
-            //     queryParams.append('startDate', dataToUseInReport?.from);
-            // }
-
-            // if (dataToUseInReport?.to) {
-            //     queryParams.append('endDate', dataToUseInReport?.to);
-            // }
-            setIsLoading(true)
-            const { data: data } = await GET(`application-management-service/report/staffCurrentApplicationNotesSummary?${queryParams.toString()}`, { signal });
-            setStaffApplicationNotesSummaryValues(data);
-        } else {
-            setIsLoading(true)
-            const { data: data } = await GET(`application-management-service/report/myReport/staffCurrentApplicationNotesSummary?id=${myReportId}`);
-            setStaffApplicationNotesSummaryValues(data);
+        if (dataToUseInReport?.selectedStaffType) {
+            queryParams.append('applicantTypeId', dataToUseInReport?.selectedStaffType);
         }
+
+        if (dataToUseInReport?.selectedPrivilegeCategory) {
+            queryParams.append('privilegingCategoryId', dataToUseInReport?.selectedPrivilegeCategory);
+        }
+
+        if (dataToUseInReport?.selectedDepartments) {
+            queryParams.append('departmentSpecialties', dataToUseInReport?.selectedDepartments);
+        }
+
+        if (dataToUseInReport?.selectedApplicationType) {
+            queryParams.append('applicationcreationType', dataToUseInReport?.selectedApplicationType);
+        }
+
+        // if (dataToUseInReport?.from) {
+        //     queryParams.append('startDate', dataToUseInReport?.from);
+        // }
+
+        // if (dataToUseInReport?.to) {
+        //     queryParams.append('endDate', dataToUseInReport?.to);
+        // }
+        setIsLoading(true)
+        const { data: data } = await GET(`application-management-service/report/staffCurrentApplicationNotesSummary?${queryParams.toString()}`, { signal });
+        setStaffApplicationNotesSummaryValues(data);
+        // } else {
+        //     setIsLoading(true)
+        //     const { data: data } = await GET(`application-management-service/report/myReport/staffCurrentApplicationNotesSummary?id=${myReportId}`);
+        //     setStaffApplicationNotesSummaryValues(data);
+        // }
         setIsLoading(false)
     }
 
     const getLocumRenewalOrExtensionApplication = async (signal) => {
-        if (!isMyReport) {
-            const queryParams = new URLSearchParams({
-            });
+        // if (!isMyReport) {
+        const queryParams = new URLSearchParams({
+        });
 
-            if (dataToUseInReport?.selectedStaffType) {
-                queryParams.append('applicantTypeId', dataToUseInReport?.selectedStaffType);
-            }
-
-            if (dataToUseInReport?.selectedPrivilegeCategory) {
-                queryParams.append('privilegingCategoryId', dataToUseInReport?.selectedPrivilegeCategory);
-            }
-
-            if (dataToUseInReport?.selectedDepartments) {
-                queryParams.append('departmentSpecialties', dataToUseInReport?.selectedDepartments);
-            }
-
-            // if (dataToUseInReport?.from) {
-            //     queryParams.append('startDate', dataToUseInReport?.from);
-            // }
-
-            // if (dataToUseInReport?.to) {
-            //     queryParams.append('endDate', dataToUseInReport?.to);
-            // }
-            setIsLoading(true)
-            const { data: data } = await GET(`application-management-service/report/locumRenewalOrExtensionApplications?${queryParams.toString()}&applicationCurrentLevel=${workModeType}`, { signal });
-            setLocumRenewalOrExtensionApplicationValues(data);
-        } else {
-            setIsLoading(true)
-            const { data: data } = await GET(`application-management-service/report/myReport/locumRenewalOrExtensionApplications?id=${myReportId}`);
-            setLocumRenewalOrExtensionApplicationValues(data);
+        if (dataToUseInReport?.selectedStaffType) {
+            queryParams.append('applicantTypeId', dataToUseInReport?.selectedStaffType);
         }
+
+        if (dataToUseInReport?.selectedPrivilegeCategory) {
+            queryParams.append('privilegingCategoryId', dataToUseInReport?.selectedPrivilegeCategory);
+        }
+
+        if (dataToUseInReport?.selectedDepartments) {
+            queryParams.append('departmentSpecialties', dataToUseInReport?.selectedDepartments);
+        }
+
+        // if (dataToUseInReport?.from) {
+        //     queryParams.append('startDate', dataToUseInReport?.from);
+        // }
+
+        // if (dataToUseInReport?.to) {
+        //     queryParams.append('endDate', dataToUseInReport?.to);
+        // }
+        setIsLoading(true)
+        const { data: data } = await GET(`application-management-service/report/locumRenewalOrExtensionApplications?${queryParams.toString()}&applicationCurrentLevel=${workModeType}`, { signal });
+        setLocumRenewalOrExtensionApplicationValues(data);
+        // } else {
+        //     setIsLoading(true)
+        //     const { data: data } = await GET(`application-management-service/report/myReport/locumRenewalOrExtensionApplications?id=${myReportId}`);
+        //     setLocumRenewalOrExtensionApplicationValues(data);
+        // }
         setIsLoading(false)
     }
 
     const getDeclinedOrNotRenewedStaffSummary = async (signal) => {
-        if (!isMyReport) {
-            const queryParams = new URLSearchParams({
-            });
+        // if (!isMyReport) {
+        const queryParams = new URLSearchParams({
+        });
 
-            if (dataToUseInReport?.selectedStaffType) {
-                queryParams.append('applicantTypeId', dataToUseInReport?.selectedStaffType);
-            }
-
-            if (dataToUseInReport?.selectedPrivilegeCategory) {
-                queryParams.append('privilegingCategoryId', dataToUseInReport?.selectedPrivilegeCategory);
-            }
-
-            if (dataToUseInReport?.selectedDepartments) {
-                queryParams.append('departmentSpecialties', dataToUseInReport?.selectedDepartments);
-            }
-
-            if (dataToUseInReport?.selectedReappointmentStatus) {
-                queryParams.append('staffReappointmentStatus', dataToUseInReport?.selectedReappointmentStatus);
-            }
-
-            // if (dataToUseInReport?.from) {
-            //     queryParams.append('startDate', dataToUseInReport?.from);
-            // }
-
-            // if (dataToUseInReport?.to) {
-            //     queryParams.append('endDate', dataToUseInReport?.to);
-            // }
-            setIsLoading(true)
-            const { data: data } = await GET(`application-management-service/report/declinedOrNotRenewedStaffs?${queryParams.toString()}`, { signal });
-            setDeclinedOrNotRenewedStaffSummaryValues(data);
-        } else {
-            setIsLoading(true)
-            const { data: data } = await GET(`application-management-service/report/myReport/declinedOrNotRenewedStaffs?id=${myReportId}`);
-            setDeclinedOrNotRenewedStaffSummaryValues(data);
+        if (dataToUseInReport?.selectedStaffType) {
+            queryParams.append('applicantTypeId', dataToUseInReport?.selectedStaffType);
         }
+
+        if (dataToUseInReport?.selectedPrivilegeCategory) {
+            queryParams.append('privilegingCategoryId', dataToUseInReport?.selectedPrivilegeCategory);
+        }
+
+        if (dataToUseInReport?.selectedDepartments) {
+            queryParams.append('departmentSpecialties', dataToUseInReport?.selectedDepartments);
+        }
+
+        if (dataToUseInReport?.selectedReappointmentStatus) {
+            queryParams.append('staffReappointmentStatus', dataToUseInReport?.selectedReappointmentStatus);
+        }
+
+        // if (dataToUseInReport?.from) {
+        //     queryParams.append('startDate', dataToUseInReport?.from);
+        // }
+
+        // if (dataToUseInReport?.to) {
+        //     queryParams.append('endDate', dataToUseInReport?.to);
+        // }
+        setIsLoading(true)
+        const { data: data } = await GET(`application-management-service/report/declinedOrNotRenewedStaffs?${queryParams.toString()}`, { signal });
+        setDeclinedOrNotRenewedStaffSummaryValues(data);
+        // } else {
+        //     setIsLoading(true)
+        //     const { data: data } = await GET(`application-management-service/report/myReport/declinedOrNotRenewedStaffs?id=${myReportId}`);
+        //     setDeclinedOrNotRenewedStaffSummaryValues(data);
+        // }
         setIsLoading(false)
     }
 
@@ -1217,85 +1217,6 @@ const ReportTypeOverview = () => {
             }
         }
         setIsLoading(false);
-    }
-
-    const getContractDocumentsOnFile = async () => {
-        if (dataToUseInReport?.selectedSites !== undefined && dataToUseInReport?.selectedDepartments !== undefined) {
-            if (!isMyReport) {
-                setIsLoading(true)
-                const { data: contractDocumentsOnFile } = await GET(`contract-managment-service/reports/contractDocumentsOnFile?sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}&contracts=${dataToUseInReport?.selectedContracts}&users=${dataToUseInReport?.selectedContractedServiceProvider}&contractStatus=${dataToUseInReport?.contractStatus}`);
-                if (contractDocumentsOnFile) {
-                    setContractDocumentsOnFileValues(contractDocumentsOnFile);
-                }
-            } else {
-                setIsLoading(true)
-                const { data: contractDocumentsOnFile } = await GET(`contract-managment-service/reports/myReport/contractDocumentsOnFile?id=${myReportId}`);
-                setContractDocumentsOnFileValues(contractDocumentsOnFile);
-            }
-        }
-        setIsLoading(false);
-    }
-
-    const getMultiProviderContractsList = async () => {
-        if (dataToUseInReport?.selectedSites !== undefined && dataToUseInReport?.selectedDepartments !== undefined) {
-            if (!isMyReport) {
-                setIsLoading(true)
-                const { data: multiProviderContract } = await GET(`contract-managment-service/reports/multiProviderContract?sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}&contracts=${dataToUseInReport?.selectedContracts}&contractStatus=${dataToUseInReport?.contractStatus}`);
-                if (multiProviderContract) {
-                    setMultiProviderContractValues(multiProviderContract);
-                }
-            } else {
-                setIsLoading(true)
-                const { data: multiProviderContract } = await GET(`contract-managment-service/reports/myReport/multiProviderContract?id=${myReportId}`);
-                setMultiProviderContractValues(multiProviderContract);
-            }
-        }
-        setIsLoading(false);
-    }
-
-    const getContractsWithABusinessEntity = async () => {
-        if (dataToUseInReport?.selectedSites !== undefined && dataToUseInReport?.selectedDepartments !== undefined) {
-            if (!isMyReport) {
-                setIsLoading(true)
-                const { data: contractsWithBusinessEntity } = await GET(`contract-managment-service/reports/contractsWithBusinessEntity?sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}&contracts=${dataToUseInReport?.selectedContracts}&contractStatus=${dataToUseInReport?.contractStatus}`);
-                if (contractsWithBusinessEntity) {
-                    setContractsWithBusinessEntityValues(contractsWithBusinessEntity);
-                }
-            } else {
-                setIsLoading(true)
-                const { data: contractsWithBusinessEntity } = await GET(`contract-managment-service/reports/myReport/contractsWithBusinessEntity?id=${myReportId}`);
-                setContractsWithBusinessEntityValues(contractsWithBusinessEntity);
-            }
-        }
-        setIsLoading(false);
-    }
-
-    const getCurrentRemitToAddressForActiveContracts = async () => {
-        if (dataToUseInReport?.selectedSites !== undefined && dataToUseInReport?.selectedDepartments !== undefined) {
-            if (!isMyReport) {
-                setIsLoading(true)
-                const { data: currentRemitToAddress } = await GET(`timesheet-management-service/report/currentRemitToAddress?sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}&contracts=${dataToUseInReport?.selectedContracts}&users=${dataToUseInReport?.selectedContractedServiceProvider}`);
-                if (currentRemitToAddress) {
-                    setCurrentRemitToAddressValues(currentRemitToAddress);
-                }
-            } else {
-                setIsLoading(true)
-                const { data: currentRemitToAddress } = await GET(`timesheet-management-service/report/myReport/currentRemitToAddress?id=${myReportId}`);
-                setCurrentRemitToAddressValues(currentRemitToAddress);
-            }
-        }
-        setIsLoading(false);
-    }
-
-    const getNonCompliantContractReportTile = async () => {
-        if (dataToUseInReport?.selectedSites !== undefined && dataToUseInReport?.selectedDepartments !== undefined && dataToUseInReport?.selectedContracts !== undefined && dataToUseInReport?.contractStatus !== undefined) {
-            setIsLoading(true)
-            const { data: nonCompliantContract } = await GET(`contract-managment-service/reports/documentProofReport?contractNames=${dataToUseInReport?.selectedContracts}&contractStatus=${dataToUseInReport?.contractStatus}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
-            if (nonCompliantContract) {
-                setNonCompliantContractTile(nonCompliantContract);
-            }
-            setIsLoading(false);
-        }
     }
 
     const getNonCompliantContractReport = async () => {
@@ -1402,7 +1323,7 @@ const ReportTypeOverview = () => {
         "No.",
         "Staff Name",
         "CPSO License",
-        "OHIP",
+        "OHIP Number",
         "Privilege Type",
         "Department",
         "Speciality / Service Area"
@@ -1499,7 +1420,7 @@ const ReportTypeOverview = () => {
         "No.",
         "Staff Name",
         "CPSO License",
-        "OHIP",
+        "OHIP Number",
         "Total",
         "Full Privileges",
         "Temporary Privileges",
@@ -1543,7 +1464,7 @@ const ReportTypeOverview = () => {
         "No.",
         "Staff Name",
         "CPSO License",
-        "OHIP",
+        "OHIP Number",
         "Privilege Type",
         "Department",
         "Start Date"
