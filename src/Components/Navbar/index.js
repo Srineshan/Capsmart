@@ -397,6 +397,7 @@ useEffect(() => {
 
   const handleWorkModeSelection = () => {
         window.location.pathname = "/"
+        sessionStorage.setItem('applicationCreationType', 'REAPPOINTMENT');
     };
   // console.log(selectedWorkingMode);
 
