@@ -40,7 +40,9 @@ const ReportsApplicantWithAllDataTable = ({ tableData, declinedReport }) => {
                     : ""}{", "}
                 </span>
                 <div className={`${style.rejectionTextStyle} ${style.marginLeft2}`}>{formDetails?.basicDetailReferences?.applicantType?.serviceProviderType}</div>
-                <div className={`${style.declinedTextStyle} ${style.marginLeft20}`}>{formDetails?.onGoingApplication?.status === "DECLINED" ? 'Declined' : 'Not Renewed'}</div>
+                {declinedReport && (
+                  <div className={`${style.declinedTextStyle} ${style.marginLeft20}`}>{formDetails?.onGoingApplication?.status === "DECLINED" ? 'Declined' : 'Not Renewed'}</div>
+                )}
               </div>
               <div className={`${style.twoColumnGridInner} ${style.displayInRowCenter}`}>
                 <span className={`${style.rejectionTextStyle}`}>Privilege Category:</span>

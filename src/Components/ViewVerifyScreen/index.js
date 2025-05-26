@@ -2088,6 +2088,14 @@ const NewActiveApplication = ({
   const credentialingCommitteeData = form?.completedWorkflows?.find(
     (workflow) => workflow?.role === "Credentialing Committee"
   );
+  const ExpireDate = form?.cyclePeriod?.to
+  ? new Date(form?.cyclePeriod?.to).toISOString().split('T')[0] + 'T00:00'
+  : null;
+  const formattedExpiringDate = ExpireDate ? format(new Date(ExpireDate), "MMM dd, yyyy") : "-";
+   const startDate = form?.cyclePeriod?.from
+  ? new Date(form?.cyclePeriod?.from).toISOString().split('T')[0] + 'T00:00'
+  : null;
+  const formattedStartingDate = startDate ? format(new Date(startDate), "MMM dd, yyyy") : "-";
   const reviewedDateCC = credentialingCommitteeData ? new Date(credentialingCommitteeData?.reviewedDate) : null;
   const AdvisoryCommitteeData = form?.completedWorkflows?.find(
     (workflow) => workflow?.role === "Advisory Committee"
@@ -5351,7 +5359,7 @@ const NewActiveApplication = ({
                                   className={`${style.displayInRow} ${style.verticalAlignCenter} `}
                                 >
                                   <div className={`${style.tableHeaderTextStyle} ${style.marginLeft20}`}>
-                                    Required {applicationType === "LOCUM" ? `Application ${form?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'}` : 'Reappointment'} data and Proof of Documentation for July 1, 2025 and June 30, 2026
+                                    Required {applicationType === "LOCUM" ? `Application ${form?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'} data and Proof of Documentation for ${formattedStartingDate} and ${formattedExpiringDate}` : 'Reappointment data and Proof of Documentation for July 1, 2025 and June 30, 2026'} 
                                   </div>
                                 </div>
                               </div>
@@ -5372,7 +5380,7 @@ const NewActiveApplication = ({
                                     className={`${style.displayInRow} ${style.verticalAlignCenter} `}
                                   >
                                     <div className={`${style.tableHeaderTextStyle}`}>
-                                      Required {applicationType === "LOCUM" ? `Application ${form?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'}` : 'Reappointment'} data and Proof of Documentation for July 1, 2025 and June 30, 2026
+                                      Required {applicationType === "LOCUM" ? `Application ${form?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'} data and Proof of Documentation for ${formattedStartingDate} and ${formattedExpiringDate}` : 'Reappointment data and Proof of Documentation for July 1, 2025 and June 30, 2026'} 
                                     </div>
                                   </div>
                                   <div
@@ -6873,7 +6881,7 @@ const NewActiveApplication = ({
                             <div className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderGridStyleCred1} `}>
 
                               <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                                <div className={`${style.tableHeaderTextStyleCred}`}> Required {applicationType === "LOCUM" ? `Application ${form?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'}` : 'Reappointment'} data and Proof of Documentation for July 1, 2025 and June 30, 2026 </div>
+                                <div className={`${style.tableHeaderTextStyleCred}`}> Required {applicationType === "LOCUM" ? `Application ${form?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'} data and Proof of Documentation for ${formattedStartingDate} and ${formattedExpiringDate}` : 'Reappointment data and Proof of Documentation for July 1, 2025 and June 30, 2026'} </div>
                               </div>
 
                             </div>
@@ -7929,7 +7937,7 @@ const NewActiveApplication = ({
                                 className={`${style.displayInRow} ${style.verticalAlignCenter} `}
                               >
                                 <div className={`${style.tableHeaderTextStyle}`}>
-                                  Required {applicationType === "LOCUM" ? `Application ${form?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'}` : 'Reappointment'} data and Proof of Documentation for July 1, 2025 and June 30, 2026
+                                   Required {applicationType === "LOCUM" ? `Application ${form?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'} data and Proof of Documentation for ${formattedStartingDate} and ${formattedExpiringDate}` : 'Reappointment data and Proof of Documentation for July 1, 2025 and June 30, 2026'} 
                                 </div>
                               </div>
                               <div
@@ -8917,7 +8925,7 @@ const NewActiveApplication = ({
                             <div className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderGridStyleCred1} `}>
 
                               <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                                <div className={`${style.tableHeaderTextStyleCred}`}> Required {applicationType === "LOCUM" ? `Application ${form?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'}` : 'Reappointment'} data and Proof of Documentation for July 1, 2025 and June 30, 2026 </div>
+                                <div className={`${style.tableHeaderTextStyleCred}`}>  Required {applicationType === "LOCUM" ? `Application ${form?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'} data and Proof of Documentation for ${formattedStartingDate} and ${formattedExpiringDate}` : 'Reappointment data and Proof of Documentation for July 1, 2025 and June 30, 2026'}  </div>
                               </div>
 
                             </div>
@@ -9530,7 +9538,7 @@ const NewActiveApplication = ({
                               className={`${style.displayInRow} ${style.verticalAlignCenter} `}
                             >
                               <div className={`${style.tableHeaderTextStyle}`}>
-                                Required {applicationType === "LOCUM" ? `Application ${form?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'}` : 'Reappointment'} data and Proof of Documentation for July 1, 2025 and June 30, 2026
+                                Required {applicationType === "LOCUM" ? `Application ${form?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'} data and Proof of Documentation for ${formattedStartingDate} and ${formattedExpiringDate}` : 'Reappointment data and Proof of Documentation for July 1, 2025 and June 30, 2026'} 
                               </div>
                             </div>
                             <div

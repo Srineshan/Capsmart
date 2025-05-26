@@ -1,20 +1,24 @@
 import React, { createRef, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Icon, Intent, Dialog, Classes } from '@blueprintjs/core';
 import Reject from './../../images/reject-report.png';
 import SideBar from '../../Components/Sidebar';
 import Popover from '@mui/material/Popover';
 import TemplateIcon from './../../images/templateIcon.png';
+import DoctorAnime from './../../images/doctorAnime.png';
 import style from './index.module.scss';
 import { Link, useParams } from 'react-router-dom';
-import { DELETE, GET } from '../dataSaver';
+import { DELETE, GET, POST } from '../dataSaver';
 import { format } from 'date-fns';
 import { formatInTimeZone } from 'date-fns-tz';
 import { currentUser } from '../../utils/auth';
-import { corsUrl, siteTimeZone } from '../../utils/formatting';
+import { corsUrl, formatFirstNameLastName, siteTimeZone } from '../../utils/formatting';
 import ReportNoDataBox from '../../Components/ReusableSmallComponents/reportNoDataBox';
 import TileApplication from '../../Components/TileApplication';
 import TableTwo from '../../Components/TableDesignTwo';
 import FileDisplayDialog from '../../Components/fileDisplayDialog';
+import CommonSearchField from '../../Components/CommonFields/CommonSearchField';
+import { SuccessToaster2 } from '../../utils/toaster';
 
 export const Run = ({ link }) => {
     const [anchorEl, setAnchorEl] = useState(null);
@@ -72,7 +76,13 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
     const [totalCount, setTotalCount] = useState(0);
     const [limit, setLimit] = useState(9999);
     const [selectedFile, setselectedFile] = useState(false);
+    const [showShareDialog, setShowShareDialog] = useState(false);
     const [showFileDisplayDialog, setShowFileDisplayDialog] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [searchData, setSearchData] = useState([]);
+    const [selectedUsers, setSelectedUsers] = useState([]);
+    const [selectedReport, setSelectedReport] = useState();
+    const [isLoading, setIsLoading] = useState(false);
     const myReportsColSortValues = [false, false, false, false, false];
     const reportingTemplateColSortValues = [false, false, false, false, false, false, false, false, false];
     const savedReportsColSortValues = [false, false, false, false, false, false, false, false, false, false];
@@ -95,6 +105,80 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
                     : myReportsColSortValues
     // let tableDataValues = selectedTab !== 'applicantsToProcess' ? getApplicantValues() : selectedTab === 'level-1' ? getApplicationValues() : selectedTab === 'level-1' ? getApplicationValues() : getApplicationValues();
 
+    useEffect(() => {
+        if (searchTerm.trim() === "") {
+            setSearchData([]); // Clear results if input is empty
+            return;
+        }
+
+        const controller = new AbortController(); // Create an AbortController instance
+        const signal = controller.signal;
+
+        getUserDataSearch(signal); // Call API function with signal
+
+        return () => controller.abort(); // Cleanup: Cancel previous request if a new one starts
+    }, [searchTerm]);
+
+    useEffect(() => {
+        getUserList()
+    }, [])
+
+    const handleSearch = (e) => {
+        setSearchTerm(e.target.value);
+    }
+
+    const onSearchClickFunc = (data) => {
+        setSelectedUsers((prevList) => {
+            if (!prevList?.map(data => data?.id)?.includes(data?.id)) {
+                return [...prevList, data];
+            }
+            return prevList;
+        });
+    }
+
+    const handleRemoveFromList = (id) => {
+        setSelectedUsers((prevList) => {
+            if (prevList?.map(data => data?.id)?.includes(id)) {
+                return prevList?.filter(item => item?.id !== id);
+            }
+        });
+    };
+
+    const getUserList = async () => {
+        const { data: users } = await GET(`user-management-service/user`);
+        setSearchData(users?.map(item => ({
+            id: item.id,
+            name: `${formatFirstNameLastName(item?.name?.firstName, item?.name?.lastName)}` || " ",
+            desc: `${item?.title?.title || ''}`,
+            profilePic: item?.profilePic?.file?.fileURL,
+            mailId: item?.email?.officialEmail
+        })));
+    }
+
+    const getUserDataSearch = async (signal) => {
+        try {
+            let response;
+
+            response = await GET(
+                `user-management-service/user?searchText=${searchTerm}`, { signal }
+            );
+            console.log("Application data", response?.data);
+            setSearchData(response?.data?.map(item => ({
+                id: item.id,
+                name: `${formatFirstNameLastName(item?.name?.firstName, item?.name?.lastName)}` || " ",
+                desc: `${item?.title?.title || ''}`,
+                profilePic: item?.profilePic?.file?.fileURL,
+                mailId: item?.email?.officialEmail
+            })));
+
+            return response?.data?.applications || [];
+        } catch (error) {
+            console.error("Error fetching applications:", error);
+            return [];
+        }
+    };
+
+
     const onClickRunReport = (data) => {
         navigate(`/reportTypeOverview/${routeList[data?.subCategory]}`);
     }
@@ -104,6 +188,7 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
     }
 
     const onClickDownloadReport = async (data) => {
+        const uniqueFileName = `SavedReport_${Date.now()}.pdf`;
         try {
             const proxyUrl = `${corsUrl}${encodeURIComponent(data?.savedReport?.reportDoc?.fileURL)}`;
 
@@ -113,7 +198,7 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
 
             const link = document.createElement("a");
             link.href = url;
-            link.download = "savedReport.pdf";
+            link.download = uniqueFileName;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -121,6 +206,28 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
             window.URL.revokeObjectURL(url); // cleanup
         } catch (err) {
             console.error("Download failed:", err);
+        }
+    }
+
+    const handleShare = async () => {
+        setShowShareDialog(false)
+        let data = {
+            mailIds: selectedUsers?.map(data => data?.mailId),
+            savedReportIds: [selectedReport?.id],
+            category: selectedReport?.savedReport?.category,
+            type: selectedReport?.savedReport?.type,
+        }
+        const formData = new FormData();
+        formData.append('sharingDetails', new Blob([JSON.stringify(data)], {
+            type: "application/json"
+        }));
+        try {
+            const response = await POST(`application-management-service/report/shareReports/`, formData);
+            console.log(response?.data);
+            SuccessToaster2('Report Output Shared Successfully!')
+        } catch (error) {
+            console.error(error);
+            return null;
         }
     }
 
@@ -137,6 +244,11 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
             alert("Popup blocked! Please allow popups for this site.");
         }
     };
+
+    const onClickSharePDF = (data) => {
+        setSelectedReport(data);
+        setShowShareDialog(true);
+    }
 
     const onClickDeleteReport = async (data) => {
         await DELETE(`application-management-service/report/savedReport/${data?.id}`)
@@ -169,7 +281,7 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
     }, {
         data: "Share",
         requiredValue: "boolean",
-        onClick: onClickPrintPDF,
+        onClick: onClickSharePDF,
     }]
     let reportingTemplatesActions = [{
         data: "Run",
@@ -258,6 +370,7 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         PRIVILEGED_STAFF_SUMMARY: 'privilegedStaffSummary',
         CURRENT_NOTES_SUMMARY: 'currentNotesSummary',
         STAFF_REAPPOINTMENT_STATUS_SUMMARY: 'staffReappointmentStatusSummary',
+        REAPPOINTMENT_APPLICATIONS_NOT_YET_STARTED_SUMMARY: 'reappointmentApplicationNotStarted',
         LOCUM_RENEWAL_OR_EXTENSION_APPLICATIONS_SUMMARY: 'locumRenewalOrExtensionApplicationsSummary',
         DECLINED_OR_NOT_RENEWED_STAFF_SUMMARY: 'declinedOrNotRenewedStaffSummary',
         CARE_PROVIDER_CAREER_MILESTONE_SUMMARY: 'careProviderCareerMilestoneSummary',
@@ -315,6 +428,40 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         PAYMENT_TRACKER: 'Payment Processing Status By Service Provider',
         SUBMITTED_APPLICATIONS_REVIEW_SUMMARY: 'Submitted Applications Review Summary',
         STAFF_REAPPOINTMENT_STATUS_SUMMARY: 'Staff Reappointment Status Summary'
+    }
+
+    const typeList = {
+        'activitiesOrServices': 'ACTIVITES_SERVICES_LOG_SUMMARY',
+        'addOnActivities': 'ADDON_ACTIVITES_SERVICES_LOG_SUMMARY',
+        'scheduledActivity': '',
+        'staffReappointmentsNotes': 'UPCOMING_CONTRACT_RENEWALS',
+        'staffReappointments': 'ONE_TIME_CONTRACT',
+        'complianceStatus': '',
+        'nonCompliant': '',
+        'paidConsultingHours': '',
+        'scheduledActivityByContract': '',
+        'paymentsProcessingSummary': 'PAYMENT_PROCESSING_SUMMARY',
+        'compensationCostAnalysis': 'COST_REPORT_FOR_CONTRACTED_SERVICES_PERFORMED',
+        'timeAndPaymentLog': 'TIME_AND_PAYEMENT_LOG_FOR_CONTRACTED_SERVICES',
+        'siteDepartmentSpecificContractorSummary': 'SITE_DEPARTMENT_SPECIFIC_CONTRACTOR_SUMMARY',
+        'timesheetProcessingSummary': 'TIMESHEET_PROCESSING_SUMMARY',
+        'listingOfTimesheetsNotPaid': 'LISTING_OF_TIMESHEETS_NOTPAID',
+        'staffReappointmentTracker': 'SUBMITTED_TIMESHEETS_PAYMENT_STATUS',
+        'contractDocumentsOnFile': 'CONTRACT_DOCUMENT_ON_FILE',
+        'contractsWithABusinessEntity': 'CONTRACT_WITH_BUSINESS_ENTITY',
+        'multiProviderContractsList': 'MULTI_PROVIDER_CONTRACT',
+        'currentRemitToAddressForActiveContracts': 'CURRENT_REMIT_TO_ADDRESS',
+        'activityStatusTracker': 'ACTIVITY_STATUS_TRACKER',
+        'paymentProcessingStatusTracker': 'PAYMENT_TRACKER',
+        'submittedApplicationsReviewSummary': 'SUBMITTED_APPLICATIONS_REVIEW_SUMMARY',
+        'ohipBillingNumbersByCareProvider': 'OHIP_BILLING_NUMBERS_BY_CARE_PROVIDER',
+        'reappointmentApplicationNotStarted': 'REAPPOINTMENT_APPLICATIONS_NOT_YET_STARTED_SUMMARY',
+        'privilegedStaffSummary': 'PRIVILEGED_STAFF_SUMMARY',
+        'currentNotesSummary': 'CURRENT_NOTES_SUMMARY',
+        'staffReappointmentStatusSummary': 'STAFF_REAPPOINTMENT_STATUS_SUMMARY',
+        'locumRenewalOrExtensionApplicationsSummary': 'DECLINED_OR_NOT_RENEWED_STAFF_SUMMARY',
+        'careProviderCareerMilestoneSummary': 'CARE_PROVIDER_CAREER_MILESTONE_SUMMARY',
+        'declinedOrNotRenewedStaffSummary': 'DECLINED_OR_NOT_RENEWED_STAFF_SUMMARY'
     }
 
     const availableScheduleValue = {
@@ -399,15 +546,19 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
     }
 
     const getMyReports = async () => {
+        setIsLoading(true)
         const { data: myReport } = await GET(`application-management-service/report/myReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
         setMyReports(myReport);
+        setIsLoading(false)
     }
 
     console.log(myReports)
 
     const getSavedReports = async () => {
+        setIsLoading(true)
         const { data: savedReport } = await GET(`application-management-service/report/savedReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
         setSavedReports(savedReport);
+        setIsLoading(false)
     }
 
     const getSelectedTab = (value) => {
@@ -415,8 +566,10 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
     }
 
     const getStandardTemplates = async () => {
+        setIsLoading(true)
         const { data: standardTemplates } = await GET(`application-management-service/report/standardTemplates?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
         setStandardTemplates(standardTemplates);
+        setIsLoading(false)
     }
 
     const getIsExpanded = (value) => {
@@ -472,9 +625,9 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
             title.push(data?.title)
             titleHover.push(data?.description)
             type.push('Standard');
-            lastRunBy.push('-');
-            lastRunDateAndTime.push(data?.lastRun ? format(new Date(data?.lastRun), "MMM dd, yyyy") : '-');
-            lastUpdatedBy.push('-');
+            lastRunBy.push(data?.lastRunBy?.name?.firstName);
+            lastRunDateAndTime.push(data?.lastRun ? format(new Date(data?.lastRun), "MMM dd, yyyy hh:mm") : '-');
+            lastUpdatedBy.push(data?.lastUpdatedBy?.name?.firstName);
             lastUpdated.push(data?.lastUpdate ? format(new Date(data?.lastUpdate), "MMM dd, yyyy") : '-');
             actions.push(true);
         });
@@ -712,31 +865,107 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
                                 className={`${style.reduceMarginTop10} ${style.margin20} staffApplicationList`}
                                 ref={PDFRef}
                             >
-                                <TableTwo
-                                    tableHeaderValues={tableHeaderValues}
-                                    tableDataValues={tableDataValues}
-                                    tableData={tableData}
-                                    gridStyle={gridStyle}
-                                    actions={actions}
-                                    scrollStyle={style.contractScrollStyle}
-                                    tableSortValues={tableSortValues}
-                                    heading={"There are no Record for you to manage"}
-                                    onClickFunction={() => { }}
-                                    getHandleSort={getHandleSort}
-                                    sortValue={{ sortBy: sortValue, sortByField: sortField }}
-                                    getSelectedPage={getSelectedPage}
-                                    totalCount={totalCount}
-                                    page={page}
-                                    searchTermForTable={""}
-                                    searchCount={0}
-                                    setSearchTermForTable={() => { }}
-                                    onLimitChange={handleLimitChange}
-                                />
+                                {!isLoading && (
+                                    <TableTwo
+                                        tableHeaderValues={tableHeaderValues}
+                                        tableDataValues={tableDataValues}
+                                        tableData={tableData}
+                                        gridStyle={gridStyle}
+                                        actions={actions}
+                                        scrollStyle={style.contractScrollStyle}
+                                        tableSortValues={tableSortValues}
+                                        heading={"There are no Record for you to manage"}
+                                        onClickFunction={() => { }}
+                                        getHandleSort={getHandleSort}
+                                        sortValue={{ sortBy: sortValue, sortByField: sortField }}
+                                        getSelectedPage={getSelectedPage}
+                                        totalCount={totalCount}
+                                        page={page}
+                                        searchTermForTable={""}
+                                        searchCount={0}
+                                        setSearchTermForTable={() => { }}
+                                        onLimitChange={handleLimitChange}
+                                    />
+                                )}
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+            <Dialog isOpen={showShareDialog} onClose={() => setShowShareDialog(false)} className={`${style.sendMailUserDialog} ${style.dialogPaddingBottom}`}>
+                <div className={`${Classes.DIALOG_BODY} ${style.deleteEcecutedContractDialogBackground}`}>
+                    <div className={style.spaceBetween}>
+                        <p className={`${style.extensionStyle} ${style.marginTop} ${style.bold}`}>Share This Report Output</p>
+                        <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => setShowShareDialog(false)} />
+                    </div>
+                    <div className={style.spaceBetween}>
+                        <div></div>
+                        <div className={style.displayInRow}>
+                            {/* <p className={`${style.mailBoldText} ${style.marginTop20} ${style.blueText}`}>Registered Users</p>
+                            <div className={`${style.taskCountStyle} ${style.marginTop20} ${style.marginLeft20}`}>20</div>
+                            <p className={`${style.mailBoldText} ${style.marginTop20} ${style.externalRecipientsMarginLeft}`}>External Recipients</p>
+                            <div className={style.deliveryCountStyle}>20</div> */}
+                            <div className={style.marginTop10}>
+                                <CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={() => { }} isOnClickAvailable={true} onClickFunc={onSearchClickFunc} placeholder={"Search by Staff Name"} />
+                            </div>
+                        </div>
+                    </div>
+                    <div className={`${style.extensionBorder} ${style.marginTop10}`}></div>
+                    <div className={`${style.padding10}`}>
+                        <div>
+                            <div>
+                                {selectedUsers?.map((data, index) => (
+                                    <>
+                                        <div className={`${style.userMailListGrid} ${style.padding10}  ${index !== 0 ? style.marginTop10 : ''}`}>
+                                            <img src={data?.profilePic ? data?.profilePic : DoctorAnime} alt={'User Logo 1'} className={style.userLogoMailStyle} />
+                                            <div>
+                                                <p className={`${style.mailIdTextColor}`}>{`${data?.name}`}</p>
+                                                <p className={`${style.descriptionText} ${style.reduceMarginTop}`}>{`${data?.desc}`}</p>
+                                            </div>
+                                            <Icon icon="cross" className={`${style.marginTop10} ${style.cursorPointer}`} color="#2C2C2C" onClick={() => handleRemoveFromList(data?.id)} />
+                                        </div>
+                                        <div className={`${style.extensionBorder}`}></div>
+                                    </>
+                                ))}
+                                {/* <div className={`${style.userMailListGrid} ${style.padding10} ${style.marginTop10}`}>
+                                    <img src={UserLogo2} alt={'User Logo 2'} className={style.userLogoMailStyle} />
+                                    <div>
+                                        <p className={`${style.mailIdTextColor}`}>Kyle Wright, MD</p>
+                                        <p className={`${style.descriptionText} ${style.reduceMarginTop}`}>Medical Director, Dept. of Surgery</p>
+                                    </div>
+                                    <Icon icon="cross" className={style.marginTop10} color="#2C2C2C" />
+                                </div>
+                                <div className={`${style.extensionBorder} `}></div>
+                                <div className={`${style.userMailListGrid} ${style.padding10} ${style.marginTop10} `}>
+                                    <img src={UserLogo3} alt={'User Logo 3'} className={style.userLogoMailStyle} />
+                                    <div>
+                                        <p className={`${style.mailIdTextColor}`}>Mathew Bailey, MD</p>
+                                        <p className={`${style.descriptionText} ${style.reduceMarginTop}`}>Medical Director, Dept. of Surgery</p>
+                                    </div>
+                                    <Icon icon="cross" className={style.marginTop10} color="#2C2C2C" />
+                                </div>
+                                <div className={`${style.extensionBorder}`}></div>
+                                <div className={`${style.userMailListGrid} ${style.padding10} ${style.marginTop10}`}>
+                                    <img src={UserLogo4} alt={'User Logo 4'} className={style.userLogoMailStyle} />
+                                    <div className={style.displayInRow}>
+                                        <div>
+                                            <p className={`${style.mailIdTextColor}`}>Ronnie Owens, MD</p>
+                                            <p className={`${style.descriptionText} ${style.reduceMarginTop}`}>Medical Director, Dept. of Surgery</p>
+                                        </div>
+                                    </div>
+                                    <Icon icon="cross" className={style.marginTop10} color="#2C2C2C" />
+                                </div>
+                                <div className={`${style.extensionBorder}`}></div>*/}
+                            </div>
+                            <div>
+                                <div className={`${style.justifyCenter} ${style.marginTop20}`}>
+                                    <button className={`${style.cloneButtonStyle} ${style.marginLeft20} ${style.cursorPointer} ${selectedUsers?.length === 0 ? style.disabledButton : ''}  `} onClick={selectedUsers?.length === 0 ? () => { } : () => handleShare()}>{'Share Now'}</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </Dialog>
             {showFileDisplayDialog && (
                 <FileDisplayDialog
                     getIsOpen={getIsShowFileDialog}

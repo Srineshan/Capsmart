@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Icon, Intent, Dialog, Classes, TextArea } from '@blueprintjs/core';
 import { TextField } from '@mui/material';
 import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined';
@@ -22,12 +22,16 @@ import ReportsSchedule from './../../images/reportsSchedule.png';
 import ReportsPrint from './../../images/reportsPrint.png';
 import ReportsFullScreen from './../../images/reportsFullScreen.png';
 import ReportsShare from './../../images/reportsShare.png';
+import DoctorAnime from './../../images/doctorAnime.png';
 import Info from './../../images/info.png';
 import SaveReport from './saveReport';
 import { format } from 'date-fns';
 
 import style from './index.module.scss';
-import { POST } from '../dataSaver';
+import { GET, POST } from '../dataSaver';
+import CommonSearchField from '../../Components/CommonFields/CommonSearchField';
+import { formatFirstNameLastName } from '../../utils/formatting';
+import { SuccessToaster2 } from '../../utils/toaster';
 
 const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, refToUse, getIsDownloadClicked, isNoData }) => {
     const { reportType } = useParams();
@@ -53,7 +57,9 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
     const [reportDescription, setReportDescription] = useState('');
     const openInfo = Boolean(anchorElInfo);
     const [isLoading, setIsLoading] = useState(true);
-
+    const [searchTerm, setSearchTerm] = useState('');
+    const [searchData, setSearchData] = useState([]);
+    const [selectedUsers, setSelectedUsers] = useState([]);
     const reportTitleList = {
         // staffReappointmentsNotes: 'Upcoming Contract Renewals',
         staffReappointmentsNotes: 'Staff Reappointments to Process',
@@ -83,7 +89,10 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
         paymentProcessingStatusTracker: 'Payment Processing Status By Service Provider',
         submittedApplicationsReviewSummary: 'Submitted Applications Review Summary',
         ohipBillingNumbersByCareProvider: 'OHIP Billing Numbers By Care Provider',
+        reappointmentApplicationNotStarted: 'Reappointment Application Not Yet Started Summary',
         privilegedStaffSummary: 'Privileged Staff Summary',
+        currentNotesSummary: 'Current Notes Summary',
+        staffReappointmentStatusSummary: 'Staff Reappointment Status Summary',
         locumRenewalOrExtensionApplicationsSummary: 'Locum Renewal / Extension Applications Summary',
         careProviderCareerMilestoneSummary: 'Care Providers Career Milestone Summary',
         declinedOrNotRenewedStaffSummary: 'Declined Or Not Renewed Staff Summary'
@@ -108,7 +117,10 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
         locumExtensionOrRenewal: 'LOCUM_EXTENSION_OR_RENEWAL',
         submittedApplicationsReviewSummary: 'STAFF_REAPPOINTMENT',
         ohipBillingNumbersByCareProvider: 'ALL_STAFF',
+        reappointmentApplicationNotStarted: 'STAFF_REAPPOINTMENT',
         privilegedStaffSummary: 'ALL_STAFF',
+        currentNotesSummary: 'ALL_STAFF',
+        staffReappointmentStatusSummary: 'STAFF_REAPPOINTMENT',
         locumRenewalOrExtensionApplicationsSummary: 'LOCUM_EXTENSION_OR_RENEWAL',
         careProviderCareerMilestoneSummary: 'PERMANENT_STAFF',
         declinedOrNotRenewedStaffSummary: 'LOCUM_EXTENSION_OR_RENEWAL'
@@ -139,22 +151,100 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
         'paymentProcessingStatusTracker': 'PAYMENT_TRACKER',
         'submittedApplicationsReviewSummary': 'SUBMITTED_APPLICATIONS_REVIEW_SUMMARY',
         'ohipBillingNumbersByCareProvider': 'OHIP_BILLING_NUMBERS_BY_CARE_PROVIDER',
+        'reappointmentApplicationNotStarted': 'REAPPOINTMENT_APPLICATIONS_NOT_YET_STARTED_SUMMARY',
         'privilegedStaffSummary': 'PRIVILEGED_STAFF_SUMMARY',
+        'currentNotesSummary': 'CURRENT_NOTES_SUMMARY',
+        'staffReappointmentStatusSummary': 'STAFF_REAPPOINTMENT_STATUS_SUMMARY',
         'locumRenewalOrExtensionApplicationsSummary': 'DECLINED_OR_NOT_RENEWED_STAFF_SUMMARY',
         'careProviderCareerMilestoneSummary': 'CARE_PROVIDER_CAREER_MILESTONE_SUMMARY',
         'declinedOrNotRenewedStaffSummary': 'DECLINED_OR_NOT_RENEWED_STAFF_SUMMARY'
     }
 
+    useEffect(() => {
+        if (searchTerm.trim() === "") {
+            setSearchData([]); // Clear results if input is empty
+            return;
+        }
+
+        const controller = new AbortController(); // Create an AbortController instance
+        const signal = controller.signal;
+
+        getUserDataSearch(signal); // Call API function with signal
+
+        return () => controller.abort(); // Cleanup: Cancel previous request if a new one starts
+    }, [searchTerm]);
+
+    useEffect(() => {
+        getUserList()
+    }, [])
+
     const getSaveReportDialog = (value) => {
         setShowSaveReport(value);
     }
 
-    const handleDownload = () => {
+    const handleSearch = (e) => {
+        setSearchTerm(e.target.value);
+    }
+
+    const onSearchClickFunc = (data) => {
+        setSelectedUsers((prevList) => {
+            if (!prevList?.map(data => data?.id)?.includes(data?.id)) {
+                return [...prevList, data];
+            }
+            return prevList;
+        });
+    }
+
+    const handleRemoveFromList = (id) => {
+        setSelectedUsers((prevList) => {
+            if (prevList?.map(data => data?.id)?.includes(id)) {
+                return prevList?.filter(item => item?.id !== id);
+            }
+        });
+    };
+
+    const getUserList = async () => {
+        const { data: users } = await GET(`user-management-service/user`);
+        setSearchData(users?.map(item => ({
+            id: item.id,
+            name: `${formatFirstNameLastName(item?.name?.firstName, item?.name?.lastName)}` || " ",
+            desc: `${item?.title?.title || ''}`,
+            profilePic: item?.profilePic?.file?.fileURL,
+            mailId: item?.email?.officialEmail
+        })));
+    }
+
+    const getUserDataSearch = async (signal) => {
+        try {
+            let response;
+
+            response = await GET(
+                `user-management-service/user?searchText=${searchTerm}`, { signal }
+            );
+            console.log("Application data", response?.data);
+            setSearchData(response?.data?.map(item => ({
+                id: item.id,
+                name: `${formatFirstNameLastName(item?.name?.firstName, item?.name?.lastName)}` || " ",
+                desc: `${item?.title?.title || ''}`,
+                profilePic: item?.profilePic?.file?.fileURL,
+                mailId: item?.email?.officialEmail
+            })));
+
+            return response?.data?.applications || [];
+        } catch (error) {
+            console.error("Error fetching applications:", error);
+            return [];
+        }
+    };
+
+    const handleDownload = (isShare) => {
+        const uniqueFileName = `SavedReport_${Date.now()}.pdf`;
         setShowSaveReportOutput(false)
+        setShowShareDialog(false)
         const element = refToUse.current;
         const opt = {
             margin: 0.5,
-            filename: "savedReport.pdf",
+            filename: uniqueFileName,
             image: { type: "jpeg", quality: 0.98 },
             html2canvas: {
                 scale: 2,
@@ -162,26 +252,32 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                 logging: true,
             },
             jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
-            pagebreak: { mode: ["avoid-all", "css", "legacy"] },
+            pagebreak: { mode: [] },
         };
 
         html2pdf().set(opt).from(element).outputPdf("blob").then((pdfBlob) => {
-            addSavedReport(pdfBlob)
+            if (isShare) {
+                handleShare(pdfBlob, uniqueFileName)
+            } else {
+                addSavedReport(pdfBlob, uniqueFileName)
+            }
         });
 
     }
 
-    const addSavedReport = async (pdfBlob) => {
+    const addSavedReport = async (pdfBlob, uniqueFileName) => {
+        let userData = (sessionStorage.getItem('user') && sessionStorage.getItem('user') !== 'undefined') ? JSON.parse(sessionStorage.getItem('user')) : {}
+        console.log(userData, 'userData')
         let data = {
             reportName: reportTitleList[reportType],
             reportNotes: reportDescription,
             runDate: new Date(),
             reportDoc: {
-                fileName: "savedReport.pdf"
+                fileName: uniqueFileName
             },
             category: availableCategories[reportType],
             type: typeList[reportType],
-            owner: (sessionStorage.getItem('user') && sessionStorage.getItem('user') !== 'undefined') ? JSON.parse(sessionStorage.getItem('user')) : {}
+            owner: userData
         }
         const formData = new FormData();
         if (pdfBlob !== null) {
@@ -189,13 +285,11 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
             formData.append('savedReport', new Blob([JSON.stringify(data)], {
                 type: "application/json"
             }));
-            formData.append('savedReportFile', blob, "savedReport.pdf");
+            formData.append('savedReportFile', blob, uniqueFileName);
 
-            let uploadedFile = {};
             try {
                 const response = await POST(`application-management-service/report/savedReport/`, formData);
                 console.log(response?.data);
-                uploadedFile = response?.data?.file;
                 setShowReportSavedDialog(true);
             } catch (error) {
                 console.error(error);
@@ -203,6 +297,38 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
             }
         };
     }
+
+    const handleShare = async (pdfBlob, uniqueFileName) => {
+        let data = {
+            mailIds: selectedUsers?.map(data => data?.mailId),
+            savedReportIds: [],
+            file: {
+                fileName: uniqueFileName
+            },
+            category: availableCategories[reportType],
+            type: typeList[reportType],
+        }
+        const formData = new FormData();
+        if (pdfBlob !== null) {
+            const blob = new Blob([pdfBlob], { type: `application/pdf` });
+            formData.append('sharingDetails', new Blob([JSON.stringify(data)], {
+                type: "application/json"
+            }));
+            formData.append('document', blob, uniqueFileName);
+            console.log(formData, blob, data, pdfBlob)
+            try {
+                const response = await POST(`application-management-service/report/shareReports/`, formData);
+                console.log(response?.data);
+                SuccessToaster2('Report Output Shared Successfully!')
+            } catch (error) {
+                console.error(error);
+                return null;
+            }
+        };
+    }
+
+    console.log(searchData)
+
 
     return (
         <div>
@@ -263,12 +389,12 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                             </Popover>
                         </div>
                         {/* <div className={`${style.iconPadding} ${style.cursorPointer}`}>
-                            <ShareOutlinedIcon style={{color:"#2C2C2C"}} onClick={() => setShowShareDialog(true)} />
+                            <ShareOutlinedIcon style={{ color: "#2C2C2C" }} onClick={() => setShowShareDialog(true)} />
                         </div> */}
-                        {/* <div className={`${style.iconPadding} ${style.cursorPointer} ${isNoData && style.disabledCursor}`}
+                        <div className={`${style.iconPadding} ${style.cursorPointer} ${isNoData && style.disabledCursor}`}
                             onMouseEnter={(e) => !isNoData ? setAnchorElSchedule(e.currentTarget) : {}} onMouseLeave={() => !isNoData ? setAnchorElSchedule(null) : {}} aria-owns={openSchedule ? 'mouse-over-popover' : undefined}
                             aria-haspopup="true">
-                            <img src={ReportsSchedule} alt="" className={`${style.reportsActions} ${style.marginTop5}`} onClick={() => !isNoData ? setShowSaveReport(true) : {}} />
+                            <img src={ReportsShare} alt="" className={`${style.reportsActions} ${style.marginTop5}`} onClick={() => !isNoData ? setShowShareDialog(true) : {}} />
                             <Popover
                                 id={'mouse-over-popover'}
                                 sx={{
@@ -283,9 +409,9 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                                 }}
                                 disableRestoreFocus
                             >
-                                <div className={style.popoverStyle}>Click To Schedule This Report</div>
+                                <div className={style.popoverStyle}>Click To Share This Report</div>
                             </Popover>
-                        </div> */}
+                        </div>
                         <div className={`${style.iconPadding} ${style.cursorPointer}`}
                             onMouseEnter={(e) => setAnchorElSave(e.currentTarget)} onMouseLeave={() => setAnchorElSave(null)} aria-owns={openSave ? 'mouse-over-popover' : undefined}
                             aria-haspopup="true">
@@ -427,33 +553,36 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                         <p className={`${style.extensionStyle} ${style.marginTop} ${style.bold}`}>Share This Report Output</p>
                         <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => setShowShareDialog(false)} />
                     </div>
-                    <div className={style.extensionBorder}></div>
                     <div className={style.spaceBetween}>
+                        <div></div>
                         <div className={style.displayInRow}>
-                            <p className={`${style.mailBoldText} ${style.marginTop20} ${style.blueText}`}>Registered Users</p>
+                            {/* <p className={`${style.mailBoldText} ${style.marginTop20} ${style.blueText}`}>Registered Users</p>
                             <div className={`${style.taskCountStyle} ${style.marginTop20} ${style.marginLeft20}`}>20</div>
                             <p className={`${style.mailBoldText} ${style.marginTop20} ${style.externalRecipientsMarginLeft}`}>External Recipients</p>
-                            <div className={style.deliveryCountStyle}>20</div>
-                            <div className={`${style.searchBarStyle} ${style.spaceBetween} ${style.externalRecipientsMarginLeft}`}>
-                                <p>Search</p>
-                                <img src={Search} className={style.searchIcon} />
+                            <div className={style.deliveryCountStyle}>20</div> */}
+                            <div>
+                                <CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={() => { }} isOnClickAvailable={true} onClickFunc={onSearchClickFunc} placeholder={"Search by Staff Name"} />
                             </div>
                         </div>
                     </div>
                     <div className={`${style.extensionBorder} ${style.marginTop10}`}></div>
                     <div className={`${style.padding10}`}>
                         <div>
-                            <div className={style.padding10}>
-                                <div className={`${style.userMailListGrid} ${style.padding10} `}>
-                                    <img src={UserLogo1} alt={'User Logo 1'} className={style.userLogoMailStyle} />
-                                    <div>
-                                        <p className={`${style.mailIdTextColor}`}>Ronald Jones (Myself)</p>
-                                        <p className={`${style.descriptionText} ${style.reduceMarginTop}`}>Medical Director, Dept. of Surgery</p>
-                                    </div>
-                                    <Icon icon="cross" className={style.marginTop10} color="#2C2C2C" />
-                                </div>
-                                <div className={`${style.extensionBorder}`}></div>
-                                <div className={`${style.userMailListGrid} ${style.padding10} ${style.marginTop10}`}>
+                            <div>
+                                {selectedUsers?.map((data, index) => (
+                                    <>
+                                        <div className={`${style.userMailListGrid} ${style.padding10}  ${index !== 0 ? style.marginTop10 : ''}`}>
+                                            <img src={data?.profilePic ? data?.profilePic : DoctorAnime} alt={'User Logo 1'} className={style.userLogoMailStyle} />
+                                            <div>
+                                                <p className={`${style.mailIdTextColor}`}>{`${data?.name}`}</p>
+                                                <p className={`${style.descriptionText} ${style.reduceMarginTop}`}>{`${data?.desc}`}</p>
+                                            </div>
+                                            <Icon icon="cross" className={`${style.marginTop10} ${style.cursorPointer}`} color="#2C2C2C" onClick={() => handleRemoveFromList(data?.id)} />
+                                        </div>
+                                        <div className={`${style.extensionBorder}`}></div>
+                                    </>
+                                ))}
+                                {/* <div className={`${style.userMailListGrid} ${style.padding10} ${style.marginTop10}`}>
                                     <img src={UserLogo2} alt={'User Logo 2'} className={style.userLogoMailStyle} />
                                     <div>
                                         <p className={`${style.mailIdTextColor}`}>Kyle Wright, MD</p>
@@ -481,11 +610,11 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                                     </div>
                                     <Icon icon="cross" className={style.marginTop10} color="#2C2C2C" />
                                 </div>
-                                <div className={`${style.extensionBorder}`}></div>
+                                <div className={`${style.extensionBorder}`}></div>*/}
                             </div>
                             <div>
                                 <div className={`${style.justifyCenter} ${style.marginTop20}`}>
-                                    <button className={`${style.cloneButtonStyle} ${style.marginLeft20} ${style.cursorPointer} `}>{'Share Now'}</button>
+                                    <button className={`${style.cloneButtonStyle} ${style.marginLeft20} ${style.cursorPointer} ${selectedUsers?.length === 0 ? style.disabledButton : ''}  `} onClick={selectedUsers?.length === 0 ? () => { } : () => handleDownload(true)}>{'Share Now'}</button>
                                 </div>
                             </div>
                         </div>

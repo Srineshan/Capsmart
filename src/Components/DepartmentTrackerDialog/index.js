@@ -57,6 +57,7 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
   const selectedDepartmentName = departmentList?.find(data => data?.id === selectedDepartment)?.departmentName?.name;
   const selectedApplicantTypeName = applicantType?.find(data => data?.id === selectedApplicantType)?.applicantType;
   const [limit, setLimit] = useState(9999);
+  const workModeType = sessionStorage.getItem('workModeType')
 
   const transformedOptions = departmentList?.flatMap((department) => {
     const departmentEntry = {
@@ -106,7 +107,7 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
 
   useEffect(() => {
     setUserDetails();
-  }, [users?.id])
+  }, [users?.id, workModeType])
 
   useEffect(() => {
     getDepartmentList();
@@ -164,6 +165,9 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
     console.log("userdataaaa" + JSON.stringify(userData))
     sessionStorage.setItem('user', JSON.stringify(userData))
     setUserRole(userData?.roles?.map((data) => data?.roleName));
+    if(workModeType === "Department Head"){
+      setSelectedDepartment(userData?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.id);
+    }
   }
 
   // const getApplication = async () => {
@@ -532,7 +536,7 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
                 {applicationType === "LOCUM" ? 'Locum Renewal Status Tracker' : 'Staff Reappointment Status'}
               </div>
               <div className={style.displayInRow}>
-                {selectedDepartment && (
+                {(selectedDepartment && workModeType !== "Department Head") && (
                   <div className={`${style.filterBackground} ${style.displayInRow}`}>
                     <div className={`${style.filtertextStyle} ${style.marginRight5}`}>Filter by {selectedDepartmentName}</div>
                     <Tooltip title="Remove" arrow>
@@ -609,13 +613,9 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
             {/* Expandable Department List */}
             {showFilter && (
               <div className={style.departmentContainer}>
-                <div>
+                {workModeType !== "Department Head" && (
+                  <div>
                   <CommonSelectField
-                    // value={
-                    //   selectedServiceArea 
-                    //     ? `${selectedDepartment}|${selectedServiceArea}` 
-                    //     : selectedDepartment
-                    // } 
                     value={selectedDepartment}
                     onChange={handleChange}
                     className={style.fullWidth}
@@ -628,6 +628,7 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
                     required={false}
                   />
                 </div>
+                )}
                 <div>
                   <CommonSelectField
                     value={selectedApplicantType}
