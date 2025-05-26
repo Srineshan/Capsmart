@@ -2,6 +2,7 @@ import React, { Fragment, useState, useEffect } from 'react';
 import Navbar from '../../Components/Navbar';
 import LocumStaffList from './locumStaffList';
 import ApplicantDetailViewScreen from '../../Components/ApplicantDetailViewScreen';
+import ApplicantDetailNotesView from '../../Components/ApplicantDetailNotesView';
 import DepartmentTrackerDialog from '../../Components/DepartmentTrackerDialog';
 import LocumExtensionDialog from "../../Components/LocumExtensionDialog";
 import LocumExtensionRequestDialog from "../../Components/LocumExtensionRequestDialog";
@@ -18,6 +19,7 @@ const LocumStaff = () => {
     const [showLocumExtensiveRequestDialog, setShowLocumExtensiveRequestDialog] = useState(false);
     const [showLocumRequestDialog, setShowLocumRequestDialog] = useState(false);
     const [showNotesDialog, setShowNotesDialog] = useState(false);
+    const [showNotesDetailsDialog, setShowNotesDetailsDialog] = useState(false);
 
     useEffect(() => {
         const fetchSessionDetails = async () => {
@@ -97,10 +99,14 @@ const LocumStaff = () => {
         setShowNotesDialog(value);
     };
 
+    const getApplicantNotesNotesDialog = (value) => {
+        setShowNotesDetailsDialog(value);
+    };
+
     return (
         <>
             {applicationDetailsView ? (
-                < ApplicantDetailViewScreen isLoading={isLoading} getSelectedTab={getSelectedTab} selectedTab={selectedTab} getApplicantDetailsViewScreen={getApplicantDetailsViewScreen} getStaffView={getStaffView} staffView={staffView} />
+                < ApplicantDetailViewScreen isLoading={isLoading} getSelectedTab={getSelectedTab} selectedTab={selectedTab} getApplicantDetailsViewScreen={getApplicantDetailsViewScreen}  getApplicantNotesNotesDialog={getApplicantNotesNotesDialog} getStaffView={getStaffView} staffView={staffView} />
             ) : (
                 <Fragment>
                     <Navbar />
@@ -116,6 +122,7 @@ const LocumStaff = () => {
                         getLocumExtensiveRequestDialog={getLocumExtensiveRequestDialog}
                         getLocumRequestDialog={getLocumRequestDialog}
                         getNotesDialog={getNotesDialog}
+                        getApplicantNotesNotesDialog={getApplicantNotesNotesDialog}
                         showLocumExtensiveDialog={showLocumExtensiveDialog}
                         showLocumExtensiveRequestDialog={showLocumExtensiveRequestDialog}
                         showLocumRequestDialog={showLocumRequestDialog}
@@ -125,6 +132,9 @@ const LocumStaff = () => {
                     )}
                     {showNotesDialog && (
                         <NotesDialog isLoading={isLoading} getIsOpen={getNotesDialog} getApplicantDetailsViewScreen={getApplicantDetailsViewScreen} />
+                    )}
+                    {showNotesDetailsDialog && (
+                        <ApplicantDetailNotesView isLoading={isLoading} getIsOpen={getApplicantNotesNotesDialog} getApplicantDetailsViewScreen={getApplicantDetailsViewScreen} />
                     )}
                     {showLocumExtensiveDialog && (
                         <LocumExtensionDialog isLoading={isLoading} getIsOpen={getLocumExtensiveDialog} selectedTab={selectedTab} getApplicantDetailsViewScreen={getApplicantDetailsViewScreen} />

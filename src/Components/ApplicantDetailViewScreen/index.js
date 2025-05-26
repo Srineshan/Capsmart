@@ -48,40 +48,19 @@ import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import ApplicationDecline from "../../Screens/StaffApplication/applicationDeclineDialog";
 import ApplicationHeader from "../../Components/ApplicationHeader";
+import ApplicantDetailNotesView from '../../Components/ApplicantDetailNotesView';
 import ApplicationFieldCard from "../../Components/ApplicationFieldCard";
 import CommonDivider from "../../Components/CommonFields/CommonDivider";
 import ESignature from "../../Components/ESignature";
 import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
 import CommonDateField from "../../Components/CommonFields/CommonDateField";
-import { add, format, isValid, parse, sub, differenceInDays } from 'date-fns';
-import TextField from "@mui/material/TextField";
-import CommonDropZone from '../../Components/CommonFields/CommonDropZone';
-import DescriptionIcon from '@mui/icons-material/Description';
-import TaskAltIcon from "@mui/icons-material/TaskAlt";
-import WarningIcon from "@mui/icons-material/Warning";
-import Dropzone from "react-dropzone";
+import { format } from 'date-fns';
 import TableTwo from "../../Components/TableDesignTwo";
-import CommonSelectField from "../../Components/CommonFields/CommonSelectField";
-import FileDisplayDialog from "../../Components/fileDisplayDialog";
-import EditNotesDialog from "../../Components/NotesEditDialog";
-import FileVerifyDialog from "../../Components/fileVerifyDialog";
-import CommonRadio from "../../Components/CommonFields/CommonRadio";
-import { CKEditor } from "@ckeditor/ckeditor5-react";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import CreateOutlinedIcon from '@mui/icons-material/CreateOutlined';
-import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
-import { useNavigate, useParams } from "react-router-dom";
-import PictureAsPdfRoundedIcon from '@mui/icons-material/PictureAsPdfRounded';
-import DescriptionRoundedIcon from '@mui/icons-material/DescriptionRounded';
-import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
-import CommonCheckBox from "../CommonFields/CommonCheckBox";
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import ExpandLessIcon from '@mui/icons-material/ExpandLess';
-import IconButton from '@mui/material/IconButton';
 import LoadingScreen from "../LoadingScreen";
 
-const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading}) => {
+const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, getApplicantNotesNotesDialog}) => {
     let cookie = new Cookie();
     let userDetails = cookie.get('user');
     const users = jwt(userDetails);
@@ -99,7 +78,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading})
         section6: false,
         section7: false,
       });
-
+    const [showNotesDetailsDialog, setShowNotesDetailsDialog] = useState(false);
     const documentHeaderValues = ["Document Type", "Document Name", "Requirement", "Expiration Date", "Last Updated", "Action"];
     const documentColSortValues = [false, false, false, false, false, , false];
     const appointmentHeaderValues = ["Appointment Cycle", <img src={CAPManagerSmallLogo} alt="img" className={style.LogoIcon} />, "Privilege Category", "Approved Privileges", "Notes","Doc","Approval Date", "Action"];
@@ -245,6 +224,20 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading})
     },
   ];
 
+   const onClickNotesDetailsFunction = () => {
+        getApplicantNotesNotesDialog(true);
+    };
+
+    const getCCDateDialogOpen = (value) => {
+    // // getCCDateDialog(true,checkedIds);
+    setShowNotesDetailsDialog(value)
+  };
+
+     const onClickNotesFunction = () => {
+    console.log("Note clicked");
+    alert(`Note`);
+  };
+
   let documentType = [];
   let expireDate = [];
   let requirementType = [];
@@ -318,8 +311,23 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading})
         dotTooltipValues.push(color === "yellow" ? "Application completed on CAPManager" : color === "green" ? "Application was manually entered by MSO" : color === "red" ? "Application not in CAPManager" :"" )
       privilegeCategory.push(data?.privilegeCategory)
       approvedPrivileges.push(data?.approvedPrivileges)
-      notes.push(data?.notes)
-      notesIcon.push(<NoteAltOutlinedIcon style={{ fontSize: 20, color: `#2C2C2C` }} />)
+    //   notes.push(data?.notes)
+      notes.push(
+      <span
+        key={index}
+        onClick={getCCDateDialogOpen}
+        style={{ cursor: "pointer", color: "#2C2C2C" }}
+      >
+        {data?.notes || "—"}
+      </span>
+    );
+    //   notesIcon.push(<NoteAltOutlinedIcon style={{ fontSize: 20, color: `#2C2C2C` }} />)
+     notesIcon.push(
+      <NoteAltOutlinedIcon
+        style={{ fontSize: 20, color: "#2C2C2C", cursor: "pointer" }}
+        onClick={getCCDateDialogOpen}
+      />
+    );
       docs.push(data?.docs)
       approvalDate.push(
         format(new Date(data?.approvalDate), "MMM dd, yyyy")
@@ -377,11 +385,10 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading})
     ];
   };
 
-
-
     useEffect(() => {
         getPreApplication();
     }, [applicationId]);
+
 
     useEffect(() => {
       setUserDetails();
@@ -882,6 +889,14 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading})
             </div>
             </div>
         </div>
+          {
+            showNotesDetailsDialog && (
+            <ApplicantDetailNotesView
+                getIsOpen={getCCDateDialogOpen}
+                // onClose={() => { setShowCCDateDialog(false); setCheckedIds([]); }}
+            />
+            )
+        }
         </>
       )
 }
