@@ -400,6 +400,7 @@ const Navbar = () => {
 
   const handleWorkModeSelection = () => {
     window.location.pathname = "/"
+    sessionStorage.setItem('applicationCreationType', 'REAPPOINTMENT');
   };
   // console.log(selectedWorkingMode);
 
@@ -694,6 +695,7 @@ const Navbar = () => {
                           </Link>
                         </>
                       )}
+                      <div className={style.menuDivider}></div>
                       <div>
                         <div className={style.spaceBetween}>
                           <div className={`${style.dropdownItem}`}>Staff Applications</div>

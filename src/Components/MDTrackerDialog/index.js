@@ -74,7 +74,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
   }, []);
   const handlePrintClick = useReactToPrint({
     content: reactToPrintContent,
-    documentTitle: "Staff Application",
+    documentTitle: "Medical Directive Attestation Log",
     removeAfterPrint: true,
   });
   const transformedOptions = departmentList?.flatMap((department) => {
