@@ -2,14 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { GET, POST, PUT } from "../../Screens/dataSaver";
 import { Dialog } from "@blueprintjs/core";
 import CrossPink from "../../images/crossPink.png";
-import { format, sub, add } from 'date-fns';
-import HourglassTopIcon from '@mui/icons-material/HourglassTop';
-import SecurityIcon from '@mui/icons-material/Security';
-import MailOutlineIcon from '@mui/icons-material/MailOutline';
-import { ErrorToaster, SuccessToaster } from "../../utils/toaster";
 import style from "./index.module.scss";
-import CommonDateField from "../CommonFields/CommonDateField";
-import TextField from "@mui/material/TextField";
 import { Tooltip } from "@mui/material";
 
 const ApplicantNotesViewDialog = ({ getIsOpen }) => {
@@ -25,34 +18,34 @@ const ApplicantNotesViewDialog = ({ getIsOpen }) => {
         "The Staff Manager has reviewed the initial application documents and verified completeness. The applicant's qualifications and employment history appear satisfactory. Awaiting department head evaluation."
     },
     {
-      title: " Department Head Evaluation",
+      title: "Department Head Evaluation",
       author: "Nina G.",
-      role: "Staff Manager",
+      role: "Department Head",
       date: "08:00",
       content:
         "The Department Head has conducted an initial assessment of the applicant’s clinical experience and fit within the surgical team. Recommendation forwarded for credentialing review."
     },
     {
-      title: "Cred. Comm. Recommendation Notes / Comments",
+      title: " Credentialing Committee Assessment",
       author: "Nina G.",
-      role: "Staff Manager",
+      role: "Credentialing Committee",
       date: "08:00",
       content:
         "Credentialing Committee has verified licenses, board certifications, malpractice history, and references. No red flags identified. Credentials meet institutional standards."
     },
     {
-      title: "MSO Verification Notes / Comments",
+      title: "Advisory Committee Feedback",
       author: "username",
-      role: "",
+      role: "Advisory Committee",
       date: "10:00",
       content:
         "Advisory Committee has reviewed the case and provided a positive recommendation based on clinical expertise, departmental needs, and peer feedback.",
       attachment: "Document File Name"
     },
     {
-      title: "Staff Manager Notes / Comments",
+      title: "Board Final Decision",
       author: "Nina G.",
-      role: "Staff Manager",
+      role: "Board",
       date: "08:00",
       content:
         "The Board has approved the application based on comprehensive evaluations from all prior levels. Formal offer and onboarding process can proceed."
