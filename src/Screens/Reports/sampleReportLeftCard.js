@@ -60,6 +60,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
     const [timesheetIntervals, setTimesheetIntervals] = useState([]);
     const [selectedPosition, setSelectedPosition] = useState('');
     const [selectedApplicationType, setSelectedApplicationType] = useState('');
+    const [selectedReappointmentStatus, setSelectedReappointmentStatus] = useState('');
     const [user, setUsers] = useState([]);
     const [from, setFrom] = useState(startOfMonth(new Date()));
     const [to, setTo] = useState(endOfMonth(new Date()));
@@ -128,7 +129,8 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         selectedPrivilegeCategory: selectedPrivilegeCategory,
         selectedPrivilegeCategoryToSend: selectedPrivilegeCategoryToSend,
         selectedPosition: selectedPosition,
-        selectedApplicationType: selectedApplicationType
+        selectedApplicationType: selectedApplicationType,
+        selectedReappointmentStatus: selectedReappointmentStatus
     };
 
     useEffect(() => {
@@ -284,7 +286,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
     useEffect(() => {
         getDataToUseInReport(dataToUseInReport);
     }, [renewalreportingTimePeriod, selectedSites, selectedDepartments, selectedPrivilegeCategory, selectedStaffType,
-        podType, contractStatus, reportingTimePeriod, selectedApplicationType,
+        podType, contractStatus, reportingTimePeriod, selectedApplicationType, selectedReappointmentStatus,
         selectedPosition, from, to, initialValueSet, selectedTimesheetInterval]);
 
     useEffect(() => {
@@ -601,10 +603,11 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         <div>
             <div className={`${style.leftCard} ${style.leftCardDisplay} ${style.marginTop20} ${style.bigCalendarLeftCardWidth}`}>
                 <div className={`${style.reporttypeLeftBackGround}`}>
-                    <div className={`${style.reportLeftTextStyle} ${style.cursorPointer}`} onClick={() => setShowSaveReport(true)}>Save Parameter Selection As My Report</div>
+                    <div className={`${style.reportLeftTextStyle} ${style.cursorPointer}`} onClick={() => setShowSaveReport(true)}>{!isMyReport ? 'Save Parameter Selection As My Report' : "Update Parameter Selection"}</div>
                 </div>
-                {(reportType === "staffReappointmentsNotes" || reportType === "staffReappointments" ||
-                    reportType === "submittedApplicationsReviewSummary" || reportType === "staffReappointmentTracker") ? (
+                {(reportType === "staffReappointmentsNotes" || reportType === "staffReappointments" || reportType === "locumRenewalOrExtensionApplicationsSummary" || reportType === "privilegedStaffSummary" ||
+                    reportType === "submittedApplicationsReviewSummary" || reportType === "staffReappointmentTracker" || reportType === "ohipBillingNumbersByCareProvider" || reportType === "careProviderCareerMilestoneSummary" ||
+                    reportType === "declinedOrNotRenewedStaffSummary" || reportType === "reappointmentApplicationNotStarted" || reportType === "currentNotesSummary" || reportType === "staffReappointmentStatusSummary") ? (
                     <>
                         {/* {reportType === "staffReappointmentsNotes" && (
                             <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
@@ -672,17 +675,17 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 MenuProps={MenuProps}
                                 value={reportingTimePeriod}
                                 onChange={(e) => { setReportingTimePeriod(e.target.value) }}
-                                disabled={isMyReport || isLoading}
+                                disabled={isLoading}
                             >
-                                <MenuItem value={'Current Week'} disabled={isMyReport || isLoading}>Current Week</MenuItem>
-                                <MenuItem value={'Last Week'} disabled={isMyReport || isLoading}>Last Week</MenuItem>
-                                <MenuItem value={'Current Month'} disabled={isMyReport || isLoading}>Current Month</MenuItem>
-                                <MenuItem value={'Last Month'} disabled={isMyReport || isLoading}>Last Month</MenuItem>
-                                <MenuItem value={'Current Qtr'} disabled={isMyReport || isLoading}>Current Quarter</MenuItem>
-                                <MenuItem value={'Last Qtr'} disabled={isMyReport || isLoading}>Last Quarter</MenuItem>
-                                <MenuItem value={'Current Year'} disabled={isMyReport || isLoading}>Current Year</MenuItem>
-                                <MenuItem value={'Last Year'} disabled={isMyReport || isLoading}>Last Year</MenuItem>
-                                <MenuItem value={'Custom'} disabled={isMyReport || isLoading}>Custom</MenuItem>
+                                <MenuItem value={'Current Week'} disabled={isLoading}>Current Week</MenuItem>
+                                <MenuItem value={'Last Week'} disabled={isLoading}>Last Week</MenuItem>
+                                <MenuItem value={'Current Month'} disabled={isLoading}>Current Month</MenuItem>
+                                <MenuItem value={'Last Month'} disabled={isLoading}>Last Month</MenuItem>
+                                <MenuItem value={'Current Qtr'} disabled={isLoading}>Current Quarter</MenuItem>
+                                <MenuItem value={'Last Qtr'} disabled={isLoading}>Last Quarter</MenuItem>
+                                <MenuItem value={'Current Year'} disabled={isLoading}>Current Year</MenuItem>
+                                <MenuItem value={'Last Year'} disabled={isLoading}>Last Year</MenuItem>
+                                <MenuItem value={'Custom'} disabled={isLoading}>Custom</MenuItem>
                             </Select>
                         </FormControl>
                         {reportingTimePeriod === "Custom" && (
@@ -738,16 +741,16 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 value={selectedDepartments}
                                 onChange={handleChangeDepartments}
                                 MenuProps={MenuProps}
-                                disabled={isMyReport || isLoading}
+                                disabled={isLoading}
                             >
                                 {departments?.length >= 2 && (
-                                    <MenuItem value={defaultOption} disabled={isMyReport || isLoading}>All</MenuItem>
+                                    <MenuItem value={defaultOption} disabled={isLoading}>All</MenuItem>
                                 )}
                                 {departments?.map((data) => (
                                     <MenuItem
                                         key={data?.id}
                                         value={data?.id}
-                                        disabled={isMyReport || isLoading}
+                                        disabled={isLoading}
                                     >
                                         {data?.departmentName?.name}
                                     </MenuItem>
@@ -788,10 +791,10 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 value={selectedStaffType}
                                 onChange={handleChangeStaffType}
                                 MenuProps={MenuProps}
-                                disabled={isMyReport || isLoading}
+                                disabled={isLoading}
                             >
                                 {staffType?.length >= 2 && (
-                                    <MenuItem value={defaultOption} disabled={isMyReport || isLoading}>All</MenuItem>
+                                    <MenuItem value={defaultOption} disabled={isLoading}>All</MenuItem>
                                 )}
                                 {staffType?.map((data) => (
                                     // <MenuItem
@@ -803,7 +806,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                     <MenuItem
                                         key={data?.id}
                                         value={data?.id}
-                                        disabled={isMyReport || isLoading}
+                                        disabled={isLoading}
                                     >
                                         {data?.applicantType}
                                     </MenuItem>
@@ -819,10 +822,10 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 value={selectedPrivilegeCategory}
                                 onChange={handleChangePrivilegeCategory}
                                 MenuProps={MenuProps}
-                                disabled={isMyReport || isLoading}
+                                disabled={isLoading}
                             >
                                 {privilegeCategory?.length >= 2 && (
-                                    <MenuItem value={defaultOption} disabled={isMyReport || isLoading}>All Categories</MenuItem>
+                                    <MenuItem value={defaultOption} disabled={isLoading}>All Categories</MenuItem>
                                 )}
                                 {privilegeCategory?.map((data) => (
                                     // <MenuItem
@@ -834,32 +837,49 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                     <MenuItem
                                         key={data?.id}
                                         value={data?.id}
-                                        disabled={isMyReport || isLoading}
+                                        disabled={isLoading}
                                     >
                                         {data?.category}
                                     </MenuItem>
                                 ))}
                             </Select>
                         </FormControl>
-
-                        <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                            <InputLabel id="demo-simple-select-standard-label3">Application Type</InputLabel>
-                            <Select
-                                labelId="demo-simple-select-standard-label3"
-                                id="demo-simple-select-standard3"
-                                value={selectedApplicationType}
-                                onChange={(e) => { setSelectedApplicationType(e.target.value) }}
-                                MenuProps={MenuProps}
-                                disabled={isMyReport || isLoading}
-                            >
-                                <MenuItem value={''} disabled={isMyReport || isLoading}>All</MenuItem>
-                                <MenuItem value={'NEW'} disabled={isMyReport || isLoading}>New Applicants</MenuItem>
-                                <MenuItem value={'REAPPOINTMENT'} disabled={isMyReport || isLoading}>Staff Reapointments</MenuItem>
-                                <MenuItem value={'LOCUM_RENEWAL'} disabled={isMyReport || isLoading}>Locum Applications</MenuItem>
-                            </Select>
-                        </FormControl>
-
-                        <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                        {(reportType === "submittedApplicationsReviewSummary" || reportType === "currentNotesSummary") && (
+                            <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                                <InputLabel id="demo-simple-select-standard-label3">Application Type</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-standard-label3"
+                                    id="demo-simple-select-standard3"
+                                    value={selectedApplicationType}
+                                    onChange={(e) => { setSelectedApplicationType(e.target.value) }}
+                                    MenuProps={MenuProps}
+                                    disabled={isLoading}
+                                >
+                                    <MenuItem value={''} disabled={isLoading}>All</MenuItem>
+                                    <MenuItem value={'NEW'} disabled={isLoading}>New Applicants</MenuItem>
+                                    <MenuItem value={'REAPPOINTMENT'} disabled={isLoading}>Staff Reapointments</MenuItem>
+                                    <MenuItem value={'LOCUM_RENEWAL'} disabled={isLoading}>Locum Applications</MenuItem>
+                                </Select>
+                            </FormControl>
+                        )}
+                        {reportType === "declinedOrNotRenewedStaffSummary" && (
+                            <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                                <InputLabel id="demo-simple-select-standard-label3">Locum Application Status</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-standard-label3"
+                                    id="demo-simple-select-standard3"
+                                    value={selectedReappointmentStatus}
+                                    onChange={(e) => { setSelectedReappointmentStatus(e.target.value) }}
+                                    MenuProps={MenuProps}
+                                    disabled={isLoading}
+                                >
+                                    <MenuItem value={''} disabled={isLoading}>All</MenuItem>
+                                    <MenuItem value={'NOT_RENEWED'} disabled={isLoading}>Not Renewed</MenuItem>
+                                    <MenuItem value={'DECLINED'} disabled={isLoading}>Declined</MenuItem>
+                                </Select>
+                            </FormControl>
+                        )}
+                        {/* <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                             <InputLabel id="demo-simple-select-standard-label3">Position</InputLabel>
                             <Select
                                 labelId="demo-simple-select-standard-label3"
@@ -873,7 +893,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 <MenuItem value={'PERMANENT'} disabled={isMyReport || isLoading}>Permanent</MenuItem>
                                 <MenuItem value={'LOCUM'} disabled={isMyReport || isLoading}>Locum</MenuItem>
                             </Select>
-                        </FormControl>
+                        </FormControl> */}
                         {/* <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                             <InputLabel id="demo-multiple-name-label5" className={style.headingtextStyle}>Contract</InputLabel>
                             <Select
@@ -1391,9 +1411,11 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                 {/* <button className={`${style.primaryButtonStyle} ${style.marginTop20}`} onClick={()=> setShowSaveReport(true)} >Save Parameter Selection As My Report</button> */}
             </div>
 
-            {showSaveReport && (
-                <SaveReport getSaveReportDialog={getSaveReportDialog} dataToUseInReport={dataToUseInReport} reportType={reportType} />
-            )}
+            {
+                showSaveReport && (
+                    <SaveReport getSaveReportDialog={getSaveReportDialog} dataToUseInReport={dataToUseInReport} reportType={reportType} />
+                )
+            }
         </div >
     )
 }

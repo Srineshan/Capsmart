@@ -16,7 +16,7 @@ import UserLogo4 from './../../images/userLogo6.png';
 import Search from './../../images/search.png';
 import BlueChevronLeft from './../../images/blueChevronLeft.png';
 import style from './index.module.scss';
-import { TenantID, POST, GET } from '../dataSaver';
+import { TenantID, POST, GET, PUT } from '../dataSaver';
 import { format } from 'date-fns';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import { currentUser } from '../../utils/auth';
@@ -66,6 +66,7 @@ const AntSwitch = styled(Switch)(({ theme }) => ({
 const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType, setIsLoading }) => {
     const currentUserData = currentUser();
     let myReportContent = JSON.parse(sessionStorage.getItem('myReportContent'))
+    const myReportId = sessionStorage.getItem('myReportId')
     const [isPrivate, setIsPrivate] = useState(false);
     const [isDeliveryScheduled, setIsDeliveryScheduled] = useState(false);
     const [reportName, setReportName] = useState('');
@@ -123,7 +124,15 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType, setIsL
         'currentRemitToAddressForActiveContracts': 'TIMESHEET',
         'activityStatusTracker': 'TIMESHEET',
         'paymentProcessingStatusTracker': 'PAYMENT',
-        'submittedApplicationsReviewSummary': 'STAFF_REAPPOINTMENT'
+        'submittedApplicationsReviewSummary': 'STAFF_REAPPOINTMENT',
+        'ohipBillingNumbersByCareProvider': 'ALL_STAFF',
+        'reappointmentApplicationNotStarted': 'STAFF_REAPPOINTMENT',
+        'privilegedStaffSummary': 'ALL_STAFF',
+        'currentNotesSummary': 'ALL_STAFF',
+        'staffReappointmentStatusSummary': 'STAFF_REAPPOINTMENT',
+        'locumRenewalOrExtensionApplicationsSummary': 'LOCUM_EXTENSION_OR_RENEWAL',
+        'careProviderCareerMilestoneSummary': 'PERMANENT_STAFF',
+        'declinedOrNotRenewedStaffSummary': 'LOCUM_EXTENSION_OR_RENEWAL'
     }
 
     // const type = (reportType === 'activitiesOrServices' ?
@@ -155,7 +164,15 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType, setIsL
         'currentRemitToAddressForActiveContracts': 'CURRENT_REMIT_TO_ADDRESS',
         'activityStatusTracker': 'ACTIVITY_STATUS_TRACKER',
         'paymentProcessingStatusTracker': 'PAYMENT_TRACKER',
-        'submittedApplicationsReviewSummary': 'SUBMITTED_APPLICATIONS_REVIEW_SUMMARY'
+        'submittedApplicationsReviewSummary': 'SUBMITTED_APPLICATIONS_REVIEW_SUMMARY',
+        'ohipBillingNumbersByCareProvider': 'OHIP_BILLING_NUMBERS_BY_CARE_PROVIDER',
+        'reappointmentApplicationNotStarted': 'REAPPOINTMENT_APPLICATIONS_NOT_YET_STARTED_SUMMARY',
+        'privilegedStaffSummary': 'PRIVILEGED_STAFF_SUMMARY',
+        'currentNotesSummary': 'CURRENT_NOTES_SUMMARY',
+        'staffReappointmentStatusSummary': 'STAFF_REAPPOINTMENT_STATUS_SUMMARY',
+        'locumRenewalOrExtensionApplicationsSummary': 'DECLINED_OR_NOT_RENEWED_STAFF_SUMMARY',
+        'careProviderCareerMilestoneSummary': 'CARE_PROVIDER_CAREER_MILESTONE_SUMMARY',
+        'declinedOrNotRenewedStaffSummary': 'DECLINED_OR_NOT_RENEWED_STAFF_SUMMARY'
     }
 
     const filters = {
@@ -174,7 +191,7 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType, setIsL
 
     useEffect(() => {
         if (myReportContent) {
-            setIsReadOnly(true)
+            // setIsReadOnly(true)
             setReportName(myReportContent?.title)
             setIsPrivate(myReportContent?.private)
             setIsDeliveryScheduled(myReportContent?.schedule?.isdeliveryScheduled)
@@ -228,21 +245,33 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType, setIsL
                     "applicationCreationType": dataToUseInReport?.selectedApplicationType !== "" ? [dataToUseInReport?.selectedApplicationType] : [],
                     // "intervals": decodeURIComponent(dataToUseInReport?.selectedTimesheetInterval).split(','),
                     "applicationCurrentLevel": sessionStorage.getItem('workModeType'),
-                    // "staffReappointmentStatus": [dataToUseInReport?.selectedApplicationType]
+                    "staffReappointmentStatus": dataToUseInReport?.selectedReappointmentStatus ? [dataToUseInReport?.selectedReappointmentStatus] : []
                 },
                 "private": isPrivate
             }
         }
         console.log(data, 'dataInConsole')
         if (reportName !== '' && reportDescription !== '') {
-            await POST('application-management-service/report/myReport/', JSON.stringify(data))
-                .then(response => {
-                    SuccessToaster('Report Saved Successfully');
-                })
-                .catch(error => {
-                    ErrorToaster('Unexpected Error');
-                })
-            getSaveReportDialog(false);
+            if (myReportContent) {
+                await PUT(`application-management-service/report/myReport/${myReportId}`, JSON.stringify(data))
+                    .then(response => {
+                        SuccessToaster('Report Updated Successfully');
+                    })
+                    .catch(error => {
+                        ErrorToaster('Unexpected Error');
+                    })
+                getSaveReportDialog(false);
+            }
+            else {
+                await POST('application-management-service/report/myReport/', JSON.stringify(data))
+                    .then(response => {
+                        SuccessToaster('Report Saved Successfully');
+                    })
+                    .catch(error => {
+                        ErrorToaster('Unexpected Error');
+                    })
+                getSaveReportDialog(false);
+            }
         } else {
             ErrorToaster('All Fields are Mandatory');
         }
