@@ -4,6 +4,7 @@ import { Dialog } from "@blueprintjs/core";
 import CrossPink from "../../images/crossPink.png";
 import style from "./index.module.scss";
 import { Tooltip } from "@mui/material";
+import DescriptionIcon from '@mui/icons-material/Description';
 
 const ApplicantNotesViewDialog = ({ getIsOpen }) => {
   const id = sessionStorage.getItem("applicationId");
@@ -40,7 +41,7 @@ const ApplicantNotesViewDialog = ({ getIsOpen }) => {
       date: "10:00",
       content:
         "Advisory Committee has reviewed the case and provided a positive recommendation based on clinical expertise, departmental needs, and peer feedback.",
-      attachment: "Document File Name"
+      attachment: "CMPA of 2025"
     },
     {
       title: "Board Final Decision",
@@ -83,6 +84,10 @@ const ApplicantNotesViewDialog = ({ getIsOpen }) => {
                 {note?.role ? `, ${note?.role}` : ""} on dd/mm/yyyy, {note?.date})
             </div>
             <div className={`${style.notesDataTextStyle}  ${style.marginTop10}`}>{note?.content}</div>
+            {note?.attachment && (
+            <div className={`${style.referenceCardStyle} ${style.marginTop10}`}>
+              <div><DescriptionIcon className={style.docsIcon} /> <span>{note?.attachment}</span></div></div>
+          )}
             </div>
         ))}
         </div>

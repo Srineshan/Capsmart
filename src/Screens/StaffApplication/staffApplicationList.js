@@ -89,7 +89,7 @@ const StaffApplicationList = ({
   getOverrideNotesCommentBox,
   showOverRideRequestApprovalDialog,
   showOverRideRequestDialog,
-  showOverRideRequestDeclineDialog
+  showOverRideRequestDeclineDialog,
 
 }) => {
   const PDFRef = createRef();
@@ -1622,10 +1622,11 @@ const isValidSingleCheckedIdMove = (id) => {
 
   useEffect(() => {
     getWorkflowUserData();
+    setShowAssignee(false);
     // getNotesDialog();
     getReFetchMetaData(true);
     console.log("getReFetchMetaData", reFetchMetaData)
-  }, [showNotesDialog, showCCDateDialog, approvalnotesCommentsBoxDept, showBulkApproveDialog, showBulkMoveDialog, activeApplicationTask, applicationType,showOverRideRequestDialog,showOverRideRequestApprovalDialog, showOverRideRequestDeclineDialog]);
+  }, [showNotesDialog, showCCDateDialog, approvalnotesCommentsBoxDept, showBulkApproveDialog, showBulkMoveDialog, activeApplicationTask, applicationType,showOverRideRequestDialog,showOverRideRequestApprovalDialog, showOverRideRequestDeclineDialog,activeApplicationView]);
 
   // useEffect(() => {
   //   getApplicationCreationType();
@@ -2529,7 +2530,9 @@ useEffect(() => {
       );
       const notesHoverTextArray = validNotes?.length > 0
         ? validNotes.map((note, index) => {
-          const text = note?.notes?.notes ? note?.notes?.notes.replace(/<[^>]*>/g, '') : '-';
+          const text = note?.notes?.notes
+          ? note?.notes?.notes.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ')
+          : '-';
           const firstName = note?.user?.name?.firstName || '';
           const title = note?.title;
           const createdDate = format(new Date(note?.createdDate), "MMM dd, yyyy 'at' h:mm a") || '';
@@ -2812,7 +2815,9 @@ useEffect(() => {
       );
       const notesHoverTextArray = validNotes?.length > 0
         ? validNotes.map((note, index) => {
-          const text = note?.notes?.notes ? note?.notes?.notes.replace(/<[^>]*>/g, '') : '-';
+          const text = note?.notes?.notes
+          ? note?.notes?.notes.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ')
+          : '-';
           const firstName = note?.user?.name?.firstName || '';
           const title = note?.title;
           const createdDate = format(new Date(note?.createdDate), "MMM dd, yyyy 'at' h:mm a") || '';
@@ -3075,7 +3080,9 @@ useEffect(() => {
       //   : ["-"];
       const notesHoverTextArray = validNotes?.length > 0
         ? validNotes.map((note, index) => {
-          const text = note?.notes?.notes ? note?.notes?.notes.replace(/<[^>]*>/g, '') : '-';
+          const text = note?.notes?.notes
+          ? note?.notes?.notes.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ')
+          : '-';
           const firstName = note?.user?.name?.firstName || '';
           const title = note?.title;
           const createdDate = format(new Date(note?.createdDate), "MMM dd, yyyy 'at' h:mm a") || '';
@@ -3445,7 +3452,9 @@ useEffect(() => {
       );
       const notesHoverTextArray = validNotes?.length > 0
         ? validNotes.map((note, index) => {
-          const text = note?.notes?.notes ? note?.notes?.notes.replace(/<[^>]*>/g, '') : '-';
+          const text = note?.notes?.notes
+          ? note?.notes?.notes.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ')
+          : '-';
           const firstName = note?.user?.name?.firstName || '';
           const title = note?.title;
           const createdDate = format(new Date(note?.createdDate), "MMM dd, yyyy 'at' h:mm a") || '';
@@ -3754,7 +3763,9 @@ useEffect(() => {
       );
       const notesHoverTextArray = validNotes?.length > 0
         ? validNotes.map((note, index) => {
-          const text = note?.notes?.notes ? note?.notes?.notes.replace(/<[^>]*>/g, '') : '-';
+          const text = note?.notes?.notes
+          ? note?.notes?.notes.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ')
+          : '-';
           const firstName = note?.user?.name?.firstName || '';
           const title = note?.title;
           const createdDate = format(new Date(note?.createdDate), "MMM dd, yyyy 'at' h:mm a") || '';
@@ -4091,7 +4102,9 @@ useEffect(() => {
       );
       const notesHoverTextArray = validNotes?.length > 0
         ? validNotes.map((note, index) => {
-          const text = note?.notes?.notes ? note?.notes?.notes.replace(/<[^>]*>/g, '') : '-';
+          const text = note?.notes?.notes
+          ? note?.notes?.notes.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ')
+          : '-';
           const firstName = note?.user?.name?.firstName || '';
           const title = note?.title;
           const createdDate = format(new Date(note?.createdDate), "MMM dd, yyyy 'at' h:mm a") || '';
@@ -4375,7 +4388,9 @@ useEffect(() => {
       );
       const notesHoverTextArray = validNotes?.length > 0
         ? validNotes.map((note, index) => {
-          const text = note?.notes?.notes ? note?.notes?.notes.replace(/<[^>]*>/g, '') : '-';
+          const text = note?.notes?.notes
+          ? note?.notes?.notes.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ')
+          : '-';
           const firstName = note?.user?.name?.firstName || '';
           const title = note?.title;
           const createdDate = format(new Date(note?.createdDate), "MMM dd, yyyy 'at' h:mm a") || '';
@@ -4653,7 +4668,9 @@ useEffect(() => {
       );
       const notesHoverTextArray = validNotes?.length > 0
         ? validNotes.map((note, index) => {
-          const text = note?.notes?.notes ? note?.notes?.notes.replace(/<[^>]*>/g, '') : '-';
+          const text = note?.notes?.notes
+          ? note?.notes?.notes.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ')
+          : '-';
           const firstName = note?.user?.name?.firstName || '';
           const title = note?.title;
           const createdDate = format(new Date(note?.createdDate), "MMM dd, yyyy 'at' h:mm a") || '';
@@ -4919,7 +4936,9 @@ useEffect(() => {
       );
       const notesHoverTextArray = validNotes?.length > 0
         ? validNotes.map((note, index) => {
-          const text = note?.notes?.notes ? note?.notes?.notes.replace(/<[^>]*>/g, '') : '-';
+          const text = note?.notes?.notes
+          ? note?.notes?.notes.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ')
+          : '-';
           const firstName = note?.user?.name?.firstName || '';
           const title = note?.title;
           const createdDate = format(new Date(note?.createdDate), "MMM dd, yyyy 'at' h:mm a") || '';
@@ -5230,7 +5249,9 @@ useEffect(() => {
       );
       const notesHoverTextArray = validNotes?.length > 0
         ? validNotes.map((note, index) => {
-          const text = note?.notes?.notes ? note?.notes?.notes.replace(/<[^>]*>/g, '') : '-';
+          const text = note?.notes?.notes
+          ? note?.notes?.notes.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ')
+          : '-';
           const firstName = note?.user?.name?.firstName || '';
           const title = note?.title;
           const createdDate = format(new Date(note?.createdDate), "MMM dd, yyyy 'at' h:mm a") || '';
@@ -5308,7 +5329,7 @@ useEffect(() => {
         (data?.completionLetter) ?
           <div className={`${style.justifyCenter} ${style.cursorPointer}`}
             onClick={() => onClickMoveToNextFunction(data.id)}
-          > <Tooltip arrow title={"Click to Send Annual Reappointment Letter"}><img src={sendBod} alt="" className={style.resentIcon} /></Tooltip></div> :
+          > <Tooltip arrow title={`Click to Send Annual ${applicationType === "LOCUM" ? "Application" : "Reappointment"} Letter`}><img src={sendBod} alt="" className={style.resentIcon} /></Tooltip></div> :
           <div className={`${style.justifyCenter} ${style.disabled}`}> <Tooltip arrow title="Waiting for Approval"><img src={sendBodDisabled} alt="" className={style.resentIcon} /></Tooltip></div>
       );
 
@@ -5534,7 +5555,9 @@ useEffect(() => {
       );
       const notesHoverTextArray = validNotes?.length > 0
         ? validNotes.map((note, index) => {
-          const text = note?.notes?.notes ? note?.notes?.notes.replace(/<[^>]*>/g, '') : '-';
+          const text = note?.notes?.notes
+          ? note?.notes?.notes.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ')
+          : '-';
           const firstName = note?.user?.name?.firstName || '';
           const title = note?.title;
           const createdDate = format(new Date(note?.createdDate), "MMM dd, yyyy 'at' h:mm a") || '';
@@ -5612,7 +5635,7 @@ useEffect(() => {
         (data?.completionLetter) ?
           <div className={`${style.justifyCenter} ${style.cursorPointer}`}
             onClick={() => onClickMoveToNextFunction(data.id)}
-          > <Tooltip arrow title={"Click to Send Annual Reappointment Letter"}><img src={sendBod} alt="" className={style.resentIcon} /></Tooltip></div> :
+          >  <Tooltip arrow title={`Click to Send Annual ${applicationType === "LOCUM" ? "Application" : "Reappointment"} Letter`}><img src={sendBod} alt="" className={style.resentIcon} /></Tooltip></div> :
           <div className={`${style.justifyCenter} ${style.disabled}`}> <Tooltip arrow title="Waiting for Approval"><img src={sendBodDisabled} alt="" className={style.resentIcon} /></Tooltip></div>
       );
 
@@ -5996,7 +6019,9 @@ useEffect(() => {
       );
       const notesHoverTextArray = validNotes?.length > 0
         ? validNotes.map((note, index) => {
-          const text = note?.notes?.notes ? note?.notes?.notes.replace(/<[^>]*>/g, '') : '-';
+          const text = note?.notes?.notes
+          ? note?.notes?.notes.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ')
+          : '-';
           const firstName = note?.user?.name?.firstName || '';
           const title = note?.title;
           const createdDate = format(new Date(note?.createdDate), "MMM dd, yyyy 'at' h:mm a") || '';
@@ -6320,7 +6345,9 @@ useEffect(() => {
       );
       const notesHoverTextArray = validNotes?.length > 0
         ? validNotes.map((note, index) => {
-          const text = note?.notes?.notes ? note?.notes?.notes.replace(/<[^>]*>/g, '') : '-';
+          const text = note?.notes?.notes
+          ? note?.notes?.notes.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ')
+          : '-';
           const firstName = note?.user?.name?.firstName || '';
           const title = note?.title;
           const createdDate = format(new Date(note?.createdDate), "MMM dd, yyyy 'at' h:mm a") || '';
@@ -7689,7 +7716,7 @@ useEffect(() => {
                           }
                         }}
                       >
-                        <Tooltip arrow title={"Click to Send Annual Reappointment Letter"}><img src={sendBod} alt="" className={style.resentIcon} /></Tooltip>
+                        <Tooltip arrow title={`Click to Send Annual ${applicationType === "LOCUM" ? "Application" : "Reappointment"} Letter`}><img src={sendBod} alt="" className={style.resentIcon} /></Tooltip>
                       </div>
                     )}
                     <div

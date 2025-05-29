@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
 import NoteAltOutlinedIcon from "@mui/icons-material/NoteAltOutlined";
+import WarningOutlinedIcon from '@mui/icons-material/WarningOutlined';
 import { InputGroup, Icon, Intent, Dialog, Classes } from "@blueprintjs/core";
 import FileImg from "./../../images/fileImg.png";
 import WritingFile from "./../../images/writingFile.png";
@@ -49,6 +50,7 @@ import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import ApplicationDecline from "../../Screens/StaffApplication/applicationDeclineDialog";
 import ApplicationHeader from "../../Components/ApplicationHeader";
 import ApplicantDetailNotesView from '../../Components/ApplicantDetailNotesView';
+import ViewandVerifyScreen from '../../Components/ViewVerifyScreen';
 import ApplicationFieldCard from "../../Components/ApplicationFieldCard";
 import CommonDivider from "../../Components/CommonFields/CommonDivider";
 import ESignature from "../../Components/ESignature";
@@ -60,7 +62,7 @@ import TableTwo from "../../Components/TableDesignTwo";
 import CreateOutlinedIcon from '@mui/icons-material/CreateOutlined';
 import LoadingScreen from "../LoadingScreen";
 
-const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, getApplicantNotesNotesDialog}) => {
+const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, getActiveApplicationView}) => {
     let cookie = new Cookie();
     let userDetails = cookie.get('user');
     const users = jwt(userDetails);
@@ -79,14 +81,42 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
         section7: false,
       });
     const [showNotesDetailsDialog, setShowNotesDetailsDialog] = useState(false);
-    const documentHeaderValues = ["Document Type", "Document Name", "Requirement", "Expiration Date", "Last Updated", "Action"];
-    const documentColSortValues = [false, false, false, false, false, , false];
+    const [showViewAndVerifyScreen, setShowViewAndVerifyScreen] = useState(false);
+    const documentHeaderValues = ["","Document Type", "Document Name", "Requirement", "Expiration Date", "Last Updated", "Action"];
+    const documentColSortValues = [false,false, false, false, false, false, , false];
     const appointmentHeaderValues = ["Appointment Cycle", <img src={CAPManagerSmallLogo} alt="img" className={style.LogoIcon} />, "Privilege Category", "Approved Privileges", "Notes","Doc","Approval Date", "Action"];
     const appointmentColSortValues = [false, false, false, false, false, , false, false, false];
     const MDHeaderValues = ["","Title", "", "MD ID", "Attestation Due Date", "Last Updated", "Action"];
     const MDColSortValues = [false, false, false, false, false, , false];
 
-    const tableDataAppointment = [
+     const tableData = [
+    {
+        status: "IN_PROGRESS",
+        DocumentType: "Approval Letter",
+        DocumentName: "BOD Approval Letter for 2025 - 2026 Reappointment",
+        Requirement: "Required",
+        ExpirationDate: "Apr 21, 2025",
+        LastUpdated: "Apr 21, 2025"
+    },
+    {
+        status: "COMPLETED",
+        DocumentType: "Certificate",
+        DocumentName: "N 95 Respiratory Fit",
+        Requirement: "Required",
+        ExpirationDate: "Apr 21, 2025",
+        LastUpdated: "Apr 21, 2025"
+    },
+    {
+        status: "REJECTED",
+        DocumentType: "Insurance",
+        DocumentName: "Available",
+        Requirement: "Required",
+        ExpirationDate: "Apr 21, 2025",
+        LastUpdated: "Apr 21, 2025"
+    }
+    ];
+
+        const tableDataAppointment = [
     {
         appointmentCycle: "2025 - 2026",
         capManagerStatus: "IN_PROGRESS",
@@ -159,30 +189,6 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
     }
     ];
 
-     const tableData = [
-    {
-        DocumentType: "Approval Letter",
-        DocumentName: "BOD Approval Letter for 2025 - 2026 Reappointment",
-        Requirement: "Required",
-        ExpirationDate: "Apr 21, 2025",
-        LastUpdated: "Apr 21, 2025"
-    },
-    {
-        DocumentType: "Certificate",
-        DocumentName: "N 95 Respiratory Fit",
-        Requirement: "Required",
-        ExpirationDate: "Apr 21, 2025",
-        LastUpdated: "Apr 21, 2025"
-    },
-    {
-        DocumentType: "Insurance",
-        DocumentName: "Available",
-        Requirement: "Required",
-        ExpirationDate: "Apr 21, 2025",
-        LastUpdated: "Apr 21, 2025"
-    }
-    ];
-
     const documentActionsData = [
     {
       data: "ViewDocs",
@@ -190,17 +196,6 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
     },
     {
       data: "EditDocs",
-      requiredValue: "boolean",
-    },
-  ];
-
-    const mDActionsData = [
-    {
-      data: "ViewMD",
-      requiredValue: "boolean",
-    },
-    {
-      data: "EditMD",
       requiredValue: "boolean",
     },
   ];
@@ -224,18 +219,29 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
     },
   ];
 
-   const onClickNotesDetailsFunction = () => {
-        getApplicantNotesNotesDialog(true);
-    };
+      const mDActionsData = [
+    {
+      data: "ViewMD",
+      requiredValue: "boolean",
+    },
+    {
+      data: "EditMD",
+      requiredValue: "boolean",
+    },
+  ];
 
-    const getCCDateDialogOpen = (value) => {
-    // // getCCDateDialog(true,checkedIds);
+  const getNotesDetailsDialogOpen = (value) => {
     setShowNotesDetailsDialog(value)
   };
 
-     const onClickNotesFunction = () => {
-    console.log("Note clicked");
-    alert(`Note`);
+  // const getActiveApplicationView = () => {
+  //   setShowViewAndVerifyScreen(true)
+  //   sessionStorage.setItem("applicationId", form?.onGoingApplication?.id);
+  // };
+
+  const onclickViewAndVerifyFunction = () => {
+    getActiveApplicationView(true)
+    sessionStorage.setItem("applicationId", form?.onGoingApplication?.id);
   };
 
   let documentType = [];
@@ -257,6 +263,8 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
   let mdID = [];
   let attestationDate = [];
   let dotTooltipValues = [];
+  let status = [];
+  let textTooltipValues = [];
 
   const getDocsTableValues = () => {
     documentType = [];
@@ -265,8 +273,18 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
     documentName = [];
     action = [];
     lastUpdateDate =[];
+    status = [];
 
     tableData?.map((data, index) => {
+      status.push(
+        data?.status === "IN_PROGRESS" ? (
+          <WarningOutlinedIcon style={{ fontSize: 20, color: "#FFD700" }} />
+        ) : data?.status === "COMPLETED" ? (
+          <WarningOutlinedIcon style={{ fontSize: 20, color: "#228B22" }} />
+        ) : data?.status === "REJECTED" ? (
+          <WarningOutlinedIcon style={{ fontSize: 20, color: "#ED2939" }} />
+        ) : null
+      );
       documentType.push(`${data?.DocumentType}` || "Dentist");
       documentName.push(data?.DocumentName || "dd")
       requirementType.push(data?.Requirement)
@@ -280,6 +298,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
     });
 
     return [
+      { type: "text", value: status },
       { type: "text", value: documentType },
       { type: "text", value: documentName },
       { type: "text", value: requirementType },
@@ -300,9 +319,20 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
     docs = [];
     approvalDate = [];
     action = [];
+    textTooltipValues = [];
 
     tableDataAppointment?.map((data, index) => {
-      appointmentCycle.push(`${data?.appointmentCycle}` || "Dentist");
+       appointmentCycle.push(
+      <span
+        key={index}
+        onClick={onclickViewAndVerifyFunction}
+        style={{ cursor: "pointer", color: "#2C2C2C" }}
+      >
+        {data?.appointmentCycle || "—"}
+      </span>
+    );
+    textTooltipValues.push("Click to View Applicant Details")
+      // appointmentCycle.push(`${data?.appointmentCycle}` || "Dentist");
       const color = data?.capManagerStatus === "IN_PROGRESS" ? "yellow"
           : data?.capManagerStatus === "COMPLETED" ? "green"
           : data?.capManagerStatus === "REJECTED" ? "red"
@@ -313,20 +343,24 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
       approvedPrivileges.push(data?.approvedPrivileges)
     //   notes.push(data?.notes)
       notes.push(
+        <Tooltip title="Click to View Notes" arrow>
       <span
         key={index}
-        onClick={getCCDateDialogOpen}
+        onClick={getNotesDetailsDialogOpen}
         style={{ cursor: "pointer", color: "#2C2C2C" }}
       >
         {data?.notes || "—"}
       </span>
+      </Tooltip>
     );
     //   notesIcon.push(<NoteAltOutlinedIcon style={{ fontSize: 20, color: `#2C2C2C` }} />)
      notesIcon.push(
+      <Tooltip title="Click to View Notes" arrow>
       <NoteAltOutlinedIcon
         style={{ fontSize: 20, color: "#2C2C2C", cursor: "pointer" }}
-        onClick={getCCDateDialogOpen}
+        onClick={getNotesDetailsDialogOpen}
       />
+      </Tooltip>
     );
       docs.push(data?.docs)
       approvalDate.push(
@@ -336,7 +370,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
     });
 
     return [
-      { type: "text", value: appointmentCycle },
+      { type: "text", value: appointmentCycle, tooltipValueText: textTooltipValues},
       { type: "dot", value: dot ,tooltipValue: dotTooltipValues},
       { type: "text", value: privilegeCategory },
       { type: "text", value: approvedPrivileges },
@@ -507,7 +541,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
                 <div
                     className={`${style.cardLeftStyle}`}
                 >
-                    <div className={style.flex}>
+                    <div className={style.gridView}>
                     <div className={`${style.photoBorderStyle}`}>
                         <img
                         src={form?.applicant?.profilePicture?.fileURL || UserLogo}
@@ -529,9 +563,12 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
                         <div
                             className={`${style.cardTextNormalStyle} ${style.marginTop10}`}
                         >
-                            {applicationType === "LOCUM" ? "Locum" : ""}{" "}
+                            <span className={`${style.serviceAreaType}`}>{applicationType === "LOCUM" ? "Locum" : ""}{" "}
                             {form?.basicDetailReferences?.applicantType
-                            ?.serviceProviderType || ""}
+                            ?.serviceProviderType || ""}</span>
+
+                            <span className={`${style.serviceAreaType} ${style.marginLeft10}`}>{" "}
+                            {form?.status || ""}</span>
                             <span
                             className={`${style.cardTextNormalStyle} ${style.marginLeft10}`}
                             >
@@ -892,11 +929,18 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
           {
             showNotesDetailsDialog && (
             <ApplicantDetailNotesView
-                getIsOpen={getCCDateDialogOpen}
+                getIsOpen={getNotesDetailsDialogOpen}
                 // onClose={() => { setShowCCDateDialog(false); setCheckedIds([]); }}
             />
             )
         }
+        {/* {
+            showViewAndVerifyScreen && (
+            <ViewandVerifyScreen
+                getActiveApplicationView={getActiveApplicationView}
+            />
+            )
+        } */}
         </>
       )
 }
