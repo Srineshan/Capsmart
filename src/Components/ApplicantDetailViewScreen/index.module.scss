@@ -95,8 +95,9 @@ opacity: 1;
   margin-right: 15px;
 }
 
-.flex {
-  display: flex;
+.gridView {
+  display: grid;
+  grid-template-columns: 12% 88%;
 }
 
 .grip3{
@@ -227,8 +228,28 @@ opacity: 1;
     border-radius: 8px;
     // opacity: 0.5;
     padding: 5px;
-    // height: 70px;
+    height: 90px;
 }
+
+.serviceAreaType {
+  background: rgba(232, 233, 233, 0.5) 0% 0% no-repeat padding-box;
+  border-radius: 2px;
+  padding: 5px;
+  text-align: left;
+  font: italic normal bold 14px/16px proxima nova;
+  letter-spacing: 0px;
+  color: $primarycolor;
+  text-transform: capitalize;
+}
+
+// .typeTextStyle{
+//   text-align: left;
+//   font: italic normal bold 14px/16px proxima nova;
+//   letter-spacing: 0px;
+//   color: $primarycolor;
+//   text-transform: capitalize;
+//   opacity: 1;
+// }
 
 .alignSelfEnd{
   align-items: self-end !important;
@@ -270,7 +291,7 @@ opacity: 1;
 
 .documentViewGrid {
   display: grid;
-  grid-template-columns: 15% 29% 13% 13% 13% 10%;
+  grid-template-columns: 3% 15% 29% 13% 13% 13% 10%;
   grid-gap: 10px;
 }
 
