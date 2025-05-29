@@ -186,6 +186,12 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType, setIsL
         departments: dataToUseInReport?.selectedDepartments
     }
 
+    const availableApplicationTypes = {
+        NEW: 'New Applicants',
+        REAPPOINTMENT: 'Staff Reappointments',
+        LOCUM_RENEWAL: 'Locum Renewals'
+    }
+
     useEffect(() => {
         getUserDetail()
     }, [currentUserData?.id])
@@ -249,15 +255,14 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType, setIsL
                     "applicationCurrentLevel": sessionStorage.getItem('workModeType'),
                     "staffReappointmentStatus": dataToUseInReport?.selectedReappointmentStatus ? [dataToUseInReport?.selectedReappointmentStatus] : []
                 },
-                filtersWithLabels: [
-                    { name: 'Reporting Period used for this report', values: dataToUseInReport?.from },
-                    { name: 'Reporting Period used for this report', values: dataToUseInReport?.to },
-                    { name: 'Staff Type', values: dataToUseInReport?.selectedStaffType?.[0] !== '' ? dataToUseInReport?.selectedStaffType : [] },
-                    { name: 'Departments', values: dataToUseInReport?.selectedDepartments?.[0] !== '' ? dataToUseInReport?.selectedDepartments : [] },
-                    { name: 'Privilege Category', values: dataToUseInReport?.selectedPrivilegeCategory !== '' ? dataToUseInReport?.selectedPrivilegeCategory : '' },
+                filterDisplayNames: [
+                    { name: 'Reporting Period used for this report', values: [`${dataToUseInReport?.fromToDisplay} - ${dataToUseInReport?.toToDisplay}`] },
+                    { name: 'Staff Type', values: [dataToUseInReport?.selectedStaffTypeToSend?.map(data => data?.applicantType).join(', ') || 'All Staff Type'] },
+                    { name: 'Departments', values: [dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.departmentName?.name).join(', ') || 'All Departments'] },
+                    { name: 'Privilege Category', values: [dataToUseInReport?.selectedPrivilegeCategoryToSend?.map(data => data?.category).join(', ') || 'All Categories'] },
                     { name: 'Position', values: dataToUseInReport?.selectedPosition !== "" ? [dataToUseInReport?.selectedPosition] : [] },
-                    { name: 'Application Type', values: dataToUseInReport?.selectedApplicationType !== "" ? [dataToUseInReport?.selectedApplicationType] : [] },
-                    { name: 'Reappointment Status', values: dataToUseInReport?.selectedReappointmentStatus ? [dataToUseInReport?.selectedReappointmentStatus] : [] },
+                    { name: 'Application Type', values: [availableApplicationTypes[dataToUseInReport?.selectedApplicationType] || 'All Application Type'] },
+                    { name: 'Reappointment Status', values: [dataToUseInReport?.selectedReappointmentStatus || 'All Applications'] },
                 ],
                 "private": isPrivate
             }
@@ -480,10 +485,12 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType, setIsL
                                 >{"CANCEL"}</button>
                             </div>
                             <div className={style.displayInRow}>
-                                <button className={`${style.saveStyle} ${style.cursorPointer}`}
-                                    onClick={() => { handleSave() }}
-                                // onClick={() => { scheduledFor !== "MYSELF" && setShowDeliveryDialog(true); handleSave() }}
-                                >{"REPLACE REPORT"}</button>
+                                {isMyReport && (
+                                    <button className={`${style.saveStyle} ${style.cursorPointer}`}
+                                        onClick={() => { handleSave() }}
+                                    // onClick={() => { scheduledFor !== "MYSELF" && setShowDeliveryDialog(true); handleSave() }}
+                                    >{"REPLACE REPORT"}</button>
+                                )}
                                 <button className={`${style.saveStyle} ${style.cursorPointer} ${style.marginLeft20} ${(reportName === "" || reportDescription === "" || reportName.trim() === myReportContent?.title || '') ? style.disabledButton : ''}`}
                                     onClick={(reportName === "" || reportDescription === "" || reportName.trim() === myReportContent?.title || '') ? () => { } : () => { handleSave(true) }}
                                 // onClick={() => { scheduledFor !== "MYSELF" && setShowDeliveryDialog(true); handleSave() }}

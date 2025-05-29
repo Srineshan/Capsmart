@@ -257,29 +257,29 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         if (reportFilter) {
             let sitesToShow = [];
             let departmentsToShow = [];
-            let contractsToShow = [];
-            let serviceProvidersToShow = [];
+            let staffsToShow = [];
+            let privilegeCategoryToShow = [];
             departments?.map(data => {
-                if (reportFilter?.departments?.includes(data?.id)) {
+                if (reportFilter?.departmentSpecialties?.includes(data?.id)) {
                     departmentsToShow.push(data)
                 }
             })
             setSelectedDepartmentsToSend(departmentsToShow)
-            contracts?.map(data => {
-                if (reportFilter?.contracts?.includes(data?.id)) {
-                    contractsToShow.push(data)
+            staffType?.map(data => {
+                if (reportFilter?.applicantTypeId?.includes(data?.id)) {
+                    staffsToShow.push(data)
                 }
             })
-            setSelectedContractsToSend(contractsToShow)
-            contractedServiceProviders?.map(data => {
-                if (reportFilter?.users?.includes(data?.id)) {
-                    serviceProvidersToShow.push(data)
+            setSelectedStaffTypeToSend(staffsToShow)
+            privilegeCategory?.map(data => {
+                if (reportFilter?.privilegingCategoryId?.includes(data?.id)) {
+                    privilegeCategoryToShow.push(data)
                 }
             })
-            setSelectedContractedServiceProviderToSend(serviceProvidersToShow)
-            console.log(sitesToShow, departmentsToShow, contractsToShow, serviceProvidersToShow, sites, departments, contracts, contractedServiceProviders)
+            setSelectedPrivilegeCategoryToSend(privilegeCategoryToShow)
+            console.log(sitesToShow, departmentsToShow, privilegeCategory, staffType, sites, departments, contracts, contractedServiceProviders)
         }
-    }, [sites, departments, contracts, contractedServiceProviders])
+    }, [sites, departments, privilegeCategory, staffType])
 
     console.log(isMyReport)
 

@@ -40,12 +40,14 @@ import TrackTable from '../../Components/TrackTable';
 import TableTwo from "../../Components/TableDesignTwo"
 import ReportsStaffTable from '../../Components/ReportStaffbyType';
 import ReportsApplicantWithAllDataTable from '../../Components/ReportApplicantWithAllData';
+import { currentUser } from '../../utils/auth';
 
 const ReportTypeOverview = () => {
     const location = useLocation();
     const tableData = location.state?.tableData || [];
+    const currentUserDetails = currentUser();
     console.log("tables:", tableData);
-    const { reportType } = useParams();
+    const { reportType, myReportIdFromUrl } = useParams();
     const isMyReport = window.location.pathname.includes("/myReport");
     const myReportId = sessionStorage.getItem('myReportId')
     const myReportContent = (sessionStorage.getItem('myReportContent') && sessionStorage.getItem('myReportContent') !== 'undefined') ? JSON.parse(sessionStorage.getItem('myReportContent')) : {};
@@ -153,6 +155,40 @@ const ReportTypeOverview = () => {
         FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITHOUT_OFFSET: 'Fixed Amount For Timesheet Period Without Offset',
     }
 
+    const availableApplicationTypes = {
+        NEW: 'New Applicants',
+        REAPPOINTMENT: 'Staff Reappointments',
+        LOCUM_RENEWAL: 'Locum Renewals'
+    }
+
+    const availableCategories = {
+        servicesOrActivities: 'SERVICES_ACTIVITIES',
+        contractManagement: 'CONTRACT_MANAGEMENT',
+        contractCompliance: 'CONTRACT_COMPLIANCE',
+        contractPerformance: 'CONTRACT_PERFORMANCE',
+        payments: 'PAYMENT',
+        timesheets: 'TIMESHEET',
+        reviewsApprovals: 'REVIEWS_APPROVALS',
+        systemAdministrative: 'SYSTEM_ADMINISTRATIVE',
+        allStaffMembers: 'ALL_STAFF',
+        savedReportsArchive: '',
+        staffReappointments: 'STAFF_REAPPOINTMENT',
+        newApplicants: 'NEW_APPLICANT',
+        allApplications: 'ALL_APPLICATION',
+        locumStaff: 'LOCUM_STAFF',
+        permanentStaff: 'PERMANENT_STAFF',
+        locumExtensionOrRenewal: 'LOCUM_EXTENSION_OR_RENEWAL',
+        submittedApplicationsReviewSummary: 'STAFF_REAPPOINTMENT',
+        ohipBillingNumbersByCareProvider: 'ALL_STAFF',
+        reappointmentApplicationNotStarted: 'STAFF_REAPPOINTMENT',
+        privilegedStaffSummary: 'ALL_STAFF',
+        currentNotesSummary: 'ALL_STAFF',
+        staffReappointmentStatusSummary: 'STAFF_REAPPOINTMENT',
+        locumRenewalOrExtensionApplicationsSummary: 'LOCUM_EXTENSION_OR_RENEWAL',
+        careProviderCareerMilestoneSummary: 'PERMANENT_STAFF',
+        declinedOrNotRenewedStaffSummary: 'LOCUM_EXTENSION_OR_RENEWAL'
+    }
+
     // console.log("dashboard",tableData.map(item => item.id))
     console.log("dashboard", tableData)
 
@@ -199,6 +235,11 @@ const ReportTypeOverview = () => {
     }, [])
 
     useEffect(() => {
+        if (myReportIdFromUrl)
+            getMyReportRecords()
+    }, [myReportIdFromUrl])
+
+    useEffect(() => {
         if (dataToUseInReport?.initialValueSet && ((dataToUseInReport?.selectedDepartments?.length !== 1 ? !dataToUseInReport?.selectedDepartments?.includes('') : true) && (dataToUseInReport?.selectedStaffType?.length !== 1 ? !dataToUseInReport?.selectedStaffType?.includes('') : true) && (dataToUseInReport?.selectedPrivilegeCategory?.length !== 1 ? !dataToUseInReport?.selectedPrivilegeCategory?.includes('') : true))) {
             const controller = new AbortController(); // Create an AbortController instance
             const signal = controller.signal;
@@ -211,6 +252,14 @@ const ReportTypeOverview = () => {
     useEffect(() => {
         setApexStackedBarChartDisplay(<ApexStackedBarChart stackedSeries={stackedSeries} stackedCategories={stackedCategories} />);
     }, [stackedCategories, stackedSeries])
+
+    const getMyReportRecords = async () => {
+        const { data: myReport } = await GET(`application-management-service/report/myReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
+        sessionStorage.setItem('reportFilter', JSON.stringify(myReport?.filter(data => data?.id === myReportIdFromUrl)?.[0]?.report?.filters));
+        sessionStorage.setItem('myReportContent', JSON.stringify(myReport?.filter(data => data?.id === myReportIdFromUrl)?.[0]?.report));
+        sessionStorage.setItem('myReportId', myReportIdFromUrl);
+        console.log(myReportIdFromUrl, myReport?.filter(data => data?.id === myReportIdFromUrl)?.[0])
+    }
 
     const getUpdatedValuesWithParams = (signal) => {
         switch (reportType) {
@@ -952,14 +1001,13 @@ const ReportTypeOverview = () => {
             queryParams.append('departmentSpecialties', dataToUseInReport?.selectedDepartments);
         }
 
+        if (dataToUseInReport?.from) {
+            queryParams.append('startDate', dataToUseInReport?.from);
+        }
 
-        // if (dataToUseInReport?.from) {
-        //     queryParams.append('startDate', dataToUseInReport?.from);
-        // }
-
-        // if (dataToUseInReport?.to) {
-        //     queryParams.append('endDate', dataToUseInReport?.to);
-        // }
+        if (dataToUseInReport?.to) {
+            queryParams.append('endDate', dataToUseInReport?.to);
+        }
         setIsLoading(true)
         const { data: data } = await GET(`application-management-service/report/careProvidersMileStoneReport?${queryParams.toString()}`, { signal });
         setCareProviderCareerMilestoneValues(data);
@@ -2338,7 +2386,7 @@ const ReportTypeOverview = () => {
     return (
         <Fragment>
             <Navbar />
-            <div className={`${isExpanded ? style.bigCardGrid : style.smallCardGrid} ${style.margin20WithoutTop} ${style.marginTop10} `}>
+            <div className={`${isExpanded ? style.bigCardGrid : style.smallCardGrid} ${style.margin20WithoutTop} `}>
                 <div>
                     <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
                         <SampleReportLeftCard getDataToUseInReport={getDataToUseInReport} isLoading={isLoading} />
@@ -2396,12 +2444,12 @@ const ReportTypeOverview = () => {
                                                     </div> */}
                                                         <div>
                                                             <div className={`${style.reportRunByParamStyle} ${style.marginTop5} `}>Departments</div>
-                                                            <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.departmentName?.name).join(', ') || 'All'}</div>
+                                                            <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.departmentName?.name).join(', ') || 'All Departments'}</div>
                                                         </div>
-                                                        <div>
+                                                        {/* <div>
                                                             <div className={`${style.reportRunByParamStyle} ${style.marginTop5} `}>DIVISION / SPECIALITY </div>
                                                             <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedContractsToSend?.map(data => data?.contractName?.contractName).join(', ') || 'All'}</div>
-                                                        </div>
+                                                        </div> */}
                                                         <div>
                                                             <div className={`${style.reportRunByParamStyle} ${style.marginTop5} `}>STAFF TYPE </div>
                                                             <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedStaffTypeToSend?.map(data => data?.applicantType).join(', ') || 'All Staff Type'}</div>
@@ -2417,7 +2465,7 @@ const ReportTypeOverview = () => {
                                                         {reportType === "submittedApplicationsReviewSummary" && (
                                                             <div>
                                                                 <div className={`${style.reportRunByParamStyle} ${style.marginTop5} `}>APPLICATION TYPE</div>
-                                                                <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedApplicationType || 'All Application Type'}</div>
+                                                                <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{availableApplicationTypes[dataToUseInReport?.selectedApplicationType] || 'All Application Type'}</div>
                                                             </div>
                                                         )}
                                                         {reportType === "declinedOrNotRenewedStaffSummary" && (
