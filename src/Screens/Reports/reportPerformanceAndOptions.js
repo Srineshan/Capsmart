@@ -277,7 +277,28 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
             },
             category: availableCategories[reportType],
             type: typeList[reportType],
-            owner: userData
+            owner: userData,
+            filters: {
+                'startDate': dataToUseInReport?.from,
+                'endDate': dataToUseInReport?.to,
+                'applicantTypeId': dataToUseInReport?.selectedStaffType?.[0] !== '' ? dataToUseInReport?.selectedStaffType : [],
+                'departmentSpecialties': dataToUseInReport?.selectedDepartments?.[0] !== '' ? dataToUseInReport?.selectedDepartments : [],
+                'privilegingCategoryId': dataToUseInReport?.selectedPrivilegeCategory !== '' ? dataToUseInReport?.selectedPrivilegeCategory : '',
+                "positionType": dataToUseInReport?.selectedPosition !== "" ? [dataToUseInReport?.selectedPosition] : [],
+                "applicationCreationType": dataToUseInReport?.selectedApplicationType !== "" ? [dataToUseInReport?.selectedApplicationType] : [],
+                "applicationCurrentLevel": sessionStorage.getItem('workModeType'),
+                "staffReappointmentStatus": dataToUseInReport?.selectedReappointmentStatus ? [dataToUseInReport?.selectedReappointmentStatus] : []
+            },
+            filtersWithLabels: [
+                { name: 'Reporting Period used for this report', values: dataToUseInReport?.from },
+                { name: 'Reporting Period used for this report', values: dataToUseInReport?.to },
+                { name: 'Staff Type', values: dataToUseInReport?.selectedStaffType?.[0] !== '' ? dataToUseInReport?.selectedStaffType : [] },
+                { name: 'Departments', values: dataToUseInReport?.selectedDepartments?.[0] !== '' ? dataToUseInReport?.selectedDepartments : [] },
+                { name: 'Privilege Category', values: dataToUseInReport?.selectedPrivilegeCategory !== '' ? dataToUseInReport?.selectedPrivilegeCategory : '' },
+                { name: 'Position', values: dataToUseInReport?.selectedPosition !== "" ? [dataToUseInReport?.selectedPosition] : [] },
+                { name: 'Application Type', values: dataToUseInReport?.selectedApplicationType !== "" ? [dataToUseInReport?.selectedApplicationType] : [] },
+                { name: 'Reappointment Status', values: dataToUseInReport?.selectedReappointmentStatus ? [dataToUseInReport?.selectedReappointmentStatus] : [] },
+            ],
         }
         const formData = new FormData();
         if (pdfBlob !== null) {

@@ -65,6 +65,7 @@ const AntSwitch = styled(Switch)(({ theme }) => ({
 
 const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType, setIsLoading }) => {
     const currentUserData = currentUser();
+    const isMyReport = window.location.pathname.includes("/myReport");
     let myReportContent = JSON.parse(sessionStorage.getItem('myReportContent'))
     const myReportId = sessionStorage.getItem('myReportId')
     const [isPrivate, setIsPrivate] = useState(false);
@@ -190,6 +191,7 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType, setIsL
     }, [currentUserData?.id])
 
     useEffect(() => {
+        console.log('enteredInMyreport')
         if (myReportContent) {
             // setIsReadOnly(true)
             setReportName(myReportContent?.title)
@@ -202,7 +204,7 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType, setIsL
             setScheduledFor(myReportContent?.schedule?.scheduledFor)
             // setShowDeliveryDialog(myReportContent?.)
         }
-    }, [myReportContent])
+    }, [myReportContent?.title])
 
     console.log(reportName, reportDescription, myReportContent, deliveryTime, new Date(myReportContent?.schedule?.deliveryTime))
 
@@ -211,7 +213,7 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType, setIsL
         setUserDetails(user);
     }
 
-    const handleSave = async () => {
+    const handleSave = async (isNew) => {
         setIsReadOnly(true)
         let data = {
             "tenant": {
@@ -247,20 +249,79 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType, setIsL
                     "applicationCurrentLevel": sessionStorage.getItem('workModeType'),
                     "staffReappointmentStatus": dataToUseInReport?.selectedReappointmentStatus ? [dataToUseInReport?.selectedReappointmentStatus] : []
                 },
+                filtersWithLabels: [
+                    { name: 'Reporting Period used for this report', values: dataToUseInReport?.from },
+                    { name: 'Reporting Period used for this report', values: dataToUseInReport?.to },
+                    { name: 'Staff Type', values: dataToUseInReport?.selectedStaffType?.[0] !== '' ? dataToUseInReport?.selectedStaffType : [] },
+                    { name: 'Departments', values: dataToUseInReport?.selectedDepartments?.[0] !== '' ? dataToUseInReport?.selectedDepartments : [] },
+                    { name: 'Privilege Category', values: dataToUseInReport?.selectedPrivilegeCategory !== '' ? dataToUseInReport?.selectedPrivilegeCategory : '' },
+                    { name: 'Position', values: dataToUseInReport?.selectedPosition !== "" ? [dataToUseInReport?.selectedPosition] : [] },
+                    { name: 'Application Type', values: dataToUseInReport?.selectedApplicationType !== "" ? [dataToUseInReport?.selectedApplicationType] : [] },
+                    { name: 'Reappointment Status', values: dataToUseInReport?.selectedReappointmentStatus ? [dataToUseInReport?.selectedReappointmentStatus] : [] },
+                ],
                 "private": isPrivate
             }
         }
         console.log(data, 'dataInConsole')
         if (reportName !== '' && reportDescription !== '') {
             if (myReportContent) {
-                await PUT(`application-management-service/report/myReport/${myReportId}`, JSON.stringify(data))
-                    .then(response => {
-                        SuccessToaster('Report Updated Successfully');
-                    })
-                    .catch(error => {
-                        ErrorToaster('Unexpected Error');
-                    })
-                getSaveReportDialog(false);
+                let newData = {
+                    "tenant": {
+                        "id": TenantID
+                    },
+                    "report": {
+                        "category": availableCategories[reportType],
+                        "type": typeList[reportType],
+                        "title": reportName,
+                        "description": reportDescription,
+                        "schedule": {
+                            "isdeliveryScheduled": isDeliveryScheduled,
+                            "schedule": deliverySchedule !== "" ? deliverySchedule : 'ONETIME',
+                            "startDate": format(new Date(startDate), 'yyyy-MM-dd'),
+                            "deliveryTime": format(new Date(deliveryTime), 'HH:mm:ss'),
+                            "scheduledFor": scheduledFor
+                        },
+                        "owner": {
+                            "id": currentUserData?.id,
+                            "name": userDetails?.name
+                        },
+                        "lastUpdated": format(new Date(), 'yyyy-MM-dd'),
+                        "filters": {
+                            'startDate': dataToUseInReport?.from,
+                            'endDate': dataToUseInReport?.to,
+                            'applicantTypeId': dataToUseInReport?.selectedStaffType?.[0] !== '' ? dataToUseInReport?.selectedStaffType : [],
+                            // 'sites': dataToUseInReport?.selectedSites?.[0] !== '' ? dataToUseInReport?.selectedSites : [],
+                            'departmentSpecialties': dataToUseInReport?.selectedDepartments?.[0] !== '' ? dataToUseInReport?.selectedDepartments : [],
+                            'privilegingCategoryId': dataToUseInReport?.selectedPrivilegeCategory !== '' ? dataToUseInReport?.selectedPrivilegeCategory : '',
+                            "positionType": dataToUseInReport?.selectedPosition !== "" ? [dataToUseInReport?.selectedPosition] : [],
+                            "applicationCreationType": dataToUseInReport?.selectedApplicationType !== "" ? [dataToUseInReport?.selectedApplicationType] : [],
+                            // "intervals": decodeURIComponent(dataToUseInReport?.selectedTimesheetInterval).split(','),
+                            "applicationCurrentLevel": sessionStorage.getItem('workModeType'),
+                            "staffReappointmentStatus": dataToUseInReport?.selectedReappointmentStatus ? [dataToUseInReport?.selectedReappointmentStatus] : []
+                        },
+                        "private": isPrivate
+                    }
+                }
+
+                if (isNew) {
+                    await POST('application-management-service/report/myReport/', JSON.stringify(newData))
+                        .then(response => {
+                            SuccessToaster('Report Saved Successfully');
+                        })
+                        .catch(error => {
+                            ErrorToaster('Unexpected Error');
+                        })
+                    getSaveReportDialog(false);
+                } else {
+                    await PUT(`application-management-service/report/myReport/${myReportId}`, JSON.stringify(data))
+                        .then(response => {
+                            SuccessToaster('Report Updated Successfully');
+                        })
+                        .catch(error => {
+                            ErrorToaster('Unexpected Error');
+                        })
+                    getSaveReportDialog(false);
+                }
             }
             else {
                 await POST('application-management-service/report/myReport/', JSON.stringify(data))
@@ -411,11 +472,23 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType, setIsL
                         </div>
                     </div>
                     {!isReadOnly && (
-                        <div className={`${style.justifyCenter} ${style.marginTop20}`}>
-                            <button className={`${style.saveStyle} ${style.cursorPointer}`}
-                                onClick={() => { handleSave() }}
-                            // onClick={() => { scheduledFor !== "MYSELF" && setShowDeliveryDialog(true); handleSave() }}
-                            >{"SAVE"}</button>
+                        <div className={`${style.spaceBetween} ${style.marginTop20}`}>
+                            <div>
+                                <button className={`${style.outlinedButton} ${style.cursorPointer}`}
+                                    onClick={() => { getSaveReportDialog(false) }}
+                                // onClick={() => { scheduledFor !== "MYSELF" && setShowDeliveryDialog(true); handleSave() }}
+                                >{"CANCEL"}</button>
+                            </div>
+                            <div className={style.displayInRow}>
+                                <button className={`${style.saveStyle} ${style.cursorPointer}`}
+                                    onClick={() => { handleSave() }}
+                                // onClick={() => { scheduledFor !== "MYSELF" && setShowDeliveryDialog(true); handleSave() }}
+                                >{"REPLACE REPORT"}</button>
+                                <button className={`${style.saveStyle} ${style.cursorPointer} ${style.marginLeft20} ${(reportName === "" || reportDescription === "" || reportName.trim() === myReportContent?.title || '') ? style.disabledButton : ''}`}
+                                    onClick={(reportName === "" || reportDescription === "" || reportName.trim() === myReportContent?.title || '') ? () => { } : () => { handleSave(true) }}
+                                // onClick={() => { scheduledFor !== "MYSELF" && setShowDeliveryDialog(true); handleSave() }}
+                                >{isMyReport ? 'SAVE AS A NEW REPORT' : "SAVE"}</button>
+                            </div>
                         </div>
                     )}
                 </div>

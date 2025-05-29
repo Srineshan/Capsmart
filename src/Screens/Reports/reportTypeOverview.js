@@ -48,6 +48,7 @@ const ReportTypeOverview = () => {
     const { reportType } = useParams();
     const isMyReport = window.location.pathname.includes("/myReport");
     const myReportId = sessionStorage.getItem('myReportId')
+    const myReportContent = (sessionStorage.getItem('myReportContent') && sessionStorage.getItem('myReportContent') !== 'undefined') ? JSON.parse(sessionStorage.getItem('myReportContent')) : {};
     const entityName = sessionStorage.getItem('title');
     const handle = useFullScreenHandle();
     const componentRef = useRef(null);
@@ -2357,7 +2358,7 @@ const ReportTypeOverview = () => {
                                         <div className={style.justifyCenter}>
                                             <div className={style.marginTop20}>
                                                 <div className={`${style.entityNameBolderStyle} ${style.textAlignCenter} ${style.marginTop5} `}>
-                                                    {reportTitleList[reportType]}
+                                                    {isMyReport ? myReportContent?.title : reportTitleList[reportType]}
                                                 </div>
                                                 {(dataToUseInReport?.reportingTimePeriod !== "") && (
                                                     <div className={`${style.reportRunByTextStyle} ${style.textAlignCenter} ${style.marginTop5} `}>Reporting Period used for this report : {dataToUseInReport?.reportingTimePeriod} ({dataToUseInReport?.fromToDisplay} to {dataToUseInReport?.toToDisplay}) </div>
