@@ -7474,7 +7474,7 @@ const NewActiveApplication = ({
                                             ) : (
                                               <>
                                                 {!staffView && (
-                                                  <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                  <div className={`${style.greenButton}`}>
                                                     <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
                                                       Verified <LockOutlinedIcon sx={{
                                                         fontSize: 20,

@@ -30,8 +30,9 @@ const MenuProps = {
 };
 const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
     const [showSaveReport, setShowSaveReport] = useState(false);
-    const { reportType } = useParams();
+    const { reportType, myReportIdFromUrl } = useParams();
     const isMyReport = window.location.pathname.includes("/myReport");
+    const myReportId = sessionStorage.getItem('myReportId')
     const [activityType, setActivityType] = useState('Outpatient Clinic Service');
     const [activityPerformed, setActivityPerformed] = useState('Half Day Clinic Session');
     const [renewalreportingTimePeriod, setRenewalreportingTimePeriod] = useState(30);
@@ -77,7 +78,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
     };
     const monthOptions = generateMonthYearOptions();
     const [selectedMonth, setSelectedMonth] = useState(format(new Date(), "MMMM yyyy")); // Default: Current month & year
-    let reportFilter = JSON.parse(sessionStorage.getItem('reportFilter'));
+    let reportFilter = (sessionStorage.getItem('reportFilter') && sessionStorage.getItem('reportFilter') !== "undefined") ? JSON.parse(sessionStorage.getItem('reportFilter')) : {};
     let reportCategory = {
         activitiesOrServices: 'ACTIVITY',
         addOnActivities: 'ACTIVITY',
@@ -242,44 +243,46 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         if (reportFilter) {
             const encodedArray = reportFilter?.intervals?.map(encodeHashToPercent23);
             console.log(encodedArray, 'encodedArray', reportFilter?.intervals)
-            setFrom(new Date(reportFilter?.startDate));
-            setTo(new Date(reportFilter?.endDate));
+            if (reportFilter?.startDate)
+                setFrom(new Date(reportFilter?.startDate));
+            if (reportFilter?.endDate)
+                setTo(new Date(reportFilter?.endDate));
             // setSelectedSites(reportFilter?.sites);
-            setSelectedDepartments(reportFilter?.departmentSpecialties);
+            setSelectedDepartments(reportFilter?.departmentSpecialties ? reportFilter?.departmentSpecialties : []);
             setSelectedStaffType(reportFilter?.applicantTypeId ? reportFilter?.applicantTypeId : [])
             setSelectedPrivilegeCategory(reportFilter?.privilegingCategoryId ? reportFilter?.privilegingCategoryId : [])
             setSelectedPosition(reportFilter?.positionType ? reportFilter?.positionType?.[0] : '')
             setSelectedApplicationType(reportFilter?.applicationCreationType ? reportFilter?.applicationCreationType?.[0] : '')
         }
-    }, [currentUserDetails])
+    }, [currentUserDetails, myReportId])
 
     useEffect(() => {
         if (reportFilter) {
             let sitesToShow = [];
             let departmentsToShow = [];
-            let contractsToShow = [];
-            let serviceProvidersToShow = [];
+            let staffsToShow = [];
+            let privilegeCategoryToShow = [];
             departments?.map(data => {
-                if (reportFilter?.departments?.includes(data?.id)) {
+                if (reportFilter?.departmentSpecialties?.includes(data?.id)) {
                     departmentsToShow.push(data)
                 }
             })
             setSelectedDepartmentsToSend(departmentsToShow)
-            contracts?.map(data => {
-                if (reportFilter?.contracts?.includes(data?.id)) {
-                    contractsToShow.push(data)
+            staffType?.map(data => {
+                if (reportFilter?.applicantTypeId?.includes(data?.id)) {
+                    staffsToShow.push(data)
                 }
             })
-            setSelectedContractsToSend(contractsToShow)
-            contractedServiceProviders?.map(data => {
-                if (reportFilter?.users?.includes(data?.id)) {
-                    serviceProvidersToShow.push(data)
+            setSelectedStaffTypeToSend(staffsToShow)
+            privilegeCategory?.map(data => {
+                if (reportFilter?.privilegingCategoryId?.includes(data?.id)) {
+                    privilegeCategoryToShow.push(data)
                 }
             })
-            setSelectedContractedServiceProviderToSend(serviceProvidersToShow)
-            console.log(sitesToShow, departmentsToShow, contractsToShow, serviceProvidersToShow, sites, departments, contracts, contractedServiceProviders)
+            setSelectedPrivilegeCategoryToSend(privilegeCategoryToShow)
+            console.log(sitesToShow, departmentsToShow, privilegeCategory, staffType, sites, departments, contracts, contractedServiceProviders)
         }
-    }, [sites, departments, contracts, contractedServiceProviders])
+    }, [sites, departments, privilegeCategory, staffType])
 
     console.log(isMyReport)
 
@@ -404,6 +407,18 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         return () => clearTimeout(timer);
 
     }, [defaultOption, selectedSites, selectedDepartments, selectedContractedServiceProvider, selectedContracts, selectedStaffType, selectedPrivilegeCategory]);
+
+    useEffect(() => {
+        if (myReportIdFromUrl)
+            getMyReportDetails();
+    }, [myReportIdFromUrl])
+
+    const getMyReportDetails = async () => {
+        const { data: report } = await GET(`application-management-service/report/myReport/${myReportIdFromUrl}`);
+        sessionStorage.setItem('reportFilter', JSON.stringify(report?.report?.filters));
+        sessionStorage.setItem('myReportContent', JSON.stringify(report?.report));
+        sessionStorage.setItem('myReportId', myReportIdFromUrl);
+    }
 
     const encodeHashToPercent23 = (str) => {
         const parts = str.split('#');

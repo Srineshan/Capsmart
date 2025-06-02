@@ -1319,6 +1319,10 @@ const App = ({ props }) => {
                   element={<ProtectedRoute><ReportTypeOverview /></ProtectedRoute>}
                 />
                 <Route
+                  path="/myReport/:reportType/:myReportIdFromUrl"
+                  element={<ProtectedRoute><ReportTypeOverview /></ProtectedRoute>}
+                />
+                <Route
                   path="/applicationForm/:applicationId/:section/:step"
                   element={<ProtectedRoute><ApplicationForm /></ProtectedRoute>}
                 />
