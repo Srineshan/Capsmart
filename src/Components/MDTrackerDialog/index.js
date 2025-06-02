@@ -60,6 +60,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
   const [medicalDirectiveSummaryLevel2, setMedicalDirectiveSummaryLevel2] = useState([]);
   const [medicalDirectiveSummaryByApplicant, setMedicalDirectiveSummaryByApplicant] = useState([]);
   const [applicantSummary, setApplicantSummary] = useState([]);
+  const [departmentSummary, setDepartmentSummary] = useState([]);
   const [selectedApplicantType, setSelectedApplicantType] = useState('');
   const selectedDepartmentName = departmentList?.find(data => data?.id === selectedDepartment)?.departmentName?.name;
   const selectedApplicantTypeName = applicantType?.find(data => data?.id === selectedApplicantType)?.applicantType;
@@ -285,6 +286,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
     "No.",
     "Applicant Type",
     "Applicant Name",
+    "Department / Division",
     "Attestation Status",
     "Attestation Date",
     ""
@@ -303,7 +305,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
   const innerHeaderValues = currentTab === "ByApplicants" ? innerHeaderValuesForByApplicants : innerHeaderValuesForByMedicalDirective
   const colSortValuesByMedicalDirective = [false, false, true, true, false, true, true];
   const colSortValuesByApplicants = [false, false, true, true, true, false];
-  const colSortValuesByInnerMedicalDirective = [false, true, true, true, true, false];
+  const colSortValuesByInnerMedicalDirective = [false, true, true, true, true, true, false];
   const colSortValuesByInnerApplicants = [false, false, false, false, false, false];
 
   const handleInnerSelectData = (data) => {
@@ -579,6 +581,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
     const dot = []
     const dotTooltipValues = []
     const applicantName = [];
+    const dept = [];
     const type = [];
     const attestationDate = [];
     const actionItem = [];
@@ -588,6 +591,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
       dotTooltipValues.push(data?.attestationLog ? "Attested" : 'Not Attested')
       No.push(index + 1 + ".")
       applicantName.push(`${formatFirstNameLastName(data?.application?.applicant?.name?.firstName, data?.application?.applicant?.name?.lastName)}`);
+      dept.push(`${data?.application?.basicDetailReferences?.department?.name} ${data?.application?.basicDetailReferences?.specialty?.name ? `- ${data?.application?.basicDetailReferences?.specialty?.name}` : ''}`)
       type.push(data?.application?.basicDetailReferences?.applicantType?.serviceProviderType)
       attestationDate.push(data?.attestationLog?.esign?.signedDate ? format(parse(data?.attestationLog?.esign?.signedDate, 'dd/MM/yyyy', new Date()), 'MMM dd, yyyy') : '-');
       actionItem.push(
@@ -600,6 +604,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
       { type: "text", value: No },
       { type: "text", value: type },
       { type: "text", value: applicantName },
+      { type: "text", value: dept },
       { type: "dot", value: dot, tooltipValue: dotTooltipValues },
       { type: "text", value: attestationDate },
       { type: "icon", icon: actionItem, 'isShowHoverText': false },
@@ -756,18 +761,24 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                       <>
                         <div className={style.spaceBetween}>
                           <div className={`${style.displayInRow} ${style.marginLeft} ${style.marginTopAuto}`}>
-                          <Tooltip title={currentTab === "ByMedicalDirective" ? "" :  "View attestation status organized by Medical Directives" } arrow>
-                            <div className={`${style.tabGrid} ${style.cursorPointer} ${currentTab === "ByMedicalDirective" ? style.activeTab : ''}`} onClick={() => setCurrentTab('ByMedicalDirective')}> 
-                              <div>By Medical Directives</div>
-                              <div className={style.marginLeft5}>{medicalDirectiveSummary?.length}</div>
-                            </div>
+                            <Tooltip title={currentTab === "ByMedicalDirective" ? "" : "View attestation status organized by Medical Directives"} arrow>
+                              <div className={`${style.tabGrid} ${style.cursorPointer} ${currentTab === "ByMedicalDirective" ? style.activeTab : ''}`} onClick={() => setCurrentTab('ByMedicalDirective')}>
+                                <div>By Medical Directives</div>
+                                <div className={style.marginLeft5}>{medicalDirectiveSummary?.length}</div>
+                              </div>
                             </Tooltip>
-                            <Tooltip title={currentTab === "ByApplicants" ? "" :  "View attestation status organized by Applicants" } arrow>
-                            <div className={`${style.tabGrid} ${style.cursorPointer} ${currentTab === "ByApplicants" ? style.activeTab : ''}`} onClick={() => setCurrentTab('ByApplicants')}>
-                              <div>By Applicants</div>
-                              <div className={style.marginLeft5}>{applicantSummary?.length}</div>
-                            </div>
+                            <Tooltip title={currentTab === "ByApplicants" ? "" : "View attestation status organized by Applicants"} arrow>
+                              <div className={`${style.tabGrid} ${style.cursorPointer} ${currentTab === "ByApplicants" ? style.activeTab : ''}`} onClick={() => setCurrentTab('ByApplicants')}>
+                                <div>By Applicants</div>
+                                <div className={style.marginLeft5}>{applicantSummary?.length}</div>
+                              </div>
                             </Tooltip>
+                            {/* <Tooltip title={currentTab === "ByDepartments" ? "" : "View attestation status organized by Departments"} arrow>
+                              <div className={`${style.tabGrid} ${style.cursorPointer} ${currentTab === "ByDepartments" ? style.activeTab : ''}`} onClick={() => setCurrentTab('ByDepartments')}>
+                                <div>By Departments</div>
+                                <div className={style.marginLeft5}>{departmentSummary?.length}</div>
+                              </div>
+                            </Tooltip> */}
                           </div>
                           <div className={`${style.marginLeftAuto} ${style.noPrint}`}>
                             <CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} placeholder={currentTab === "ByApplicants" ? 'Search By Applicant Name' : 'Search By MD Name'} />
@@ -777,11 +788,11 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                           <TableTwo
                             tableHeaderValues={headerValues}
                             tableDataValues={tableValues}
-                            tableData={currentTab === "ByApplicants" ? applicantSummary : medicalDirectiveSummary}
-                            gridStyle={currentTab === "ByApplicants" ? style.byApplicantGrid : style.byMedicalDirectiveGrid}
-                            actions={currentTab === "ByApplicants" ? actionsDataByApplicant : actionsData}
+                            tableData={currentTab === "ByApplicants" ? applicantSummary : currentTab === 'ByMedicalDirective' ? medicalDirectiveSummary : medicalDirectiveSummary}
+                            gridStyle={currentTab === "ByApplicants" ? style.byApplicantGrid : currentTab === 'ByMedicalDirective' ? style.byMedicalDirectiveGrid : style.byMedicalDirectiveGrid}
+                            actions={currentTab === "ByApplicants" ? actionsDataByApplicant : currentTab === 'ByMedicalDirective' ? actionsData : actionsData}
                             scrollStyle={style.contractScrollStyle}
-                            tableSortValues={currentTab === "ByApplicants" ? colSortValuesByApplicants : colSortValuesByMedicalDirective}
+                            tableSortValues={currentTab === "ByApplicants" ? colSortValuesByApplicants : currentTab === 'ByMedicalDirective' ? colSortValuesByMedicalDirective : colSortValuesByMedicalDirective}
                             heading={"There are no record to display"}
                             getHandleSort={getHandleSort}
                             sortValue={{ sortBy: sortValue, sortByField: sortField }}

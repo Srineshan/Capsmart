@@ -234,10 +234,10 @@ const ReportTypeOverview = () => {
         getUsersData();
     }, [])
 
-    useEffect(() => {
-        if (myReportIdFromUrl)
-            getMyReportRecords()
-    }, [myReportIdFromUrl])
+    // useEffect(() => {
+    //     if (myReportIdFromUrl)
+    //         getMyReportRecords()
+    // }, [myReportIdFromUrl])
 
     useEffect(() => {
         if (dataToUseInReport?.initialValueSet && ((dataToUseInReport?.selectedDepartments?.length !== 1 ? !dataToUseInReport?.selectedDepartments?.includes('') : true) && (dataToUseInReport?.selectedStaffType?.length !== 1 ? !dataToUseInReport?.selectedStaffType?.includes('') : true) && (dataToUseInReport?.selectedPrivilegeCategory?.length !== 1 ? !dataToUseInReport?.selectedPrivilegeCategory?.includes('') : true))) {
@@ -253,13 +253,13 @@ const ReportTypeOverview = () => {
         setApexStackedBarChartDisplay(<ApexStackedBarChart stackedSeries={stackedSeries} stackedCategories={stackedCategories} />);
     }, [stackedCategories, stackedSeries])
 
-    const getMyReportRecords = async () => {
-        const { data: myReport } = await GET(`application-management-service/report/myReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
-        sessionStorage.setItem('reportFilter', JSON.stringify(myReport?.filter(data => data?.id === myReportIdFromUrl)?.[0]?.report?.filters));
-        sessionStorage.setItem('myReportContent', JSON.stringify(myReport?.filter(data => data?.id === myReportIdFromUrl)?.[0]?.report));
-        sessionStorage.setItem('myReportId', myReportIdFromUrl);
-        console.log(myReportIdFromUrl, myReport?.filter(data => data?.id === myReportIdFromUrl)?.[0])
-    }
+    // const getMyReportRecords = async () => {
+    //     const { data: myReport } = await GET(`application-management-service/report/myReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
+    //     sessionStorage.setItem('reportFilter', JSON.stringify(myReport?.filter(data => data?.id === myReportIdFromUrl)?.[0]?.report?.filters));
+    //     sessionStorage.setItem('myReportContent', JSON.stringify(myReport?.filter(data => data?.id === myReportIdFromUrl)?.[0]?.report));
+    //     sessionStorage.setItem('myReportId', myReportIdFromUrl);
+    //     console.log(myReportIdFromUrl, myReport?.filter(data => data?.id === myReportIdFromUrl)?.[0])
+    // }
 
     const getUpdatedValuesWithParams = (signal) => {
         switch (reportType) {

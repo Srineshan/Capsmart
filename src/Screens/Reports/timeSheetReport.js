@@ -242,7 +242,7 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
     const handleMyReportShare = async () => {
         setShowShareDialog(false)
         try {
-            const response = await POST(`application-management-service/report/myReport/share?userIds=${selectedUsers?.map(data => data?.id)}&applicationMyReportIds=${[selectedMyReport?.id]}`);
+            const response = await POST(`application-management-service/report/myReport/share?userIds=${selectedUsers?.map(data => data?.id)}&applicationMyReportIds=${[selectedMyReport?.id]}&url=${`/myReport/${routeList[selectedMyReport?.report?.type]}`}`);
             console.log(response?.data);
             SuccessToaster2('Report Definition Shared Successfully!')
         } catch (error) {
@@ -313,12 +313,11 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         requiredValue: "boolean",
         onClick: onClickMyReport,
     },
-        // {
-        //     data: "Share Report Definition",
-        //     requiredValue: "boolean",
-        //     onClick: onClickMyReportShare,
-        // }
-    ]
+    {
+        data: "Share Report Definition",
+        requiredValue: "boolean",
+        onClick: onClickMyReportShare,
+    }]
     let actions = selectedTab === "MYREPORTS"
         ? myReportsActions
         : selectedTab === "REPORTINGTEMPLATES"

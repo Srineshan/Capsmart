@@ -368,7 +368,7 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
 
     return (
         <div>
-            <div className={`${style.spaceBetween} ${style.alignCenter} ${style.IconHeaderBackgroundStyle}`}>
+            <div className={`${style.spaceBetween} ${style.alignCenter} ${style.IconHeaderBackgroundStyle} ${style.marginTop20}`}>
                 <div className={`${style.displayInRow} ${style.cardPadding} ${style.alignCenter}`}>
                     <div className={style.reportTypeTextNotificationStyle}>
                         {reportTitleList[reportType]}
