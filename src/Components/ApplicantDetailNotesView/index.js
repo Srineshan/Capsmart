@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { GET, POST, PUT } from "../../Screens/dataSaver";
+import { format } from 'date-fns';
 import { Dialog } from "@blueprintjs/core";
 import CrossPink from "../../images/crossPink.png";
 import style from "./index.module.scss";
 import { Tooltip } from "@mui/material";
 import DescriptionIcon from '@mui/icons-material/Description';
 
-const ApplicantNotesViewDialog = ({ getIsOpen }) => {
+const ApplicantNotesViewDialog = ({ getIsOpen,notesDetails }) => {
   const id = sessionStorage.getItem("applicationId");
   const applicationType = sessionStorage.getItem('applicationCreationType') ?? 'REAPPOINTMENT';
   const notesData = [
@@ -52,7 +53,7 @@ const ApplicantNotesViewDialog = ({ getIsOpen }) => {
         "The Board has approved the application based on comprehensive evaluations from all prior levels. Formal offer and onboarding process can proceed."
     }
   ];
-
+ console.log("notesDetails",notesDetails)
   return (
     <Dialog
       isOpen={getIsOpen}
@@ -76,20 +77,39 @@ const ApplicantNotesViewDialog = ({ getIsOpen }) => {
             />
             </Tooltip>
           </div>
-          {notesData.map((note, index) => (
-            <div key={index} className={style.marginTop10}>
-            <div className={style.notesTitle}>{note?.title}</div>
-            <div className={`${style.notesUsertext} ${style.marginTop10}`}>
-                ({note?.author}
-                {note?.role ? `, ${note?.role}` : ""} on dd/mm/yyyy, {note?.date})
-            </div>
-            <div className={`${style.notesDataTextStyle}  ${style.marginTop10}`}>{note?.content}</div>
-            {note?.attachment && (
-            <div className={`${style.referenceCardStyle} ${style.marginTop10}`}>
-              <div><DescriptionIcon className={style.docsIcon} /> <span>{note?.attachment}</span></div></div>
-          )}
-            </div>
-        ))}
+       
+          {notesDetails.map((note, index) => {
+            const createdDate = note?.createdDate
+              ? format(new Date(note.createdDate), "dd/MM/yyyy, HH:mm")
+              : "";
+
+            return (
+              <div key={index} className={style.marginTop10}>
+                <div className={style.notesTitle}>{note?.title}</div>
+
+                <div className={`${style.notesUsertext} ${style.marginTop10}`}>
+                  ({note?.user?.name?.firstName || "Unknown"}
+                  {note?.user?.title?.title ? `, ${note.user.title.title}` : ""} on {createdDate})
+                </div>
+
+                <div
+                  className={`${style.notesDataTextStyle} ${style.marginTop10}`}
+                  dangerouslySetInnerHTML={{ __html: note?.notes?.notes || "" }}
+                />
+
+                {note?.files && note.files.length > 0 && (
+                  <div className={`${style.referenceCardStyle} ${style.marginTop10}`}>
+                    {note.files.map((file, fileIndex) => (
+                      <div key={fileIndex}>
+                        <DescriptionIcon className={style.docsIcon} />
+                        <span>{file?.name || "Attachment"}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
     </Dialog>

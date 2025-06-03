@@ -67,6 +67,16 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
   let userDetails = cookie.get('user');
   const users = jwt(userDetails);
   const [form, setForm] = useState();
+  const [documentDetails, setDocumentDetails] = useState();
+  const [currentDocumentCount, setCurrentDocumentCount] = useState();
+  const [renewedDocumentRequired, setRenewedDocumentRequired] = useState();
+  const [expireDocumentCount, setExpireDocumentCount] = useState();
+  const [applicationsDetails, setApplicationsDetails] = useState();
+  const [notesDetails, setNotesDetails] = useState(null);
+  const [applicationsMedicalDirectives, setApplicationsMedicalDirectives] = useState();
+  const [attestedMDCount, setAttestedMDCount] = useState();
+  const [reviewMDCount, setReviewMDCount] = useState();
+  const [pastDueMDCount, setPastDueMDCount] = useState();
   const applicationId = sessionStorage.getItem("applicationId");
   const applicationType = sessionStorage.getItem('applicationCreationType') ?? 'REAPPOINTMENT';
   const [isLoadingImage, setIsLoadingImage] = useState(false);
@@ -84,7 +94,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
   const [showViewAndVerifyScreen, setShowViewAndVerifyScreen] = useState(false);
   const documentHeaderValues = ["", "Document Type", "Document Name", "Requirement", "Expiration Date", "Last Updated", "Action"];
   const documentColSortValues = [false, false, false, false, false, false, , false];
-  const appointmentHeaderValues = ["Appointment Cycle", <img src={CAPManagerSmallLogo} alt="img" className={style.LogoIcon} />, "Privilege Category", "Approved Privileges", "Notes", "Doc", "Approval Date", "Action"];
+  const appointmentHeaderValues = ["Appointment Cycle", <img src={CAPManagerSmallLogo} alt="img" className={style.LogoIcon} />, "Privilege Category", "Approved Privileges", "Notes", "Docs", "Approval Date", "Action"];
   const appointmentColSortValues = [false, false, false, false, false, , false, false, false];
   const MDHeaderValues = ["", "Title", "", "MD ID", "Attestation Due Date", "Last Updated", "Action"];
   const MDColSortValues = [false, false, false, false, false, , false];
@@ -230,18 +240,25 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
     },
   ];
 
-  const getNotesDetailsDialogOpen = (value) => {
-    setShowNotesDetailsDialog(value)
-  };
+  // const getNotesDetailsDialogOpen = (value) => {
+  //   setShowNotesDetailsDialog(value)
+  // };
+
+  const getNotesDetailsDialogOpen = (value, details = null) => {
+  setShowNotesDetailsDialog(value);
+  if (value && details) {
+    setNotesDetails(details);
+  }
+};
 
   // const getActiveApplicationView = () => {
   //   setShowViewAndVerifyScreen(true)
   //   sessionStorage.setItem("applicationId", form?.onGoingApplication?.id);
   // };
 
-  const onclickViewAndVerifyFunction = () => {
-    getActiveApplicationView(true)
-    sessionStorage.setItem("applicationId", form?.onGoingApplication?.id);
+  const onclickViewAndVerifyFunction = (id) => () => {
+  getActiveApplicationView(true);
+  sessionStorage.setItem("applicationId", id);
   };
 
   let documentType = [];
@@ -254,6 +271,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
   let dot = [];
   let privilegeCategory = [];
   let approvedPrivileges = [];
+  let PrivilegesHoverText = [];
   let notes = [];
   let notesIcon = [];
   let docs = [];
@@ -275,24 +293,26 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
     lastUpdateDate = [];
     status = [];
 
-    tableData?.map((data, index) => {
+    documentDetails?.map((data, index) => {
+      const expiryDateFormat = data?.expiryDate
+        ? new Date(data?.expiryDate).toISOString().split('T')[0] + 'T00:00'
+        : null;
       status.push(
-        data?.status === "IN_PROGRESS" ? (
+        data?.hasExpiry === false ? (
           <WarningOutlinedIcon style={{ fontSize: 20, color: "#FFD700" }} />
-        ) : data?.status === "COMPLETED" ? (
-          <WarningOutlinedIcon style={{ fontSize: 20, color: "#228B22" }} />
-        ) : data?.status === "REJECTED" ? (
+        ) : data?.hasExpiry === true ? (
           <WarningOutlinedIcon style={{ fontSize: 20, color: "#ED2939" }} />
         ) : null
       );
-      documentType.push(`${data?.DocumentType}` || "Dentist");
-      documentName.push(data?.DocumentName || "dd")
-      requirementType.push(data?.Requirement)
+      documentType.push(`${data?.documentType}` || "Dentist");
+      documentName.push(data?.shortName || "dd")
+      requirementType.push(data?.required)
       expireDate.push(
-        format(new Date(data?.ExpirationDate), "MMM dd, yyyy")
+       expiryDateFormat ? format(new Date(expiryDateFormat), "MMM dd, yyyy") : "-"
       );
       lastUpdateDate.push(
-        format(new Date(data?.LastUpdated), "MMM dd, yyyy")
+        // format(new Date(data?.LastUpdated), "MMM dd, yyyy") || '-'
+        "-"
       );
       action.push(true);
     });
@@ -320,51 +340,83 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
     approvalDate = [];
     action = [];
     textTooltipValues = [];
+    PrivilegesHoverText = [];
 
-    tableDataAppointment?.map((data, index) => {
+    applicationsDetails?.map((data, index) => {
+
+      const startDateFormat = data?.cyclePeriod?.from
+        ? new Date(data?.cyclePeriod?.from).toISOString().split('T')[0] + 'T00:00'
+        : null;
+      const endDateFormat = data?.cyclePeriod?.to
+        ? new Date(data?.cyclePeriod?.to).toISOString().split('T')[0] + 'T00:00'
+        : null;
+         const approvalDateFormat = data?.approvedDate
+        ? new Date(data?.approvedDate).toISOString().split('T')[0] + 'T00:00'
+        : null;
+        const privilegeData = [
+        ...(data?.privileges?.obligatedPrivileges || []),
+        ...(data?.privileges?.additionalPrivileges || [])
+      ];
       appointmentCycle.push(
         <span
           key={index}
-          onClick={onclickViewAndVerifyFunction}
+          onClick={onclickViewAndVerifyFunction(data?.id)}
           style={{ cursor: "pointer", color: "#2C2C2C" }}
         >
-          {data?.appointmentCycle || "—"}
+           {startDateFormat && endDateFormat
+            ? `${format(new Date(startDateFormat), "MMM dd, yyyy")} - ${format(new Date(endDateFormat), "MMM dd, yyyy")}`
+          : data?.appointmentCycle || "-"}
         </span>
       );
       textTooltipValues.push("Click to View Applicant Details")
-      // appointmentCycle.push(`${data?.appointmentCycle}` || "Dentist");
-      const color = data?.capManagerStatus === "IN_PROGRESS" ? "yellow"
-        : data?.capManagerStatus === "COMPLETED" ? "green"
-          : data?.capManagerStatus === "REJECTED" ? "red"
+      const color = data?.status === "IN_PROGRESS" ? "yellow"
+        : data?.status === "COMPLETED" ? "green"
+          : data?.status === "REJECTED" ? "red"
             : "grey";
       dot.push(color);
-      dotTooltipValues.push(color === "yellow" ? "Application completed on CAPManager" : color === "green" ? "Application was manually entered by MSO" : color === "red" ? "Application not in CAPManager" : "")
-      privilegeCategory.push(data?.privilegeCategory)
-      approvedPrivileges.push(data?.approvedPrivileges)
-      //   notes.push(data?.notes)
+      dotTooltipValues.push(color === "yellow" ? "Application completed on CAPManager" : color === "green" ? "Application was manually entered by MSO" : color === "red" ? "Application not in CAPManager" : color === "grey" ? "Application Created" : "")
+      privilegeCategory.push(data?.basicDetailReferences?.credentialingAndPrivilegingCategory?.name)
+      approvedPrivileges.push(privilegeData?.length);
+      const PrivilegesHoverTitle = privilegeData?.length > 0
+        ? privilegeData.map((priv, index) => {
+            return (
+              <div key={index} style={{ width: '100%' }}>
+                <span>{priv?.privilegeSetTitle}</span>
+              </div>
+            );
+          })
+        : ['-'];    
+          
+      PrivilegesHoverText.push(PrivilegesHoverTitle)  
       notes.push(
+      data?.notesDetails?.length > 0 ? (
         <Tooltip title="Click to View Notes" arrow>
           <span
             key={index}
-            onClick={getNotesDetailsDialogOpen}
+            onClick={() => getNotesDetailsDialogOpen(true, data?.notesDetails)}
             style={{ cursor: "pointer", color: "#2C2C2C" }}
           >
-            {data?.notes || "—"}
+            {data?.notesDetails?.length}
           </span>
         </Tooltip>
-      );
-      //   notesIcon.push(<NoteAltOutlinedIcon style={{ fontSize: 20, color: `#2C2C2C` }} />)
-      notesIcon.push(
+      ) : (
+        <span key={index} style={{ color: "#2C2C2C" }}>-</span>
+      )
+    );
+
+    notesIcon.push(
+      data?.notesDetails?.length > 0 ? (
         <Tooltip title="Click to View Notes" arrow>
           <NoteAltOutlinedIcon
             style={{ fontSize: 20, color: "#2C2C2C", cursor: "pointer" }}
-            onClick={getNotesDetailsDialogOpen}
+            onClick={() => getNotesDetailsDialogOpen(true, data?.notesDetails)}
           />
         </Tooltip>
-      );
-      docs.push(data?.docs)
+      ) : null
+    );
+      docs.push(data?.documents?.documentDetails?.length)
       approvalDate.push(
-        format(new Date(data?.approvalDate), "MMM dd, yyyy")
+        approvalDateFormat ? format(new Date(approvalDateFormat), "MMM dd, yyyy") : "-"
       );
       action.push(true);
     });
@@ -373,7 +425,10 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
       { type: "text", value: appointmentCycle, tooltipValueText: textTooltipValues },
       { type: "dot", value: dot, tooltipValue: dotTooltipValues },
       { type: "text", value: privilegeCategory },
-      { type: "text", value: approvedPrivileges },
+      { type: "countWithHover",
+        value: approvedPrivileges,
+        hoverText: PrivilegesHoverText, 
+        isShowHoverText: true, },
       { type: "iconWithCount", value: notes, icon: notesIcon, },
       { type: "text", value: docs },
       { type: "text", value: approvalDate },
@@ -390,20 +445,27 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
     lastUpdateDate = [];
     action = [];
 
-    MDtableData?.map((data, index) => {
+    applicationsMedicalDirectives?.map((data, index) => {
+      const directive = data?.medicalDirective;
+      const attestationDueDateFormat = data?.attestationDueDate
+        ? new Date(data?.attestationDueDate).toISOString().split('T')[0] + 'T00:00'
+        : null;
+      const lastModifiedDate = directive?.lastModifiedDate 
+        ? new Date(directive.lastModifiedDate)
+        : null;
       const color = data?.status === "IN_PROGRESS" ? "yellow"
         : data?.status === "COMPLETED" ? "green"
           : data?.status === "REJECTED" ? "red"
             : "grey";
       dot.push(color);
-      title.push(data?.mdtitle)
-      mdStatus.push(data?.currentStatus)
-      mdID.push(data?.mdID)
+      title.push(directive?.title)
+      mdStatus.push(directive?.creationType)
+      mdID.push(directive?.mdID)
       attestationDate.push(
-        format(new Date(data?.AttestationDate), "MMM dd, yyyy")
+        attestationDueDateFormat ? format(new Date(attestationDueDateFormat), "MMM dd, yyyy") : "-"
       );
       lastUpdateDate.push(
-        format(new Date(data?.lastUpdateDate), "MMM dd, yyyy")
+        lastModifiedDate ? format(lastModifiedDate, "MMM dd, yyyy") : "-"
       );
       action.push(true);
     });
@@ -421,6 +483,9 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
 
   useEffect(() => {
     getPreApplication();
+    getPreApplicationDocuments();
+    getPreApplicationDetails();
+    getPreApplicationMedicalDirectives();
   }, [applicationId]);
 
 
@@ -450,6 +515,39 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
       setIsLoadingImage(false)
     } catch (error) {
       console.error('Error fetching application:', error);
+    }
+  };
+
+  const getPreApplicationDocuments = async () => {
+    try {
+      const { data: basicDocuments } = await GET(`application-management-service/staff/${applicationId}/documents?noOfDays=20`);
+      setDocumentDetails(basicDocuments?.allDocuments || []);
+      setCurrentDocumentCount(basicDocuments?.allDocuments?.length || 0)
+      setRenewedDocumentRequired(basicDocuments?.documentsExpiringSoon || [])
+      setExpireDocumentCount(basicDocuments?.expiredDocuments?.length || 0)
+    } catch (error) {
+      console.error('Error fetching application Documents:', error);
+    }
+  };
+  
+    const getPreApplicationDetails = async () => {
+    try {
+      const { data: applicationDetails } = await GET(`application-management-service/staff/${applicationId}/applications`);
+      setApplicationsDetails(applicationDetails);
+    } catch (error) {
+      console.error('Error fetching application Documents:', error);
+    }
+  };
+
+    const getPreApplicationMedicalDirectives = async () => {
+    try {
+      const { data: applicationsMedicalDirectivesDetails } = await GET(`application-management-service/staff/${applicationId}/medicalDirectivesAttestationSummary`);
+      setApplicationsMedicalDirectives(applicationsMedicalDirectivesDetails?.pending);
+      setAttestedMDCount(applicationsMedicalDirectivesDetails?.completed?.length || 0)
+      setPastDueMDCount(applicationsMedicalDirectivesDetails?.pastDue?.length || 0)
+      setReviewMDCount(applicationsMedicalDirectivesDetails?.pending?.length || 0)
+    } catch (error) {
+      console.error('Error fetching application Documents:', error);
     }
   };
 
@@ -680,21 +778,21 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
                   <div className={`${style.grip3} ${style.marginTop20}`}>
                     <div className={`${style.documentCurrentBackGround} ${style.spaceBetweenCol}`}>
                       <div className={`${style.innerTextDocumentStyle}`}>Current Documents </div>
-                      <div className={`${style.countStyle}`}>5</div>
+                      <div className={`${style.countStyle}`}>{currentDocumentCount}</div>
                     </div>
                     <div className={`${style.documentCurrentBackGround} ${style.spaceBetweenCol}`}>
                       <div className={`${style.innerTextDocumentStyle}`}>To Be Renewed  </div>
                       <div className={`${style.spaceBetween} ${style.alignSelfEnd}`}>
-                        <div className={`${style.countStyleRed}`}>8</div>
+                        <div className={`${style.countStyleRed}`}>{renewedDocumentRequired?.documentsExpiringSoon?.length}</div>
                         <div>
-                          <div className={`${style.requiredTextStyle}`}>Required <span className={`${style.marginLeft10} ${style.countStyleYellow}`}>3</span></div>
-                          <div className={`${style.requiredTextStyle}`}>Recommended <span className={`${style.marginLeft10}  ${style.countStyleRed}`}>5</span></div>
+                          <div className={`${style.requiredTextStyle}`}>Required <span className={`${style.marginLeft10} ${style.countStyleYellow}`}>{renewedDocumentRequired?.requiredDocumentsCount}</span></div>
+                          <div className={`${style.requiredTextStyle}`}>Recommended <span className={`${style.marginLeft10}  ${style.countStyleRed}`}>{renewedDocumentRequired?.recommendedDocumentsCount}</span></div>
                         </div>
                       </div>
                     </div>
                     <div className={`${style.documentCurrentBackGround} ${style.spaceBetweenCol}`}>
                       <div className={`${style.innerTextDocumentStyle}`}>Expired </div>
-                      <div className={`${style.countStyleRed}`}>5</div>
+                      <div className={`${style.countStyleRed}`}>{expireDocumentCount}</div>
                     </div>
                   </div>
                   <div className={`${style.bigCardStyle}`}>
@@ -712,7 +810,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
                           <TableTwo
                             tableHeaderValues={tableHeaderValues}
                             tableDataValues={tableDataValues}
-                            tableData={tableData}
+                            tableData={documentDetails}
                             gridStyle={gridStyle}
                             actions={actions}
                             scrollStyle={style.contractScrollStyle}
@@ -777,7 +875,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
                           <TableTwo
                             tableHeaderValues={tableAppointmentHeaderValues}
                             tableDataValues={tableAppointmentDataValues}
-                            tableData={tableDataAppointment}
+                            tableData={applicationsDetails}
                             gridStyle={gridStyleAppointment}
                             actions={actionsAppointment}
                             scrollStyle={style.contractScrollStyle}
@@ -830,15 +928,15 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
                   <div className={`${style.grip3} ${style.marginTop20}`}>
                     <div className={`${style.documentCurrentBackGround} ${style.spaceBetweenCol}`}>
                       <div className={`${style.innerTextDocumentStyle}`}>Attested </div>
-                      <div className={`${style.countStyle}`}>45</div>
+                      <div className={`${style.countStyle}`}>{attestedMDCount}</div>
                     </div>
                     <div className={`${style.documentCurrentBackGround} ${style.spaceBetweenCol}`}>
                       <div className={`${style.innerTextDocumentStyle}`}>To Review & Attest </div>
-                      <div className={`${style.countStyleYellow}`}>5</div>
+                      <div className={`${style.countStyleYellow}`}>{reviewMDCount}</div>
                     </div>
                     <div className={`${style.documentCurrentBackGround} ${style.spaceBetweenCol}`}>
                       <div className={`${style.innerTextDocumentStyle}`}>Attestations Past Due </div>
-                      <div className={`${style.countStyleRed}`}>3</div>
+                      <div className={`${style.countStyleRed}`}>{pastDueMDCount}</div>
                     </div>
                   </div>
                   <div className={`${style.bigCardStyle}`}>
@@ -856,7 +954,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
                           <TableTwo
                             tableHeaderValues={tableMDHeaderValues}
                             tableDataValues={tableMDDataValues}
-                            tableData={MDtableData}
+                            tableData={applicationsMedicalDirectives}
                             gridStyle={gridStyleMD}
                             actions={actionsMD}
                             scrollStyle={style.contractScrollStyle}
@@ -929,6 +1027,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
         showNotesDetailsDialog && (
           <ApplicantDetailNotesView
             getIsOpen={getNotesDetailsDialogOpen}
+            notesDetails={notesDetails}
           // onClose={() => { setShowCCDateDialog(false); setCheckedIds([]); }}
           />
         )
