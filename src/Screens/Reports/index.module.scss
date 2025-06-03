@@ -1917,29 +1917,68 @@
     }
 }
 
-// @media print {
-//     @page {
-//         margin-top: 20px;
-//     }
+@media print {
+    @page {
+        margin: 20px 15px 40px 15px;
+    }
 
-//     .printContainer {
-//         page-break-inside: avoid;
-//     }
+    .printContainer>* {
+        page-break-before: auto;
+        page-break-inside: avoid;
+        // display: flex;
+        // flex-direction: column;
+        // height: 100vh;
+    }
 
-//     .printContainer>* {
-//         page-break-before: auto;
-//         page-break-inside: avoid;
-//     }
+    .reportBackgroundCard {
+        padding: 20px !important;
+    }
 
-//     .reportBackgroundCard {
-//         padding: 20px !important;
-//     }
+    .tableRow {
+        page-break-inside: avoid;
+    }
 
-//     .tableRow {
-//         page-break-inside: avoid;
-//     }
+    .reportSection {
+        page-break-before: always;
+    }
 
-//     .reportSection {
-//         page-break-before: always;
-//     }
-// }
+    table {
+        page-break-inside: auto;
+        width: 100%;
+    }
+
+    thead {
+        display: table-header-group;
+    }
+
+    tfoot {
+        display: table-footer-group;
+    }
+
+    tr {
+        page-break-inside: avoid;
+    }
+
+    body {
+        margin: 0;
+    }
+
+    .table-wrapper {
+        flex: 1 0 auto;
+    }
+
+    tfoot {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+    }
+
+    .printFooter {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        text-align: center;
+        font-size: 12px;
+        margin-top: auto;
+    }
+}
