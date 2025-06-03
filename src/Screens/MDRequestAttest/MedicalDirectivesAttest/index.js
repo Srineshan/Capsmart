@@ -15,7 +15,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import PdfViewer from '../../ReappointmentApplicationForm/pdfViewer';
 
 const MDAttest = () => {
-    const { applicationId, section, step, medicalDirectivesId } = useParams();
+    const { entityId, medicalDirectivesId } = useParams();
     const [medicalDirectives, setMedicalDirectives] = useState()
     const [medicalDirectivesAttestationLog, setMedicalDirectivesAttestationLog] = useState()
     const iframeRef = useRef(null);
@@ -25,7 +25,6 @@ const MDAttest = () => {
     const publicKey = "-----BEGIN PUBLIC KEY-----MIGeMA0GCSqGSIb3DQEBAQUAA4GMADCBiAKBgHA5SDu30/8uQAqqkQE0NuY4ePBptMGufG6AWnC/88YVLXi4thh7M8VU6kElVJkfXL5DwlfVnwPb08+PK1EcaOWWtp2gdQitkohjZLB9zVE+0OtRrzSc33wItf7Iwisi5dHPggHvfOp5fr+QYWFMa/kKYl3SgNo8fryeLbKKalmdAgMBAAE=-----END PUBLIC KEY-----";
     const [dateTime, setDateTime] = useState(new Date().toISOString());
     const [basicForm, setBasicForm] = useState({})
-    const [encryptedText, setEncryptedText] = useState(CryptoJS.AES.encrypt(`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} ` + dateTime, publicKey).toString());
     // const [decryptedText, setDecryptedText] = useState(CryptoJS.AES.decrypt(encryptedText, publicKey).toString(CryptoJS.enc.Utf8));
     const canadaData = sessionStorage.getItem('canadaData') !== 'undefined' ? JSON.parse(sessionStorage.getItem('canadaData')) : {};
     const [currentDate, setCurrentDate] = useState(format(new Date(), canadaData?.dateFormat || 'dd/MM/yyyy'));
@@ -37,17 +36,15 @@ const MDAttest = () => {
     let cookie = new Cookie();
     let userDetails = cookie.get('user');
     const users = jwt(userDetails);
+    const [encryptedText, setEncryptedText] = useState(CryptoJS.AES.encrypt(users?.userName + dateTime, publicKey).toString());
+
     useEffect(() => {
         getMedicalDirectives()
     }, [medicalDirectivesId])
 
     useEffect(() => {
-        getApplication()
-    }, [applicationId])
-
-    useEffect(() => {
         getAttestationLog()
-    }, [applicationId])
+    }, [])
 
     // useEffect(() => {
     //     setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === atob(step)))
@@ -117,17 +114,17 @@ const MDAttest = () => {
     }
 
     const getAttestationLog = async () => {
-        if (medicalDirectivesId !== undefined && applicationId !== undefined) {
+        if (medicalDirectivesId !== undefined) {
             const { data: medicalDirectivesAttestationLog } = await GET(
-                `medical-directive-service/attestationLog?applicationId=${applicationId}&medicalDirectiveId=${medicalDirectivesId}`
+                `medical-directive-service/attestationLog?medicalDirectiveId=${medicalDirectivesId}&userId=${users?.id}`
             );
             setMedicalDirectivesAttestationLog(medicalDirectivesAttestationLog)
             console.log(medicalDirectivesAttestationLog, 'medicalDirectivesAttestationLog')
-            if ((medicalDirectivesAttestationLog?.[0]?.esign?.esign !== '' && medicalDirectivesAttestationLog?.[0]?.esign?.esign !== undefined)) {
-                setMedicalDirectivesAttestation((medicalDirectivesAttestationLog?.[0]?.esign?.esign !== '' && medicalDirectivesAttestationLog?.[0]?.esign?.esign !== undefined) ? true : false);
-                setEncryptedText(medicalDirectivesAttestationLog?.[0]?.esign?.esign)
-                setCurrentDate(medicalDirectivesAttestationLog?.[0]?.esign?.signedDate);
-                setIsSigned((medicalDirectivesAttestationLog?.[0]?.esign?.esign !== '' && medicalDirectivesAttestationLog?.[0]?.esign?.esign !== undefined) ? true : false);
+            if ((medicalDirectivesAttestationLog?.[medicalDirectivesAttestationLog?.length - 1]?.esign?.esign !== '' && medicalDirectivesAttestationLog?.[medicalDirectivesAttestationLog?.length - 1]?.esign?.esign !== undefined)) {
+                setMedicalDirectivesAttestation((medicalDirectivesAttestationLog?.[medicalDirectivesAttestationLog?.length - 1]?.esign?.esign !== '' && medicalDirectivesAttestationLog?.[medicalDirectivesAttestationLog?.length - 1]?.esign?.esign !== undefined) ? true : false);
+                setEncryptedText(medicalDirectivesAttestationLog?.[medicalDirectivesAttestationLog?.length - 1]?.esign?.esign)
+                setCurrentDate(medicalDirectivesAttestationLog?.[medicalDirectivesAttestationLog?.length - 1]?.esign?.signedDate);
+                setIsSigned((medicalDirectivesAttestationLog?.[medicalDirectivesAttestationLog?.length - 1]?.esign?.esign !== '' && medicalDirectivesAttestationLog?.[medicalDirectivesAttestationLog?.length - 1]?.esign?.esign !== undefined) ? true : false);
             }
         }
     }
@@ -139,18 +136,15 @@ const MDAttest = () => {
                 name: userData?.name,
                 email: userData?.email
             },
-            application: {
-                id: applicationId
-            },
             esign: {
                 esign: isSigned ? encryptedText : '',
-                name: isSigned ? `${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} ` : '',
-                signedDate: isSigned ? currentDate : ''
+                name: isSigned ? users?.userName : '',
+                signedDate: isSigned ? format(new Date(), canadaData?.dateFormat || 'dd/MM/yyyy') : ''
             }
         }
         await POST(`medical-directive-service/medicalDirectives/${medicalDirectivesId}/attest`, temp)
             .then(response => {
-                navigate(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex]?.formCategory}/${btoa(basicForm?.forms[formIndex]?.schemaCategory)}`)
+                navigate(`/tenant/${entityId}/medicalDirectives`);
                 getAttestationLog();
                 console.log(response, response?.response?.data)
             })
@@ -159,15 +153,8 @@ const MDAttest = () => {
             })
     }
 
-    const getApplication = async () => {
-        const { data: basicForm } = await GET(
-            `application-management-service/application/${applicationId}`
-        );
-        setBasicForm(basicForm)
-    }
-
     const handleClose = () => {
-        navigate(`/reappointmentApplicationForm/${applicationId}/${section}/${step}`);
+        navigate(`/tenant/${entityId}/medicalDirectives`);
     }
     return (
         <div className={style.screenBackground}>
@@ -220,6 +207,7 @@ const MDAttest = () => {
                                                     showData={isSigned}
                                                     showDatais={true}
                                                     removePadding={true}
+                                                    alternateSignature={users?.userName}
                                                 />
                                             </div>
                                             <div className={style.verticalAlignCenter}>
@@ -250,6 +238,7 @@ const MDAttest = () => {
                                                 showData={isSigned}
                                                 showDatais={true}
                                                 removePadding={true}
+                                                alternateSignature={users?.userName}
                                             />
                                         </div>
                                         <div className={style.verticalAlignCenter}>
