@@ -6,7 +6,7 @@ import style from './index.module.scss';
 
 const ReportFooter = () => {
     return (
-        <div>
+        <div className={style.printFooter}>
             <div className={`${style.marginTop40}`}></div>
             <CommonDivider />
             <div className={style.spaceBetween}>

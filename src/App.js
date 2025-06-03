@@ -309,6 +309,12 @@ const MedicalDirectivesAttestDisplay = React.lazy(() =>
   import("./Screens/MedicalDirectivesAttestDisplay")
 );
 
+const MDRequestAttest = React.lazy(() =>
+  import("./Screens/MDRequestAttest")
+);
+const MDAttest = React.lazy(() => import("./Screens/MDRequestAttest/MedicalDirectivesAttest"));
+
+
 const App = ({ props }) => {
   const [accessToken, setAccessToken] = useState(Auth());
   const { isAuthenticated, isSessionLoading } = useSession();
@@ -1337,6 +1343,14 @@ const App = ({ props }) => {
                 <Route
                   path="/medicalDirective/:applicationId/:medicalDirectivesId"
                   element={<ProtectedRoute><MedicalDirectivesAttestDisplay /></ProtectedRoute>}
+                />
+                <Route
+                  path="/tenant/:entityId/medicalDirectives"
+                  element={<ProtectedRoute><MDRequestAttest /></ProtectedRoute>}
+                />
+                <Route
+                  path="/medicalDirectiveAttest/:applicationId/:medicalDirectivesId"
+                  element={<ProtectedRoute><MDAttest /></ProtectedRoute>}
                 />
                 <Route
                   path="/locumApplicationForm/:applicationId/:section/:step"

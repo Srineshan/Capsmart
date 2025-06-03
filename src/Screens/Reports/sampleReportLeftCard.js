@@ -146,6 +146,14 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         }
     }, [])
 
+    useEffect(() => {
+        const controller = new AbortController(); // Create an AbortController instance
+        const signal = controller.signal;
+        getPrivilegeCategory(signal);
+        return () => controller.abort();
+        console.log(selectedStaffType, 'selectedStaffType')
+    }, [selectedStaffType])
+
     const setUserDetails = async () => {
         const { data: user } = await GET(`user-management-service/user/${userId}`);
         setCurrentUserDetails(user);
@@ -210,10 +218,15 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         setStaffType(applicant)
     }
 
-    const getPrivilegeCategory = async () => {
-        const { data: privilege } = await GET(
-            `entity-service/privilege`
-        );
+    const getPrivilegeCategory = async (signal) => {
+        let url = `entity-service/privilege`
+
+        if (selectedStaffType?.[0] !== '') {
+            url += `?applicantTypeId=${selectedStaffType?.[0] === '' ? [] : selectedStaffType}`
+        }
+
+        const { data: privilege } = await GET(url, { signal });
+        console.log(privilege, 'selectedStaffType')
         setPrivilegeCategory(privilege);
     }
 
