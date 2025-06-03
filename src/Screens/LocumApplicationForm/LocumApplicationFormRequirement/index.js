@@ -480,6 +480,10 @@ const LocumApplicationFormRequirement = () => {
         if (isPrivilegeSpecificationType) {
             setSelectedPrivilegeForDisplay((prevData) => {
                 const temp = [...prevData];
+            if (temp?.[index]) {
+                if (!temp[index]?.descriptiveContent) {
+                temp[index].descriptiveContent ??= {};
+                }
                 if ((temp?.[index]?.descriptiveContent?.esign === null ||
                     temp?.[index]?.descriptiveContent?.esign === undefined)
                 ) {
@@ -492,7 +496,7 @@ const LocumApplicationFormRequirement = () => {
                         signedDate: currentDate,
                     };
                 }
-
+            }
                 return temp;
             });
         } else {
