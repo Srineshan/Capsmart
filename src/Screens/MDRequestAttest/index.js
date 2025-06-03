@@ -49,7 +49,6 @@ const MDRequestAttest = ({ name }) => {
     const [formContent, setFormContent] = useState();
     const publicKey = "-----BEGIN PUBLIC KEY-----MIGeMA0GCSqGSIb3DQEBAQUAA4GMADCBiAKBgHA5SDu30/8uQAqqkQE0NuY4ePBptMGufG6AWnC/88YVLXi4thh7M8VU6kElVJkfXL5DwlfVnwPb08+PK1EcaOWWtp2gdQitkohjZLB9zVE+0OtRrzSc33wItf7Iwisi5dHPggHvfOp5fr+QYWFMa/kKYl3SgNo8fryeLbKKalmdAgMBAAE=-----END PUBLIC KEY-----";
     const [dateTime, setDateTime] = useState(new Date().toISOString());
-    const [encryptedText, setEncryptedText] = useState(CryptoJS.AES.encrypt(name + dateTime, publicKey).toString());
     // const [decryptedText, setDecryptedText] = useState(CryptoJS.AES.decrypt(encryptedText, publicKey).toString(CryptoJS.enc.Utf8));
     const [currentDate, setCurrentDate] = useState(format(new Date(), 'MMM dd, yyyy'));
     const [userData, setUserData] = useState();
@@ -62,6 +61,9 @@ const MDRequestAttest = ({ name }) => {
     let cookie = new Cookie();
     let userDetails = cookie.get('user');
     const users = jwt(userDetails);
+    const [encryptedText, setEncryptedText] = useState(CryptoJS.AES.encrypt(users?.userName + dateTime, publicKey).toString());
+
+    console.log(users, 'users')
 
     useEffect(() => {
         if (entityId)
@@ -189,30 +191,30 @@ const MDRequestAttest = ({ name }) => {
     }
 
     const handleSubmitAttestBulk = async () => {
-        // let temp = {
-        //     user: {
-        //         id: userData?.id,
-        //         name: userData?.name,
-        //         email: userData?.email
-        //     },
-        //     application: {
-        //         id: applicationId
-        //     },
-        //     medicalDirectiveIds: selectedIds,
-        //     esign: {
-        //         esign: encryptedText,
-        //         name: `${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `,
-        //         signedDate: currentDate
-        //     }
-        // }
-        // await POST(`medical-directive-service/medicalDirectives/attest/bulk`, temp)
-        //     .then(response => {
-        //         getMedicalDirectives();
-        //         console.log(response, response?.response?.data)
-        //     })
-        //     .catch((error) => {
-        //         console.log(error)
-        //     })
+        let temp = {
+            user: {
+                id: userData?.id,
+                name: userData?.name,
+                email: userData?.email
+            },
+            // application: {
+            //     id: applicationId
+            // },
+            medicalDirectiveIds: selectedIds,
+            esign: {
+                esign: encryptedText,
+                name: `${users?.userName}`,
+                signedDate: currentDate
+            }
+        }
+        await POST(`medical-directive-service/medicalDirectives/attest/bulk`, temp)
+            .then(response => {
+                getMedicalDirectives();
+                console.log(response, response?.response?.data)
+            })
+            .catch((error) => {
+                console.log(error)
+            })
     }
 
     const getIsSubmitClicked = (value, data, skip) => {
@@ -412,7 +414,7 @@ const MDRequestAttest = ({ name }) => {
 
     return (
         <div className={style.screenBackground}>
-            <ApplicationHeader title={`Medical Directives To Attest For ${basicForm?.basicDetails?.applicant?.name?.firstName !== undefined ? basicForm?.basicDetails?.applicant?.name?.firstName : '{First Name}'} ${basicForm?.basicDetails?.applicant?.name?.lastName !== undefined ? `${basicForm?.basicDetails?.applicant?.name?.lastName?.toLowerCase()}` : '{Last Name}'}, ${(basicForm?.basicDetails?.applicant?.applicantType !== null) ? basicForm?.basicDetails?.applicant?.applicantType : ''}`} close={true} closeClick={() => { }} />
+            <ApplicationHeader title={`Medical Directives To Attest For ${users?.userName ? users?.userName : '{First Name Last Name}'}`} close={true} closeClick={() => { }} />
 
             <div className={style.screenPadding}>
                 {showInfo && <div className={style.bgdrop} onClick={() => setShowInfo(false)}></div>}
@@ -502,7 +504,7 @@ const MDRequestAttest = ({ name }) => {
                                                     "MD ID",
                                                     // "Type",
                                                     // "Attestation Due Date",
-                                                    "Action",
+                                                    "",
                                                 ]}
                                                 tableDataValues={getMedicalDirectiveTable()}
                                                 tableData={selectedMedicalDirectiveList}
@@ -532,30 +534,28 @@ const MDRequestAttest = ({ name }) => {
                                                     {formContent?.disclaimer?.content !== null && (
                                                         <CommonCheckBox checked={isChecked} onChange={(e) => { handleIsChecked(e.target.checked) }} bigCheckbox={true} />
                                                     )}
-                                                    <div
-                                                        className={`${style.leftAlign} ${style.marginTop}`}
-                                                        dangerouslySetInnerHTML={{ __html: formContent?.disclaimer?.content }}
-                                                    />
+                                                    <div className={`${style.leftAlign} ${style.marginTop}`}>
+                                                        {`I hereby confirm that by signing, I agree to the delegation and implementation of the Medical Directives and Delegated Acts used within the ${title}`}
+                                                    </div>
                                                 </div>
-                                                {formSchemaWholeObject?.esignatureRequired && (
-                                                    <div className={style.twoCol}>
-                                                        <div onClick={(isChecked) ? () => { setIsSigned(!isSigned); setIsEdited(true) } : () => { }}
-                                                        >
-                                                            <ESignature
-                                                                userName={isSigned ? name : ""}
-                                                                encData={isSigned ? encryptedText : ''}
-                                                                showData={isSigned}
-                                                                showDatais={true}
-                                                            />
-                                                        </div>
-                                                        <div className={style.verticalAlignCenter}>
-                                                            <div className={style.displayInRow}>
-                                                                <div className={style.dateTitle}>Date: </div>
-                                                                <div className={`${style.date} ${style.marginLeft}`}>{isSigned ? (basicForm?.forms?.[formIndex]?.esign?.signedDate !== '' && basicForm?.forms?.[formIndex]?.esign?.signedDate !== undefined) ? basicForm?.forms?.[formIndex]?.esign?.signedDate : currentDate : ""}</div>
-                                                            </div>
+                                                <div className={style.twoCol}>
+                                                    <div onClick={(isChecked) ? () => { setIsSigned(!isSigned); setIsEdited(true) } : () => { }}
+                                                    >
+                                                        <ESignature
+                                                            userName={isSigned ? name : ""}
+                                                            encData={isSigned ? encryptedText : ''}
+                                                            showData={isSigned}
+                                                            showDatais={true}
+                                                            alternateSignature={users?.userName}
+                                                        />
+                                                    </div>
+                                                    <div className={style.verticalAlignCenter}>
+                                                        <div className={style.displayInRow}>
+                                                            <div className={style.dateTitle}>Date: </div>
+                                                            <div className={`${style.date} ${style.marginLeft}`}>{isSigned ? (basicForm?.forms?.[formIndex]?.esign?.signedDate !== '' && basicForm?.forms?.[formIndex]?.esign?.signedDate !== undefined) ? basicForm?.forms?.[formIndex]?.esign?.signedDate : currentDate : ""}</div>
                                                         </div>
                                                     </div>
-                                                )}
+                                                </div>
                                             </div>
                                         </div>
                                     )}
@@ -583,10 +583,10 @@ const MDRequestAttest = ({ name }) => {
                         <div>
                             <div className={`${style.infoContainer} ${showInfo ? style.show : ""}`}>
                                 <img src={Close} alt="Close" className={style.closeIcon} onClick={() => setShowInfo(false)} />
-                                <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
-                                <div className={style.marginTop}>
-                                    <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
-                                </div>
+                                {/* <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} /> */}
+                                {/* <div className={style.marginTop}> */}
+                                <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
+                                {/* </div> */}
                             </div>
                         </div>
                         <div className={`${style.stickyContainer} ${isSaveInProgressOpen ? style.hiddenStickyContainer : ""}`}>
