@@ -1349,7 +1349,7 @@ const App = ({ props }) => {
                   element={<ProtectedRoute><MDRequestAttest /></ProtectedRoute>}
                 />
                 <Route
-                  path="/medicalDirectiveAttest/:applicationId/:medicalDirectivesId"
+                  path="/medicalDirectiveAttest/:entityId/:medicalDirectivesId"
                   element={<ProtectedRoute><MDAttest /></ProtectedRoute>}
                 />
                 <Route
