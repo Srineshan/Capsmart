@@ -24,7 +24,7 @@ import BlueSign from "../../images/blueSign.png";
 import HapiCare from "../../images/PoweredHapiCare.png";
 import PhoneIcon from "../../images/phoneIcon.png";
 import MailIcon from "../../images/mailIcon.png";
-import journeyImg from "../../images/journeyStep5.png";
+import journeyImg from "../../images/MDJourney.png";
 import DefaultUserAvatar from "../../images/defaultUserLogo.jpg";
 import FileDisplayDialog from '../../Components/fileDisplayDialog';
 import ApplicationUserCard from '../../Components/ApplicationUserCard';
