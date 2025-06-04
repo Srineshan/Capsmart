@@ -406,7 +406,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
         label = {
             ...label,
             mandatory: true,
-            label: "isMailingAddressSameAsHomeAddress"
+            label: "Mailing address: Home or different?"
         };
     }
 
@@ -414,7 +414,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
         label = {
             ...label,
             mandatory: true,
-            label: "isBusinessAddressSameAsHomeAddressOrMailingAddress"
+            label: "Business address: Home or Mailing or Different?"
         };
     }
             keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label:label})
