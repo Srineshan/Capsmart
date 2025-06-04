@@ -68,6 +68,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
   const users = jwt(userDetails);
   const [form, setForm] = useState();
   const [documentDetails, setDocumentDetails] = useState();
+  const [selectedDocsFilter, setSelectedDocsFilter] = useState(null);
   const [currentDocumentCount, setCurrentDocumentCount] = useState();
   const [renewedDocumentRequired, setRenewedDocumentRequired] = useState();
   const [expireDocumentCount, setExpireDocumentCount] = useState();
@@ -77,6 +78,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
   const [attestedMDCount, setAttestedMDCount] = useState();
   const [reviewMDCount, setReviewMDCount] = useState();
   const [pastDueMDCount, setPastDueMDCount] = useState();
+  const [selectedMDFilter, setSelectedMDFilter] = useState(null);
   const applicationId = sessionStorage.getItem("applicationId");
   const applicationType = sessionStorage.getItem('applicationCreationType') ?? 'REAPPOINTMENT';
   const [isLoadingImage, setIsLoadingImage] = useState(false);
@@ -98,106 +100,12 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
   const appointmentColSortValues = [false, false, false, false, false, , false, false, false];
   const MDHeaderValues = ["", "Title", "", "MD ID", "Attestation Due Date", "Last Updated", "Action"];
   const MDColSortValues = [false, false, false, false, false, , false];
-
-  const tableData = [
-    {
-      status: "IN_PROGRESS",
-      DocumentType: "Approval Letter",
-      DocumentName: "BOD Approval Letter for 2025 - 2026 Reappointment",
-      Requirement: "Required",
-      ExpirationDate: "Apr 21, 2025",
-      LastUpdated: "Apr 21, 2025"
-    },
-    {
-      status: "COMPLETED",
-      DocumentType: "Certificate",
-      DocumentName: "N 95 Respiratory Fit",
-      Requirement: "Required",
-      ExpirationDate: "Apr 21, 2025",
-      LastUpdated: "Apr 21, 2025"
-    },
-    {
-      status: "REJECTED",
-      DocumentType: "Insurance",
-      DocumentName: "Available",
-      Requirement: "Required",
-      ExpirationDate: "Apr 21, 2025",
-      LastUpdated: "Apr 21, 2025"
-    }
-  ];
-
-  const tableDataAppointment = [
-    {
-      appointmentCycle: "2025 - 2026",
-      capManagerStatus: "IN_PROGRESS",
-      privilegeCategory: "Active",
-      approvedPrivileges: "1",
-      notes: "2",
-      docs: "1",
-      approvalDate: "Apr 21, 2025"
-    },
-    {
-      appointmentCycle: "2024 - 2025",
-      capManagerStatus: "COMPLETED",
-      privilegeCategory: "InActive",
-      approvedPrivileges: "1",
-      notes: "2",
-      docs: "1",
-      approvalDate: "Apr 21, 2025"
-    },
-    {
-      appointmentCycle: "New Staff Appointment",
-      capManagerStatus: "REJECTED",
-      privilegeCategory: "Active",
-      approvedPrivileges: "1",
-      notes: "2",
-      docs: "1",
-      approvalDate: "Apr 21, 2025"
-    },
-  ];
-
-  const MDtableData = [
-    {
-      status: "REJECTED",
-      mdtitle: "Paediatric Emergency Department Asthma Care Pathway",
-      currentStatus: "Revised",
-      mdID: "650",
-      AttestationDate: "Apr 21, 2025",
-      lastUpdateDate: "Apr 21, 2025",
-    },
-    {
-      status: "REJECTED",
-      mdtitle: "Paediatric Emergency Department Asthma Care Pathway",
-      currentStatus: "New",
-      mdID: "654",
-      AttestationDate: "Apr 21, 2025",
-      lastUpdateDate: "Apr 21, 2025",
-    },
-    {
-      status: "REJECTED",
-      mdtitle: "Paediatric Emergency Department Asthma Care Pathway",
-      currentStatus: "Revised",
-      mdID: "658",
-      AttestationDate: "Apr 21, 2025",
-      lastUpdateDate: "Apr 29, 2025",
-    },
-    {
-      status: "IN_PROGRESS",
-      mdtitle: "Paediatric Emergency Department Asthma Care Pathway",
-      currentStatus: "Revised",
-      mdID: "658",
-      AttestationDate: "Apr 10, 2025",
-      lastUpdateDate: "Apr 10, 2025",
-    },
-    {
-      status: "COMPLETED",
-      mdtitle: "Paediatric Emergency Department Asthma Care Pathway",
-      currentStatus: "New",
-      mdID: "658",
-      AttestationDate: "Apr 10, 2025",
-      lastUpdateDate: "Apr 10, 2025",
-    }
-  ];
+  const toggleMDFilter = (filterType) => {
+  setSelectedMDFilter((prevFilter) => prevFilter === filterType ? null : filterType);
+  };
+  const toggleDocsFilter = (filterType) => {
+  setSelectedDocsFilter((prevFilter) => prevFilter === filterType ? null : filterType);
+  };
 
   const documentActionsData = [
     {
@@ -283,6 +191,8 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
   let dotTooltipValues = [];
   let status = [];
   let textTooltipValues = [];
+  let allMedicalDirectives = [];
+  let allDocumentDetails = [];
 
   const getDocsTableValues = () => {
     documentType = [];
@@ -292,8 +202,18 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
     action = [];
     lastUpdateDate = [];
     status = [];
+    if (selectedDocsFilter === "allDocuments") {
+        allDocumentDetails = documentDetails?.allDocuments || [];
+      } else if (selectedDocsFilter === "documentsExpiringSoon") {
+        allDocumentDetails = documentDetails?.documentsExpiringSoon?.documentsExpiringSoon || [];
+      } else if (selectedDocsFilter === "expiredDocuments") {
+        allDocumentDetails = documentDetails?.expiredDocuments || [];
+      } else {
+        allDocumentDetails = documentDetails?.allDocuments || [];
+      }
 
-    documentDetails?.map((data, index) => {
+      console.log("allDocumentDetails",allDocumentDetails)
+    allDocumentDetails?.map((data, index) => {
       const expiryDateFormat = data?.expiryDate
         ? new Date(data?.expiryDate).toISOString().split('T')[0] + 'T00:00'
         : null;
@@ -444,8 +364,31 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
     attestationDate = [];
     lastUpdateDate = [];
     action = [];
+     if (selectedMDFilter === "completed") {
+        allMedicalDirectives = applicationsMedicalDirectives?.completed || [];
+      } else if (selectedMDFilter === "pending") {
+        allMedicalDirectives = applicationsMedicalDirectives?.pending || [];
+      } else if (selectedMDFilter === "pastDue") {
+        allMedicalDirectives = applicationsMedicalDirectives?.pastDue || [];
+      } else {
+        allMedicalDirectives = [
+          ...(applicationsMedicalDirectives?.completed || []),
+          ...(applicationsMedicalDirectives?.pending || []),
+          ...(applicationsMedicalDirectives?.pastDue || [])
+        ];
+      }
+    // allMedicalDirectives = [
+    //     ...(applicationsMedicalDirectives?.completed || []),
+    //     ...(applicationsMedicalDirectives?.pending || []),
+    //     ...(applicationsMedicalDirectives?.pastDue || [])
+    //   ];
 
-    applicationsMedicalDirectives?.map((data, index) => {
+    //  const allDirectives = [
+    //     ...(applicationsMedicalDirectives || [])
+    //   ];
+
+      console.log("applicationsMedicalDirectives",allMedicalDirectives)
+    allMedicalDirectives?.forEach((data, index) => {
       const directive = data?.medicalDirective;
       const attestationDueDateFormat = data?.attestationDueDate
         ? new Date(data?.attestationDueDate).toISOString().split('T')[0] + 'T00:00'
@@ -521,7 +464,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
   const getPreApplicationDocuments = async () => {
     try {
       const { data: basicDocuments } = await GET(`application-management-service/staff/${applicationId}/documents?noOfDays=20`);
-      setDocumentDetails(basicDocuments?.allDocuments || []);
+      setDocumentDetails(basicDocuments || []);
       setCurrentDocumentCount(basicDocuments?.allDocuments?.length || 0)
       setRenewedDocumentRequired(basicDocuments?.documentsExpiringSoon || [])
       setExpireDocumentCount(basicDocuments?.expiredDocuments?.length || 0)
@@ -542,7 +485,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
     const getPreApplicationMedicalDirectives = async () => {
     try {
       const { data: applicationsMedicalDirectivesDetails } = await GET(`application-management-service/staff/${applicationId}/medicalDirectivesAttestationSummary`);
-      setApplicationsMedicalDirectives(applicationsMedicalDirectivesDetails?.pending);
+      setApplicationsMedicalDirectives(applicationsMedicalDirectivesDetails);
       setAttestedMDCount(applicationsMedicalDirectivesDetails?.completed?.length || 0)
       setPastDueMDCount(applicationsMedicalDirectivesDetails?.pastDue?.length || 0)
       setReviewMDCount(applicationsMedicalDirectivesDetails?.pending?.length || 0)
@@ -748,9 +691,9 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
                     <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
                       <div
                         className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
-                        onClick={() => toggleExpand("section5")}
+                        onClick={() => toggleExpand("section1")}
                       >
-                        {expandStates.section5 ? (
+                        {expandStates.section1 ? (
                           <Tooltip title={"Click to Minimize"} arrow>
                             <RemoveIcon
                               sx={{
@@ -774,13 +717,15 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
                       </div>
                     </div>
                   </div>
+                  {expandStates.section1 && (
+                  <div>
                   <CommonDivider />
                   <div className={`${style.grip3} ${style.marginTop20}`}>
-                    <div className={`${style.documentCurrentBackGround} ${style.spaceBetweenCol}`}>
+                    <div className={`${style.documentCurrentBackGround} ${style.spaceBetweenCol} ${style.cursorPointer}`} onClick={() => toggleDocsFilter("allDocuments")}>
                       <div className={`${style.innerTextDocumentStyle}`}>Current Documents </div>
                       <div className={`${style.countStyle}`}>{currentDocumentCount}</div>
                     </div>
-                    <div className={`${style.documentCurrentBackGround} ${style.spaceBetweenCol}`}>
+                    <div className={`${style.documentCurrentBackGround} ${style.spaceBetweenCol} ${style.cursorPointer}`} onClick={() => toggleDocsFilter("documentsExpiringSoon")}>
                       <div className={`${style.innerTextDocumentStyle}`}>To Be Renewed  </div>
                       <div className={`${style.spaceBetween} ${style.alignSelfEnd}`}>
                         <div className={`${style.countStyleRed}`}>{renewedDocumentRequired?.documentsExpiringSoon?.length}</div>
@@ -790,7 +735,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
                         </div>
                       </div>
                     </div>
-                    <div className={`${style.documentCurrentBackGround} ${style.spaceBetweenCol}`}>
+                    <div className={`${style.documentCurrentBackGround} ${style.spaceBetweenCol} ${style.cursorPointer}`} onClick={() => toggleDocsFilter("expiredDocuments")}>
                       <div className={`${style.innerTextDocumentStyle}`}>Expired </div>
                       <div className={`${style.countStyleRed}`}>{expireDocumentCount}</div>
                     </div>
@@ -810,7 +755,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
                           <TableTwo
                             tableHeaderValues={tableHeaderValues}
                             tableDataValues={tableDataValues}
-                            tableData={documentDetails}
+                            tableData={allDocumentDetails}
                             gridStyle={gridStyle}
                             actions={actions}
                             scrollStyle={style.contractScrollStyle}
@@ -822,6 +767,8 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
                       </div>
                     )}
                   </div>
+                  </div>
+                  )}
                 </div>
               </div>
               <div className={`${style.marginTop20}`}>
@@ -833,9 +780,9 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
                     <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
                       <div
                         className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
-                        onClick={() => toggleExpand("section5")}
+                        onClick={() => toggleExpand("section2")}
                       >
-                        {expandStates.section5 ? (
+                        {expandStates.section2 ? (
                           <Tooltip title={"Click to Minimize"} arrow>
                             <RemoveIcon
                               sx={{
@@ -859,6 +806,8 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
                       </div>
                     </div>
                   </div>
+                  {expandStates.section2 && (
+                  <div>
                   <CommonDivider />
                   <div className={`${style.bigCardStyle}`}>
                     {isLoading ? (
@@ -887,6 +836,8 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
                       </div>
                     )}
                   </div>
+                  </div>
+                  )}
                 </div>
               </div>
               <div className={`${style.marginTop20}`}>
@@ -898,9 +849,9 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
                     <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
                       <div
                         className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
-                        onClick={() => toggleExpand("section5")}
+                        onClick={() => toggleExpand("section3")}
                       >
-                        {expandStates.section5 ? (
+                        {expandStates.section3 ? (
                           <Tooltip title={"Click to Minimize"} arrow>
                             <RemoveIcon
                               sx={{
@@ -924,17 +875,19 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
                       </div>
                     </div>
                   </div>
+                  {expandStates.section3 && (
+                  <div>
                   <CommonDivider />
                   <div className={`${style.grip3} ${style.marginTop20}`}>
-                    <div className={`${style.documentCurrentBackGround} ${style.spaceBetweenCol}`}>
+                    <div className={`${style.documentCurrentBackGround} ${style.spaceBetweenCol} ${style.cursorPointer}`} onClick={() => toggleMDFilter("completed")}> 
                       <div className={`${style.innerTextDocumentStyle}`}>Attested </div>
                       <div className={`${style.countStyle}`}>{attestedMDCount}</div>
                     </div>
-                    <div className={`${style.documentCurrentBackGround} ${style.spaceBetweenCol}`}>
+                    <div className={`${style.documentCurrentBackGround} ${style.spaceBetweenCol} ${style.cursorPointer}`} onClick={() => toggleMDFilter("pending")}>
                       <div className={`${style.innerTextDocumentStyle}`}>To Review & Attest </div>
                       <div className={`${style.countStyleYellow}`}>{reviewMDCount}</div>
                     </div>
-                    <div className={`${style.documentCurrentBackGround} ${style.spaceBetweenCol}`}>
+                    <div className={`${style.documentCurrentBackGround} ${style.spaceBetweenCol} ${style.cursorPointer}`} onClick={() => toggleMDFilter("pastDue")}>
                       <div className={`${style.innerTextDocumentStyle}`}>Attestations Past Due </div>
                       <div className={`${style.countStyleRed}`}>{pastDueMDCount}</div>
                     </div>
@@ -954,7 +907,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
                           <TableTwo
                             tableHeaderValues={tableMDHeaderValues}
                             tableDataValues={tableMDDataValues}
-                            tableData={applicationsMedicalDirectives}
+                            tableData={allMedicalDirectives}
                             gridStyle={gridStyleMD}
                             actions={actionsMD}
                             scrollStyle={style.contractScrollStyle}
@@ -966,6 +919,8 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
                       </div>
                     )}
                   </div>
+                  </div>
+                  )}
                 </div>
               </div>
             </div>
