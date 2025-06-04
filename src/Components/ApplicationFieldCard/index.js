@@ -2355,6 +2355,25 @@ const ApplicationFieldCard = ({
           const ckEditorFields = additionalFields.filter(key => parentData?.properties?.[key]?.fieldType === "ckeditor");
           const fileUploadFields = additionalFields.filter(key => parentData?.properties?.[key]?.fieldType === "fileupload");
 
+const isRequired =
+  !isLableEmpty(fieldData.label) &&
+  (object.required?.includes(fieldKey) ||
+    (parentData?.required?.includes(fieldKey) ?? false));
+
+const insertAsteriskBeforeClosingP = (html) => {
+  return isRequired
+    ? html.replace(
+        /<\/p>/i,
+        '<span style="color:#171A1A;"> *</span></p>'
+      )
+    : html;
+};
+
+const labelWithAsterisk = insertAsteriskBeforeClosingP(fieldData.label);
+
+
+
+
           return (
             <div
               className={`${style.disclosureGrid} ${style.verticalAlignCenter}`}
@@ -2371,18 +2390,11 @@ const ApplicationFieldCard = ({
                   className={`${style.lableRadioStyle} ${!isPOD ? fieldData.serialNumber !== null ? style.marginLeft10 : "" : ""
                     } ${fieldData.label !== null ? style.marginRight : ""} ${style.displayInRow}`} style={{ display: 'inline' }}
                 >
-                  <span className={style.description}
-                    dangerouslySetInnerHTML={{
-                      __html: fieldData.label
-                    }}
-                  />
-                  {/* <span>{(isLableEmpty(fieldData.label)
-                    ? false
-                    : object.required?.includes(fieldKey) ||
-                    (parentData !== null
-                      ? parentData.required?.includes(fieldKey)
-                      : false)) && "*"}
-                  </span> */}
+ <span
+    dangerouslySetInnerHTML={{
+      __html: labelWithAsterisk,
+    }}
+  />
                 </div>
               </div>
               {isPOD ? (
