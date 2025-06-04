@@ -160,6 +160,12 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
         'declinedOrNotRenewedStaffSummary': 'DECLINED_OR_NOT_RENEWED_STAFF_SUMMARY'
     }
 
+    const availableApplicationTypes = {
+        NEW: 'New Applicants',
+        REAPPOINTMENT: 'Staff Reappointments',
+        LOCUM_RENEWAL: 'Locum Renewals'
+    }
+
     useEffect(() => {
         if (searchTerm.trim() === "") {
             setSearchData([]); // Clear results if input is empty
@@ -277,7 +283,27 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
             },
             category: availableCategories[reportType],
             type: typeList[reportType],
-            owner: userData
+            owner: userData,
+            filters: {
+                'startDate': dataToUseInReport?.from,
+                'endDate': dataToUseInReport?.to,
+                'applicantTypeId': dataToUseInReport?.selectedStaffType?.[0] !== '' ? dataToUseInReport?.selectedStaffType : [],
+                'departmentSpecialties': dataToUseInReport?.selectedDepartments?.[0] !== '' ? dataToUseInReport?.selectedDepartments : [],
+                'privilegingCategoryId': dataToUseInReport?.selectedPrivilegeCategory !== '' ? dataToUseInReport?.selectedPrivilegeCategory : '',
+                "positionType": dataToUseInReport?.selectedPosition !== "" ? [dataToUseInReport?.selectedPosition] : [],
+                "applicationCreationType": dataToUseInReport?.selectedApplicationType !== "" ? [dataToUseInReport?.selectedApplicationType] : [],
+                "applicationCurrentLevel": sessionStorage.getItem('workModeType'),
+                "staffReappointmentStatus": dataToUseInReport?.selectedReappointmentStatus ? [dataToUseInReport?.selectedReappointmentStatus] : []
+            },
+            filterDisplayNames: [
+                { name: 'Reporting Period used for this report', values: [`${dataToUseInReport?.fromToDisplay} - ${dataToUseInReport?.toToDisplay}`] },
+                { name: 'Staff Type', values: [dataToUseInReport?.selectedStaffTypeToSend?.map(data => data?.applicantType).join(', ') || 'All Staff Type'] },
+                { name: 'Departments', values: [dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.departmentName?.name).join(', ') || 'All Departments'] },
+                { name: 'Privilege Category', values: [dataToUseInReport?.selectedPrivilegeCategoryToSend?.map(data => data?.category).join(', ') || 'All Categories'] },
+                { name: 'Position', values: dataToUseInReport?.selectedPosition !== "" ? [dataToUseInReport?.selectedPosition] : [] },
+                { name: 'Application Type', values: [availableApplicationTypes[dataToUseInReport?.selectedApplicationType] || 'All Application Type'] },
+                { name: 'Reappointment Status', values: [dataToUseInReport?.selectedReappointmentStatus || 'All Applications'] },
+            ],
         }
         const formData = new FormData();
         if (pdfBlob !== null) {
@@ -302,11 +328,21 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
         let data = {
             mailIds: selectedUsers?.map(data => data?.mailId),
             savedReportIds: [],
+            reportName: reportTitleList[reportType],
             file: {
                 fileName: uniqueFileName
             },
             category: availableCategories[reportType],
             type: typeList[reportType],
+            filterDisplayNames: [
+                { name: 'Reporting Period used for this report', values: [`${dataToUseInReport?.fromToDisplay} - ${dataToUseInReport?.toToDisplay}`] },
+                { name: 'Staff Type', values: [dataToUseInReport?.selectedStaffTypeToSend?.map(data => data?.applicantType).join(', ') || 'All Staff Type'] },
+                { name: 'Departments', values: [dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.departmentName?.name).join(', ') || 'All Departments'] },
+                { name: 'Privilege Category', values: [dataToUseInReport?.selectedPrivilegeCategoryToSend?.map(data => data?.category).join(', ') || 'All Categories'] },
+                { name: 'Position', values: dataToUseInReport?.selectedPosition !== "" ? [dataToUseInReport?.selectedPosition] : [] },
+                { name: 'Application Type', values: [availableApplicationTypes[dataToUseInReport?.selectedApplicationType] || 'All Application Type'] },
+                { name: 'Reappointment Status', values: [dataToUseInReport?.selectedReappointmentStatus || 'All Applications'] },
+            ],
         }
         const formData = new FormData();
         if (pdfBlob !== null) {
@@ -332,7 +368,7 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
 
     return (
         <div>
-            <div className={`${style.spaceBetween} ${style.alignCenter} ${style.IconHeaderBackgroundStyle}`}>
+            <div className={`${style.spaceBetween} ${style.alignCenter} ${style.IconHeaderBackgroundStyle} ${style.marginTop20}`}>
                 <div className={`${style.displayInRow} ${style.cardPadding} ${style.alignCenter}`}>
                     <div className={style.reportTypeTextNotificationStyle}>
                         {reportTitleList[reportType]}

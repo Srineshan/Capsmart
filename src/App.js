@@ -309,6 +309,12 @@ const MedicalDirectivesAttestDisplay = React.lazy(() =>
   import("./Screens/MedicalDirectivesAttestDisplay")
 );
 
+const MDRequestAttest = React.lazy(() =>
+  import("./Screens/MDRequestAttest")
+);
+const MDAttest = React.lazy(() => import("./Screens/MDRequestAttest/MedicalDirectivesAttest"));
+
+
 const App = ({ props }) => {
   const [accessToken, setAccessToken] = useState(Auth());
   const { isAuthenticated, isSessionLoading } = useSession();
@@ -772,7 +778,7 @@ const App = ({ props }) => {
         method: "GET",
         headers: {
           "Authorization": `Bearer ${authorization}`,
-          "X-subdomain": 'master',
+          "X-subdomain": 'cmh-hospital',
         },
       };
     console.log(requestHeader, 'requestHeader')
@@ -812,7 +818,7 @@ const App = ({ props }) => {
         "Content-Type": "application/json",
         "X-tenantID": id,
         "Authorization": `Bearer ${authorization}`,
-        "X-subdomain": 'master',
+        "X-subdomain": 'cmh-hospital',
       },
     }
     fetch(`${baseUrl()}/user-management-service/auth/login`, requestOptions)
@@ -1319,6 +1325,10 @@ const App = ({ props }) => {
                   element={<ProtectedRoute><ReportTypeOverview /></ProtectedRoute>}
                 />
                 <Route
+                  path="/myReport/:reportType/:myReportIdFromUrl"
+                  element={<ProtectedRoute><ReportTypeOverview /></ProtectedRoute>}
+                />
+                <Route
                   path="/applicationForm/:applicationId/:section/:step"
                   element={<ProtectedRoute><ApplicationForm /></ProtectedRoute>}
                 />
@@ -1333,6 +1343,14 @@ const App = ({ props }) => {
                 <Route
                   path="/medicalDirective/:applicationId/:medicalDirectivesId"
                   element={<ProtectedRoute><MedicalDirectivesAttestDisplay /></ProtectedRoute>}
+                />
+                <Route
+                  path="/tenant/:entityId/medicalDirectives"
+                  element={<ProtectedRoute><MDRequestAttest /></ProtectedRoute>}
+                />
+                <Route
+                  path="/medicalDirectiveAttest/:entityId/:medicalDirectivesId"
+                  element={<ProtectedRoute><MDAttest /></ProtectedRoute>}
                 />
                 <Route
                   path="/locumApplicationForm/:applicationId/:section/:step"

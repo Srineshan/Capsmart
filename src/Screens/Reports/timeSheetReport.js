@@ -83,6 +83,7 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
     const [selectedUsers, setSelectedUsers] = useState([]);
     const [selectedReport, setSelectedReport] = useState();
     const [isLoading, setIsLoading] = useState(false);
+    const [selectedMyReport, setSelectedMyReport] = useState();
     const myReportsColSortValues = [false, false, false, false, false];
     const reportingTemplateColSortValues = [false, false, false, false, false, false, false, false, false];
     const savedReportsColSortValues = [false, false, false, false, false, false, false, false, false, false];
@@ -187,6 +188,11 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         showMyReport(data)
     }
 
+    const onClickMyReportShare = async (data) => {
+        setShowShareDialog(true);
+        setSelectedMyReport(data);
+    }
+
     const onClickDownloadReport = async (data) => {
         const uniqueFileName = `SavedReport_${Date.now()}.pdf`;
         try {
@@ -214,8 +220,10 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         let data = {
             mailIds: selectedUsers?.map(data => data?.mailId),
             savedReportIds: [selectedReport?.id],
+            reportName: selectedReport?.savedReport?.reportName,
             category: selectedReport?.savedReport?.category,
             type: selectedReport?.savedReport?.type,
+            filterDisplayNames: selectedReport?.savedReport?.filterDisplayNames
         }
         const formData = new FormData();
         formData.append('sharingDetails', new Blob([JSON.stringify(data)], {
@@ -225,6 +233,18 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
             const response = await POST(`application-management-service/report/shareReports/`, formData);
             console.log(response?.data);
             SuccessToaster2('Report Output Shared Successfully!')
+        } catch (error) {
+            console.error(error);
+            return null;
+        }
+    }
+
+    const handleMyReportShare = async () => {
+        setShowShareDialog(false)
+        try {
+            const response = await POST(`application-management-service/report/myReport/share?userIds=${selectedUsers?.map(data => data?.id)}&applicationMyReportIds=${[selectedMyReport?.id]}&url=${`/myReport/${routeList[selectedMyReport?.report?.type]}`}`);
+            console.log(response?.data);
+            SuccessToaster2('Report Definition Shared Successfully!')
         } catch (error) {
             console.error(error);
             return null;
@@ -292,6 +312,11 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         data: "Run",
         requiredValue: "boolean",
         onClick: onClickMyReport,
+    },
+    {
+        data: "Share Report Definition",
+        requiredValue: "boolean",
+        onClick: onClickMyReportShare,
     }]
     let actions = selectedTab === "MYREPORTS"
         ? myReportsActions
@@ -862,7 +887,7 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
                     <div className={`${style.bigCardStyle}`}>
                         <div ref={componentRef}>
                             <div
-                                className={`${style.reduceMarginTop10} ${style.margin20} staffApplicationList`}
+                                className={` ${style.margin20} staffApplicationList`}
                                 ref={PDFRef}
                             >
                                 {!isLoading && (
@@ -927,39 +952,10 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
                                         <div className={`${style.extensionBorder}`}></div>
                                     </>
                                 ))}
-                                {/* <div className={`${style.userMailListGrid} ${style.padding10} ${style.marginTop10}`}>
-                                    <img src={UserLogo2} alt={'User Logo 2'} className={style.userLogoMailStyle} />
-                                    <div>
-                                        <p className={`${style.mailIdTextColor}`}>Kyle Wright, MD</p>
-                                        <p className={`${style.descriptionText} ${style.reduceMarginTop}`}>Medical Director, Dept. of Surgery</p>
-                                    </div>
-                                    <Icon icon="cross" className={style.marginTop10} color="#2C2C2C" />
-                                </div>
-                                <div className={`${style.extensionBorder} `}></div>
-                                <div className={`${style.userMailListGrid} ${style.padding10} ${style.marginTop10} `}>
-                                    <img src={UserLogo3} alt={'User Logo 3'} className={style.userLogoMailStyle} />
-                                    <div>
-                                        <p className={`${style.mailIdTextColor}`}>Mathew Bailey, MD</p>
-                                        <p className={`${style.descriptionText} ${style.reduceMarginTop}`}>Medical Director, Dept. of Surgery</p>
-                                    </div>
-                                    <Icon icon="cross" className={style.marginTop10} color="#2C2C2C" />
-                                </div>
-                                <div className={`${style.extensionBorder}`}></div>
-                                <div className={`${style.userMailListGrid} ${style.padding10} ${style.marginTop10}`}>
-                                    <img src={UserLogo4} alt={'User Logo 4'} className={style.userLogoMailStyle} />
-                                    <div className={style.displayInRow}>
-                                        <div>
-                                            <p className={`${style.mailIdTextColor}`}>Ronnie Owens, MD</p>
-                                            <p className={`${style.descriptionText} ${style.reduceMarginTop}`}>Medical Director, Dept. of Surgery</p>
-                                        </div>
-                                    </div>
-                                    <Icon icon="cross" className={style.marginTop10} color="#2C2C2C" />
-                                </div>
-                                <div className={`${style.extensionBorder}`}></div>*/}
                             </div>
                             <div>
                                 <div className={`${style.justifyCenter} ${style.marginTop20}`}>
-                                    <button className={`${style.cloneButtonStyle} ${style.marginLeft20} ${style.cursorPointer} ${selectedUsers?.length === 0 ? style.disabledButton : ''}  `} onClick={selectedUsers?.length === 0 ? () => { } : () => handleShare()}>{'Share Now'}</button>
+                                    <button className={`${style.cloneButtonStyle} ${style.marginLeft20} ${style.cursorPointer} ${selectedUsers?.length === 0 ? style.disabledButton : ''}  `} onClick={selectedUsers?.length === 0 ? () => { } : () => selectedTab === "MYREPORTS" ? handleMyReportShare() : handleShare()}>{'Share Now'}</button>
                                 </div>
                             </div>
                         </div>

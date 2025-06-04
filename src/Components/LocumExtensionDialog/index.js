@@ -2744,7 +2744,8 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
                     ? "Locum Period & Privileges Extension"
                     : "Reactivate Locum Staff"}
                 </div>
-                <div className={style.displayInRow}>
+                {!showSelectedPrivilegeLocum && (
+                 <div className={style.displayInRow}>
                   <Tooltip title="Click to Close" arrow >
                     <img
                       src={CrossPink}
@@ -2756,6 +2757,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
                     />
                   </Tooltip>
                 </div>
+                )}
               </div>
               <div className={`${style.rejectionBorderStyle} ${style.declineBorderStyle} ${style.marginTop10}`}>
                 <div className={style.marginTop10}>

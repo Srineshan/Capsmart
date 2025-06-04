@@ -210,6 +210,7 @@ const StaffApplication = () => {
                         getApprovalNotesCommentBoxDept={getApprovalNotesCommentBoxDept}
                         getEmailDialogBox={getEmailDialogBox}
                         getPaymentDisplayBox={getPaymentDisplayBox}
+                        activeApplicationView = {activeApplicationView}
                         emailDialogBox={emailDialogBox}
                         activeApplicationTask={activeApplicationTask}
                         approvalnotesCommentsBox={approvalnotesCommentsBox}

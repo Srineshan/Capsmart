@@ -2794,18 +2794,20 @@ const LocumRequestDialog = ({ getIsOpen, selectedTab }) => {
                     ? "Locum Period & Privileges Extension"
                     : "Reactivate Locum Staff"}
                 </div>
-                <div className={style.displayInRow}>
-                  <Tooltip title="Click to Close" arrow >
-                    <img
-                      src={CrossPink}
-                      alt="cross"
-                      className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft}`}
-                      onClick={() => {
-                        getIsOpen(false);
-                      }}
-                    />
-                  </Tooltip>
-                </div>
+                {!showSelectedPrivilegeLocum && (
+                    <div className={style.displayInRow}>
+                      <Tooltip title="Click to Close" arrow >
+                        <img
+                          src={CrossPink}
+                          alt="cross"
+                          className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft}`}
+                          onClick={() => {
+                            getIsOpen(false);
+                          }}
+                        />
+                      </Tooltip>
+                    </div>
+                    )}
               </div>
               <div className={`${style.rejectionBorderStyle} ${style.declineBorderStyle} ${style.marginTop10}`}>
                 <div className={style.marginTop10}>

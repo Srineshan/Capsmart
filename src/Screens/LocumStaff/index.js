@@ -2,6 +2,7 @@ import React, { Fragment, useState, useEffect } from 'react';
 import Navbar from '../../Components/Navbar';
 import LocumStaffList from './locumStaffList';
 import ApplicantDetailViewScreen from '../../Components/ApplicantDetailViewScreen';
+import ViewVerifyScreen from '../../Components/ViewVerifyScreen';
 import DepartmentTrackerDialog from '../../Components/DepartmentTrackerDialog';
 import LocumExtensionDialog from "../../Components/LocumExtensionDialog";
 import LocumExtensionRequestDialog from "../../Components/LocumExtensionRequestDialog";
@@ -12,6 +13,7 @@ const LocumStaff = () => {
     const [selectedTab, setSelectedTab] = useState('ACTIVELOCUM');
     const [isLoading, setIsLoading] = useState(false);
     const [applicationDetailsView, setApplicationDetailsView] = useState(false);
+    const [applicationDetailsViewVerify, setApplicationDetailsViewVerify] = useState(false);
     const [staffView, setStaffView] = useState(false);
     const [showDeptTrackerDialog, setShowDeptTrackerDialog] = useState(false);
     const [showLocumExtensiveDialog, setShowLocumExtensiveDialog] = useState(false);
@@ -77,6 +79,11 @@ const LocumStaff = () => {
         setApplicationDetailsView(value);
     }
 
+    const getActiveApplicationView = (value) => {
+    setApplicationDetailsView(false);
+    setApplicationDetailsViewVerify(value);
+};
+
     const getStaffView = (value) => {
         setStaffView(value);
     }
@@ -100,8 +107,12 @@ const LocumStaff = () => {
     return (
         <>
             {applicationDetailsView ? (
-                < ApplicantDetailViewScreen isLoading={isLoading} getSelectedTab={getSelectedTab} selectedTab={selectedTab} getApplicantDetailsViewScreen={getApplicantDetailsViewScreen} getStaffView={getStaffView} staffView={staffView} />
-            ) : (
+                < ApplicantDetailViewScreen isLoading={isLoading} getSelectedTab={getSelectedTab} selectedTab={selectedTab} getApplicantDetailsViewScreen={getApplicantDetailsViewScreen} getActiveApplicationView={getActiveApplicationView} getStaffView={getStaffView} staffView={staffView} />
+            ) 
+            : applicationDetailsViewVerify ? (
+                < ViewVerifyScreen isLoading={isLoading} getSelectedTab={getSelectedTab} selectedTab={selectedTab} getApplicantDetailsViewScreen={getApplicantDetailsViewScreen} getActiveApplicationView={getActiveApplicationView}/>
+            ) 
+            : (
                 <Fragment>
                     <Navbar />
                     <LocumStaffList

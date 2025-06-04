@@ -136,6 +136,12 @@
   grid-gap: 1%;
 }
 
+.byDepartmentGrid {
+  display: grid;
+  grid-template-columns: 3% 3% 73% 8% 8%;
+  grid-gap: 1%;
+}
+
 .byApplicantGrid {
   display: grid;
   grid-template-columns: 3% 3% 18% 13% 10% 33% 6% 6%;
@@ -144,7 +150,7 @@
 
 .byInnerMedicalDirectiveGrid {
   display: grid;
-  grid-template-columns: 5% 15% 35% 15% 15% 9%;
+  grid-template-columns: 5% 15% 15% 20% 15% 15% 8%;
   grid-gap: 1%;
 }
 
@@ -275,8 +281,8 @@
 @media print {
 
   .byMedicalDirectiveGrid {
-  display: grid;
-  grid-template-columns: 3% 4% 9% 30% 29% 11% 10%;
-  grid-gap: 0.5%;
-}
+    display: grid;
+    grid-template-columns: 3% 4% 9% 30% 29% 11% 10%;
+    grid-gap: 0.5%;
+  }
 }
