@@ -100,12 +100,14 @@ const LocumStaffList = ({
 
   const activeLocumHeaderValues = ["Locum Staff", "", "Locum Type", "Department", "Docs", "Start Date", "Expiry Date", "Days to Expiration", "Action"];
   const expiredLocumHeaderValues = ["Locum Staff", "", "Locum Type", "Department", "Docs", "Last End Date", "Days Since Expired", "Action"];
-  const requestLocumHeaderValues = ["Locum Staff", "", "Staff Status", "Locum Type", "Department", "Request By", "End Date", "Days to Expiration", ""];
+  const requestLocumHeaderValues = ["Locum Staff", "", "Staff Status", "Locum Type", "Department", "Request By", "Expiry Date", "Days to Expiration", ""];
+  const tempPrivilegedLocumHeaderValues = ["Locum Staff", "", "Locum Type", "Department", "Docs", "Start Date", "Expiry Date"];
 
 
-  const activeLocumColSortValues = [true, false, true, true, false, , false, false, false, false];
-  const expiredLocumColSortValues = [true, false, true, true, false, false, false, false, false, false];
-  const requestLocumColSortValues = [false, false, false, false, false, false, false, false, false, false];
+  const activeLocumColSortValues = [true, false, true, true, false, true, true, true, false];
+  const expiredLocumColSortValues = [true, false, true, true, false, true, true, false];
+  const requestLocumColSortValues = [false, false, false, false, false, false, true, true, false];
+  const tempPrivilegedLocumColSortValues = [true, false, true, true, false, true, true];
 
   const [isPrintClicked, setIsPrintClicked] = useState(false);
   const [isExpanded, setIsExpanded] = useState(true);
@@ -115,6 +117,7 @@ const LocumStaffList = ({
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [totalExpireCount, setTotalExpireCount] = useState(0);
+  const [totalTempPrivilegeCount, setTotalTempPrivilegeCount] = useState(0);
   const [totalRequestCount, setTotalRequestCount] = useState(0);
 
   const getApplicationRejectionDialog = (value) => {
@@ -260,6 +263,7 @@ const LocumStaffList = ({
     // setSelectedSpeciality(formDetails?.basicDetailReferences?.specialty?.id);
     getActiveUserDataActiveCount();
     getActiveUserDataExpireCount();
+    getTempPrivilegeUserDataCount();
     getRequestUserDataCount();
     // getActiveUserDataSearch();
     console.log("setSelectedDepartment", selectedDepartment)
@@ -338,6 +342,28 @@ const LocumStaffList = ({
     }
   };
 
+  const getTempPrivilegeUserDataCount = async () => {
+    try {
+      const userDepartmentListData =
+        userDetailsFetchOption?.sites?.sites[0]?.departmentList?.departments?.[0]?.id;
+
+      let apiUrl = `application-management-service/staff?status=ACTIVE&type=LOCUM&noOfDays=30&isExpired=false&searchText=${searchTermForTable}&isProvisional=true`;
+
+      if (userDepartmentListData && workModeType === "Department Head") {
+        apiUrl += `&departmentSpecialties=${userDepartmentListData}`;
+      }
+
+      const response = await GET(apiUrl);
+
+      console.log("Application data", response?.data?.staffs);
+      setTotalTempPrivilegeCount(response?.data?.numberOfElements);
+      return response?.data || [];
+    } catch (error) {
+      console.error("Error fetching applications:", error);
+      return [];
+    }
+  };
+
   const getActiveUserDataSearch = async (signal) => {
     try {
       const userDepartmentListData =
@@ -379,11 +405,12 @@ const LocumStaffList = ({
           apiUrl += `&departmentSpecialties=${selectedDepartment}`;
         }
       } else {
-        const isExpired = selectedTab === "ACTIVELOCUM" ? false : true;
+        const isExpired = (selectedTab === "ACTIVELOCUM" || selectedTab === "TEMPORARYPRIVILEGEDLOCUM") ? false : true;
+        const isProvisional = selectedTab === "TEMPORARYPRIVILEGEDLOCUM" ? true : false;
         const isPaginationRequired = limit === 9999 ? false : true;
         const userDepartmentListData =
           userDetailsFetchOption?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.id;
-        apiUrl = `application-management-service/staff?status=ACTIVE&type=LOCUM&noOfDays=30&isExpired=${isExpired}&searchText=${searchTermForTable}&isPaginationRequired=${isPaginationRequired}&limit=${limit}&offset=${page - 1}&sortBy=${sortValue}&sortByField=${sortField}`;
+        apiUrl = `application-management-service/staff?status=ACTIVE&type=LOCUM&noOfDays=30&isExpired=${isExpired}&searchText=${searchTermForTable}&isPaginationRequired=${isPaginationRequired}&limit=${limit}&offset=${page - 1}&sortBy=${sortValue}&sortByField=${sortField}&isProvisional=${isProvisional}`;
 
         if (selectedDepartment && workModeType === "Department Head") {
           apiUrl += `&departmentSpecialties=${selectedDepartment}`;
@@ -590,10 +617,15 @@ const LocumStaffList = ({
       applicantNameHoverText.push(
         <div>
           <div>
-            Active Locum {`${startDateFormat ? format(new Date(startDateFormat), "MMM dd, yyyy") : "-"} - ${endDateFormat ? format(new Date(endDateFormat), "MMM dd, yyyy") : ''}`}
+            Active Locum <strong>{`${startDateFormat ? format(new Date(startDateFormat), "MMM dd, yyyy") : "-"} - ${endDateFormat ? format(new Date(endDateFormat), "MMM dd, yyyy") : ''}`}</strong>
           </div>
+          {data?.onGoingApplication?.cyclePeriod?.from && (
+            <div>
+              Current Period Extension Applied For - <strong>{`${format(new Date(data?.onGoingApplication?.cyclePeriod?.from), 'MMM dd, yyyy')} - ${format(new Date(data?.onGoingApplication?.cyclePeriod?.to), 'MMM dd, yyyy')}`}</strong>
+            </div>
+          )}
           <div>
-            Current Period Extension Applied For -
+            Days to Expiration - <strong>{expiredDays.toString()}</strong>
           </div>
           <div>
             Click To View Details
@@ -632,9 +664,12 @@ const LocumStaffList = ({
           iconStatus.push(
             <img src={Renewed} alt="Renewed Icon" style={{ width: 20, height: 20 }} />
           );
+        } else if (expiredDays <= 30) {
+          iconStatus.push(<WarningAmberOutlinedIcon style={{ fontSize: 20, color: '#EBB433' }} />);
         } else {
           iconStatus.push("");
         }
+
       }
 
       //  if (workModeType === "Staff Manager") {
@@ -670,8 +705,10 @@ const LocumStaffList = ({
           reappointDate.push(
             [`Extension Application Sent By Dept Head on ${format(new Date(data?.reAppointmentSentDate), 'MMM dd, yyyy')}`]
           );
+        } else if (expiredDays <= 30) {
+          reappointDate.push(["Extension Application Not Yet Sent By Dept Head"]);
         } else {
-          reappointDate.push("");
+          reappointDate.push("")
         }
       }
 
@@ -884,11 +921,13 @@ const LocumStaffList = ({
       applicantNameHoverText.push(
         <div>
           <div>
-            Expired Locum {`${startDateFormat ? format(new Date(startDateFormat), "MMM dd, yyyy") : "-"} - ${endDateFormat ? format(new Date(endDateFormat), "MMM dd, yyyy") : ''}`}
+            Expired Locum <strong>{`${startDateFormat ? format(new Date(startDateFormat), "MMM dd, yyyy") : "-"} - ${endDateFormat ? format(new Date(endDateFormat), "MMM dd, yyyy") : ''}`}</strong>
           </div>
-          <div>
-            Current Period Renewal Applied For -
-          </div>
+          {data?.onGoingApplication?.cyclePeriod?.from && (
+            <div>
+              Current Period Renewal Applied For - <strong>{`${format(new Date(data?.onGoingApplication?.cyclePeriod?.from), 'MMM dd, yyyy')} - ${format(new Date(data?.onGoingApplication?.cyclePeriod?.to), 'MMM dd, yyyy')}`}</strong>
+            </div>
+          )}
           <div>
             Click To View Details
           </div>
@@ -926,7 +965,7 @@ const LocumStaffList = ({
             <img src={Renewed} alt="Renewed Icon" style={{ width: 20, height: 20 }} />
           );
         } else {
-          iconStatus.push("");
+          iconStatus.push(<WarningAmberOutlinedIcon style={{ fontSize: 20, color: '#FF6562' }} />);
         }
       }
 
@@ -960,7 +999,7 @@ const LocumStaffList = ({
             [`Renewal Application Sent By Dept Head on ${format(new Date(data?.reAppointmentSentDate), 'MMM dd, yyyy')}`]
           );
         } else {
-          reappointDate.push([""]);
+          reappointDate.push(["Extension Application Not Yet Sent By Dept Head"]);
         }
       }
       applicantId.push(data?.staffId || "123");
@@ -1050,6 +1089,299 @@ const LocumStaffList = ({
         value: ExpiredDays,
       },
       { type: "action", value: action },
+    ];
+  };
+
+  const getLocumTempPrivilegesValues = () => {
+    dot = [];
+    applicantName = [];
+    applicantNameHoverText = [];
+    applicantId = [];
+    applicantType = [];
+    department = [];
+    docs = [];
+    docsHoverText = [];
+    docsIcon = [];
+    dataStatus = [];
+    crs = [];
+    crsHoverText = [];
+    notes = [];
+    notesHoverText = [];
+    notesIcon = [];
+    lastUpdated = [];
+    lastUpdatedBy = [];
+    capManager = [];
+    taskListStatus = [];
+    taskListDotColor = [];
+    action = [];
+    ExpiredDays = [];
+    startDate = [];
+    endDate = [];
+    iconStatus = [];
+    reappointDate = [];
+    WarningIcon = [];
+    WarningText = [];
+    applicantDept = [];
+    deptSpecialty = [];
+
+    tableData?.map((data) => {
+      const startDateFormat = data?.tenure?.from
+        ? new Date(data?.tenure?.from).toISOString().split('T')[0] + 'T00:00'
+        : null;
+      const endDateFormat = data?.tenure?.to
+        ? new Date(data?.tenure?.to).toISOString().split('T')[0] + 'T00:00'
+        : null;
+      console.log(data, 'dataCheck', `${startDateFormat ? format(new Date(startDateFormat), "MMM dd, yyyy") : "-"} - ${endDateFormat ? format(new Date(endDateFormat), "MMM dd, yyyy") : ''}`)
+
+      const expiredDays = differenceInDays(new Date(data?.tenure?.to), new Date());
+      // applicantName.push(
+      //   `${formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName)}` || " "
+      // );
+      applicantName.push(
+        <div
+          key={data.id}
+          className={`${style.justifyCenter} ${style.cursorPointer}`}
+          onClick={() => onClickViewAndVerifyFunction(data.id)}
+        >
+          {formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName) || " "}
+        </div>
+      );
+      applicantNameHoverText.push(
+        <div>
+          <div>
+            Active Locum <strong>{`${startDateFormat ? format(new Date(startDateFormat), "MMM dd, yyyy") : "-"} - ${endDateFormat ? format(new Date(endDateFormat), "MMM dd, yyyy") : ''}`}</strong>
+          </div>
+          {data?.onGoingApplication?.cyclePeriod?.from && (
+            <div>
+              Current Period Extension Applied For - <strong>{`${format(new Date(data?.onGoingApplication?.cyclePeriod?.from), 'MMM dd, yyyy')} - ${format(new Date(data?.onGoingApplication?.cyclePeriod?.to), 'MMM dd, yyyy')}`}</strong>
+            </div>
+          )}
+          <div>
+            Days to Expiration - <strong>{expiredDays.toString()}</strong>
+          </div>
+          <div>
+            Click To View Details
+          </div>
+        </div>
+      )
+      applicantDept.push([data?.basicDetailReferences?.department?.name ? data?.basicDetailReferences?.department?.name : "-"]);
+      department.push(
+        `${data?.basicDetailReferences?.department?.name || "-"}`
+      );
+      deptSpecialty.push(
+        data?.basicDetailReferences?.specialty?.name ?? "-"
+      );
+      // if (workModeType === "Staff Manager") {
+      if (data?.extensionRequested === true) {
+        if (data?.reAppointmentInitiated === false && expiredDays < 2) {
+          iconStatus.push(
+            <img src={RequestSendApplicationDelay} alt="RequestSendApplicationDelay Icon" style={{ width: 20, height: 20 }} />
+          );
+        } else if (data?.reAppointmentInitiated === false) {
+          iconStatus.push(
+            <img src={RequestSend} alt="RequestSend Icon" style={{ width: 20, height: 20 }} />
+          );
+        } else if (data?.reAppointmentInitiated === true) {
+          iconStatus.push(
+            <img src={Renewed} alt="Renewed Icon" style={{ width: 20, height: 20 }} />
+          );
+        }
+      }
+      //   else {
+      //     iconStatus.push("");
+      //   }
+      // } 
+      else {
+        if (data?.reAppointmentInitiated === true) {
+          iconStatus.push(
+            <img src={Renewed} alt="Renewed Icon" style={{ width: 20, height: 20 }} />
+          );
+        } else {
+          iconStatus.push("");
+        }
+      }
+
+      //  if (workModeType === "Staff Manager") {
+      if (data?.extensionRequested === true) {
+        if (data?.reAppointmentInitiated === false && expiredDays < 2) {
+          reappointDate.push(
+            ["Extension Request Not Acted Upon By Dept Head"]
+          );
+        } else if (data?.reAppointmentInitiated === false) {
+          const requests = data?.requests;
+          if (requests && requests?.length > 0) {
+            const lastRequest = requests[requests?.length - 1];
+            const role = lastRequest?.requestedTo?.[0]?.role || "Unknown Role";
+            const createdDate = lastRequest?.createdDate
+              ? format(new Date(lastRequest?.createdDate), "MMM dd, yyyy hh:mm a")
+              : "-";
+            reappointDate.push([`Extension Request Sent By Staff Manager To ${role} On ${createdDate}`]);
+          } else {
+            reappointDate.push(["Locum Extension Request Sent"]);
+          }
+        } else if (data?.reAppointmentInitiated === true) {
+          reappointDate.push(
+            [`Extension Application Sent By Dept Head on ${format(new Date(data?.reAppointmentSentDate), 'MMM dd, yyyy')}`]
+          );
+        }
+      }
+      //    else {
+      //     reappointDate.push([""]);
+      //   }
+      // } 
+      else {
+        if (data?.reAppointmentInitiated === true) {
+          reappointDate.push(
+            [`Extension Application Sent By Dept Head on ${format(new Date(data?.reAppointmentSentDate), 'MMM dd, yyyy')}`]
+          );
+        } else {
+          reappointDate.push("");
+        }
+      }
+
+      //   if (workModeType === "Staff Manager") {
+      //  reappointDate.push([
+      //     data?.extensionRequested
+      //       ? "Locum extension Request Sent"
+      //       : "Locum extension Not Sent",
+      //   ]);
+      // } else {
+      //   reappointDate.push([
+      //     data?.reAppointmentInitiated
+      //       ? `Locum Renewal Request Sent on ${format(new Date(data?.reAppointmentSentDate), "dd/MM/yyyy")}`
+      //       : "Locum Renewal Not Sent",
+      //   ]);
+      // }
+      applicantId.push(data?.staffId || "123");
+
+      applicantType.push(data?.basicDetailReferences?.applicantType?.serviceProviderType || "Doctor");
+      // docs.push(data?.documents?.length + "/" + data?.documents?.length || "");
+      // docsIcon.push(
+      //   <TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#00C07F` }} />
+      // );
+      crsHoverText.push(["Ontario Medical Society", "Ontario Medical Society"]);
+      notes.push("0");
+      notesIcon.push(
+        <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#2C2C2C` }} />
+      );
+      if (data?.documents?.length === 0) {
+        docs.push("-");
+        docsIcon.push("");
+        docsHoverText.push("");
+      } else {
+        docs.push(data?.documents?.length + "/" + data?.documents?.length);
+
+        docsIcon.push(
+          <TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#00C07F` }} />
+        );
+
+        const documentDetails = data?.documents || [];
+
+        const docHoverTextArray = documentDetails.map((doc, index) => {
+          const verifiedIndicator = doc?.documentStatus
+            ? <CircleIcon style={{ color: '#8ED12B', fontSize: '12px', marginRight: '5px' }} />
+            : <CircleIcon style={{ color: '#FFCA27', fontSize: '12px', marginRight: '5px' }} />;
+
+          return (
+            <div key={index} className={style.fullWidth}>
+              <span>
+                {verifiedIndicator} {doc?.shortName}
+              </span>
+              {index !== documentDetails.length - 1 && (
+                <hr style={{ margin: '5px 0px -10px 0' }} />
+              )}
+            </div>
+          );
+        });
+
+        docsHoverText.push(docHoverTextArray);
+      }
+      startDate.push(
+        startDateFormat ? format(new Date(startDateFormat), "MMM dd, yyyy") : "-"
+      );
+      endDate.push(
+        endDateFormat ? format(new Date(endDateFormat), "MMM dd, yyyy") : "-"
+      );
+      lastUpdatedBy.push(["-"]);
+
+      if (data?.tenure?.to) {
+        ExpiredDays.push(expiredDays.toString());
+      } else {
+        ExpiredDays.push("-");
+      }
+
+      if (expiredDays < 7) {
+        WarningIcon.push(
+          <WarningAmberOutlinedIcon style={{ fontSize: 20, color: '#FF6562' }} />
+        );
+      } else if (expiredDays >= 7 && expiredDays <= 14) {
+        WarningIcon.push(
+          <WarningAmberOutlinedIcon style={{ fontSize: 20, color: '#EBB433' }} />
+        );
+      } else if (expiredDays > 14) {
+        WarningIcon.push("");
+      }
+
+      if (expiredDays < 7) {
+        WarningText.push(
+          ["This Locum Staff Will Expire In Less Than 7 Days"]
+        );
+      } else if (expiredDays >= 7 && expiredDays <= 14) {
+        WarningText.push(
+          ["This Locum Staff Will Expire In Less Than 14 Days"]
+        );
+      } else if (expiredDays > 14) {
+        WarningText.push([""]);
+      }
+      console.log("tabledata" + tableData);
+    });
+
+    return [
+      // { type: "dot", value: dot, tooltipValue: dotTooltipValues },
+      { type: "text", value: applicantName, tooltipValueText: applicantNameHoverText },
+      {
+        type: "iconWithCount",
+        icon: iconStatus,
+        // value: reappointValue,
+        hoverText: reappointDate,
+        isShowHoverText: true,
+      },
+      // { type: "text", value: applicantId },
+      { type: "text", value: applicantType },
+      { type: "text", value: department, tooltipValueText: deptSpecialty },
+      // {
+      //   type: "iconWithCount",
+      //   value: notes,
+      //   // hoverText: notesHoverText,
+      //   // isShowHoverText: true,
+      //   icon: notesIcon,
+      // },
+      {
+        type: "iconWithCount",
+        value: docs,
+        hoverText: docsHoverText,
+        isShowHoverText: true,
+        icon: docsIcon,
+      },
+      {
+        type: "iconWithCount",
+        value: startDate,
+        // hoverText: lastUpdatedBy,
+        // isShowHoverText: true,
+      },
+      {
+        type: "iconWithCount",
+        value: endDate,
+        // hoverText: lastUpdatedBy,
+        // isShowHoverText: true,
+      },
+      // {
+      //   type: "iconWithCount",
+      //   value: ExpiredDays,
+      //   icon: WarningIcon,
+      //   hoverText: WarningText,
+      //   isShowHoverText: true
+      // }
     ];
   };
 
@@ -1216,7 +1548,7 @@ const LocumStaffList = ({
       data: "Extend",
       requiredValue: "boolean",
       onClick: onClickExtensiveLocumDialog,
-      conditionToShow: `data?.reAppointmentInitiated === false`,
+      conditionToShow: `data?.reAppointmentInitiated === false && ((new Date(data?.tenure?.to) - new Date()) / (1000 * 60 * 60 * 24)) <= 30`,
     },
     // {
     //   data: "Create Note",
@@ -1231,7 +1563,7 @@ const LocumStaffList = ({
       data: "Request Extension",
       requiredValue: "boolean",
       onClick: onClickExtensiveRequestLocumDialog,
-      conditionToShow: `data?.extensionRequested === false && data?.reAppointmentInitiated === false `,
+      conditionToShow: `data?.extensionRequested === false && data?.reAppointmentInitiated === false && ((new Date(data?.tenure?.to) - new Date()) / (1000 * 60 * 60 * 24)) <= 30`,
     },
     // {
     //   data: "Create Note",
@@ -1304,26 +1636,43 @@ const LocumStaffList = ({
       ? activeLocumHeaderValues
       : selectedTab === "EXPIREDLOCUM"
         ? expiredLocumHeaderValues
-        : selectedTab === "REQUEST"
-          ? requestLocumHeaderValues
-          : activeLocumHeaderValues
+        : selectedTab === "TEMPORARYPRIVILEGEDLOCUM"
+          ? tempPrivilegedLocumHeaderValues
+          : selectedTab === "REQUEST"
+            ? requestLocumHeaderValues
+            : activeLocumHeaderValues
   let tableSortValues =
     selectedTab === "ACTIVELOCUM"
       ? activeLocumColSortValues
       : selectedTab === "EXPIREDLOCUM"
         ? expiredLocumColSortValues
-        : selectedTab === "REQUEST"
-          ? requestLocumColSortValues
-          : activeLocumColSortValues
+        : selectedTab === "TEMPORARYPRIVILEGEDLOCUM"
+          ? tempPrivilegedLocumColSortValues
+          : selectedTab === "REQUEST"
+            ? requestLocumColSortValues
+            : activeLocumColSortValues
   // let tableDataValues = selectedTab !== 'applicantsToProcess' ? getApplicantValues() : selectedTab === 'level-1' ? getApplicationValues() : selectedTab === 'level-1' ? getApplicationValues() : getApplicationValues();
   let tableDataValues =
     selectedTab === "ACTIVELOCUM"
       ? getLocumActiveValues()
       : selectedTab === "EXPIREDLOCUM"
         ? getExpiredLocumValues()
-        : selectedTab === "REQUEST"
-          ? getLocumRequestValues()
-          : getLocumActiveValues()
+        : selectedTab === "TEMPORARYPRIVILEGEDLOCUM"
+          ? getLocumTempPrivilegesValues()
+          : selectedTab === "REQUEST"
+            ? getLocumRequestValues()
+            : getLocumActiveValues()
+
+  let tableTotalValues =
+    selectedTab === "ACTIVELOCUM"
+      ? totalCount
+      : selectedTab === "EXPIREDLOCUM"
+        ? totalExpireCount
+        : selectedTab === "TEMPORARYPRIVILEGEDLOCUM"
+          ? totalTempPrivilegeCount
+          : selectedTab === "REQUEST"
+            ? totalRequestCount
+            : totalCount
   let actions =
     selectedTab === "ACTIVELOCUM" && workModeType === "Staff Manager"
       ? activeLocumActionsSMData
@@ -1341,9 +1690,11 @@ const LocumStaffList = ({
       ? style.activeLocumStaffGrid
       : selectedTab === "EXPIREDLOCUM"
         ? style.expiredLocumStaffGrid
-        : selectedTab === "REQUEST"
-          ? style.requestLocumStaffGrid
-          : style.activeLocumStaffGrid
+        : selectedTab === "TEMPORARYPRIVILEGEDLOCUM"
+          ? style.tempPrivilegesLocumStaffGrid
+          : selectedTab === "REQUEST"
+            ? style.requestLocumStaffGrid
+            : style.activeLocumStaffGrid
 
   return (
     <div className={style.margin20}>
@@ -1470,6 +1821,7 @@ const LocumStaffList = ({
               getReFetchMetadata={getReFetchMetaData}
               locumCount={totalCount}
               locumexpireCount={totalExpireCount}
+              locumTempPrivilegeCount={totalTempPrivilegeCount}
               totalRequestCount={totalRequestCount}
             />
           </div>
@@ -1500,7 +1852,7 @@ const LocumStaffList = ({
                     getHandleSort={getHandleSort}
                     sortValue={{ sortBy: sortValue, sortByField: sortField }}
                     getSelectedPage={getSelectedPage}
-                    totalCount={totalCount}
+                    totalCount={tableTotalValues}
                     page={page}
                     searchTermForTable={searchTermForTable}
                     searchCount={searchCount}

@@ -5,7 +5,7 @@ import { FormControl } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import style from './index.module.scss';
 
-const CommonSelectField = ({ value, onChange, className, firstOptionLabel, firstOptionValue, valueList, labelList, disabledList, disabledSelect, defaultValue, widthValue, menuColor, error, label, required, warning }) => {
+const CommonSelectField = ({ value, onChange, className, firstOptionLabel, firstOptionValue, valueList, labelList, disabledList, disabledSelect, defaultValue, widthValue, menuColor, error, label, required, warning, multiple, maxSelect }) => {
     const contractStatus = sessionStorage.getItem('Selected Contract Status');
     const warningCheck = (value === '' || value === undefined || value === null) && value !== firstOptionValue;
     const [touched, setTouched] = useState(false);
@@ -47,6 +47,7 @@ const CommonSelectField = ({ value, onChange, className, firstOptionLabel, first
                             labelId="demo-simple-select-error-label"
                             id="demo-simple-select-error"
                             displayEmpty
+                            multiple={multiple}
                             defaultValue={defaultValue}
                             value={value}
                             onChange={onChange}
@@ -64,9 +65,24 @@ const CommonSelectField = ({ value, onChange, className, firstOptionLabel, first
                             {firstOptionLabel !== '' && firstOptionLabel && (
                                 <MenuItem value={firstOptionValue}>{firstOptionLabel}</MenuItem>
                             )}
-                            {valueList?.map((data, index) => (
-                                <MenuItem value={data} key={index} disabled={disabledList[index]} style={{ backgroundColor: menuColor ? menuColor[index] : "", opacity: disabledList[index] ? 0.4 : 1 }}>{labelList[index]}</MenuItem>
-                            ))}
+                            {valueList?.map((data, index) => {
+                            const isSelected = multiple && value?.includes(data);
+                            const isDisabled = multiple && maxSelect && value?.length >= maxSelect && !isSelected;
+                            
+                            return (
+                            <MenuItem
+                                key={index}
+                                value={data}
+                                disabled={disabledList[index] || isDisabled}
+                                style={{
+                                backgroundColor: menuColor ? menuColor[index] : "",
+                                opacity: disabledList[index] || isDisabled ? 0.4 : 1
+                                }}
+                            >
+                                {labelList[index]}
+                            </MenuItem>
+                            );
+                          })}
                         </Select>
                         {/* <div>
                             {warningCheck ? (<div className={`${style.helperText} ${required ? style.errorColor : style.warningColor}`}>Could not find data</div>) : ''}
