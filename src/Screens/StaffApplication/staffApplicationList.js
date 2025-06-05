@@ -1733,31 +1733,33 @@ useEffect(() => {
       //     workModeType === "Chief Of Staff" ||
       //     workModeType === "Credentialing Committee");
 
-        // const assignedUserIdsParam = shouldIncludeAssignee ? `&assignedUserIds=${users?.id}` : "";
-        const departmentParam =
-          selectedDepartment || selectedServiceArea
-            ? `&departmentSpecialties=${selectedDepartment}%23${selectedServiceArea}`
-            : "";
+      // const assignedUserIdsParam = shouldIncludeAssignee ? `&assignedUserIds=${users?.id}` : "";
+      const departmentParam =
+        selectedDepartment || selectedServiceArea
+          ? `&departmentSpecialties=${selectedDepartment}%23${selectedServiceArea}`
+          : "";
 
-        const positionTypeParam =
-          applicationType === "LOCUM"
-            ? `&positionType=${applicationType}`
-            : "&positionType=PERMANENT";
+      const positionTypeParam =
+        applicationType === "LOCUM"
+          ? `&positionType=${applicationType}`
+          : "&positionType=PERMANENT";
 
-        const selectedTabCC =
-          applicationType === "LOCUM"
-            ? `level-2`
-            : "level-3";
+      const selectedTabCC =
+        applicationType === "LOCUM"
+          ? `level-2`
+          : "level-3";
 
-        const applicationCreationType =
-          applicationType === "LOCUM" ? "REAPPOINTMENT" : applicationType;
+      const applicationCreationType =
+        applicationType === "LOCUM" ? "REAPPOINTMENT" : applicationType;
 
-        try {
-          const response = await GET(
-            `application-management-service/application/workflowUser?tab=${selectedTabCC}&sortBy=${sortValue}&sortByField=${sortField}${positionTypeParam}&limit=${limit}&offset=${page - 1
-            }&role=${role}&searchText=${searchTermForTable}&applicationCreationType=${applicationCreationType}&isPaginationRequired=${limit === 9999 ? false : true
-            }${departmentParam}`
-          );
+      try {
+        const response = await GET(
+          `application-management-service/application/workflowUser?tab=${selectedTabCC}&sortBy=${sortValue}&sortByField=${sortField}${positionTypeParam}&limit=${limit}&offset=${
+            page - 1
+          }&role=${role}&searchText=${searchTermForTable}&applicationCreationType=${applicationCreationType}&isPaginationRequired=${
+            limit === 9999 ? false : true
+          }${departmentParam}`
+        );
 
         let applications = response?.data?.applications || [];
       if (applicationType === "LOCUM") {
@@ -1810,10 +1812,10 @@ useEffect(() => {
       } catch (error) {
         console.error("Error fetching applications:", error);
       }
-    };
+    }
+  };
 
   fetchData();
-  }
 }, [tableData]);
 
   const getWorkflowUserData = async () => {
