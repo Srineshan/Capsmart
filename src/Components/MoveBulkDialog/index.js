@@ -86,7 +86,7 @@ const BulkMoveDialog = ({ checkedIds, getBulkApproveDialogOpen, onClose, selecte
 
   const checkApproveEnabled = () => {
     const hasCheckedIds = checkedIds?.length > 0;
-      setIsApproveEnabled(hasCheckedIds);
+    setIsApproveEnabled(hasCheckedIds);
   };
 
   const handleDateChange = (date) => {
@@ -100,6 +100,7 @@ const BulkMoveDialog = ({ checkedIds, getBulkApproveDialogOpen, onClose, selecte
   };
 
   const handleApplicationMove = async () => {
+    setIsLoadingImage(true)
     let role;
     let title;
     let approvedDate;
@@ -141,7 +142,7 @@ const BulkMoveDialog = ({ checkedIds, getBulkApproveDialogOpen, onClose, selecte
     } else if (selectedTab === 'level-4' && applicationType === "LOCUM") {
       role = "Board";
       title = "BOD Approval";
-    }else if (selectedTab === 'level-5') {
+    } else if (selectedTab === 'level-5') {
       role = "Board";
       title = "BOD Approval";
     } else if (selectedTab === 'level-1') {
@@ -153,7 +154,7 @@ const BulkMoveDialog = ({ checkedIds, getBulkApproveDialogOpen, onClose, selecte
     // Prepare the payload
     let temp = {
       role: isDelegate ? role : "",
-    //   approvedDate : new Date().toISOString(),
+      //   approvedDate : new Date().toISOString(),
       title: title,
     };
 
@@ -165,6 +166,7 @@ const BulkMoveDialog = ({ checkedIds, getBulkApproveDialogOpen, onClose, selecte
       .catch((error) => {
         console.log(error);
       });
+    setIsLoadingImage(false)
   };
 
   const renderApplicationDetails = () => {
@@ -267,14 +269,26 @@ const BulkMoveDialog = ({ checkedIds, getBulkApproveDialogOpen, onClose, selecte
           <div>
             <div className={style.templateHeader}>
               <div className={style.templateHeadertext}>
-                {selectedTab === "level-3"
-                  ? "Staff Reappointments Approved by the Cred. Comm." :
-                  selectedTab === "level-4"
-                    ? "Staff Reappointments Approved by the MAC."
-                    : "Staff Reappointments Send by the BOD."}
+                {(() => {
+                  const isLocum = applicationType === "LOCUM";
+                  const isReappointment = applicationType === "REAPPOINTMENT";
+                  const count = checkedIds?.length || 0;
+                  const noun =
+                    count <= 1
+                      ? (isLocum ? "Application" : "Reappointment")
+                      : (isLocum ? "Applications" : "Reappointments");
+
+                  if ((selectedTab === "level-3" && isReappointment) || (selectedTab === "level-2" && isLocum)) {
+                    return `Staff ${noun} Approved by the Cred. Comm.`;
+                  } else if ((selectedTab === "level-4" && isReappointment) || (selectedTab === "level-3" && isLocum)) {
+                    return `Staff ${noun} Approved by the MAC.`;
+                  } else {
+                    return `Staff ${noun} send by the BOD.`;
+                  }
+                })()}
               </div>
               <Tooltip title="Click to Close" arrow>
-              <img src={CrossPink} alt="close" className={`${style.crossStyle} ${style.cursorPointer}`} onClick={onClose} /></Tooltip>
+                <img src={CrossPink} alt="close" className={`${style.crossStyle} ${style.cursorPointer}`} onClick={onClose} /></Tooltip>
             </div>
             {renderApplicationDetails()}
             <div className={`${style.actionButtons} ${style.marginTop}`}>
@@ -284,9 +298,9 @@ const BulkMoveDialog = ({ checkedIds, getBulkApproveDialogOpen, onClose, selecte
                   opacity: isApproveEnabled ? 1 : 0.5
                 }}
                 onClick={onClickApproveMoveFunction}
-                >
-                  <Tooltip title={isApproveEnabled ? "Click to Save" : ""} arrow>
-                <div className={style.reviewButton}>Send as Mail</div></Tooltip>
+              >
+                <Tooltip title={isApproveEnabled ? "Click to Save" : ""} arrow>
+                  <div className={style.reviewButton}>Send as Mail</div></Tooltip>
               </div>
             </div>
           </div>

@@ -16,7 +16,7 @@ import UserLogo4 from './../../images/userLogo6.png';
 import Search from './../../images/search.png';
 import BlueChevronLeft from './../../images/blueChevronLeft.png';
 import style from './index.module.scss';
-import { TenantID, POST, GET } from '../dataSaver';
+import { TenantID, POST, GET, PUT } from '../dataSaver';
 import { format } from 'date-fns';
 import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
 import { currentUser } from '../../utils/auth';
@@ -63,9 +63,11 @@ const AntSwitch = styled(Switch)(({ theme }) => ({
     },
 }));
 
-const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
+const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType, setIsLoading }) => {
     const currentUserData = currentUser();
+    const isMyReport = window.location.pathname.includes("/myReport");
     let myReportContent = JSON.parse(sessionStorage.getItem('myReportContent'))
+    const myReportId = sessionStorage.getItem('myReportId')
     const [isPrivate, setIsPrivate] = useState(false);
     const [isDeliveryScheduled, setIsDeliveryScheduled] = useState(false);
     const [reportName, setReportName] = useState('');
@@ -122,7 +124,16 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
         'multiProviderContractsList': 'CONTRACT_MANAGEMENT',
         'currentRemitToAddressForActiveContracts': 'TIMESHEET',
         'activityStatusTracker': 'TIMESHEET',
-        'paymentProcessingStatusTracker': 'PAYMENT'
+        'paymentProcessingStatusTracker': 'PAYMENT',
+        'submittedApplicationsReviewSummary': 'STAFF_REAPPOINTMENT',
+        'ohipBillingNumbersByCareProvider': 'ALL_STAFF',
+        'reappointmentApplicationNotStarted': 'STAFF_REAPPOINTMENT',
+        'privilegedStaffSummary': 'ALL_STAFF',
+        'currentNotesSummary': 'ALL_STAFF',
+        'staffReappointmentStatusSummary': 'STAFF_REAPPOINTMENT',
+        'locumRenewalOrExtensionApplicationsSummary': 'LOCUM_EXTENSION_OR_RENEWAL',
+        'careProviderCareerMilestoneSummary': 'PERMANENT_STAFF',
+        'declinedOrNotRenewedStaffSummary': 'LOCUM_EXTENSION_OR_RENEWAL'
     }
 
     // const type = (reportType === 'activitiesOrServices' ?
@@ -153,7 +164,16 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
         'multiProviderContractsList': 'MULTI_PROVIDER_CONTRACT',
         'currentRemitToAddressForActiveContracts': 'CURRENT_REMIT_TO_ADDRESS',
         'activityStatusTracker': 'ACTIVITY_STATUS_TRACKER',
-        'paymentProcessingStatusTracker': 'PAYMENT_TRACKER'
+        'paymentProcessingStatusTracker': 'PAYMENT_TRACKER',
+        'submittedApplicationsReviewSummary': 'SUBMITTED_APPLICATIONS_REVIEW_SUMMARY',
+        'ohipBillingNumbersByCareProvider': 'OHIP_BILLING_NUMBERS_BY_CARE_PROVIDER',
+        'reappointmentApplicationNotStarted': 'REAPPOINTMENT_APPLICATIONS_NOT_YET_STARTED_SUMMARY',
+        'privilegedStaffSummary': 'PRIVILEGED_STAFF_SUMMARY',
+        'currentNotesSummary': 'CURRENT_NOTES_SUMMARY',
+        'staffReappointmentStatusSummary': 'STAFF_REAPPOINTMENT_STATUS_SUMMARY',
+        'locumRenewalOrExtensionApplicationsSummary': 'DECLINED_OR_NOT_RENEWED_STAFF_SUMMARY',
+        'careProviderCareerMilestoneSummary': 'CARE_PROVIDER_CAREER_MILESTONE_SUMMARY',
+        'declinedOrNotRenewedStaffSummary': 'DECLINED_OR_NOT_RENEWED_STAFF_SUMMARY'
     }
 
     const filters = {
@@ -166,13 +186,20 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
         departments: dataToUseInReport?.selectedDepartments
     }
 
+    const availableApplicationTypes = {
+        NEW: 'New Applicants',
+        REAPPOINTMENT: 'Staff Reappointments',
+        LOCUM_RENEWAL: 'Locum Renewals'
+    }
+
     useEffect(() => {
         getUserDetail()
     }, [currentUserData?.id])
 
     useEffect(() => {
+        console.log('enteredInMyreport')
         if (myReportContent) {
-            setIsReadOnly(true)
+            // setIsReadOnly(true)
             setReportName(myReportContent?.title)
             setIsPrivate(myReportContent?.private)
             setIsDeliveryScheduled(myReportContent?.schedule?.isdeliveryScheduled)
@@ -183,7 +210,7 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
             setScheduledFor(myReportContent?.schedule?.scheduledFor)
             // setShowDeliveryDialog(myReportContent?.)
         }
-    }, [myReportContent])
+    }, [myReportContent?.title])
 
     console.log(reportName, reportDescription, myReportContent, deliveryTime, new Date(myReportContent?.schedule?.deliveryTime))
 
@@ -192,7 +219,7 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
         setUserDetails(user);
     }
 
-    const handleSave = async () => {
+    const handleSave = async (isNew) => {
         setIsReadOnly(true)
         let data = {
             "tenant": {
@@ -205,7 +232,7 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
                 "description": reportDescription,
                 "schedule": {
                     "isdeliveryScheduled": isDeliveryScheduled,
-                    "schedule": deliverySchedule,
+                    "schedule": deliverySchedule !== "" ? deliverySchedule : 'ONETIME',
                     "startDate": format(new Date(startDate), 'yyyy-MM-dd'),
                     "deliveryTime": format(new Date(deliveryTime), 'HH:mm:ss'),
                     "scheduledFor": scheduledFor
@@ -216,34 +243,101 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
                 },
                 "lastUpdated": format(new Date(), 'yyyy-MM-dd'),
                 "filters": {
-                    'reportingTimePeriod': dataToUseInReport?.reportingTimePeriod,
                     'startDate': dataToUseInReport?.from,
                     'endDate': dataToUseInReport?.to,
-                    'contracts': dataToUseInReport?.selectedContracts?.[0] !== '' ? dataToUseInReport?.selectedContracts : [],
-                    'users': dataToUseInReport?.selectedContractedServiceProvider?.[0] !== '' ? dataToUseInReport?.selectedContractedServiceProvider : [],
-                    'sites': dataToUseInReport?.selectedSites?.[0] !== '' ? dataToUseInReport?.selectedSites : [],
-                    'departments': dataToUseInReport?.selectedDepartments?.[0] !== '' ? dataToUseInReport?.selectedDepartments : [],
-                    'contractPolicyType': dataToUseInReport?.contractContinuationPolicy !== 'ALL' ? dataToUseInReport?.contractContinuationPolicy : '',
-                    'contractStatus': dataToUseInReport?.contractStatus,
-                    "renewalDays": dataToUseInReport?.renewalreportingTimePeriod,
-                    "contractNames": [''],
-                    "intervals": decodeURIComponent(dataToUseInReport?.selectedTimesheetInterval).split(',')
+                    'applicantTypeId': dataToUseInReport?.selectedStaffType?.[0] !== '' ? dataToUseInReport?.selectedStaffType : [],
+                    // 'sites': dataToUseInReport?.selectedSites?.[0] !== '' ? dataToUseInReport?.selectedSites : [],
+                    'departmentSpecialties': dataToUseInReport?.selectedDepartments?.[0] !== '' ? dataToUseInReport?.selectedDepartments : [],
+                    'privilegingCategoryId': dataToUseInReport?.selectedPrivilegeCategory !== '' ? dataToUseInReport?.selectedPrivilegeCategory : '',
+                    "positionType": dataToUseInReport?.selectedPosition !== "" ? [dataToUseInReport?.selectedPosition] : [],
+                    "applicationCreationType": dataToUseInReport?.selectedApplicationType !== "" ? [dataToUseInReport?.selectedApplicationType] : [],
+                    // "intervals": decodeURIComponent(dataToUseInReport?.selectedTimesheetInterval).split(','),
+                    "applicationCurrentLevel": sessionStorage.getItem('workModeType'),
+                    "staffReappointmentStatus": dataToUseInReport?.selectedReappointmentStatus ? [dataToUseInReport?.selectedReappointmentStatus] : []
                 },
+                filterDisplayNames: [
+                    { name: 'Reporting Period used for this report', values: [`${dataToUseInReport?.fromToDisplay} - ${dataToUseInReport?.toToDisplay}`] },
+                    { name: 'Staff Type', values: [dataToUseInReport?.selectedStaffTypeToSend?.map(data => data?.applicantType).join(', ') || 'All Staff Type'] },
+                    { name: 'Departments', values: [dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.departmentName?.name).join(', ') || 'All Departments'] },
+                    { name: 'Privilege Category', values: [dataToUseInReport?.selectedPrivilegeCategoryToSend?.map(data => data?.category).join(', ') || 'All Categories'] },
+                    { name: 'Position', values: dataToUseInReport?.selectedPosition !== "" ? [dataToUseInReport?.selectedPosition] : [] },
+                    { name: 'Application Type', values: [availableApplicationTypes[dataToUseInReport?.selectedApplicationType] || 'All Application Type'] },
+                    { name: 'Reappointment Status', values: [dataToUseInReport?.selectedReappointmentStatus || 'All Applications'] },
+                ],
                 "private": isPrivate
             }
         }
-        if (reportName !== '' && reportDescription !== '' && deliverySchedule !== '') {
-            await POST((reportType !== "staffReappointmentsNotes" && reportType !== "staffReappointments" &&
-                reportType !== "contractDocumentsOnFile" && reportType !== "multiProviderContractsList" &&
-                reportType !== "contractsWithABusinessEntity") ?
-                'timesheet-management-service/report/myReport/' : 'contract-managment-service/reports/myReport/', JSON.stringify(data))
-                .then(response => {
-                    SuccessToaster('Report Saved Successfully');
-                })
-                .catch(error => {
-                    ErrorToaster('Unexpected Error');
-                })
-            getSaveReportDialog(false);
+        console.log(data, 'dataInConsole')
+        if (reportName !== '' && reportDescription !== '') {
+            if (myReportContent) {
+                let newData = {
+                    "tenant": {
+                        "id": TenantID
+                    },
+                    "report": {
+                        "category": availableCategories[reportType],
+                        "type": typeList[reportType],
+                        "title": reportName,
+                        "description": reportDescription,
+                        "schedule": {
+                            "isdeliveryScheduled": isDeliveryScheduled,
+                            "schedule": deliverySchedule !== "" ? deliverySchedule : 'ONETIME',
+                            "startDate": format(new Date(startDate), 'yyyy-MM-dd'),
+                            "deliveryTime": format(new Date(deliveryTime), 'HH:mm:ss'),
+                            "scheduledFor": scheduledFor
+                        },
+                        "owner": {
+                            "id": currentUserData?.id,
+                            "name": userDetails?.name
+                        },
+                        "lastUpdated": format(new Date(), 'yyyy-MM-dd'),
+                        "filters": {
+                            'startDate': dataToUseInReport?.from,
+                            'endDate': dataToUseInReport?.to,
+                            'applicantTypeId': dataToUseInReport?.selectedStaffType?.[0] !== '' ? dataToUseInReport?.selectedStaffType : [],
+                            // 'sites': dataToUseInReport?.selectedSites?.[0] !== '' ? dataToUseInReport?.selectedSites : [],
+                            'departmentSpecialties': dataToUseInReport?.selectedDepartments?.[0] !== '' ? dataToUseInReport?.selectedDepartments : [],
+                            'privilegingCategoryId': dataToUseInReport?.selectedPrivilegeCategory !== '' ? dataToUseInReport?.selectedPrivilegeCategory : '',
+                            "positionType": dataToUseInReport?.selectedPosition !== "" ? [dataToUseInReport?.selectedPosition] : [],
+                            "applicationCreationType": dataToUseInReport?.selectedApplicationType !== "" ? [dataToUseInReport?.selectedApplicationType] : [],
+                            // "intervals": decodeURIComponent(dataToUseInReport?.selectedTimesheetInterval).split(','),
+                            "applicationCurrentLevel": sessionStorage.getItem('workModeType'),
+                            "staffReappointmentStatus": dataToUseInReport?.selectedReappointmentStatus ? [dataToUseInReport?.selectedReappointmentStatus] : []
+                        },
+                        "private": isPrivate
+                    }
+                }
+
+                if (isNew) {
+                    await POST('application-management-service/report/myReport/', JSON.stringify(newData))
+                        .then(response => {
+                            SuccessToaster('Report Saved Successfully');
+                        })
+                        .catch(error => {
+                            ErrorToaster('Unexpected Error');
+                        })
+                    getSaveReportDialog(false);
+                } else {
+                    await PUT(`application-management-service/report/myReport/${myReportId}`, JSON.stringify(data))
+                        .then(response => {
+                            SuccessToaster('Report Updated Successfully');
+                        })
+                        .catch(error => {
+                            ErrorToaster('Unexpected Error');
+                        })
+                    getSaveReportDialog(false);
+                }
+            }
+            else {
+                await POST('application-management-service/report/myReport/', JSON.stringify(data))
+                    .then(response => {
+                        SuccessToaster('Report Saved Successfully');
+                    })
+                    .catch(error => {
+                        ErrorToaster('Unexpected Error');
+                    })
+                getSaveReportDialog(false);
+            }
         } else {
             ErrorToaster('All Fields are Mandatory');
         }
@@ -280,92 +374,96 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
                                     <Typography className={isDeliveryScheduled && style.typographyStyle}>Yes</Typography>
                                 </Stack>
                             </div>
-                            <div className={`${style.saveReportLabelStyle} ${style.marginTop20}`}>Delivery Schedule</div>
-                            <select
-                                name="action"
-                                id="action"
-                                value={deliverySchedule}
-                                onChange={(e) => setDeliverySchedule(e.target.value)}
-                                className={`${style.fullWidth} ${style.marginTop10}`}>
-                                <option value="" >
-                                    Select Delivery Schedule
-                                </option>
-                                <option value="ONETIME" >
-                                    One Time (Does Not Repeat)
-                                </option>
-                                <option value="EVERYWEEKDAY" >
-                                    Every Weekday
-                                </option>
-                                <option value="WEEKLY" >
-                                    Weekly
-                                </option>
-                                <option value="MONTHLY" >
-                                    Monthly
-                                </option>
-                                <option value="QUARTELY" >
-                                    Quarterly
-                                </option>
-                                <option value="ANNUALY" >
-                                    Annually
-                                </option>
-                            </select>
-                            <div className={`${style.displayInRow} ${style.marginTop20}`}>
-                                <div className={`${style.displayInCol} ${style.marginTop5}`}>
-                                    <label className={`${style.saveReportLabelStyle}`}>Start Date</label>
-                                    <div className={style.marginTop10}>
-                                        <LocalizationProvider dateAdapter={AdapterDateFns}>
-                                            <DatePicker
-                                                InputProps={{
-                                                    style: {
-                                                        fontSize: 14,
-                                                        height: 30,
-                                                    }
-                                                }}
-                                                value={startDate}
-                                                onChange={(e) => setStartDate(e)}
-                                                renderInput={(params) => <TextField  {...params} />}
-                                            />
-                                        </LocalizationProvider>
-                                    </div>
-                                </div>
-                                <div className={style.marginLeft20}>
-                                    <label className={`${style.saveReportLabelStyle}`}>Delivery Time</label>
-                                    <div className={style.marginTop5}>
-                                        <LocalizationProvider dateAdapter={AdapterDateFns}>
-                                            <TimePicker
-                                                InputProps={{
-                                                    style: {
-                                                        fontSize: 14,
-                                                        height: 30,
-                                                    }
-                                                }}
-                                                value={deliveryTime}
-                                                onChange={(e) => setDeliveryTime(e)}
-                                                renderInput={(params) => <TextField {...params} />}
-                                            />
-                                        </LocalizationProvider>
-                                    </div>
-                                </div>
-                                <div className={style.marginTop20}>
+                            {isDeliveryScheduled && (
+                                <>
+                                    <div className={`${style.saveReportLabelStyle} ${style.marginTop20}`}>Delivery Schedule</div>
+                                    <select
+                                        name="action"
+                                        id="action"
+                                        value={deliverySchedule}
+                                        onChange={(e) => setDeliverySchedule(e.target.value)}
+                                        className={`${style.fullWidth} ${style.marginTop10}`}>
+                                        <option value="" >
+                                            Select Delivery Schedule
+                                        </option>
+                                        <option value="ONETIME" >
+                                            One Time (Does Not Repeat)
+                                        </option>
+                                        <option value="EVERYWEEKDAY" >
+                                            Every Weekday
+                                        </option>
+                                        <option value="WEEKLY" >
+                                            Weekly
+                                        </option>
+                                        <option value="MONTHLY" >
+                                            Monthly
+                                        </option>
+                                        <option value="QUARTELY" >
+                                            Quarterly
+                                        </option>
+                                        <option value="ANNUALY" >
+                                            Annually
+                                        </option>
+                                    </select>
+                                    <div className={`${style.displayInRow} ${style.marginTop20}`}>
+                                        <div className={`${style.displayInCol} ${style.marginTop5}`}>
+                                            <label className={`${style.saveReportLabelStyle}`}>Start Date</label>
+                                            <div className={style.marginTop10}>
+                                                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                                    <DatePicker
+                                                        InputProps={{
+                                                            style: {
+                                                                fontSize: 14,
+                                                                height: 30,
+                                                            }
+                                                        }}
+                                                        value={startDate}
+                                                        onChange={(e) => setStartDate(e)}
+                                                        renderInput={(params) => <TextField  {...params} />}
+                                                    />
+                                                </LocalizationProvider>
+                                            </div>
+                                        </div>
+                                        <div className={style.marginLeft20}>
+                                            <label className={`${style.saveReportLabelStyle}`}>Delivery Time</label>
+                                            <div className={style.marginTop5}>
+                                                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                                    <TimePicker
+                                                        InputProps={{
+                                                            style: {
+                                                                fontSize: 14,
+                                                                height: 30,
+                                                            }
+                                                        }}
+                                                        value={deliveryTime}
+                                                        onChange={(e) => setDeliveryTime(e)}
+                                                        renderInput={(params) => <TextField {...params} />}
+                                                    />
+                                                </LocalizationProvider>
+                                            </div>
+                                        </div>
+                                        <div className={style.marginTop20}>
 
-                                </div>
-                            </div>
-                            <div className={style.marginTop20}>
-                                <RadioGroup
-                                    label="Schedule this Report for"
-                                    selectedValue={scheduledFor}
-                                    onChange={(e) => setScheduledFor(e.target.value)}
-                                    inline={true}
-                                >
-                                    <Radio label="Only Myself" value="MYSELF" intent={Intent.SUCCESS} />
-                                    {!isPrivate && (
-                                        <Radio label="Myself & Others" value="MYSELFANDOTHERS" />
-                                    )}
-                                    {!isPrivate && (
-                                        <Radio label="Others Only" value="OTHERS" />
-                                    )}
-                                </RadioGroup>
-                            </div>
+                                        </div>
+                                    </div>
+                                    <div className={style.marginTop20}>
+                                        <RadioGroup
+                                            label="Schedule this Report for"
+                                            selectedValue={scheduledFor}
+                                            onChange={(e) => setScheduledFor(e.target.value)}
+                                            inline={true}
+                                        >
+                                            <Radio label="Only Myself" value="MYSELF" intent={Intent.SUCCESS} />
+                                            {!isPrivate && (
+                                                <Radio label="Myself & Others" value="MYSELFANDOTHERS" />
+                                            )}
+                                            {!isPrivate && (
+                                                <Radio label="Others Only" value="OTHERS" />
+                                            )}
+                                        </RadioGroup>
+                                    </div>
+                                </>
+                            )}
                         </div>
                     </div>
                     <div className={style.privateGrid}>
@@ -379,11 +477,25 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
                         </div>
                     </div>
                     {!isReadOnly && (
-                        <div className={`${style.justifyCenter} ${style.marginTop20}`}>
-                            <button className={`${style.saveStyle} ${style.cursorPointer}`}
-                                onClick={() => { handleSave() }}
-                            // onClick={() => { scheduledFor !== "MYSELF" && setShowDeliveryDialog(true); handleSave() }}
-                            >{"SAVE"}</button>
+                        <div className={`${style.spaceBetween} ${style.marginTop20}`}>
+                            <div>
+                                <button className={`${style.outlinedButton} ${style.cursorPointer}`}
+                                    onClick={() => { getSaveReportDialog(false) }}
+                                // onClick={() => { scheduledFor !== "MYSELF" && setShowDeliveryDialog(true); handleSave() }}
+                                >{"CANCEL"}</button>
+                            </div>
+                            <div className={style.displayInRow}>
+                                {isMyReport && (
+                                    <button className={`${style.saveStyle} ${style.cursorPointer}`}
+                                        onClick={() => { handleSave() }}
+                                    // onClick={() => { scheduledFor !== "MYSELF" && setShowDeliveryDialog(true); handleSave() }}
+                                    >{"REPLACE REPORT"}</button>
+                                )}
+                                <button className={`${style.saveStyle} ${style.cursorPointer} ${style.marginLeft20} ${(reportName === "" || reportDescription === "" || reportName.trim() === myReportContent?.title || '') ? style.disabledButton : ''}`}
+                                    onClick={(reportName === "" || reportDescription === "" || reportName.trim() === myReportContent?.title || '') ? () => { } : () => { handleSave(true) }}
+                                // onClick={() => { scheduledFor !== "MYSELF" && setShowDeliveryDialog(true); handleSave() }}
+                                >{isMyReport ? 'SAVE AS A NEW REPORT' : "SAVE"}</button>
+                            </div>
                         </div>
                     )}
                 </div>

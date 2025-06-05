@@ -1,27 +1,32 @@
 import React, { createRef, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Icon, Intent, Dialog, Classes } from '@blueprintjs/core';
 import Reject from './../../images/reject-report.png';
 import SideBar from '../../Components/Sidebar';
 import Popover from '@mui/material/Popover';
 import TemplateIcon from './../../images/templateIcon.png';
+import DoctorAnime from './../../images/doctorAnime.png';
 import style from './index.module.scss';
 import { Link, useParams } from 'react-router-dom';
-import { GET } from '../dataSaver';
+import { DELETE, GET, POST } from '../dataSaver';
 import { format } from 'date-fns';
 import { formatInTimeZone } from 'date-fns-tz';
 import { currentUser } from '../../utils/auth';
-import { siteTimeZone } from '../../utils/formatting';
+import { corsUrl, formatFirstNameLastName, siteTimeZone } from '../../utils/formatting';
 import ReportNoDataBox from '../../Components/ReusableSmallComponents/reportNoDataBox';
 import TileApplication from '../../Components/TileApplication';
 import TableTwo from '../../Components/TableDesignTwo';
+import FileDisplayDialog from '../../Components/fileDisplayDialog';
+import CommonSearchField from '../../Components/CommonFields/CommonSearchField';
+import { SuccessToaster2 } from '../../utils/toaster';
 
 export const Run = ({ link }) => {
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
-
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
     };
+
 
     const handleClose = () => {
         setAnchorEl(null);
@@ -54,6 +59,7 @@ export const Run = ({ link }) => {
 const TimeSheetReports = ({ getShowSampleReport }) => {
     const navigate = useNavigate();
     const [selectedTab, setSelectedTab] = useState('REPORTINGTEMPLATES');
+    const [selectedTopTab, setSelectedTopTab] = useState('');
     const [tabName, setTabName] = useState('Standard Report Templates');
     const { reportType } = useParams();
     const [myReports, setMyReports] = useState([]);
@@ -62,14 +68,22 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
     const currentUserDetails = currentUser();
     const [isExpanded, setIsExpanded] = useState(true);
     const myReportsHeaderValues = ["Report Title", "Schedule", "Saved Parameters", "Last Updated", "Action"];
-    const reportingTemplateHeaderValues = ["Template Title", "Type", "Last Run by", "Last Run Date/ Time", "Last Updated by", "Last Updated", "Action"];
+    const reportingTemplateHeaderValues = ["Report Template Title", "Type", "Last Run by", "Last Run Date/ Time", "Last Updated by", "Last Updated", "Action"];
     const savedReportsHeaderValues = ["Saved Report", "Reporting Period", "Saved On", "Action"];
     const [sortField, setSortField] = useState("DEFAULT");
     const [sortValue, setSortValue] = useState("DESCENDING");
     const [page, setPage] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
     const [limit, setLimit] = useState(9999);
-
+    const [selectedFile, setselectedFile] = useState(false);
+    const [showShareDialog, setShowShareDialog] = useState(false);
+    const [showFileDisplayDialog, setShowFileDisplayDialog] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [searchData, setSearchData] = useState([]);
+    const [selectedUsers, setSelectedUsers] = useState([]);
+    const [selectedReport, setSelectedReport] = useState();
+    const [isLoading, setIsLoading] = useState(false);
+    const [selectedMyReport, setSelectedMyReport] = useState();
     const myReportsColSortValues = [false, false, false, false, false];
     const reportingTemplateColSortValues = [false, false, false, false, false, false, false, false, false];
     const savedReportsColSortValues = [false, false, false, false, false, false, false, false, false, false];
@@ -92,35 +106,217 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
                     : myReportsColSortValues
     // let tableDataValues = selectedTab !== 'applicantsToProcess' ? getApplicantValues() : selectedTab === 'level-1' ? getApplicationValues() : selectedTab === 'level-1' ? getApplicationValues() : getApplicationValues();
 
+    useEffect(() => {
+        if (searchTerm.trim() === "") {
+            setSearchData([]); // Clear results if input is empty
+            return;
+        }
+
+        const controller = new AbortController(); // Create an AbortController instance
+        const signal = controller.signal;
+
+        getUserDataSearch(signal); // Call API function with signal
+
+        return () => controller.abort(); // Cleanup: Cancel previous request if a new one starts
+    }, [searchTerm]);
+
+    useEffect(() => {
+        getUserList()
+    }, [])
+
+    const handleSearch = (e) => {
+        setSearchTerm(e.target.value);
+    }
+
+    const onSearchClickFunc = (data) => {
+        setSelectedUsers((prevList) => {
+            if (!prevList?.map(data => data?.id)?.includes(data?.id)) {
+                return [...prevList, data];
+            }
+            return prevList;
+        });
+    }
+
+    const handleRemoveFromList = (id) => {
+        setSelectedUsers((prevList) => {
+            if (prevList?.map(data => data?.id)?.includes(id)) {
+                return prevList?.filter(item => item?.id !== id);
+            }
+        });
+    };
+
+    const getUserList = async () => {
+        const { data: users } = await GET(`user-management-service/user`);
+        setSearchData(users?.map(item => ({
+            id: item.id,
+            name: `${formatFirstNameLastName(item?.name?.firstName, item?.name?.lastName)}` || " ",
+            desc: `${item?.title?.title || ''}`,
+            profilePic: item?.profilePic?.file?.fileURL,
+            mailId: item?.email?.officialEmail
+        })));
+    }
+
+    const getUserDataSearch = async (signal) => {
+        try {
+            let response;
+
+            response = await GET(
+                `user-management-service/user?searchText=${searchTerm}`, { signal }
+            );
+            console.log("Application data", response?.data);
+            setSearchData(response?.data?.map(item => ({
+                id: item.id,
+                name: `${formatFirstNameLastName(item?.name?.firstName, item?.name?.lastName)}` || " ",
+                desc: `${item?.title?.title || ''}`,
+                profilePic: item?.profilePic?.file?.fileURL,
+                mailId: item?.email?.officialEmail
+            })));
+
+            return response?.data?.applications || [];
+        } catch (error) {
+            console.error("Error fetching applications:", error);
+            return [];
+        }
+    };
+
+
     const onClickRunReport = (data) => {
         navigate(`/reportTypeOverview/${routeList[data?.subCategory]}`);
     }
+
+    const onClickMyReport = (data) => {
+        showMyReport(data)
+    }
+
+    const onClickMyReportShare = async (data) => {
+        setShowShareDialog(true);
+        setSelectedMyReport(data);
+    }
+
+    const onClickDownloadReport = async (data) => {
+        const uniqueFileName = `SavedReport_${Date.now()}.pdf`;
+        try {
+            const proxyUrl = `${corsUrl}${encodeURIComponent(data?.savedReport?.reportDoc?.fileURL)}`;
+
+            const response = await fetch(proxyUrl);
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = uniqueFileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            window.URL.revokeObjectURL(url); // cleanup
+        } catch (err) {
+            console.error("Download failed:", err);
+        }
+    }
+
+    const handleShare = async () => {
+        setShowShareDialog(false)
+        let data = {
+            mailIds: selectedUsers?.map(data => data?.mailId),
+            savedReportIds: [selectedReport?.id],
+            reportName: selectedReport?.savedReport?.reportName,
+            category: selectedReport?.savedReport?.category,
+            type: selectedReport?.savedReport?.type,
+            filterDisplayNames: selectedReport?.savedReport?.filterDisplayNames
+        }
+        const formData = new FormData();
+        formData.append('sharingDetails', new Blob([JSON.stringify(data)], {
+            type: "application/json"
+        }));
+        try {
+            const response = await POST(`application-management-service/report/shareReports/`, formData);
+            console.log(response?.data);
+            SuccessToaster2('Report Output Shared Successfully!')
+        } catch (error) {
+            console.error(error);
+            return null;
+        }
+    }
+
+    const handleMyReportShare = async () => {
+        setShowShareDialog(false)
+        try {
+            const response = await POST(`application-management-service/report/myReport/share?userIds=${selectedUsers?.map(data => data?.id)}&applicationMyReportIds=${[selectedMyReport?.id]}&url=${`/myReport/${routeList[selectedMyReport?.report?.type]}`}`);
+            console.log(response?.data);
+            SuccessToaster2('Report Definition Shared Successfully!')
+        } catch (error) {
+            console.error(error);
+            return null;
+        }
+    }
+
+    const onClickPrintPDF = (data) => {
+        const printWindow = window.open(`${corsUrl}${encodeURIComponent(data?.savedReport?.reportDoc?.fileURL)}`, "_blank");
+        if (printWindow) {
+            printWindow.focus();
+
+            // Wait until PDF is fully loaded before calling print
+            printWindow.onload = () => {
+                printWindow.print();
+            };
+        } else {
+            alert("Popup blocked! Please allow popups for this site.");
+        }
+    };
+
+    const onClickSharePDF = (data) => {
+        setSelectedReport(data);
+        setShowShareDialog(true);
+    }
+
+    const onClickDeleteReport = async (data) => {
+        await DELETE(`application-management-service/report/savedReport/${data?.id}`)
+            .then((response) => {
+                getSavedReports();
+            })
+    }
+
+    const onClickViewReport = (data) => {
+        setselectedFile(data?.savedReport?.reportDoc);
+        setShowFileDisplayDialog(true);
+    }
+
     let savedReportsActions = [{
+        data: "View",
+        requiredValue: "boolean",
+        onClick: onClickViewReport,
+    }, {
         data: "Delete",
         requiredValue: "boolean",
-        onClick: onClickRunReport,
+        onClick: onClickDeleteReport,
     }, {
         data: "Download",
         requiredValue: "boolean",
-        onClick: onClickRunReport,
+        onClick: onClickDownloadReport,
     }, {
         data: "Print",
         requiredValue: "boolean",
-        onClick: onClickRunReport,
+        onClick: onClickPrintPDF,
     }, {
         data: "Share",
         requiredValue: "boolean",
-        onClick: onClickRunReport,
+        onClick: onClickSharePDF,
     }]
     let reportingTemplatesActions = [{
-        data: "Run Report",
+        data: "Run",
         requiredValue: "boolean",
         onClick: onClickRunReport,
     }]
     let myReportsActions = [{
-        data: "View Report",
+        data: "Run",
         requiredValue: "boolean",
-        onClick: onClickRunReport,
+        onClick: onClickMyReport,
+    },
+    {
+        data: "Share Report Definition",
+        requiredValue: "boolean",
+        onClick: onClickMyReportShare,
     }]
     let actions = selectedTab === "MYREPORTS"
         ? myReportsActions
@@ -139,6 +335,17 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
                     : style.myReportsGrid
     const PDFRef = createRef();
     const componentRef = useRef(null);
+
+    const availableParentList = {
+        allStaffMembers: 'All Staff Members',
+        permanentStaff: 'Permanent Staff',
+        locumStaff: 'Locum Staff',
+        allApplications: 'All Applications',
+        newApplicants: 'New Applicants',
+        staffReappointments: 'Reappointments',
+        locumExtensionOrRenewal: 'Locum Extension / Renewal',
+        savedReportsArchive: 'Saved Reports Archive'
+    }
 
     const availableCategories = {
         servicesOrActivities: 'SERVICES_ACTIVITIES',
@@ -183,7 +390,16 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         ACTIVITY_STATUS_TRACKER: 'activityStatusTracker',
         PAYMENT_TRACKER: 'paymentProcessingStatusTracker',
         SUBMITTED_APPLICATIONS_REVIEW_SUMMARY: 'submittedApplicationsReviewSummary',
-        STAFF_REAPPOINTMENT_STATUS_SUMMARY: 'staffReappointmentStatusSummary'
+        DETAILED_PRIVILEGED_STAFF_SUMMARY: 'detailedPrivilegedStaffSummary',
+        OHIP_BILLING_NUMBERS_BY_CARE_PROVIDER: 'ohipBillingNumbersByCareProvider',
+        PRIVILEGED_STAFF_SUMMARY: 'privilegedStaffSummary',
+        CURRENT_NOTES_SUMMARY: 'currentNotesSummary',
+        STAFF_REAPPOINTMENT_STATUS_SUMMARY: 'staffReappointmentStatusSummary',
+        REAPPOINTMENT_APPLICATIONS_NOT_YET_STARTED_SUMMARY: 'reappointmentApplicationNotStarted',
+        LOCUM_RENEWAL_OR_EXTENSION_APPLICATIONS_SUMMARY: 'locumRenewalOrExtensionApplicationsSummary',
+        DECLINED_OR_NOT_RENEWED_STAFF_SUMMARY: 'declinedOrNotRenewedStaffSummary',
+        CARE_PROVIDER_CAREER_MILESTONE_SUMMARY: 'careProviderCareerMilestoneSummary',
+        CARE_PROVIDERS_SUMMARY: 'careProvidersSummary'
     }
     const descriptionList = {
         ACTIVITES_SERVICES_LOG_SUMMARY: 'Activities/ Services Log Status Summary',
@@ -235,9 +451,61 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         PROOF_OF_DOCUMENTATION_COMPLIANCE_FOR_CONTRACT_BASED_REQUIREMENTS: 'Proof of documentation compliance for contract based requirments',
         ACTIVITY_STATUS_TRACKER: `Status Of Activities/ Services By Service Provider For ${format(new Date(), 'MMMM yyyy')}`,
         PAYMENT_TRACKER: 'Payment Processing Status By Service Provider',
-        SUBMITTED_APPLICATIONS_REVIEW_SUMMARY: 'submittedApplicationsReviewSummary',
-        STAFF_REAPPOINTMENT_STATUS_SUMMARY: 'staffReappointmentStatusSummary'
+        SUBMITTED_APPLICATIONS_REVIEW_SUMMARY: 'Submitted Applications Review Summary',
+        STAFF_REAPPOINTMENT_STATUS_SUMMARY: 'Staff Reappointment Status Summary'
     }
+
+    const typeList = {
+        'activitiesOrServices': 'ACTIVITES_SERVICES_LOG_SUMMARY',
+        'addOnActivities': 'ADDON_ACTIVITES_SERVICES_LOG_SUMMARY',
+        'scheduledActivity': '',
+        'staffReappointmentsNotes': 'UPCOMING_CONTRACT_RENEWALS',
+        'staffReappointments': 'ONE_TIME_CONTRACT',
+        'complianceStatus': '',
+        'nonCompliant': '',
+        'paidConsultingHours': '',
+        'scheduledActivityByContract': '',
+        'paymentsProcessingSummary': 'PAYMENT_PROCESSING_SUMMARY',
+        'compensationCostAnalysis': 'COST_REPORT_FOR_CONTRACTED_SERVICES_PERFORMED',
+        'timeAndPaymentLog': 'TIME_AND_PAYEMENT_LOG_FOR_CONTRACTED_SERVICES',
+        'siteDepartmentSpecificContractorSummary': 'SITE_DEPARTMENT_SPECIFIC_CONTRACTOR_SUMMARY',
+        'timesheetProcessingSummary': 'TIMESHEET_PROCESSING_SUMMARY',
+        'listingOfTimesheetsNotPaid': 'LISTING_OF_TIMESHEETS_NOTPAID',
+        'staffReappointmentTracker': 'SUBMITTED_TIMESHEETS_PAYMENT_STATUS',
+        'contractDocumentsOnFile': 'CONTRACT_DOCUMENT_ON_FILE',
+        'contractsWithABusinessEntity': 'CONTRACT_WITH_BUSINESS_ENTITY',
+        'multiProviderContractsList': 'MULTI_PROVIDER_CONTRACT',
+        'currentRemitToAddressForActiveContracts': 'CURRENT_REMIT_TO_ADDRESS',
+        'activityStatusTracker': 'ACTIVITY_STATUS_TRACKER',
+        'paymentProcessingStatusTracker': 'PAYMENT_TRACKER',
+        'submittedApplicationsReviewSummary': 'SUBMITTED_APPLICATIONS_REVIEW_SUMMARY',
+        'ohipBillingNumbersByCareProvider': 'OHIP_BILLING_NUMBERS_BY_CARE_PROVIDER',
+        'reappointmentApplicationNotStarted': 'REAPPOINTMENT_APPLICATIONS_NOT_YET_STARTED_SUMMARY',
+        'privilegedStaffSummary': 'PRIVILEGED_STAFF_SUMMARY',
+        'currentNotesSummary': 'CURRENT_NOTES_SUMMARY',
+        'staffReappointmentStatusSummary': 'STAFF_REAPPOINTMENT_STATUS_SUMMARY',
+        'locumRenewalOrExtensionApplicationsSummary': 'DECLINED_OR_NOT_RENEWED_STAFF_SUMMARY',
+        'careProviderCareerMilestoneSummary': 'CARE_PROVIDER_CAREER_MILESTONE_SUMMARY',
+        'declinedOrNotRenewedStaffSummary': 'DECLINED_OR_NOT_RENEWED_STAFF_SUMMARY'
+    }
+
+    const availableScheduleValue = {
+        ONETIME: 'One Time',
+        EVERYWEEKDAY: 'Every Weekday',
+        WEEKLY: 'Weekly',
+        MONTHLY: 'Monthly',
+        QUARTELY: 'Quaterly',
+        ANNUALY: 'Annually'
+    }
+
+    const filterLabels = {
+        departmentSpecialties: "Department",
+        positionType: "Position",
+        applicationCreationType: "Application Type",
+        applicantTypeId: "Staff Type",
+        privilegingCategoryId: "Privilege Category",
+        startDate: "Reporting Time Period", // represents start + end together
+    };
 
     useEffect(() => {
         sessionStorage.removeItem('reportFilter');
@@ -266,37 +534,56 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
     // }
 
     useEffect(() => {
-        if (tabName === 'My Reports') {
-            getMyReports();
-        } else if (tabName === 'Saved Report Outputs') {
-            getSavedReports();
-        } else {
-            getStandardTemplates();
+        getMyReports();
+        getSavedReports();
+        getStandardTemplates();
+    }, [selectedTab, reportType])
+
+    const getFilterSummary = (filters) => {
+        let count = 0;
+        const labels = [];
+
+        // Special handling for startDate + endDate
+        if (filters.startDate && filters.endDate) {
+            count += 1;
+            labels.push(filterLabels.startDate);
         }
-    }, [tabName, reportType])
+
+        const excludeKeys = ["startDate", "endDate", "applicationCurrentLevel"];
+
+        for (const [key, value] of Object.entries(filters)) {
+            if (excludeKeys.includes(key)) continue;
+
+            const hasValue = Array.isArray(value)
+                ? value.length > 0
+                : value !== null && value !== undefined && value !== "";
+
+            if (hasValue && filterLabels[key]) {
+                count += 1;
+                labels.push(filterLabels[key]);
+            }
+        }
+
+        return {
+            count,
+            labels
+        };
+    }
 
     const getMyReports = async () => {
-        if (reportType === 'contractManagement') {
-            const { data: myReport } = await GET(`timesheet-management-service/report/myReport?userId=${currentUserDetails?.id}&category=TIMESHEET`);
-            setMyReports(myReport);
-            let temp = [...myReport] || [];
-            const { data: myReportContract } = await GET(`contract-managment-service/reports/myReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
-            myReportContract?.map(data => { temp.push(data) })
-            setMyReports(temp);
-        } else if (reportType === "contractCompliance") {
-            const { data: myReport } = await GET(`contract-managment-service/reports/myReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
-            setMyReports(myReport);
-        } else {
-            const { data: myReport } = await GET(`timesheet-management-service/report/myReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
-            setMyReports(myReport);
-        }
+        setIsLoading(true)
+        const { data: myReport } = await GET(`application-management-service/report/myReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
+        setMyReports(myReport);
+        setIsLoading(false)
     }
 
     console.log(myReports)
 
     const getSavedReports = async () => {
-        const { data: savedReport } = await GET(`timesheet-management-service/report/savedReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
+        setIsLoading(true)
+        const { data: savedReport } = await GET(`application-management-service/report/savedReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
         setSavedReports(savedReport);
+        setIsLoading(false)
     }
 
     const getSelectedTab = (value) => {
@@ -304,38 +591,55 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
     }
 
     const getStandardTemplates = async () => {
+        setIsLoading(true)
         const { data: standardTemplates } = await GET(`application-management-service/report/standardTemplates?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
         setStandardTemplates(standardTemplates);
+        setIsLoading(false)
     }
 
     const getIsExpanded = (value) => {
         setIsExpanded(value);
     }
 
-    const getScheduleValue = (value) => {
-        if (value === 'ONETIME') {
-            return 'One Time';
-        } else if (value === 'EVERYWEEKDAY') {
-            return 'Every Weekday';
-        } else if (value === 'WEEKLY') {
-            return 'Weekly';
-        } else if (value === 'MONTHLY') {
-            return 'Monthly';
-        } else if (value === 'QUARTELY') {
-            return 'Quaterly';
-        } else if (value === 'ANNUALY') {
-            return 'Annualy';
-        } else {
-            return '';
-        }
+    const getIsShowFileDialog = (value) => {
+        setShowFileDisplayDialog(value);
     }
 
     const getMyReportsValues = () => {
+        const title = [];
+        const titleHover = [];
+        const schedule = [];
+        const savedParams = [];
+        const savedParamHoverText = [];
+        const lastUpdated = [];
+        const actions = [];
+        myReports?.map((data, index) => {
+            title.push(data?.report?.title);
+            titleHover.push(data?.report?.description)
+            schedule.push(availableScheduleValue[data?.report?.schedule?.schedule]);
+            savedParams.push(getFilterSummary(data?.report?.filters)?.count);
+            // const remindTooltipValue = reminderCount >= 0 ? (
+            //     <div>
+            //       <div>{reminderText}</div>
+            //       <div>{reminderDates}</div>
+            //     </div>
+            //   ) : null;
+            lastUpdated.push(data?.report?.lastUpdated ? format(new Date(data?.report?.lastUpdated), "MMM dd, yyyy") : '-');
+            actions.push(true);
+        });
 
+        return [
+            { type: "text", value: title, tooltipValueText: titleHover },
+            { type: "text", value: schedule },
+            { type: "text", value: savedParams },
+            { type: "text", value: lastUpdated },
+            { type: "action", value: actions },
+        ];
     }
 
     const getReportingTemplatesValues = () => {
         const title = [];
+        const titleHover = [];
         const type = [];
         const lastRunDateAndTime = [];
         const lastRunBy = [];
@@ -344,16 +648,17 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         const actions = [];
         standardTemplates?.map((data, index) => {
             title.push(data?.title)
+            titleHover.push(data?.description)
             type.push('Standard');
-            lastRunBy.push('-');
-            lastRunDateAndTime.push(data?.lastRun ? format(new Date(data?.lastRun), "MM/dd/yyyy") : '-');
-            lastUpdatedBy.push('-');
-            lastUpdated.push(data?.lastUpdate ? format(new Date(data?.lastUpdate), "MM/dd/yyyy") : '-');
+            lastRunBy.push(data?.lastRunBy?.name?.firstName);
+            lastRunDateAndTime.push(data?.lastRun ? format(new Date(data?.lastRun), "MMM dd, yyyy hh:mm") : '-');
+            lastUpdatedBy.push(data?.lastUpdatedBy?.name?.firstName);
+            lastUpdated.push(data?.lastUpdate ? format(new Date(data?.lastUpdate), "MMM dd, yyyy") : '-');
             actions.push(true);
         });
 
         return [
-            { type: "text", value: title },
+            { type: "text", value: title, tooltipValueText: titleHover },
             { type: "text", value: type },
             { type: "text", value: lastRunBy },
             { type: "text", value: lastRunDateAndTime },
@@ -364,7 +669,25 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
     }
 
     const getSavedReportOutputsValues = () => {
+        const title = [];
+        const titleHover = [];
+        const period = [];
+        const savedOn = [];
+        const actions = [];
+        savedReports?.map((data, index) => {
+            title.push(data?.savedReport?.reportName)
+            titleHover.push(data?.savedReport?.reportNotes)
+            period.push(data?.report?.schedule?.schedule);
+            savedOn.push(data?.savedReport?.runDate ? format(new Date(data?.savedReport?.runDate), "MMM dd, yyyy") : '-');
+            actions.push(true);
+        });
 
+        return [
+            { type: "text", value: title, tooltipValueText: titleHover },
+            { type: "text", value: period },
+            { type: "text", value: savedOn },
+            { type: "action", value: actions },
+        ];
     }
 
     let tableDataValues =
@@ -378,12 +701,12 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
 
     let tableData =
         selectedTab === "MYREPORTS"
-            ? []
+            ? myReports
             : selectedTab === "REPORTINGTEMPLATES"
                 ? standardTemplates
                 : selectedTab === "SAVEDREPORTOUTPUTS"
-                    ? []
-                    : []
+                    ? savedReports
+                    : myReports
 
     const getSelectedPage = (value) => {
         setPage(value);
@@ -547,43 +870,104 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
                             className={`${style.spaceBetween} ${style.marginLeft30} `}
                         >
                             <div className={`${style.tabs}`}>
-                                <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="My Reports" tileCount={0} currentTile="MYREPORTS" />
+                                <TileApplication selectedTab={selectedTopTab} getSelectedTab={() => { }} tileLabel={`Reports Accross ${availableParentList[reportType]}`} currentTile="" />
+                            </div>
+                        </div>
+                        <div className={`${style.borderStyleTiles} ${style.marginLeft30}`}></div>
+                        <div
+                            className={`${style.spaceBetween} ${style.marginLeft30} ${style.marginTop10} `}
+                        >
+                            <div className={`${style.tabs}`}>
+                                <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="My Reports" tileCount={myReports?.length} currentTile="MYREPORTS" />
                                 <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="Reporting Templates" tileCount={standardTemplates?.length} currentTile="REPORTINGTEMPLATES" />
-                                <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="Saved Report Outputs" tileCount={0} currentTile="SAVEDREPORTOUTPUTS" />
+                                <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="Saved Report Outputs" tileCount={savedReports?.length} currentTile="SAVEDREPORTOUTPUTS" />
                             </div>
                         </div>
                     </div>
                     <div className={`${style.bigCardStyle}`}>
                         <div ref={componentRef}>
                             <div
-                                className={`${style.reduceMarginTop10} ${style.margin20} staffApplicationList`}
+                                className={` ${style.margin20} staffApplicationList`}
                                 ref={PDFRef}
                             >
-                                <TableTwo
-                                    tableHeaderValues={tableHeaderValues}
-                                    tableDataValues={tableDataValues}
-                                    tableData={tableData}
-                                    gridStyle={gridStyle}
-                                    actions={actions}
-                                    scrollStyle={style.contractScrollStyle}
-                                    tableSortValues={tableSortValues}
-                                    heading={"There are no Record for you to manage"}
-                                    onClickFunction={() => { }}
-                                    getHandleSort={getHandleSort}
-                                    sortValue={{ sortBy: sortValue, sortByField: sortField }}
-                                    getSelectedPage={getSelectedPage}
-                                    totalCount={totalCount}
-                                    page={page}
-                                    searchTermForTable={""}
-                                    searchCount={0}
-                                    setSearchTermForTable={() => { }}
-                                    onLimitChange={handleLimitChange}
-                                />
+                                {!isLoading && (
+                                    <TableTwo
+                                        tableHeaderValues={tableHeaderValues}
+                                        tableDataValues={tableDataValues}
+                                        tableData={tableData}
+                                        gridStyle={gridStyle}
+                                        actions={actions}
+                                        scrollStyle={style.contractScrollStyle}
+                                        tableSortValues={tableSortValues}
+                                        heading={"There are no Record for you to manage"}
+                                        onClickFunction={() => { }}
+                                        getHandleSort={getHandleSort}
+                                        sortValue={{ sortBy: sortValue, sortByField: sortField }}
+                                        getSelectedPage={getSelectedPage}
+                                        totalCount={totalCount}
+                                        page={page}
+                                        searchTermForTable={""}
+                                        searchCount={0}
+                                        setSearchTermForTable={() => { }}
+                                        onLimitChange={handleLimitChange}
+                                    />
+                                )}
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+            <Dialog isOpen={showShareDialog} onClose={() => setShowShareDialog(false)} className={`${style.sendMailUserDialog} ${style.dialogPaddingBottom}`}>
+                <div className={`${Classes.DIALOG_BODY} ${style.deleteEcecutedContractDialogBackground}`}>
+                    <div className={style.spaceBetween}>
+                        <p className={`${style.extensionStyle} ${style.marginTop} ${style.bold}`}>Share This Report Output</p>
+                        <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => setShowShareDialog(false)} />
+                    </div>
+                    <div className={style.spaceBetween}>
+                        <div></div>
+                        <div className={style.displayInRow}>
+                            {/* <p className={`${style.mailBoldText} ${style.marginTop20} ${style.blueText}`}>Registered Users</p>
+                            <div className={`${style.taskCountStyle} ${style.marginTop20} ${style.marginLeft20}`}>20</div>
+                            <p className={`${style.mailBoldText} ${style.marginTop20} ${style.externalRecipientsMarginLeft}`}>External Recipients</p>
+                            <div className={style.deliveryCountStyle}>20</div> */}
+                            <div className={style.marginTop10}>
+                                <CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={() => { }} isOnClickAvailable={true} onClickFunc={onSearchClickFunc} placeholder={"Search by Staff Name"} />
+                            </div>
+                        </div>
+                    </div>
+                    <div className={`${style.extensionBorder} ${style.marginTop10}`}></div>
+                    <div className={`${style.padding10}`}>
+                        <div>
+                            <div>
+                                {selectedUsers?.map((data, index) => (
+                                    <>
+                                        <div className={`${style.userMailListGrid} ${style.padding10}  ${index !== 0 ? style.marginTop10 : ''}`}>
+                                            <img src={data?.profilePic ? data?.profilePic : DoctorAnime} alt={'User Logo 1'} className={style.userLogoMailStyle} />
+                                            <div>
+                                                <p className={`${style.mailIdTextColor}`}>{`${data?.name}`}</p>
+                                                <p className={`${style.descriptionText} ${style.reduceMarginTop}`}>{`${data?.desc}`}</p>
+                                            </div>
+                                            <Icon icon="cross" className={`${style.marginTop10} ${style.cursorPointer}`} color="#2C2C2C" onClick={() => handleRemoveFromList(data?.id)} />
+                                        </div>
+                                        <div className={`${style.extensionBorder}`}></div>
+                                    </>
+                                ))}
+                            </div>
+                            <div>
+                                <div className={`${style.justifyCenter} ${style.marginTop20}`}>
+                                    <button className={`${style.cloneButtonStyle} ${style.marginLeft20} ${style.cursorPointer} ${selectedUsers?.length === 0 ? style.disabledButton : ''}  `} onClick={selectedUsers?.length === 0 ? () => { } : () => selectedTab === "MYREPORTS" ? handleMyReportShare() : handleShare()}>{'Share Now'}</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </Dialog>
+            {showFileDisplayDialog && (
+                <FileDisplayDialog
+                    getIsOpen={getIsShowFileDialog}
+                    file={selectedFile}
+                />
+            )}
         </div >
     )
 }

@@ -131,7 +131,7 @@ const LocumRequestDialog = ({ getIsOpen, selectedTab }) => {
       // const oneDayBefore = subDays(futureDate, 1); // Go one day before the future "same day"
 
       const label = `${i} ${i === 1 ? 'month' : 'months'}`;
-      const value = format(futureDate, 'yyyy-MM-dd');
+      const value = format(futureDate, "yyyy-MM-dd'T'00:00");
 
       months.push({ label, value });
     }
@@ -150,7 +150,9 @@ const LocumRequestDialog = ({ getIsOpen, selectedTab }) => {
   const rawExpireDate = selectDataLocum?.staff?.tenure?.to ?? null;
   const rawExpireDateRequest = selectDataLocum?.locumRenewalDetails?.tenure?.from ?? null;
   const rawExpireDateRequestTo = selectDataLocum?.locumRenewalDetails?.tenure?.to ?? null;
-  const ExpireDate = rawExpireDate ? parseISO(rawExpireDate) : null;
+  const ExpireDate = selectDataLocum?.staff?.tenure?.to
+    ? new Date(selectDataLocum?.staff?.tenure?.to).toISOString().split('T')[0] + 'T00:00'
+    : null;
   const ExpireDateRequest = rawExpireDateRequest ? parseISO(rawExpireDateRequest) : null;
   const ExpireDateRequestTo = rawExpireDateRequestTo ? parseISO(rawExpireDateRequestTo) : null;
 
@@ -294,10 +296,12 @@ const LocumRequestDialog = ({ getIsOpen, selectedTab }) => {
     const endDate = selectDataLocum?.locumRenewalDetails?.tenure?.to;
     const startDate = selectDataLocum?.locumRenewalDetails?.tenure?.from;
     if (endDate) {
-      setCustomEndDate(new Date(endDate));
+      const formattedEndDate = new Date(endDate).toISOString().split('T')[0] + 'T00:00';
+      setCustomEndDate(formattedEndDate);
     }
     if (startDate) {
-      setCustomStartDate(new Date(startDate));
+       const formattedStartDate = new Date(startDate).toISOString().split('T')[0] + 'T00:00';
+       setCustomStartDate(formattedStartDate);
     }
     // Set entire array of coveredDetails
     const coveredDetails = selectDataLocum?.locumRenewalDetails?.coveredDetails || [];
@@ -324,7 +328,7 @@ const LocumRequestDialog = ({ getIsOpen, selectedTab }) => {
         const departmentId = selectDataLocum?.staff?.basicDetailReferences?.department?.id;
         const applicantTypeId = selectDataLocum?.staff?.basicDetailReferences?.applicantType?.id;
         const response = await GET(
-          `application-management-service/staff?status=ACTIVE&departmentId=${departmentId}&applicantTypeId=${applicantTypeId}&sortByField=STAFF_NAME`
+          `application-management-service/staff?status=ACTIVE&departmentId=${departmentId}&applicantTypeId=${applicantTypeId}&sortByField=STAFF_NAME&isPaginationRequired=${limit === 9999 ? false : true}&limit=${limit}`
         );
         console.log(response.data);
 
@@ -429,8 +433,11 @@ const LocumRequestDialog = ({ getIsOpen, selectedTab }) => {
   };
 
   const reappointmentApplication = async () => {
+    const startDate = selectDataLocum?.locumRenewalDetails?.tenure?.from
+    ? new Date(selectDataLocum?.locumRenewalDetails?.tenure?.from).toISOString().split('T')[0] + 'T00:00'
+    : null;
     const fromDate = selectDataLocum?.locumRenewalDetails?.reappointmentType === "EXTENSION"
-      ? format(new Date(selectDataLocum?.locumRenewalDetails?.tenure?.from), 'yyyy-MM-dd')
+      ? format(new Date(startDate), 'yyyy-MM-dd')
       : selectDataLocum?.locumRenewalDetails?.reappointmentType === "RENEWAL" && customStartDate
         ? format(new Date(customStartDate), 'yyyy-MM-dd')
         : format(new Date(), 'yyyy-MM-dd');
@@ -509,6 +516,12 @@ const LocumRequestDialog = ({ getIsOpen, selectedTab }) => {
     setCustomEndDate(formattedDate);
     setCalendarStart(false);
     console.log("handleDateChange", customEndDate)
+  };
+  const handleDateChangeStart = (date, field) => {
+    const formattedDate = format(new Date(date), "yyyy-MM-dd'T'00:00")
+    setCustomStartDate(formattedDate);
+    setCalendarStart(false);
+
   };
   // const handleDateChange = (date) => {
   //   setCustomDate(date);
@@ -2781,18 +2794,20 @@ const LocumRequestDialog = ({ getIsOpen, selectedTab }) => {
                     ? "Locum Period & Privileges Extension"
                     : "Reactivate Locum Staff"}
                 </div>
-                <div className={style.displayInRow}>
-                  <Tooltip title="Click to Close" arrow >
-                    <img
-                      src={CrossPink}
-                      alt="cross"
-                      className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft}`}
-                      onClick={() => {
-                        getIsOpen(false);
-                      }}
-                    />
-                  </Tooltip>
-                </div>
+                {!showSelectedPrivilegeLocum && (
+                    <div className={style.displayInRow}>
+                      <Tooltip title="Click to Close" arrow >
+                        <img
+                          src={CrossPink}
+                          alt="cross"
+                          className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft}`}
+                          onClick={() => {
+                            getIsOpen(false);
+                          }}
+                        />
+                      </Tooltip>
+                    </div>
+                    )}
               </div>
               <div className={`${style.rejectionBorderStyle} ${style.declineBorderStyle} ${style.marginTop10}`}>
                 <div className={style.marginTop10}>
@@ -2905,7 +2920,7 @@ const LocumRequestDialog = ({ getIsOpen, selectedTab }) => {
                           <div className={`${style.marginTopLess}`}>
                             <CommonDateField
                               className={`${style.fullWidth}`}
-                              onChange={(date) => setCustomStartDate(date)}
+                              onChange={(date) => handleDateChangeStart(date)}
                               open={calendarStart}
                               onOpen={() => setCalendarStart(true)}
                               onClose={() => setCalendarStart(false)}

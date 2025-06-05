@@ -30,8 +30,9 @@ const MenuProps = {
 };
 const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
     const [showSaveReport, setShowSaveReport] = useState(false);
-    const { reportType } = useParams();
+    const { reportType, myReportIdFromUrl } = useParams();
     const isMyReport = window.location.pathname.includes("/myReport");
+    const myReportId = sessionStorage.getItem('myReportId')
     const [activityType, setActivityType] = useState('Outpatient Clinic Service');
     const [activityPerformed, setActivityPerformed] = useState('Half Day Clinic Session');
     const [renewalreportingTimePeriod, setRenewalreportingTimePeriod] = useState(30);
@@ -58,6 +59,9 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
     const [selectedContractedServiceProviderToSend, setSelectedContractedServiceProviderToSend] = useState([]);
     const [selectedTimesheetInterval, setSelectedTimesheetInterval] = useState([]);
     const [timesheetIntervals, setTimesheetIntervals] = useState([]);
+    const [selectedPosition, setSelectedPosition] = useState('');
+    const [selectedApplicationType, setSelectedApplicationType] = useState('');
+    const [selectedReappointmentStatus, setSelectedReappointmentStatus] = useState('');
     const [user, setUsers] = useState([]);
     const [from, setFrom] = useState(startOfMonth(new Date()));
     const [to, setTo] = useState(endOfMonth(new Date()));
@@ -74,7 +78,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
     };
     const monthOptions = generateMonthYearOptions();
     const [selectedMonth, setSelectedMonth] = useState(format(new Date(), "MMMM yyyy")); // Default: Current month & year
-    let reportFilter = JSON.parse(sessionStorage.getItem('reportFilter'));
+    let reportFilter = (sessionStorage.getItem('reportFilter') && sessionStorage.getItem('reportFilter') !== "undefined") ? JSON.parse(sessionStorage.getItem('reportFilter')) : {};
     let reportCategory = {
         activitiesOrServices: 'ACTIVITY',
         addOnActivities: 'ACTIVITY',
@@ -118,13 +122,16 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         reportingTimePeriod: reportingTimePeriod,
         from: format(new Date(from), 'yyyy-MM-dd'),
         to: format(new Date(to), 'yyyy-MM-dd'),
-        fromToDisplay: format(new Date(from), 'MM-dd-yyyy'),
-        toToDisplay: format(new Date(to), 'MM-dd-yyyy'),
+        fromToDisplay: format(new Date(from), 'MMM dd, yyyy'),
+        toToDisplay: format(new Date(to), 'MMM dd, yyyy'),
         selectedContractedServiceProvider: selectedContractedServiceProvider,
         selectedContractedServiceProviderToSend: selectedContractedServiceProviderToSend,
         initialValueSet: initialValueSet,
         selectedPrivilegeCategory: selectedPrivilegeCategory,
-        selectedPrivilegeCategoryToSend: selectedPrivilegeCategoryToSend
+        selectedPrivilegeCategoryToSend: selectedPrivilegeCategoryToSend,
+        selectedPosition: selectedPosition,
+        selectedApplicationType: selectedApplicationType,
+        selectedReappointmentStatus: selectedReappointmentStatus
     };
 
     useEffect(() => {
@@ -138,6 +145,14 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
             getTimesheetIntervals()
         }
     }, [])
+
+    useEffect(() => {
+        const controller = new AbortController(); // Create an AbortController instance
+        const signal = controller.signal;
+        getPrivilegeCategory(signal);
+        return () => controller.abort();
+        console.log(selectedStaffType, 'selectedStaffType')
+    }, [selectedStaffType])
 
     const setUserDetails = async () => {
         const { data: user } = await GET(`user-management-service/user/${userId}`);
@@ -203,10 +218,15 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         setStaffType(applicant)
     }
 
-    const getPrivilegeCategory = async () => {
-        const { data: privilege } = await GET(
-            `entity-service/privilege`
-        );
+    const getPrivilegeCategory = async (signal) => {
+        let url = `entity-service/privilege`
+
+        if (selectedStaffType?.[0] !== '') {
+            url += `?applicantTypeId=${selectedStaffType?.[0] === '' ? [] : selectedStaffType}`
+        }
+
+        const { data: privilege } = await GET(url, { signal });
+        console.log(privilege, 'selectedStaffType')
         setPrivilegeCategory(privilege);
     }
 
@@ -234,57 +254,56 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         //     }
         // }
         if (reportFilter) {
-            const encodedArray = reportFilter?.intervals.map(encodeHashToPercent23);
+            const encodedArray = reportFilter?.intervals?.map(encodeHashToPercent23);
             console.log(encodedArray, 'encodedArray', reportFilter?.intervals)
-            setFrom(new Date(reportFilter?.startDate));
-            setTo(new Date(reportFilter?.endDate));
-            setSelectedContracts(reportFilter?.contracts);
-            setSelectedSites(reportFilter?.sites);
-            setSelectedDepartments(reportFilter?.departments);
-            setReportingTimePeriod(reportFilter?.reportingTimePeriod);
-            setSelectedContractedServiceProvider(reportFilter?.users);
-            setContractContinuationPolicy(reportFilter?.contractPolicyType !== "" ? reportFilter?.contractPolicyType : 'ALL');
-            setContractStatus(reportFilter?.contractStatus);
-            setRenewalreportingTimePeriod(reportFilter?.renewalDays)
-            setSelectedTimesheetInterval(reportFilter?.intervals ? encodedArray : [])
+            if (reportFilter?.startDate)
+                setFrom(new Date(reportFilter?.startDate));
+            if (reportFilter?.endDate)
+                setTo(new Date(reportFilter?.endDate));
+            // setSelectedSites(reportFilter?.sites);
+            setSelectedDepartments(reportFilter?.departmentSpecialties ? reportFilter?.departmentSpecialties : []);
+            setSelectedStaffType(reportFilter?.applicantTypeId ? reportFilter?.applicantTypeId : [])
+            setSelectedPrivilegeCategory(reportFilter?.privilegingCategoryId ? reportFilter?.privilegingCategoryId : [])
+            setSelectedPosition(reportFilter?.positionType ? reportFilter?.positionType?.[0] : '')
+            setSelectedApplicationType(reportFilter?.applicationCreationType ? reportFilter?.applicationCreationType?.[0] : '')
         }
-    }, [currentUserDetails])
+    }, [currentUserDetails, myReportId])
 
     useEffect(() => {
         if (reportFilter) {
             let sitesToShow = [];
             let departmentsToShow = [];
-            let contractsToShow = [];
-            let serviceProvidersToShow = [];
+            let staffsToShow = [];
+            let privilegeCategoryToShow = [];
             departments?.map(data => {
-                if (reportFilter?.departments?.includes(data?.id)) {
+                if (reportFilter?.departmentSpecialties?.includes(data?.id)) {
                     departmentsToShow.push(data)
                 }
             })
             setSelectedDepartmentsToSend(departmentsToShow)
-            contracts?.map(data => {
-                if (reportFilter?.contracts?.includes(data?.id)) {
-                    contractsToShow.push(data)
+            staffType?.map(data => {
+                if (reportFilter?.applicantTypeId?.includes(data?.id)) {
+                    staffsToShow.push(data)
                 }
             })
-            setSelectedContractsToSend(contractsToShow)
-            contractedServiceProviders?.map(data => {
-                if (reportFilter?.users?.includes(data?.id)) {
-                    serviceProvidersToShow.push(data)
+            setSelectedStaffTypeToSend(staffsToShow)
+            privilegeCategory?.map(data => {
+                if (reportFilter?.privilegingCategoryId?.includes(data?.id)) {
+                    privilegeCategoryToShow.push(data)
                 }
             })
-            setSelectedContractedServiceProviderToSend(serviceProvidersToShow)
-            console.log(sitesToShow, departmentsToShow, contractsToShow, serviceProvidersToShow, sites, departments, contracts, contractedServiceProviders)
+            setSelectedPrivilegeCategoryToSend(privilegeCategoryToShow)
+            console.log(sitesToShow, departmentsToShow, privilegeCategory, staffType, sites, departments, contracts, contractedServiceProviders)
         }
-    }, [sites, departments, contracts, contractedServiceProviders])
+    }, [sites, departments, privilegeCategory, staffType])
 
     console.log(isMyReport)
 
     useEffect(() => {
         getDataToUseInReport(dataToUseInReport);
-    }, [renewalreportingTimePeriod, selectedSites, selectedDepartments, contractContinuationPolicy, selectedContracts,
-        podType, contractStatus, reportingTimePeriod, selectedContractedServiceProvider,
-        selectedContractedServiceProviderToSend, from, to, initialValueSet, selectedTimesheetInterval]);
+    }, [renewalreportingTimePeriod, selectedSites, selectedDepartments, selectedPrivilegeCategory, selectedStaffType,
+        podType, contractStatus, reportingTimePeriod, selectedApplicationType, selectedReappointmentStatus,
+        selectedPosition, from, to, initialValueSet, selectedTimesheetInterval]);
 
     useEffect(() => {
         let tempDept = [];
@@ -317,36 +336,34 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
     // }, isMyReport ? [currentUserDetails] : [selectedSitesToSend, selectedDepartmentsToSend, selectedContractsToSend, currentUserDetails]);
 
     useEffect(() => {
-        if (reportType === "activitiesOrServices" || reportType === "paymentsProcessingSummary" || reportType === "addOnActivities" || reportType === "timesheetProcessingSummary" || reportType === "listingOfTimesheetsNotPaid" || reportType === "staffReappointmentTracker") {
-            const quarter = Math.floor((new Date().getMonth() / 3));
-            const lastyear = new Date(new Date().getFullYear() - 1, 0, 1);
-            if (reportingTimePeriod === 'Current Week') {
-                setFrom(startOfWeek(new Date()));
-                setTo(endOfWeek(new Date()));
-            } else if (reportingTimePeriod === 'Last Week') {
-                setFrom(subDays(startOfWeek(new Date()), 7));
-                setTo(subDays(startOfWeek(new Date()), 1));
-            } else if (reportingTimePeriod === 'Current Month') {
-                setFrom(startOfMonth(new Date()));
-                setTo(endOfMonth(new Date()));
-            } else if (reportingTimePeriod === 'Last Month') {
-                setFrom(new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1));
-                setTo(subDays(startOfMonth(new Date()), 1));
-            } else if (reportingTimePeriod === 'Current Qtr') {
-                setFrom(startOfQuarter(new Date()));
-                setTo(endOfQuarter(new Date()));
-            } else if (reportingTimePeriod === 'Last Qtr') {
-                setFrom(new Date(new Date().getFullYear(), quarter * 3 - 3, 1));
-                setTo(subDays(startOfQuarter(new Date()), 1));
-            } else if (reportingTimePeriod === 'Current Year') {
-                setFrom(startOfYear(new Date()));
-                setTo(endOfYear(new Date()));
-            } else if (reportingTimePeriod === 'Last Year') {
-                setFrom(new Date(new Date(lastyear.getFullYear(), 0, 1)));
-                setTo(subDays(startOfYear(new Date()), 1));
-            } else {
-                return;
-            }
+        const quarter = Math.floor((new Date().getMonth() / 3));
+        const lastyear = new Date(new Date().getFullYear() - 1, 0, 1);
+        if (reportingTimePeriod === 'Current Week') {
+            setFrom(startOfWeek(new Date()));
+            setTo(endOfWeek(new Date()));
+        } else if (reportingTimePeriod === 'Last Week') {
+            setFrom(subDays(startOfWeek(new Date()), 7));
+            setTo(subDays(startOfWeek(new Date()), 1));
+        } else if (reportingTimePeriod === 'Current Month') {
+            setFrom(startOfMonth(new Date()));
+            setTo(endOfMonth(new Date()));
+        } else if (reportingTimePeriod === 'Last Month') {
+            setFrom(new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1));
+            setTo(subDays(startOfMonth(new Date()), 1));
+        } else if (reportingTimePeriod === 'Current Qtr') {
+            setFrom(startOfQuarter(new Date()));
+            setTo(endOfQuarter(new Date()));
+        } else if (reportingTimePeriod === 'Last Qtr') {
+            setFrom(new Date(new Date().getFullYear(), quarter * 3 - 3, 1));
+            setTo(subDays(startOfQuarter(new Date()), 1));
+        } else if (reportingTimePeriod === 'Current Year') {
+            setFrom(startOfYear(new Date()));
+            setTo(endOfYear(new Date()));
+        } else if (reportingTimePeriod === 'Last Year') {
+            setFrom(new Date(new Date(lastyear.getFullYear(), 0, 1)));
+            setTo(subDays(startOfYear(new Date()), 1));
+        } else {
+            return;
         }
     }, [reportingTimePeriod])
 
@@ -402,7 +419,19 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         }, 2000);
         return () => clearTimeout(timer);
 
-    }, [defaultOption, selectedSites, selectedDepartments, selectedContractedServiceProvider, selectedContracts, selectedStaffType]);
+    }, [defaultOption, selectedSites, selectedDepartments, selectedContractedServiceProvider, selectedContracts, selectedStaffType, selectedPrivilegeCategory]);
+
+    useEffect(() => {
+        if (myReportIdFromUrl)
+            getMyReportDetails();
+    }, [myReportIdFromUrl])
+
+    const getMyReportDetails = async () => {
+        const { data: report } = await GET(`application-management-service/report/myReport/${myReportIdFromUrl}`);
+        sessionStorage.setItem('reportFilter', JSON.stringify(report?.report?.filters));
+        sessionStorage.setItem('myReportContent', JSON.stringify(report?.report));
+        sessionStorage.setItem('myReportId', myReportIdFromUrl);
+    }
 
     const encodeHashToPercent23 = (str) => {
         const parts = str.split('#');
@@ -596,14 +625,17 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         }
     };
 
+    console.log(selectedPosition, 'selectedPosition', selectedPosition === "")
+
     return (
         <div>
             <div className={`${style.leftCard} ${style.leftCardDisplay} ${style.marginTop20} ${style.bigCalendarLeftCardWidth}`}>
                 <div className={`${style.reporttypeLeftBackGround}`}>
-                    <div className={style.reportLeftTextStyle}>Save Parameter Selection As My Report</div>
+                    <div className={`${style.reportLeftTextStyle} ${style.cursorPointer}`} onClick={() => setShowSaveReport(true)}>{!isMyReport ? 'Save Parameter Selection As My Report' : "Update Parameter Selection"}</div>
                 </div>
-                {(reportType === "staffReappointmentsNotes" || reportType === "staffReappointments" ||
-                    reportType === "submittedApplicationsReviewSummary" || reportType === "staffReappointmentTracker") ? (
+                {(reportType === "staffReappointmentsNotes" || reportType === "staffReappointments" || reportType === "locumRenewalOrExtensionApplicationsSummary" || reportType === "privilegedStaffSummary" ||
+                    reportType === "submittedApplicationsReviewSummary" || reportType === "staffReappointmentTracker" || reportType === "ohipBillingNumbersByCareProvider" || reportType === "careProviderCareerMilestoneSummary" ||
+                    reportType === "declinedOrNotRenewedStaffSummary" || reportType === "reappointmentApplicationNotStarted" || reportType === "currentNotesSummary" || reportType === "staffReappointmentStatusSummary") ? (
                     <>
                         {/* {reportType === "staffReappointmentsNotes" && (
                             <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
@@ -647,7 +679,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 ))}
                             </Select>
                         </FormControl> */}
-                        <FormControl variant="standard" sx={{ m: 1, width: "250px", marginTop: "20px" }}>
+                        {/* <FormControl variant="standard" sx={{ m: 1, width: "250px", marginTop: "20px" }}>
                             <InputLabel id="month-selector-label">Reporting Period</InputLabel>
                             <Select
                                 labelId="month-selector-label"
@@ -662,7 +694,72 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                     </MenuItem>
                                 ))}
                             </Select>
+                        </FormControl> */}
+                        <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                            <InputLabel id="demo-multiple-name-label1">Reporting Time Period</InputLabel>
+                            <Select
+                                labelId="demo-multiple-name-label1"
+                                id="demo-multiple-name1"
+                                MenuProps={MenuProps}
+                                value={reportingTimePeriod}
+                                onChange={(e) => { setReportingTimePeriod(e.target.value) }}
+                                disabled={isLoading}
+                            >
+                                <MenuItem value={'Current Week'} disabled={isLoading}>Current Week</MenuItem>
+                                <MenuItem value={'Last Week'} disabled={isLoading}>Last Week</MenuItem>
+                                <MenuItem value={'Current Month'} disabled={isLoading}>Current Month</MenuItem>
+                                <MenuItem value={'Last Month'} disabled={isLoading}>Last Month</MenuItem>
+                                <MenuItem value={'Current Qtr'} disabled={isLoading}>Current Quarter</MenuItem>
+                                <MenuItem value={'Last Qtr'} disabled={isLoading}>Last Quarter</MenuItem>
+                                <MenuItem value={'Current Year'} disabled={isLoading}>Current Year</MenuItem>
+                                <MenuItem value={'Last Year'} disabled={isLoading}>Last Year</MenuItem>
+                                <MenuItem value={'Custom'} disabled={isLoading}>Custom</MenuItem>
+                            </Select>
                         </FormControl>
+                        {reportingTimePeriod === "Custom" && (
+                            <>
+                                <div className={style.marginTop10}>
+                                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                        <DatePicker
+                                            InputProps={{
+                                                style: {
+                                                    fontSize: 14,
+                                                    height: 30,
+                                                }
+                                            }}
+                                            value={from}
+                                            minDate={sub(new Date(to), { years: 3 })}
+                                            maxDate={new Date(to)}
+                                            onChange={(e) => { setFrom(e) }}
+                                            renderInput={(params) => <TextField {...params} inputProps={{
+                                                ...params.inputProps,
+                                                placeholder: "From", readOnly: true
+                                            }} />}
+                                        />
+                                    </LocalizationProvider>
+                                </div>
+                                <div className={style.marginTop10}>
+                                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                        <DatePicker
+                                            InputProps={{
+                                                style: {
+                                                    fontSize: 14,
+                                                    height: 30,
+                                                }
+                                            }}
+                                            value={to}
+                                            minDate={new Date(from)}
+                                            maxDate={add(new Date(from), { years: 3 })}
+                                            onChange={(e) => { setTo(e) }}
+                                            renderInput={(params) => <TextField {...params} inputProps={{
+                                                ...params.inputProps,
+                                                placeholder: "To", readOnly: true
+                                            }} />}
+                                        />
+                                    </LocalizationProvider>
+                                </div>
+                            </>
+                        )}
                         <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                             <InputLabel id="demo-multiple-name-label2" className={style.headingtextStyle}>Departments</InputLabel>
                             <Select
@@ -672,42 +769,23 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 value={selectedDepartments}
                                 onChange={handleChangeDepartments}
                                 MenuProps={MenuProps}
-                                disabled={isMyReport || isLoading}
+                                disabled={isLoading}
                             >
                                 {departments?.length >= 2 && (
-                                    <MenuItem value={defaultOption} disabled={isMyReport || isLoading}>All</MenuItem>
+                                    <MenuItem value={defaultOption} disabled={isLoading}>All</MenuItem>
                                 )}
                                 {departments?.map((data) => (
-                                    // <MenuItem
-                                    //     key={data?.dept?.id}
-                                    //     value={data?.dept?.id}
-                                    // >
-                                    //     {`${data?.site?.siteName?.siteName} - ${data?.dept?.departmentName?.name}`}
-                                    // </MenuItem>
                                     <MenuItem
                                         key={data?.id}
                                         value={data?.id}
-                                        disabled={isMyReport || isLoading}
+                                        disabled={isLoading}
                                     >
                                         {data?.departmentName?.name}
                                     </MenuItem>
                                 ))}
                             </Select>
                         </FormControl>
-                        {/* <CommonSelectField
-                            label="Departments"
-                            value={selectedDepartments}
-                            onChange={handleChangeDepartments}
-                            firstOptionLabel={departments?.length >= 2 ? "All" : ""}
-                            firstOptionValue={defaultOption}
-                            valueList={departments?.map((data) => data?.id)}
-                            labelList={departments?.map((data) => data?.departmentName?.name)}
-                            disabledList={departments?.map(() => isMyReport || isLoading)}
-                            disabledSelect={isMyReport || isLoading}
-                            multiple={true}
-                            // widthValue="250px"
-                        /> */}
-                        <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                        {/* <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                             <InputLabel id="demo-multiple-name-label2" className={style.headingtextStyle}>Division / Speciality</InputLabel>
                             <Select
                                 labelId="demo-multiple-name-label2"
@@ -722,12 +800,6 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                     <MenuItem value={defaultOption} disabled={isMyReport || isLoading}>All</MenuItem>
                                 )}
                                 {departments?.map((data) => (
-                                    // <MenuItem
-                                    //     key={data?.dept?.id}
-                                    //     value={data?.dept?.id}
-                                    // >
-                                    //     {`${data?.site?.siteName?.siteName} - ${data?.dept?.departmentName?.name}`}
-                                    // </MenuItem>
                                     <MenuItem
                                         key={data?.id}
                                         value={data?.id}
@@ -737,7 +809,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                     </MenuItem>
                                 ))}
                             </Select>
-                        </FormControl>
+                        </FormControl> */}
                         <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                             <InputLabel id="demo-multiple-name-label2" className={style.headingtextStyle}>Staff Type</InputLabel>
                             <Select
@@ -747,10 +819,10 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 value={selectedStaffType}
                                 onChange={handleChangeStaffType}
                                 MenuProps={MenuProps}
-                                disabled={isMyReport || isLoading}
+                                disabled={isLoading}
                             >
                                 {staffType?.length >= 2 && (
-                                    <MenuItem value={defaultOption} disabled={isMyReport || isLoading}>All</MenuItem>
+                                    <MenuItem value={defaultOption} disabled={isLoading}>All</MenuItem>
                                 )}
                                 {staffType?.map((data) => (
                                     // <MenuItem
@@ -762,7 +834,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                     <MenuItem
                                         key={data?.id}
                                         value={data?.id}
-                                        disabled={isMyReport || isLoading}
+                                        disabled={isLoading}
                                     >
                                         {data?.applicantType}
                                     </MenuItem>
@@ -778,10 +850,10 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 value={selectedPrivilegeCategory}
                                 onChange={handleChangePrivilegeCategory}
                                 MenuProps={MenuProps}
-                                disabled={isMyReport || isLoading}
+                                disabled={isLoading}
                             >
                                 {privilegeCategory?.length >= 2 && (
-                                    <MenuItem value={defaultOption} disabled={isMyReport || isLoading}>All Categories</MenuItem>
+                                    <MenuItem value={defaultOption} disabled={isLoading}>All Categories</MenuItem>
                                 )}
                                 {privilegeCategory?.map((data) => (
                                     // <MenuItem
@@ -793,13 +865,63 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                     <MenuItem
                                         key={data?.id}
                                         value={data?.id}
-                                        disabled={isMyReport || isLoading}
+                                        disabled={isLoading}
                                     >
                                         {data?.category}
                                     </MenuItem>
                                 ))}
                             </Select>
                         </FormControl>
+                        {(reportType === "submittedApplicationsReviewSummary" || reportType === "currentNotesSummary") && (
+                            <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                                <InputLabel id="demo-simple-select-standard-label3">Application Type</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-standard-label3"
+                                    id="demo-simple-select-standard3"
+                                    value={selectedApplicationType}
+                                    onChange={(e) => { setSelectedApplicationType(e.target.value) }}
+                                    MenuProps={MenuProps}
+                                    disabled={isLoading}
+                                >
+                                    <MenuItem value={''} disabled={isLoading}>All</MenuItem>
+                                    <MenuItem value={'NEW'} disabled={isLoading}>New Applicants</MenuItem>
+                                    <MenuItem value={'REAPPOINTMENT'} disabled={isLoading}>Staff Reapointments</MenuItem>
+                                    <MenuItem value={'LOCUM_RENEWAL'} disabled={isLoading}>Locum Applications</MenuItem>
+                                </Select>
+                            </FormControl>
+                        )}
+                        {reportType === "declinedOrNotRenewedStaffSummary" && (
+                            <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                                <InputLabel id="demo-simple-select-standard-label3">Locum Application Status</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-standard-label3"
+                                    id="demo-simple-select-standard3"
+                                    value={selectedReappointmentStatus}
+                                    onChange={(e) => { setSelectedReappointmentStatus(e.target.value) }}
+                                    MenuProps={MenuProps}
+                                    disabled={isLoading}
+                                >
+                                    <MenuItem value={''} disabled={isLoading}>All</MenuItem>
+                                    <MenuItem value={'NOT_RENEWED'} disabled={isLoading}>Not Renewed</MenuItem>
+                                    <MenuItem value={'DECLINED'} disabled={isLoading}>Declined</MenuItem>
+                                </Select>
+                            </FormControl>
+                        )}
+                        {/* <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                            <InputLabel id="demo-simple-select-standard-label3">Position</InputLabel>
+                            <Select
+                                labelId="demo-simple-select-standard-label3"
+                                id="demo-simple-select-standard3"
+                                value={selectedPosition}
+                                onChange={(e) => { setSelectedPosition(e.target.value) }}
+                                MenuProps={MenuProps}
+                                disabled={isMyReport || isLoading}
+                            >
+                                <MenuItem value={''} >All</MenuItem>
+                                <MenuItem value={'PERMANENT'} disabled={isMyReport || isLoading}>Permanent</MenuItem>
+                                <MenuItem value={'LOCUM'} disabled={isMyReport || isLoading}>Locum</MenuItem>
+                            </Select>
+                        </FormControl> */}
                         {/* <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                             <InputLabel id="demo-multiple-name-label5" className={style.headingtextStyle}>Contract</InputLabel>
                             <Select
@@ -1316,9 +1438,10 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                 )}
                 {/* <button className={`${style.primaryButtonStyle} ${style.marginTop20}`} onClick={()=> setShowSaveReport(true)} >Save Parameter Selection As My Report</button> */}
             </div>
+
             {
                 showSaveReport && (
-                    <SaveReport getSaveReportDialog={getSaveReportDialog} />
+                    <SaveReport getSaveReportDialog={getSaveReportDialog} dataToUseInReport={dataToUseInReport} reportType={reportType} />
                 )
             }
         </div >

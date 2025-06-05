@@ -309,6 +309,12 @@ const MedicalDirectivesAttestDisplay = React.lazy(() =>
   import("./Screens/MedicalDirectivesAttestDisplay")
 );
 
+const MDRequestAttest = React.lazy(() =>
+  import("./Screens/MDRequestAttest")
+);
+const MDAttest = React.lazy(() => import("./Screens/MDRequestAttest/MedicalDirectivesAttest"));
+
+
 const App = ({ props }) => {
   const [accessToken, setAccessToken] = useState(Auth());
   const { isAuthenticated, isSessionLoading } = useSession();
@@ -896,6 +902,7 @@ const App = ({ props }) => {
     // const navigate = useNavigate();
     const fetchData = () => {
       console.log('login route', Auth())
+      const initialRoute = sessionStorage.getItem("initialRoute");
       if (Auth()) {
         console.log('login route')
         let roles = jwt(Auth())?.roles?.split(",");
@@ -912,7 +919,13 @@ const App = ({ props }) => {
             setShowDialog(true);
           }
         }
-        if (roles?.length === 1) {
+
+        if (roles?.length === 1 && sessionStorage?.getItem('initialRoute') !== undefined && sessionStorage?.getItem('initialRoute') !== 'undefined' && sessionStorage?.getItem('initialRoute') !== null) {
+          sessionStorage.setItem("workModeType", roles[0]);
+          window.location.href = `${initialRoute}`;
+          sessionStorage?.removeItem('initialRoute')
+        }
+        else if (roles?.length === 1) {
           sessionStorage.setItem("workModeType", roles[0]);
           let isAppUser =
             roles?.includes("Approver") ||
@@ -1312,6 +1325,10 @@ const App = ({ props }) => {
                   element={<ProtectedRoute><ReportTypeOverview /></ProtectedRoute>}
                 />
                 <Route
+                  path="/myReport/:reportType/:myReportIdFromUrl"
+                  element={<ProtectedRoute><ReportTypeOverview /></ProtectedRoute>}
+                />
+                <Route
                   path="/applicationForm/:applicationId/:section/:step"
                   element={<ProtectedRoute><ApplicationForm /></ProtectedRoute>}
                 />
@@ -1326,6 +1343,14 @@ const App = ({ props }) => {
                 <Route
                   path="/medicalDirective/:applicationId/:medicalDirectivesId"
                   element={<ProtectedRoute><MedicalDirectivesAttestDisplay /></ProtectedRoute>}
+                />
+                <Route
+                  path="/tenant/:entityId/medicalDirectives"
+                  element={<ProtectedRoute><MDRequestAttest /></ProtectedRoute>}
+                />
+                <Route
+                  path="/medicalDirectiveAttest/:entityId/:medicalDirectivesId"
+                  element={<ProtectedRoute><MDAttest /></ProtectedRoute>}
                 />
                 <Route
                   path="/locumApplicationForm/:applicationId/:section/:step"

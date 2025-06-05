@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Icon, Intent, Dialog, Classes, TextArea } from '@blueprintjs/core';
 import { TextField } from '@mui/material';
 import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined';
@@ -8,6 +8,7 @@ import PrintOutlinedIcon from '@mui/icons-material/PrintOutlined';
 import CachedOutlinedIcon from '@mui/icons-material/CachedOutlined';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import ZoomOutMapIcon from '@mui/icons-material/ZoomOutMap';
+import html2pdf from "html2pdf.js";
 import Popover from '@mui/material/Popover';
 import { useParams } from 'react-router-dom';
 import UserLogo1 from './../../images/userLogo3.png';
@@ -21,11 +22,16 @@ import ReportsSchedule from './../../images/reportsSchedule.png';
 import ReportsPrint from './../../images/reportsPrint.png';
 import ReportsFullScreen from './../../images/reportsFullScreen.png';
 import ReportsShare from './../../images/reportsShare.png';
+import DoctorAnime from './../../images/doctorAnime.png';
 import Info from './../../images/info.png';
 import SaveReport from './saveReport';
 import { format } from 'date-fns';
 
 import style from './index.module.scss';
+import { GET, POST } from '../dataSaver';
+import CommonSearchField from '../../Components/CommonFields/CommonSearchField';
+import { formatFirstNameLastName } from '../../utils/formatting';
+import { SuccessToaster2 } from '../../utils/toaster';
 
 const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, refToUse, getIsDownloadClicked, isNoData }) => {
     const { reportType } = useParams();
@@ -47,8 +53,13 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
     const [anchorElFullscreen, setAnchorElFullscreen] = useState(null);
     const openFullscreen = Boolean(anchorElFullscreen);
     const [anchorElInfo, setAnchorElInfo] = useState(null);
+    const [reportName, setReportName] = useState('');
+    const [reportDescription, setReportDescription] = useState('');
     const openInfo = Boolean(anchorElInfo);
-
+    const [isLoading, setIsLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [searchData, setSearchData] = useState([]);
+    const [selectedUsers, setSelectedUsers] = useState([]);
     const reportTitleList = {
         // staffReappointmentsNotes: 'Upcoming Contract Renewals',
         staffReappointmentsNotes: 'Staff Reappointments to Process',
@@ -75,16 +86,289 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
         contractsWithABusinessEntity: 'Contracts With A Business Entity',
         currentRemitToAddressForActiveContracts: 'Current Remit To Address For Active Contracts',
         activityStatusTracker: `Status Of Activities/ Services By Service Provider For ${format(new Date(), 'MMMM yyyy')}`,
-        paymentProcessingStatusTracker: 'Payment Processing Status By Service Provider'
+        paymentProcessingStatusTracker: 'Payment Processing Status By Service Provider',
+        submittedApplicationsReviewSummary: 'Submitted Applications Review Summary',
+        ohipBillingNumbersByCareProvider: 'OHIP Billing Numbers By Care Provider',
+        reappointmentApplicationNotStarted: 'Reappointment Application Not Yet Started Summary',
+        privilegedStaffSummary: 'Privileged Staff Summary',
+        currentNotesSummary: 'Current Notes Summary',
+        staffReappointmentStatusSummary: 'Staff Reappointment Status Summary',
+        locumRenewalOrExtensionApplicationsSummary: 'Locum Renewal / Extension Applications Summary',
+        careProviderCareerMilestoneSummary: 'Care Providers Career Milestone Summary',
+        declinedOrNotRenewedStaffSummary: 'Declined Or Not Renewed Staff Summary'
     }
+
+    const availableCategories = {
+        servicesOrActivities: 'SERVICES_ACTIVITIES',
+        contractManagement: 'CONTRACT_MANAGEMENT',
+        contractCompliance: 'CONTRACT_COMPLIANCE',
+        contractPerformance: 'CONTRACT_PERFORMANCE',
+        payments: 'PAYMENT',
+        timesheets: 'TIMESHEET',
+        reviewsApprovals: 'REVIEWS_APPROVALS',
+        systemAdministrative: 'SYSTEM_ADMINISTRATIVE',
+        allStaffMembers: 'ALL_STAFF',
+        savedReportsArchive: '',
+        staffReappointments: 'STAFF_REAPPOINTMENT',
+        newApplicants: 'NEW_APPLICANT',
+        allApplications: 'ALL_APPLICATION',
+        locumStaff: 'LOCUM_STAFF',
+        permanentStaff: 'PERMANENT_STAFF',
+        locumExtensionOrRenewal: 'LOCUM_EXTENSION_OR_RENEWAL',
+        submittedApplicationsReviewSummary: 'STAFF_REAPPOINTMENT',
+        ohipBillingNumbersByCareProvider: 'ALL_STAFF',
+        reappointmentApplicationNotStarted: 'STAFF_REAPPOINTMENT',
+        privilegedStaffSummary: 'ALL_STAFF',
+        currentNotesSummary: 'ALL_STAFF',
+        staffReappointmentStatusSummary: 'STAFF_REAPPOINTMENT',
+        locumRenewalOrExtensionApplicationsSummary: 'LOCUM_EXTENSION_OR_RENEWAL',
+        careProviderCareerMilestoneSummary: 'PERMANENT_STAFF',
+        declinedOrNotRenewedStaffSummary: 'LOCUM_EXTENSION_OR_RENEWAL'
+    }
+
+    const typeList = {
+        'activitiesOrServices': 'ACTIVITES_SERVICES_LOG_SUMMARY',
+        'addOnActivities': 'ADDON_ACTIVITES_SERVICES_LOG_SUMMARY',
+        'scheduledActivity': '',
+        'staffReappointmentsNotes': 'UPCOMING_CONTRACT_RENEWALS',
+        'staffReappointments': 'ONE_TIME_CONTRACT',
+        'complianceStatus': '',
+        'nonCompliant': '',
+        'paidConsultingHours': '',
+        'scheduledActivityByContract': '',
+        'paymentsProcessingSummary': 'PAYMENT_PROCESSING_SUMMARY',
+        'compensationCostAnalysis': 'COST_REPORT_FOR_CONTRACTED_SERVICES_PERFORMED',
+        'timeAndPaymentLog': 'TIME_AND_PAYEMENT_LOG_FOR_CONTRACTED_SERVICES',
+        'siteDepartmentSpecificContractorSummary': 'SITE_DEPARTMENT_SPECIFIC_CONTRACTOR_SUMMARY',
+        'timesheetProcessingSummary': 'TIMESHEET_PROCESSING_SUMMARY',
+        'listingOfTimesheetsNotPaid': 'LISTING_OF_TIMESHEETS_NOTPAID',
+        'staffReappointmentTracker': 'SUBMITTED_TIMESHEETS_PAYMENT_STATUS',
+        'contractDocumentsOnFile': 'CONTRACT_DOCUMENT_ON_FILE',
+        'contractsWithABusinessEntity': 'CONTRACT_WITH_BUSINESS_ENTITY',
+        'multiProviderContractsList': 'MULTI_PROVIDER_CONTRACT',
+        'currentRemitToAddressForActiveContracts': 'CURRENT_REMIT_TO_ADDRESS',
+        'activityStatusTracker': 'ACTIVITY_STATUS_TRACKER',
+        'paymentProcessingStatusTracker': 'PAYMENT_TRACKER',
+        'submittedApplicationsReviewSummary': 'SUBMITTED_APPLICATIONS_REVIEW_SUMMARY',
+        'ohipBillingNumbersByCareProvider': 'OHIP_BILLING_NUMBERS_BY_CARE_PROVIDER',
+        'reappointmentApplicationNotStarted': 'REAPPOINTMENT_APPLICATIONS_NOT_YET_STARTED_SUMMARY',
+        'privilegedStaffSummary': 'PRIVILEGED_STAFF_SUMMARY',
+        'currentNotesSummary': 'CURRENT_NOTES_SUMMARY',
+        'staffReappointmentStatusSummary': 'STAFF_REAPPOINTMENT_STATUS_SUMMARY',
+        'locumRenewalOrExtensionApplicationsSummary': 'DECLINED_OR_NOT_RENEWED_STAFF_SUMMARY',
+        'careProviderCareerMilestoneSummary': 'CARE_PROVIDER_CAREER_MILESTONE_SUMMARY',
+        'declinedOrNotRenewedStaffSummary': 'DECLINED_OR_NOT_RENEWED_STAFF_SUMMARY'
+    }
+
+    const availableApplicationTypes = {
+        NEW: 'New Applicants',
+        REAPPOINTMENT: 'Staff Reappointments',
+        LOCUM_RENEWAL: 'Locum Renewals'
+    }
+
+    useEffect(() => {
+        if (searchTerm.trim() === "") {
+            setSearchData([]); // Clear results if input is empty
+            return;
+        }
+
+        const controller = new AbortController(); // Create an AbortController instance
+        const signal = controller.signal;
+
+        getUserDataSearch(signal); // Call API function with signal
+
+        return () => controller.abort(); // Cleanup: Cancel previous request if a new one starts
+    }, [searchTerm]);
+
+    useEffect(() => {
+        getUserList()
+    }, [])
 
     const getSaveReportDialog = (value) => {
         setShowSaveReport(value);
     }
 
+    const handleSearch = (e) => {
+        setSearchTerm(e.target.value);
+    }
+
+    const onSearchClickFunc = (data) => {
+        setSelectedUsers((prevList) => {
+            if (!prevList?.map(data => data?.id)?.includes(data?.id)) {
+                return [...prevList, data];
+            }
+            return prevList;
+        });
+    }
+
+    const handleRemoveFromList = (id) => {
+        setSelectedUsers((prevList) => {
+            if (prevList?.map(data => data?.id)?.includes(id)) {
+                return prevList?.filter(item => item?.id !== id);
+            }
+        });
+    };
+
+    const getUserList = async () => {
+        const { data: users } = await GET(`user-management-service/user`);
+        setSearchData(users?.map(item => ({
+            id: item.id,
+            name: `${formatFirstNameLastName(item?.name?.firstName, item?.name?.lastName)}` || " ",
+            desc: `${item?.title?.title || ''}`,
+            profilePic: item?.profilePic?.file?.fileURL,
+            mailId: item?.email?.officialEmail
+        })));
+    }
+
+    const getUserDataSearch = async (signal) => {
+        try {
+            let response;
+
+            response = await GET(
+                `user-management-service/user?searchText=${searchTerm}`, { signal }
+            );
+            console.log("Application data", response?.data);
+            setSearchData(response?.data?.map(item => ({
+                id: item.id,
+                name: `${formatFirstNameLastName(item?.name?.firstName, item?.name?.lastName)}` || " ",
+                desc: `${item?.title?.title || ''}`,
+                profilePic: item?.profilePic?.file?.fileURL,
+                mailId: item?.email?.officialEmail
+            })));
+
+            return response?.data?.applications || [];
+        } catch (error) {
+            console.error("Error fetching applications:", error);
+            return [];
+        }
+    };
+
+    const handleDownload = (isShare) => {
+        const uniqueFileName = `SavedReport_${Date.now()}.pdf`;
+        setShowSaveReportOutput(false)
+        setShowShareDialog(false)
+        const element = refToUse.current;
+        const opt = {
+            margin: 0.5,
+            filename: uniqueFileName,
+            image: { type: "jpeg", quality: 0.98 },
+            html2canvas: {
+                scale: 2,
+                useCORS: true,
+                logging: true,
+            },
+            jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
+            pagebreak: { mode: [] },
+        };
+
+        html2pdf().set(opt).from(element).outputPdf("blob").then((pdfBlob) => {
+            if (isShare) {
+                handleShare(pdfBlob, uniqueFileName)
+            } else {
+                addSavedReport(pdfBlob, uniqueFileName)
+            }
+        });
+
+    }
+
+    const addSavedReport = async (pdfBlob, uniqueFileName) => {
+        let userData = (sessionStorage.getItem('user') && sessionStorage.getItem('user') !== 'undefined') ? JSON.parse(sessionStorage.getItem('user')) : {}
+        console.log(userData, 'userData')
+        let data = {
+            reportName: reportTitleList[reportType],
+            reportNotes: reportDescription,
+            runDate: new Date(),
+            reportDoc: {
+                fileName: uniqueFileName
+            },
+            category: availableCategories[reportType],
+            type: typeList[reportType],
+            owner: userData,
+            filters: {
+                'startDate': dataToUseInReport?.from,
+                'endDate': dataToUseInReport?.to,
+                'applicantTypeId': dataToUseInReport?.selectedStaffType?.[0] !== '' ? dataToUseInReport?.selectedStaffType : [],
+                'departmentSpecialties': dataToUseInReport?.selectedDepartments?.[0] !== '' ? dataToUseInReport?.selectedDepartments : [],
+                'privilegingCategoryId': dataToUseInReport?.selectedPrivilegeCategory !== '' ? dataToUseInReport?.selectedPrivilegeCategory : '',
+                "positionType": dataToUseInReport?.selectedPosition !== "" ? [dataToUseInReport?.selectedPosition] : [],
+                "applicationCreationType": dataToUseInReport?.selectedApplicationType !== "" ? [dataToUseInReport?.selectedApplicationType] : [],
+                "applicationCurrentLevel": sessionStorage.getItem('workModeType'),
+                "staffReappointmentStatus": dataToUseInReport?.selectedReappointmentStatus ? [dataToUseInReport?.selectedReappointmentStatus] : []
+            },
+            filterDisplayNames: [
+                { name: 'Reporting Period used for this report', values: [`${dataToUseInReport?.fromToDisplay} - ${dataToUseInReport?.toToDisplay}`] },
+                { name: 'Staff Type', values: [dataToUseInReport?.selectedStaffTypeToSend?.map(data => data?.applicantType).join(', ') || 'All Staff Type'] },
+                { name: 'Departments', values: [dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.departmentName?.name).join(', ') || 'All Departments'] },
+                { name: 'Privilege Category', values: [dataToUseInReport?.selectedPrivilegeCategoryToSend?.map(data => data?.category).join(', ') || 'All Categories'] },
+                { name: 'Position', values: dataToUseInReport?.selectedPosition !== "" ? [dataToUseInReport?.selectedPosition] : [] },
+                { name: 'Application Type', values: [availableApplicationTypes[dataToUseInReport?.selectedApplicationType] || 'All Application Type'] },
+                { name: 'Reappointment Status', values: [dataToUseInReport?.selectedReappointmentStatus || 'All Applications'] },
+            ],
+        }
+        const formData = new FormData();
+        if (pdfBlob !== null) {
+            const blob = new Blob([pdfBlob], { type: `application/pdf` });
+            formData.append('savedReport', new Blob([JSON.stringify(data)], {
+                type: "application/json"
+            }));
+            formData.append('savedReportFile', blob, uniqueFileName);
+
+            try {
+                const response = await POST(`application-management-service/report/savedReport/`, formData);
+                console.log(response?.data);
+                setShowReportSavedDialog(true);
+            } catch (error) {
+                console.error(error);
+                return null;
+            }
+        };
+    }
+
+    const handleShare = async (pdfBlob, uniqueFileName) => {
+        let data = {
+            mailIds: selectedUsers?.map(data => data?.mailId),
+            savedReportIds: [],
+            reportName: reportTitleList[reportType],
+            file: {
+                fileName: uniqueFileName
+            },
+            category: availableCategories[reportType],
+            type: typeList[reportType],
+            filterDisplayNames: [
+                { name: 'Reporting Period used for this report', values: [`${dataToUseInReport?.fromToDisplay} - ${dataToUseInReport?.toToDisplay}`] },
+                { name: 'Staff Type', values: [dataToUseInReport?.selectedStaffTypeToSend?.map(data => data?.applicantType).join(', ') || 'All Staff Type'] },
+                { name: 'Departments', values: [dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.departmentName?.name).join(', ') || 'All Departments'] },
+                { name: 'Privilege Category', values: [dataToUseInReport?.selectedPrivilegeCategoryToSend?.map(data => data?.category).join(', ') || 'All Categories'] },
+                { name: 'Position', values: dataToUseInReport?.selectedPosition !== "" ? [dataToUseInReport?.selectedPosition] : [] },
+                { name: 'Application Type', values: [availableApplicationTypes[dataToUseInReport?.selectedApplicationType] || 'All Application Type'] },
+                { name: 'Reappointment Status', values: [dataToUseInReport?.selectedReappointmentStatus || 'All Applications'] },
+            ],
+        }
+        const formData = new FormData();
+        if (pdfBlob !== null) {
+            const blob = new Blob([pdfBlob], { type: `application/pdf` });
+            formData.append('sharingDetails', new Blob([JSON.stringify(data)], {
+                type: "application/json"
+            }));
+            formData.append('document', blob, uniqueFileName);
+            console.log(formData, blob, data, pdfBlob)
+            try {
+                const response = await POST(`application-management-service/report/shareReports/`, formData);
+                console.log(response?.data);
+                SuccessToaster2('Report Output Shared Successfully!')
+            } catch (error) {
+                console.error(error);
+                return null;
+            }
+        };
+    }
+
+    console.log(searchData)
+
+
     return (
         <div>
-            <div className={`${style.spaceBetween} ${style.alignCenter} ${style.IconHeaderBackgroundStyle}`}>
+            <div className={`${style.spaceBetween} ${style.alignCenter} ${style.IconHeaderBackgroundStyle} ${style.marginTop20}`}>
                 <div className={`${style.displayInRow} ${style.cardPadding} ${style.alignCenter}`}>
                     <div className={style.reportTypeTextNotificationStyle}>
                         {reportTitleList[reportType]}
@@ -119,7 +403,7 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                             <Icon icon="star" size={20} color="#D3D3D3" className={style.marginLeft} />
                             <Icon icon="star" size={20} color="#D3D3D3" className={style.marginLeft} />
                         </div> */}
-                        {/* <div className={`${style.iconPadding} ${style.cursorPointer} ${style.marginLeft20}`}
+                        <div className={`${style.iconPadding} ${style.cursorPointer} ${style.marginLeft20}`}
                             onMouseEnter={(e) => setAnchorElRefresh(e.currentTarget)} onMouseLeave={() => setAnchorElRefresh(null)} aria-owns={openRefresh ? 'mouse-over-popover' : undefined}
                             aria-haspopup="true">
                             <img src={ReportsRefresh} alt="" className={`${style.reportsActions} ${style.marginTop5}`} onClick={() => { setShowReportRefreshingDialog(true); window.location.reload() }} />
@@ -139,14 +423,14 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                             >
                                 <div className={style.popoverStyle}>Click To Refresh This Report</div>
                             </Popover>
-                        </div> */}
+                        </div>
                         {/* <div className={`${style.iconPadding} ${style.cursorPointer}`}>
-                            <ShareOutlinedIcon style={{color:"#2C2C2C"}} onClick={() => setShowShareDialog(true)} />
+                            <ShareOutlinedIcon style={{ color: "#2C2C2C" }} onClick={() => setShowShareDialog(true)} />
                         </div> */}
-                        {/* <div className={`${style.iconPadding} ${style.cursorPointer} ${isNoData && style.disabledCursor}`}
+                        <div className={`${style.iconPadding} ${style.cursorPointer} ${isNoData && style.disabledCursor}`}
                             onMouseEnter={(e) => !isNoData ? setAnchorElSchedule(e.currentTarget) : {}} onMouseLeave={() => !isNoData ? setAnchorElSchedule(null) : {}} aria-owns={openSchedule ? 'mouse-over-popover' : undefined}
                             aria-haspopup="true">
-                            <img src={ReportsSchedule} alt="" className={`${style.reportsActions} ${style.marginTop5}`} onClick={() => !isNoData ? setShowSaveReport(true) : {}} />
+                            <img src={ReportsShare} alt="" className={`${style.reportsActions} ${style.marginTop5}`} onClick={() => !isNoData ? setShowShareDialog(true) : {}} />
                             <Popover
                                 id={'mouse-over-popover'}
                                 sx={{
@@ -161,13 +445,13 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                                 }}
                                 disableRestoreFocus
                             >
-                                <div className={style.popoverStyle}>Click To Schedule This Report</div>
+                                <div className={style.popoverStyle}>Click To Share This Report</div>
                             </Popover>
-                        </div> */}
-                        {/* <div className={`${style.iconPadding} ${style.cursorPointer}`} onClick={() => setShowSaveReportOutput(true)}
+                        </div>
+                        <div className={`${style.iconPadding} ${style.cursorPointer}`}
                             onMouseEnter={(e) => setAnchorElSave(e.currentTarget)} onMouseLeave={() => setAnchorElSave(null)} aria-owns={openSave ? 'mouse-over-popover' : undefined}
                             aria-haspopup="true">
-                            <SaveOutlinedIcon style={{ color: "#2C2C2C" }} />
+                            <img src={ReportsSchedule} alt="" className={`${style.reportsActions} ${style.marginTop5}`} onClick={() => setShowSaveReportOutput(true)} />
                             <Popover
                                 id={'mouse-over-popover'}
                                 sx={{
@@ -184,7 +468,7 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                             >
                                 <div className={style.popoverStyle}>Click to Save this Report</div>
                             </Popover>
-                        </div> */}
+                        </div>
                         <div className={`${style.iconPadding} ${style.cursorPointer} ${isNoData && style.disabledCursor}`} onClick={() => !isNoData ? getIsDownloadClicked(true) : {}}
                             onMouseEnter={(e) => !isNoData ? setAnchorElDownload(e.currentTarget) : {}} onMouseLeave={() => !isNoData ? setAnchorElDownload(null) : {}} aria-owns={openDownload ? 'mouse-over-popover' : undefined}
                             aria-haspopup="true">
@@ -267,16 +551,16 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                             <div className={`${style.marginTop20} ${style.recipientsDataHeight}`}>
                                 <div className={style.displayInCol}>
                                     <label for="standard-basic" className={style.saveReportLabelStyle}>Report Output Name</label>
-                                    <TextField id="standard-basic" variant="standard" value="Report Name - ABC" className={`${style.threeColWidth} ${style.saveReportFieldStyle} ${style.marginTop10}`} />
+                                    <TextField id="standard-basic" variant="standard" value={reportTitleList[reportType]} className={`${style.threeColWidth} ${style.saveReportFieldStyle} ${style.marginTop10}`} />
                                 </div>
                                 <div className={style.marginTop20}>
                                     <label for="description" className={`${style.saveReportLabelStyle}`}>Report Output Notes</label>
-                                    <TextArea id="description" rows={5} placeholder="Enter Notes" className={`${style.fullWidth} ${style.saveReportFieldStyle} ${style.marginTop10}`} />
+                                    <TextArea id="description" rows={5} placeholder="Indicate why you’re saving this report output" className={`${style.fullWidth} ${style.saveReportFieldStyle} ${style.marginTop10}`} value={reportDescription} onChange={(e) => setReportDescription(e.target.value)} />
                                 </div>
                             </div>
                             <div>
                                 <div className={`${style.justifyCenter} ${style.marginTop20}`}>
-                                    <button className={`${style.saveButtonStyle} ${style.marginLeft20} ${style.cursorPointer} `} onClick={() => { setShowReportSavedDialog(true); setShowSaveReportOutput(false) }}>Save</button>
+                                    <button className={`${style.saveButtonStyle} ${style.marginLeft20} ${style.cursorPointer} `} onClick={() => { handleDownload(); }}>Save</button>
                                 </div>
                             </div>
                         </div>
@@ -305,33 +589,36 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                         <p className={`${style.extensionStyle} ${style.marginTop} ${style.bold}`}>Share This Report Output</p>
                         <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => setShowShareDialog(false)} />
                     </div>
-                    <div className={style.extensionBorder}></div>
                     <div className={style.spaceBetween}>
+                        <div></div>
                         <div className={style.displayInRow}>
-                            <p className={`${style.mailBoldText} ${style.marginTop20} ${style.blueText}`}>Registered Users</p>
+                            {/* <p className={`${style.mailBoldText} ${style.marginTop20} ${style.blueText}`}>Registered Users</p>
                             <div className={`${style.taskCountStyle} ${style.marginTop20} ${style.marginLeft20}`}>20</div>
                             <p className={`${style.mailBoldText} ${style.marginTop20} ${style.externalRecipientsMarginLeft}`}>External Recipients</p>
-                            <div className={style.deliveryCountStyle}>20</div>
-                            <div className={`${style.searchBarStyle} ${style.spaceBetween} ${style.externalRecipientsMarginLeft}`}>
-                                <p>Search</p>
-                                <img src={Search} className={style.searchIcon} />
+                            <div className={style.deliveryCountStyle}>20</div> */}
+                            <div>
+                                <CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={() => { }} isOnClickAvailable={true} onClickFunc={onSearchClickFunc} placeholder={"Search by Staff Name"} />
                             </div>
                         </div>
                     </div>
                     <div className={`${style.extensionBorder} ${style.marginTop10}`}></div>
                     <div className={`${style.padding10}`}>
                         <div>
-                            <div className={style.padding10}>
-                                <div className={`${style.userMailListGrid} ${style.padding10} `}>
-                                    <img src={UserLogo1} alt={'User Logo 1'} className={style.userLogoMailStyle} />
-                                    <div>
-                                        <p className={`${style.mailIdTextColor}`}>Ronald Jones (Myself)</p>
-                                        <p className={`${style.descriptionText} ${style.reduceMarginTop}`}>Medical Director, Dept. of Surgery</p>
-                                    </div>
-                                    <Icon icon="cross" className={style.marginTop10} color="#2C2C2C" />
-                                </div>
-                                <div className={`${style.extensionBorder}`}></div>
-                                <div className={`${style.userMailListGrid} ${style.padding10} ${style.marginTop10}`}>
+                            <div>
+                                {selectedUsers?.map((data, index) => (
+                                    <>
+                                        <div className={`${style.userMailListGrid} ${style.padding10}  ${index !== 0 ? style.marginTop10 : ''}`}>
+                                            <img src={data?.profilePic ? data?.profilePic : DoctorAnime} alt={'User Logo 1'} className={style.userLogoMailStyle} />
+                                            <div>
+                                                <p className={`${style.mailIdTextColor}`}>{`${data?.name}`}</p>
+                                                <p className={`${style.descriptionText} ${style.reduceMarginTop}`}>{`${data?.desc}`}</p>
+                                            </div>
+                                            <Icon icon="cross" className={`${style.marginTop10} ${style.cursorPointer}`} color="#2C2C2C" onClick={() => handleRemoveFromList(data?.id)} />
+                                        </div>
+                                        <div className={`${style.extensionBorder}`}></div>
+                                    </>
+                                ))}
+                                {/* <div className={`${style.userMailListGrid} ${style.padding10} ${style.marginTop10}`}>
                                     <img src={UserLogo2} alt={'User Logo 2'} className={style.userLogoMailStyle} />
                                     <div>
                                         <p className={`${style.mailIdTextColor}`}>Kyle Wright, MD</p>
@@ -359,11 +646,11 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                                     </div>
                                     <Icon icon="cross" className={style.marginTop10} color="#2C2C2C" />
                                 </div>
-                                <div className={`${style.extensionBorder}`}></div>
+                                <div className={`${style.extensionBorder}`}></div>*/}
                             </div>
                             <div>
                                 <div className={`${style.justifyCenter} ${style.marginTop20}`}>
-                                    <button className={`${style.cloneButtonStyle} ${style.marginLeft20} ${style.cursorPointer} `}>{'Share Now'}</button>
+                                    <button className={`${style.cloneButtonStyle} ${style.marginLeft20} ${style.cursorPointer} ${selectedUsers?.length === 0 ? style.disabledButton : ''}  `} onClick={selectedUsers?.length === 0 ? () => { } : () => handleDownload(true)}>{'Share Now'}</button>
                                 </div>
                             </div>
                         </div>

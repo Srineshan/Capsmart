@@ -198,7 +198,7 @@ const LocumExtensiveRequestDialog = ({ getIsOpen, tableDataValue, selectedTab })
         const departmentId = selectDataLocum?.basicDetailReferences?.department?.id;
         const applicantTypeId = selectDataLocum?.basicDetailReferences?.applicantType?.id;
         const response = await GET(
-          `application-management-service/staff?status=ACTIVE&departmentId=${departmentId}&applicantTypeId=${applicantTypeId}&sortByField=STAFF_NAME`
+          `application-management-service/staff?status=ACTIVE&departmentId=${departmentId}&applicantTypeId=${applicantTypeId}&sortByField=STAFF_NAME&isPaginationRequired=${limit === 9999 ? false : true}&limit=${limit}`
         );
         console.log(response.data);
 
@@ -223,8 +223,11 @@ const LocumExtensiveRequestDialog = ({ getIsOpen, tableDataValue, selectedTab })
   }, [selectDataLocum]);
 
   const reappointmentRequestApplication = async () => {
+     const startDate = selectDataLocum?.tenure?.to
+    ? new Date(selectDataLocum?.tenure?.to).toISOString().split('T')[0] + 'T00:00'
+    : null;
     const fromDate = selectedTab === "ACTIVELOCUM"
-      ? format(addDays(new Date(selectDataLocum?.tenure?.to), 1), 'yyyy-MM-dd')
+      ? format(addDays(new Date(startDate), 1), 'yyyy-MM-dd')
       : selectedTab === "EXPIREDLOCUM" && customStartDate
         ? format(new Date(customStartDate), 'yyyy-MM-dd')
         : format(new Date(), 'yyyy-MM-dd');
@@ -324,6 +327,15 @@ const LocumExtensiveRequestDialog = ({ getIsOpen, tableDataValue, selectedTab })
     setCalendarStart(false);
 
   };
+
+   const handleDateChangeStart = (date, field) => {
+    const formattedDate = format(new Date(date), "yyyy-MM-dd'T'00:00")
+    setCustomStartDate(formattedDate);
+    // setSelectedMonth(formattedDate);
+
+    setCalendarStart(false);
+
+  };
   // const handleDateChange = (date) => {
   //   setCustomDate(date);
   //   const formattedDate = format(date, 'yyyy-MM');
@@ -383,7 +395,7 @@ const LocumExtensiveRequestDialog = ({ getIsOpen, tableDataValue, selectedTab })
       // const oneDayBefore = subDays(futureDate, 1); // Go one day before the future "same day"
 
       const label = `${i} ${i === 1 ? 'month' : 'months'}`;
-      const value = format(futureDate, 'yyyy-MM-dd');
+      const value = format(futureDate, "yyyy-MM-dd'T'00:00");
 
       months.push({ label, value });
     }
@@ -406,9 +418,11 @@ const LocumExtensiveRequestDialog = ({ getIsOpen, tableDataValue, selectedTab })
   const lastModifiedDate = formDetails?.lastModifiedDate;
   const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), "MM/dd/yyyy") : "-";
   //  const ExpireDate = selectDataLocum?.tenure?.to;
-  const ExpireDate = selectDataLocum?.tenure?.to
-    ? parseISO(selectDataLocum.tenure.to)
-    : null;
+ const ExpireDate = selectDataLocum?.tenure?.to
+  ? new Date(selectDataLocum?.tenure?.to).toISOString().split('T')[0] + 'T00:00'
+  : null;
+
+  console.log("Date to Expire :", ExpireDate ,"expire Date add one day :", format(addDays(new Date(ExpireDate), 1), "MMM dd, yyyy"))  
 
   const formattedExpiringDate = ExpireDate ? format(new Date(ExpireDate), "MMM dd, yyyy") : "-";
   const daysRemaining = ExpireDate ? Math.abs(differenceInDays(new Date(ExpireDate), new Date())) : null;
@@ -577,7 +591,7 @@ const LocumExtensiveRequestDialog = ({ getIsOpen, tableDataValue, selectedTab })
                         <div className={`${style.marginTopLess}`}>
                           <CommonDateField
                             className={`${style.fullWidth}`}
-                            onChange={(date) => setCustomStartDate(date)}
+                            onChange={(date) => handleDateChangeStart(date)}
                             open={calendarStart}
                             onOpen={() => setCalendarStart(true)}
                             onClose={() => setCalendarStart(false)}
@@ -904,12 +918,16 @@ const LocumExtensiveRequestDialog = ({ getIsOpen, tableDataValue, selectedTab })
                   pointerEvents: isValidDateRange() ? "auto" : "none",
                   opacity: isValidDateRange() ? 1 : 0.5,
                 }}
-                onClick={() => {
-                  if (isValidDateRange()) {
-                    reappointmentRequestApplication();
+                onClick={async () => {
+                if (isValidDateRange()) {
+                  try {
+                    await reappointmentRequestApplication();
                     getIsOpen(false);
+                  } catch (error) {
+                    console.error("Error in reappointment request:", error);
                   }
-                }}
+                }
+              }}
               >
                 <div className={style.reviewButton}>Continue</div>
               </div>

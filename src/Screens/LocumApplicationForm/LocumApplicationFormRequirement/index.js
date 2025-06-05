@@ -480,8 +480,8 @@ const LocumApplicationFormRequirement = () => {
         if (isPrivilegeSpecificationType) {
             setSelectedPrivilegeForDisplay((prevData) => {
                 const temp = [...prevData];
-                if ((temp[index].descriptiveContent.esign === null ||
-                    temp[index].descriptiveContent.esign === undefined)
+                if ((temp?.[index]?.descriptiveContent === null || temp?.[index]?.descriptiveContent?.esign === null ||
+                    temp?.[index]?.descriptiveContent?.esign === undefined)
                 ) {
                     temp[index].descriptiveContent.esign = {
                         esign: CryptoJS.AES.encrypt(
@@ -492,7 +492,6 @@ const LocumApplicationFormRequirement = () => {
                         signedDate: currentDate,
                     };
                 }
-
                 return temp;
             });
         } else {

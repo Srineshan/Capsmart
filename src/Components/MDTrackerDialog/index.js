@@ -18,9 +18,11 @@ import CommonSearchField from "../CommonFields/CommonSearchField";
 import { useNavigate } from "react-router-dom";
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import PrintOutlinedIcon from "@mui/icons-material/PrintOutlined";
+import { useReactToPrint } from "react-to-print";
 import { Tooltip } from "@mui/material";
 
 const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
+  const tableRef = useRef(null);
   let cookie = new Cookie();
   let userDetails = cookie.get('user');
   const users = jwt(userDetails);
@@ -55,9 +57,10 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
   const [selectedServiceArea, setSelectedServiceArea] = useState("");
   const [applicantType, setApplicantType] = useState([]);
   const [medicalDirectiveSummary, setMedicalDirectiveSummary] = useState([]);
-  const [medicalDirectiveSummaryLevel2, setMedicalDirectiveSummaryLevel2] = useState([]);
+  const [medicalDirectiveSummaryByDept, setMedicalDirectiveSummaryByDept] = useState([]);
   const [medicalDirectiveSummaryByApplicant, setMedicalDirectiveSummaryByApplicant] = useState([]);
   const [applicantSummary, setApplicantSummary] = useState([]);
+  const [departmentSummary, setDepartmentSummary] = useState([]);
   const [selectedApplicantType, setSelectedApplicantType] = useState('');
   const selectedDepartmentName = departmentList?.find(data => data?.id === selectedDepartment)?.departmentName?.name;
   const selectedApplicantTypeName = applicantType?.find(data => data?.id === selectedApplicantType)?.applicantType;
@@ -67,7 +70,14 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
   const [selectedMedicalDirective, setSelectedMedicalDirective] = useState();
   const [selectedMedicalDirectiveList, setSelectedMedicalDirectiveList] = useState();
   const [selectedApplicant, setSelectedApplicant] = useState();
-
+  const reactToPrintContent = useCallback(() => {
+    return tableRef.current;
+  }, []);
+  const handlePrintClick = useReactToPrint({
+    content: reactToPrintContent,
+    documentTitle: "Medical Directive Attestation Log",
+    removeAfterPrint: true,
+  });
   const transformedOptions = departmentList?.flatMap((department) => {
     const departmentEntry = {
       value: department?.id,
@@ -102,8 +112,10 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
     if (!displayInnerList) {
       if (currentTab === "ByApplicants") {
         getApplicantSummary()
-      } else {
+      } else if (currentTab === "ByMedicalDirective") {
         getMedicalDirectiveSummary()
+      } else {
+        getMedicalDirectiveSummaryByDept()
       }
     } else {
       if (currentTab === "ByApplicants") {
@@ -117,6 +129,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
   useEffect(() => {
     getApplicantSummary()
     getMedicalDirectiveSummary()
+    getMedicalDirectiveSummaryByDept()
   }, [])
 
   useEffect(() => {
@@ -172,6 +185,18 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
       `medical-directive-service/medicalDirectives/summary?sortBy=${sortValue}&sortByField=${sortField}&limit=${limit}&searchText=${searchTermForTable}&isPaginationRequired=${limit === 9999 ? false : true}&offset=${page - 1}&isNewAppointment=${applicationType === 'NEW' ? true : false}&isReAppointment=${applicationType === 'NEW' ? false : true}${departmentParam}`
     );
     setMedicalDirectiveSummary(medicalDirectiveSummary?.medicalDirectivesWithAttestationLogsList);
+    setTotalCount(medicalDirectiveSummary?.numberOfElements);
+    setIsLoadingImage(false);
+  }
+
+  const getMedicalDirectiveSummaryByDept = async () => {
+    setIsLoadingImage(true);
+    const departmentParam = selectedDepartment || selectedServiceArea ? `&departmentSpecialties=${selectedDepartment}%23${selectedServiceArea}` : "";
+    const { data: medicalDirectiveSummary } = await GET(
+      `medical-directive-service/medicalDirectives/attestationSummaryByDepartment`
+      // `medical-directive-service/medicalDirectives/attestationSummaryByDepartment?sortBy=${sortValue}&sortByField=${sortField}&limit=${limit}&searchText=${searchTermForTable}&isPaginationRequired=${limit === 9999 ? false : true}&offset=${page - 1}&isNewAppointment=${applicationType === 'NEW' ? true : false}&isReAppointment=${applicationType === 'NEW' ? false : true}${departmentParam}`
+    );
+    setMedicalDirectiveSummaryByDept(medicalDirectiveSummary?.attestationCountByDepartment);
     setTotalCount(medicalDirectiveSummary?.numberOfElements);
     setIsLoadingImage(false);
   }
@@ -272,10 +297,20 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
     ""
   ];
 
+  const headerValuesByDept = [
+    "",
+    "No.",
+    "Department / Division",
+    "Attested",
+    "Not Attested",
+    ""
+  ];
+
   const innerHeaderValuesForByMedicalDirective = [
     "No.",
     "Applicant Type",
     "Applicant Name",
+    "Department / Division",
     "Attestation Status",
     "Attestation Date",
     ""
@@ -290,11 +325,12 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
     ""
   ];
 
-  const headerValues = currentTab === "ByApplicants" ? headerValuesForByApplicants : headerValuesForByMedicalDirective
+  const headerValues = currentTab === "ByApplicants" ? headerValuesForByApplicants : currentTab === "ByMedicalDirective" ? headerValuesForByMedicalDirective : headerValuesByDept
   const innerHeaderValues = currentTab === "ByApplicants" ? innerHeaderValuesForByApplicants : innerHeaderValuesForByMedicalDirective
   const colSortValuesByMedicalDirective = [false, false, true, true, false, true, true];
   const colSortValuesByApplicants = [false, false, true, true, true, false];
-  const colSortValuesByInnerMedicalDirective = [false, true, true, true, true, false];
+  const colSortValuesByDept = [false, false, false, false, false];
+  const colSortValuesByInnerMedicalDirective = [false, true, true, true, true, true, false];
   const colSortValuesByInnerApplicants = [false, false, false, false, false, false];
 
   const handleInnerSelectData = (data) => {
@@ -530,6 +566,52 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
       // { type: "action", value: action },
     ];
   };
+
+  const getTableValuesByMedicalDirectiesByDept = () => {
+    const No = [];
+    const dot = []
+    const dotTooltipValues = []
+    const mdName = [];
+    const mdNameHoverText = [];
+    const mdId = [];
+    const departmentSpecificHover = [];
+    const departmentSpecific = [];
+    const attestedBy = [];
+    const notAttested = [];
+    const action = [];
+
+    medicalDirectiveSummaryByDept?.map((data, index) => {
+      dot.push((data?.notAttestedCount === 0 && data?.attestedCount > 0) ? 'green' : (data?.notAttestedCount > 0 && data?.attestedCount !== 0) ? 'yellow' : (data?.notAttestedCount === 0 && data?.attestedCount === 0) ? 'grey' : "red");
+      dotTooltipValues.push((data?.notAttestedCount === 0 && data?.attestedCount > 0) ? 'All Attested' : (data?.notAttestedCount > 0 && data?.attestedCount !== 0) ? 'Not All Attested' : (data?.notAttestedCount === 0 && data?.attestedCount === 0) ? 'No Attestations' : 'Attestation Pending')
+      No.push(index + 1 + ".")
+      // mdName.push(data?.medicalDirectives?.title);
+      // mdNameHoverText.push('Click to view the attestation Log for this Medical Directive by each Applicant')
+      // mdId.push(data?.medicalDirectives?.mdID);
+      departmentSpecific.push(`${data?.department?.serviceAreaSpecific ? `${data?.department?.serviceAreas?.map(specialty => `${data?.department?.name} -  ${specialty?.name}`)?.join(', ')}` : data?.department?.name}`)
+      // departmentSpecificHover.push([`${data?.departments?.map(data => data?.serviceAreaSpecific ? `${data?.serviceAreas?.map(specialty => `${data?.name} -  ${specialty?.name}`)}` : data?.name)}`]);
+      attestedBy.push(data?.attestedCount > 0 ? data?.attestedCount : '-');
+      notAttested.push(data?.notAttestedCount > 0 ? data?.notAttestedCount : '-')
+      // action.push((data?.attestedCount !== 0 || data?.notAttestedCount !== 0) ? true : false);
+    });
+
+    return [
+      { type: "dot", value: dot, tooltipValue: dotTooltipValues },
+      { type: "text", value: No },
+      // { type: "text", value: mdId },
+      // { type: "text", value: mdName, tooltipValueText: mdNameHoverText, onClickFunction: handleSelectData },
+      { type: "text", value: departmentSpecific },
+      // {
+      //   type: "countWithHover",
+      //   value: departmentSpecific,
+      //   hoverText: departmentSpecificHover,
+      //   isShowHoverText: true,
+      // },
+      { type: "text", value: attestedBy },
+      { type: "text", value: notAttested },
+      // { type: "action", value: action },
+    ];
+  };
+
   const getInnerTableValuesByApplicants = () => {
     const No = [];
     const dot = []
@@ -570,6 +652,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
     const dot = []
     const dotTooltipValues = []
     const applicantName = [];
+    const dept = [];
     const type = [];
     const attestationDate = [];
     const actionItem = [];
@@ -579,6 +662,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
       dotTooltipValues.push(data?.attestationLog ? "Attested" : 'Not Attested')
       No.push(index + 1 + ".")
       applicantName.push(`${formatFirstNameLastName(data?.application?.applicant?.name?.firstName, data?.application?.applicant?.name?.lastName)}`);
+      dept.push(`${data?.application?.basicDetailReferences?.department?.name} ${data?.application?.basicDetailReferences?.specialty?.name ? `- ${data?.application?.basicDetailReferences?.specialty?.name}` : ''}`)
       type.push(data?.application?.basicDetailReferences?.applicantType?.serviceProviderType)
       attestationDate.push(data?.attestationLog?.esign?.signedDate ? format(parse(data?.attestationLog?.esign?.signedDate, 'dd/MM/yyyy', new Date()), 'MMM dd, yyyy') : '-');
       actionItem.push(
@@ -591,13 +675,14 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
       { type: "text", value: No },
       { type: "text", value: type },
       { type: "text", value: applicantName },
+      { type: "text", value: dept },
       { type: "dot", value: dot, tooltipValue: dotTooltipValues },
       { type: "text", value: attestationDate },
       { type: "icon", icon: actionItem, 'isShowHoverText': false },
     ];
   };
 
-  const tableValues = currentTab === "ByApplicants" ? getTableValuesByApplicants() : getTableValuesByMedicalDirecties()
+  const tableValues = currentTab === "ByApplicants" ? getTableValuesByApplicants() : currentTab === "ByMedicalDirective" ? getTableValuesByMedicalDirecties() : getTableValuesByMedicalDirectiesByDept()
   const innerTableValues = currentTab === "ByApplicants" ? getInnerTableValuesByApplicants() : getInnerTableValuesByMedicalDirecties()
 
   return (
@@ -618,16 +703,16 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
       >
         <div>
           {!displayInnerList ? (
-            <div className={Classes.DIALOG_BODY}>
+            <div ref={tableRef} className={Classes.DIALOG_BODY}>
               <div className={style.spaceBetween}>
                 <div>
                   <div className={`${style.heading}`}>
                     {/* Staff Reappointment Status {" "}({" "}{totalCount|| 0 }{" "}) */}
-                    Medical Directive Attestation Log For Reappointment Staff With Applications Submitted ({currentTab === 'ByApplicants' ? applicantSummary?.length : medicalDirectiveSummary?.length})
+                    Medical Directive Attestation Log For Reappointment Staff With Applications Submitted ({currentTab === 'ByApplicants' ? applicantSummary?.length : currentTab === "ByMedicalDirective" ? medicalDirectiveSummary?.length : medicalDirectiveSummaryByDept?.length})
                   </div>
                   <div className={style.currentStatusText}>{`Current status as of ${format(new Date(), 'MMM dd, yyyy')}`}</div>
                 </div>
-                <div className={style.displayInRow}>
+                <div className={`${style.displayInRow} ${style.noPrint}`}>
                   {selectedDepartment && (
                     <div className={`${style.filterBackground} ${style.displayInRow}`}>
                       <div className={`${style.filtertextStyle} ${style.marginRight5}`}>Filter by {selectedDepartmentName}</div>
@@ -676,11 +761,25 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                       />
                     </Tooltip>
                   </div>
+                  <div
+                    className={`${style.alignCenter
+                      } ${style.cursorPointer} ${style.marginLeft10}`}
+                  >
+                    <Tooltip title='Print Data' arrow >
+                      <PrintOutlinedIcon
+                        sx={{
+                          fontSize: 25,
+                          color: "#06617A",
+                        }}
+                        onClick={handlePrintClick}
+                      />
+                    </Tooltip>
+                  </div>
                   <Tooltip arrow title={"Close"}>
                     <img
                       src={CrossPink}
                       alt="cross"
-                      className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft}`}
+                      className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft10}`}
                       onClick={() => {
                         getIsOpen(false);
                       }}
@@ -689,7 +788,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                 </div>
               </div>
               {showFilter && (
-                <div className={style.departmentContainer}>
+                <div className={`${style.departmentContainer}`}>
                   <div>
                     <CommonSelectField
                       value={selectedDepartment}
@@ -733,20 +832,26 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                       <>
                         <div className={style.spaceBetween}>
                           <div className={`${style.displayInRow} ${style.marginLeft} ${style.marginTopAuto}`}>
-                          <Tooltip title={currentTab === "ByMedicalDirective" ? "" :  "View attestation status organized by Medical Directives" } arrow>
-                            <div className={`${style.tabGrid} ${style.cursorPointer} ${currentTab === "ByMedicalDirective" ? style.activeTab : ''}`} onClick={() => setCurrentTab('ByMedicalDirective')}> 
-                              <div>By Medical Directives</div>
-                              <div className={style.marginLeft5}>{medicalDirectiveSummary?.length}</div>
-                            </div>
+                            <Tooltip title={currentTab === "ByMedicalDirective" ? "" : "View attestation status organized by Medical Directives"} arrow>
+                              <div className={`${style.tabGrid} ${style.cursorPointer} ${currentTab === "ByMedicalDirective" ? style.activeTab : ''}`} onClick={() => setCurrentTab('ByMedicalDirective')}>
+                                <div>By Medical Directives</div>
+                                <div className={style.marginLeft5}>{medicalDirectiveSummary?.length}</div>
+                              </div>
                             </Tooltip>
-                            <Tooltip title={currentTab === "ByApplicants" ? "" :  "View attestation status organized by Applicants" } arrow>
-                            <div className={`${style.tabGrid} ${style.cursorPointer} ${currentTab === "ByApplicants" ? style.activeTab : ''}`} onClick={() => setCurrentTab('ByApplicants')}>
-                              <div>By Applicants</div>
-                              <div className={style.marginLeft5}>{applicantSummary?.length}</div>
-                            </div>
+                            <Tooltip title={currentTab === "ByApplicants" ? "" : "View attestation status organized by Applicants"} arrow>
+                              <div className={`${style.tabGrid} ${style.cursorPointer} ${currentTab === "ByApplicants" ? style.activeTab : ''}`} onClick={() => setCurrentTab('ByApplicants')}>
+                                <div>By Applicants</div>
+                                <div className={style.marginLeft5}>{applicantSummary?.length}</div>
+                              </div>
+                            </Tooltip>
+                            <Tooltip title={currentTab === "ByDepartments" ? "" : "View attestation status organized by Departments"} arrow>
+                              <div className={`${style.tabGrid} ${style.cursorPointer} ${currentTab === "ByDepartments" ? style.activeTab : ''}`} onClick={() => setCurrentTab('ByDepartments')}>
+                                <div>By Departments</div>
+                                <div className={style.marginLeft5}>{medicalDirectiveSummaryByDept?.length}</div>
+                              </div>
                             </Tooltip>
                           </div>
-                          <div className={style.marginLeftAuto}>
+                          <div className={`${style.marginLeftAuto} ${style.noPrint}`}>
                             <CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} placeholder={currentTab === "ByApplicants" ? 'Search By Applicant Name' : 'Search By MD Name'} />
                           </div>
                         </div>
@@ -754,11 +859,11 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                           <TableTwo
                             tableHeaderValues={headerValues}
                             tableDataValues={tableValues}
-                            tableData={currentTab === "ByApplicants" ? applicantSummary : medicalDirectiveSummary}
-                            gridStyle={currentTab === "ByApplicants" ? style.byApplicantGrid : style.byMedicalDirectiveGrid}
-                            actions={currentTab === "ByApplicants" ? actionsDataByApplicant : actionsData}
+                            tableData={currentTab === "ByApplicants" ? applicantSummary : currentTab === 'ByMedicalDirective' ? medicalDirectiveSummary : medicalDirectiveSummaryByDept}
+                            gridStyle={currentTab === "ByApplicants" ? style.byApplicantGrid : currentTab === 'ByMedicalDirective' ? style.byMedicalDirectiveGrid : style.byDepartmentGrid}
+                            actions={currentTab === "ByApplicants" ? actionsDataByApplicant : currentTab === 'ByMedicalDirective' ? actionsData : actionsData}
                             scrollStyle={style.contractScrollStyle}
-                            tableSortValues={currentTab === "ByApplicants" ? colSortValuesByApplicants : colSortValuesByMedicalDirective}
+                            tableSortValues={currentTab === "ByApplicants" ? colSortValuesByApplicants : currentTab === 'ByMedicalDirective' ? colSortValuesByMedicalDirective : colSortValuesByDept}
                             heading={"There are no record to display"}
                             getHandleSort={getHandleSort}
                             sortValue={{ sortBy: sortValue, sortByField: sortField }}
@@ -779,7 +884,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
               </div>
             </div>
           ) : (
-            <div className={Classes.DIALOG_BODY}>
+            <div ref={tableRef} className={Classes.DIALOG_BODY}>
               <div className={style.spaceBetween}>
                 <div>
                   <div className={`${style.heading}`}>
@@ -796,7 +901,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                     </div>
                   </div>
                 </div>
-                <div className={style.displayInRow}>
+                <div className={`${style.displayInRow} ${style.noPrint}`}>
                   {selectedDepartment && (
                     <div className={`${style.filterBackground} ${style.displayInRow}`}>
                       <div className={`${style.filtertextStyle} ${style.marginRight5}`}>Filter by {selectedDepartmentName}</div>
@@ -845,6 +950,20 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                       />
                     </Tooltip>
                   </div> */}
+                  <div
+                    className={`${style.alignCenter
+                      } ${style.cursorPointer} ${style.marginLeft10}`}
+                  >
+                    <Tooltip title='Print Data' arrow >
+                      <PrintOutlinedIcon
+                        sx={{
+                          fontSize: 25,
+                          color: "#06617A",
+                        }}
+                        onClick={handlePrintClick}
+                      />
+                    </Tooltip>
+                  </div>
                   <Tooltip arrow title={"Close"}>
                     <img
                       src={CrossPink}

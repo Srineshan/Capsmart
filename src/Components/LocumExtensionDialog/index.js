@@ -224,7 +224,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
         const departmentId = selectDataLocum?.basicDetailReferences?.department?.id;
         const applicantTypeId = selectDataLocum?.basicDetailReferences?.applicantType?.id;
         const response = await GET(
-          `application-management-service/staff?status=ACTIVE&departmentId=${departmentId}&applicantTypeId=${applicantTypeId}&sortByField=STAFF_NAME`
+          `application-management-service/staff?status=ACTIVE&departmentId=${departmentId}&applicantTypeId=${applicantTypeId}&sortByField=STAFF_NAME&isPaginationRequired=${limit === 9999 ? false : true}&limit=${limit}`
         );
         console.log(response.data);
 
@@ -329,8 +329,11 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
   };
 
   const reappointmentApplication = async () => {
+    const startDate = selectDataLocum?.tenure?.to
+    ? new Date(selectDataLocum?.tenure?.to).toISOString().split('T')[0] + 'T00:00'
+    : null;
     const fromDate = selectedTab === "ACTIVELOCUM"
-      ? format(addDays(new Date(selectDataLocum?.tenure?.to), 1), 'yyyy-MM-dd')
+      ? format(addDays(new Date(startDate), 1), 'yyyy-MM-dd')
       : selectedTab === "EXPIREDLOCUM" && customStartDate
         ? format(new Date(customStartDate), 'yyyy-MM-dd')
         : format(new Date(), 'yyyy-MM-dd');
@@ -390,11 +393,13 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
     setCalendarStart(false);
     console.log("handleDateChange", customEndDate)
   };
-  // const handleDateChange = (date) => {
-  //   setCustomDate(date);
-  //   const formattedDate = format(date, 'yyyy-MM');
-  //   setSelectedMonth(formattedDate);
-  // };
+
+  const handleDateChangeStart = (date, field) => {
+      const formattedDate = format(new Date(date), "yyyy-MM-dd'T'00:00")
+      setCustomStartDate(formattedDate);
+      setCalendarStart(false);
+  
+    };
 
   const handleSelectedAdditionalPrivilegesForDisplayMultiple = (data) => {
     let temp = selectedAdditionalPrivilegesForDisplayMultiple;
@@ -2624,7 +2629,11 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
   // Examples:
   console.log(getMonthOrDays("2025-01-15", "2025-01-28")); // 13 day(s)
   const rawExpireDate = selectDataLocum?.tenure?.to ?? null;
-  const ExpireDate = rawExpireDate ? parseISO(rawExpireDate) : null;
+  const ExpireDate = selectDataLocum?.tenure?.to
+    ? new Date(selectDataLocum?.tenure?.to).toISOString().split('T')[0] + 'T00:00'
+    : null;
+  
+    console.log("Date to Expire :", ExpireDate ,"expire Date add one day :", format(addDays(new Date(ExpireDate), 1), "MMM dd, yyyy"))  
 
   // Validate date before using
   const isExpireDateValid = ExpireDate && isValid(ExpireDate);
@@ -2656,7 +2665,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
       // const oneDayBefore = subDays(futureDate, 1); // Go one day before the future "same day"
 
       const label = `${i} ${i === 1 ? 'month' : 'months'}`;
-      const value = format(futureDate, 'yyyy-MM-dd');
+      const value = format(futureDate, "yyyy-MM-dd'T'00:00");
 
       months.push({ label, value });
     }
@@ -2735,7 +2744,8 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
                     ? "Locum Period & Privileges Extension"
                     : "Reactivate Locum Staff"}
                 </div>
-                <div className={style.displayInRow}>
+                {!showSelectedPrivilegeLocum && (
+                 <div className={style.displayInRow}>
                   <Tooltip title="Click to Close" arrow >
                     <img
                       src={CrossPink}
@@ -2747,6 +2757,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
                     />
                   </Tooltip>
                 </div>
+                )}
               </div>
               <div className={`${style.rejectionBorderStyle} ${style.declineBorderStyle} ${style.marginTop10}`}>
                 <div className={style.marginTop10}>
@@ -2859,7 +2870,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
                           <div className={`${style.marginTopLess}`}>
                             <CommonDateField
                               className={`${style.fullWidth}`}
-                              onChange={(date) => setCustomStartDate(date)}
+                              onChange={(date) => handleDateChangeStart(date)}
                               open={calendarStart}
                               onOpen={() => setCalendarStart(true)}
                               onClose={() => setCalendarStart(false)}

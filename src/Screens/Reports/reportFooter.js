@@ -6,13 +6,13 @@ import style from './index.module.scss';
 
 const ReportFooter = () => {
     return (
-        <div>
+        <div className={style.printFooter}>
             <div className={`${style.marginTop40}`}></div>
             <CommonDivider />
             <div className={style.spaceBetween}>
                 <div>
                     {/* <div className={style.poweredByTextStyle}>Powered By</div> */}
-                    <img src={HapiCare} alt="poweredBy" className={style.reportFooterLogoApplicant} />
+                    <img src={HapiCare} alt="poweredBy" className={`${style.reportFooterLogoApplicant} ${style.marginTop10}`} />
                 </div>
                 {/* <div id='content'>
                     <div className={`${style.reportFooterTextStyle}`} id="pageFooter"></div>
