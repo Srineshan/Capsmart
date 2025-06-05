@@ -269,11 +269,23 @@ const BulkMoveDialog = ({ checkedIds, getBulkApproveDialogOpen, onClose, selecte
           <div>
             <div className={style.templateHeader}>
               <div className={style.templateHeadertext}>
-                {selectedTab === "level-3"
-                  ? "Staff Reappointments Approved by the Cred. Comm." :
-                  selectedTab === "level-4"
-                    ? "Staff Reappointments Approved by the MAC."
-                    : "Staff Reappointments Send by the BOD."}
+                {(() => {
+                  const isLocum = applicationType === "LOCUM";
+                  const isReappointment = applicationType === "REAPPOINTMENT";
+                  const count = checkedIds?.length || 0;
+                  const noun =
+                    count <= 1
+                      ? (isLocum ? "Application" : "Reappointment")
+                      : (isLocum ? "Applications" : "Reappointments");
+
+                  if ((selectedTab === "level-3" && isReappointment) || (selectedTab === "level-2" && isLocum)) {
+                    return `Staff ${noun} Approved by the Cred. Comm.`;
+                  } else if ((selectedTab === "level-4" && isReappointment) || (selectedTab === "level-3" && isLocum)) {
+                    return `Staff ${noun} Approved by the MAC.`;
+                  } else {
+                    return `Staff ${noun} send by the BOD.`;
+                  }
+                })()}
               </div>
               <Tooltip title="Click to Close" arrow>
                 <img src={CrossPink} alt="close" className={`${style.crossStyle} ${style.cursorPointer}`} onClick={onClose} /></Tooltip>
