@@ -398,7 +398,7 @@ const StaffApplicationList = ({
     "Meeting Date",
     "",
   ] : [
- <CommonCheckBox
+    <CommonCheckBox
       size="medium"
       checked={checkedIds?.length === tableData?.length}
       onChange={handleSelectAllClick}
@@ -502,7 +502,7 @@ const StaffApplicationList = ({
     // "MAC Status",
     "",
   ] : [
-     <CommonCheckBox
+    <CommonCheckBox
       size="medium"
       checked={checkedIds?.length === tableData?.length}
       onChange={handleSelectAllClick}
@@ -634,7 +634,7 @@ const StaffApplicationList = ({
     false,
     true,
     false,
-  ] :  applicationType === "REAPPOINTMENT" ? [
+  ] : applicationType === "REAPPOINTMENT" ? [
     false,
     true,
     // true,
@@ -772,7 +772,7 @@ const StaffApplicationList = ({
     false,
     true,
     false,
-  ] : applicationType === "REAPPOINTMENT" ?  [
+  ] : applicationType === "REAPPOINTMENT" ? [
     false,
     true,
     // true,
@@ -897,62 +897,62 @@ const StaffApplicationList = ({
   // });
 
   const isValidSingleCheckedId = (id) => {
-  const getFilteredIds = (role) =>
-    tableData
-      .filter(
-        (data) =>
-          data?.id === id &&
-          data?.completedWorkflows?.some(
-            (workflow) => workflow?.role === role && workflow?.meetingDate
-          )
-      )
-      .map((data) => data?.id);
+    const getFilteredIds = (role) =>
+      tableData
+        .filter(
+          (data) =>
+            data?.id === id &&
+            data?.completedWorkflows?.some(
+              (workflow) => workflow?.role === role && workflow?.meetingDate
+            )
+        )
+        .map((data) => data?.id);
 
-  if (applicationType === "REAPPOINTMENT") {
-    if (selectedTab === "level-3") {
-      return getFilteredIds("Credentialing Committee")?.includes(id);
-    } else if (selectedTab === "level-4") {
-      return getFilteredIds("Advisory Committee")?.includes(id);
-    } else if (selectedTab === "level-5") {
-      return getFilteredIds("Board")?.includes(id);
+    if (applicationType === "REAPPOINTMENT") {
+      if (selectedTab === "level-3") {
+        return getFilteredIds("Credentialing Committee")?.includes(id);
+      } else if (selectedTab === "level-4") {
+        return getFilteredIds("Advisory Committee")?.includes(id);
+      } else if (selectedTab === "level-5") {
+        return getFilteredIds("Board")?.includes(id);
+      }
+    } else if (applicationType === "LOCUM") {
+      if (selectedTab === "level-2") {
+        return getFilteredIds("Credentialing Committee")?.includes(id);
+      } else if (selectedTab === "level-3") {
+        return getFilteredIds("Advisory Committee")?.includes(id);
+      } else if (selectedTab === "level-4") {
+        return getFilteredIds("Board")?.includes(id);
+      }
     }
-  } else if (applicationType === "LOCUM") {
-    if (selectedTab === "level-2") {
-      return getFilteredIds("Credentialing Committee")?.includes(id);
-    } else if (selectedTab === "level-3") {
-      return getFilteredIds("Advisory Committee")?.includes(id);
-    } else if (selectedTab === "level-4") {
-      return getFilteredIds("Board")?.includes(id);
+
+    return false;
+  };
+
+  const isValidSingleCheckedIdMove = (id) => {
+    const getFilteredIds = (role) =>
+      tableData
+        .filter(
+          (data) =>
+            data?.id === id &&
+            data?.completedWorkflows?.some(
+              (workflow) => workflow?.role === role && workflow?.approvalType
+            )
+        )
+        .map((data) => data?.id);
+
+    if (applicationType === "REAPPOINTMENT") {
+      if (selectedTab === "level-5") {
+        return getFilteredIds("Board")?.includes(id);
+      }
+    } else if (applicationType === "LOCUM") {
+      if (selectedTab === "level-4") {
+        return getFilteredIds("Board")?.includes(id);
+      }
     }
-  }
 
-  return false;
-};
-
-const isValidSingleCheckedIdMove = (id) => {
-  const getFilteredIds = (role) =>
-    tableData
-      .filter(
-        (data) =>
-          data?.id === id &&
-          data?.completedWorkflows?.some(
-            (workflow) => workflow?.role === role && workflow?.approvalType
-          )
-      )
-      .map((data) => data?.id);
-
-  if (applicationType === "REAPPOINTMENT") {
-     if (selectedTab === "level-5") {
-      return getFilteredIds("Board")?.includes(id);
-    }
-  } else if (applicationType === "LOCUM") {
-     if (selectedTab === "level-4") {
-      return getFilteredIds("Board")?.includes(id);
-    }
-  }
-
-  return false;
-};
+    return false;
+  };
 
   const transformedOptions = departmentList?.flatMap((department) => {
     const departmentEntry = {
@@ -1199,7 +1199,7 @@ const isValidSingleCheckedIdMove = (id) => {
     sessionStorage.setItem("applicationId", data?.id);
   };
 
-   const onClickNotesOverrideDialog = (data) => {
+  const onClickNotesOverrideDialog = (data) => {
     getNotesDialog(true);
     sessionStorage.setItem("applicationId", data?.application?.id);
   };
@@ -1219,12 +1219,12 @@ const isValidSingleCheckedIdMove = (id) => {
     sessionStorage.setItem("applicationId", data?.id);
   };
 
-    const onClickOverRideDialog = (data) => {
+  const onClickOverRideDialog = (data) => {
     getOverRideRequestDialog(true);
     sessionStorage.setItem("applicationId", data?.id);
   };
 
-   const onClickOverRideApprovalDialog = (data) => {
+  const onClickOverRideApprovalDialog = (data) => {
     getOverRideRequestApprovalDialog(true);
     sessionStorage.setItem("applicationId", data?.id);
   };
@@ -1297,7 +1297,7 @@ const isValidSingleCheckedIdMove = (id) => {
   const onClickViewAndVerifyOverrideFunction = (data) => {
     sessionStorage.setItem("applicationId", data?.application?.id);
     sessionStorage.setItem("requestId", data?.id);
-    
+
     getOverrideNotesCommentBox(true);
     getActiveApplicationView(true);
   };
@@ -1356,7 +1356,7 @@ const isValidSingleCheckedIdMove = (id) => {
     ActiveStaffApplication(data?.id)
     sessionStorage.setItem("applicationId", data?.id);
   };
-  
+
   const onClickTileFunction = () => {
     sessionStorage.removeItem('selectedTab');
   };
@@ -1636,7 +1636,7 @@ const isValidSingleCheckedIdMove = (id) => {
     // getNotesDialog();
     getReFetchMetaData(true);
     console.log("getReFetchMetaData", reFetchMetaData)
-  }, [showNotesDialog, showCCDateDialog, approvalnotesCommentsBoxDept, showBulkApproveDialog, showBulkMoveDialog, activeApplicationTask, applicationType,showOverRideRequestDialog,showOverRideRequestApprovalDialog, showOverRideRequestDeclineDialog,activeApplicationView]);
+  }, [showNotesDialog, showCCDateDialog, approvalnotesCommentsBoxDept, showBulkApproveDialog, showBulkMoveDialog, activeApplicationTask, applicationType, showOverRideRequestDialog, showOverRideRequestApprovalDialog, showOverRideRequestDeclineDialog, activeApplicationView]);
 
   // useEffect(() => {
   //   getApplicationCreationType();
@@ -1733,33 +1733,31 @@ useEffect(() => {
       //     workModeType === "Chief Of Staff" ||
       //     workModeType === "Credentialing Committee");
 
-      // const assignedUserIdsParam = shouldIncludeAssignee ? `&assignedUserIds=${users?.id}` : "";
-      const departmentParam =
-        selectedDepartment || selectedServiceArea
-          ? `&departmentSpecialties=${selectedDepartment}%23${selectedServiceArea}`
-          : "";
+        // const assignedUserIdsParam = shouldIncludeAssignee ? `&assignedUserIds=${users?.id}` : "";
+        const departmentParam =
+          selectedDepartment || selectedServiceArea
+            ? `&departmentSpecialties=${selectedDepartment}%23${selectedServiceArea}`
+            : "";
 
-      const positionTypeParam =
-        applicationType === "LOCUM"
-          ? `&positionType=${applicationType}`
-          : "&positionType=PERMANENT";
+        const positionTypeParam =
+          applicationType === "LOCUM"
+            ? `&positionType=${applicationType}`
+            : "&positionType=PERMANENT";
 
-      const selectedTabCC =
-        applicationType === "LOCUM"
-          ? `level-2`
-          : "level-3";
+        const selectedTabCC =
+          applicationType === "LOCUM"
+            ? `level-2`
+            : "level-3";
 
-      const applicationCreationType =
-        applicationType === "LOCUM" ? "REAPPOINTMENT" : applicationType;
+        const applicationCreationType =
+          applicationType === "LOCUM" ? "REAPPOINTMENT" : applicationType;
 
-      try {
-        const response = await GET(
-          `application-management-service/application/workflowUser?tab=${selectedTabCC}&sortBy=${sortValue}&sortByField=${sortField}${positionTypeParam}&limit=${limit}&offset=${
-            page - 1
-          }&role=${role}&searchText=${searchTermForTable}&applicationCreationType=${applicationCreationType}&isPaginationRequired=${
-            limit === 9999 ? false : true
-          }${departmentParam}`
-        );
+        try {
+          const response = await GET(
+            `application-management-service/application/workflowUser?tab=${selectedTabCC}&sortBy=${sortValue}&sortByField=${sortField}${positionTypeParam}&limit=${limit}&offset=${page - 1
+            }&role=${role}&searchText=${searchTermForTable}&applicationCreationType=${applicationCreationType}&isPaginationRequired=${limit === 9999 ? false : true
+            }${departmentParam}`
+          );
 
         let applications = response?.data?.applications || [];
       if (applicationType === "LOCUM") {
@@ -1812,40 +1810,39 @@ useEffect(() => {
       } catch (error) {
         console.error("Error fetching applications:", error);
       }
-    }
-  };
+    };
 
   fetchData();
+  }
 }, [tableData]);
 
- 
   const getWorkflowUserData = async () => {
     try {
       let response;
       if (applicationType === "LOCUM") {
-        if (selectedTab === "OverrideRequest"){
+        if (selectedTab === "OverrideRequest") {
           setIsLoadingImage(true);
-        response = await GET(
-          `application-management-service/application/request?requestType=OVERRIDE_REQUEST&status=PENDING&role=Chief Of Staff`,
-        );
-        console.log("Application data", response?.data?.requests);
-        setTableData(response?.data?.requests);
-        setTotalCount(response?.data?.numberOfElements);
-        setIsLoadingImage(false);
-        } else{
-        let role = workModeType === "Credentialing Committee User" ? "Staff Manager" : workModeType;
-        const shouldIncludeAssignee = showAssignee &&
-          (workModeType === "Department Head" ||
-            workModeType === "Chief Of Staff" ||
-            workModeType === "Credentialing Committee");
-        const assignedUserIdsParam = shouldIncludeAssignee ? `&assignedUserIds=${users?.id}` : "";
-        const departmentParam = selectedDepartment || selectedServiceArea ? `&departmentSpecialties=${selectedDepartment}%23${selectedServiceArea}` : "";
-        const positionTypeParam = applicationType === "LOCUM" ? `&positionType=${applicationType}` : "&positionType=PERMANENT";
-        setIsLoadingImage(true);
-        response = await GET(
-          `application-management-service/application/workflowUser?tab=${selectedTab}&sortBy=${sortValue}&sortByField=${sortField}${positionTypeParam}&limit=${limit}&offset=${page - 1}&role=${role}&searchText=${searchTermForTable}&applicationCreationType=${applicationType === "LOCUM" ? "REAPPOINTMENT" : applicationType}&isPaginationRequired=${limit === 9999 ? false : true}${departmentParam}${assignedUserIdsParam}`
-        );
-        let applications = response?.data?.applications || [];
+          response = await GET(
+            `application-management-service/application/request?requestType=OVERRIDE_REQUEST&status=PENDING&role=Chief Of Staff`,
+          );
+          console.log("Application data", response?.data?.requests);
+          setTableData(response?.data?.requests);
+          setTotalCount(response?.data?.numberOfElements);
+          setIsLoadingImage(false);
+        } else {
+          let role = workModeType === "Credentialing Committee User" ? "Staff Manager" : workModeType;
+          const shouldIncludeAssignee = showAssignee &&
+            (workModeType === "Department Head" ||
+              workModeType === "Chief Of Staff" ||
+              workModeType === "Credentialing Committee");
+          const assignedUserIdsParam = shouldIncludeAssignee ? `&assignedUserIds=${users?.id}` : "";
+          const departmentParam = selectedDepartment || selectedServiceArea ? `&departmentSpecialties=${selectedDepartment}%23${selectedServiceArea}` : "";
+          const positionTypeParam = applicationType === "LOCUM" ? `&positionType=${applicationType}` : "&positionType=PERMANENT";
+          setIsLoadingImage(true);
+          response = await GET(
+            `application-management-service/application/workflowUser?tab=${selectedTab}&sortBy=${sortValue}&sortByField=${sortField}${positionTypeParam}&limit=${limit}&offset=${page - 1}&role=${role}&searchText=${searchTermForTable}&applicationCreationType=${applicationType === "LOCUM" ? "REAPPOINTMENT" : applicationType}&isPaginationRequired=${limit === 9999 ? false : true}${departmentParam}${assignedUserIdsParam}`
+          );
+          let applications = response?.data?.applications || [];
 
         if (selectedTab === "level-2" && workModeType === "Credentialing Committee") {
           applications = applications?.filter(app => {
@@ -1904,7 +1901,7 @@ useEffect(() => {
         if (selectedTab === "level-3" && workModeType === "Credentialing Committee") {
           applications = applications?.filter(app => {
             const ccWorkflow = app?.completedWorkflows?.find(wf => wf?.role === "Credentialing Committee");
-            console.log("Application dataaaaaaaaaaaaaaaaa",ccWorkflow);
+            console.log("Application dataaaaaaaaaaaaaaaaa", ccWorkflow);
             // setShowAssignee(true)
             return ccWorkflow && ccWorkflow?.approvalType === null;
           });
@@ -1912,8 +1909,9 @@ useEffect(() => {
           setShowAssignee(false)
           applications = applications?.filter(app => {
             const ccWorkflow = app?.completedWorkflows?.find(wf => wf?.role === "Credentialing Committee");
-             console.log("Application dataaaaaaaaaaaaaaaaa",ccWorkflow);
-           return ccWorkflow && ccWorkflow?.approvalType});
+            console.log("Application dataaaaaaaaaaaaaaaaa", ccWorkflow);
+            return ccWorkflow && ccWorkflow?.approvalType
+          });
         }
         // console.log("Application dataaaaaaaaaaaaaaaaa",applications);
         setTableData(applications);
@@ -2596,8 +2594,8 @@ useEffect(() => {
       const notesHoverTextArray = validNotes?.length > 0
         ? validNotes.map((note, index) => {
           const text = note?.notes?.notes
-          ? note?.notes?.notes.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ')
-          : '-';
+            ? note?.notes?.notes.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ')
+            : '-';
           const firstName = note?.user?.name?.firstName || '';
           const title = note?.title;
           const createdDate = format(new Date(note?.createdDate), "MMM dd, yyyy 'at' h:mm a") || '';
@@ -2766,18 +2764,18 @@ useEffect(() => {
         );
       } else if (data?.overrideStatus === "PENDING") {
         overRideIcon.push(
-           <img src={overRidePending} alt="Pending Icon" style={{ width: 20, height: 20 }} />
+          <img src={overRidePending} alt="Pending Icon" style={{ width: 20, height: 20 }} />
         );
       } else {
         overRideIcon.push("")
       }
-        if (data?.overrideStatus === "APPROVED") {
+      if (data?.overrideStatus === "APPROVED") {
         hoverOverRide.push(
-         ["Temporary privilege granted"]
+          ["Temporary privilege granted"]
         );
       } else if (data?.overrideStatus === "PENDING") {
         hoverOverRide.push(
-            ["Temporary privilege Pending"]
+          ["Temporary privilege Pending"]
         );
       } else {
         hoverOverRide.push([""])
@@ -2883,8 +2881,8 @@ useEffect(() => {
       const notesHoverTextArray = validNotes?.length > 0
         ? validNotes.map((note, index) => {
           const text = note?.notes?.notes
-          ? note?.notes?.notes.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ')
-          : '-';
+            ? note?.notes?.notes.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ')
+            : '-';
           const firstName = note?.user?.name?.firstName || '';
           const title = note?.title;
           const createdDate = format(new Date(note?.createdDate), "MMM dd, yyyy 'at' h:mm a") || '';
@@ -3158,8 +3156,8 @@ useEffect(() => {
       const notesHoverTextArray = validNotes?.length > 0
         ? validNotes.map((note, index) => {
           const text = note?.notes?.notes
-          ? note?.notes?.notes.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ')
-          : '-';
+            ? note?.notes?.notes.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ')
+            : '-';
           const firstName = note?.user?.name?.firstName || '';
           const title = note?.title;
           const createdDate = format(new Date(note?.createdDate), "MMM dd, yyyy 'at' h:mm a") || '';
@@ -3530,8 +3528,8 @@ useEffect(() => {
       const notesHoverTextArray = validNotes?.length > 0
         ? validNotes.map((note, index) => {
           const text = note?.notes?.notes
-          ? note?.notes?.notes.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ')
-          : '-';
+            ? note?.notes?.notes.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ')
+            : '-';
           const firstName = note?.user?.name?.firstName || '';
           const title = note?.title;
           const createdDate = format(new Date(note?.createdDate), "MMM dd, yyyy 'at' h:mm a") || '';
@@ -3737,9 +3735,9 @@ useEffect(() => {
       applicantName.push(
         `${formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName)}` || " "
       );
-       if (data?.overrideStatus === "APPROVED") {
+      if (data?.overrideStatus === "APPROVED") {
         overRideIcon.push(
-          <img src={overRideComplete} alt="Override Icon" style={{ width: 20, height: 20 }} /> 
+          <img src={overRideComplete} alt="Override Icon" style={{ width: 20, height: 20 }} />
         );
       } else if (data?.overrideStatus === "PENDING") {
         overRideIcon.push(
@@ -3748,13 +3746,13 @@ useEffect(() => {
       } else {
         overRideIcon.push("")
       }
-        if (data?.overrideStatus === "APPROVED") {
+      if (data?.overrideStatus === "APPROVED") {
         hoverOverRide.push(
-         ["Temporary privilege granted"]
+          ["Temporary privilege granted"]
         );
       } else if (data?.overrideStatus === "PENDING") {
         hoverOverRide.push(
-            ["Temporary privilege Pending"]
+          ["Temporary privilege Pending"]
         );
       } else {
         hoverOverRide.push([""])
@@ -3850,8 +3848,8 @@ useEffect(() => {
       const notesHoverTextArray = validNotes?.length > 0
         ? validNotes.map((note, index) => {
           const text = note?.notes?.notes
-          ? note?.notes?.notes.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ')
-          : '-';
+            ? note?.notes?.notes.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ')
+            : '-';
           const firstName = note?.user?.name?.firstName || '';
           const title = note?.title;
           const createdDate = format(new Date(note?.createdDate), "MMM dd, yyyy 'at' h:mm a") || '';
@@ -4212,8 +4210,8 @@ useEffect(() => {
       const notesHoverTextArray = validNotes?.length > 0
         ? validNotes.map((note, index) => {
           const text = note?.notes?.notes
-          ? note?.notes?.notes.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ')
-          : '-';
+            ? note?.notes?.notes.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ')
+            : '-';
           const firstName = note?.user?.name?.firstName || '';
           const title = note?.title;
           const createdDate = format(new Date(note?.createdDate), "MMM dd, yyyy 'at' h:mm a") || '';
@@ -4377,24 +4375,24 @@ useEffect(() => {
         `${formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName)}` || " "
       );
 
-       if (data?.overrideStatus === "APPROVED") {
+      if (data?.overrideStatus === "APPROVED") {
         overRideIcon.push(
-           <img src={overRideComplete} alt="Override Icon" style={{ width: 20, height: 20 }} /> 
+          <img src={overRideComplete} alt="Override Icon" style={{ width: 20, height: 20 }} />
         );
       } else if (data?.overrideStatus === "PENDING") {
         overRideIcon.push(
-           <img src={overRidePending} alt="Pending Icon" style={{ width: 20, height: 20 }} />
+          <img src={overRidePending} alt="Pending Icon" style={{ width: 20, height: 20 }} />
         );
       } else {
         overRideIcon.push("")
       }
-        if (data?.overrideStatus === "APPROVED") {
+      if (data?.overrideStatus === "APPROVED") {
         hoverOverRide.push(
-         ["Temporary privilege granted"]
+          ["Temporary privilege granted"]
         );
       } else if (data?.overrideStatus === "PENDING") {
         hoverOverRide.push(
-            ["Temporary privilege Pending"]
+          ["Temporary privilege Pending"]
         );
       } else {
         hoverOverRide.push([""])
@@ -4556,8 +4554,8 @@ useEffect(() => {
       const notesHoverTextArray = validNotes?.length > 0
         ? validNotes.map((note, index) => {
           const text = note?.notes?.notes
-          ? note?.notes?.notes.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ')
-          : '-';
+            ? note?.notes?.notes.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ')
+            : '-';
           const firstName = note?.user?.name?.firstName || '';
           const title = note?.title;
           const createdDate = format(new Date(note?.createdDate), "MMM dd, yyyy 'at' h:mm a") || '';
@@ -4845,8 +4843,8 @@ useEffect(() => {
       const notesHoverTextArray = validNotes?.length > 0
         ? validNotes.map((note, index) => {
           const text = note?.notes?.notes
-          ? note?.notes?.notes.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ')
-          : '-';
+            ? note?.notes?.notes.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ')
+            : '-';
           const firstName = note?.user?.name?.firstName || '';
           const title = note?.title;
           const createdDate = format(new Date(note?.createdDate), "MMM dd, yyyy 'at' h:mm a") || '';
@@ -4954,7 +4952,7 @@ useEffect(() => {
       { type: "action", value: action },
     ];
   } : () => {
-// checkbox= [];
+    // checkbox= [];
     dot = [];
     applicantName = [];
     applicantId = [];
@@ -5006,7 +5004,7 @@ useEffect(() => {
       );
       if (data?.overrideStatus === "APPROVED") {
         overRideIcon.push(
-          <img src={overRideComplete} alt="Override Icon" style={{ width: 20, height: 20 }} /> 
+          <img src={overRideComplete} alt="Override Icon" style={{ width: 20, height: 20 }} />
         );
       } else if (data?.overrideStatus === "PENDING") {
         overRideIcon.push(
@@ -5015,13 +5013,13 @@ useEffect(() => {
       } else {
         overRideIcon.push("")
       }
-        if (data?.overrideStatus === "APPROVED") {
+      if (data?.overrideStatus === "APPROVED") {
         hoverOverRide.push(
-         ["Temporary privilege granted"]
+          ["Temporary privilege granted"]
         );
       } else if (data?.overrideStatus === "PENDING") {
         hoverOverRide.push(
-            ["Temporary privilege Pending"]
+          ["Temporary privilege Pending"]
         );
       } else {
         hoverOverRide.push([""])
@@ -5115,8 +5113,8 @@ useEffect(() => {
       const notesHoverTextArray = validNotes?.length > 0
         ? validNotes.map((note, index) => {
           const text = note?.notes?.notes
-          ? note?.notes?.notes.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ')
-          : '-';
+            ? note?.notes?.notes.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ')
+            : '-';
           const firstName = note?.user?.name?.firstName || '';
           const title = note?.title;
           const createdDate = format(new Date(note?.createdDate), "MMM dd, yyyy 'at' h:mm a") || '';
@@ -5438,8 +5436,8 @@ useEffect(() => {
       const notesHoverTextArray = validNotes?.length > 0
         ? validNotes.map((note, index) => {
           const text = note?.notes?.notes
-          ? note?.notes?.notes.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ')
-          : '-';
+            ? note?.notes?.notes.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ')
+            : '-';
           const firstName = note?.user?.name?.firstName || '';
           const title = note?.title;
           const createdDate = format(new Date(note?.createdDate), "MMM dd, yyyy 'at' h:mm a") || '';
@@ -5573,7 +5571,7 @@ useEffect(() => {
       { type: "action", value: action },
     ];
   } : () => {
-     // checkbox= [];
+    // checkbox= [];
     dot = [];
     applicantName = [];
     applicantId = [];
@@ -5626,9 +5624,9 @@ useEffect(() => {
       applicantName.push(
         `${formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName)}` || " "
       );
-       if (data?.overrideStatus === "APPROVED") {
+      if (data?.overrideStatus === "APPROVED") {
         overRideIcon.push(
-          <img src={overRideComplete} alt="Override Icon" style={{ width: 20, height: 20 }} /> 
+          <img src={overRideComplete} alt="Override Icon" style={{ width: 20, height: 20 }} />
         );
       } else if (data?.overrideStatus === "PENDING") {
         overRideIcon.push(
@@ -5638,13 +5636,13 @@ useEffect(() => {
         overRideIcon.push(
           "")
       }
-        if (data?.overrideStatus === "APPROVED") {
+      if (data?.overrideStatus === "APPROVED") {
         hoverOverRide.push(
-         ["Temporary privilege granted"]
+          ["Temporary privilege granted"]
         );
       } else if (data?.overrideStatus === "PENDING") {
         hoverOverRide.push(
-            ["Temporary privilege Pending"]
+          ["Temporary privilege Pending"]
         );
       } else {
         hoverOverRide.push([""])
@@ -5746,8 +5744,8 @@ useEffect(() => {
       const notesHoverTextArray = validNotes?.length > 0
         ? validNotes.map((note, index) => {
           const text = note?.notes?.notes
-          ? note?.notes?.notes.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ')
-          : '-';
+            ? note?.notes?.notes.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ')
+            : '-';
           const firstName = note?.user?.name?.firstName || '';
           const title = note?.title;
           const createdDate = format(new Date(note?.createdDate), "MMM dd, yyyy 'at' h:mm a") || '';
@@ -6220,8 +6218,8 @@ useEffect(() => {
       const notesHoverTextArray = validNotes?.length > 0
         ? validNotes.map((note, index) => {
           const text = note?.notes?.notes
-          ? note?.notes?.notes.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ')
-          : '-';
+            ? note?.notes?.notes.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ')
+            : '-';
           const firstName = note?.user?.name?.firstName || '';
           const title = note?.title;
           const createdDate = format(new Date(note?.createdDate), "MMM dd, yyyy 'at' h:mm a") || '';
@@ -6489,12 +6487,12 @@ useEffect(() => {
     notesIcon = [];
     requestBy = [];
 
-    tableData?.map((data,uniqueKey) => {
+    tableData?.map((data, uniqueKey) => {
       applicantName.push(
         `${formatFirstNameLastName(data?.application?.applicant?.name?.firstName, data?.application?.applicant?.name?.lastName)}` || "-"
       );
       applicantType.push(data?.application?.providerType?.serviceProviderType || "-");
-       docs.push(data?.application?.documents?.verifiedCount + "/" + data?.application?.documents?.uploadedCount || "");
+      docs.push(data?.application?.documents?.verifiedCount + "/" + data?.application?.documents?.uploadedCount || "");
       // docsHoverText.push([
       //   "Immunization History Verification From PCP pending",
       // ]);
@@ -6546,8 +6544,8 @@ useEffect(() => {
       const notesHoverTextArray = validNotes?.length > 0
         ? validNotes.map((note, index) => {
           const text = note?.notes?.notes
-          ? note?.notes?.notes.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ')
-          : '-';
+            ? note?.notes?.notes.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ')
+            : '-';
           const firstName = note?.user?.name?.firstName || '';
           const title = note?.title;
           const createdDate = format(new Date(note?.createdDate), "MMM dd, yyyy 'at' h:mm a") || '';
@@ -6566,7 +6564,7 @@ useEffect(() => {
         }).reverse()
         : ["-"];
       notesHoverText.push(notesHoverTextArray);
- const closedCount = data?.application?.clarificationCount?.closedCount ?? 0;
+      const closedCount = data?.application?.clarificationCount?.closedCount ?? 0;
       const totalCount = data?.application?.clarificationCount?.totalCount ?? 0;
 
       crs.push(closedCount === 0 && totalCount === 0 ? "-" : `${closedCount}/${totalCount}`);
@@ -6595,14 +6593,14 @@ useEffect(() => {
         })
         : ["-"];
       crsHoverText.push(crsHoverTextArray);
-       requestBy.push(
-              <div key={uniqueKey}>
-                {data?.requestedBy?.name?.firstName || "-"}
-                <br />
-                {format(new Date(data?.createdDate), 'MMM dd, yyyy')}
-              </div>
-            );
-     lastUpdated.push(
+      requestBy.push(
+        <div key={uniqueKey}>
+          {data?.requestedBy?.name?.firstName || "-"}
+          <br />
+          {format(new Date(data?.createdDate), 'MMM dd, yyyy')}
+        </div>
+      );
+      lastUpdated.push(
         data?.lastModifiedDate
           ? format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
           : "-"
@@ -6613,7 +6611,7 @@ useEffect(() => {
     return [
       { type: "text", value: applicantName },
       { type: "text", value: applicantType },
-       {
+      {
         type: "iconWithCount",
         value: docs,
         hoverText: docsHoverText,
@@ -6627,7 +6625,7 @@ useEffect(() => {
         isShowHoverText: true,
         icon: notesIcon,
       },
-       {
+      {
         // type: "countWithHover",
         type: "textWithHover",
         value: crs,
@@ -6866,6 +6864,34 @@ useEffect(() => {
     // { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog },
   ];
 
+  const credUserLocumActionsData = [
+    {
+      data: "Modify CC Meeting Date",
+      requiredValue: "boolean",
+      onClick: onClickViewAndVerifyDateSetFunction,
+      conditionToShow: `data?.completedWorkflows?.find((wf) => wf?.role === "Credentialing Committee")?.meetingDate`,
+    },
+    {
+      data: "Designate CC Meeting Date",
+      requiredValue: "boolean",
+      onClick: onClickViewAndVerifyDateSetFunction,
+      conditionToShow: `!data?.completedWorkflows?.find((wf) => wf?.role === "Credentialing Committee")?.meetingDate`,
+    },
+    {
+      data: "Update CC Approval Status",
+      requiredValue: "boolean",
+      onClick: onClickViewAndVerifyApproveFromCCFunction,
+      conditionToShow: `data?.completedWorkflows?.find((wf) => wf?.role === "Credentialing Committee")?.approvalType && data?.completedWorkflows?.find((wf) => wf?.role === "Credentialing Committee")?.meetingDate`,
+    },
+    {
+      data: "Request Override",
+      requiredValue: "boolean",
+      onClick: onClickOverRideDialog,
+      conditionToShow: `data?.overrideStatus === "NA"`,
+    },
+    // { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog },
+  ];
+
   const applicationActionsData = applicationType === "NEW" ? [
     // { data: "View & Verify", requiredValue: "boolean", onClick: "" },
     // {
@@ -6970,7 +6996,7 @@ useEffect(() => {
     { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog },
   ];
 
-    const reviewedApplicationActionData = [
+  const reviewedApplicationActionData = [
     {
       data: "View",
       requiredValue: "boolean",
@@ -7040,6 +7066,34 @@ useEffect(() => {
     // { data: applicationType === "NEW" ? "From Applicant" : "From Staff", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Credentialing Committee", hideForRoles2: "Department Head", },
     // { data: "From Internal Approver", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Credentialing Committee", hideForRoles2: "Department Head", },
     // { data: "From Institution", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Credentialing Committee", hideForRoles2: "Department Head", },
+  ]
+
+  const macActionsLocumData = [
+    {
+      data: "Modify MAC Meeting Date",
+      requiredValue: "boolean",
+      onClick: onClickViewAndVerifyDateSetMACFunction,
+      conditionToShow: `data?.completedWorkflows?.find((wf) => wf?.role === "Advisory Committee")?.meetingDate`,
+    },
+    {
+      data: "Designate MAC Meeting Date",
+      requiredValue: "boolean",
+      onClick: onClickViewAndVerifyDateSetMACFunction,
+      conditionToShow: `!data?.completedWorkflows?.find((wf) => wf?.role === "Advisory Committee")?.meetingDate`,
+    },
+    {
+      data: (workModeType === "Department Head") || (workModeType === "Credentialing Committee") || (workModeType === "Chief Of Staff") ? "View" : "Update MAC Approval Status",
+      requiredValue: "boolean",
+      onClick: onClickViewAndVerifyApproveFromMACFunction,
+      conditionToShow: `data?.completedWorkflows?.find((wf) => wf?.role === "Advisory Committee")?.meetingDate`,
+    },
+    {
+      data: "Request Override",
+      requiredValue: "boolean",
+      onClick: onClickOverRideDialog,
+      conditionToShow: `data?.overrideStatus === "NA"`,
+    },
+    { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog, hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
   ]
 
   const macLocumActionData = [
@@ -7113,12 +7167,32 @@ useEffect(() => {
   ]
 
   const bodLocumActionData = [
+    // { data: (workModeType === "Department Head") || (workModeType === "Credentialing Committee") ? "View" : "BOD Approval", requiredValue: "boolean", onClick: onClickViewAndVerifyFunction, },
     {
-      data: "BOD Approval",
+      data: "Modify BOD Meeting Date",
+      requiredValue: "boolean",
+      onClick: onClickViewAndVerifyDateSetBODFunction,
+      conditionToShow: `data?.completedWorkflows?.find((wf) => wf?.role === "Board")?.meetingDate`,
+    },
+    {
+      data: "Designate BOD Meeting Date",
+      requiredValue: "boolean",
+      onClick: onClickViewAndVerifyDateSetBODFunction,
+      conditionToShow: `!data?.completedWorkflows?.find((wf) => wf?.role === "Board")?.meetingDate`,
+    },
+    {
+      data: (workModeType === "Department Head") || (workModeType === "Credentialing Committee") || (workModeType === "Chief Of Staff") ? "View" : "Update BOD Approval Status",
       requiredValue: "boolean",
       onClick: onClickViewAndVerifyApproveFromBODFunction,
+      conditionToShow: `data?.completedWorkflows?.find((wf) => wf?.role === "Board")?.meetingDate && !data?.completedWorkflows?.find((wf) => wf?.role === "Board")?.approvalType`,
     },
-    { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog },
+    {
+      data: "Request Override",
+      requiredValue: "boolean",
+      onClick: onClickOverRideDialog,
+      conditionToShow: `data?.overrideStatus === "NA"`,
+    },
+    { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog, hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
   ];
 
   const clarificationActionsData = applicationType === "NEW" ? [
@@ -7200,7 +7274,7 @@ useEffect(() => {
       requiredValue: "boolean",
       onClick: onClickViewAndVerifyOverrideFunction
     },
-      {
+    {
       data: "Create Note",
       requiredValue: "boolean",
       onClick: onClickNotesOverrideDialog,
@@ -7245,35 +7319,35 @@ useEffect(() => {
           : selectedTab === "level-2" && applicationType === "LOCUM" && workModeType === "Credentialing Committee"
             ? applicationHeaderValues
             : selectedTab === "ReviewedApplications" && applicationType === "LOCUM" && workModeType === "Credentialing Committee"
-            ? applicationHeaderValues
-            : selectedTab === "level-2" && applicationType === "LOCUM" && workModeType === "Chief Of Staff"
               ? applicationHeaderValues
-              : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Credentialing Committee"
+              : selectedTab === "level-2" && applicationType === "LOCUM" && workModeType === "Chief Of Staff"
                 ? applicationHeaderValues
-                : selectedTab === "ReviewedApplications" && applicationType === "REAPPOINTMENT" && workModeType === "Credentialing Committee"
-                ? applicationHeaderValues
-                : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Staff Manager"
-                  ? credUserHeaderValues
-                  : selectedTab === "level-3" && applicationType === "LOCUM"
-                    ? macHeaderValues
-                    : selectedTab === "level-4" && (applicationType === "REAPPOINTMENT" || applicationType === "NEW")
-                      ? macHeaderValues
-                      : selectedTab === "level-4" && applicationType === "LOCUM"
-                        ? bodHeaderValues
-                        : selectedTab === "level-5"
-                          ? bodHeaderValues
-                          : selectedTab === "LocumRenewals" && applicationType === "LOCUM"
-                            ? locumHeaderValues
-                            : selectedTab === "OverrideRequest" && applicationType === "LOCUM"
-                            ? locumOverrideValues
-                            : selectedTab === "clarificationsRequired"
-                              ? clarificationHeaderValues
-                              : selectedTab === "rejected"
-                                ? rejectedHeaderValues
-                                // :[];
+                : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Credentialing Committee"
+                  ? applicationHeaderValues
+                  : selectedTab === "ReviewedApplications" && applicationType === "REAPPOINTMENT" && workModeType === "Credentialing Committee"
+                    ? applicationHeaderValues
+                    : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Staff Manager"
+                      ? credUserHeaderValues
+                      : selectedTab === "level-3" && applicationType === "LOCUM"
+                        ? macHeaderValues
+                        : selectedTab === "level-4" && (applicationType === "REAPPOINTMENT" || applicationType === "NEW")
+                          ? macHeaderValues
+                          : selectedTab === "level-4" && applicationType === "LOCUM"
+                            ? bodHeaderValues
+                            : selectedTab === "level-5"
+                              ? bodHeaderValues
+                              : selectedTab === "LocumRenewals" && applicationType === "LOCUM"
+                                ? locumHeaderValues
+                                : selectedTab === "OverrideRequest" && applicationType === "LOCUM"
+                                  ? locumOverrideValues
+                                  : selectedTab === "clarificationsRequired"
+                                    ? clarificationHeaderValues
+                                    : selectedTab === "rejected"
+                                      ? rejectedHeaderValues
+                                      // :[];
 
-                                // : approvedHeaderValues;
-                                : applicantHeaderValues;
+                                      // : approvedHeaderValues;
+                                      : applicantHeaderValues;
   let tableSortValues =
     selectedTab === "level-1"
       ? applicantColSortValues
@@ -7284,35 +7358,35 @@ useEffect(() => {
           : selectedTab === "level-2" && applicationType === "LOCUM" && workModeType === "Credentialing Committee"
             ? applicationColSortValues
             : selectedTab === "ReviewedApplications" && applicationType === "LOCUM" && workModeType === "Credentialing Committee"
-            ? applicationColSortValues
-            : selectedTab === "level-2" && applicationType === "LOCUM" && workModeType === "Chief Of Staff"
               ? applicationColSortValues
-              : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Credentialing Committee"
+              : selectedTab === "level-2" && applicationType === "LOCUM" && workModeType === "Chief Of Staff"
                 ? applicationColSortValues
-                : selectedTab === "ReviewedApplications" && applicationType === "REAPPOINTMENT" && workModeType === "Credentialing Committee"
-                ? applicationColSortValues
-                : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Staff Manager"
-                  ? credUserColSortValues
-                  : selectedTab === "level-3" && applicationType === "LOCUM"
-                    ? macColSortValues
-                    : selectedTab === "level-4" && applicationType === "LOCUM"
-                      ? bodColSortValues
-                      : selectedTab === "level-4" && (applicationType === "REAPPOINTMENT" || applicationType === "NEW")
+                : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Credentialing Committee"
+                  ? applicationColSortValues
+                  : selectedTab === "ReviewedApplications" && applicationType === "REAPPOINTMENT" && workModeType === "Credentialing Committee"
+                    ? applicationColSortValues
+                    : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Staff Manager"
+                      ? credUserColSortValues
+                      : selectedTab === "level-3" && applicationType === "LOCUM"
                         ? macColSortValues
-                        : selectedTab === "level-5"
+                        : selectedTab === "level-4" && applicationType === "LOCUM"
                           ? bodColSortValues
-                          : selectedTab === "LocumRenewals" && applicationType === "LOCUM"
-                            ? locumColSortValues
-                            : selectedTab === "OverrideRequest" && applicationType === "LOCUM"
-                            ? locumOverrideColSortValues
-                            : selectedTab === "clarificationsRequired"
-                              ? clarificationColSortValues
-                              : selectedTab === "rejected"
-                                ? rejectedColSortValues
-                                // :[];
+                          : selectedTab === "level-4" && (applicationType === "REAPPOINTMENT" || applicationType === "NEW")
+                            ? macColSortValues
+                            : selectedTab === "level-5"
+                              ? bodColSortValues
+                              : selectedTab === "LocumRenewals" && applicationType === "LOCUM"
+                                ? locumColSortValues
+                                : selectedTab === "OverrideRequest" && applicationType === "LOCUM"
+                                  ? locumOverrideColSortValues
+                                  : selectedTab === "clarificationsRequired"
+                                    ? clarificationColSortValues
+                                    : selectedTab === "rejected"
+                                      ? rejectedColSortValues
+                                      // :[];
 
-                                // : approvedColSortValues;
-                                : applicantColSortValues;
+                                      // : approvedColSortValues;
+                                      : applicantColSortValues;
   let tableDataValues =
     selectedTab === "level-1"
       ? getApplicantValues()
@@ -7323,35 +7397,35 @@ useEffect(() => {
           : selectedTab === "level-2" && applicationType === "LOCUM" && workModeType === "Credentialing Committee"
             ? getApplicationValues()
             : selectedTab === "ReviewedApplications" && applicationType === "LOCUM" && workModeType === "Credentialing Committee"
-            ? getApplicationValues()
-            : selectedTab === "level-2" && applicationType === "LOCUM" && workModeType === "Chief Of Staff"
               ? getApplicationValues()
-              : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Credentialing Committee"
+              : selectedTab === "level-2" && applicationType === "LOCUM" && workModeType === "Chief Of Staff"
                 ? getApplicationValues()
-                : selectedTab === "ReviewedApplications" && applicationType === "REAPPOINTMENT" && workModeType === "Credentialing Committee"
-                ? getApplicationValues()
-                : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Staff Manager"
-                  ? getCredUserValues()
-                  : selectedTab === "level-3" && applicationType === "LOCUM"
-                    ? getMacValues()
-                    : selectedTab === "level-4" && applicationType === "LOCUM"
-                      ? getBodValues()
-                      : selectedTab === "level-4" && (applicationType === "REAPPOINTMENT" || applicationType === "NEW")
+                : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Credentialing Committee"
+                  ? getApplicationValues()
+                  : selectedTab === "ReviewedApplications" && applicationType === "REAPPOINTMENT" && workModeType === "Credentialing Committee"
+                    ? getApplicationValues()
+                    : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Staff Manager"
+                      ? getCredUserValues()
+                      : selectedTab === "level-3" && applicationType === "LOCUM"
                         ? getMacValues()
-                        : selectedTab === "level-5"
+                        : selectedTab === "level-4" && applicationType === "LOCUM"
                           ? getBodValues()
-                          : selectedTab === "LocumRenewals" && applicationType === "LOCUM"
-                            ? getLocumValues()
-                             : selectedTab === "OverrideRequest" && applicationType === "LOCUM"
-                            ? getLocumOverrideValues()
-                            : selectedTab === "clarificationsRequired"
-                              ? getClarificationValues()
-                              : selectedTab === "rejected"
-                                ? getRejectedValues()
-                                // :[];
+                          : selectedTab === "level-4" && (applicationType === "REAPPOINTMENT" || applicationType === "NEW")
+                            ? getMacValues()
+                            : selectedTab === "level-5"
+                              ? getBodValues()
+                              : selectedTab === "LocumRenewals" && applicationType === "LOCUM"
+                                ? getLocumValues()
+                                : selectedTab === "OverrideRequest" && applicationType === "LOCUM"
+                                  ? getLocumOverrideValues()
+                                  : selectedTab === "clarificationsRequired"
+                                    ? getClarificationValues()
+                                    : selectedTab === "rejected"
+                                      ? getRejectedValues()
+                                      // :[];
 
-                                // : getApprovedValues();
-                                : getApplicantValues();
+                                      // : getApprovedValues();
+                                      : getApplicantValues();
   let actions =
     selectedTab === "level-1" && (applicationType === "REAPPOINTMENT" || applicationType === "NEW")
       ? applicantActionsData
@@ -7360,38 +7434,38 @@ useEffect(() => {
         : selectedTab === "level-2" && (applicationType === "REAPPOINTMENT" || applicationType === "NEW")
           ? departmentHeadActionsData
           : selectedTab === "level-2" && applicationType === "LOCUM" && workModeType === "Staff Manager"
-            ? credUserActionsData
+            ? credUserLocumActionsData
             : selectedTab === "level-2" && applicationType === "LOCUM" && workModeType === "Credentialing Committee"
               ? applicationActionsData
               : selectedTab === "ReviewedApplications" && applicationType === "LOCUM" && workModeType === "Credentialing Committee"
-              ? reviewedApplicationActionData
-              : selectedTab === "level-2" && applicationType === "LOCUM" && workModeType === "Chief Of Staff"
-                ? applicationLocumActionData
-                : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Credentialing Committee"
-                  ? applicationActionsData
-                  : selectedTab === "ReviewedApplications" && applicationType === "REAPPOINTMENT" && workModeType === "Credentialing Committee"
-                  ? reviewedApplicationActionData
-                  : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Staff Manager"
-                    ? credUserActionsData
-                    : selectedTab === "level-3" && applicationType === "LOCUM" && workModeType === "Staff Manager"
-                      ? macActionsData
-                      : selectedTab === "level-4" && applicationType === "REAPPOINTMENT"
-                        ? macActionsData
-                        : selectedTab === "level-4" && applicationType === "LOCUM"
-                          ? bodActionsData
-                          : selectedTab === "level-5"
-                            ? bodActionsData
-                            : selectedTab === "LocumRenewals" && applicationType === "LOCUM"
-                              ? departmentHeadActionsData
-                              : selectedTab === "OverrideRequest" && applicationType === "LOCUM"
-                              ? LocumOverrideActionsData
-                              : selectedTab === "clarificationsRequired"
-                                ? clarificationActionsData
-                                : selectedTab === "rejected"
-                                  ? rejectedActionsData
-                                  // :[];
+                ? reviewedApplicationActionData
+                : selectedTab === "level-2" && applicationType === "LOCUM" && workModeType === "Chief Of Staff"
+                  ? applicationLocumActionData
+                  : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Credentialing Committee"
+                    ? applicationActionsData
+                    : selectedTab === "ReviewedApplications" && applicationType === "REAPPOINTMENT" && workModeType === "Credentialing Committee"
+                      ? reviewedApplicationActionData
+                      : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Staff Manager"
+                        ? credUserActionsData
+                        : selectedTab === "level-3" && applicationType === "LOCUM" && workModeType === "Staff Manager"
+                          ? macActionsLocumData
+                          : selectedTab === "level-4" && applicationType === "REAPPOINTMENT"
+                            ? macActionsData
+                            : selectedTab === "level-4" && applicationType === "LOCUM"
+                              ? bodLocumActionData
+                              : selectedTab === "level-5"
+                                ? bodActionsData
+                                : selectedTab === "LocumRenewals" && applicationType === "LOCUM"
+                                  ? departmentHeadActionsData
+                                  : selectedTab === "OverrideRequest" && applicationType === "LOCUM"
+                                    ? LocumOverrideActionsData
+                                    : selectedTab === "clarificationsRequired"
+                                      ? clarificationActionsData
+                                      : selectedTab === "rejected"
+                                        ? rejectedActionsData
+                                        // :[];
 
-                                  : applicantActionsData;
+                                        : applicantActionsData;
   // : applicantActionsData;
   let gridStyle =
     selectedTab === "level-1" && applicationType === "NEW"
@@ -7399,51 +7473,51 @@ useEffect(() => {
       : selectedTab === "level-1" && applicationType === "REAPPOINTMENT"
         ? style.applicantStaffReappointGrid
         : selectedTab === "level-1" && applicationType === "LOCUM"
-        ? style.applicantLocumStaffGrid
-        : selectedTab === "level-2" && (applicationType === "REAPPOINTMENT" || applicationType === "NEW")
-          ? style.departmentHeadStaffGrid
-          : selectedTab === "level-2" && applicationType === "LOCUM" && workModeType === "Staff Manager"
-            ? style.credUserStaffLocumGrid
-            : selectedTab === "level-2" && applicationType === "LOCUM" && workModeType === "Credentialing Committee"
-              ? style.applicationStaffLocumGrid
-              : selectedTab === "ReviewedApplications" && applicationType === "LOCUM" && workModeType === "Credentialing Committee"
-              ? style.applicationStaffLocumGrid
-              : selectedTab === "level-2" && applicationType === "LOCUM" && workModeType === "Chief Of Staff"
-                ? style.applicationStaffReappointGrid
-                : selectedTab === "level-3" && applicationType === "NEW"
-                  ? style.applicationStaffGrid
-                  : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Credentialing Committee"
+          ? style.applicantLocumStaffGrid
+          : selectedTab === "level-2" && (applicationType === "REAPPOINTMENT" || applicationType === "NEW")
+            ? style.departmentHeadStaffGrid
+            : selectedTab === "level-2" && applicationType === "LOCUM" && workModeType === "Staff Manager"
+              ? style.credUserStaffLocumGrid
+              : selectedTab === "level-2" && applicationType === "LOCUM" && workModeType === "Credentialing Committee"
+                ? style.applicationStaffLocumGrid
+                : selectedTab === "ReviewedApplications" && applicationType === "LOCUM" && workModeType === "Credentialing Committee"
+                  ? style.applicationStaffLocumGrid
+                  : selectedTab === "level-2" && applicationType === "LOCUM" && workModeType === "Chief Of Staff"
                     ? style.applicationStaffReappointGrid
-                    : selectedTab === "ReviewedApplications" && applicationType === "REAPPOINTMENT" && workModeType === "Credentialing Committee"
-                    ? style.applicationStaffReappointGrid
-                    : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Staff Manager"
-                      ? style.credUserStaffReappointGrid
-                      : selectedTab === "level-3" && applicationType === "LOCUM"
-                        ? style.macStaffLocumGrid
-                        : selectedTab === "level-4" && applicationType === "NEW"
-                          ? style.macStaffGrid
-                          : selectedTab === "level-4" && applicationType === "REAPPOINTMENT"
-                            ? style.macStaffReappointGrid
-                            : selectedTab === "level-4" && applicationType === "LOCUM"
-                              ? style.bodStaffLocumGrid
-                              : selectedTab === "level-5" && applicationType === "NEW"
-                                ? style.bodStaffGrid
-                                : selectedTab === "level-5" && applicationType === "REAPPOINTMENT"
-                                  ? style.bodStaffReappointGrid
-                                  : selectedTab === "LocumRenewals" && applicationType === "LOCUM"
-                                    ? style.locumStaffGrid
-                                     : selectedTab === "OverrideRequest" && applicationType === "LOCUM"
-                                       ? style.locumOverrideStaffGrid
-                                    : selectedTab === "clarificationsRequired" && applicationType === "NEW"
-                                      ? style.applicantStaffGrid
-                                      : selectedTab === "clarificationsRequired" && applicationType === "REAPPOINTMENT"
-                                        ? style.applicantStaffReappointGrid
-                                        : selectedTab === "rejected"
-                                          ? style.rejectedStaffGrid
-                                          // :[];
+                    : selectedTab === "level-3" && applicationType === "NEW"
+                      ? style.applicationStaffGrid
+                      : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Credentialing Committee"
+                        ? style.applicationStaffReappointGrid
+                        : selectedTab === "ReviewedApplications" && applicationType === "REAPPOINTMENT" && workModeType === "Credentialing Committee"
+                          ? style.applicationStaffReappointGrid
+                          : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Staff Manager"
+                            ? style.credUserStaffReappointGrid
+                            : selectedTab === "level-3" && applicationType === "LOCUM"
+                              ? style.macStaffLocumGrid
+                              : selectedTab === "level-4" && applicationType === "NEW"
+                                ? style.macStaffGrid
+                                : selectedTab === "level-4" && applicationType === "REAPPOINTMENT"
+                                  ? style.macStaffReappointGrid
+                                  : selectedTab === "level-4" && applicationType === "LOCUM"
+                                    ? style.bodStaffLocumGrid
+                                    : selectedTab === "level-5" && applicationType === "NEW"
+                                      ? style.bodStaffGrid
+                                      : selectedTab === "level-5" && applicationType === "REAPPOINTMENT"
+                                        ? style.bodStaffReappointGrid
+                                        : selectedTab === "LocumRenewals" && applicationType === "LOCUM"
+                                          ? style.locumStaffGrid
+                                          : selectedTab === "OverrideRequest" && applicationType === "LOCUM"
+                                            ? style.locumOverrideStaffGrid
+                                            : selectedTab === "clarificationsRequired" && applicationType === "NEW"
+                                              ? style.applicantStaffGrid
+                                              : selectedTab === "clarificationsRequired" && applicationType === "REAPPOINTMENT"
+                                                ? style.applicantStaffReappointGrid
+                                                : selectedTab === "rejected"
+                                                  ? style.rejectedStaffGrid
+                                                  // :[];
 
-                                          // : style.approvedStaffGrid;
-                                          : style.applicantStaffReappointGrid;
+                                                  // : style.approvedStaffGrid;
+                                                  : style.applicantStaffReappointGrid;
 
   return (
     <>
@@ -7898,16 +7972,16 @@ useEffect(() => {
                         style={{
                           pointerEvents:
                             checkedIds?.length > 1 ||
-                            (checkedIds?.length === 1 && isValidSingleCheckedIdMove(checkedIds[0]))
+                              (checkedIds?.length === 1 && isValidSingleCheckedIdMove(checkedIds[0]))
                               ? "auto"
                               : "none",
                           opacity:
                             checkedIds?.length > 1 ||
-                            (checkedIds?.length === 1 && isValidSingleCheckedIdMove(checkedIds[0]))
+                              (checkedIds?.length === 1 && isValidSingleCheckedIdMove(checkedIds[0]))
                               ? 1
                               : 0.5,
                         }}
-                         onClick={() => {
+                        onClick={() => {
                           if (
                             checkedIds?.length > 1 ||
                             (checkedIds?.length === 1 && isValidSingleCheckedIdMove(checkedIds[0]))
@@ -7921,26 +7995,26 @@ useEffect(() => {
                     )}
                     <div
                       className={`${style.alignCenter} ${style.cursorPointer} ${style.marginRight20}`}
-                       style={{
-                          pointerEvents:
-                            checkedIds?.length > 1 ||
+                      style={{
+                        pointerEvents:
+                          checkedIds?.length > 1 ||
                             (checkedIds?.length === 1 && isValidSingleCheckedId(checkedIds[0]))
-                              ? "auto"
-                              : "none",
-                          opacity:
-                            checkedIds?.length > 1 ||
+                            ? "auto"
+                            : "none",
+                        opacity:
+                          checkedIds?.length > 1 ||
                             (checkedIds?.length === 1 && isValidSingleCheckedId(checkedIds[0]))
-                              ? 1
-                              : 0.5,
-                        }}
-                        onClick={() => {
-                          if (
-                            checkedIds?.length > 1 ||
-                            (checkedIds?.length === 1 && isValidSingleCheckedId(checkedIds[0]))
-                          ) {
-                            setShowBulkApproveDialog(true);
-                          }
-                        }}
+                            ? 1
+                            : 0.5,
+                      }}
+                      onClick={() => {
+                        if (
+                          checkedIds?.length > 1 ||
+                          (checkedIds?.length === 1 && isValidSingleCheckedId(checkedIds[0]))
+                        ) {
+                          setShowBulkApproveDialog(true);
+                        }
+                      }}
                     >
                       <Tooltip title={((selectedTab === "level-3" && applicationType === "REAPPOINTMENT") || (selectedTab === "level-2" && applicationType === "LOCUM")) ? "Update CC Approval Status" : ((selectedTab === "level-4" && applicationType === "REAPPOINTMENT") || (selectedTab === "level-3" && applicationType === "LOCUM")) ? "Update MAC Approval Status" : "Update BOD Approval Status"} arrow>
                         <PeopleOutlinedIcon
@@ -8081,7 +8155,7 @@ useEffect(() => {
                 activeApplicationTask={activeApplicationTask}
                 totalCount={totalCount}
                 filterCCReview={filterCCReview}
-                filterCCNotReview = {filterCCNotReview}
+                filterCCNotReview={filterCCNotReview}
                 recordUpdate={recordUpdate}
               />
             </div>

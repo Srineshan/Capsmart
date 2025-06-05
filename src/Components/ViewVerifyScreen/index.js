@@ -2096,12 +2096,12 @@ const NewActiveApplication = ({
     (workflow) => workflow?.role === "Credentialing Committee"
   );
   const ExpireDate = form?.cyclePeriod?.to
-  ? new Date(form?.cyclePeriod?.to).toISOString().split('T')[0] + 'T00:00'
-  : null;
+    ? new Date(form?.cyclePeriod?.to).toISOString().split('T')[0] + 'T00:00'
+    : null;
   const formattedExpiringDate = ExpireDate ? format(new Date(ExpireDate), "MMM dd, yyyy") : "-";
-   const startDate = form?.cyclePeriod?.from
-  ? new Date(form?.cyclePeriod?.from).toISOString().split('T')[0] + 'T00:00'
-  : null;
+  const startDate = form?.cyclePeriod?.from
+    ? new Date(form?.cyclePeriod?.from).toISOString().split('T')[0] + 'T00:00'
+    : null;
   const formattedStartingDate = startDate ? format(new Date(startDate), "MMM dd, yyyy") : "-";
   const reviewedDateCC = credentialingCommitteeData ? new Date(credentialingCommitteeData?.reviewedDate) : null;
   const AdvisoryCommitteeData = form?.completedWorkflows?.find(
@@ -5350,26 +5350,24 @@ const NewActiveApplication = ({
                         >
 
                           <div>
-                            {applicationType === "REAPPOINTMENT" && (
+                            <div
+                              className={`${style.tableHeaderStyle} ${style.tableHeaderStyleCred} ${style.marginTop20} `}
+                            >
                               <div
-                                className={`${style.tableHeaderStyle} ${style.tableHeaderStyleCred} ${style.marginTop20} `}
+                                className={`${style.displayInRow} ${style.verticalAlignCenter} `}
                               >
                                 <div
-                                  className={`${style.displayInRow} ${style.verticalAlignCenter} `}
-                                >
-                                  <div
-                                    className={`${style.marginLeft30} ${style.tableHeaderTextStyle}`}
-                                  ></div>
-                                </div>
-                                <div
-                                  className={`${style.displayInRow} ${style.verticalAlignCenter} `}
-                                >
-                                  <div className={`${style.tableHeaderTextStyle} ${style.marginLeft20}`}>
-                                    Required {applicationType === "LOCUM" ? `Application ${form?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'} data and Proof of Documentation for ${formattedStartingDate} and ${formattedExpiringDate}` : 'Reappointment data and Proof of Documentation for July 1, 2025 and June 30, 2026'} 
-                                  </div>
+                                  className={`${style.marginLeft30} ${style.tableHeaderTextStyle}`}
+                                ></div>
+                              </div>
+                              <div
+                                className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                              >
+                                <div className={`${style.tableHeaderTextStyle} ${style.marginLeft20}`}>
+                                  Required {applicationType === "LOCUM" ? `Application ${form?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'} data and Proof of Documentation for ${formattedStartingDate} and ${formattedExpiringDate}` : 'Reappointment data and Proof of Documentation for July 1, 2025 and June 30, 2026'}
                                 </div>
                               </div>
-                            )}
+                            </div>
                             {applicationType === "NEW" && (
                               <div
                                 className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderGridStyle} `}
@@ -5386,7 +5384,7 @@ const NewActiveApplication = ({
                                     className={`${style.displayInRow} ${style.verticalAlignCenter} `}
                                   >
                                     <div className={`${style.tableHeaderTextStyle}`}>
-                                      Required {applicationType === "LOCUM" ? `Application ${form?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'} data and Proof of Documentation for ${formattedStartingDate} and ${formattedExpiringDate}` : 'Reappointment data and Proof of Documentation for July 1, 2025 and June 30, 2026'} 
+                                      Required {applicationType === "LOCUM" ? `Application ${form?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'} data and Proof of Documentation for ${formattedStartingDate} and ${formattedExpiringDate}` : 'Reappointment data and Proof of Documentation for July 1, 2025 and June 30, 2026'}
                                     </div>
                                   </div>
                                   <div
@@ -7943,7 +7941,7 @@ const NewActiveApplication = ({
                                 className={`${style.displayInRow} ${style.verticalAlignCenter} `}
                               >
                                 <div className={`${style.tableHeaderTextStyle}`}>
-                                   Required {applicationType === "LOCUM" ? `Application ${form?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'} data and Proof of Documentation for ${formattedStartingDate} and ${formattedExpiringDate}` : 'Reappointment data and Proof of Documentation for July 1, 2025 and June 30, 2026'} 
+                                  Required {applicationType === "LOCUM" ? `Application ${form?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'} data and Proof of Documentation for ${formattedStartingDate} and ${formattedExpiringDate}` : 'Reappointment data and Proof of Documentation for July 1, 2025 and June 30, 2026'}
                                 </div>
                               </div>
                               <div
@@ -9544,7 +9542,7 @@ const NewActiveApplication = ({
                               className={`${style.displayInRow} ${style.verticalAlignCenter} `}
                             >
                               <div className={`${style.tableHeaderTextStyle}`}>
-                                Required {applicationType === "LOCUM" ? `Application ${form?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'} data and Proof of Documentation for ${formattedStartingDate} and ${formattedExpiringDate}` : 'Reappointment data and Proof of Documentation for July 1, 2025 and June 30, 2026'} 
+                                Required {applicationType === "LOCUM" ? `Application ${form?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'} data and Proof of Documentation for ${formattedStartingDate} and ${formattedExpiringDate}` : 'Reappointment data and Proof of Documentation for July 1, 2025 and June 30, 2026'}
                               </div>
                             </div>
                             <div
@@ -10805,28 +10803,28 @@ const NewActiveApplication = ({
                       </div>
                       {workModeType === 'Staff Manager' && selectedTab === 'level-1' && applicationType === "LOCUM" && (
                         <div className={`${style.marginTop20}`}>
-                        <div
-                          className={`${style.bigButtonStyle1} ${form?.overrideStatus === "NA" ? style.cursorPointer : ""}`}
-                          style={{ opacity: form?.overrideStatus === "NA" ? 1 : 0.5 }}
-                        >
-                          <Tooltip
-                            title={form?.overrideStatus === "NA" ? "Click to Request for Override" : ""}
-                            arrow
+                          <div
+                            className={`${style.bigButtonStyle1} ${form?.overrideStatus === "NA" ? style.cursorPointer : ""}`}
+                            style={{ opacity: form?.overrideStatus === "NA" ? 1 : 0.5 }}
                           >
-                            <div
-                              className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
-                              onClick={form?.overrideStatus === "NA" ? onClickOverrideRequestDialogFunction : undefined}
-                              // style={{ pointerEvents: form?.extensionRequested === "NA" ? "auto" : "none" }} // prevents click if NA
+                            <Tooltip
+                              title={form?.overrideStatus === "NA" ? "Click to Request for Override" : ""}
+                              arrow
                             >
-                              REQUEST FOR OVERRIDE
-                            </div>
-                          </Tooltip>
+                              <div
+                                className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                                onClick={form?.overrideStatus === "NA" ? onClickOverrideRequestDialogFunction : undefined}
+                              // style={{ pointerEvents: form?.extensionRequested === "NA" ? "auto" : "none" }} // prevents click if NA
+                              >
+                                REQUEST FOR OVERRIDE
+                              </div>
+                            </Tooltip>
+                          </div>
                         </div>
-                      </div>
                       )}
                     </div>
                   ) : ("")}
-                   {((workModeType === 'Chief Of Staff' && selectedTab === 'OverrideRequest' && applicationType === "LOCUM")) ? (
+                  {((workModeType === 'Chief Of Staff' && selectedTab === 'OverrideRequest' && applicationType === "LOCUM")) ? (
                     <div className={`${style.fixedBottom} ${approvalwithoutnotesCommentsBox || approvalnotesCommentsBox || approvalnotesCommentsBoxDept || showApplicationDeclineDialog || notesCommentsBox || reappointmentChangesCommentsBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
                       <div className={`${style.twoColumnGrid}`}>
                         <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>

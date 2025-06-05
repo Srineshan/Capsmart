@@ -98,7 +98,7 @@ const LocumStaffList = ({
   // let userDepartmentList;
   let userSpecialty;
 
-  const activeLocumHeaderValues = ["Locum Staff", "", "Locum Type", "Department", "Docs", "Start Date", "End Date", "Days to Expiration", "Action"];
+  const activeLocumHeaderValues = ["Locum Staff", "", "Locum Type", "Department", "Docs", "Start Date", "Expiry Date", "Days to Expiration", "Action"];
   const expiredLocumHeaderValues = ["Locum Staff", "", "Locum Type", "Department", "Docs", "Last End Date", "Days Since Expired", "Action"];
   const requestLocumHeaderValues = ["Locum Staff", "", "Staff Status", "Locum Type", "Department", "Request By", "End Date", "Days to Expiration", ""];
 
@@ -489,6 +489,7 @@ const LocumStaffList = ({
   let lastUpdated = [];
   let action = [];
   let applicantName = [];
+  let applicantNameHoverText = [];
   let applicantId = [];
   let applicantStatus = [];
   let applicantType = [];
@@ -535,6 +536,7 @@ const LocumStaffList = ({
   const getLocumActiveValues = () => {
     dot = [];
     applicantName = [];
+    applicantNameHoverText = [];
     applicantId = [];
     applicantType = [];
     department = [];
@@ -564,6 +566,14 @@ const LocumStaffList = ({
     deptSpecialty = [];
 
     tableData?.map((data) => {
+      const startDateFormat = data?.tenure?.from
+        ? new Date(data?.tenure?.from).toISOString().split('T')[0] + 'T00:00'
+        : null;
+      const endDateFormat = data?.tenure?.to
+        ? new Date(data?.tenure?.to).toISOString().split('T')[0] + 'T00:00'
+        : null;
+      console.log(data, 'dataCheck', `${startDateFormat ? format(new Date(startDateFormat), "MMM dd, yyyy") : "-"} - ${endDateFormat ? format(new Date(endDateFormat), "MMM dd, yyyy") : ''}`)
+
       const expiredDays = differenceInDays(new Date(data?.tenure?.to), new Date());
       // applicantName.push(
       //   `${formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName)}` || " "
@@ -577,6 +587,19 @@ const LocumStaffList = ({
           {formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName) || " "}
         </div>
       );
+      applicantNameHoverText.push(
+        <div>
+          <div>
+            Active Locum {`${startDateFormat ? format(new Date(startDateFormat), "MMM dd, yyyy") : "-"} - ${endDateFormat ? format(new Date(endDateFormat), "MMM dd, yyyy") : ''}`}
+          </div>
+          <div>
+            Current Period Extension Applied For -
+          </div>
+          <div>
+            Click To View Details
+          </div>
+        </div>
+      )
       applicantDept.push([data?.basicDetailReferences?.department?.name ? data?.basicDetailReferences?.department?.name : "-"]);
       department.push(
         `${data?.basicDetailReferences?.department?.name || "-"}`
@@ -618,7 +641,7 @@ const LocumStaffList = ({
       if (data?.extensionRequested === true) {
         if (data?.reAppointmentInitiated === false && expiredDays < 2) {
           reappointDate.push(
-            ["Locum Extension Request Not Acted On"]
+            ["Extension Request Not Acted Upon By Dept Head"]
           );
         } else if (data?.reAppointmentInitiated === false) {
           const requests = data?.requests;
@@ -628,13 +651,13 @@ const LocumStaffList = ({
             const createdDate = lastRequest?.createdDate
               ? format(new Date(lastRequest?.createdDate), "MMM dd, yyyy hh:mm a")
               : "-";
-            reappointDate.push([`Locum Extension Request Sent To ${role} On ${createdDate}`]);
+            reappointDate.push([`Extension Request Sent By Staff Manager To ${role} On ${createdDate}`]);
           } else {
             reappointDate.push(["Locum Extension Request Sent"]);
           }
         } else if (data?.reAppointmentInitiated === true) {
           reappointDate.push(
-            ["Locum Extension Application Sent"]
+            [`Extension Application Sent By Dept Head on ${format(new Date(data?.reAppointmentSentDate), 'MMM dd, yyyy')}`]
           );
         }
       }
@@ -645,7 +668,7 @@ const LocumStaffList = ({
       else {
         if (data?.reAppointmentInitiated === true) {
           reappointDate.push(
-            ["Locum Extension Application Sent"]
+            [`Extension Application Sent By Dept Head on ${format(new Date(data?.reAppointmentSentDate), 'MMM dd, yyyy')}`]
           );
         } else {
           reappointDate.push("");
@@ -709,12 +732,6 @@ const LocumStaffList = ({
 
         docsHoverText.push(docHoverTextArray);
       }
-      const startDateFormat = data?.tenure?.from
-        ? new Date(data?.tenure?.from).toISOString().split('T')[0] + 'T00:00'
-        : null;
-      const endDateFormat = data?.tenure?.to
-        ? new Date(data?.tenure?.to).toISOString().split('T')[0] + 'T00:00'
-        : null;
       startDate.push(
         startDateFormat ? format(new Date(startDateFormat), "MMM dd, yyyy") : "-"
       );
@@ -761,7 +778,7 @@ const LocumStaffList = ({
 
     return [
       // { type: "dot", value: dot, tooltipValue: dotTooltipValues },
-      { type: "text", value: applicantName },
+      { type: "text", value: applicantName, tooltipValueText: applicantNameHoverText },
       {
         type: "iconWithCount",
         icon: iconStatus,
@@ -813,6 +830,7 @@ const LocumStaffList = ({
     dot = [];
     dot = [];
     applicantName = [];
+    applicantNameHoverText = [];
     applicantId = [];
     applicantType = [];
     department = [];
@@ -838,6 +856,12 @@ const LocumStaffList = ({
     deptSpecialty = [];
 
     tableData?.map((data) => {
+      const startDateFormat = data?.tenure?.from
+        ? new Date(data?.tenure?.from).toISOString().split('T')[0] + 'T00:00'
+        : null;
+      const endDateFormat = data?.tenure?.to
+        ? new Date(data?.tenure?.to).toISOString().split('T')[0] + 'T00:00'
+        : null;
       dot.push(
         data?.status === "REVIEW_INPROGRESS"
           ? "yellow"
@@ -857,6 +881,19 @@ const LocumStaffList = ({
           {formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName) || " "}
         </div>
       );
+      applicantNameHoverText.push(
+        <div>
+          <div>
+            Expired Locum {`${startDateFormat ? format(new Date(startDateFormat), "MMM dd, yyyy") : "-"} - ${endDateFormat ? format(new Date(endDateFormat), "MMM dd, yyyy") : ''}`}
+          </div>
+          <div>
+            Current Period Renewal Applied For -
+          </div>
+          <div>
+            Click To View Details
+          </div>
+        </div>
+      )
       applicantDept.push([data?.basicDetailReferences?.department?.name ? data?.basicDetailReferences?.department?.name : "-"]);
       // applicantType.push(data?.providerType.serviceProviderType);
       applicantType.push(data?.basicDetailReferences?.applicantType?.serviceProviderType || "Doctor");
@@ -909,7 +946,7 @@ const LocumStaffList = ({
           }
         } else if (data?.reAppointmentInitiated === true) {
           reappointDate.push(
-            ["Locum Renewal Application Sent"]
+            [`Renewal Application Sent By Dept Head on ${format(new Date(data?.reAppointmentSentDate), 'MMM dd, yyyy')}`]
           );
         }
       }
@@ -920,7 +957,7 @@ const LocumStaffList = ({
       else {
         if (data?.reAppointmentInitiated === true) {
           reappointDate.push(
-            ["Locum Renewal Application Sent"]
+            [`Renewal Application Sent By Dept Head on ${format(new Date(data?.reAppointmentSentDate), 'MMM dd, yyyy')}`]
           );
         } else {
           reappointDate.push([""]);
@@ -970,9 +1007,6 @@ const LocumStaffList = ({
 
       const expiredDays = differenceInDays(new Date(data?.tenure?.to), new Date());
       ExpiredDays.push(Math.abs(expiredDays).toString());
-      const endDateFormat = data?.tenure?.to
-        ? new Date(data?.tenure?.to).toISOString().split('T')[0] + 'T00:00'
-        : null;
       endDate.push(
         data?.tenure?.to ? format(new Date(endDateFormat), "MMM dd, yyyy") : "-"
       );
@@ -982,7 +1016,7 @@ const LocumStaffList = ({
 
     return [
       // { type: "dot", value: dot },
-      { type: "text", value: applicantName },
+      { type: "text", value: applicantName, tooltipValueText: applicantNameHoverText },
       {
         type: "iconWithCount",
         icon: iconStatus,
@@ -1208,7 +1242,7 @@ const LocumStaffList = ({
 
   const expiredLocumActionsData = [
     {
-      data: "Reactivate",
+      data: "Renew",
       requiredValue: "boolean",
       onClick: onClickExtensiveLocumDialog,
       conditionToShow: `data?.reAppointmentInitiated === false`,
@@ -1224,7 +1258,7 @@ const LocumStaffList = ({
 
   const expiredLocumActionsSMData = [
     {
-      data: "Request Reactivation",
+      data: "Request Renew",
       requiredValue: "boolean",
       onClick: onClickExtensiveRequestLocumDialog,
       conditionToShow: `data?.extensionRequested === false && data?.reAppointmentInitiated === false`,
