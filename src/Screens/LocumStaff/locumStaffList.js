@@ -609,7 +609,7 @@ const LocumStaffList = ({
         <div
           key={data.id}
           className={`${style.justifyCenter} ${style.cursorPointer}`}
-          onClick={() => onClickViewAndVerifyFunction(data.id)}
+        // onClick={() => onClickViewAndVerifyFunction(data.id)}
         >
           {formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName) || " "}
         </div>
@@ -627,9 +627,9 @@ const LocumStaffList = ({
           <div>
             Days to Expiration - <strong>{expiredDays.toString()}</strong>
           </div>
-          <div>
+          {/* <div>
             Click To View Details
-          </div>
+          </div> */}
         </div>
       )
       applicantDept.push([data?.basicDetailReferences?.department?.name ? data?.basicDetailReferences?.department?.name : "-"]);
@@ -913,7 +913,7 @@ const LocumStaffList = ({
         <div
           key={data.id}
           className={`${style.justifyCenter} ${style.cursorPointer}`}
-          onClick={() => onClickViewAndVerifyFunction(data.id)}
+        // onClick={() => onClickViewAndVerifyFunction(data.id)}
         >
           {formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName) || " "}
         </div>
@@ -928,9 +928,9 @@ const LocumStaffList = ({
               Current Period Renewal Applied For - <strong>{`${format(new Date(data?.onGoingApplication?.cyclePeriod?.from), 'MMM dd, yyyy')} - ${format(new Date(data?.onGoingApplication?.cyclePeriod?.to), 'MMM dd, yyyy')}`}</strong>
             </div>
           )}
-          <div>
+          {/* <div>
             Click To View Details
-          </div>
+          </div> */}
         </div>
       )
       applicantDept.push([data?.basicDetailReferences?.department?.name ? data?.basicDetailReferences?.department?.name : "-"]);
@@ -1141,7 +1141,7 @@ const LocumStaffList = ({
         <div
           key={data.id}
           className={`${style.justifyCenter} ${style.cursorPointer}`}
-          onClick={() => onClickViewAndVerifyFunction(data.id)}
+        // onClick={() => onClickViewAndVerifyFunction(data.id)}
         >
           {formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName) || " "}
         </div>
@@ -1159,9 +1159,9 @@ const LocumStaffList = ({
           <div>
             Days to Expiration - <strong>{expiredDays.toString()}</strong>
           </div>
-          <div>
+          {/* <div>
             Click To View Details
-          </div>
+          </div> */}
         </div>
       )
       applicantDept.push([data?.basicDetailReferences?.department?.name ? data?.basicDetailReferences?.department?.name : "-"]);
@@ -1422,7 +1422,7 @@ const LocumStaffList = ({
         <div
           key={data.id}
           className={`${style.justifyCenter} ${style.cursorPointer}`}
-          onClick={() => onClickViewAndVerifyFunction(data.id)}
+        // onClick={() => onClickViewAndVerifyFunction(data.id)}
         >
           {formatFirstNameLastName(data?.staff?.applicant?.name?.firstName, data?.staff?.applicant?.name?.lastName) || " "}
         </div>
