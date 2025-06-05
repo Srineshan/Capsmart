@@ -54,8 +54,6 @@ const OverrideNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, 
   const [userFirstName, setUserFirstName] = useState('');
   const [userLastName, setUserLastName] = useState('');
   const [userSelectOverideApplicant, setUserSelectOverideApplicant] = useState('');
-  let approverDetails;
-  let approverDetailsCred;
   const rawExpireDate = userSelectOverideApplicant?.application?.priorCyclePeriod?.to ?? null;
   const ExpireDate = rawExpireDate ? parseISO(rawExpireDate) : null;
   const formattedExpiringDate = ExpireDate ? format(new Date(ExpireDate), "MMM dd, yyyy") : "-";
@@ -75,57 +73,6 @@ const OverrideNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, 
     sessionStorage.setItem("fromSummary", false);
     getApplication();
   }, [applicationType, id]);
-
-  useEffect(() => {
-
-    if (workModeType === "Department Head" || workModeType === "Chief Of Staff") {
-      approverDetails = formDetails?.completedWorkflows?.find(
-        (workflow) => workflow?.role === "Department Head"
-      );
-    }
-    // else if (workModeType === "Credentialing Committee") {
-    //   approverDetails = formDetails?.completedWorkflows?.find(
-    //     (workflow) => workflow?.role === "Credentialing Committee"
-    //   );
-    // }
-
-    const firstName = approverDetails?.approverDetail?.name?.firstName;
-    const lastName = approverDetails?.approverDetail?.name?.lastName;
-
-    console.log("Updated firstname:", approverDetails, formDetails?.id);
-    console.log("Updated lastname:", lastName);
-
-    
-
-
-    if (firstName === userFirstName && lastName === userLastName) {
-    
-      setIsApproverDept1("Approve");
-    } else {
-      setIsApproverDept1("notApproved")
-    }
-  }, [workModeType, formDetails, userFirstName, userLastName, id]);
-
-  useEffect(() => {
-    if (workModeType === "Credentialing Committee") {
-      approverDetailsCred = formDetails?.completedWorkflows?.find(
-        (workflow) => workflow?.role === "Credentialing Committee"
-      );
-    }
-
-    const firstName = approverDetailsCred?.approverDetail?.name?.firstName;
-    const lastName = approverDetailsCred?.approverDetail?.name?.lastName;
-
-    console.log("Updated firstname:", approverDetailsCred, formDetails?.id);
-    console.log("Updated lastname:", lastName);
-
-
-    if (firstName === userFirstName && lastName === userLastName) {
-      setIsApproverDept1("Approve");
-    } else {
-      setIsApproverDept1("notApproved")
-    }
-  }, [workModeType, formDetails, userFirstName, userLastName, id]);
 
   console.log(`Approverssssss ${workModeType}: ${isApproverDept1}`);
 

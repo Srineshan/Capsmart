@@ -26,10 +26,14 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen, getActiveApplicationView, date
   let cookie = new Cookie();
   let userDetails = cookie.get('user');
   const users = jwt(userDetails);
+  const [applicationType, setApplicationType] = useState(() =>
+    sessionStorage.getItem('applicationCreationType') || 'NEW'
+  );
   const [userRole, setUserRole] = useState('');
   const [formDetails, setFormDetails] = useState([]);
   const [userSelectRole, setUserSelectRole] = useState([]);
-  const [selectedRoleCred, setSelectedRoleCred] = useState('');
+  // const [selectedRoleCred, setSelectedRoleCred] = useState('');
+  const [selectedRoleCred, setSelectedRoleCred] = useState(applicationType === "LOCUM" ? [] : "");
   const [userSelectRoleDept, setUserSelectRoleDept] = useState([]);
   const [selectedRoleDept, setSelectedRoleDept] = useState('');
   const [userRoleComments, setUserRoleComments] = useState('');
@@ -75,10 +79,8 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen, getActiveApplicationView, date
   };
   const [isLoadingImage, setIsLoadingImage] = useState(false);
   const workModeType = sessionStorage.getItem('workModeType');
-  const [applicationType, setApplicationType] = useState(() =>
-    sessionStorage.getItem('applicationCreationType') || 'NEW'
-  );
   const [logDetails, setLogDetails] = useState([]);
+  const [transformedRoles, setTransformedRoles] = useState([]);
   // const isApproveEnabled = 
   //   // userRoleComments.trim() !== '' && 
   // selectedDateForDept !== null && 
@@ -96,6 +98,13 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen, getActiveApplicationView, date
     handleSignatureClick();
   };
 
+  console.log("selectedRoleCred",selectedRoleCred)
+
+  const handleRoleCredChange = (event) => {
+  const value = event.target.value;
+  setSelectedRoleCred(value); 
+  };
+
   useEffect(() => {
     getApplicantType();
     getApplicationUserRole();
@@ -111,35 +120,70 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen, getActiveApplicationView, date
     console.log('selectedRoleCred:', selectedRoleCred);
     console.log('selectedRoleDept:', selectedRoleDept);
 
-    // Find the matched role by ID
-    const matchedRole = userSelectRole?.find(role => role?.id === selectedRoleCred);
-    const matchedRoleDept = userSelectRoleDept?.find(role => role?.id === selectedRoleDept);
-    console.log('matchedRole:', matchedRole);
-    console.log('matchedRoleDept:', matchedRoleDept);
+  // Handle selectedRoleCred (can be string or array)
+ if (Array.isArray(selectedRoleCred)) {
+  const matchedRoles = selectedRoleCred.map(id =>
+    userSelectRole?.find(role => role?.id === id)
+  ).filter(Boolean); // Remove any undefined values
 
-    // If a role is found, extract the name properties
+   const transformed = matchedRoles.map(role => ({
+    id: role?.id,
+    name: {
+      firstName: role?.name?.firstName || '',
+      lastName: role?.name?.lastName || '',
+      middleName: role?.name?.middleName || ''
+    },
+    role: "Credentialing Committee"
+  }));
+
+  setTransformedRoles(transformed);
+
+  console.log('Transformed Roles:', transformed);
+
+  // You can now store this in a state
+  // setMatchedCredRoles(transformedRoles);
+} else {
+    const matchedRole = userSelectRole?.find(role => role?.id === selectedRoleCred);
     if (matchedRole) {
       const { firstName, lastName, middleName } = matchedRole?.name || {};
-      console.log('firstName:', firstName);
-      console.log('lastName:', lastName);
-
-      // Set the state with the extracted values
       setFirstName(firstName || '');
       setLastName(lastName || '');
-      setMiddleName(middleName || '');;
+      setMiddleName(middleName || '');
+      console.log('matchedRole:', firstName,lastName,middleName);
     }
+  }
 
+  // Handle selectedRoleDept (can be string or array - apply same logic if needed)
+  if (Array.isArray(selectedRoleDept)) {
+    const matchedDeptRoles = selectedRoleDept.map(id =>
+      userSelectRoleDept?.find(role => role?.id === id)
+    ).filter(Boolean);
+
+    const extractedDeptNames = matchedDeptRoles.map(role => {
+      const { id, name } = role;
+      return {
+        id,
+        firstName: name?.firstName || '',
+        lastName: name?.lastName || '',
+        middleName: name?.middleName || ''
+      };
+    });
+
+    console.log('Extracted Dept Names:', extractedDeptNames);
+
+    // setMatchedDeptRoles(extractedDeptNames);
+
+  } else {
+    const matchedRoleDept = userSelectRoleDept?.find(role => role?.id === selectedRoleDept);
     if (matchedRoleDept) {
       const { firstName, lastName, middleName } = matchedRoleDept?.name || {};
-      console.log('firstNameDept:', firstName);
-      console.log('lastNameDept:', lastName);
-
-      // Set the state with the extracted values
       setFirstNameDept(firstName || '');
       setLastNameDept(lastName || '');
       setMiddleNameDept(middleName || '');
     }
-  }, [userSelectRole, userSelectRoleDept, selectedRoleCred, selectedRoleDept]);
+  }
+}, [userSelectRole, userSelectRoleDept, selectedRoleCred, selectedRoleDept]);
+
 
   useEffect(() => {
     if (userSelectRoleDept?.length === 1) {
@@ -506,7 +550,9 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen, getActiveApplicationView, date
 
   const checkApproveEnabled = () => {
     const hasValidComments = userRoleComments.trim() !== '';
-    const hasValidMember = selectedRoleCred !== '';
+    const hasValidMember = Array.isArray(selectedRoleCred)
+    ? selectedRoleCred.length > 1
+    : selectedRoleCred !== '';
     const hasValidMemberDept = selectedRoleDept !== '';
     const isLocum = applicationType === "LOCUM";
 
@@ -625,7 +671,7 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen, getActiveApplicationView, date
       //   id: selectedRoleCred,
       //   role: "Credentialing Committee"
       // } 
-      userDetail: [
+      userDetail: applicationType === "LOCUM" ? transformedRoles : [
         {
           id: selectedRoleCred,
           name: {
@@ -707,7 +753,7 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen, getActiveApplicationView, date
       },
       title: title,
       approvedDate: new Date().toISOString(),
-      userDetail: [
+      userDetail: applicationType === "LOCUM" ? transformedRoles : [
         {
           id: selectedRoleCred,
           name: {
@@ -1083,7 +1129,7 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen, getActiveApplicationView, date
                   <div>
                     <CommonSelectField
                       value={selectedRoleCred}
-                      onChange={(e) => setSelectedRoleCred(e.target.value)}
+                      onChange={handleRoleCredChange}
                       className={style.fullWidth}
                       firstOptionLabel={''}
                       firstOptionValue={''}
@@ -1099,16 +1145,21 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen, getActiveApplicationView, date
                           department => department?.departmentName?.name
                         ).join(', ');
                         let label = `${data?.name?.firstName} ${data?.name?.lastName}, ${combinedTitle}`;
-
                         if (departmentName) {
                           label += `- ${departmentName}`;
                         }
 
                         return label;
                       })}
-                      disabledList={false}
+                      disabledList={userSelectRole?.map(() => false)}
                       required={false}
-                      label="Assign a Credentialing Committee Member to Review & Approve*"
+                      label={
+                        applicationType === "LOCUM"
+                          ? "Assign Two Credentialing Committee Members to Review & Approve* (Select 2)"
+                          : "Assign a Credentialing Committee Member to Review & Approve*"
+                      }
+                      multiple={applicationType === "LOCUM"}
+                      maxSelect={applicationType === "LOCUM" ? 2 : undefined}
                     />
                   </div>
 
