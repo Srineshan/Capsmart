@@ -61,6 +61,7 @@ import { format } from 'date-fns';
 import TableTwo from "../../Components/TableDesignTwo";
 import CreateOutlinedIcon from '@mui/icons-material/CreateOutlined';
 import LoadingScreen from "../LoadingScreen";
+import FileVerifyDialog from "../../Components/fileVerifyDialog";
 
 const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, getActiveApplicationView }) => {
   let cookie = new Cookie();
@@ -94,6 +95,9 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
   });
   const [showNotesDetailsDialog, setShowNotesDetailsDialog] = useState(false);
   const [showViewAndVerifyScreen, setShowViewAndVerifyScreen] = useState(false);
+  const [fileArray, setFileArray] = useState([]);
+  const [selectedFileIndex, setSelectedFileIndex] = useState(0);
+  const [showFileVerifyDialog, setShowFileVerifyDialog] = useState(false);
   const documentHeaderValues = ["", "Document Type", "Document Name", "Requirement", "Expiration Date", "Last Updated", "Action"];
   const documentColSortValues = [false, false, false, false, false, false, , false];
   const appointmentHeaderValues = ["Appointment Cycle", <img src={CAPManagerSmallLogo} alt="img" className={style.LogoIcon} />, "Privilege Category", "Approved Privileges", "Notes", "Docs", "Approval Date", "Action"];
@@ -334,7 +338,22 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
         </Tooltip>
       ) : null
     );
-      docs.push(data?.documents?.documentDetails?.length)
+      // docs.push(data?.documents?.documentDetails?.length)
+      docs.push(
+      data?.documents?.documentDetails?.length > 0 ? (
+        <Tooltip title="Click to View Docs" arrow>
+          <span
+            key={index}
+            onClick={() => handleViewClickDocs(data?.documents?.documentDetails)}
+            style={{ cursor: "pointer", color: "#2C2C2C" }}
+          >
+            {data?.documents?.documentDetails?.length}
+          </span>
+        </Tooltip>
+      ) : (
+        <span key={index} style={{ color: "#2C2C2C" }}>-</span>
+      )
+    );
       approvalDate.push(
         approvalDateFormat ? format(new Date(approvalDateFormat), "MMM dd, yyyy") : "-"
       );
@@ -449,6 +468,11 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
     }));
   };
 
+  const handleViewClickDocs = (files) => {
+    setFileArray(files);
+    setSelectedFileIndex(0);
+    setShowFileVerifyDialog(true);
+  };
 
   const getPreApplication = async () => {
     try {
@@ -987,6 +1011,16 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
           />
         )
       }
+      {showFileVerifyDialog && (
+        <FileVerifyDialog
+          getIsOpen={setShowFileVerifyDialog}
+          file={fileArray[selectedFileIndex]}
+          fileArray={fileArray}
+          setFileArray={setFileArray}
+          selectedFileIndex={selectedFileIndex}
+          setSelectedFileIndex={setSelectedFileIndex}
+        />
+      )}
       {/* {
             showViewAndVerifyScreen && (
             <ViewandVerifyScreen
