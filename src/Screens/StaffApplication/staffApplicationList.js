@@ -1437,8 +1437,17 @@ const StaffApplicationList = ({
         console.log(error)
       });
     getWorkflowUserData();
-    setRecordUpdate(false)
+    // setRecordUpdate(false)
   }
+
+  useEffect(() => {
+    if (recordUpdate) {
+      const timer = setTimeout(() => {
+        setRecordUpdate(false);
+      }, 10000);
+      return () => clearTimeout(timer);
+    }
+  }, [recordUpdate]);
   const getApplicationMoveToNext = async (id) => {
     // let role;
     let notes;
@@ -6883,7 +6892,7 @@ useEffect(() => {
       data: "Update CC Approval Status",
       requiredValue: "boolean",
       onClick: onClickViewAndVerifyApproveFromCCFunction,
-      conditionToShow: `data?.completedWorkflows?.find((wf) => wf?.role === "Credentialing Committee")?.approvalType && data?.completedWorkflows?.find((wf) => wf?.role === "Credentialing Committee")?.meetingDate`,
+      conditionToShow: `data?.completedWorkflows?.find((wf) => wf?.role === "Credentialing Committee")?.approverDetails?.every(detail => detail?.approvalType !== null) && data?.completedWorkflows?.find((wf) => wf?.role === "Credentialing Committee")?.meetingDate`,
     },
     {
       data: "Request Override",
@@ -7930,6 +7939,9 @@ useEffect(() => {
                 getApplicationCreationType={getApplicationCreationType}
                 searchTermForTable={searchTermForTable}
                 totalCount={totalCount}
+                showBulkApproveDialog={showBulkApproveDialog}
+                showBulkMoveDialog={showBulkMoveDialog}
+                recordUpdate={recordUpdate}
               />
               <div className={`${style.spaceBetween} ${style.marginLeft} ${style.textAlign} `}>
                 {workModeType === "Credentialing Committee" || workModeType === "Department Head" || workModeType === "Chief Of Staff" ? (

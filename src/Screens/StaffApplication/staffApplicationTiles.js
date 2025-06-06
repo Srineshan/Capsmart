@@ -173,7 +173,14 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
     console.log("refetcheddddddddddd", reFetchMetaData)
     // }
     // console.log("refetcheddddddddddd",reFetchMetaData)
-  }, [showBulkApproveDialog, approvalnotesCommentsBoxDept, searchTermForTable, activeApplicationTask, showBulkMoveDialog,recordUpdate]);
+  }, [showBulkApproveDialog, approvalnotesCommentsBoxDept, searchTermForTable, activeApplicationTask, showBulkMoveDialog]);
+
+    useEffect(() => {
+    if (recordUpdate) {
+    getTitleCounts();
+    console.log("refetcheddddddddddd", reFetchMetaData)
+    }
+  }, [recordUpdate]);
 
   // Handle user flow and role updates
   // useEffect(() => {
