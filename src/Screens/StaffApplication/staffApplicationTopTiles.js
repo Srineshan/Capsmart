@@ -478,7 +478,7 @@ import { GET } from './../../Screens/dataSaver';
 import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
 
-const StaffApplicationTopTiles = (searchTermForTable,totalCount) => {
+const StaffApplicationTopTiles = (searchTermForTable,totalCount,showBulkApproveDialog,showBulkMoveDialog,recordUpdate) => {
   const cookie = new Cookie();
   const userDetails = cookie.get('user');
   const [user, setUser] = useState();
@@ -509,13 +509,20 @@ const StaffApplicationTopTiles = (searchTermForTable,totalCount) => {
   useEffect(() => {
     getTitleCountsLocum("LOCUM");
     getTitleCounts("REAPPOINTMENT");
-  }, [searchTermForTable?.searchTermForTable])
+  }, [searchTermForTable?.searchTermForTable,showBulkMoveDialog,showBulkApproveDialog])
 
    useEffect(() => {
    if(workModeType === "Chief Of Staff"){
     getRequestData()
    }
   }, [workModeType])
+
+   useEffect(() => {
+    if (recordUpdate) {
+    getTitleCounts("REAPPOINTMENT");
+    getTitleCountsLocum();
+    }
+  }, [recordUpdate]);
 
   useEffect(() => {
     // getTitleCounts(applicationCreationType);

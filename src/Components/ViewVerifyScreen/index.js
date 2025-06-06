@@ -11466,7 +11466,9 @@ const NewActiveApplication = ({
                             open={calendarStart}
                             onOpen={() => setCalendarStart(true)}
                             onClose={() => setCalendarStart(false)}
-
+                            minDate={reviewedDateCC || sub(new Date(), { years: 3 })}
+                            // maxDate={add(new Date(), { years: 3 })}                        
+                            maxDate={getJune30thOfCurrentYear()}
                             // minDate={sub(new Date(), { years: 3 })}
                             // maxDate={add(new Date(), { years: 3 })}
                             // minDate={lastSubmittedDate ? new Date(lastSubmittedDate) : sub(new Date(), { years: 3 })}
