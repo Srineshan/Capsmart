@@ -98,6 +98,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
   const [fileArray, setFileArray] = useState([]);
   const [selectedFileIndex, setSelectedFileIndex] = useState(0);
   const [showFileVerifyDialog, setShowFileVerifyDialog] = useState(false);
+   const [showViewOnly, setShowViewOnly] = useState(false);
   const documentHeaderValues = ["", "Document Type", "Document Name", "Requirement", "Expiration Date", "Last Updated", "Action"];
   const documentColSortValues = [false, false, false, false, false, false, , false];
   const appointmentHeaderValues = ["Appointment Cycle", <img src={CAPManagerSmallLogo} alt="img" className={style.LogoIcon} />, "Privilege Category", "Approved Privileges", "Notes", "Docs", "Approval Date", "Action"];
@@ -472,6 +473,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
     setFileArray(files);
     setSelectedFileIndex(0);
     setShowFileVerifyDialog(true);
+    setShowViewOnly(true)
   };
 
   const getPreApplication = async () => {
@@ -1019,6 +1021,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
           setFileArray={setFileArray}
           selectedFileIndex={selectedFileIndex}
           setSelectedFileIndex={setSelectedFileIndex}
+          showViewOnly={showViewOnly}
         />
       )}
       {/* {
