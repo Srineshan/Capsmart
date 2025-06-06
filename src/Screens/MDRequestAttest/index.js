@@ -24,7 +24,7 @@ import BlueSign from "../../images/blueSign.png";
 import HapiCare from "../../images/PoweredHapiCare.png";
 import PhoneIcon from "../../images/phoneIcon.png";
 import MailIcon from "../../images/mailIcon.png";
-import journeyImg from "../../images/journeyStep5.png";
+import journeyImg from "../../images/MDJourney.png";
 import DefaultUserAvatar from "../../images/defaultUserLogo.jpg";
 import FileDisplayDialog from '../../Components/fileDisplayDialog';
 import ApplicationUserCard from '../../Components/ApplicationUserCard';
@@ -458,7 +458,7 @@ const MDRequestAttest = ({ name }) => {
                                         <Tooltip title="Click to View and Attest Pending Medical Directives" arrow>
                                             <div className={`${style.pendingCard} ${style.marginTop} ${style.displayInRow} ${style.cursorPointer} `} onClick={() => { setShowMedicalDirectives(true); setMedicalDirectivesStatus('pending'); setSelectedMedicalDirectiveList(allMedicalDirectives?.pending) }}>
                                                 <div className={`${style.iconBackgroundPending} ${style.verticalAlignCenter} ${style.justifyCenter} `}><WarningAmberIcon sx={{ fontSize: 18, color: '#FFFFFF' }} /></div>
-                                                <div className={`${style.marginLeft} ${style.textTransform} `}>{allMedicalDirectives?.pending?.length} Pending</div>
+                                                <div className={`${style.marginLeft} ${style.textTransform} `}>{allMedicalDirectives?.pending?.length} Pending For Attestation</div>
                                             </div>
                                         </Tooltip>
                                     )}
@@ -557,24 +557,26 @@ const MDRequestAttest = ({ name }) => {
                                                         {`I hereby confirm that by signing, I agree to the delegation and implementation of the Medical Directives and Delegated Acts used within the ${title} `}
                                                     </div>
                                                 </div>
-                                                <div className={style.twoCol}>
-                                                    <div onClick={(isChecked) ? () => { setIsSigned(!isSigned); setIsEdited(true) } : () => { }}
-                                                    >
-                                                        <ESignature
-                                                            userName={isSigned ? name : ""}
-                                                            encData={isSigned ? encryptedText : ''}
-                                                            showData={isSigned}
-                                                            showDatais={true}
-                                                            alternateSignature={users?.userName}
-                                                        />
-                                                    </div>
-                                                    <div className={style.verticalAlignCenter}>
-                                                        <div className={style.displayInRow}>
-                                                            <div className={style.dateTitle}>Date: </div>
-                                                            <div className={`${style.date} ${style.marginLeft} `}>{isSigned ? (basicForm?.forms?.[formIndex]?.esign?.signedDate !== '' && basicForm?.forms?.[formIndex]?.esign?.signedDate !== undefined) ? basicForm?.forms?.[formIndex]?.esign?.signedDate : currentDate : ""}</div>
+                                                {isChecked && (
+                                                    <div className={style.twoCol}>
+                                                        <div onClick={(isChecked) ? () => { setIsSigned(!isSigned); setIsEdited(true) } : () => { }}
+                                                        >
+                                                            <ESignature
+                                                                userName={isSigned ? name : ""}
+                                                                encData={isSigned ? encryptedText : ''}
+                                                                showData={isSigned}
+                                                                showDatais={true}
+                                                                alternateSignature={users?.userName}
+                                                            />
+                                                        </div>
+                                                        <div className={style.verticalAlignCenter}>
+                                                            <div className={style.displayInRow}>
+                                                                <div className={style.dateTitle}>Date: </div>
+                                                                <div className={`${style.date} ${style.marginLeft} `}>{isSigned ? (basicForm?.forms?.[formIndex]?.esign?.signedDate !== '' && basicForm?.forms?.[formIndex]?.esign?.signedDate !== undefined) ? basicForm?.forms?.[formIndex]?.esign?.signedDate : currentDate : ""}</div>
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
+                                                )}
                                             </div>
                                         </div>
                                     )}

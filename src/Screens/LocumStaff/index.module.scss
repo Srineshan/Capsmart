@@ -422,6 +422,7 @@ body::-webkit-scrollbar {
   // cursor: pointer;
   padding: 15px;
 }
+
 .bigCardStyle {
   height: calc(100vh - 185px);
   overflow: scroll;
@@ -720,8 +721,14 @@ body::-webkit-scrollbar {
 
 .activeLocumStaffGrid {
   display: grid;
-  grid-template-columns: 15% 3% 11% 15% 6% 11% 11% 9% 10%;
+  grid-template-columns: 15% 3% 11% 15% 6% 11% 11% 11% 9%;
   grid-gap: 10px;
+}
+
+.tempPrivilegesLocumStaffGrid {
+  display: grid;
+  grid-template-columns: 15% 3% 19% 25% 10% 11% 10%;
+  grid-gap: 1%;
 }
 
 .temporaryStaffGrid {
