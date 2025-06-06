@@ -112,7 +112,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         APPLICANT_NAME: ["Applicant Name", "Staff for Reappointment", "Locum Staff"],
         APPLICANT_LAST_NAME: ["Staff for Reappointment", "Staff", "Applicant Name", "Locum Staff"],
         DEPARTMENT: ["Dept / Division & Specialty", "Department"],
-        STAFF_LAST_NAME: ['Staff Name',"Locum Staff"],
+        STAFF_LAST_NAME: ['Staff Name', "Locum Staff"],
         APPLICANT_TYPE: ['Applicant Type', 'Type', 'Staff Type', 'Locum Type'],
         CREATED_DATE: ['created date'],
         LAST_UPDATED: ['Last Updated'],
@@ -127,7 +127,9 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         NOT_ATTESTED_COUNT: ['Not Attested'],
         ATTESTED_COUNT: ['Attested'],
         ATTESTATION_STATUS: ['Attestation Status'],
-        ATTESTATION_DATE: ['Attestation Date']
+        ATTESTATION_DATE: ['Attestation Date'],
+        TENURE_END_DATE: ['Days to Expiration', 'Expiry Date', 'Last End Date', 'Days Since Expired'],
+        TENURE_START_DATE: ['Start Date']
     }
 
     const availableSortValueEnum = {
@@ -157,7 +159,12 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         'Not Attested': 'NOT_ATTESTED_COUNT',
         'Attested': 'ATTESTED_COUNT',
         'Attestation Status': 'ATTESTATION_STATUS',
-        'Attestation Date': 'ATTESTATION_DATE'
+        'Attestation Date': 'ATTESTATION_DATE',
+        'Days to Expiration': 'TENURE_END_DATE',
+        'Expiry Date': 'TENURE_END_DATE',
+        'Start Date': 'TENURE_START_DATE',
+        'Last End Date': 'TENURE_END_DATE',
+        'Days Since Expired': 'TENURE_END_DATE'
     }
 
 
