@@ -8,6 +8,7 @@ import LocumExtensionDialog from "../../Components/LocumExtensionDialog";
 import LocumExtensionRequestDialog from "../../Components/LocumExtensionRequestDialog";
 import LocumRequestDialog from "../../Components/LocumRequestDialog";
 import NotesDialog from "../../Components/NotesDialog";
+import SummaryDialog from "../../Components/SummaryDialog";
 
 const LocumStaff = () => {
     const [selectedTab, setSelectedTab] = useState('ACTIVELOCUM');
@@ -20,6 +21,7 @@ const LocumStaff = () => {
     const [showLocumExtensiveRequestDialog, setShowLocumExtensiveRequestDialog] = useState(false);
     const [showLocumRequestDialog, setShowLocumRequestDialog] = useState(false);
     const [showNotesDialog, setShowNotesDialog] = useState(false);
+    const [showSummaryDialog, setShowSummaryDialog] = useState(false);
 
     useEffect(() => {
         const fetchSessionDetails = async () => {
@@ -104,6 +106,10 @@ const LocumStaff = () => {
         setShowNotesDialog(value);
     };
 
+     const getSummaryDialog = (value) => {
+        setShowSummaryDialog(value);
+    };
+
     return (
         <>
             {applicationDetailsView ? (
@@ -127,6 +133,7 @@ const LocumStaff = () => {
                         getLocumExtensiveRequestDialog={getLocumExtensiveRequestDialog}
                         getLocumRequestDialog={getLocumRequestDialog}
                         getNotesDialog={getNotesDialog}
+                        getSummaryDialog={getSummaryDialog}
                         showLocumExtensiveDialog={showLocumExtensiveDialog}
                         showLocumExtensiveRequestDialog={showLocumExtensiveRequestDialog}
                         showLocumRequestDialog={showLocumRequestDialog}
@@ -136,6 +143,9 @@ const LocumStaff = () => {
                     )}
                     {showNotesDialog && (
                         <NotesDialog isLoading={isLoading} getIsOpen={getNotesDialog} getApplicantDetailsViewScreen={getApplicantDetailsViewScreen} />
+                    )}
+                    {showSummaryDialog && (
+                        <SummaryDialog isLoading={isLoading} getIsOpen={getSummaryDialog} getApplicantDetailsViewScreen={getApplicantDetailsViewScreen} />
                     )}
                     {showLocumExtensiveDialog && (
                         <LocumExtensionDialog isLoading={isLoading} getIsOpen={getLocumExtensiveDialog} selectedTab={selectedTab} getApplicantDetailsViewScreen={getApplicantDetailsViewScreen} />

@@ -38,6 +38,7 @@ import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
 import LoadingScreen from "../../Components/LoadingScreen";
 import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined';
+import PeopleOutlinedIcon from '@mui/icons-material/PeopleOutlined';
 
 const LocumStaffList = ({
   isLoading,
@@ -51,6 +52,7 @@ const LocumStaffList = ({
   getLocumExtensiveRequestDialog,
   getLocumRequestDialog,
   getNotesDialog,
+  getSummaryDialog,
   showLocumExtensiveDialog,
   showLocumRequestDialog,
   showLocumExtensiveRequestDialog
@@ -230,6 +232,10 @@ const LocumStaffList = ({
   const onClickRequestLocumDialog = (data) => {
     getLocumRequestDialog(true);
     sessionStorage.setItem("applicationId", data?.id);
+  };
+
+  const onClickSummaryDialog = (data) => {
+    getSummaryDialog(true);
   };
 
   const onClickExtensiveRequestLocumDialog = (data) => {
@@ -787,7 +793,7 @@ const LocumStaffList = ({
         WarningIcon.push(
           <WarningAmberOutlinedIcon style={{ fontSize: 20, color: '#FF6562' }} />
         );
-      } else if (expiredDays >= 7 && expiredDays <= 14) {
+      } else if (expiredDays >= 7 && expiredDays <= 30) {
         WarningIcon.push(
           <WarningAmberOutlinedIcon style={{ fontSize: 20, color: '#EBB433' }} />
         );
@@ -1825,6 +1831,13 @@ const LocumStaffList = ({
               totalRequestCount={totalRequestCount}
             />
           </div>
+         {/* <PeopleOutlinedIcon
+          sx={{
+            fontSize: 25,
+            color: "#06617A",
+          }}
+          onClick={() => onClickSummaryDialog()} // Pass `data` if needed
+        /> */}
 
           <div className={`${style.bigCardStyle}`}>
             {isLoading ? (
