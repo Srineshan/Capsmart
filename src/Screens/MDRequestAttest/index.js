@@ -519,6 +519,7 @@ const MDRequestAttest = ({ name }) => {
                                                 tableSortValues={[]}
                                                 heading={"There are no Record for you to manage"}
                                                 onClickFunction={() => { }}
+                                                hidePagination={true}
                                             />
                                         ) : (
                                             <TableTwo
@@ -545,6 +546,7 @@ const MDRequestAttest = ({ name }) => {
                                                 onClickFunction={() => { }}
                                                 checkedIds={selectedIds?.map(data => data?.id)}
                                                 handleCheckboxClick={handleCheckboxClick}
+                                                hidePagination={true}
                                             />
                                         )}
                                     </div>
