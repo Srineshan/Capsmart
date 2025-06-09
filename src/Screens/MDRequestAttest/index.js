@@ -100,6 +100,16 @@ const MDRequestAttest = ({ name }) => {
         setUserDetails();
     }, [users?.id])
 
+    // useEffect(() => {
+    //     if (medicalDirectives && allMedicalDirectives) {
+    //         if (medicalDirectives?.length === allMedicalDirectives?.completed?.length) {
+    //             setShowMedicalDirectives(true)
+    //             setMedicalDirectivesStatus('completed')
+    //             setSelectedMedicalDirectiveList(allMedicalDirectives?.completed)
+    //         }
+    //     }
+    // }, [])
+
     const handleView = (data) => {
         setselectedFile(data?.medicalDirective?.file)
         setShowFileDisplayDialog(true);
@@ -410,8 +420,8 @@ const MDRequestAttest = ({ name }) => {
         temp.push({ "type": "text", "value": selectedMedicalDirectiveList?.map(innerData => innerData?.medicalDirective?.mdID), 'onClickFunction': handleEdit });
         if (medicalDirectivesStatus === 'completed') {
             temp.push({ "type": "text", "value": selectedMedicalDirectiveList?.map(innerData => innerData?.medicalDirective?.creationType), 'onClickFunction': handleEdit });
-            temp.push({ "type": "text", "value": selectedMedicalDirectiveList?.map(innerData => format(new Date(innerData?.dueDate), 'dd/MM/yyyy')), 'onClickFunction': handleEdit });
         }
+        temp.push({ "type": "text", "value": selectedMedicalDirectiveList?.map(innerData => format(new Date(innerData?.dueDate), 'dd/MM/yyyy')), 'onClickFunction': handleEdit });
         if (medicalDirectivesStatus !== 'completed') {
             // temp.push({
             //     "type": "icon", "icon": selectedMedicalDirectiveList?.map(innerData =>
@@ -441,7 +451,7 @@ const MDRequestAttest = ({ name }) => {
                     <div>
                         <div>
                             <WelcomeCard title={<div dangerouslySetInnerHTML={{ __html: `<strong> Listed below are Medical Directives approved for use at the ${title} that you need to Review and Attest to.</strong> ` }} />}
-                                description={<div dangerouslySetInnerHTML={{ __html: '' }} />} />
+                                description={<div dangerouslySetInnerHTML={{ __html: `` }} />} />
                         </div>
                         <div className={`${style.applicationCardStyle} ${style.marginTop} `}>
                             {!showMedicalDirectives ? allMedicalDirectives?.completed?.length !== undefined && (
@@ -456,8 +466,8 @@ const MDRequestAttest = ({ name }) => {
                                     {/* )} */}
                                     {allMedicalDirectives?.pending?.length !== 0 && (
                                         <Tooltip title="Click to View and Attest Pending Medical Directives" arrow>
-                                            <div className={`${style.pendingCard} ${style.marginTop} ${style.displayInRow} ${style.cursorPointer} `} onClick={() => { setShowMedicalDirectives(true); setMedicalDirectivesStatus('pending'); setSelectedMedicalDirectiveList(allMedicalDirectives?.pending) }}>
-                                                <div className={`${style.iconBackgroundPending} ${style.verticalAlignCenter} ${style.justifyCenter} `}><WarningAmberIcon sx={{ fontSize: 18, color: '#FFFFFF' }} /></div>
+                                            <div className={`${style.pastDueCard} ${style.marginTop} ${style.displayInRow} ${style.cursorPointer} `} onClick={() => { setShowMedicalDirectives(true); setMedicalDirectivesStatus('pending'); setSelectedMedicalDirectiveList(allMedicalDirectives?.pending) }}>
+                                                <div className={`${style.iconBackgroundPastDue} ${style.verticalAlignCenter} ${style.justifyCenter} `}><WarningAmberIcon sx={{ fontSize: 18, color: '#FFFFFF' }} /></div>
                                                 <div className={`${style.marginLeft} ${style.textTransform} `}>{allMedicalDirectives?.pending?.length} Pending For Attestation</div>
                                             </div>
                                         </Tooltip>
@@ -473,7 +483,7 @@ const MDRequestAttest = ({ name }) => {
                                     {allMedicalDirectives?.completed?.length !== 0 && (
                                         <div className={`${style.completedCard} ${style.marginTop} ${style.displayInRow} ${style.cursorPointer} `} onClick={() => { setShowMedicalDirectives(true); setMedicalDirectivesStatus('completed'); setSelectedMedicalDirectiveList(allMedicalDirectives?.completed) }}>
                                             <div className={`${style.iconBackgroundCompleted} ${style.verticalAlignCenter} ${style.justifyCenter} `}><CheckCircleOutlineIcon sx={{ fontSize: 18, color: '#FFFFFF' }} /></div>
-                                            <div className={`${style.marginLeft} ${style.textTransform} `}> {medicalDirectives?.length === allMedicalDirectives?.completed?.length ? 'All Medical Directives Completed & Up-To-Date' : `${allMedicalDirectives?.completed?.length} Completed`}</div>
+                                            <div className={`${style.marginLeft} ${style.textTransform} `}> {medicalDirectives?.length === allMedicalDirectives?.completed?.length ? 'All Medical Directives Attestation Completed & Up-To-Date' : `${allMedicalDirectives?.completed?.length} Completed`}</div>
                                         </div>
                                     )}
                                     {medicalDirectives?.length === allMedicalDirectives?.completed?.length && (
@@ -483,7 +493,7 @@ const MDRequestAttest = ({ name }) => {
                             ) : (
                                 <>
                                     <div className={style.spaceBetween}>
-                                        <div className={`${style.medicalDirectivesText} ${style.marginTop10} `}>{medicalDirectivesStatus === 'completed' ? 'Attested Medical Directives' : 'Medical Directives to Attest'}</div>
+                                        <div className={`${style.medicalDirectivesText} ${style.marginTop10} `}>{medicalDirectivesStatus === 'completed' ? 'Attested Medical Directives' : 'Medical Directives Requiring Your Attestation'}</div>
                                         {/* <div className={`${ style.attestButton } ${ style.displayInRow } ${ style.verticalAlignCenter } ${ style.justifyCenter }
                                          ${ selectedIds?.length !== 0 ? '' : style.disabledButton } `} onClick={selectedIds?.length !== 0 ? () => { setAttestClicked(true) } : () => { }}
                                     >
@@ -513,7 +523,7 @@ const MDRequestAttest = ({ name }) => {
                                         ) : (
                                             <TableTwo
                                                 tableHeaderValues={[
-                                                    <div className={`${style.sign} ${medicalDirectivesStatus === 'completed' ? style.disabled : ''} `} onClick={(e) => setSelectedIds(medicalDirectives?.length === selectedIds.length ? [] : selectedMedicalDirectiveList?.map(innerData => ({ id: innerData?.medicalDirective?.id })))}><Tooltip title={medicalDirectives?.length === selectedIds.length ? "Click to Remove All" : "Click to Select All"} arrow>{medicalDirectives?.length === selectedIds.length ? 'Remove All' : 'Select All'}</Tooltip></div>,
+                                                    <div className={`${style.sign} ${medicalDirectivesStatus === 'completed' ? style.disabled : ''} `} onClick={(e) => setSelectedIds(medicalDirectives?.length === selectedIds.length ? [] : selectedMedicalDirectiveList?.map(innerData => ({ id: innerData?.medicalDirective?.id })))}><Tooltip title={medicalDirectives?.length === selectedIds.length ? "Click to Remove All" : "Click to Select All"} arrow>{medicalDirectives?.length === selectedIds.length ? 'Reset' : 'Select All'}</Tooltip></div>,
                                                     // <CommonCheckBox
                                                     //     size="medium"
                                                     //     checked={selectedIds.length === selectedMedicalDirectiveList.length && selectedIds.length !== 0}
@@ -522,7 +532,7 @@ const MDRequestAttest = ({ name }) => {
                                                     "Title",
                                                     "MD ID",
                                                     // "Type",
-                                                    // "Attestation Due Date",
+                                                    "Attestation Due Date",
                                                     "Action",
                                                 ]}
                                                 tableDataValues={getMedicalDirectiveTable()}
