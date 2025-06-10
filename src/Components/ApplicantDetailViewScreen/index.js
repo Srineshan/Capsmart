@@ -61,6 +61,8 @@ import { format } from 'date-fns';
 import TableTwo from "../../Components/TableDesignTwo";
 import CreateOutlinedIcon from '@mui/icons-material/CreateOutlined';
 import LoadingScreen from "../LoadingScreen";
+import FileVerifyDialog from "../../Components/fileVerifyDialog";
+import FileDisplayDialog from "../../Components/fileDisplayDialog";
 
 const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, getActiveApplicationView }) => {
   let cookie = new Cookie();
@@ -68,6 +70,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
   const users = jwt(userDetails);
   const [form, setForm] = useState();
   const [documentDetails, setDocumentDetails] = useState();
+  const [selectedFile, setselectedFile] = useState(false);
   const [selectedDocsFilter, setSelectedDocsFilter] = useState(null);
   const [currentDocumentCount, setCurrentDocumentCount] = useState();
   const [renewedDocumentRequired, setRenewedDocumentRequired] = useState();
@@ -94,11 +97,17 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
   });
   const [showNotesDetailsDialog, setShowNotesDetailsDialog] = useState(false);
   const [showViewAndVerifyScreen, setShowViewAndVerifyScreen] = useState(false);
+  const [fileArray, setFileArray] = useState([]);
+  const [selectedFileIndex, setSelectedFileIndex] = useState(0);
+  const [showFileVerifyDialog, setShowFileVerifyDialog] = useState(false);
+  const [showFileDisplayDialog, setShowFileDisplayDialog] = useState(false);
+  const [showViewOnly, setShowViewOnly] = useState(false);
+  const [hasReviewInProgress, setHasReviewInProgress] = useState(false);
   const documentHeaderValues = ["", "Document Type", "Document Name", "Requirement", "Expiration Date", "Last Updated", "Action"];
   const documentColSortValues = [false, false, false, false, false, false, , false];
   const appointmentHeaderValues = ["Appointment Cycle", <img src={CAPManagerSmallLogo} alt="img" className={style.LogoIcon} />, "Privilege Category", "Approved Privileges", "Notes", "Docs", "Approval Date", "Action"];
   const appointmentColSortValues = [false, false, false, false, false, , false, false, false];
-  const MDHeaderValues = ["", "Title", "", "MD ID", "Attestation Due Date", "Last Updated", "Action"];
+  const MDHeaderValues = ["", "Title", "", "MD ID", "Attestation Due Date", "Last Updated"];
   const MDColSortValues = [false, false, false, false, false, , false];
   const toggleMDFilter = (filterType) => {
   setSelectedMDFilter((prevFilter) => prevFilter === filterType ? null : filterType);
@@ -107,34 +116,55 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
   setSelectedDocsFilter((prevFilter) => prevFilter === filterType ? null : filterType);
   };
 
+  const onClickViewDocDialog = (data) => {
+    setShowFileDisplayDialog(true);
+    setselectedFile(data?.file)
+  };
+
+  const onclickViewAndVerifyFunction = (id) => () => {
+  getActiveApplicationView(true);
+  sessionStorage.setItem("applicationId", id);
+  };
+
+  const onclickViewAndVerifyDataFunction = (data) => {
+  getActiveApplicationView(true);
+  sessionStorage.setItem("applicationId", data?.id);
+  };
+
   const documentActionsData = [
     {
-      data: "ViewDocs",
+      data: "View",
       requiredValue: "boolean",
+      onClick: onClickViewDocDialog,
     },
-    {
-      data: "EditDocs",
-      requiredValue: "boolean",
-    },
+    // {
+    //   data: "EditDocs",
+    //   requiredValue: "boolean",
+    // },
   ];
 
   const appointmentActionsData = [
     {
-      data: "View Application",
+      data: "View",
       requiredValue: "boolean",
+      onClick: onclickViewAndVerifyDataFunction,
     },
-    {
-      data: "Print Application Details",
-      requiredValue: "boolean",
-    },
-    {
-      data: "Share Application Details",
-      requiredValue: "boolean",
-    },
-    {
-      data: "Download Details",
-      requiredValue: "boolean",
-    },
+    // {
+    //   data: "View Application",
+    //   requiredValue: "boolean",
+    // },
+    // {
+    //   data: "Print Application Details",
+    //   requiredValue: "boolean",
+    // },
+    // {
+    //   data: "Share Application Details",
+    //   requiredValue: "boolean",
+    // },
+    // {
+    //   data: "Download Details",
+    //   requiredValue: "boolean",
+    // },
   ];
 
   const mDActionsData = [
@@ -152,6 +182,33 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
   //   setShowNotesDetailsDialog(value)
   // };
 
+    useEffect(() => {
+    if (currentDocumentCount > 0) {
+      setExpandStates(prev => ({
+        ...prev,
+        section1: true,
+      }));
+    }
+    if (
+      Array.isArray(applicationsDetails)
+    ) {
+      const hasReviewInProgressStatus = applicationsDetails.some(app => app.status === "REVIEW_INPROGRESS");
+      setExpandStates(prev => ({
+        ...prev,
+        section2: hasReviewInProgressStatus,
+      }));
+      
+    setHasReviewInProgress(hasReviewInProgressStatus);
+    }
+
+     if ((reviewMDCount > 1) || (pastDueMDCount > 1)) {
+      setExpandStates(prev => ({
+        ...prev,
+        section3: true,
+      }));
+    }
+  }, [currentDocumentCount,applicationsDetails,reviewMDCount,pastDueMDCount]);
+
   const getNotesDetailsDialogOpen = (value, details = null) => {
   setShowNotesDetailsDialog(value);
   if (value && details) {
@@ -164,10 +221,6 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
   //   sessionStorage.setItem("applicationId", form?.onGoingApplication?.id);
   // };
 
-  const onclickViewAndVerifyFunction = (id) => () => {
-  getActiveApplicationView(true);
-  sessionStorage.setItem("applicationId", id);
-  };
 
   let documentType = [];
   let expireDate = [];
@@ -334,7 +387,22 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
         </Tooltip>
       ) : null
     );
-      docs.push(data?.documents?.documentDetails?.length)
+      // docs.push(data?.documents?.documentDetails?.length)
+      docs.push(
+      data?.documents?.documentDetails?.length > 0 ? (
+        <Tooltip title="Click to View Docs" arrow>
+          <span
+            key={index}
+            onClick={() => handleViewClickDocs(data?.documents?.documentDetails)}
+            style={{ cursor: "pointer", color: "#2C2C2C" }}
+          >
+            {data?.documents?.documentDetails?.length}
+          </span>
+        </Tooltip>
+      ) : (
+        <span key={index} style={{ color: "#2C2C2C" }}>-</span>
+      )
+    );
       approvalDate.push(
         approvalDateFormat ? format(new Date(approvalDateFormat), "MMM dd, yyyy") : "-"
       );
@@ -420,7 +488,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
       { type: "text", value: mdID },
       { type: "text", value: attestationDate },
       { type: "text", value: lastUpdateDate },
-      { type: "action", value: action },
+      // { type: "action", value: action },
     ];
   };
 
@@ -449,6 +517,12 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
     }));
   };
 
+  const handleViewClickDocs = (files) => {
+    setFileArray(files);
+    setSelectedFileIndex(0);
+    setShowFileVerifyDialog(true);
+    setShowViewOnly(true)
+  };
 
   const getPreApplication = async () => {
     try {
@@ -524,11 +598,11 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
   let tableAppointmentSortValues = appointmentColSortValues;
   let tableAppointmentDataValues = getAppointmentTableValues();
   let actionsAppointment = appointmentActionsData;
-  let gridStyleAppointment = style.appointmntViewGrid;
+  let gridStyleAppointment = style.appointmentViewGrid;
   let tableMDHeaderValues = MDHeaderValues;
   let tableMDSortValues = MDColSortValues;
   let tableMDDataValues = getMDTableValues();
-  let actionsMD = mDActionsData;
+  // let actionsMD = mDActionsData;
   let gridStyleMD = style.medicalDirectiveViewGrid;
 
   return (
@@ -576,9 +650,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
             )
             : "{First Name} {Last Name}"
             }`}</div>
-          <div className={style.grid2to1}>
-            <div>
-              <div
+            <div
                 className={`${style.cardLeftStyle}`}
               >
                 <div className={style.gridView}>
@@ -591,26 +663,25 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
                   </div>
                   <div className={`${style.grid2} ${style.textAlignLeft}`}>
                     <div className={style.marginTop10}>
-                      <span className={`${style.cardTextBoldStyle}`}>
-                        {form?.applicant?.name?.firstName !== undefined &&
-                          form?.applicant?.name?.lastName !== undefined
-                          ? formatFirstNameLastName(
-                            form?.applicant?.name?.firstName,
-                            form?.applicant?.name?.lastName,
-                          )
-                          : "{First Name} {Last Name}"}{" "}
-                      </span>
+                      <div>
+                        <span className={`${style.cardTextBoldStyle}`}>
+                          {form?.applicant?.name?.firstName !== undefined &&
+                            form?.applicant?.name?.lastName !== undefined
+                            ? formatFirstNameLastName(
+                              form?.applicant?.name?.firstName,
+                              form?.applicant?.name?.lastName,
+                            )
+                            : "{First Name} {Last Name}"}{" "}
+                        </span>
+                          <span className={`${style.serviceAreaType} ${style.marginLeft10}`}>{applicationType === "LOCUM" ? "Locum" : ""}{" "}
+                            {form?.basicDetailReferences?.applicantType
+                              ?.serviceProviderType || ""}</span>
+                      </div>
                       <div
                         className={`${style.cardTextNormalStyle} ${style.marginTop10}`}
                       >
-                        <span className={`${style.serviceAreaType}`}>{applicationType === "LOCUM" ? "Locum" : ""}{" "}
-                          {form?.basicDetailReferences?.applicantType
-                            ?.serviceProviderType || ""}</span>
-
-                        <span className={`${style.serviceAreaType} ${style.marginLeft10}`}>{" "}
-                          {form?.status || ""}</span>
                         <span
-                          className={`${style.cardTextNormalStyle} ${style.marginLeft10}`}
+                          className={`${style.cardTextNormalStyle}`}
                         >
                           {form?.basicDetailReferences?.department?.name
                             ? `${form.basicDetailReferences.department.name}`
@@ -642,51 +713,58 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
                     </div>
                     <div>
                       <div
-                        className={`${style.marginTop10} ${style.twoColumnGridInner2}`}
+                        className={`${style.marginTop10}`}
                       >
                         <span className={style.rightAlignTextStyle}>
-                          Last Updated:
+                          Last Updated on {lastModifiedDateFormat}
                         </span>
-                        <span
+                        {/* <span
                           className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}
                         >
                           {lastModifiedDateFormat}
-                        </span>
+                        </span> */}
                       </div>
                       <div
-                        className={`${style.twoColumnGridInner2} ${style.marginTop10}`}
+                        className={`${style.marginTop10}`}
                       >
                         <span className={style.rightAlignTextStyle}>
-                          Expiration Date:
+                          Expiration Date on {formattedExpiringDate}
                         </span>
-                        <span
+                        {/* <span
                           className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}
                         >
                           {formattedExpiringDate}
-                        </span>
+                        </span> */}
                       </div>
                       <div
-                        className={`${style.twoColumnGridInner2} ${style.marginTop10}`}
+                        className={`${style.marginTop10}`}
                       >
-                        <span className={style.rightAlignTextStyle}>
-                          Last Approved By BOD:
-                        </span>
-                        <span
+                        {/* <span className={style.rightAlignTextStyle}>
+                          Last Approved By BOD on {formattedExpiringDate}
+                        </span> */}
+                        {/* <span
                           className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}
                         >
                           {formattedExpiringDate}
-                        </span>
+                        </span> */}
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
+          <div className={style.grid2to1}>
+            <div>
               <div className={`${style.marginTop20}`}>
                 <div className={`${style.cardLeftStyle} ${style.padding30}`}>
                   <div className={`${style.spaceBetween} ${style.alignItemCenter}`}>
                     <div className={`${style.documentTextStyle}`}>
                       Document Vault
-                      <span className={`${style.marginLeft10} ${style.documentSubHeadingStyle}`}>Only includes documents that have verified by the MSO</span>
+                      <span className={`${style.marginLeft10} ${style.documentSubHeadingStyle}`}>
+                        Only includes documents that have been verified by the MSO.
+                        {currentDocumentCount === 0 && (
+                          <strong className={style.greenTextStyle}> (All documents are up to date.)</strong>
+                        )}
+                      </span>
                     </div>
                     <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
                       <div
@@ -721,11 +799,11 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
                   <div>
                   <CommonDivider />
                   <div className={`${style.grip3} ${style.marginTop20}`}>
-                    <div className={`${style.documentCurrentBackGround} ${style.spaceBetweenCol} ${style.cursorPointer}`} onClick={() => toggleDocsFilter("allDocuments")}>
+                    <div className={` ${selectedDocsFilter === "allDocuments" ? style.selectedBackgroundCard : ""} ${style.documentCurrentBackGround} ${style.spaceBetweenCol} ${style.cursorPointer}`} onClick={() => toggleDocsFilter("allDocuments")}>
                       <div className={`${style.innerTextDocumentStyle}`}>Current Documents </div>
-                      <div className={`${style.countStyle}`}>{currentDocumentCount}</div>
+                      <div className={`${currentDocumentCount > 0 ? style.countStyleGreen : style.countStyleGrey}`}> {currentDocumentCount} </div>
                     </div>
-                    <div className={`${style.documentCurrentBackGround} ${style.spaceBetweenCol} ${style.cursorPointer}`} onClick={() => toggleDocsFilter("documentsExpiringSoon")}>
+                    <div className={` ${selectedDocsFilter === "documentsExpiringSoon" ? style.selectedBackgroundCard : ""} ${style.documentCurrentBackGround} ${style.spaceBetweenCol} ${style.cursorPointer}`} onClick={() => toggleDocsFilter("documentsExpiringSoon")}>
                       <div className={`${style.innerTextDocumentStyle}`}>To Be Renewed  </div>
                       <div className={`${style.spaceBetween} ${style.alignSelfEnd}`}>
                         <div className={`${style.countStyleRed}`}>{renewedDocumentRequired?.documentsExpiringSoon?.length}</div>
@@ -735,7 +813,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
                         </div>
                       </div>
                     </div>
-                    <div className={`${style.documentCurrentBackGround} ${style.spaceBetweenCol} ${style.cursorPointer}`} onClick={() => toggleDocsFilter("expiredDocuments")}>
+                    <div className={` ${selectedDocsFilter === "expiredDocuments" ? style.selectedBackgroundCard : ""} ${style.documentCurrentBackGround} ${style.spaceBetweenCol} ${style.cursorPointer}`} onClick={() => toggleDocsFilter("expiredDocuments")}>
                       <div className={`${style.innerTextDocumentStyle}`}>Expired </div>
                       <div className={`${style.countStyleRed}`}>{expireDocumentCount}</div>
                     </div>
@@ -775,7 +853,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
                 <div className={`${style.cardLeftStyle} ${style.padding30}`}>
                   <div className={`${style.spaceBetween} ${style.alignItemCenter}`}>
                     <div className={`${style.documentTextStyle}`}>
-                      <img src={CAPManagerSmallLogo} alt="img" className={style.LogoIcon} /> <span>Appointment History</span>
+                      <img src={CAPManagerSmallLogo} alt="img" className={style.LogoIcon} /> <span>Appointment History {!hasReviewInProgress && (<strong className={style.greenTextStyle}> - No Current Application</strong> )}</span>
                     </div>
                     <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
                       <div
@@ -844,7 +922,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
                 <div className={`${style.cardLeftStyle} ${style.padding30}`}>
                   <div className={`${style.spaceBetween} ${style.alignItemCenter}`}>
                     <div className={`${style.documentTextStyle}`}>
-                      <img src={MDManager} alt="img" className={style.LogoIcon} /> <span>Medical Directives</span>
+                      <img src={MDManager} alt="img" className={style.LogoIcon} /> <span>Medical Directives {(reviewMDCount < 1 && pastDueMDCount < 1) && (<strong className={style.greenTextStyle}> - All Medical Directives are Attested </strong> )}</span>
                     </div>
                     <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
                       <div
@@ -879,15 +957,15 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
                   <div>
                   <CommonDivider />
                   <div className={`${style.grip3} ${style.marginTop20}`}>
-                    <div className={`${style.documentCurrentBackGround} ${style.spaceBetweenCol} ${style.cursorPointer}`} onClick={() => toggleMDFilter("completed")}> 
+                    <div className={` ${selectedMDFilter === "completed" ? style.selectedBackgroundCard : ""} ${style.documentCurrentBackGround} ${style.spaceBetweenCol} ${style.cursorPointer}`} onClick={() => toggleMDFilter("completed")}> 
                       <div className={`${style.innerTextDocumentStyle}`}>Attested </div>
-                      <div className={`${style.countStyle}`}>{attestedMDCount}</div>
+                       <div className={`${attestedMDCount > 0 ? style.countStyleGreen : style.countStyleGrey}`}> {attestedMDCount} </div>
                     </div>
-                    <div className={`${style.documentCurrentBackGround} ${style.spaceBetweenCol} ${style.cursorPointer}`} onClick={() => toggleMDFilter("pending")}>
+                    <div className={` ${selectedMDFilter === "pending" ? style.selectedBackgroundCard : ""} ${style.documentCurrentBackGround} ${style.spaceBetweenCol} ${style.cursorPointer}`} onClick={() => toggleMDFilter("pending")}>
                       <div className={`${style.innerTextDocumentStyle}`}>To Review & Attest </div>
                       <div className={`${style.countStyleYellow}`}>{reviewMDCount}</div>
                     </div>
-                    <div className={`${style.documentCurrentBackGround} ${style.spaceBetweenCol} ${style.cursorPointer}`} onClick={() => toggleMDFilter("pastDue")}>
+                    <div className={` ${selectedMDFilter === "pastDue" ? style.selectedBackgroundCard : ""} ${style.documentCurrentBackGround} ${style.spaceBetweenCol} ${style.cursorPointer}`} onClick={() => toggleMDFilter("pastDue")}>
                       <div className={`${style.innerTextDocumentStyle}`}>Attestations Past Due </div>
                       <div className={`${style.countStyleRed}`}>{pastDueMDCount}</div>
                     </div>
@@ -909,7 +987,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
                             tableDataValues={tableMDDataValues}
                             tableData={allMedicalDirectives}
                             gridStyle={gridStyleMD}
-                            actions={actionsMD}
+                            // actions={actionsMD}
                             scrollStyle={style.contractScrollStyle}
                             tableSortValues={tableMDSortValues}
                             heading={"There are no Record for you to manage"}
@@ -925,7 +1003,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
               </div>
             </div>
             <div>
-              <div className={`${style.cardLeftStyle}`}>
+              <div className={`${style.cardLeftStyle}  ${style.marginTop20}`}>
                 <div className={`${style.displayInRow}${style.marginTop20}`}>
                   <div
                     className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20} ${style.alignItemCenter}`}
@@ -987,6 +1065,23 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
           />
         )
       }
+      {showFileVerifyDialog && (
+        <FileVerifyDialog
+          getIsOpen={setShowFileVerifyDialog}
+          file={fileArray[selectedFileIndex]}
+          fileArray={fileArray}
+          setFileArray={setFileArray}
+          selectedFileIndex={selectedFileIndex}
+          setSelectedFileIndex={setSelectedFileIndex}
+          showViewOnly={showViewOnly}
+        />
+      )}
+      {showFileDisplayDialog && (
+        <FileDisplayDialog
+          getIsOpen={setShowFileDisplayDialog}
+          file={selectedFile}
+        />
+      )}
       {/* {
             showViewAndVerifyScreen && (
             <ViewandVerifyScreen

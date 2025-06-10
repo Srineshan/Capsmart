@@ -160,9 +160,9 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
       className={style.padding0}
     />,
     "No.",
-    `${applicationCreationType === "LOCUM" ? "Locum Staff Name" : "Staff Name"}`,
+    `${applicationCreationType === "LOCUM" ? "Staff Name" : "Staff Name"}`,
     "Email",
-    `${applicationCreationType === "LOCUM" ? "Locum Staff Type" : "Staff Type"}`,
+    `${applicationCreationType === "LOCUM" ? "Staff Type" : "Staff Type"}`,
     "Department",
     "Status",
     "Completed %",
