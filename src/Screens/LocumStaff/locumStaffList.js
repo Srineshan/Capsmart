@@ -81,8 +81,8 @@ const LocumStaffList = ({
 
   const [tableData, setTableData] = useState([]);
   const [rejectionListData, setRejectionListData] = useState([]);
-  const [sortField, setSortField] = useState("DEFAULT");
-  const [sortValue, setSortValue] = useState("DESCENDING");
+  const [sortField, setSortField] = useState('TENURE_END_DATE');
+  const [sortValue, setSortValue] = useState("ASCENDING");
   const userDetailsFetchOption = (sessionStorage.getItem('user') !== "undefined" && sessionStorage.getItem('user')) ? JSON.parse(sessionStorage.getItem('user')) : {};
   const [searchTerm, setSearchTerm] = useState('');
   const [searchData, setSearchData] = useState([]);
@@ -100,16 +100,16 @@ const LocumStaffList = ({
   // let userDepartmentList;
   let userSpecialty;
 
-  const activeLocumHeaderValues = ["Locum Staff", "", "Locum Type", "Department", "Docs", "Start Date", "Expiry Date", "Days to Expiration", "Action"];
-  const expiredLocumHeaderValues = ["Locum Staff", "", "Locum Type", "Department", "Docs", "Last End Date", "Days Since Expired", "Action"];
-  const requestLocumHeaderValues = ["Locum Staff", "", "Staff Status", "Locum Type", "Department", "Request By", "Expiry Date", "Days to Expiration", ""];
-  const tempPrivilegedLocumHeaderValues = ["Locum Staff", "", "Locum Type", "Department", "Docs", "Start Date", "Expiry Date"];
+  const activeLocumHeaderValues = ["Staff Name", "", "Staff Type", "Department", "Docs", "Start Date", "Expiry Date", "Days to Expiration", "Action"];
+  const expiredLocumHeaderValues = ["Staff Name", "", "Staff Type", "Department", "Docs", "Last End Date", "Days Since Expired", "Action"];
+  const requestLocumHeaderValues = ["Staff Name", "", "Staff Status", "Staff Type", "Department", "Request By", "Expiry Date", "Days to Expiration", ""];
+  const tempPrivilegedLocumHeaderValues = ["Staff Name", "", "Staff Type", "Department", "Start Date", "Expiry Date"];
 
 
   const activeLocumColSortValues = [true, false, true, true, false, true, true, true, false];
   const expiredLocumColSortValues = [true, false, true, true, false, true, true, false];
   const requestLocumColSortValues = [false, false, false, false, false, false, true, true, false];
-  const tempPrivilegedLocumColSortValues = [true, false, true, true, false, true, true];
+  const tempPrivilegedLocumColSortValues = [true, false, true, true, true, true, false];
 
   const [isPrintClicked, setIsPrintClicked] = useState(false);
   const [isExpanded, setIsExpanded] = useState(true);
@@ -202,9 +202,9 @@ const LocumStaffList = ({
     getRejectionCounts();
   }, [applicationType]);
 
-  useEffect(() => {
-    setSortField("DEFAULT");
-  }, [selectedTab]);
+  // useEffect(() => {
+  //   setSortField("DEFAULT");
+  // }, [selectedTab]);
 
   useEffect(() => {
     getActiveUserData();
@@ -633,7 +633,7 @@ const LocumStaffList = ({
           <div>
             Days to Expiration - <strong>{expiredDays.toString()}</strong>
           </div>
-          <div>
+          <div className={style.customStyle}>
             Click To View Details
           </div>
         </div>
@@ -805,11 +805,11 @@ const LocumStaffList = ({
         WarningText.push(
           ["This Locum Staff Will Expire In Less Than 7 Days"]
         );
-      } else if (expiredDays >= 7 && expiredDays <= 14) {
+      } else if (expiredDays >= 7 && expiredDays <= 30) {
         WarningText.push(
-          ["This Locum Staff Will Expire In Less Than 14 Days"]
+          ["This Locum Staff Will Expire In Less Than 30 Days"]
         );
-      } else if (expiredDays > 14) {
+      } else if (expiredDays > 30) {
         WarningText.push([""]);
       }
 
@@ -859,7 +859,7 @@ const LocumStaffList = ({
         // isShowHoverText: true,
       },
       {
-        type: "iconWithCount",
+        type: "iconWithNumberCount",
         value: ExpiredDays,
         icon: WarningIcon,
         hoverText: WarningText,
@@ -934,7 +934,7 @@ const LocumStaffList = ({
               Current Period Renewal Applied For - <strong>{`${format(new Date(data?.onGoingApplication?.cyclePeriod?.from), 'MMM dd, yyyy')} - ${format(new Date(data?.onGoingApplication?.cyclePeriod?.to), 'MMM dd, yyyy')}`}</strong>
             </div>
           )}
-          <div>
+          <div className={style.customStyle}>
             Click To View Details
           </div>
         </div>
@@ -1091,7 +1091,7 @@ const LocumStaffList = ({
         value: endDate,
       },
       {
-        type: "iconWithCount",
+        type: "iconWithNumberCount",
         value: ExpiredDays,
       },
       { type: "action", value: action },
@@ -1165,7 +1165,7 @@ const LocumStaffList = ({
           <div>
             Days to Expiration - <strong>{expiredDays.toString()}</strong>
           </div>
-          <div>
+          <div className={style.customStyle}>
             Click To View Details
           </div>
         </div>
@@ -1362,13 +1362,13 @@ const LocumStaffList = ({
       //   // isShowHoverText: true,
       //   icon: notesIcon,
       // },
-      {
-        type: "iconWithCount",
-        value: docs,
-        hoverText: docsHoverText,
-        isShowHoverText: true,
-        icon: docsIcon,
-      },
+      // {
+      //   type: "iconWithCount",
+      //   value: docs,
+      //   hoverText: docsHoverText,
+      //   isShowHoverText: true,
+      //   icon: docsIcon,
+      // },
       {
         type: "iconWithCount",
         value: startDate,
