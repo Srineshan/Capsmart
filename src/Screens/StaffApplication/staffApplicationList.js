@@ -304,6 +304,7 @@ const StaffApplicationList = ({
     "Notes",
     // "Task list",
     "Submitted",
+    "Days to Expiration",
     "",
   ]
   const departmentHeadHeaderValues = [
@@ -370,6 +371,7 @@ const StaffApplicationList = ({
     // "Dept. Head",
     // "Submitted",
     // "Last Updated",
+    "Days to Expiration",
     "",
   ]
 
@@ -410,13 +412,14 @@ const StaffApplicationList = ({
     // "Commitee",
     // "Board",
     // "CEO",
-    "Assigned CC Member",
+    "Assigned CC Member(s)",
     "Review Status",
     "Notes",
     // "Dept. Head",
     // "Submitted",
-    "Reviewed On",
+    // "Reviewed On",
     "Meeting Date",
+    "Days to Expiration",
     "",
   ]
   const macHeaderValues = applicationType === "NEW" ? [
@@ -464,6 +467,7 @@ const StaffApplicationList = ({
     // "CRs",
     "Notes",
     "Meeting Date",
+    "Days to Expiration",
     // "Task List",
     // "CC Status",
     "",
@@ -514,6 +518,7 @@ const StaffApplicationList = ({
     // "CRs",
     "Notes",
     "Meeting Date",
+    "Days to Expiration",
     "",
     // "Task List",
     // "CC Status",
@@ -688,7 +693,7 @@ const StaffApplicationList = ({
     false,
     false,
     true,
-    true,
+    false,
     false,
     false
   ]
@@ -1279,7 +1284,7 @@ const StaffApplicationList = ({
 
     const isDepartmentHead = data?.completedWorkflows?.find(
       (wf) => wf?.role === "Department Head"
-    )?.approverDetail?.name;
+    )?.approverDetails?.[0]?.approverDetail?.name;
 
     const isAuthorized =
       isDepartmentHead?.firstName === userFirstName &&
@@ -1297,20 +1302,25 @@ const StaffApplicationList = ({
     getActiveApplicationView(true);
   };
 
-  const onClickViewAndVerifyCredFunction = (data) => {
-    sessionStorage.setItem("applicationId", data?.id);
+ const onClickViewAndVerifyCredFunction = (data) => {
+  sessionStorage.setItem("applicationId", data?.id);
 
-    const isCredComm = data?.completedWorkflows?.find(
-      (wf) => wf?.role === "Credentialing Committee"
-    )?.approverDetail?.name;
+  // Check if any approver in the Credentialing Committee matches the current user
+  const isCredComm = data?.completedWorkflows
+    ?.filter((wf) => wf?.role === "Credentialing Committee")
+    ?.flatMap((wf) => wf?.approverDetails || [])
+    ?.some((item) => {
+      const approver = item?.approverDetail;
+      console.log("onClickViewAndVerifyCredFunction",approver)
+      return (
+        approver?.name?.firstName === userFirstName &&
+        approver?.name?.lastName === userLastName
+      );
+    });
 
-    const isAuthorized =
-      isCredComm?.firstName === userFirstName &&
-      isCredComm?.lastName === userLastName;
-
-    getNotesCommentBox(isAuthorized);
-    getActiveApplicationView(true);
-  };
+  getNotesCommentBox(isCredComm);
+  getActiveApplicationView(true);
+};
 
   const showApplicationById = (id) => {
     getActiveApplicationView(true);
@@ -1427,8 +1437,17 @@ const StaffApplicationList = ({
         console.log(error)
       });
     getWorkflowUserData();
-    setRecordUpdate(false)
+    // setRecordUpdate(false)
   }
+
+  useEffect(() => {
+    if (recordUpdate) {
+      const timer = setTimeout(() => {
+        setRecordUpdate(false);
+      }, 10000);
+      return () => clearTimeout(timer);
+    }
+  }, [recordUpdate]);
   const getApplicationMoveToNext = async (id) => {
     // let role;
     let notes;
@@ -1712,66 +1731,101 @@ const StaffApplicationList = ({
       return [];
     }
   };
-  useEffect(() => {
-    const fetchData = async () => {
-      if (workModeType === "Credentialing Committee") {
-        const role = "Credentialing Committee"; // Since workModeType is already this
-        // const shouldIncludeAssignee =
-        //   showAssignee &&
-        //   (workModeType === "Department Head" ||
-        //     workModeType === "Chief Of Staff" ||
-        //     workModeType === "Credentialing Committee");
 
-        // const assignedUserIdsParam = shouldIncludeAssignee ? `&assignedUserIds=${users?.id}` : "";
-        const departmentParam =
-          selectedDepartment || selectedServiceArea
-            ? `&departmentSpecialties=${selectedDepartment}%23${selectedServiceArea}`
-            : "";
+useEffect(() => {
+  const fetchData = async () => {
+    if (workModeType === "Credentialing Committee") {
+      const role = "Credentialing Committee"; // Since workModeType is already this
+      // const shouldIncludeAssignee =
+      //   showAssignee &&
+      //   (workModeType === "Department Head" ||
+      //     workModeType === "Chief Of Staff" ||
+      //     workModeType === "Credentialing Committee");
 
-        const positionTypeParam =
-          applicationType === "LOCUM"
-            ? `&positionType=${applicationType}`
-            : "&positionType=PERMANENT";
+      // const assignedUserIdsParam = shouldIncludeAssignee ? `&assignedUserIds=${users?.id}` : "";
+      const departmentParam =
+        selectedDepartment || selectedServiceArea
+          ? `&departmentSpecialties=${selectedDepartment}%23${selectedServiceArea}`
+          : "";
 
-        const selectedTabCC =
-          applicationType === "LOCUM"
-            ? `level-2`
-            : "level-3";
+      const positionTypeParam =
+        applicationType === "LOCUM"
+          ? `&positionType=${applicationType}`
+          : "&positionType=PERMANENT";
 
-        const applicationCreationType =
-          applicationType === "LOCUM" ? "REAPPOINTMENT" : applicationType;
+      const selectedTabCC =
+        applicationType === "LOCUM"
+          ? `level-2`
+          : "level-3";
 
-        try {
-          const response = await GET(
-            `application-management-service/application/workflowUser?tab=${selectedTabCC}&sortBy=${sortValue}&sortByField=${sortField}${positionTypeParam}&limit=${limit}&offset=${page - 1
-            }&role=${role}&searchText=${searchTermForTable}&applicationCreationType=${applicationCreationType}&isPaginationRequired=${limit === 9999 ? false : true
-            }${departmentParam}`
-          );
+      const applicationCreationType =
+        applicationType === "LOCUM" ? "REAPPOINTMENT" : applicationType;
 
-          let applications = response?.data?.applications || [];
+      try {
+        const response = await GET(
+          `application-management-service/application/workflowUser?tab=${selectedTabCC}&sortBy=${sortValue}&sortByField=${sortField}${positionTypeParam}&limit=${limit}&offset=${
+            page - 1
+          }&role=${role}&searchText=${searchTermForTable}&applicationCreationType=${applicationCreationType}&isPaginationRequired=${
+            limit === 9999 ? false : true
+          }${departmentParam}`
+        );
 
-          const notReviewed = applications?.filter(app => {
-            const ccWorkflow = app?.completedWorkflows?.find(wf => wf?.role === "Credentialing Committee");
-            return ccWorkflow && ccWorkflow?.approvalType === null;
+        let applications = response?.data?.applications || [];
+      if (applicationType === "LOCUM") {
+        const notReviewed = applications?.filter(app => {
+        const ccWorkflow = app?.completedWorkflows?.find(wf => wf?.role === "Credentialing Committee");
+        
+        if (ccWorkflow && ccWorkflow?.approverDetails) {
+          const matchedAssignee = ccWorkflow?.approverDetails?.find(detail => {
+            const firstNameMatch = detail?.approverDetail?.name?.firstName === userFirstName;
+            const lastNameMatch = detail?.approverDetail?.name?.lastName === userLastName;
+            return firstNameMatch && lastNameMatch;
           });
 
-          setFilterCCNotReview(notReviewed?.length);
-
-          const reviewed = applications?.filter(app => {
-            const ccWorkflow = app?.completedWorkflows?.find(wf => wf?.role === "Credentialing Committee");
-            return ccWorkflow && ccWorkflow?.approvalType;
-          });
-
-          setFilterCCReview(reviewed?.length);
-        } catch (error) {
-          console.error("Error fetching applications:", error);
+          // Return true if matched with user, or if no filtering is required
+          return matchedAssignee ? matchedAssignee.approvalType === null : true;
         }
+
+        return false;
+      });
+
+        setFilterCCNotReview(notReviewed?.length);
+
+        const reviewed = applications?.filter(app => {
+        const ccWorkflow = app?.completedWorkflows?.find(wf => wf?.role === "Credentialing Committee");
+        if (!ccWorkflow) return false;
+
+        const matchedAssignee = ccWorkflow.approverDetails?.find(detail => {
+          const firstNameMatch = detail?.approverDetail?.name?.firstName === userFirstName;
+          const lastNameMatch = detail?.approverDetail?.name?.lastName === userLastName;
+          return firstNameMatch && lastNameMatch;
+        });
+
+        return matchedAssignee?.approvalType;
+      });
+        setFilterCCReview(reviewed?.length);
+        } else {
+          const notReviewed = applications?.filter(app => {
+          const ccWorkflow = app?.completedWorkflows?.find(wf => wf?.role === "Credentialing Committee");
+          return ccWorkflow && ccWorkflow?.approvalType === null;
+        });
+
+        const reviewed = applications?.filter(app => {
+          const ccWorkflow = app?.completedWorkflows?.find(wf => wf?.role === "Credentialing Committee");
+          return ccWorkflow && ccWorkflow?.approvalType;
+        });
+
+        setFilterCCNotReview(notReviewed?.length);
+        setFilterCCReview(reviewed?.length);
       }
-    };
+      } catch (error) {
+        console.error("Error fetching applications:", error);
+      }
+    }
+  };
 
-    fetchData();
-  }, [workModeType, showAssignee, users?.id, selectedDepartment, selectedServiceArea, applicationType, selectedTab, sortValue, sortField, limit, page, searchTermForTable]);
-
+  fetchData();
+}, [tableData]);
 
   const getWorkflowUserData = async () => {
     try {
@@ -1801,28 +1855,44 @@ const StaffApplicationList = ({
           );
           let applications = response?.data?.applications || [];
 
-          if (selectedTab === "level-2" && workModeType === "Credentialing Committee") {
-            applications = applications?.filter(app => {
-              const ccWorkflow = app?.completedWorkflows?.find(wf => wf?.role === "Credentialing Committee");
-              // setShowAssignee(true)
-              return ccWorkflow && ccWorkflow?.approvalType === null;
-            });
-          } else if (selectedTab === "ReviewedApplications" && workModeType === "Credentialing Committee") {
-            applications = applications?.filter(app => {
-              const ccWorkflow = app?.completedWorkflows?.find(wf => wf?.role === "Credentialing Committee");
-              setShowAssignee(false)
-              return ccWorkflow && ccWorkflow?.approvalType
-            });
-          }
-          console.log("Application data", response?.data?.applications);
-          setTableData(applications);
-          setTotalCount(applications?.length);
-          setSearchount(response?.data?.numberOfElements)
-          setReFetchMetaData(true);
-          setIsLoadingImage(false);
-          console.log("Application data length", response?.data?.numberOfElements);
-          return response?.data?.applications || [];
+        if (selectedTab === "level-2" && workModeType === "Credentialing Committee") {
+          applications = applications?.filter(app => {
+            const ccWorkflow = app?.completedWorkflows?.find(wf => wf?.role === "Credentialing Committee");
+            // setShowAssignee(true)
+            const matchedAssignee=  ccWorkflow.approverDetails.find(detail => {
+            const firstNameMatch = detail?.approverDetail?.name?.firstName === userFirstName;
+            const lastNameMatch = detail?.approverDetail?.name?.lastName === userLastName;
+            return firstNameMatch && lastNameMatch;
+            })
+              if (matchedAssignee) {
+                return matchedAssignee.approvalType === null;
+              }
+              return true;
+          });
+        } else if (selectedTab === "ReviewedApplications" && workModeType === "Credentialing Committee") {
+          applications = applications?.filter(app => {
+            const ccWorkflow = app?.completedWorkflows?.find(wf => wf?.role === "Credentialing Committee");
+            // setShowAssignee(true)
+            const matchedAssignee=  ccWorkflow.approverDetails.find(detail => {
+            const firstNameMatch = detail?.approverDetail?.name?.firstName === userFirstName;
+            const lastNameMatch = detail?.approverDetail?.name?.lastName === userLastName;
+            return firstNameMatch && lastNameMatch;
+            })
+              if (matchedAssignee) {
+                return matchedAssignee.approvalType;
+              }
+              return false;
+          });
         }
+        console.log("Application data", response?.data?.applications);
+        setTableData(applications);
+        setTotalCount(applications?.length);
+        setSearchount(response?.data?.numberOfElements)
+        setReFetchMetaData(true);
+        setIsLoadingImage(false);
+        console.log("Application data length", response?.data?.numberOfElements);
+        return response?.data?.applications || [];
+      }
       } else {
         let role = workModeType === "Credentialing Committee User" ? "Staff Manager" : workModeType;
         const shouldIncludeAssignee = showAssignee &&
@@ -2195,6 +2265,10 @@ const StaffApplicationList = ({
   let requestBy = [];
   let overRideIcon = [];
   let hoverOverRide = [];
+  let CountDetails = [];
+  let ccMemberCount =[];
+  let ccMemberReviewed =[];
+  let expiriedDate = [];
 
   const getApplicantValues = applicationType === "NEW" ? () => {
     dot = [];
@@ -2652,6 +2726,7 @@ const StaffApplicationList = ({
     action = [];
     overRideIcon = [];
     hoverOverRide = [];
+    expiriedDate = [];
 
     tableData?.map((data) => {
       // dot.push(
@@ -2663,6 +2738,7 @@ const StaffApplicationList = ({
       // );
 
       const workflow = data?.completedWorkflows?.find(workflow => (workflow?.role === "Staff Manager"));
+      const expiredDays = differenceInDays(new Date(data?.expiryDate), new Date());
 
       // For debugging the userRole
       // data?.completedWorkflows?.forEach((workflow, index) => {
@@ -2851,6 +2927,12 @@ const StaffApplicationList = ({
           submitted.push(format(new Date(log?.lastModifiedDate), "MM/dd/yyyy"));
         }
       });
+
+      if (expiredDays > 0) {
+        expiriedDate.push(`${expiredDays}`);
+      } else {
+        expiriedDate.push("-");
+      }
       // lastUpdated.push(
       //   format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
       // );
@@ -2909,6 +2991,10 @@ const StaffApplicationList = ({
         value: submitted,
         // hoverText: lastUpdatedBy,
         // isShowHoverText: true,
+      },
+      {
+        type: "text",
+        value: expiriedDate,
       },
       // {
       //   type: "iconWithCount",
@@ -2985,9 +3071,9 @@ const StaffApplicationList = ({
         (workflow) => workflow?.role === "Department Head"
       );
 
-      if (DeptHead?.approverDetail) {
+      if (DeptHead?.approverDetails) {
         dhMember.push(
-          `${DeptHead.approverDetail.name?.firstName || ""} ${DeptHead.approverDetail.name?.lastName || ""}`
+          `${DeptHead?.approverDetails?.[0]?.approverDetail?.name?.firstName || ""} ${DeptHead?.approverDetails?.[0]?.approverDetail?.name?.lastName || ""}`
         );
       }
       docs.push(data?.documents?.verifiedCount + "/" + data?.documents?.uploadedCount || "");
@@ -3478,11 +3564,18 @@ const StaffApplicationList = ({
         (workflow) => workflow?.role === "Credentialing Committee"
       );
 
-      if (credCommittee?.approverDetail) {
-        ccMember.push(
-          `${credCommittee.approverDetail.name?.firstName || ""} ${credCommittee.approverDetail.name?.lastName || ""}`
-        );
-      }
+      if (Array.isArray(credCommittee?.approverDetails)) {
+      const names = credCommittee.approverDetails.map(detail => {
+        const name = detail?.approverDetail?.name;
+        const firstName = name?.firstName || "";
+        const lastName = name?.lastName || "";
+        return `${firstName} ${lastName}`.trim();
+      });
+
+      // If only one name, push directly, else join with comma
+      const formattedNames = names.length === 1 ? names[0] : names.join(", ");
+      ccMember.push(formattedNames);
+    }
       // cr.push(data?.logs[data.logs.length - 1]?.role)
       // cos.push(data?.boardStatus || "green");
       // cos.push(data?.logs[data.logs.length - 1].workflowAction === "SUBMITTED"
@@ -3623,6 +3716,7 @@ const StaffApplicationList = ({
     action = [];
     overRideIcon = [];
     hoverOverRide = [];
+    expiriedDate = [];
 
     tableData?.map((data) => {
       // dot.push(
@@ -3635,9 +3729,10 @@ const StaffApplicationList = ({
 
 
       const workflow = data?.completedWorkflows?.find(workflow => (workflow?.role === "Credentialing Committee"));
+      const expiredDays = differenceInDays(new Date(data?.expiryDate), new Date());
       // const workflowDeptRole = data?.completedWorkflows?.find(workflow => workflow.role === "Department Head");
       if (workflow) {
-        const color = workflow?.status === "IN_PROGRESS" ? "yellow"
+        const color = workflow?.status === "PENDING" ? "yellow"
           : workflow?.status === "COMPLETED" ? "green"
             : "grey";
         dot.push(color);
@@ -3789,11 +3884,18 @@ const StaffApplicationList = ({
         (workflow) => workflow?.role === "Credentialing Committee"
       );
 
-      if (credCommittee?.approverDetail) {
-        ccMember.push(
-          `${credCommittee.approverDetail.name?.firstName || ""} ${credCommittee.approverDetail.name?.lastName || ""}`
-        );
-      }
+     if (Array.isArray(credCommittee?.approverDetails)) {
+      const names = credCommittee.approverDetails.map(detail => {
+        const name = detail?.approverDetail?.name;
+        const firstName = name?.firstName || "";
+        const lastName = name?.lastName || "";
+        return `${firstName} ${lastName}`.trim();
+      });
+
+      // If only one name, push directly, else join with comma
+      const formattedNames = names.length === 1 ? names[0] : names.join(", ");
+      ccMember.push(formattedNames);
+    }
       // cr.push(data?.logs[data.logs.length - 1]?.role)
       // cos.push(data?.boardStatus || "green");
       // cos.push(data?.logs[data.logs.length - 1].workflowAction === "SUBMITTED"
@@ -3848,6 +3950,11 @@ const StaffApplicationList = ({
         format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
       );
       lastUpdatedBy.push(["Last Updated By", data?.updatedBy?.name?.firstName]);
+       if (expiredDays > 0) {
+        expiriedDate.push(`${expiredDays}`);
+      } else {
+        expiriedDate.push("-");
+      }
       action.push(true);
     });
 
@@ -3891,6 +3998,10 @@ const StaffApplicationList = ({
         hoverText: notesHoverText,
         isShowHoverText: true,
         icon: notesIcon,
+      },
+       {
+        type: "text",
+        value: expiriedDate,
       },
       // { type: "dot", value: cos },
       // { type: "dot", value: deptHead },
@@ -4000,10 +4111,17 @@ const StaffApplicationList = ({
             : "-"
         );
       }
-      if (credCommittee?.approverDetail) {
-        ccMember.push(
-          `${credCommittee.approverDetail.name?.firstName || ""} ${credCommittee.approverDetail.name?.lastName || ""}`
-        );
+      if (Array.isArray(credCommittee?.approverDetails)) {
+        const names = credCommittee.approverDetails.map(detail => {
+          const name = detail?.approverDetail?.name;
+          const firstName = name?.firstName || "";
+          const lastName = name?.lastName || "";
+          return `${firstName} ${lastName}`.trim();
+        });
+
+        // If only one name, push directly, else join with comma
+        const formattedNames = names.length === 1 ? names[0] : names.join(", ");
+        ccMember.push(formattedNames);
       }
 
       if (credCommittee) {
@@ -4200,10 +4318,14 @@ const StaffApplicationList = ({
     ccdate = [];
     lastUpdatedOn = [];
     ccMember = [];
+    ccMemberReviewed = [];
     dotTooltipValues = [];
     action = [];
     overRideIcon = [];
     hoverOverRide = [];
+    CountDetails = [];
+    ccMemberCount = [];
+    expiriedDate = [];
 
     tableData?.map((data) => {
       // dot.push(
@@ -4214,6 +4336,23 @@ const StaffApplicationList = ({
       //       : "grey"
       // );
       const workflow = data?.completedWorkflows?.find(workflow => (workflow?.role === "Credentialing Committee"));
+      // const reviewDate = workflow?.reviewedDate
+      //     ? format(new Date(`${workflow?.reviewedDate}T00:00`), "MM/dd/yyyy")
+      //     : '-';
+      const expiredDays = differenceInDays(new Date(data?.expiryDate), new Date());
+      const approverDetails = workflow?.approverDetails || [];
+
+      // const ccMemberReviewedMember = approverDetails.map((approver, index) => {
+      //   const name = `${approver?.approverDetail?.name?.firstName || ""} ${approver?.approverDetail?.name?.lastName || ""}`.trim();
+      //   const reviewDate = approver?.reviewedDate
+      //     ? format(new Date(`${approver.reviewedDate}T00:00`), "MM/dd/yyyy")
+      //     : "-";
+      //   return `${name} reviewed on ${reviewDate}`;
+      // });
+      // console.log("ccMemberReviewedMember",approverDetails)
+      const totalReviewMember = approverDetails?.length;
+      let doneReview = 0;
+      let ccMemberReviewedMember;
       const workflowCCDate = data?.logs
         ?.filter(workflowCC => workflowCC?.role === "Credentialing Committee")
         ?.sort((a, b) => {
@@ -4286,27 +4425,64 @@ const StaffApplicationList = ({
             : "-"
         );
       }
-      if (credCommittee?.approverDetail) {
-        ccMember.push(
-          `${credCommittee.approverDetail.name?.firstName || ""} ${credCommittee.approverDetail.name?.lastName || ""}`
-        );
-      }
+      if (Array.isArray(credCommittee?.approverDetails)) {
+      const names = credCommittee.approverDetails.map(detail => {
+        const name = detail?.approverDetail?.name;
+        const firstName = name?.firstName || "";
+        const lastName = name?.lastName || "";
+        return `${firstName} ${lastName}`.trim();
+      });
 
-      if (credCommittee) {
-        if (credCommittee?.approvalType === "RECOMMENDED_WITH_NOTES") {
-          cc.push('green');
-          dotTooltipValues.push("Recommended with Notes")
-        } else if (credCommittee?.approvalType === "NOT_RECOMMENDED") {
+      // If only one name, push directly, else join with comma
+      const formattedNames = names.length === 1 ? names[0] : names.join(", ");
+      ccMember.push([formattedNames]);
+    }
+
+     if (approverDetails.length > 0) {
+        const hasNotRecommended = approverDetails.some(item => item?.approvalType === "NOT_RECOMMENDED");
+        const hasApprovalType = approverDetails.some(item => item?.approvalType !== null);
+        const allValue = approverDetails.every(item => item?.approvalType);
+
+        if (hasNotRecommended) {
           cc.push('red');
-          dotTooltipValues.push("Not Recommended")
-        } else if (credCommittee?.approvalType === "RECOMMENDED") {
-          cc.push('darkgreen');
-          dotTooltipValues.push("Recommended")
+        }  else if (allValue) {
+          cc.push('green');
+        } else if (hasApprovalType) {
+          cc.push('yellow');
         } else {
           cc.push('grey');
-          dotTooltipValues.push("Not yet Started")
         }
       }
+      // ccMemberReviewed.push([
+      //   // `${credCommittee?.approverDetails?.[0]?.approverDetail?.name?.firstName || ""} ${credCommittee?.approverDetails?.[0]?.approverDetail?.name?.lastName || ""} reviewed on ${reviewDate}`
+      //   ccMemberReviewedMember
+      // ]);
+      // {ccMemberReviewed.push((entry, idx) => [
+      //     <div key={idx}>
+      //       <p>{entry}</p>
+      //       {ccMemberReviewedMember?.length > 1 && idx !== ccMemberReviewedMember?.length - 1 && <hr />}
+      //     </div>
+      //   ])}
+      if (approverDetails.every(approver => approver?.approvalType == null)) {
+        ccMemberReviewed.push(["Not Yet Started"]);
+        CountDetails.push(`0/${totalReviewMember}`);
+      } else {
+        ccMemberReviewedMember = approverDetails?.filter(approver => approver?.approvalType != null)?.map((approver) => {
+          const name = `${approver?.approverDetail?.name?.firstName || ""} ${approver?.approverDetail?.name?.lastName || ""}`.trim();
+          const reviewDate = approver?.reviewedDate
+            ? format(new Date(`${approver.reviewedDate}T00:00`), "MM/dd/yyyy")
+            : "-";
+
+          if (approver?.approvalType != null) doneReview += 1;
+
+          return `${name} reviewed on ${reviewDate}`;
+        });
+
+        // ccMemberReviewed.push([ccMemberReviewedMember]);
+        ccMemberReviewed.push([...ccMemberReviewedMember]); 
+        CountDetails.push(`${doneReview}/${totalReviewMember}`);
+      }
+      ccMemberCount.push(totalReviewMember)
 
       docs.push(data?.documents?.verifiedCount + "/" + data?.documents?.uploadedCount || "");
       // docsHoverText.push([
@@ -4427,9 +4603,11 @@ const StaffApplicationList = ({
       } else {
         submitted.push('-');
       }
-      lastUpdatedOn.push(
-        format(new Date(data?.lastModifiedDate), "MM/dd/yyyy")
-      );
+      if (expiredDays > 0) {
+        expiriedDate.push(`${expiredDays}`);
+      } else {
+        expiriedDate.push("-");
+      }
       lastUpdatedBy.push(["Last Updated By", data?.updatedBy?.name?.firstName]);
       action.push(true);
     });
@@ -4448,10 +4626,13 @@ const StaffApplicationList = ({
 
       { type: "text", value: department },
       {
-        type: "text",
-        value: ccMember,
+        type: "countWithHover",
+        value: ccMemberCount,
+        hoverText: ccMember,
+        isShowHoverText: true,
       },
-      { type: "dot", value: cc, tooltipValue: dotTooltipValues },
+      { type: "dotWithCount", value: cc, hoverText: ccMemberReviewed,count: CountDetails,
+        isShowHoverText: true },
       {
         type: "iconWithCountNotes",
         value: notes,
@@ -4459,13 +4640,17 @@ const StaffApplicationList = ({
         isShowHoverText: true,
         icon: notesIcon,
       },
-      {
-        type: "text",
-        value: submitted,
-      },
+      // {
+      //   type: "text",
+      //   value: submitted,
+      // },
       {
         type: "text",
         value: ccdate,
+      },
+      {
+        type: "text",
+        value: expiriedDate,
       },
       { type: "action", value: action },
     ]
@@ -4800,9 +4985,11 @@ const StaffApplicationList = ({
     macdate = [];
     overRideIcon = [];
     hoverOverRide = [];
+    expiriedDate = [];
 
     tableData?.map((data) => {
       // const workflowCredRole = data?.completedWorkflows?.find(workflow => workflow.role === "Credentialing Committee");
+      const expiredDays = differenceInDays(new Date(data?.expiryDate), new Date());
       checkbox.push(
         <CommonCheckBox
           checked={checkedIds.includes(data.id)}
@@ -4964,6 +5151,11 @@ const StaffApplicationList = ({
             : "-"
         );
       }
+       if (expiredDays > 0) {
+        expiriedDate.push(`${expiredDays}`);
+      } else {
+        expiriedDate.push("-");
+      }
       // notesHoverText.push([
       //   "June 13 00:00, Nina Grealy",
       //   "Lorem ipsum dolor sit amet, consetetur sadipscing.",
@@ -5049,6 +5241,10 @@ const StaffApplicationList = ({
         type: "text",
         value: macdate,
       },
+      {
+        type: "text",
+        value: expiriedDate,
+      },
       { type: "action", value: action },
     ];
   }
@@ -5062,6 +5258,7 @@ const StaffApplicationList = ({
     taskListStatus = [];
     lastUpdated = [];
     action = [];
+    expiriedDate = [];
 
     tableData?.map((data) => {
       applicantName.push(
@@ -5409,8 +5606,10 @@ const StaffApplicationList = ({
     pdfSendIcon = [];
     overRideIcon = [];
     hoverOverRide = [];
+    expiriedDate = [];
 
     tableData?.map((data) => {
+      const expiredDays = differenceInDays(new Date(data?.expiryDate), new Date());
       // const workflowCredRole = data?.completedWorkflows?.find(workflow => workflow.role === "Credentialing Committee");
       // const workflowMacRole = data?.completedWorkflows?.find(workflow => workflow.role === "Advisory Committee");
       checkbox.push(
@@ -5583,6 +5782,12 @@ const StaffApplicationList = ({
             : "-"
         );
       }
+
+      if (expiredDays > 0) {
+        expiriedDate.push(`${expiredDays}`);
+      } else {
+        expiriedDate.push("-");
+      }
       // notesHoverText.push([
       //   "June 13 00:00, Nina Grealy",
       //   "Lorem ipsum dolor sit amet, consetetur sadipscing.",
@@ -5689,6 +5894,10 @@ const StaffApplicationList = ({
       {
         type: "text",
         value: boddate,
+      },
+       {
+        type: "text",
+        value: expiriedDate,
       },
       {
         type: "iconWithCount",
@@ -6661,7 +6870,7 @@ const StaffApplicationList = ({
       data: "Update CC Approval Status",
       requiredValue: "boolean",
       onClick: onClickViewAndVerifyApproveFromCCFunction,
-      conditionToShow: `data?.completedWorkflows?.find((wf) => wf?.role === "Credentialing Committee")?.approvalType && data?.completedWorkflows?.find((wf) => wf?.role === "Credentialing Committee")?.meetingDate`,
+      conditionToShow: `data?.completedWorkflows?.find((wf) => wf?.role === "Credentialing Committee")?.approverDetails?.every(detail => detail?.approvalType) && data?.completedWorkflows?.find((wf) => wf?.role === "Credentialing Committee")?.meetingDate`,
     },
     // { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog },
   ];
@@ -6683,7 +6892,7 @@ const StaffApplicationList = ({
       data: "Update CC Approval Status",
       requiredValue: "boolean",
       onClick: onClickViewAndVerifyApproveFromCCFunction,
-      conditionToShow: `data?.completedWorkflows?.find((wf) => wf?.role === "Credentialing Committee")?.approvalType && data?.completedWorkflows?.find((wf) => wf?.role === "Credentialing Committee")?.meetingDate`,
+      conditionToShow: `data?.completedWorkflows?.find((wf) => wf?.role === "Credentialing Committee")?.approverDetails?.every(detail => detail?.approvalType !== null) && data?.completedWorkflows?.find((wf) => wf?.role === "Credentialing Committee")?.meetingDate`,
     },
     {
       data: "Request Override",
@@ -7730,6 +7939,9 @@ const StaffApplicationList = ({
                 getApplicationCreationType={getApplicationCreationType}
                 searchTermForTable={searchTermForTable}
                 totalCount={totalCount}
+                showBulkApproveDialog={showBulkApproveDialog}
+                showBulkMoveDialog={showBulkMoveDialog}
+                recordUpdate={recordUpdate}
               />
               <div className={`${style.spaceBetween} ${style.marginLeft} ${style.textAlign} `}>
                 {workModeType === "Credentialing Committee" || workModeType === "Department Head" || workModeType === "Chief Of Staff" ? (
