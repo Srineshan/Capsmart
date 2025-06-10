@@ -301,6 +301,8 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
     "",
     "No.",
     "Department / Division",
+    "Staff Count",
+    "MD Count",
     "Attested",
     "Not Attested",
     ""
@@ -329,7 +331,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
   const innerHeaderValues = currentTab === "ByApplicants" ? innerHeaderValuesForByApplicants : innerHeaderValuesForByMedicalDirective
   const colSortValuesByMedicalDirective = [false, false, true, true, false, true, true];
   const colSortValuesByApplicants = [false, false, true, true, true, false];
-  const colSortValuesByDept = [false, false, false, false, false];
+  const colSortValuesByDept = [false, false, false, false, false, false, false];
   const colSortValuesByInnerMedicalDirective = [false, true, true, true, true, true, false];
   const colSortValuesByInnerApplicants = [false, false, false, false, false, false];
 
@@ -578,6 +580,8 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
     const departmentSpecific = [];
     const attestedBy = [];
     const notAttested = [];
+    const noOfStaff = [];
+    const noOfMD = [];
     const action = [];
 
     medicalDirectiveSummaryByDept?.map((data, index) => {
@@ -589,6 +593,8 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
       // mdId.push(data?.medicalDirectives?.mdID);
       departmentSpecific.push(`${data?.department?.serviceAreaSpecific ? `${data?.department?.serviceAreas?.map(specialty => `${data?.department?.name} -  ${specialty?.name}`)?.join(', ')}` : data?.department?.name}`)
       // departmentSpecificHover.push([`${data?.departments?.map(data => data?.serviceAreaSpecific ? `${data?.serviceAreas?.map(specialty => `${data?.name} -  ${specialty?.name}`)}` : data?.name)}`]);
+      noOfStaff.push(data?.staffCount > 0 ? data?.staffCount : '-')
+      noOfMD.push(data?.medicalDirectiveCount > 0 ? data?.medicalDirectiveCount : '-')
       attestedBy.push(data?.attestedCount > 0 ? data?.attestedCount : '-');
       notAttested.push(data?.notAttestedCount > 0 ? data?.notAttestedCount : '-')
       // action.push((data?.attestedCount !== 0 || data?.notAttestedCount !== 0) ? true : false);
@@ -606,6 +612,8 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
       //   hoverText: departmentSpecificHover,
       //   isShowHoverText: true,
       // },
+      { type: "text", value: noOfStaff },
+      { type: "text", value: noOfMD },
       { type: "text", value: attestedBy },
       { type: "text", value: notAttested },
       // { type: "action", value: action },
