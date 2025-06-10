@@ -938,6 +938,7 @@ const App = ({ props }) => {
             roles?.includes("Entity Sys User") ||
             roles?.includes("Distributor Admin");
           let isStaffManager = roles?.includes("Staff Manager");
+          let isAttester = roles?.includes("Attester");
           let isDepartmentHead = roles?.includes("Department Head");
           let isCredentialingCommittee = roles?.includes("Credentialing Committee");
           let isChiefOfStaff = roles?.includes("Chief Of Staff");
@@ -974,6 +975,10 @@ const App = ({ props }) => {
           } else if (isChiefOfStaff) {
             console.log('login route', roles, isChiefOfStaff)
             window.location.pathname = "/applications";
+            // navigate("/applications");
+          } else if (isAttester) {
+            console.log('login route', roles, isAttester)
+            window.location.pathname = "/tenant/64246d491b70b07241d37aa1/medicalDirectives";
             // navigate("/applications");
           } else if (isApplicant) {
             window.location.pathname = "/applicant";
