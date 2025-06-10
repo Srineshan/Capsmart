@@ -615,7 +615,7 @@ const LocumStaffList = ({
         <div
           key={data.id}
           className={`${style.justifyCenter} ${style.cursorPointer}`}
-        // onClick={() => onClickViewAndVerifyFunction(data.id)}
+          onClick={() => onClickViewAndVerifyFunction(data.id)}
         >
           {formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName) || " "}
         </div>
@@ -919,7 +919,7 @@ const LocumStaffList = ({
         <div
           key={data.id}
           className={`${style.justifyCenter} ${style.cursorPointer}`}
-        // onClick={() => onClickViewAndVerifyFunction(data.id)}
+          onClick={() => onClickViewAndVerifyFunction(data.id)}
         >
           {formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName) || " "}
         </div>
@@ -1147,7 +1147,7 @@ const LocumStaffList = ({
         <div
           key={data.id}
           className={`${style.justifyCenter} ${style.cursorPointer}`}
-        // onClick={() => onClickViewAndVerifyFunction(data.id)}
+          onClick={() => onClickViewAndVerifyFunction(data.id)}
         >
           {formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName) || " "}
         </div>
@@ -1428,7 +1428,7 @@ const LocumStaffList = ({
         <div
           key={data.id}
           className={`${style.justifyCenter} ${style.cursorPointer}`}
-        // onClick={() => onClickViewAndVerifyFunction(data.id)}
+          onClick={() => onClickViewAndVerifyFunction(data.id)}
         >
           {formatFirstNameLastName(data?.staff?.applicant?.name?.firstName, data?.staff?.applicant?.name?.lastName) || " "}
         </div>
