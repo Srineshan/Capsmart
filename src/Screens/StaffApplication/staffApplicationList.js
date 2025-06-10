@@ -3732,7 +3732,7 @@ useEffect(() => {
       const expiredDays = differenceInDays(new Date(data?.expiryDate), new Date());
       // const workflowDeptRole = data?.completedWorkflows?.find(workflow => workflow.role === "Department Head");
       if (workflow) {
-        const color = workflow?.status === "IN_PROGRESS" ? "yellow"
+        const color = workflow?.status === "PENDING" ? "yellow"
           : workflow?.status === "COMPLETED" ? "green"
             : "grey";
         dot.push(color);
