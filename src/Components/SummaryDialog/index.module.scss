@@ -1,0 +1,120 @@
+@import "../../index.scss";
+
+.eSignDialog {
+  height: 75%;
+  overflow: hidden;
+  width: 40% !important;
+}
+
+.eSignDialogBackground {
+  background: #ffffff 0% 0% no-repeat padding-box;
+  padding: 20px 40px 20px 40px;
+  // padding: 20px;
+  border-radius: 20px !important;
+}
+
+.marginTop {
+  margin-top: 20px;
+}
+
+.marginLeft20{
+    margin-left: 20px;
+}
+
+.flex{
+    display: flex;
+}
+
+.templateHeader {
+  display: grid;
+  justify-content: space-between;
+  grid-template-columns: 90% 5%;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.templateHeadertext {
+  text-align: left;
+  font: normal normal bold 22px proxima-nova;
+  letter-spacing: 0px;
+  color: #06617A;
+  opacity: 1;
+}
+
+.crossStyle {
+  height: 24px;
+  width: 24px;
+}
+
+.cursorPointer {
+  cursor: pointer;
+}
+
+.actionButtons {
+  display: flex;
+  justify-content: center;
+
+}
+
+.verticalAlignCenter {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.justifyCenter {
+  display: flex;
+  justify-content: center;
+}
+
+.summaryCountStyle{
+    text-align: left;
+    font: normal normal bold 24px/30px proxima-nova;
+    letter-spacing: 0px;
+    color: #52575D;
+    opacity: 1;
+}
+
+.summaryFontStyle {
+    text-align: left;
+    font: normal normal medium 18px/30px proxima-nova !important;
+    letter-spacing: 0px;
+    color: #52575D;
+    opacity: 1;
+}
+
+.reviewButtonStyle {
+  background: $primarycolor 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 6px #00000029;
+  border-radius: 8px;
+  opacity: 1;
+  padding: 5px 15px;
+}
+
+.reviewButton {
+  text-align: center;
+  font: normal normal bold 18px/30px proxima-nova;
+  letter-spacing: 0px;
+  color: #FFFFFF;
+  text-transform: uppercase;
+  opacity: 1;
+}
+
+.loadingOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.fileLoadingStyle {
+  height: auto;
+  width: 40%;
+  object-fit: contain;
+}

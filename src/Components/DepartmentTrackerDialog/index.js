@@ -199,7 +199,7 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
   ];
   const locumHeaderValues = [
     "No.",
-    "Locum Staff",
+    "Staff Name",
     "Staff Type",
     "Expiration Date",
     "Department",

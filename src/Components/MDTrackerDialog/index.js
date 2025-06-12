@@ -7,7 +7,7 @@ import jwt from 'jwt-decode';
 import style from "./index.module.scss";
 import TableTwo from "../TableDesignTwo";
 import CircularProgress from "@mui/material/CircularProgress";
-import { format, parse } from "date-fns";
+import { format, parse, isValid } from "date-fns";
 import { formatFirstNameLastName } from "../../utils/formatting";
 import LoadingScreen from "../LoadingScreen";
 import WorkModeSelect from "../SwitchWorkSpaceDialog";
@@ -301,6 +301,8 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
     "",
     "No.",
     "Department / Division",
+    "Staff Count",
+    "MD Count",
     "Attested",
     "Not Attested",
     ""
@@ -329,7 +331,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
   const innerHeaderValues = currentTab === "ByApplicants" ? innerHeaderValuesForByApplicants : innerHeaderValuesForByMedicalDirective
   const colSortValuesByMedicalDirective = [false, false, true, true, false, true, true];
   const colSortValuesByApplicants = [false, false, true, true, true, false];
-  const colSortValuesByDept = [false, false, false, false, false];
+  const colSortValuesByDept = [false, false, false, false, false, false, false];
   const colSortValuesByInnerMedicalDirective = [false, true, true, true, true, true, false];
   const colSortValuesByInnerApplicants = [false, false, false, false, false, false];
 
@@ -578,6 +580,8 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
     const departmentSpecific = [];
     const attestedBy = [];
     const notAttested = [];
+    const noOfStaff = [];
+    const noOfMD = [];
     const action = [];
 
     medicalDirectiveSummaryByDept?.map((data, index) => {
@@ -589,6 +593,8 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
       // mdId.push(data?.medicalDirectives?.mdID);
       departmentSpecific.push(`${data?.department?.serviceAreaSpecific ? `${data?.department?.serviceAreas?.map(specialty => `${data?.department?.name} -  ${specialty?.name}`)?.join(', ')}` : data?.department?.name}`)
       // departmentSpecificHover.push([`${data?.departments?.map(data => data?.serviceAreaSpecific ? `${data?.serviceAreas?.map(specialty => `${data?.name} -  ${specialty?.name}`)}` : data?.name)}`]);
+      noOfStaff.push(data?.staffCount > 0 ? data?.staffCount : '-')
+      noOfMD.push(data?.medicalDirectiveCount > 0 ? data?.medicalDirectiveCount : '-')
       attestedBy.push(data?.attestedCount > 0 ? data?.attestedCount : '-');
       notAttested.push(data?.notAttestedCount > 0 ? data?.notAttestedCount : '-')
       // action.push((data?.attestedCount !== 0 || data?.notAttestedCount !== 0) ? true : false);
@@ -606,6 +612,8 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
       //   hoverText: departmentSpecificHover,
       //   isShowHoverText: true,
       // },
+      { type: "text", value: noOfStaff },
+      { type: "text", value: noOfMD },
       { type: "text", value: attestedBy },
       { type: "text", value: notAttested },
       // { type: "action", value: action },
@@ -647,6 +655,20 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
     ];
   };
 
+  const tryParseDate = (dateString) => {
+    const formats = ['MMM d, yyyy', 'dd/MM/yyyy'];
+
+    for (const format of formats) {
+      const parsedDate = parse(dateString, format, new Date());
+      if (isValid(parsedDate)) {
+        return { parsedDate, formatUsed: format };
+      }
+    }
+
+    return { parsedDate: null, formatUsed: null }; // Invalid date
+  };
+
+
   const getInnerTableValuesByMedicalDirecties = () => {
     const No = [];
     const dot = []
@@ -658,13 +680,14 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
     const actionItem = [];
 
     selectedMedicalDirectiveList?.allApplicants?.map((data, index) => {
+      const result = tryParseDate(data?.attestationLog?.esign?.signedDate);
       dot.push(data?.attestationLog ? "green" : 'red');
       dotTooltipValues.push(data?.attestationLog ? "Attested" : 'Not Attested')
       No.push(index + 1 + ".")
       applicantName.push(`${formatFirstNameLastName(data?.application?.applicant?.name?.firstName, data?.application?.applicant?.name?.lastName)}`);
       dept.push(`${data?.application?.basicDetailReferences?.department?.name} ${data?.application?.basicDetailReferences?.specialty?.name ? `- ${data?.application?.basicDetailReferences?.specialty?.name}` : ''}`)
       type.push(data?.application?.basicDetailReferences?.applicantType?.serviceProviderType)
-      attestationDate.push(data?.attestationLog?.esign?.signedDate ? format(parse(data?.attestationLog?.esign?.signedDate, 'dd/MM/yyyy', new Date()), 'MMM dd, yyyy') : '-');
+      attestationDate.push(data?.attestationLog?.esign?.signedDate ? result.parsedDate ? format(result.parsedDate, 'MMM dd, yyyy') : '-' : '-');
       actionItem.push(
         <div className={style.viewOrRtt} onClick={data?.attestationLog ? () => handleInnerSelectData(data) : () => { }}>{data?.attestationLog ? 'View' : 'Request'}</div>
       );

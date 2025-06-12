@@ -8,6 +8,7 @@ import ArrowDisabledLeft from "../../images/arrowDisabledLeft.png";
 import ArrowDisabledRight from "../../images/arrowDisabledRight.png";
 import ArrowHoverLeft from "../../images/arrowHoverLeft.png";
 import ArrowHoverRight from "../../images/arrowHoverRight.png";
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import FullscreenSharpIcon from '@mui/icons-material/FullscreenSharp';
 import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
 import PrintOutlinedIcon from "@mui/icons-material/PrintOutlined";
@@ -36,7 +37,7 @@ import { SuccessToaster2 } from '../../utils/toaster';
 import { corsUrl } from "../../utils/formatting";
 import { Download } from "@mui/icons-material";
 
-const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFileIndex, setSelectedFileIndex, selectedRowTableName, selectedFormId, form, setForm, handleStepsVerify, setHasVerificationAttempted, getPreApplicationForReplace }) => {
+const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFileIndex, setSelectedFileIndex, selectedRowTableName, selectedFormId, form, setForm, handleStepsVerify, setHasVerificationAttempted, getPreApplicationForReplace,showViewOnly }) => {
     const [isContinue, setIsContinue] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
     const [isPrintClicked, setIsPrintClicked] = useState(false);
@@ -66,6 +67,7 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
     const [rejectClarification, setRejectClarification] = useState('');
     const [showFileWithFields, setShowFileWithFields] = useState(false);
     const pdfUrl = file?.fileURL ? encodeURI(file?.fileURL) : "";
+    const pdfAppointmentUrl = file?.file?.fileURL ? encodeURI(file?.file?.fileURL) : "";
     console.log("URLLLLLLLLLLLLLLLLLLL", pdfUrl, file?.documentType);
 
     const availableDocumentStatus = {
@@ -583,7 +585,7 @@ if (file?.isVerified) {
                 <div>
                     <div className={Classes.DIALOG_BODY}>
                         <div className={style.spaceBetween}>
-                            <div className={style.heading}>Verification of Data & Documents</div>
+                            <div className={style.heading}>{showViewOnly === true ? 'Data & Documents Verified' : 'Verification of Data & Documents'}</div>
                             <div className={style.displayInRow}>
                                 <Tooltip title="Click to Download Document" arrow >
                                     <Download
@@ -592,7 +594,7 @@ if (file?.isVerified) {
                                             color: "#06617A",
                                         }}
                                         className={style.cursorPointer}
-                                        onClick={() => handleDownload(pdfUrl, file?.documentType)}
+                                        onClick={() => handleDownload(showViewOnly === true ? pdfAppointmentUrl : pdfUrl, file?.documentType)}
                                     />
                                 </Tooltip>
                                 <div
@@ -603,7 +605,7 @@ if (file?.isVerified) {
                                                 fontSize: isPrintClicked ? 20 : 25,
                                                 color: isPrintClicked ? "#fff" : "#06617A",
                                             }}
-                                            onClick={() => handlePrint(pdfUrl)}
+                                            onClick={() => handlePrint(showViewOnly === true ? pdfAppointmentUrl : pdfUrl)}
                                         />
                                     </Tooltip>
                                 </div>
@@ -617,7 +619,9 @@ if (file?.isVerified) {
                                 </Tooltip>
                             </div>
                         </div>
-                        <div className={`${style.textStyle}`}>You are required to verify the {fileArray?.length} associated Documents that are part of this application </div>
+                        {showViewOnly !== true && (
+                            <div className={`${style.textStyle}`}>You are required to verify the {fileArray?.length} associated Documents that are part of this application </div>
+                        )}
                         <div className={` ${style.spaceBetween} ${style.centerALign} ${style.titleBackgroundColorStyle} ${style.marginTop}`}>
                             <div className={`${style.heading}`}>{file?.documentType}</div>
                             <div className={`${style.spaceBetween} ${style.verticalAlignCenter}`}>
@@ -732,9 +736,11 @@ if (file?.isVerified) {
                                 <div className={style.extractedFields}>
                                     <div className={style.spaceBetween}>
                                         <div className={`${style.heading} ${style.marginBottom}`}>Current Document</div>
+                                        {showViewOnly !== true && (
                                         <Tooltip title="Click to Modify Details" arrow>
                                             <ModeEditOutlinedIcon sx={{ color: "#06617A" }} className={style.cursorPointer} onClick={() => setShowFileWithFields(true)} />
                                         </Tooltip>
+                                        )}
                                     </div>
                                     {(form?.documents?.documentDetails?.filter(data => data?.rowId === file?.rowId)?.[0]?.notesDetails?.length !== 0 && form?.documents?.documentDetails?.filter(data => data?.rowId === file?.rowId)?.[0]?.notesDetails?.map(item => item.notes?.notes)?.filter(note => note)?.length !== 0) && form?.documents?.documentDetails?.filter(data => data?.rowId === file?.rowId)?.[0]?.notesDetails !== undefined && (
                                         <div>
@@ -773,7 +779,7 @@ if (file?.isVerified) {
                                     )}
                                 </div>
                                 <div>
-                                    {documentStatus !== "REJECT_DOCUMENT" && documentStatus !== "REJECT_AND_REPLACE_DOCUMENT" && (
+                                    {documentStatus !== "REJECT_DOCUMENT" && documentStatus !== "REJECT_AND_REPLACE_DOCUMENT" && showViewOnly !== true && (
                                         <div className={`${style.displayInRow} ${style.marginTop}`}>
                                             {/* <div className={`${style.CloseButton} ${style.cursorPointer}`} onClick={() => { getIsOpen(false); }}>
                                         <div className={`${style.closeTextStyle} ${style.alignCenter}`}>
@@ -843,6 +849,19 @@ if (file?.isVerified) {
                                                         </div>
                                                     </div>
                                                 </Tooltip>)}
+                                        </div>
+                                    )}
+                                    {showViewOnly === true && (
+                                        <div
+                                            className={`${style.greenButtonVerify} ${style.marginTop30}`}
+                                        >
+                                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                        <LockOutlinedIcon sx={{
+                                            fontSize: 20,
+                                            color: "#ffffff",
+                                            marginRight: "10px",
+                                            }} />  VERIFIED 
+                                        </div>
                                         </div>
                                     )}
                                     {documentStatus === "REJECT_DOCUMENT" && (

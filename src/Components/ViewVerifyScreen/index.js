@@ -12598,6 +12598,7 @@ const NewActiveApplication = ({
                                                     {/* {clarification?.clarificationRequest?.clarificationRequiredFor !== 'Required Documents for Processing Your Application' && clarification?.clarificationRequest?.clarificationRequiredFor !== null && clarification?.clarificationStatus === 'NA' && ( */}
                                                     {/* <div className={style.twoColumnGrid}> */}
                                                     <div>
+                                                      {clarification?.clarificationStatus === "NA" && (
                                                       <div
                                                         className={`${style.buttonCardStyleDoc} ${style.cursorPointer}`}
                                                         onClick={() => onClickDocumentClarificationFunction(clarification, data)}
@@ -12608,6 +12609,7 @@ const NewActiveApplication = ({
                                                           </div>
                                                         </Tooltip>
                                                       </div>
+                                                      )}
                                                       {/* <div className={`${style.bigButtonStyle1} ${style.cursorPointer}`}>
                                                           <div className={`${style.bigButtonTextStyle} ${style.alignCenter}`}>
                                                             Send by Email
