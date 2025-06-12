@@ -103,7 +103,7 @@
 .grid2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-gap: 10px;
+  grid-gap: 10%;
 }
 
 .grip3 {
@@ -181,7 +181,7 @@
   font: normal normal medium 16px/23px proxima-nova;
   letter-spacing: 0px;
   color: #2C2C2C;
-  text-transform: capitalize;
+  // text-transform: capitalize;
   opacity: 0.8;
 }
 
@@ -207,6 +207,11 @@
   letter-spacing: 0px;
   color: #52575d;
   text-align: left;
+}
+
+.greenTextStyle{
+  color: $acknowledgmentgreen;
+  opacity: 1 !important;
 }
 
 .notesIcon {
@@ -271,11 +276,19 @@
   opacity: 1;
 }
 
-.countStyle {
+.countStyleGrey {
   text-align: left;
   font: normal normal bold 24px/29px proxima-nova;
   letter-spacing: 0px;
   color: #52575D;
+  opacity: 1;
+}
+
+.countStyleGreen {
+  text-align: left;
+  font: normal normal bold 24px/29px proxima-nova;
+  letter-spacing: 0px;
+  color: $acknowledgmentgreen;
   opacity: 1;
 }
 
@@ -302,7 +315,7 @@
   grid-gap: 10px;
 }
 
-.appointmntViewGrid {
+.appointmentViewGrid {
   display: grid;
   grid-template-columns: 15% 7% 20% 11% 7% 5% 17% 11%;
   grid-gap: 10px;
@@ -310,7 +323,7 @@
 
 .medicalDirectiveViewGrid {
   display: grid;
-  grid-template-columns: 5% 37% 9% 6% 14% 12% 10%;
+  grid-template-columns: 5% 37% 9% 10% 17% 15%;
   grid-gap: 10px;
 }
 
@@ -320,6 +333,11 @@
   letter-spacing: 0px;
   color: #171A1A;
   opacity: 1;
+}
+
+.selectedBackgroundCard {
+    background-color: $secondarycolor;
+    border: 1px solid #d1cefd;
 }
 
 .loadingOverlay {

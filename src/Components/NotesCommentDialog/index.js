@@ -52,7 +52,7 @@ const NotesCommentsDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, 
   const [isApproverCred, setIsApproverCred] = useState(false);
   const [userFirstName, setUserFirstName] = useState('');
   const [userLastName, setUserLastName] = useState('');
-  let approverDetails;
+  let approverDetailsDept;
   let approverDetailsCred;
 
   useEffect(() => {
@@ -68,7 +68,7 @@ const NotesCommentsDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, 
   useEffect(() => {
 
     if (workModeType === "Department Head" || workModeType === "Chief Of Staff") {
-      approverDetails = formDetails?.completedWorkflows?.find(
+      approverDetailsDept = formDetails?.completedWorkflows?.find(
         (workflow) => workflow?.role === "Department Head"
       );
     }
@@ -78,10 +78,10 @@ const NotesCommentsDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, 
     //   );
     // }
 
-    const firstName = approverDetails?.approverDetail?.name?.firstName;
-    const lastName = approverDetails?.approverDetail?.name?.lastName;
+    const firstName = approverDetailsDept?.approverDetails?.[0]?.approverDetail?.name?.firstName;
+    const lastName = approverDetailsDept?.approverDetails?.[0]?.name?.lastName;
 
-    console.log("Updated firstname:", approverDetails, formDetails?.id);
+    console.log("Updated firstname:", approverDetailsDept, formDetails?.id);
     console.log("Updated lastname:", lastName);
 
     
@@ -102,14 +102,27 @@ const NotesCommentsDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, 
       );
     }
 
-    const firstName = approverDetailsCred?.approverDetail?.name?.firstName;
-    const lastName = approverDetailsCred?.approverDetail?.name?.lastName;
+    const approverDetailsArray = approverDetailsCred?.approverDetails || [];
+
+    // const firstName = approverDetailsCred?.approverDetail?.name?.firstName;
+    // const lastName = approverDetailsCred?.approverDetail?.name?.lastName;
+    
+
+      const matchedApprover = approverDetailsArray.find((approverObj) => {
+      const approverName = approverObj?.approverDetail?.name;
+      return (
+        approverName?.firstName === userFirstName &&
+        approverName?.lastName === userLastName
+      );
+    });
+
+    console.log("Matched Approver:", matchedApprover, formDetails?.id);
 
     console.log("Updated firstname:", approverDetailsCred, formDetails?.id);
-    console.log("Updated lastname:", lastName);
+    // console.log("Updated lastname:", lastName);
 
 
-    if (firstName === userFirstName && lastName === userLastName) {
+    if (matchedApprover) {
       setIsApproverDept1("Approve");
     } else {
       setIsApproverDept1("notApproved")
@@ -560,15 +573,24 @@ const NotesCommentsDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, 
 
                     <div className={`${style.marginTop} ${style.credDateTextStyle}`}>
                       Assigned Credentials Committee: {
-                        formDetails?.completedWorkflows
-                          ?.find(workflow => workflow.role === "Credentialing Committee")
-                          ?.approverDetail?.name
-                          ? `${formDetails?.completedWorkflows
-                            .find(workflow => workflow.role === "Credentialing Committee")
-                            ?.approverDetail?.name?.firstName} ${formDetails?.completedWorkflows
-                              .find(workflow => workflow.role === "Credentialing Committee")
-                              ?.approverDetail?.name?.lastName}, Credentialing Committee`
-                          : "No approver found"
+                        (() => {
+                          const credentialingWorkflow = formDetails?.completedWorkflows?.find(
+                            (workflow) => workflow.role === "Credentialing Committee"
+                          );
+
+                          const approverList = credentialingWorkflow?.approverDetails || [];
+
+                          if (approverList.length > 0) {
+                            const names = approverList.map(({ approverDetail }) => {
+                              const { firstName = '', lastName = '' } = approverDetail?.name || {};
+                              return `${firstName} ${lastName}`.trim();
+                            });
+
+                            return `${names.join(', ')}, Credentialing Committee`;
+                          }
+
+                          return "No approver found";
+                        })()
                       }
                     </div>
                   </>

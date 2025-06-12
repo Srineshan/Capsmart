@@ -704,8 +704,8 @@ const NewActiveApplication = ({
       (workflow) => workflow?.role === "Department Head"
     );
 
-    let firstName = departmentHeadApproverDetails?.approverDetail?.name?.firstName || "";
-    let lastName = departmentHeadApproverDetails?.approverDetail?.name?.lastName || "";
+    let firstName = departmentHeadApproverDetails?.approverDetails?.[0]?.approverDetail?.name?.firstName || "";
+    let lastName = departmentHeadApproverDetails?.approverDetails?.[0]?.approverDetail?.name?.lastName || "";
 
     console.log(`Approver dept: ${firstName} ${lastName}`);
     console.log("workModeType:", workModeType);
@@ -731,17 +731,24 @@ const NewActiveApplication = ({
       (workflow) => workflow?.role === "Credentialing Committee"
     );
 
-    let firstName = CredCommApproverDetails?.approverDetail?.name?.firstName;
-    let lastName = CredCommApproverDetails?.approverDetail?.name?.lastName;
-    let approvalType = CredCommApproverDetails?.approvalType
+    let approverDetailsArray = CredCommApproverDetails?.approverDetails || [];
 
-    console.log(`Approver cred: ${firstName} ${lastName}`);
+    // let firstName = CredCommApproverDetails?.approverDetail?.name?.firstName;
+    // let lastName = CredCommApproverDetails?.approverDetail?.name?.lastName;
+    // let approvalType = CredCommApproverDetails?.approvalType
+    const matchedApprover = approverDetailsArray.find((approver) => {
+    const firstName = approver?.approverDetail?.name?.firstName;
+    const lastName = approver?.approverDetail?.name?.lastName;
+    return firstName === userFirstName && lastName === userLastName;
+  });
+
+    // console.log(`Approver cred: ${firstName} ${lastName}`);
     console.log("workModeType:", workModeType);
     // console.log("selectedTab:", selectedTab,(workModeType === 'Chief Of Staff' && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && isApproverDept === "Approve"),workModeType === 'Chief Of Staff' , selectedTab === 'level-2' , applicationType === "REAPPOINTMENT" , isApproverDept);
     console.log("applicationType:", applicationType);
     console.log("approvalType:", approvalType);
 
-    if (firstName === userFirstName && lastName === userLastName) {
+    if (matchedApprover) {
       setIsApproverCred("Approve");
       console.log("levelofApprovaltrue:", isApproverCred);
       if (!approvalType) {
@@ -11459,7 +11466,9 @@ const NewActiveApplication = ({
                             open={calendarStart}
                             onOpen={() => setCalendarStart(true)}
                             onClose={() => setCalendarStart(false)}
-
+                            minDate={reviewedDateCC || sub(new Date(), { years: 3 })}
+                            // maxDate={add(new Date(), { years: 3 })}                        
+                            maxDate={getJune30thOfCurrentYear()}
                             // minDate={sub(new Date(), { years: 3 })}
                             // maxDate={add(new Date(), { years: 3 })}
                             // minDate={lastSubmittedDate ? new Date(lastSubmittedDate) : sub(new Date(), { years: 3 })}
@@ -12589,6 +12598,7 @@ const NewActiveApplication = ({
                                                     {/* {clarification?.clarificationRequest?.clarificationRequiredFor !== 'Required Documents for Processing Your Application' && clarification?.clarificationRequest?.clarificationRequiredFor !== null && clarification?.clarificationStatus === 'NA' && ( */}
                                                     {/* <div className={style.twoColumnGrid}> */}
                                                     <div>
+                                                      {clarification?.clarificationStatus === "NA" && (
                                                       <div
                                                         className={`${style.buttonCardStyleDoc} ${style.cursorPointer}`}
                                                         onClick={() => onClickDocumentClarificationFunction(clarification, data)}
@@ -12599,6 +12609,7 @@ const NewActiveApplication = ({
                                                           </div>
                                                         </Tooltip>
                                                       </div>
+                                                      )}
                                                       {/* <div className={`${style.bigButtonStyle1} ${style.cursorPointer}`}>
                                                           <div className={`${style.bigButtonTextStyle} ${style.alignCenter}`}>
                                                             Send by Email
