@@ -744,13 +744,13 @@ const Navbar = () => {
                           </Link>
                         </>
                       )}
-                      <div className={`${style.dropdownItem}`}>System Administration</div>
+                      {/* <div className={`${style.dropdownItem}`}>System Administration</div>
                       <Link
                         to={"/reports/savedReportsArchive"}
                         className={style.noFontStyle}
                       >
                         <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`}>Saved Reports Archive</div>
-                      </Link>
+                      </Link> */}
                     </div>
                   </Link>
                 </div>
