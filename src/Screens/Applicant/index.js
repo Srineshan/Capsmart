@@ -35,10 +35,10 @@ const Applicant = () => {
                 console.log('Inside UseEffect', applicationForm);
                 cookies.remove('entityId', { path: '/' })
                 cookies.set('entityId', applicationForm?.[applicationForm?.length - 1]?.tenant?.id, { path: '/' });
-                if ((sessionStorage?.getItem('initialRoute') !== undefined && sessionStorage?.getItem('initialRoute') !== 'undefined' && sessionStorage?.getItem('initialRoute') !== null)) {
-                    console.log(sessionStorage?.getItem('initialRoute'), 'initialRiute')
-                    navigate(sessionStorage?.getItem('initialRoute'));
-                    sessionStorage?.removeItem('initialRoute')
+                if ((localStorage?.getItem('initialRoute') !== undefined && localStorage?.getItem('initialRoute') !== 'undefined' && localStorage?.getItem('initialRoute') !== null)) {
+                    console.log(localStorage?.getItem('initialRoute'), 'initialRiute')
+                    navigate(localStorage?.getItem('initialRoute'));
+                    localStorage?.removeItem('initialRoute')
                 } else {
                     if (applicationForm?.[applicationForm?.length - 1]?.status !== 'CREATED') {
                         navigate('/applicationSubmitted');
@@ -51,9 +51,9 @@ const Applicant = () => {
                     }
                 }
             } else {
-                if ((sessionStorage?.getItem('initialRoute') !== undefined && sessionStorage?.getItem('initialRoute') !== 'undefined' && sessionStorage?.getItem('initialRoute') !== null)) {
-                    navigate(sessionStorage?.getItem('initialRoute'));
-                    sessionStorage?.removeItem('initialRoute')
+                if ((localStorage?.getItem('initialRoute') !== undefined && localStorage?.getItem('initialRoute') !== 'undefined' && localStorage?.getItem('initialRoute') !== null)) {
+                    navigate(localStorage?.getItem('initialRoute'));
+                    localStorage?.removeItem('initialRoute')
                 }
             }
         }

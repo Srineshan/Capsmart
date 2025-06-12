@@ -33,7 +33,7 @@ import CommonSearchField from '../../Components/CommonFields/CommonSearchField';
 import { formatFirstNameLastName } from '../../utils/formatting';
 import { SuccessToaster2 } from '../../utils/toaster';
 
-const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, refToUse, getIsDownloadClicked, isNoData }) => {
+const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, refToUse, getIsDownloadClicked, isNoData, setIsFullScreenLoading }) => {
     const { reportType } = useParams();
     const [showSaveReportOutput, setShowSaveReportOutput] = useState(false);
     const [showReportRefreshingDialog, setShowReportRefreshingDialog] = useState(false);
@@ -56,7 +56,7 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
     const [reportName, setReportName] = useState('');
     const [reportDescription, setReportDescription] = useState('');
     const openInfo = Boolean(anchorElInfo);
-    const [isLoading, setIsLoading] = useState(true);
+    // const [isLoading, setIsLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [searchData, setSearchData] = useState([]);
     const [selectedUsers, setSelectedUsers] = useState([]);
@@ -244,6 +244,7 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
     };
 
     const handleDownload = (isShare) => {
+        setIsFullScreenLoading(true)
         const uniqueFileName = `SavedReport_${Date.now()}.pdf`;
         setShowSaveReportOutput(false)
         setShowShareDialog(false)
@@ -268,7 +269,6 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                 addSavedReport(pdfBlob, uniqueFileName)
             }
         });
-
     }
 
     const addSavedReport = async (pdfBlob, uniqueFileName) => {
@@ -322,6 +322,7 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                 return null;
             }
         };
+        setIsFullScreenLoading(false);
     }
 
     const handleShare = async (pdfBlob, uniqueFileName) => {
@@ -361,6 +362,7 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                 return null;
             }
         };
+        setIsFullScreenLoading(false);
     }
 
     console.log(searchData)
