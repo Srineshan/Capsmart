@@ -1,6 +1,6 @@
 // main applicationFieldCard
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useRef } from "react";
 import CommonPhoneField from "../../Components/CommonFields/CommonPhoneField";
 import CommonInputField from "../CommonFields/CommonInputField";
 import CommonSelectField from "../CommonFields/CommonSelectField";
@@ -105,6 +105,9 @@ const ApplicationFieldCard = ({
   const { setValue, value } = useComboboxControls({ initialValue: "" });
   const canadaData = JSON.parse(sessionStorage.getItem("canadaData")) || {};
   let user = JSON.parse(sessionStorage.getItem("user"));
+  const hometimeoutRef = useRef(null);
+  const mailingTimeoutRef = useRef(null);
+  const businessTimeoutRef = useRef(null);
 
   console.log(user);
   useEffect(() => {
@@ -1158,7 +1161,12 @@ const ApplicationFieldCard = ({
         baseKey?.split(".")[0] === "contactAddress3")
     ) {
       if (validateCanadianPostalCode(isHomeAddressPincodeEntered)) {
-        fetchData();
+        if (hometimeoutRef.current) {
+          clearTimeout(hometimeoutRef.current);
+        }
+        hometimeoutRef.current = setTimeout(() => {
+          fetchData();
+        }, 2000);
       } else {
         setBasicForm((prevData) => {
           let tempContactAddress1 = { ...prevData };
@@ -1206,7 +1214,12 @@ const ApplicationFieldCard = ({
         baseKey?.split(".")[0] === "contactAddress3")
     ) {
       if (validateCanadianPostalCode(isMailingAddressPincodeEntered)) {
-        fetchData();
+        if (mailingTimeoutRef.current) {
+          clearTimeout(mailingTimeoutRef.current);
+        }
+        mailingTimeoutRef.current = setTimeout(() => {
+          fetchData();
+        }, 2000);
       } else {
         setBasicForm((prevData) => {
           let tempContactAddress2 = { ...prevData };
@@ -1255,7 +1268,12 @@ const ApplicationFieldCard = ({
         baseKey?.split(".")[0] === "contactAddress3")
     ) {
       if (validateCanadianPostalCode(isBusinessAddressPincodeEntered)) {
-        fetchData();
+        if (businessTimeoutRef.current) {
+          clearTimeout(businessTimeoutRef.current);
+        }
+        businessTimeoutRef.current = setTimeout(() => {
+          fetchData();
+        }, 2000);
       } else {
         setBasicForm((prevData) => {
           let tempContactAddress3 = { ...prevData };

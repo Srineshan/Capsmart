@@ -424,12 +424,16 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
   };
 
   const handleResend = async (id) => {
-    await PUT(
-      `application-management-service/staff/${id}/resendReappointmentEmail`
-    ).then(() => {
-      SuccessToaster2("Application mail resent successfully!")
-    });
-  }
+    try {
+      await PUT(
+        `application-management-service/staff/${id}/resendReappointmentEmail`
+      );
+      SuccessToaster2("Application mail resent successfully!");
+      await getActiveUserData();
+    } catch (error) {
+      console.error("Failed to resend application:", error);
+    }
+  };
 
   const handleNavigate = () => {
     navigate("/reportTypeOverview/staffbyTypes", {

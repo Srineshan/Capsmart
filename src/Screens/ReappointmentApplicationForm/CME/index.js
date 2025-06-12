@@ -219,10 +219,12 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
         }
     }
 
-    const getIsSaveInProgressOpen = (value) => {
-        handleContinue("save");
-        setIsSaveInProgressOpen(value);
-    }
+    const getIsSaveInProgressOpen = async (value) => {
+        if (value) {
+          await handleContinue("save"); 
+          setIsSaveInProgressOpen(value);
+        }
+      };
 
     const getIsOpenFileWithFields = (value) => {
         setShowFileWithFields(value);
@@ -433,7 +435,9 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
             .then(response => {
                 console.log(response)
                 SuccessToaster("Application Updated Successfully");
-                getPreApplication()
+                if (actionType !== "save") {
+                    getPreApplication(); // only fetch data again if not "save"
+                  }
             })
             .catch((error) => {
                 console.log(error)
