@@ -613,7 +613,7 @@ const Navbar = () => {
               </div>
             )
           } */}
-          {/* <div>
+          <div>
             <div
               className={`${style.menuStyle} ${(window.location.pathname.includes("/reports") ||
                 window.location.pathname.includes("/reportTypeOverview") ||
@@ -756,7 +756,7 @@ const Navbar = () => {
                 </div>
               </Popover>
             </div>
-          </div> */}
+          </div>
           {/* )} */}
 
           {isEntityLevelAdmin && (
