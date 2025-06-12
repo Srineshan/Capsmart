@@ -2,8 +2,9 @@ import React, { useState, useEffect, forwardRef } from 'react';
 import { GET, POST, PUT } from '../../Screens/dataSaver';
 import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
 import ApplicationHeader from "../../Components/ApplicationHeader";
+import OverrideRequestDialog from "../../Components/OverrideRequestDialog";
 import { useNavigate } from "react-router-dom";
-import { format } from "date-fns";
+import { format,differenceInDays  } from "date-fns";
 import CircularProgress from "@mui/material/CircularProgress";
 import TableTwo from "../../Components/TableDesignTwo";
 import style from './index.module.scss';
@@ -17,6 +18,7 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import { formatFirstNameLastName } from "../../utils/formatting";
 import CommonSearchField from '../../Components/CommonFields/CommonSearchField';
 import { Tooltip } from '@mui/material';
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 
 
 const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
@@ -46,6 +48,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
   const [searchTermForTable, setSearchTermForTable] = useState('');
   const [searchCount, setSearchount] = useState(0);
   const [limit, setLimit] = useState(9999);
+  const [showOverRideRequestDialog, setShowOverRideRequestDialog] = useState(false);
   const [applicationCreationType, setApplicationCreationType] = useState(sessionStorage.getItem('applicationCreationType'))
   const selectedDepartmentName = departmentList?.find(data => data?.id === selectedDepartment)?.departmentName?.name;
   const selectedApplicantName = applicantType?.find(data => data?.id === selectedApplicantType)?.applicantType;
@@ -59,7 +62,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
     "DECLINED": "Declined"
   }
 
-  console.log("selectedReappointmentSubStatus", selectedReappointmentStatus)
+  // console.log("selectedReappointmentSubStatus", selectedReappointmentStatus)
   const transformedOptions = departmentList?.flatMap((department) => {
     const departmentEntry = {
       value: department?.id,
@@ -150,9 +153,14 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
     // console.log("Idschecked" + checkedIds)
   };
 
-  console.log("Idscheckedsssssssssss" + checkedIds)
+  // console.log("Idscheckedsssssssssss" + checkedIds)
 
-  const headerValues = [
+     const getOverRideRequestDialog = (id) => () => {
+      setShowOverRideRequestDialog(true);
+      sessionStorage.setItem("applicationId", id);
+      };
+
+  const headerValues = applicationCreationType === "REAPPOINTMENT" ? [
     <CommonCheckBox
       size="medium"
       checked={checkedIds?.length === tableData?.length}
@@ -170,8 +178,27 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
     // "Reminder Status",
     // "Application Status",
     "Action"
-  ];
-  const colSortValues = [false, false, true, false, true, true, true, true, false, false];
+  ] : [
+    <CommonCheckBox
+      size="medium"
+      checked={checkedIds?.length === tableData?.length}
+      onChange={handleSelectAllClick}
+      className={style.padding0}
+    />,
+    "No.",
+    `${applicationCreationType === "LOCUM" ? "Staff Name" : "Staff Name"}`,
+    "Email",
+    `${applicationCreationType === "LOCUM" ? "Staff Type" : "Staff Type"}`,
+    "Department",
+    "Status",
+    "Expiry Date",
+    "Last Sent",
+    // "Reminder Status",
+    // "Application Status",
+    "",
+    ""
+  ]
+  const colSortValues = applicationCreationType === "REAPPOINTMENT" ? [false, false, true, false, true, true, true, true, false, false] : [false, false, true, false, true, true, true, true, false, false];
 
   // Rest of the methods remain the same as in your original code...
   const handleCloseClick = () => {
@@ -426,8 +453,10 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
   let dotTooltipValues = [];
   let remindTooltipCount = [];
   let No = [];
+  let expiryDate = [];
+  let overRideIcon = [];
 
-  const getTableValues = () => {
+  const getTableValues = applicationCreationType === "REAPPOINTMENT" ? () => {
     checkbox = [];
     applicantName = [];
     applicantId = [];
@@ -563,8 +592,191 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
       // { type: "text", value: ReminderCount },
       // { type: "text", value: applicationStatusList },
       { type: "icon", icon: actionList },
+    ]
+  } : () => {
+    checkbox = [];
+    applicantName = [];
+    applicantId = [];
+    applicantTypeName = [];
+    department = [];
+    reappointment = [];
+    Percentage = [];
+    DateSend = [];
+    ReminderCount = [];
+    applicationStatusList = [];
+    actionList = [];
+    emailList = [];
+    applicantNumber = [];
+    dotTooltipValues = [];
+    remindTooltipCount = [];
+    No = [];
+    expiryDate = [];
+    overRideIcon = [];
+
+    tableData?.forEach((data, index) => {
+      // Checkbox with individual checked state
+      
+      const expiryDateOnGoingApplication = data?.onGoingApplication?.expiryDate;
+      const overrideStatus = data?.onGoingApplication?.overrideStatus;
+      const daysFromExpiry  = expiryDateOnGoingApplication
+      ? differenceInDays(new Date(expiryDateOnGoingApplication),new Date())
+      : null;
+      const isOverrideEnabled =
+      overrideStatus === "NA" && daysFromExpiry !== null && (daysFromExpiry) <= 14;
+      console.log("daysFromExpiry",daysFromExpiry)
+      checkbox.push(
+        <CommonCheckBox
+          checked={checkedIds.includes(data.id)}
+          onChange={() => handleCheckboxClick(data.id)}
+          color="primary"
+          inputProps={{ 'aria-label': `Select ${data.name}` }}
+          className={style.padding0}
+        />
+      );
+      No.push(index + 1 + ".");
+      <Tooltip title={`${data?.applicant?.name?.firstName}`} arrow>
+        {applicantName.push(
+          `${formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName)}` || " "
+        )}
+      </Tooltip>
+      applicantNumber.push([data?.applicant?.mobileNumber ? data?.applicant?.mobileNumber : "-"]);
+      // applicantId.push(`${data?.staffId}` || "123");
+      applicantTypeName.push(`${data?.basicDetailReferences?.applicantType?.serviceProviderType}` || "Dentist");
+      emailList.push(data?.applicant?.email?.officialEmail)
+      department.push(`${data?.basicDetailReferences?.department?.name}` || "Surgery");
+      reappointment.push(
+        // <>
+        //   {data?.reAppointmentInitiated !== undefined && (
+        //     data.reAppointmentInitiated ? (
+        //       <span>Sent</span>
+        //     ) : (
+        //       <span>Not Sent</span>
+        //     )
+        //   )}
+        // </>
+        `${data?.reappointmentStatus === "SENT" ? 'Sent' : data?.reappointmentStatus === "NOT_SENT" ? 'Not Sent' : data?.reappointmentStatus === "RE_SENT" ? 'Reminder Sent' : data?.reappointmentStatus}`
+      );
+      applicationStatusList.push(availableApplicationStatus[data?.onGoingApplication?.status])
+      actionList.push(
+        // <CommonCheckBox
+        //   checked={checkedIds.includes(data.id)}
+        //   onChange={() => handleCheckboxClick(data.id)}
+        //   color="primary"
+        //   inputProps={{ 'aria-label': `Select ${data.name}` }}
+        // />
+        (data?.reappointmentStatus === "SENT" || data?.reappointmentStatus === "RE_SENT") ?
+          <div className={`${style.justifyCenter} ${style.marginTop10}`} onClick={() => handleResend(data.id)}> <Tooltip arrow title={data?.onGoingApplication?.subStatus === 'STARTED' ? "Click to Send Remind Email" : "Click to Resend Email"}><img src={Resend} alt="" className={style.resentIcon} /></Tooltip></div> :
+          <div className={`${style.justifyCenter} ${style.disabled} ${style.marginTop10}`}> <Tooltip arrow title="Not Sent"><img src={ResendDisabled} alt="" className={style.resentIcon} /></Tooltip></div>
+      );
+      // Percentage.push(
+      //   data?.onGoingApplication?.completionPercentage === 0
+      //     ? "-"
+      //     : `${data?.onGoingApplication?.completionPercentage + "%"}`
+      // );
+
+      if (data?.onGoingApplication?.expiryDate && new Date(data?.onGoingApplication?.expiryDate) < new Date()) {
+        Percentage.push('red');
+        dotTooltipValues.push(`${data?.onGoingApplication?.completionPercentage}% Past Due`);
+      } else {
+        const completionPercentage = data?.onGoingApplication?.completionPercentage;
+
+        if (completionPercentage === 0) {
+          Percentage.push('red');
+        } else if (completionPercentage === 100) {
+          Percentage.push('darkgreen');
+        } else {
+          Percentage.push('yellow');
+        }
+
+        dotTooltipValues.push(`${completionPercentage}%`);
+      }
+
+      const reminderCount = data?.onGoingApplication?.reminderLog?.submissionReminders?.length || 0;
+      const reminderText = reminderCount === 0 ? "No Reminder Sent" : `${reminderCount} Reminder${reminderCount === 1 ? "" : "s"} Sent`;
+
+      const reminderDates =
+        reminderCount > 0
+          ? data?.onGoingApplication?.reminderLog?.submissionReminders?.map(reminder => (
+            <div key={reminder?.date}>{format(new Date(reminder?.date), 'MMM dd yyyy')}</div>
+          ))
+          : null;
+
+      const remindTooltipValue = reminderCount >= 0 ? (
+        <div>
+          <div>{reminderText}</div>
+          <div>{reminderDates}</div>
+        </div>
+      ) : null;
+
+
+      remindTooltipCount.push(remindTooltipValue);
+     expiryDate.push(
+        data?.onGoingApplication?.expiryDate
+          ? format(new Date(data?.onGoingApplication?.expiryDate), "MMM dd, yyyy")
+          : "-"
+      );
+      DateSend.push(
+        format(new Date(data?.reAppointmentSentDate), "MMM dd, yyyy")
+      );
+      overRideIcon.push(
+      <Tooltip
+        title={
+          isOverrideEnabled
+            ? "Click to override"
+              : "OverRide Not Possible"
+        }
+        arrow
+      >
+        <EditOutlinedIcon
+          onClick={
+            isOverrideEnabled
+              ? () => getOverRideRequestDialog(data?.onGoingApplication?.id)
+              : undefined
+          }
+          style={{
+            color: '#06617A',
+            height: '20px',
+            width: '20px',
+            cursor: isOverrideEnabled ? 'pointer' : 'not-allowed',
+            opacity: isOverrideEnabled ? 1 : 0.5,
+          }}
+        />
+      </Tooltip>
+    );
+    });
+
+    return [
+      { type: "checkbox", value: checkbox },
+      { type: "text", value: No },
+      // { type: "text", 
+      //   value: applicantName, 
+      //   hoverText: applicantNumber, 
+      //   isShowHoverText: true
+      // },
+      {
+        type: "text",
+        value: applicantName,
+        // ...(applicantNumber !== "" ? { tooltipValueText: applicantNumber } : {}),
+        tooltipValueText: applicantNumber,
+        // isShowHoverText: applicantNumber !== "" && applicantNumber !== undefined && applicantNumber !== null
+      },
+      // { type: "text", value: applicantId },
+      { type: "text", value: emailList },
+      { type: "text", value: applicantTypeName },
+      { type: "text", value: department },
+      { type: "text", value: reappointment },
+      // { type: "dot", value: Percentage, tooltipValue: dotTooltipValues },
+      { type: "text", value: expiryDate},
+      { type: "text", value: DateSend, tooltipValueText: remindTooltipCount },
+      // { type: "text", value: ReminderCount },
+      // { type: "text", value: applicationStatusList },
+      { type: "icon", icon: actionList },
+      { type: "icon", icon: overRideIcon },
     ];
-  };
+  }
+
+
+  let gridStyle = applicationCreationType === "REAPPOINTMENT" ? style.permanentStaffGrid : style.locumStaffGrid
 
   const isDataAvailable = tableData?.length > 0;
 
@@ -867,7 +1079,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
                 tableHeaderValues={headerValues}
                 tableDataValues={getTableValues()}
                 tableData={tableData}
-                gridStyle={style.permanentStaffGrid}
+                gridStyle={gridStyle}
                 scrollStyle={style.scrollStyle}
                 tableSortValues={colSortValues}
                 heading={"There are no records to display"}
@@ -928,6 +1140,11 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
           </div>
         </div>
       </div>
+       {
+        showOverRideRequestDialog && (
+            <OverrideRequestDialog isLoading={isLoading} getIsOpen={setShowOverRideRequestDialog} />
+        )
+    }
     </div>
   )
 })

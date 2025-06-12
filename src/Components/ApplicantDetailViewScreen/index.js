@@ -183,7 +183,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
   // };
 
     useEffect(() => {
-    if (currentDocumentCount > 0) {
+    if (renewedDocumentRequired?.documentsExpiringSoon?.length > 0 || expireDocumentCount > 0 ) {
       setExpandStates(prev => ({
         ...prev,
         section1: true,
@@ -255,6 +255,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
     action = [];
     lastUpdateDate = [];
     status = [];
+    allDocumentDetails = [];
     if (selectedDocsFilter === "allDocuments") {
         allDocumentDetails = documentDetails?.allDocuments || [];
       } else if (selectedDocsFilter === "documentsExpiringSoon") {
@@ -272,7 +273,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
         : null;
       status.push(
         data?.hasExpiry === false ? (
-          <WarningOutlinedIcon style={{ fontSize: 20, color: "#FFD700" }} />
+          <WarningOutlinedIcon style={{ fontSize: 20, color: "#737575" }} />
         ) : data?.hasExpiry === true ? (
           <WarningOutlinedIcon style={{ fontSize: 20, color: "#ED2939" }} />
         ) : null
@@ -761,7 +762,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
                       Document Vault
                       <span className={`${style.marginLeft10} ${style.documentSubHeadingStyle}`}>
                         Only includes documents that have been verified by the MSO.
-                        {currentDocumentCount === 0 && (
+                        {(currentDocumentCount > 1 && expireDocumentCount < 1 && renewedDocumentRequired?.documentsExpiringSoon?.length < 1) && (
                           <strong className={style.greenTextStyle}> (All documents are up to date.)</strong>
                         )}
                       </span>
@@ -922,7 +923,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
                 <div className={`${style.cardLeftStyle} ${style.padding30}`}>
                   <div className={`${style.spaceBetween} ${style.alignItemCenter}`}>
                     <div className={`${style.documentTextStyle}`}>
-                      <img src={MDManager} alt="img" className={style.LogoIcon} /> <span>Medical Directives {(reviewMDCount < 1 && pastDueMDCount < 1) && (<strong className={style.greenTextStyle}> - All Medical Directives are Attested </strong> )}</span>
+                      <img src={MDManager} alt="img" className={style.LogoIcon} /> <span>Medical Directives {(attestedMDCount > 1 && reviewMDCount < 1 && pastDueMDCount < 1) && (<strong className={style.greenTextStyle}> - All Medical Directives are Attested </strong> )}</span>
                     </div>
                     <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
                       <div
