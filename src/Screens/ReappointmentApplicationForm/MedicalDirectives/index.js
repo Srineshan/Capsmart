@@ -156,10 +156,12 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
         }
     }
 
-    const getIsSaveInProgressOpen = (value) => {
-        handleContinue("save");
-        setIsSaveInProgressOpen(value);
-    }
+    const getIsSaveInProgressOpen = async (value) => {
+        if (value) {
+            await handleContinue("save");
+            setIsSaveInProgressOpen(value);
+        }
+    };
 
     const getFormSchema = async () => {
         if (basicForm?.forms?.[formIndex]?.schemaId !== undefined) {
@@ -335,9 +337,9 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
         await PUT(`application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
             .then(response => {
                 console.log(response)
-                getPreApplication()
                 SuccessToaster("Application Updated Successfully");
                 if (data !== "save") {
+                    getPreApplication();
                 if (sessionStorage.getItem('fromSummary') === "true") {
                     sessionStorage.removeItem('fromSummary')
                     navigate(-1);
