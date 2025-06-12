@@ -38,6 +38,7 @@ import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
 import LoadingScreen from "../../Components/LoadingScreen";
 import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined';
+import PeopleOutlinedIcon from '@mui/icons-material/PeopleOutlined';
 
 const LocumStaffList = ({
   isLoading,
@@ -51,6 +52,7 @@ const LocumStaffList = ({
   getLocumExtensiveRequestDialog,
   getLocumRequestDialog,
   getNotesDialog,
+  getSummaryDialog,
   showLocumExtensiveDialog,
   showLocumRequestDialog,
   showLocumExtensiveRequestDialog
@@ -79,8 +81,8 @@ const LocumStaffList = ({
 
   const [tableData, setTableData] = useState([]);
   const [rejectionListData, setRejectionListData] = useState([]);
-  const [sortField, setSortField] = useState("DEFAULT");
-  const [sortValue, setSortValue] = useState("DESCENDING");
+  const [sortField, setSortField] = useState('TENURE_END_DATE');
+  const [sortValue, setSortValue] = useState("ASCENDING");
   const userDetailsFetchOption = (sessionStorage.getItem('user') !== "undefined" && sessionStorage.getItem('user')) ? JSON.parse(sessionStorage.getItem('user')) : {};
   const [searchTerm, setSearchTerm] = useState('');
   const [searchData, setSearchData] = useState([]);
@@ -98,16 +100,16 @@ const LocumStaffList = ({
   // let userDepartmentList;
   let userSpecialty;
 
-  const activeLocumHeaderValues = ["Locum Staff", "", "Locum Type", "Department", "Docs", "Start Date", "Expiry Date", "Days to Expiration", "Action"];
-  const expiredLocumHeaderValues = ["Locum Staff", "", "Locum Type", "Department", "Docs", "Last End Date", "Days Since Expired", "Action"];
-  const requestLocumHeaderValues = ["Locum Staff", "", "Staff Status", "Locum Type", "Department", "Request By", "Expiry Date", "Days to Expiration", ""];
-  const tempPrivilegedLocumHeaderValues = ["Locum Staff", "", "Locum Type", "Department", "Docs", "Start Date", "Expiry Date"];
+  const activeLocumHeaderValues = ["Staff Name", "", "Staff Type", "Department", "Docs", "Start Date", "Expiry Date", "Days to Expiration", "Action"];
+  const expiredLocumHeaderValues = ["Staff Name", "", "Staff Type", "Department", "Docs", "Last End Date", "Days Since Expired", "Action"];
+  const requestLocumHeaderValues = ["Staff Name", "", "Staff Status", "Staff Type", "Department", "Request By", "Expiry Date", "Days to Expiration", ""];
+  const tempPrivilegedLocumHeaderValues = ["Staff Name", "", "Staff Type", "Department", "Start Date", "Expiry Date","Override Date","Override By"];
 
 
   const activeLocumColSortValues = [true, false, true, true, false, true, true, true, false];
   const expiredLocumColSortValues = [true, false, true, true, false, true, true, false];
   const requestLocumColSortValues = [false, false, false, false, false, false, true, true, false];
-  const tempPrivilegedLocumColSortValues = [true, false, true, true, false, true, true];
+  const tempPrivilegedLocumColSortValues = [true, false, true, true, true, true, false, false];
 
   const [isPrintClicked, setIsPrintClicked] = useState(false);
   const [isExpanded, setIsExpanded] = useState(true);
@@ -200,9 +202,9 @@ const LocumStaffList = ({
     getRejectionCounts();
   }, [applicationType]);
 
-  useEffect(() => {
-    setSortField("DEFAULT");
-  }, [selectedTab]);
+  // useEffect(() => {
+  //   setSortField("DEFAULT");
+  // }, [selectedTab]);
 
   useEffect(() => {
     getActiveUserData();
@@ -230,6 +232,10 @@ const LocumStaffList = ({
   const onClickRequestLocumDialog = (data) => {
     getLocumRequestDialog(true);
     sessionStorage.setItem("applicationId", data?.id);
+  };
+
+  const onClickSummaryDialog = (data) => {
+    getSummaryDialog(true);
   };
 
   const onClickExtensiveRequestLocumDialog = (data) => {
@@ -559,6 +565,8 @@ const LocumStaffList = ({
   let WarningText = [];
   let applicantDept = [];
   let deptSpecialty = [];
+  let overRideDate = [];
+  let overRideBy = [];
 
   const getLocumActiveValues = () => {
     dot = [];
@@ -602,6 +610,8 @@ const LocumStaffList = ({
       console.log(data, 'dataCheck', `${startDateFormat ? format(new Date(startDateFormat), "MMM dd, yyyy") : "-"} - ${endDateFormat ? format(new Date(endDateFormat), "MMM dd, yyyy") : ''}`)
 
       const expiredDays = differenceInDays(new Date(data?.tenure?.to), new Date());
+      let reappointValue = "";
+      let sentOutStatus = "";
       // applicantName.push(
       //   `${formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName)}` || " "
       // );
@@ -627,7 +637,7 @@ const LocumStaffList = ({
           <div>
             Days to Expiration - <strong>{expiredDays.toString()}</strong>
           </div>
-          <div>
+          <div className={style.customStyle}>
             Click To View Details
           </div>
         </div>
@@ -640,7 +650,7 @@ const LocumStaffList = ({
         data?.basicDetailReferences?.specialty?.name ?? "-"
       );
       // if (workModeType === "Staff Manager") {
-      if (data?.extensionRequested === true) {
+      if (data?.extensionRequestStatus === "REQUESTED") {
         if (data?.reAppointmentInitiated === false && expiredDays < 2) {
           iconStatus.push(
             <img src={RequestSendApplicationDelay} alt="RequestSendApplicationDelay Icon" style={{ width: 20, height: 20 }} />
@@ -672,12 +682,9 @@ const LocumStaffList = ({
 
       }
 
-      //  if (workModeType === "Staff Manager") {
-      if (data?.extensionRequested === true) {
+      if (data?.extensionRequestStatus === "REQUESTED") {
         if (data?.reAppointmentInitiated === false && expiredDays < 2) {
-          reappointDate.push(
-            ["Extension Request Not Acted Upon By Dept Head"]
-          );
+          sentOutStatus = "Extension Request Not Acted Upon By Dept Head";
         } else if (data?.reAppointmentInitiated === false) {
           const requests = data?.requests;
           if (requests && requests?.length > 0) {
@@ -686,14 +693,15 @@ const LocumStaffList = ({
             const createdDate = lastRequest?.createdDate
               ? format(new Date(lastRequest?.createdDate), "MMM dd, yyyy hh:mm a")
               : "-";
-            reappointDate.push([`Extension Request Sent By Staff Manager To ${role} On ${createdDate}`]);
+           sentOutStatus = `Extension Request Sent By Staff Manager To ${role} On ${createdDate}`;
           } else {
-            reappointDate.push(["Locum Extension Request Sent"]);
+           sentOutStatus = "Locum Extension Request Sent";
           }
         } else if (data?.reAppointmentInitiated === true) {
-          reappointDate.push(
-            [`Extension Application Sent By Dept Head on ${format(new Date(data?.reAppointmentSentDate), 'MMM dd, yyyy')}`]
-          );
+         sentOutStatus = `Extension Application Sent By Dept Head on ${format(
+            new Date(data?.reAppointmentSentDate),
+            "MMM dd, yyyy"
+          )}`;
         }
       }
       //    else {
@@ -702,15 +710,35 @@ const LocumStaffList = ({
       // } 
       else {
         if (data?.reAppointmentInitiated === true) {
-          reappointDate.push(
-            [`Extension Application Sent By Dept Head on ${format(new Date(data?.reAppointmentSentDate), 'MMM dd, yyyy')}`]
-          );
+          sentOutStatus = `Extension Application Sent By Dept Head on ${format(
+            new Date(data?.reAppointmentSentDate),
+            "MMM dd, yyyy"
+          )}`;
         } else if (expiredDays <= 30) {
-          reappointDate.push(["Extension Application Not Yet Sent By Dept Head"]);
+          sentOutStatus = "Extension Application Not Yet Sent By Dept Head";
         } else {
-          reappointDate.push("")
+          sentOutStatus = "";
         }
       }
+      // reappointDate.push([sentOutStatus]);
+
+      if (Array.isArray(data?.onGoingApplication?.completedWorkflows) && data?.onGoingApplication?.completedWorkflows?.length > 0) {
+        let lastApproval = data?.onGoingApplication?.completedWorkflows
+          .filter(item => item?.approvalType !== null)
+          .pop();
+
+        if (lastApproval) {
+          const formattedApprovalType = lastApproval?.approvalType.replace(/_/g, " ").split(" ").map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(" ");
+           reappointValue = `${lastApproval?.role}, ${formattedApprovalType}`;
+        } else {
+            reappointValue = "MSO Verification Not Started";
+        }
+      } else {
+         reappointValue = "Application Not Submitted";
+      }
+
+      // reappointDate.push([reappointValue]);
+      reappointDate.push([sentOutStatus, reappointValue]);
 
       //   if (workModeType === "Staff Manager") {
       //  reappointDate.push([
@@ -787,7 +815,7 @@ const LocumStaffList = ({
         WarningIcon.push(
           <WarningAmberOutlinedIcon style={{ fontSize: 20, color: '#FF6562' }} />
         );
-      } else if (expiredDays >= 7 && expiredDays <= 14) {
+      } else if (expiredDays >= 7 && expiredDays <= 30) {
         WarningIcon.push(
           <WarningAmberOutlinedIcon style={{ fontSize: 20, color: '#EBB433' }} />
         );
@@ -799,11 +827,11 @@ const LocumStaffList = ({
         WarningText.push(
           ["This Locum Staff Will Expire In Less Than 7 Days"]
         );
-      } else if (expiredDays >= 7 && expiredDays <= 14) {
+      } else if (expiredDays >= 7 && expiredDays <= 30) {
         WarningText.push(
-          ["This Locum Staff Will Expire In Less Than 14 Days"]
+          ["This Locum Staff Will Expire In Less Than 30 Days"]
         );
-      } else if (expiredDays > 14) {
+      } else if (expiredDays > 30) {
         WarningText.push([""]);
       }
 
@@ -853,7 +881,7 @@ const LocumStaffList = ({
         // isShowHoverText: true,
       },
       {
-        type: "iconWithCount",
+        type: "iconWithNumberCount",
         value: ExpiredDays,
         icon: WarningIcon,
         hoverText: WarningText,
@@ -899,6 +927,8 @@ const LocumStaffList = ({
       const endDateFormat = data?.tenure?.to
         ? new Date(data?.tenure?.to).toISOString().split('T')[0] + 'T00:00'
         : null;
+      let reappointValue = "";
+      let sentOutStatus = "";
       dot.push(
         data?.status === "REVIEW_INPROGRESS"
           ? "yellow"
@@ -928,7 +958,7 @@ const LocumStaffList = ({
               Current Period Renewal Applied For - <strong>{`${format(new Date(data?.onGoingApplication?.cyclePeriod?.from), 'MMM dd, yyyy')} - ${format(new Date(data?.onGoingApplication?.cyclePeriod?.to), 'MMM dd, yyyy')}`}</strong>
             </div>
           )}
-          <div>
+          <div className={style.customStyle}>
             Click To View Details
           </div>
         </div>
@@ -944,7 +974,7 @@ const LocumStaffList = ({
       );
       // applicantId.push(data?.displayId);
       // if (workModeType === "Staff Manager") {
-      if (data?.extensionRequested === true) {
+      if (data?.extensionRequestStatus === "REQUESTED") {
         if (data?.reAppointmentInitiated === false) {
           iconStatus.push(
             <img src={RequestSend} alt="RequestSend Icon" style={{ width: 20, height: 20 }} />
@@ -970,7 +1000,7 @@ const LocumStaffList = ({
       }
 
       //  if (workModeType === "Staff Manager") {
-      if (data?.extensionRequested === true) {
+      if (data?.extensionRequestStatus === "REQUESTED") {
         if (data?.reAppointmentInitiated === false) {
           const requests = data?.requests;
           if (requests && requests?.length > 0) {
@@ -979,14 +1009,17 @@ const LocumStaffList = ({
             const createdDate = lastRequest?.createdDate
               ? format(new Date(lastRequest?.createdDate), "MMM dd, yyyy hh:mm a")
               : "-";
-            reappointDate.push([`Locum Renewal Request Sent To ${role} On ${createdDate}`]);
+            // reappointDate.push([`Locum Renewal Request Sent To ${role} On ${createdDate}`]);
+            sentOutStatus = `Locum Renewal Request Sent To ${role} On ${createdDate}`
           } else {
-            reappointDate.push(["Locum Renewal Request Sent"]);
+            // reappointDate.push(["Locum Renewal Request Sent"]);
+            sentOutStatus = "Locum Renewal Request Sent"
           }
         } else if (data?.reAppointmentInitiated === true) {
-          reappointDate.push(
-            [`Renewal Application Sent By Dept Head on ${format(new Date(data?.reAppointmentSentDate), 'MMM dd, yyyy')}`]
-          );
+          // reappointDate.push(
+          //   [`Renewal Application Sent By Dept Head on ${format(new Date(data?.reAppointmentSentDate), 'MMM dd, yyyy')}`]
+          // );
+          sentOutStatus = `Renewal Application Sent By Dept Head on ${format(new Date(data?.reAppointmentSentDate), 'MMM dd, yyyy')}`
         }
       }
       //    else {
@@ -995,13 +1028,32 @@ const LocumStaffList = ({
       // }
       else {
         if (data?.reAppointmentInitiated === true) {
-          reappointDate.push(
-            [`Renewal Application Sent By Dept Head on ${format(new Date(data?.reAppointmentSentDate), 'MMM dd, yyyy')}`]
-          );
+          // reappointDate.push(
+          //   [`Renewal Application Sent By Dept Head on ${format(new Date(data?.reAppointmentSentDate), 'MMM dd, yyyy')}`]
+          // );
+          sentOutStatus = `Renewal Application Sent By Dept Head on ${format(new Date(data?.reAppointmentSentDate), 'MMM dd, yyyy')}`
         } else {
-          reappointDate.push(["Extension Application Not Yet Sent By Dept Head"]);
+          // reappointDate.push(["Extension Application Not Yet Sent By Dept Head"]);
+          sentOutStatus = "Extension Application Not Yet Sent By Dept Head"
         }
       }
+
+      if (Array.isArray(data?.onGoingApplication?.completedWorkflows) && data?.onGoingApplication?.completedWorkflows?.length > 0) {
+        let lastApproval = data?.onGoingApplication?.completedWorkflows
+          .filter(item => item?.approvalType !== null)
+          .pop();
+
+        if (lastApproval) {
+          const formattedApprovalType = lastApproval?.approvalType.replace(/_/g, " ").split(" ").map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(" ");
+           reappointValue = `${lastApproval?.role}, ${formattedApprovalType}`;
+        } else {
+            reappointValue = "MSO Verification Not Started";
+        }
+      } else {
+         reappointValue = "Application Not Submitted";
+      }
+
+     reappointDate.push([sentOutStatus, reappointValue]);
       applicantId.push(data?.staffId || "123");
       notes.push("0");
       notesIcon.push(
@@ -1085,7 +1137,7 @@ const LocumStaffList = ({
         value: endDate,
       },
       {
-        type: "iconWithCount",
+        type: "iconWithNumberCount",
         value: ExpiredDays,
       },
       { type: "action", value: action },
@@ -1123,6 +1175,8 @@ const LocumStaffList = ({
     WarningText = [];
     applicantDept = [];
     deptSpecialty = [];
+    overRideDate = [];
+    overRideBy = [];
 
     tableData?.map((data) => {
       const startDateFormat = data?.tenure?.from
@@ -1131,9 +1185,14 @@ const LocumStaffList = ({
       const endDateFormat = data?.tenure?.to
         ? new Date(data?.tenure?.to).toISOString().split('T')[0] + 'T00:00'
         : null;
+      let reappointValue = "";
+      let sentOutStatus = "";
       console.log(data, 'dataCheck', `${startDateFormat ? format(new Date(startDateFormat), "MMM dd, yyyy") : "-"} - ${endDateFormat ? format(new Date(endDateFormat), "MMM dd, yyyy") : ''}`)
 
       const expiredDays = differenceInDays(new Date(data?.tenure?.to), new Date());
+       let overRideApprovedDate = "-";
+       let overRideApprovedBy = "-";
+       const OnGoingApplicationId = data?.onGoingApplication?.id
       // applicantName.push(
       //   `${formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName)}` || " "
       // );
@@ -1159,7 +1218,7 @@ const LocumStaffList = ({
           <div>
             Days to Expiration - <strong>{expiredDays.toString()}</strong>
           </div>
-          <div>
+          <div className={style.customStyle}>
             Click To View Details
           </div>
         </div>
@@ -1172,7 +1231,7 @@ const LocumStaffList = ({
         data?.basicDetailReferences?.specialty?.name ?? "-"
       );
       // if (workModeType === "Staff Manager") {
-      if (data?.extensionRequested === true) {
+      if (data?.extensionRequestStatus === "REQUESTED") {
         if (data?.reAppointmentInitiated === false && expiredDays < 2) {
           iconStatus.push(
             <img src={RequestSendApplicationDelay} alt="RequestSendApplicationDelay Icon" style={{ width: 20, height: 20 }} />
@@ -1202,11 +1261,12 @@ const LocumStaffList = ({
       }
 
       //  if (workModeType === "Staff Manager") {
-      if (data?.extensionRequested === true) {
+      if (data?.extensionRequestStatus === "REQUESTED") {
         if (data?.reAppointmentInitiated === false && expiredDays < 2) {
-          reappointDate.push(
-            ["Extension Request Not Acted Upon By Dept Head"]
-          );
+          // reappointDate.push(
+          //   ["Extension Request Not Acted Upon By Dept Head"]
+          // );
+          sentOutStatus = "Extension Request Not Acted Upon By Dept Head"
         } else if (data?.reAppointmentInitiated === false) {
           const requests = data?.requests;
           if (requests && requests?.length > 0) {
@@ -1215,14 +1275,17 @@ const LocumStaffList = ({
             const createdDate = lastRequest?.createdDate
               ? format(new Date(lastRequest?.createdDate), "MMM dd, yyyy hh:mm a")
               : "-";
-            reappointDate.push([`Extension Request Sent By Staff Manager To ${role} On ${createdDate}`]);
+            // reappointDate.push([`Extension Request Sent By Staff Manager To ${role} On ${createdDate}`]);
+            sentOutStatus = `Extension Request Sent By Staff Manager To ${role} On ${createdDate}`
           } else {
-            reappointDate.push(["Locum Extension Request Sent"]);
+            // reappointDate.push(["Locum Extension Request Sent"]);
+            sentOutStatus = "Locum Extension Request Sent"
           }
         } else if (data?.reAppointmentInitiated === true) {
-          reappointDate.push(
-            [`Extension Application Sent By Dept Head on ${format(new Date(data?.reAppointmentSentDate), 'MMM dd, yyyy')}`]
-          );
+          // reappointDate.push(
+          //   [`Extension Application Sent By Dept Head on ${format(new Date(data?.reAppointmentSentDate), 'MMM dd, yyyy')}`]
+          // );
+          sentOutStatus = `Extension Application Sent By Dept Head on ${format(new Date(data?.reAppointmentSentDate), 'MMM dd, yyyy')}`
         }
       }
       //    else {
@@ -1231,14 +1294,32 @@ const LocumStaffList = ({
       // } 
       else {
         if (data?.reAppointmentInitiated === true) {
-          reappointDate.push(
-            [`Extension Application Sent By Dept Head on ${format(new Date(data?.reAppointmentSentDate), 'MMM dd, yyyy')}`]
-          );
+          // reappointDate.push(
+          //   [`Extension Application Sent By Dept Head on ${format(new Date(data?.reAppointmentSentDate), 'MMM dd, yyyy')}`]
+          // );
+          sentOutStatus = `Extension Application Sent By Dept Head on ${format(new Date(data?.reAppointmentSentDate), 'MMM dd, yyyy')}`
         } else {
-          reappointDate.push("");
+          // reappointDate.push("");
+          sentOutStatus = "";
         }
       }
 
+      if (Array.isArray(data?.onGoingApplication?.completedWorkflows) && data?.onGoingApplication?.completedWorkflows?.length > 0) {
+        let lastApproval = data?.onGoingApplication?.completedWorkflows
+          .filter(item => item?.approvalType !== null)
+          .pop();
+
+        if (lastApproval) {
+          const formattedApprovalType = lastApproval?.approvalType.replace(/_/g, " ").split(" ").map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(" ");
+           reappointValue = `${lastApproval?.role}, ${formattedApprovalType}`;
+        } else {
+            reappointValue = "MSO Verification Not Started";
+        }
+      } else {
+         reappointValue = "Application Not Submitted";
+      }
+
+      reappointDate.push([sentOutStatus, reappointValue]);
       //   if (workModeType === "Staff Manager") {
       //  reappointDate.push([
       //     data?.extensionRequested
@@ -1333,6 +1414,24 @@ const LocumStaffList = ({
       } else if (expiredDays > 14) {
         WarningText.push([""]);
       }
+      data?.requests?.forEach(request => {
+        if (request?.id === OnGoingApplicationId && request?.requestType === "OVERRIDE_REQUEST") {
+          request?.requestLogs?.forEach(log => {
+            if (log?.actionType === "APPROVED" && log?.actionDate) {
+              overRideApprovedDate = format(new Date(log?.actionDate), "MMM dd, yyyy");
+              overRideApprovedBy = log?.actionBy?.name?.firstName
+            }
+          });
+        }
+      });
+      overRideDate.push(overRideApprovedDate);
+      overRideBy.push(overRideApprovedBy);
+      //  if (data?.requests?.requestType === "OVERRIDE_REQUEST") {
+      // data?.requests?.requestLogs?.forEach((log) => {
+      //   if (log?.actionType === "APPROVED") {
+      //     overRideDate.push(log?.actionDate);
+      //   }
+      // })};
       console.log("tabledata" + tableData);
     });
 
@@ -1356,13 +1455,13 @@ const LocumStaffList = ({
       //   // isShowHoverText: true,
       //   icon: notesIcon,
       // },
-      {
-        type: "iconWithCount",
-        value: docs,
-        hoverText: docsHoverText,
-        isShowHoverText: true,
-        icon: docsIcon,
-      },
+      // {
+      //   type: "iconWithCount",
+      //   value: docs,
+      //   hoverText: docsHoverText,
+      //   isShowHoverText: true,
+      //   icon: docsIcon,
+      // },
       {
         type: "iconWithCount",
         value: startDate,
@@ -1372,6 +1471,18 @@ const LocumStaffList = ({
       {
         type: "iconWithCount",
         value: endDate,
+        // hoverText: lastUpdatedBy,
+        // isShowHoverText: true,
+      },
+       {
+        type: "iconWithCount",
+        value: overRideDate,
+        // hoverText: lastUpdatedBy,
+        // isShowHoverText: true,
+      },
+      {
+        type: "iconWithCount",
+        value: overRideBy,
         // hoverText: lastUpdatedBy,
         // isShowHoverText: true,
       },
@@ -1563,7 +1674,7 @@ const LocumStaffList = ({
       data: "Request Extension",
       requiredValue: "boolean",
       onClick: onClickExtensiveRequestLocumDialog,
-      conditionToShow: `data?.extensionRequested === false && data?.reAppointmentInitiated === false && ((new Date(data?.tenure?.to) - new Date()) / (1000 * 60 * 60 * 24)) <= 30`,
+      conditionToShow: `data?.extensionRequestStatus === "NA" && data?.reAppointmentInitiated === false && ((new Date(data?.tenure?.to) - new Date()) / (1000 * 60 * 60 * 24)) <= 30`,
     },
     // {
     //   data: "Create Note",
@@ -1593,7 +1704,7 @@ const LocumStaffList = ({
       data: "Request Renew",
       requiredValue: "boolean",
       onClick: onClickExtensiveRequestLocumDialog,
-      conditionToShow: `data?.extensionRequested === false && data?.reAppointmentInitiated === false`,
+      conditionToShow: `data?.extensionRequestStatus === "NA" && data?.reAppointmentInitiated === false`,
     },
     // {
     //   data: "Send Reminder",
@@ -1825,6 +1936,13 @@ const LocumStaffList = ({
               totalRequestCount={totalRequestCount}
             />
           </div>
+         {/* <PeopleOutlinedIcon
+          sx={{
+            fontSize: 25,
+            color: "#06617A",
+          }}
+          onClick={() => onClickSummaryDialog()} // Pass `data` if needed
+        /> */}
 
           <div className={`${style.bigCardStyle}`}>
             {isLoading ? (

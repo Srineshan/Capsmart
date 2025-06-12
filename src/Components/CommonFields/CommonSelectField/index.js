@@ -12,6 +12,7 @@ const CommonSelectField = ({ value, onChange, className, firstOptionLabel, first
     const handleBlur = () => {
         setTouched(true);
     };
+    const alternateColors = ['#ffffff', '#f5f5f5']; // white and light gray
     const theme = createTheme({
         palette: {
             error: {
@@ -68,7 +69,7 @@ const CommonSelectField = ({ value, onChange, className, firstOptionLabel, first
                             {valueList?.map((data, index) => {
                             const isSelected = multiple && value?.includes(data);
                             const isDisabled = multiple && maxSelect && value?.length >= maxSelect && !isSelected;
-                            
+                            const bgColor = alternateColors[index % 2];
                             return (
                             <MenuItem
                                 key={index}

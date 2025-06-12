@@ -7,7 +7,7 @@ import jwt from 'jwt-decode';
 import style from "./index.module.scss";
 import TableTwo from "../TableDesignTwo";
 import CircularProgress from "@mui/material/CircularProgress";
-import { format, parse } from "date-fns";
+import { format, parse, isValid } from "date-fns";
 import { formatFirstNameLastName } from "../../utils/formatting";
 import LoadingScreen from "../LoadingScreen";
 import WorkModeSelect from "../SwitchWorkSpaceDialog";
@@ -655,6 +655,20 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
     ];
   };
 
+  const tryParseDate = (dateString) => {
+    const formats = ['MMM d, yyyy', 'dd/MM/yyyy'];
+
+    for (const format of formats) {
+      const parsedDate = parse(dateString, format, new Date());
+      if (isValid(parsedDate)) {
+        return { parsedDate, formatUsed: format };
+      }
+    }
+
+    return { parsedDate: null, formatUsed: null }; // Invalid date
+  };
+
+
   const getInnerTableValuesByMedicalDirecties = () => {
     const No = [];
     const dot = []
@@ -666,13 +680,14 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
     const actionItem = [];
 
     selectedMedicalDirectiveList?.allApplicants?.map((data, index) => {
+      const result = tryParseDate(data?.attestationLog?.esign?.signedDate);
       dot.push(data?.attestationLog ? "green" : 'red');
       dotTooltipValues.push(data?.attestationLog ? "Attested" : 'Not Attested')
       No.push(index + 1 + ".")
       applicantName.push(`${formatFirstNameLastName(data?.application?.applicant?.name?.firstName, data?.application?.applicant?.name?.lastName)}`);
       dept.push(`${data?.application?.basicDetailReferences?.department?.name} ${data?.application?.basicDetailReferences?.specialty?.name ? `- ${data?.application?.basicDetailReferences?.specialty?.name}` : ''}`)
       type.push(data?.application?.basicDetailReferences?.applicantType?.serviceProviderType)
-      attestationDate.push(data?.attestationLog?.esign?.signedDate ? format(parse(data?.attestationLog?.esign?.signedDate, 'dd/MM/yyyy', new Date()), 'MMM dd, yyyy') : '-');
+      attestationDate.push(data?.attestationLog?.esign?.signedDate ? result.parsedDate ? format(result.parsedDate, 'MMM dd, yyyy') : '-' : '-');
       actionItem.push(
         <div className={style.viewOrRtt} onClick={data?.attestationLog ? () => handleInnerSelectData(data) : () => { }}>{data?.attestationLog ? 'View' : 'Request'}</div>
       );
