@@ -902,7 +902,7 @@ const App = ({ props }) => {
     // const navigate = useNavigate();
     const fetchData = () => {
       console.log('login route', Auth())
-      const initialRoute = sessionStorage.getItem("initialRoute");
+      const initialRoute = localStorage.getItem("initialRoute");
       if (Auth()) {
         console.log('login route')
         let roles = jwt(Auth())?.roles?.split(",");
@@ -912,18 +912,18 @@ const App = ({ props }) => {
           // return(
           //   <WorkModeDialog getIsOpen={true} />
           // ) 
-          if (sessionStorage?.getItem('initialRoute') !== undefined && sessionStorage?.getItem('initialRoute') !== 'undefined' && sessionStorage?.getItem('initialRoute') !== null && sessionStorage?.getItem('initialRoute')?.includes('/applicationById/REAPPOINTMENT')) {
+          if (localStorage?.getItem('initialRoute') !== undefined && localStorage?.getItem('initialRoute') !== 'undefined' && localStorage?.getItem('initialRoute') !== null && localStorage?.getItem('initialRoute')?.includes('/applicationById/REAPPOINTMENT')) {
             sessionStorage.setItem("workModeType", roles[0]);
-            window.location.pathname = sessionStorage?.getItem('initialRoute');
+            window.location.pathname = localStorage?.getItem('initialRoute');
           } else {
             setShowDialog(true);
           }
         }
 
-        if (roles?.length === 1 && sessionStorage?.getItem('initialRoute') !== undefined && sessionStorage?.getItem('initialRoute') !== 'undefined' && sessionStorage?.getItem('initialRoute') !== null) {
+        if (roles?.length === 1 && localStorage?.getItem('initialRoute') !== undefined && localStorage?.getItem('initialRoute') !== 'undefined' && localStorage?.getItem('initialRoute') !== null) {
           sessionStorage.setItem("workModeType", roles[0]);
           window.location.href = `${initialRoute}`;
-          sessionStorage?.removeItem('initialRoute')
+          localStorage?.removeItem('initialRoute')
         }
         else if (roles?.length === 1) {
           sessionStorage.setItem("workModeType", roles[0]);
@@ -1008,7 +1008,7 @@ const App = ({ props }) => {
 
   const ProtectedRoute = ({ children }) => {
     if (!(cookie.get("authorization") !== undefined && cookie.get("authorization") !== 'undefined' && !isSessionTokenExpired(cookie.get("authorization")))) {
-      sessionStorage.setItem('initialRoute', window.location.pathname + (window.location.search ? window.location.search : ''))
+      localStorage.setItem('initialRoute', window.location.pathname + (window.location.search ? window.location.search : ''))
     }
     return (cookie.get("authorization") !== undefined && cookie.get("authorization") !== 'undefined' && !isSessionTokenExpired(cookie.get("authorization"))) ? children : <Navigate to="/loginPage" />;
   };
