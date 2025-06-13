@@ -4,6 +4,7 @@
     height: 100vh;
     width: 100vw;
     background-color: $secondarycolor;
+    padding: 0 80px;
 }
 
 .verticalAlignCenter {
@@ -24,6 +25,13 @@
 .heading {
     text-align: center;
     font: normal normal bold 38px/48px proxima-nova;
+    color: $primarycolor;
+    text-transform: capitalize;
+}
+
+.heading2 {
+    text-align: center;
+    font: normal normal bold 30px/48px proxima-nova;
     color: $primarycolor;
     text-transform: capitalize;
 }
