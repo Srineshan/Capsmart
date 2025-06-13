@@ -594,6 +594,7 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen, getActiveApplicationView, date
         return getApplicationMoveToNext(true);
       })
       .then(() => {
+        SuccessToaster('Sent for Review Successfully');
         console.log('Application successfully moved to next step.');
       })
       .catch((error) => {
