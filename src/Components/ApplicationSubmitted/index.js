@@ -20,14 +20,19 @@ const ApplicationSubmitted = () => {
         navigate('/')
     }
 
+    const handleRedirect = () => {
+        navigate('/tenant/64246d491b70b07241d37aa1/medicalDirectives')
+    }
+
     return (
         <div className={style.submittedCard}>
             <div className={`${style.verticalAlignCenter} ${style.justifyCenter}`}>
                 <div>
-                    <div className={style.heading}>Your Credentialing & Privileging Application is Submitted!</div>
+                    <div className={style.heading}>Congratulations! You have successfully completed your application.
+                        To review and attest to any new or updated medical directives, please  <span className={style.linkLike} onClick={() => handleRedirect()}>click here.</span></div>
                     <div className={style.justifyCenter}>
                         <Tooltip title={"Click to Logout"} arrow>
-                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => { handleLogout() }}>LOGOUT</div>
+                            <div className={`${style.continue} ${style.marginTop}`} onClick={() => { handleLogout() }}>LOGOUT</div>
                         </Tooltip>
                     </div>
                 </div>
