@@ -773,7 +773,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
       { type: "text", value: emailList },
       { type: "text", value: applicantTypeName },
       { type: "text", value: department },
-      { type: "text", value: reappointment },
+      { type: "dotWithText", value: Percentage, textValue: reappointment, tooltipValueText : dotTooltipValues },
       // { type: "dot", value: Percentage, tooltipValue: dotTooltipValues },
       { type: "text", value: expiryDate},
       { type: "text", value: DateSend, tooltipValueText: remindTooltipCount },

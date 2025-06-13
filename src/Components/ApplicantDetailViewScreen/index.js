@@ -57,7 +57,7 @@ import ESignature from "../../Components/ESignature";
 import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
 import CommonDateField from "../../Components/CommonFields/CommonDateField";
-import { format } from 'date-fns';
+import { format , differenceInDays, parseISO } from 'date-fns';
 import TableTwo from "../../Components/TableDesignTwo";
 import CreateOutlinedIcon from '@mui/icons-material/CreateOutlined';
 import LoadingScreen from "../LoadingScreen";
@@ -272,12 +272,25 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
         ? new Date(data?.expiryDate).toISOString().split('T')[0] + 'T00:00'
         : null;
       status.push(
-        data?.hasExpiry === false ? (
-          <WarningOutlinedIcon style={{ fontSize: 20, color: "#737575" }} />
-        ) : data?.hasExpiry === true ? (
-          <WarningOutlinedIcon style={{ fontSize: 20, color: "#ED2939" }} />
-        ) : null
-      );
+      data?.hasExpiry === false ? (
+        <WarningOutlinedIcon style={{ fontSize: 20, color: "#737575" }} />
+      ) : data?.hasExpiry === true ? (
+        (() => {
+          if (!data?.expiryDate) return null;
+          const expiryDateLevel = parseISO(data?.expiryDate);
+          const currentDate = new Date();
+          const daysDiff = differenceInDays(expiryDateLevel,currentDate);
+          
+          if (daysDiff < 0) {
+            return <WarningOutlinedIcon style={{ fontSize: 20, color: "#ED2939" }} />;
+          } else if (daysDiff <= 90) {
+            return <WarningOutlinedIcon style={{ fontSize: 20, color: "#FFD700" }} />;
+          } else {
+            return <WarningOutlinedIcon style={{ fontSize: 20, color: "#737575" }} />;
+          }
+        })()
+      ) : null
+    );
       documentType.push(`${data?.documentType}` || "Dentist");
       documentName.push(data?.shortName || "dd")
       requirementType.push(data?.required)
@@ -589,6 +602,10 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
     ? new Date(form?.tenure?.to).toISOString().split('T')[0] + 'T00:00'
     : null;
   const formattedExpiringDate = ExpireDate ? format(new Date(ExpireDate), "MMM dd, yyyy") : "-";
+  const LastApprovedDate = form?.lastApprovedDate
+    ? new Date(form?.lastApprovedDate).toISOString().split('T')[0] + 'T00:00'
+    : null;
+  const formattedLastApprovedDate = LastApprovedDate ? format(new Date(LastApprovedDate), "MMM dd, yyyy") : "-";
 
   let tableHeaderValues = documentHeaderValues;
   let tableSortValues = documentColSortValues;
@@ -740,9 +757,11 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
                       <div
                         className={`${style.marginTop10}`}
                       >
-                        {/* <span className={style.rightAlignTextStyle}>
-                          Last Approved By BOD on {formattedExpiringDate}
-                        </span> */}
+                        {formattedLastApprovedDate !== "-" && (
+                        <span className={style.rightAlignTextStyle}>
+                          Last Approved By BOD on {formattedLastApprovedDate}
+                        </span>
+                        )}
                         {/* <span
                           className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}
                         >

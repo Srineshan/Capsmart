@@ -716,6 +716,8 @@ const LocumStaffList = ({
           )}`;
         } else if (expiredDays <= 30) {
           sentOutStatus = "Extension Application Not Yet Sent By Dept Head";
+        } else if (data?.extensionRequestStatus === "NOT_REQUESTED") {
+          sentOutStatus = "Extension Application Not Requested"
         } else {
           sentOutStatus = "";
         }
@@ -731,10 +733,34 @@ const LocumStaffList = ({
           const formattedApprovalType = lastApproval?.approvalType.replace(/_/g, " ").split(" ").map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(" ");
            reappointValue = `${lastApproval?.role}, ${formattedApprovalType}`;
         } else {
+            if (data?.onGoingApplication?.status === "DECLINED") {
+            reappointValue = `${applicationType === "LOCUM" ? '' : 'Reappointment '}Application Declined`;
+          } else if (
+            data?.onGoingApplication?.completionPercentage === 100 &&
+            data?.onGoingApplication?.status === "CREATED"
+          ) {
+            reappointValue = `${applicationType === "LOCUM" ? '' : 'Reappointment '}Application Not Submitted`;
+          } else if (data?.onGoingApplication?.completionPercentage < 100) {
+            reappointValue = `${applicationType === "LOCUM" ? '' : 'Reappointment '}Application In-Progress`;
+          } else {
             reappointValue = "MSO Verification Not Started";
+          }
         }
       } else {
-         reappointValue = "Application Not Submitted";
+        if (data?.onGoingApplication?.status === "DECLINED") {
+          reappointValue = `${applicationType === "LOCUM" ? '' : 'Reappointment '}Application Declined`;
+        } else if (
+          data?.onGoingApplication?.completionPercentage === 100 &&
+          data?.onGoingApplication?.status === "CREATED"
+        ) {
+          reappointValue = `${applicationType === "LOCUM" ? '' : 'Reappointment '}Application Not Submitted`;
+        } else if (data?.onGoingApplication?.completionPercentage < 100 && data?.onGoingApplication?.status === "CREATED") {
+          reappointValue = `${applicationType === "LOCUM" ? '' : 'Reappointment '}Application In-Progress`;
+        } else if(data?.extensionRequestStatus === "NOT_REQUESTED") {
+          reappointValue = ""
+        } else {
+          reappointValue = `${applicationType === "LOCUM" ? '' : 'Reappointment '}Application Not Started`;
+        }
       }
 
       // reappointDate.push([reappointValue]);
@@ -1032,7 +1058,10 @@ const LocumStaffList = ({
           //   [`Renewal Application Sent By Dept Head on ${format(new Date(data?.reAppointmentSentDate), 'MMM dd, yyyy')}`]
           // );
           sentOutStatus = `Renewal Application Sent By Dept Head on ${format(new Date(data?.reAppointmentSentDate), 'MMM dd, yyyy')}`
-        } else {
+        } else if (data?.extensionRequestStatus === "NOT_REQUESTED") {
+          sentOutStatus = "Extension Application Not Requested"
+        }
+         else {
           // reappointDate.push(["Extension Application Not Yet Sent By Dept Head"]);
           sentOutStatus = "Extension Application Not Yet Sent By Dept Head"
         }
@@ -1047,10 +1076,34 @@ const LocumStaffList = ({
           const formattedApprovalType = lastApproval?.approvalType.replace(/_/g, " ").split(" ").map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(" ");
            reappointValue = `${lastApproval?.role}, ${formattedApprovalType}`;
         } else {
+            if (data?.onGoingApplication?.status === "DECLINED") {
+            reappointValue = `${applicationType === "LOCUM" ? '' : 'Reappointment '}Application Declined`;
+          } else if (
+            data?.onGoingApplication?.completionPercentage === 100 &&
+            data?.onGoingApplication?.status === "CREATED"
+          ) {
+            reappointValue = `${applicationType === "LOCUM" ? '' : 'Reappointment '}Application Not Submitted`;
+          } else if (data?.onGoingApplication?.completionPercentage < 100) {
+            reappointValue = `${applicationType === "LOCUM" ? '' : 'Reappointment '}Application In-Progress`;
+          } else {
             reappointValue = "MSO Verification Not Started";
+          }
         }
       } else {
-         reappointValue = "Application Not Submitted";
+        if (data?.onGoingApplication?.status === "DECLINED") {
+          reappointValue = `${applicationType === "LOCUM" ? '' : 'Reappointment '}Application Declined`;
+        } else if (
+          data?.onGoingApplication?.completionPercentage === 100 &&
+          data?.onGoingApplication?.status === "CREATED"
+        ) {
+          reappointValue = `${applicationType === "LOCUM" ? '' : 'Reappointment '}Application Not Submitted`;
+        } else if (data?.onGoingApplication?.completionPercentage < 100 && data?.onGoingApplication?.status === "CREATED" ) {
+          reappointValue = `${applicationType === "LOCUM" ? '' : 'Reappointment '}Application In-Progress`;
+        } else if(data?.extensionRequestStatus === "NOT_REQUESTED") {
+          reappointValue = ""
+        } else{
+          reappointValue = `${applicationType === "LOCUM" ? '' : 'Reappointment '}Application Not Started`;
+        }
       }
 
      reappointDate.push([sentOutStatus, reappointValue]);
@@ -1313,10 +1366,32 @@ const LocumStaffList = ({
           const formattedApprovalType = lastApproval?.approvalType.replace(/_/g, " ").split(" ").map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(" ");
            reappointValue = `${lastApproval?.role}, ${formattedApprovalType}`;
         } else {
+            if (data?.onGoingApplication?.status === "DECLINED") {
+            reappointValue = `${applicationType === "LOCUM" ? '' : 'Reappointment '}Application Declined`;
+          } else if (
+            data?.onGoingApplication?.completionPercentage === 100 &&
+            data?.onGoingApplication?.status === "CREATED"
+          ) {
+            reappointValue = `${applicationType === "LOCUM" ? '' : 'Reappointment '}Application Not Submitted`;
+          } else if (data?.onGoingApplication?.completionPercentage < 100 && data?.onGoingApplication?.status === "CREATED") {
+            reappointValue = `${applicationType === "LOCUM" ? '' : 'Reappointment '}Application In-Progress`;
+          } else {
             reappointValue = "MSO Verification Not Started";
+          }
         }
       } else {
-         reappointValue = "Application Not Submitted";
+        if (data?.onGoingApplication?.status === "DECLINED") {
+          reappointValue = `${applicationType === "LOCUM" ? '' : 'Reappointment '}Application Declined`;
+        } else if (
+          data?.onGoingApplication?.completionPercentage === 100 &&
+          data?.onGoingApplication?.status === "CREATED"
+        ) {
+          reappointValue = `${applicationType === "LOCUM" ? '' : 'Reappointment '}Application Not Submitted`;
+        } else if (data?.onGoingApplication?.completionPercentage < 100) {
+          reappointValue = `${applicationType === "LOCUM" ? '' : 'Reappointment '}Application In-Progress`;
+        } else {
+          reappointValue = `${applicationType === "LOCUM" ? '' : 'Reappointment '}Application Not Started`;
+        }
       }
 
       reappointDate.push([sentOutStatus, reappointValue]);
@@ -1529,6 +1604,8 @@ const LocumStaffList = ({
       // applicantName.push(
       //   `${formatFirstNameLastName(data?.staff?.applicant?.name?.firstName, data?.staff?.applicant?.name?.lastName)}` || " "
       // );
+      let reappointValue = "";
+      let sentOutStatus = "";
       applicantName.push(
         <div
           key={data.id}
@@ -1547,14 +1624,55 @@ const LocumStaffList = ({
         iconStatus.push("");
       }
 
-      reappointDate.push([
+      sentOutStatus =
         data?.staff?.reAppointmentInitiated
           ? `Locum ${data?.locumRenewalDetails?.reappointmentType === "EXTENSION"
             ? "Extension"
             : "Renewal"
           } Request Sent on ${format(new Date(data?.createdDate), "dd/MM/yyyy")}`
-          : "Locum Extension Not Sent",
-      ]);
+          : data?.extensionRequestStatus === "NOT_REQUESTED" ? "Extension Application Not Requested" 
+          :"Locum Extension Not Sent";
+
+       if (Array.isArray(data?.onGoingApplication?.completedWorkflows) && data?.onGoingApplication?.completedWorkflows?.length > 0) {
+        let lastApproval = data?.onGoingApplication?.completedWorkflows
+          .filter(item => item?.approvalType !== null)
+          .pop();
+
+        if (lastApproval) {
+          const formattedApprovalType = lastApproval?.approvalType.replace(/_/g, " ").split(" ").map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(" ");
+           reappointValue = `${lastApproval?.role}, ${formattedApprovalType}`;
+        } else {
+            if (data?.onGoingApplication?.status === "DECLINED") {
+            reappointValue = `${applicationType === "LOCUM" ? '' : 'Reappointment '}Application Declined`;
+          } else if (
+            data?.onGoingApplication?.completionPercentage === 100 &&
+            data?.onGoingApplication?.status === "CREATED"
+          ) {
+            reappointValue = `${applicationType === "LOCUM" ? '' : 'Reappointment '}Application Not Submitted`;
+          } else if (data?.onGoingApplication?.completionPercentage < 100 && data?.onGoingApplication?.status === "CREATED") {
+            reappointValue = `${applicationType === "LOCUM" ? '' : 'Reappointment '}Application In-Progress`;
+          } else {
+            reappointValue = "MSO Verification Not Started";
+          }
+        }
+      } else {
+        if (data?.onGoingApplication?.status === "DECLINED") {
+          reappointValue = `${applicationType === "LOCUM" ? '' : 'Reappointment '}Application Declined`;
+        } else if (
+          data?.onGoingApplication?.completionPercentage === 100 &&
+          data?.onGoingApplication?.status === "CREATED"
+        ) {
+          reappointValue = `${applicationType === "LOCUM" ? '' : 'Reappointment '}Application Not Submitted`;
+        } else if (data?.onGoingApplication?.completionPercentage < 100) {
+          reappointValue = `${applicationType === "LOCUM" ? '' : 'Reappointment '}Application In-Progress`;
+        } else if(data?.extensionRequestStatus === "NOT_REQUESTED") {
+          reappointValue = ""
+        } else {
+          reappointValue = `${applicationType === "LOCUM" ? '' : 'Reappointment '}Application Not Started`;
+        }
+      }
+
+      reappointDate.push([sentOutStatus, reappointValue]);
       applicantId.push(data?.staff?.status === "ACTIVE" ? "Active" : "Expired" || "");
 
       applicantType.push(data?.staff?.basicDetailReferences?.applicantType?.serviceProviderType || "Doctor");
@@ -1659,7 +1777,7 @@ const LocumStaffList = ({
       data: "Extend",
       requiredValue: "boolean",
       onClick: onClickExtensiveLocumDialog,
-      conditionToShow: `data?.reAppointmentInitiated === false && ((new Date(data?.tenure?.to) - new Date()) / (1000 * 60 * 60 * 24)) <= 30`,
+      conditionToShow: `data?.extensionRequestStatus !== "NOT_REQUESTED" && data?.reAppointmentInitiated === false && ((new Date(data?.tenure?.to) - new Date()) / (1000 * 60 * 60 * 24)) <= 30`,
     },
     // {
     //   data: "Create Note",
@@ -1688,7 +1806,7 @@ const LocumStaffList = ({
       data: "Renew",
       requiredValue: "boolean",
       onClick: onClickExtensiveLocumDialog,
-      conditionToShow: `data?.reAppointmentInitiated === false`,
+      conditionToShow: `data?.extensionRequestStatus !== "NOT_REQUESTED" && data?.reAppointmentInitiated === false`,
     },
     // {
     //   data: "Create Note",

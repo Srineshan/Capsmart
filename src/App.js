@@ -265,6 +265,7 @@ const ApplicationForm = React.lazy(() => import("./Screens/ApplicationForm"));
 const ReappointmentApplicationForm = React.lazy(() => import("./Screens/ReappointmentApplicationForm"));
 const LocumApplicationForm = React.lazy(() => import("./Screens/LocumApplicationForm"));
 const MedicalDirectivesAttest = React.lazy(() => import("./Screens/ReappointmentApplicationForm/MedicalDirectives/MedicalDirectivesAttest"));
+const LocumMedicalDirectivesAttest = React.lazy(() => import("./Screens/LocumApplicationForm/MedicalDirectives/MedicalDirectivesAttest"));
 const ApplicationFormRequirement = React.lazy(() =>
   import("./Screens/ApplicationForm/ApplicationFormRequirement")
 );
@@ -1360,6 +1361,10 @@ const App = ({ props }) => {
                 <Route
                   path="/locumApplicationForm/:applicationId/:section/:step"
                   element={<ProtectedRoute><LocumApplicationForm /></ProtectedRoute>}
+                />
+                <Route
+                  path="/locumApplicationForm/:applicationId/:section/:step/:medicalDirectivesId"
+                  element={<ProtectedRoute><LocumMedicalDirectivesAttest /></ProtectedRoute>}
                 />
                 <Route
                   path="/applicationForm/:applicationId"
