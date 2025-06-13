@@ -28,8 +28,14 @@ const ApplicationSubmitted = () => {
         <div className={style.submittedCard}>
             <div className={`${style.verticalAlignCenter} ${style.justifyCenter}`}>
                 <div>
-                    <div className={style.heading}>Congratulations! You have successfully completed your application.
-                        To review and attest to any new or updated medical directives, please  <span className={style.linkLike} onClick={() => handleRedirect()}>click here.</span></div>
+                    <div className={style.heading}>Congratulations! You have successfully completed your application.</div><br />
+                    <div className={style.heading}> To review & attest to any new or updated medical directives,</div><br />
+                    <div className={style.heading}> please  <span className={style.linkLike} onClick={() => handleRedirect()}>click here.</span></div>
+                    <div className={style.justifyCenter}>
+                        <Tooltip title={"Click here to Review & Attest"} arrow>
+                            <div className={`${style.continue} ${style.marginTop}`} onClick={() => { handleRedirect() }}>Attest To Medical Directives</div>
+                        </Tooltip>
+                    </div>
                     <div className={style.justifyCenter}>
                         <Tooltip title={"Click to Logout"} arrow>
                             <div className={`${style.continue} ${style.marginTop}`} onClick={() => { handleLogout() }}>LOGOUT</div>
