@@ -173,7 +173,8 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
     const getMedicalDirectives = async () => {
         if (applicationId !== undefined) {
             const { data: medicalDirectives } = await GET(
-                `medical-directive-service/medicalDirectives/application/${applicationId}?isNewAppointment=${basicForm?.creationType !== 'REAPPOINTMENT'}&isReAppointment=${basicForm?.creationType === 'REAPPOINTMENT'}&departmentId=${basicForm?.basicDetailReferences?.department !== null ? [basicForm?.basicDetailReferences?.department?.id] : []}&serviceAreaId=${basicForm?.basicDetailReferences?.specialty !== null ? [basicForm?.basicDetailReferences?.specialty?.id] : []}`
+                // `medical-directive-service/medicalDirectives/application/${applicationId}?isNewAppointment=${basicForm?.creationType !== 'REAPPOINTMENT'}&isReAppointment=${basicForm?.creationType === 'REAPPOINTMENT'}&departmentId=${basicForm?.basicDetailReferences?.department !== null ? [basicForm?.basicDetailReferences?.department?.id] : []}&serviceAreaId=${basicForm?.basicDetailReferences?.specialty !== null ? [basicForm?.basicDetailReferences?.specialty?.id] : []}`
+                `medical-directive-service/medicalDirectives/byUser`
             );
             setAllMedicalDirectives(medicalDirectives)
             let temp = [...medicalDirectives?.completed, ...medicalDirectives?.pending, ...medicalDirectives?.reviewInprogress, ...medicalDirectives?.pastDue]
