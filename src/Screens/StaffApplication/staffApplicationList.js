@@ -1641,15 +1641,19 @@ const StaffApplicationList = ({
 
   useEffect(() => {
     getWorkflowUserData();
-    setShowAssignee(false);
+    // setShowAssignee(false);
     // getNotesDialog();
     getReFetchMetaData(true);
     console.log("getReFetchMetaData", reFetchMetaData)
   }, [showNotesDialog, showCCDateDialog, approvalnotesCommentsBoxDept, showBulkApproveDialog, showBulkMoveDialog, activeApplicationTask, applicationType, showOverRideRequestDialog, showOverRideRequestApprovalDialog, showOverRideRequestDeclineDialog, activeApplicationView]);
 
-  // useEffect(() => {
-  //   getApplicationCreationType();
-  // }, [applicationCreationType]);
+  useEffect(() => {
+    setShowAssignee(false);
+  }, [activeApplicationView]);
+
+    useEffect(() => {
+    getRejectionData(rejectionTab);
+  }, [rejectionTab, showApplicationRejectionDialog]);
 
 
   useEffect(() => {
@@ -1917,7 +1921,7 @@ useEffect(() => {
             return ccWorkflow && ccWorkflow?.approvalType === null;
           });
         } else if (selectedTab === "ReviewedApplications" && workModeType === "Credentialing Committee") {
-          setShowAssignee(false)
+          // setShowAssignee(false)
           applications = applications?.filter(app => {
             const ccWorkflow = app?.completedWorkflows?.find(wf => wf?.role === "Credentialing Committee");
             console.log("Application dataaaaaaaaaaaaaaaaa", ccWorkflow);

@@ -379,12 +379,13 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
       });
   };
 
-  const onClickApproveMoveFunction = () => {
+  const onClickNotRequiredExtensionFunction = () => {
     handleUpdateStaffRequest(true)
       .then(() => {
-        return handleUpdateStaffRequesrNotes(true);
+        return handleUpdateStaffRequestNotes(true);
       })
       .then(() => {
+        getIsOpen(false);
         console.log('Application successfully moved to next step.');
       })
       .catch((error) => {
@@ -403,10 +404,19 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
       }
     };
 
-    const handleUpdateStaffRequesrNotes = async () => {
+    const handleUpdateStaffRequestNotes = async () => {
       try {
-        form.extensionRequestStatus = extensionRequiredValue;
-        const response = await PUT(`application-management-service/staff/${selectDataLocum?.id}/addNote`, form);
+        const formData = new FormData();
+        const payload = {
+          notes: {
+            notes: notRequiredComments || "",
+          },
+        };
+         const blob = new Blob([JSON.stringify(payload)], {
+            type: "application/json"
+          });
+          formData.append('notesDTO', blob);
+        const response = await PUT(`application-management-service/staff/${selectDataLocum?.id}/addNote`, formData);
         console.log('Update successful:', response?.data);
         await getActiveUserData();
         
@@ -420,8 +430,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
         form.extensionRequestStatus = extensionRequiredValue;
         const response = await PUT(`application-management-service/staff/${selectDataLocum?.id}`, form);
         console.log('Update successful:', response?.data);
-        await getActiveUserData();
-        
+        // await getActiveUserData();
       } catch (error) {
         console.error('Update failed:', error);
       }
@@ -2886,7 +2895,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
                     </span>
                     {selectedTab === "ACTIVELOCUM" && <span> By </span>}
                   </div>
-                  {/* <div>
+                  <div>
                     <CommonRadio
                       onChange={handleChangeRequired}
                       value={extensionRequiredValue}
@@ -2897,8 +2906,8 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
                           : ["Renewal Required", "Renewal Not Required"]
                       }
                     />
-                  </div> */}
-                  {/* {extensionRequiredValue === "REQUESTED" && ( */}
+                  </div>
+                  {extensionRequiredValue === "REQUESTED" && (
                     <div>
                   <div>
                     {/* <CommonRadio
@@ -3134,7 +3143,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
                     </div>
                   </div>
                   </div>
-                  {/* )} */}
+                  )}
                   {extensionRequiredValue === "NOT_REQUESTED" && (
                     <div>
                     <div className={`${style.lableStyle} ${style.marginTop10}`}>Reason For Locum Staff {selectedTab === "ACTIVELOCUM" ? "Extension" : "Renewal"} Not Required*</div>
@@ -4270,7 +4279,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
                       sendEmail();
                       setEmailSendDialog(true);
                     } else if (!showSelectedPrivilegeLocum && extensionRequiredValue === "NOT_REQUESTED" ) {
-                      
+                      onClickNotRequiredExtensionFunction();
                     }
                   }}
                 >
