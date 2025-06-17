@@ -913,7 +913,7 @@ const App = ({ props }) => {
           // return(
           //   <WorkModeDialog getIsOpen={true} />
           // ) 
-          if (localStorage?.getItem('initialRoute') !== undefined && localStorage?.getItem('initialRoute') !== 'undefined' && localStorage?.getItem('initialRoute') !== null && localStorage?.getItem('initialRoute')?.includes('/applicationById/REAPPOINTMENT')) {
+          if (localStorage?.getItem('initialRoute') !== undefined && localStorage?.getItem('initialRoute') !== 'undefined' && localStorage?.getItem('initialRoute') !== null && localStorage?.getItem('initialRoute')?.includes('/applicationById/REAPPOINTMENT') && localStorage?.getItem('initialRoute')?.includes('/applicationById/LOCUM')) {
             sessionStorage.setItem("workModeType", roles[0]);
             window.location.pathname = localStorage?.getItem('initialRoute');
           } else {

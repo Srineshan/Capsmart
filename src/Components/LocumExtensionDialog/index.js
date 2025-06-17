@@ -2777,16 +2777,29 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
       : addYears(currentDateNow, 1);
 
   const isValidDateRange = () => {
-    if (selectedTab === "EXPIREDLOCUM" && extensionRequiredValue === "REQUESTED") {
-      return customStartDate && customEndDate;
+    if (showSelectedPrivilegeLocum === true) {
+      const hasObligatedPrivileges = formDetails?.privileges?.obligatedPrivileges?.length >= 1;
+      const hasAdditionalPrivileges = formDetails?.privileges?.additionalPrivileges?.length >= 1;
+
+      const isPrivilegeSetValid =
+        hasObligatedPrivileges;
+
+      const isAdditionalPrivilegeValid =
+        additionalPrivilegeChangeYesOrNo === "No" || hasAdditionalPrivileges;
+
+      return isPrivilegeSetValid && isAdditionalPrivilegeValid;
+    } else {
+      if (selectedTab === "EXPIREDLOCUM" && extensionRequiredValue === "REQUESTED") {
+        return customStartDate && customEndDate;
+      }
+      if (selectedMonth === "Custom") {
+        return customEndDate;
+      }
+      if (extensionRequiredValue === "NOT_REQUESTED") {
+        return notRequiredComments;
+      }
+      return selectedMonth;
     }
-    if (selectedMonth === "Custom") {
-      return customEndDate;
-    }
-    if (extensionRequiredValue === "NOT_REQUESTED") {
-      return notRequiredComments;
-    }
-    return selectedMonth;
   };
 
   return (
