@@ -38,7 +38,8 @@ const ReportTypeOverview = React.lazy(() =>
   import("./Screens/Reports/reportTypeOverview")
 );
 const Home = React.lazy(() => import("./Screens/CustomerSystemAdmin"));
-
+const MDManager = React.lazy(() => import("./Screens/MDManager"));
+const MDManagerStep1 = React.lazy(() => import("./Screens/MDManager/step1"));
 const HistoricalData = React.lazy(() => import("./Screens/StaffApplication/fillHistoricalData"));
 const ApplicationSubmitted = React.lazy(() => import("./Components/ApplicationSubmitted"));
 const FunctionalTitleForCustomer = React.lazy(() =>
@@ -779,7 +780,7 @@ const App = ({ props }) => {
         method: "GET",
         headers: {
           "Authorization": `Bearer ${authorization}`,
-          "X-subdomain": 'cmh-hospital',
+          "X-subdomain": 'master',
         },
       };
     console.log(requestHeader, 'requestHeader')
@@ -819,7 +820,7 @@ const App = ({ props }) => {
         "Content-Type": "application/json",
         "X-tenantID": id,
         "Authorization": `Bearer ${authorization}`,
-        "X-subdomain": 'cmh-hospital',
+        "X-subdomain": 'master',
       },
     }
     fetch(`${baseUrl()}/user-management-service/auth/login`, requestOptions)
@@ -1320,6 +1321,8 @@ const App = ({ props }) => {
                   element={<ProtectedRoute><SettingList /></ProtectedRoute>}
                 />
                 <Route path="/entitySitePortal" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+                <Route path="/mdManager" element={<ProtectedRoute><MDManager /></ProtectedRoute>} />
+                <Route path="/mdManager/step1" element={<ProtectedRoute><MDManagerStep1 /></ProtectedRoute>} />
                 <Route path="/thankyou" element={<ProtectedRoute><Thankyou /></ProtectedRoute>} />
                 <Route path="/reportType" element={<ProtectedRoute><ReportType /></ProtectedRoute>} />
                 <Route

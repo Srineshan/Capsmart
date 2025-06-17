@@ -1,0 +1,559 @@
+@import "../../index.scss";
+
+.smallCardGrid {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    grid-gap: 20px;
+    margin-top: 20px;
+}
+
+.stepsBackground {
+    background: #E7E9EE 0% 0% no-repeat padding-box;
+    height: 100vh;
+    width: 100%;
+}
+
+.bigCardGrid {
+    display: grid;
+    grid-template-columns: 1fr 4fr;
+    grid-gap: 10px;
+    margin-top: 20px;
+}
+
+.margin20 {
+    margin: 20px;
+}
+
+.marginLeft30 {
+    margin-left: 30px;
+}
+
+.grid3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-gap: 20px;
+}
+
+.grid4 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-gap: 20px;
+}
+
+.displayInRow {
+    display: flex;
+    flex-direction: row;
+}
+
+.marginLeft10 {
+    margin-left: 10px;
+}
+
+.reduceMarginTop20 {
+    margin-top: -20px;
+}
+
+.reduceMarginTop10 {
+    margin-top: -10px;
+}
+
+.marginTop10 {
+    margin-top: 10px;
+}
+
+.marginTop20 {
+    margin-top: 20px;
+}
+
+.marginTop25 {
+    margin-top: 25px;
+}
+
+.marginTop30 {
+    margin-top: 30px;
+}
+
+.marginLeft20 {
+    margin-left: 20px;
+}
+
+.marginRight {
+    margin-right: 10px;
+}
+
+.marginRight30 {
+    margin-right: 30px;
+}
+
+
+.tabs {
+    display: flex;
+    flex-direction: row;
+}
+
+.activeContractGrid {
+    display: grid;
+    grid-template-columns: 5% 10% 10% 10% 10% 10% 7% 10% 10% 5%;
+    grid-gap: 10px;
+}
+
+.ticketsGrid {
+    display: grid;
+    grid-template-columns: 5% 5% 9% 10% 10% 6% 10% 10% 9% 9% 6%;
+    grid-gap: 1%;
+}
+
+.exceptionGrid {
+    display: grid;
+    grid-template-columns: 5% 10% 12% 15% 10% 12% 10% 12% 5%;
+    grid-gap: 10px;
+}
+
+.messageGrid {
+    display: grid;
+    grid-template-columns: 5% 15% 15% 20% 15% 15% 5%;
+    grid-gap: 10px;
+}
+
+.alertsGrid {
+    display: grid;
+    grid-template-columns: 5% 5% 25% 25% 25% 5%;
+    grid-gap: 10px;
+}
+
+.toDoGrid {
+    display: grid;
+    grid-template-columns: 5% 9% 9% 20% 10% 10% 8% 10% 8% 10%;
+    grid-gap: 10px;
+}
+
+.registeredUsersGrid {
+    display: grid;
+    grid-template-columns: 5% 20% 20% 8% 10% 15% 9% 5%;
+    grid-gap: 10px;
+}
+
+.registeredUsersMultiSiteGrid {
+    display: grid;
+    grid-template-columns: 5% 15% 14% 5% 8% 10% 10% 9% 5%;
+    grid-gap: 1%;
+}
+
+.invitedUsersGrid {
+    display: grid;
+    grid-template-columns: 5% 15% 10% 13% 10% 15% 8% 10% 5%;
+    grid-gap: 10px;
+}
+
+.bigCardStyle {
+    height: calc(100vh - 230px);
+    overflow: scroll;
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 10px 20px #C4C8D066;
+    border-radius: 6px;
+    opacity: 1;
+    padding: 5px;
+}
+
+.bigCardStyleWithoutHeading {
+    height: calc(100vh - 265px);
+    overflow: scroll;
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 10px 20px #C4C8D066;
+    border-radius: 6px;
+    opacity: 1;
+    padding: 5px;
+}
+
+.buttonGroupUsers {
+    float: left;
+    margin: 20px 20px 10px 28px;
+
+    button {
+        height: 40px;
+        margin-right: 10px;
+        background: $secondarycolor 0% 0% no-repeat padding-box;
+        border: 0.4000000059604645px solid #B3B8BD;
+        font-weight: 600;
+        border-radius: 6px;
+        min-width: 180px;
+        cursor: pointer;
+    }
+}
+
+.activeButton {
+    background: $primarycolor 0% 0% no-repeat padding-box !important;
+    border: 0.4000000059604645px solid $primarycolor;
+    border-radius: 6px;
+    opacity: 0.75;
+    color: white;
+    font-weight: 600;
+}
+
+.red {
+    color: #ED6F68;
+}
+
+.spaceBetween {
+    display: flex;
+    justify-content: space-between;
+}
+
+.addManagerDialogBackground {
+    background-color: #044354 !important;
+    padding: 10px 30px;
+    border-radius: 20px !important;
+    margin-top: -10px;
+    margin-bottom: -10px;
+}
+
+.addMDDialogBackground {
+    background: #ffffff 0% 0% no-repeat padding-box;
+    padding: 20px 20px 0px 20px;
+    border-radius: 20px !important;
+    border: 5px solid rgba(255, 255, 255, 0.4);
+}
+
+.addProofDialog {
+    height: 100vh !important;
+    width: 100% !important;
+}
+
+.addNewMDDialog {
+    height: 30vh !important;
+    width: 35% !important;
+}
+
+.extensionStyle {
+    text-align: left;
+    font: normal normal bold 16px/17px proxima-nova;
+    letter-spacing: 0px;
+    color: $primarycolor;
+}
+
+.crossStyle {
+    color: linear-gradient($primarycolor, $statusred) !important;
+    margin-bottom: 15px;
+    cursor: pointer;
+}
+
+.extensionBorder {
+    background-color: #EBF2F7;
+    height: 3px;
+}
+
+.proofBorder {
+    border: 1px solid #06617A;
+    border-radius: 8px;
+    opacity: 1;
+    overflow: scroll;
+    border-radius: 8px;
+    opacity: 1;
+    overflow: scroll;
+    margin-top: 10px;
+    padding: 20px;
+}
+
+.addManagerGrid {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    grid-gap: 20px;
+}
+
+.extentionLableStyle {
+    text-align: left;
+    font: normal normal normal $tabledatatext proxima-nova;
+    letter-spacing: 0px;
+    color: #2C2C2C;
+    text-transform: capitalize;
+    opacity: 1;
+    margin-top: 5px;
+}
+
+.reduce10Left {
+    margin-left: -10px;
+}
+
+.twoCol {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 20px;
+}
+
+.threeCol {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-gap: 10px;
+}
+
+.fourCol {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-gap: 10px;
+}
+
+.fullWidth {
+    width: 100%;
+}
+
+.buttonStyle {
+    background-color: $primarycolor;
+    color: white;
+    border: 1px solid $primarycolor;
+    height: 40px;
+    width: 140px;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    // margin-bottom: -10px;
+}
+
+.outlinedButton {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 6px #00000029;
+    border: 0.5px solid #9AAFB5;
+    border-radius: 8px;
+    height: 40px;
+    width: 140px;
+    font-weight: bold;
+    color: $primarycolor;
+    cursor: pointer;
+}
+
+.buttonStyleMd {
+    background-color: $primarycolor;
+    color: white;
+    border: 1px solid $primarycolor;
+    height: 40px;
+    width: 180px;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    // margin-bottom: -10px;
+}
+
+.outlinedButtonMd {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 6px #00000029;
+    border: 0.5px solid #9AAFB5;
+    border-radius: 8px;
+    height: 40px;
+    width: 180px;
+    font-weight: bold;
+    color: $primarycolor;
+    cursor: pointer;
+}
+
+
+.floatRight {
+    float: right;
+}
+
+.yellowSmallNumber {
+    color: $statusyellow;
+    background-color: #fff2cc;
+}
+
+.yellowSmallNumberSelected {
+    color: #fff;
+    background-color: $statusyellow;
+}
+
+.greenSmallNumber {
+    color: #14B15A;
+    background-color: #d1fae3;
+}
+
+.greenSmallNumberSelected {
+    color: #fff;
+    background-color: #14B15A;
+}
+
+.redSmallNumber {
+    color: #F94848;
+    background-color: #fdcece;
+}
+
+.redSmallNumberSelected {
+    color: #fff;
+    background-color: #F94848;
+}
+
+.cursorPointer {
+    cursor: pointer;
+}
+
+.helpScrollStyle {
+    height: calc(100vh - 495px);
+    overflow: scroll;
+}
+
+.iconSize {
+    height: 30px;
+    width: 30px;
+}
+
+.bodyContainer {
+    background: #044354;
+    padding: 20px;
+    margin: -10px -30px;
+}
+
+.formContainer {
+    background: $secondarycolor !important;
+    border-radius: 20px;
+    padding: 40px;
+    height: calc(100vh - 200px);
+}
+
+.stepImg {
+    height: 60px;
+    width: 60px;
+    object-fit: contain;
+}
+
+.stepperDivider {
+    height: 1px;
+    background-color: #FFFFFF;
+}
+
+.stepperDividerDisabled {
+    height: 1px;
+    background-color: #FFFFFF;
+    opacity: 0.5;
+}
+
+.stepperGrid {
+    padding: 20px;
+    display: grid;
+    grid-template-columns: 17% 6% 23% 6% 23% 6% 17%;
+    gap: 1%;
+}
+
+.verticalAlignCenter {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.justifyCenter {
+    display: flex;
+    justify-content: center;
+}
+
+.verticalSpaceBetween {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+
+.chipsContainer {
+    width: 100%;
+    padding: 5px;
+    display: flex;
+    flex-wrap: wrap;
+    grid-gap: 10px;
+}
+
+
+.chips {
+    background: $secondarycolor 0% 0% no-repeat padding-box;
+    font: normal normal normal 16px/18px proxima-nova;
+    border: 1px solid $primarycolor;
+    border-radius: 23px;
+    padding: 5px 10px;
+    color: $primarycolor;
+}
+
+.addNewButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: $primarycolor ;
+    padding: 5px;
+    box-shadow: 0px 3px 11px $primarycolor ;
+}
+
+.textColurBlue {
+    color: $primarycolor ;
+}
+
+.borderNone {
+    border: none;
+}
+
+.backgroundBlue {
+    background-color: $primarycolor ;
+}
+
+.textColorWhite {
+    color: white;
+}
+
+.borderRadius5 {
+    border-radius: 5px;
+}
+
+.marginBottom {
+    margin-bottom: 10px;
+}
+
+.dialogTitle {
+    text-align: left;
+    font: normal normal bold 16px/28px proxima-nova;
+    color: $primarycolor;
+}
+
+.dialogDesc {
+    text-align: left;
+    font: normal normal normal 14px/26px proxima-nova;
+    letter-spacing: 0px;
+    color: #1D2437;
+}
+
+.stepHeader {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 6px 12px #382DA514;
+    height: 80px;
+    width: 100%;
+    padding: 0 20px;
+}
+
+.stepNumber {
+    text-align: left;
+    font: normal normal bold 14px/28px proxima-nova;
+    color: #1D2437;
+}
+
+.stepHeading {
+    text-align: left;
+    font: normal normal bold 18px/28px proxima-nova;
+    letter-spacing: 0px;
+    color: $primarycolor;
+}
+
+.stepContentCard {
+    margin: 20px;
+    padding: 10px;
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 5px 20px #52575D4D;
+    border-radius: 12px;
+    height: calc(100vh - 120px);
+    overflow: scroll;
+}
+
+.stepsTitleBar {
+    background: rgba(6, 97, 122, 0.05) 0% 0% no-repeat padding-box;
+    border-radius: 4px;
+    height: 30px;
+    padding: 0 40px;
+}
+
+.stepsTitleText {
+    text-align: left;
+    font: normal normal medium 16px/30px proxima-nova;
+    letter-spacing: 1.1px;
+    color: #1D2437;
+    opacity: 0.6;
+}
