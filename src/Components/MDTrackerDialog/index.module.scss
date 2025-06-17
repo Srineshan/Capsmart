@@ -160,6 +160,12 @@
   grid-gap: 1%;
 }
 
+.byinnerDeptGrid {
+  display: grid;
+  grid-template-columns: 3% 3% 7% 32% 32% 8% 8%;
+  grid-gap: 1%;
+}
+
 .verticalAlignCenter {
   display: flex;
   align-items: center;
