@@ -2827,16 +2827,29 @@ const LocumRequestDialog = ({ getIsOpen, selectedTab }) => {
   console.log("1111111111111111111111", getMonthOrDays("2025-04-30", "2025-05-30"), monthOptionsToView, selectedMonth, startDateStr, endDateStr); // 2 month(s)
 
   const isValidDateRange = () => {
-    if (selectDataLocum?.locumRenewalDetails?.reappointmentType === "RENEWAL" && extensionRequiredValue === "REQUESTED") {
-      return customStartDate && customEndDate;
+    if (showSelectedPrivilegeLocum === true) {
+      const hasObligatedPrivileges = formDetails?.privileges?.obligatedPrivileges?.length >= 1;
+      const hasAdditionalPrivileges = formDetails?.privileges?.additionalPrivileges?.length >= 1;
+
+      const isPrivilegeSetValid =
+       hasObligatedPrivileges;
+
+      const isAdditionalPrivilegeValid =
+        additionalPrivilegeChangeYesOrNo === "No" || hasAdditionalPrivileges;
+
+      return isPrivilegeSetValid && isAdditionalPrivilegeValid;
+    } else {
+       if (extensionRequiredValue === "NOT_REQUESTED") {
+        return notRequiredComments;
+      }
+      if (selectDataLocum?.locumRenewalDetails?.reappointmentType === "RENEWAL" && extensionRequiredValue === "REQUESTED") {
+        return customStartDate && customEndDate;
+      }
+      if (selectedMonth === "Custom") {
+        return customEndDate;
+      }
+      return selectedMonth;
     }
-    if (selectedMonth === "Custom") {
-      return customEndDate;
-    }
-    if (extensionRequiredValue === "NOT_REQUESTED") {
-      return notRequiredComments;
-    }
-    return selectedMonth;
   };
 
   console.log("notRequiredComments",notRequiredComments,extensionRequiredValue)

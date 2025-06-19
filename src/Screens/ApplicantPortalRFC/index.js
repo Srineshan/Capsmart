@@ -1760,7 +1760,7 @@ const ApplicantPortalRFC = () => {
                 </div>
             )}
             <ApplicationHeader
-                title={`${form?.creationType === "NEW" ? "Clarification Required For New Application For" : "Clarification Required For Reappointment Application For"}   ${form?.basicDetails?.applicant?.name?.firstName !== undefined
+                title={`${form?.creationType === "NEW" ? "Clarification Required For New Application For" : form?.creationType === "REAPPOINTMENT" && form?.privilegeCategoryType === "LOCUM" ? "Clarification Required For Application For" : "Clarification Required For Reappointment Application For" }   ${form?.basicDetails?.applicant?.name?.firstName !== undefined
                     ? form?.basicDetails?.applicant?.name?.firstName
                     : "{First Name}"
                     } ${form?.basicDetails?.applicant?.name?.lastName !== undefined
