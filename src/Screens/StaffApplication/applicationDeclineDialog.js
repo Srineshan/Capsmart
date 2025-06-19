@@ -98,6 +98,7 @@ import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
 import DescriptionIcon from '@mui/icons-material/Description';
 import { fileLoadingURL, FormatPhoneNumber, FormatPostalCode } from "../../utils/formatting";
 import LoadingScreen from "../../Components/LoadingScreen";
+import { Tooltip } from '@mui/material';
 
 const ApplicationDecline = ({ getIsOpen, selectedTab, applicationType, getApplicationDeclineDialog, getActiveApplicationView }) => {
   const [showDeclineMailDialog, setShowDeclineMailDialog] = useState(false);
@@ -830,9 +831,11 @@ const ApplicationDecline = ({ getIsOpen, selectedTab, applicationType, getApplic
                 CONTINUE
               </button>
             </div> */}
+            <Tooltip title=" Click to Reject/Decline Staff" arrow>
               <div className={`${style.marginTop10} ${style.reviewButtonContainer}`} onClick={isApproveEnabled ? () => onClickRejectMoveFunction() : () => { }} style={{ pointerEvents: isApproveEnabled ? 'auto' : 'none', opacity: isApproveEnabled ? 1 : 0.5 }}>
                 <div className={style.reviewButton}>NOT RECOMMENDED</div>
               </div>
+              </Tooltip>
             </div>
           </div>
         </Dialog>

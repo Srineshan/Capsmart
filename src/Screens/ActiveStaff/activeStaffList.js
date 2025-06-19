@@ -960,7 +960,7 @@ const ActiveStaffList = ({
         </div>
         <div>
           <div className={`${style.displayInRow} ${style.spaceBetween} ${style.headingForStaffs} ${style.bottomTextStyle}`}>
-            {`STAFF MANAGER > ACTIVE STAFF`}
+            {`STAFF MANAGER > PERMANENT STAFF`}
           </div>
 
           <div

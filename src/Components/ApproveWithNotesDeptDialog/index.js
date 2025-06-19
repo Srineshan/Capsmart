@@ -591,10 +591,12 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen, getActiveApplicationView, date
   const onClickApproveMoveFunction = () => {
     handleApplicationApprove(true)
       .then(() => {
+        return SuccessToaster('Sent for Review Successfully');
+      })
+      .then(() => {
         return getApplicationMoveToNext(true);
       })
       .then(() => {
-        SuccessToaster('Sent for Review Successfully');
         console.log('Application successfully moved to next step.');
       })
       .catch((error) => {
@@ -625,6 +627,7 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen, getActiveApplicationView, date
   };
 
   const handleApplicationApprove = async () => {
+    setIsLoadingImage(true);
     let role;
     let title;
     const files = (uploadFileData || []).map((item, index) => ({
@@ -702,8 +705,9 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen, getActiveApplicationView, date
     )
       .then(response => {
         console.log('successfull');
+        setIsLoadingImage(false);
         SuccessToaster('Sent for Review Successfully');
-        onClose();
+        // onClose();
       })
       .catch((error) => {
         console.log(error);
@@ -781,6 +785,7 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen, getActiveApplicationView, date
 
     await PUT(`application-management-service/application/${id}/workflow/move?workflowAction=APPROVED&isDelegate=${isDelegate}`, payload)
       .then(response => {
+        SuccessToaster('Sent for Review Successfully');
         console.log('successfull');
         onClose();
       })
