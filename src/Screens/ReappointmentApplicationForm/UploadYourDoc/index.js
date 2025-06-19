@@ -1167,7 +1167,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                 showDeleteConfirmation && (
                     <DeleteConfirmation getShowDeleteConfirmation={getShowDeleteConfirmation}
                         getDeleteConfirmation={getDeleteConfirmation}
-                        confirmationText="Do you want to delete this document?" />
+                        confirmationText="Do you want to delete this Uploaded document?" />
                 )
             }
         </div>

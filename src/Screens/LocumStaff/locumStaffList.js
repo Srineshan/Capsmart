@@ -181,10 +181,10 @@ const LocumStaffList = ({
     console.log("setUserDetails", userDepartmentList)
   }
 
-  const onClickViewAndVerifyFunction = (data) => {
+  const onClickViewAndVerifyFunction = (id) => {
     getApplicantDetailsViewScreen(true);
-    sessionStorage.setItem("applicationId", data);
-    console.log("id", data)
+    sessionStorage.setItem("applicationId", id);
+    console.log("id", id)
   };
 
   const onClickReappointmentFunction = (data) => {
@@ -612,18 +612,18 @@ const LocumStaffList = ({
       const expiredDays = differenceInDays(new Date(data?.tenure?.to), new Date());
       let reappointValue = "";
       let sentOutStatus = "";
-      // applicantName.push(
-      //   `${formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName)}` || " "
-      // );
       applicantName.push(
-        <div
-          key={data.id}
-          className={`${style.justifyCenter} ${style.cursorPointer}`}
-          onClick={() => onClickViewAndVerifyFunction(data.id)}
-        >
-          {formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName) || " "}
-        </div>
+        `${formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName)}` || " "
       );
+      // applicantName.push(
+      //   <div
+      //     key={data?.id}
+      //     className={`${style.justifyCenter} ${style.cursorPointer}`}
+      //     onClick={() => onClickViewAndVerifyFunction(data?.id)}
+      //   >
+      // {formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName)}
+      //   </div>
+      // );
       applicantNameHoverText.push(
         <div>
           <div>
@@ -869,7 +869,7 @@ const LocumStaffList = ({
 
     return [
       // { type: "dot", value: dot, tooltipValue: dotTooltipValues },
-      { type: "text", value: applicantName, tooltipValueText: applicantNameHoverText },
+      { type: "text", value: applicantName, tooltipValueText: applicantNameHoverText,  onClickFunction: (data, index) => onClickViewAndVerifyFunction(data.id) },
       {
         type: "iconWithCount",
         icon: iconStatus,
@@ -962,18 +962,18 @@ const LocumStaffList = ({
             ? "green"
             : "grey"
       );
-      // applicantName.push(
-      //   `${formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName)}` || " "
-      // );
       applicantName.push(
-        <div
-          key={data.id}
-          className={`${style.justifyCenter} ${style.cursorPointer}`}
-          onClick={() => onClickViewAndVerifyFunction(data.id)}
-        >
-          {formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName) || " "}
-        </div>
+        `${formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName)}` || " "
       );
+      // applicantName.push(
+      //   <div
+      //     key={data.id}
+      //     className={`${style.justifyCenter} ${style.cursorPointer}`}
+      //     onClick={() => onClickViewAndVerifyFunction(data.id)}
+      //   >
+      //     {formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName) || " "}
+      //   </div>
+      // );
       applicantNameHoverText.push(
         <div>
           <div>
@@ -1160,7 +1160,7 @@ const LocumStaffList = ({
 
     return [
       // { type: "dot", value: dot },
-      { type: "text", value: applicantName, tooltipValueText: applicantNameHoverText },
+      { type: "text", value: applicantName, tooltipValueText: applicantNameHoverText,  onClickFunction: (data, index) => onClickViewAndVerifyFunction(data.id)},
       {
         type: "iconWithCount",
         icon: iconStatus,
@@ -1246,18 +1246,18 @@ const LocumStaffList = ({
        let overRideApprovedDate = "-";
        let overRideApprovedBy = "-";
        const OnGoingApplicationId = data?.onGoingApplication?.id
-      // applicantName.push(
-      //   `${formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName)}` || " "
-      // );
       applicantName.push(
-        <div
-          key={data.id}
-          className={`${style.justifyCenter} ${style.cursorPointer}`}
-          onClick={() => onClickViewAndVerifyFunction(data.id)}
-        >
-          {formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName) || " "}
-        </div>
+        `${formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName)}` || " "
       );
+      // applicantName.push(
+      //   <div
+      //     key={data.id}
+      //     className={`${style.justifyCenter} ${style.cursorPointer}`}
+      //     onClick={() => onClickViewAndVerifyFunction(data.id)}
+      //   >
+      //     {formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName) || " "}
+      //   </div>
+      // );
       applicantNameHoverText.push(
         <div>
           <div>
@@ -1512,7 +1512,7 @@ const LocumStaffList = ({
 
     return [
       // { type: "dot", value: dot, tooltipValue: dotTooltipValues },
-      { type: "text", value: applicantName, tooltipValueText: applicantNameHoverText },
+      { type: "text", value: applicantName, tooltipValueText: applicantNameHoverText, onClickFunction: (data, index) => onClickViewAndVerifyFunction(data.id) },
       {
         type: "iconWithCount",
         icon: iconStatus,
@@ -1607,14 +1607,17 @@ const LocumStaffList = ({
       let reappointValue = "";
       let sentOutStatus = "";
       applicantName.push(
-        <div
-          key={data.id}
-          className={`${style.justifyCenter} ${style.cursorPointer}`}
-          onClick={() => onClickViewAndVerifyFunction(data.id)}
-        >
-          {formatFirstNameLastName(data?.staff?.applicant?.name?.firstName, data?.staff?.applicant?.name?.lastName) || " "}
-        </div>
+        `${formatFirstNameLastName(data?.staff?.applicant?.name?.firstName, data?.staff?.applicant?.name?.lastName)}` || " "
       );
+      // applicantName.push(
+      //   <div
+      //     key={data.id}
+      //     className={`${style.justifyCenter} ${style.cursorPointer}`}
+      //     onClick={() => onClickViewAndVerifyFunction(data.id)}
+      //   >
+      //     {formatFirstNameLastName(data?.staff?.applicant?.name?.firstName, data?.staff?.applicant?.name?.lastName) || " "}
+      //   </div>
+      // );
       applicantDept.push([data?.staff?.basicDetailReferences?.department?.name ? data?.staff?.basicDetailReferences?.department?.name : "-"]);
       if (data?.staff?.reAppointmentInitiated === true) {
         iconStatus.push(
@@ -1729,7 +1732,7 @@ const LocumStaffList = ({
 
     return [
       // { type: "dot", value: dot, tooltipValue: dotTooltipValues },
-      { type: "text", value: applicantName },
+      { type: "text", value: applicantName,onClickFunction: (data, index) => onClickViewAndVerifyFunction(data?.staff?.id) },
       {
         type: "iconWithCount",
         icon: iconStatus,
@@ -2010,7 +2013,7 @@ const LocumStaffList = ({
                     // }}
                     >
                       {/* Staff Rejected ({applicationRejected?.appointmentRequestsDenied}) */}
-                      Requested But Declined ({applicationRejected?.applicationsRejected})
+                      Requested But Declined ({applicationRejected?.applicationsApprovedButDenied})
                     </div>
                     <div
                       className={`${style.borderStyle} ${style.marginTop} ${style.textStyle}`}
@@ -2018,7 +2021,7 @@ const LocumStaffList = ({
                     //   setShowApplicationApprovedDeclineDialog(true);
                     // }}
                     >
-                      Locum Staff Rejected ({applicationRejected?.appointmentRequestsDenied})
+                      Locum Staff Rejected ({applicationRejected?.applicationsRejected})
                       {/* Approved But Declined ({applicationRejected?.applicationsRejected}) */}
                     </div>
                     <div
@@ -2028,7 +2031,7 @@ const LocumStaffList = ({
                     // }}
                     >
                       {/* Staff Rejected ({applicationRejected?.appointmentRequestsDenied}) */}
-                      Locum Staff Expired ({applicationRejected?.applicationsRejected})
+                      Locum Staff Expired ({applicationRejected?.appointmentRequestsDenied})
                     </div>
                   </>
                 )
