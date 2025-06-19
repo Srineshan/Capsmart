@@ -58,6 +58,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
   const [applicantType, setApplicantType] = useState([]);
   const [medicalDirectiveSummary, setMedicalDirectiveSummary] = useState([]);
   const [medicalDirectiveSummaryByDept, setMedicalDirectiveSummaryByDept] = useState([]);
+  const [innerMedicalDirectiveSummaryByDept, setInnerMedicalDirectiveSummaryByDept] = useState([]);
   const [medicalDirectiveSummaryByApplicant, setMedicalDirectiveSummaryByApplicant] = useState([]);
   const [applicantSummary, setApplicantSummary] = useState([]);
   const [departmentSummary, setDepartmentSummary] = useState([]);
@@ -67,6 +68,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
   const [limit, setLimit] = useState(9999);
   const [currentTab, setCurrentTab] = useState('ByMedicalDirective')
   const [displayInnerList, setDisplayInnerList] = useState(false);
+  const [displayInnerList2, setDisplayInnerList2] = useState(false);
   const [selectedMedicalDirective, setSelectedMedicalDirective] = useState();
   const [selectedMedicalDirectiveList, setSelectedMedicalDirectiveList] = useState();
   const [selectedApplicant, setSelectedApplicant] = useState();
@@ -120,8 +122,10 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
     } else {
       if (currentTab === "ByApplicants") {
         setTotalCount(0)
-      } else {
+      } else if (currentTab === "ByMedicalDirective") {
         getMedicalDirectiveSummaryLevel2(selectedMedicalDirective?.id)
+      } else {
+        getMedicalDirectiveSummary()
       }
     }
   }, [sortField, sortValue, page, totalCount, selectedDepartment, selectedServiceArea, selectedApplicantType, limit, searchTermForTable, currentTab, displayInnerList]);
@@ -180,11 +184,15 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
 
   const getMedicalDirectiveSummary = async () => {
     setIsLoadingImage(true);
-    const departmentParam = selectedDepartment || selectedServiceArea ? `&departmentSpecialties=${selectedDepartment}%23${selectedServiceArea}` : "";
+    const departmentParam = selectedDepartment || selectedServiceArea ? `&departmentSpecialties=${selectedDepartment}%23${selectedServiceArea ? selectedServiceArea : ''}` : "";
     const { data: medicalDirectiveSummary } = await GET(
       `medical-directive-service/medicalDirectives/summary?sortBy=${sortValue}&sortByField=${sortField}&limit=${limit}&searchText=${searchTermForTable}&isPaginationRequired=${limit === 9999 ? false : true}&offset=${page - 1}&isNewAppointment=${applicationType === 'NEW' ? true : false}&isReAppointment=${applicationType === 'NEW' ? false : true}${departmentParam}`
     );
-    setMedicalDirectiveSummary(medicalDirectiveSummary?.medicalDirectivesWithAttestationLogsList);
+    if (!displayInnerList) {
+      setMedicalDirectiveSummary(medicalDirectiveSummary?.medicalDirectivesWithAttestationLogsList);
+    } else {
+      setInnerMedicalDirectiveSummaryByDept(medicalDirectiveSummary?.medicalDirectivesWithAttestationLogsList)
+    }
     setTotalCount(medicalDirectiveSummary?.numberOfElements);
     setIsLoadingImage(false);
   }
@@ -327,13 +335,25 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
     ""
   ];
 
+  const innerHeaderValuesForByDept = [
+    "",
+    "No.",
+    "MD ID",
+    "MD Title",
+    "Department / Division",
+    "Attested",
+    "Not Attested",
+    ""
+  ];
+
   const headerValues = currentTab === "ByApplicants" ? headerValuesForByApplicants : currentTab === "ByMedicalDirective" ? headerValuesForByMedicalDirective : headerValuesByDept
-  const innerHeaderValues = currentTab === "ByApplicants" ? innerHeaderValuesForByApplicants : innerHeaderValuesForByMedicalDirective
+  const innerHeaderValues = currentTab === "ByApplicants" ? innerHeaderValuesForByApplicants : currentTab === "ByMedicalDirective" ? innerHeaderValuesForByMedicalDirective : displayInnerList2 ? innerHeaderValuesForByMedicalDirective : innerHeaderValuesForByDept
   const colSortValuesByMedicalDirective = [false, false, true, true, false, true, true];
   const colSortValuesByApplicants = [false, false, true, true, true, false];
   const colSortValuesByDept = [false, false, false, false, false, false, false];
   const colSortValuesByInnerMedicalDirective = [false, true, true, true, true, true, false];
   const colSortValuesByInnerApplicants = [false, false, false, false, false, false];
+  const colSortValuesByInnerDept = [false, false, true, true, false, true, true];
 
   const handleInnerSelectData = (data) => {
     navigate(`/medicalDirective/${data?.attestationLog?.application?.id}/${data?.attestationLog?.medicalDirective?.id}`)
@@ -380,7 +400,6 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
   const handleSelectData = (data) => {
     setSortField('DEFAULT');
     setDisplayInnerList(true);
-    console.log()
     setSelectedMedicalDirective(data?.medicalDirectives)
     getMedicalDirectiveSummaryLevel2(data?.medicalDirectives?.id)
     // setSelectedMedicalDirectiveList([...data?.pendingApplicants, ...data?.completedApplicants])
@@ -391,6 +410,20 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
     setDisplayInnerList(true);
     setSelectedApplicant(data);
     getMedicalDirectiveSummaryByApplicant(data)
+  }
+
+  const handleSelectDataByDept = (data) => {
+    setSortField('DEFAULT');
+    setDisplayInnerList(true);
+    setSelectedDepartment(data?.department?.id)
+  }
+
+  const handleSelectDataByDeptLevel2 = (data) => {
+    setSortField('DEFAULT');
+    setDisplayInnerList(true);
+    setDisplayInnerList2(true);
+    setSelectedMedicalDirective(data?.medicalDirectives)
+    getMedicalDirectiveSummaryLevel2(data?.medicalDirectives?.id)
   }
 
   const actionsData = [
@@ -592,7 +625,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
       // mdNameHoverText.push('Click to view the attestation Log for this Medical Directive by each Applicant')
       // mdId.push(data?.medicalDirectives?.mdID);
       departmentSpecific.push(`${data?.department?.serviceAreaSpecific ? `${data?.department?.serviceAreas?.map(specialty => `${data?.department?.name} -  ${specialty?.name}`)?.join(', ')}` : data?.department?.name}`)
-      // departmentSpecificHover.push([`${data?.departments?.map(data => data?.serviceAreaSpecific ? `${data?.serviceAreas?.map(specialty => `${data?.name} -  ${specialty?.name}`)}` : data?.name)}`]);
+      departmentSpecificHover.push('Click to view the attestation Log for this Department by each Medical Directive');
       noOfStaff.push(data?.staffCount > 0 ? data?.staffCount : '-')
       noOfMD.push(data?.medicalDirectiveCount > 0 ? data?.medicalDirectiveCount : '-')
       attestedBy.push(data?.attestedCount > 0 ? data?.attestedCount : '-');
@@ -605,7 +638,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
       { type: "text", value: No },
       // { type: "text", value: mdId },
       // { type: "text", value: mdName, tooltipValueText: mdNameHoverText, onClickFunction: handleSelectData },
-      { type: "text", value: departmentSpecific },
+      { type: "text", value: departmentSpecific, tooltipValueText: departmentSpecificHover, onClickFunction: handleSelectDataByDept },
       // {
       //   type: "countWithHover",
       //   value: departmentSpecific,
@@ -705,8 +738,66 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
     ];
   };
 
+  const handleBackButton = () => {
+    if (currentTab === "ByDepartments") {
+      if (displayInnerList2) {
+        setDisplayInnerList2(false);
+      } else {
+        setSelectedDepartment();
+        setDisplayInnerList(false);
+      }
+    } else {
+      setDisplayInnerList(false);
+    }
+  }
+
+  const getInnerTableValuesByMedicalDirectiesByDept = () => {
+    const No = [];
+    const dot = []
+    const dotTooltipValues = []
+    const mdName = [];
+    const mdNameHoverText = [];
+    const mdId = [];
+    const departmentSpecificHover = [];
+    const departmentSpecific = [];
+    const attestedBy = [];
+    const notAttested = [];
+    const action = [];
+
+    innerMedicalDirectiveSummaryByDept?.map((data, index) => {
+      dot.push((data?.notAttestedCount === 0 && data?.attestedCount > 0) ? 'green' : (data?.notAttestedCount > 0 && data?.attestedCount !== 0) ? 'yellow' : (data?.notAttestedCount === 0 && data?.attestedCount === 0) ? 'grey' : "red");
+      dotTooltipValues.push((data?.notAttestedCount === 0 && data?.attestedCount > 0) ? 'All Attested' : (data?.notAttestedCount > 0 && data?.attestedCount !== 0) ? 'Not All Attested' : (data?.notAttestedCount === 0 && data?.attestedCount === 0) ? 'No Attestations' : 'Attestation Pending')
+      No.push(index + 1 + ".")
+      mdName.push(data?.medicalDirectives?.title);
+      mdNameHoverText.push('Click to view the attestation Log for this Medical Directive by each Applicant')
+      mdId.push(data?.medicalDirectives?.mdID);
+      departmentSpecific.push(data?.medicalDirectives?.departmentSpecific ? `${data?.medicalDirectives?.departments?.map(data => data?.serviceAreaSpecific ? `${data?.serviceAreas?.map(specialty => `${data?.name} -  ${specialty?.name}`)?.join(', ')}` : data?.name)?.length > 3 ? `${data?.medicalDirectives?.departments?.map(data => data?.serviceAreaSpecific ? `${data?.serviceAreas?.map(specialty => `${data?.name} -  ${specialty?.name}`)?.join(', ')}` : data?.name)?.length} Departments` : data?.medicalDirectives?.departments?.map(data => data?.serviceAreaSpecific ? `${data?.serviceAreas?.map(specialty => `${data?.name} -  ${specialty?.name}`)?.join(', ')}` : data?.name)?.join(', ')}` : 'General')
+      departmentSpecificHover.push(data?.medicalDirectives?.departmentSpecific ? [`${data?.medicalDirectives?.departments?.map(data => data?.serviceAreaSpecific ? `${data?.serviceAreas?.map(specialty => `${data?.name} -  ${specialty?.name}`)}` : data?.name)}`] : ['General']);
+      attestedBy.push(data?.attestedCount > 0 ? data?.attestedCount : '-');
+      notAttested.push(data?.notAttestedCount > 0 ? data?.notAttestedCount : '-')
+      // action.push((data?.attestedCount !== 0 || data?.notAttestedCount !== 0) ? true : false);
+    });
+
+    return [
+      { type: "dot", value: dot, tooltipValue: dotTooltipValues },
+      { type: "text", value: No },
+      { type: "text", value: mdId },
+      { type: "text", value: mdName, tooltipValueText: mdNameHoverText, onClickFunction: handleSelectDataByDeptLevel2 },
+      // { type: "text", value: departmentSpecific },
+      {
+        type: "countWithHover",
+        value: departmentSpecific,
+        hoverText: departmentSpecificHover,
+        isShowHoverText: true,
+      },
+      { type: "text", value: attestedBy },
+      { type: "text", value: notAttested },
+      // { type: "action", value: action },
+    ];
+  }
+
   const tableValues = currentTab === "ByApplicants" ? getTableValuesByApplicants() : currentTab === "ByMedicalDirective" ? getTableValuesByMedicalDirecties() : getTableValuesByMedicalDirectiesByDept()
-  const innerTableValues = currentTab === "ByApplicants" ? getInnerTableValuesByApplicants() : getInnerTableValuesByMedicalDirecties()
+  const innerTableValues = currentTab === "ByApplicants" ? getInnerTableValuesByApplicants() : currentTab === "ByMedicalDirective" ? getInnerTableValuesByMedicalDirecties() : displayInnerList2 ? getInnerTableValuesByMedicalDirecties() : getInnerTableValuesByMedicalDirectiesByDept()
 
   return (
     <>
@@ -912,14 +1003,14 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                 <div>
                   <div className={`${style.heading}`}>
                     {/* Staff Reappointment Status {" "}({" "}{totalCount|| 0 }{" "}) */}
-                    {currentTab === "ByApplicants" ? `Medical Directive Attestation Log For ${selectedApplicant?.applicant?.name?.firstName} ${selectedApplicant?.applicant?.name?.lastName} (${selectedApplicant?.basicDetailReferences?.applicantType?.serviceProviderType}), ${selectedApplicant?.basicDetailReferences?.department?.name} ${selectedApplicant?.basicDetailReferences?.specialty?.name ? ` - ${selectedApplicant?.basicDetailReferences?.specialty?.name}` : ''}` : `Attestation Log For ${selectedMedicalDirective?.mdID} - ${selectedMedicalDirective?.title}`}
+                    {currentTab === "ByApplicants" ? `Medical Directive Attestation Log For ${selectedApplicant?.applicant?.name?.firstName} ${selectedApplicant?.applicant?.name?.lastName} (${selectedApplicant?.basicDetailReferences?.applicantType?.serviceProviderType}), ${selectedApplicant?.basicDetailReferences?.department?.name} ${selectedApplicant?.basicDetailReferences?.specialty?.name ? ` - ${selectedApplicant?.basicDetailReferences?.specialty?.name}` : ''}` : currentTab === 'ByMedicalDirective' ? `Attestation Log For ${selectedMedicalDirective?.mdID} - ${selectedMedicalDirective?.title}` : `Medical Directive Attestation Log For ${selectedDepartmentName}`}
                   </div>
                   <div className={style.currentStatusText}>{`Current status as of ${format(new Date(), 'MMM dd, yyyy')}`}</div>
-                  <div className={`${style.backButton} ${style.marginTop10} ${style.justifyCenter} ${style.cursorPointer}`} onClick={() => setDisplayInnerList(false)}>
+                  <div className={`${style.backButton} ${style.marginTop10} ${style.justifyCenter} ${style.cursorPointer}`} onClick={() => handleBackButton()}>
                     <div className={style.displayInRow}>
                       <ChevronLeftIcon sx={{ color: '#ffffff', fontSize: '20px' }} />
                       <div className={style.marginLeft5}>
-                        {currentTab === "ByApplicants" ? 'Go Back to All Applicants' : 'Go Back to All Medical Directives'}
+                        {currentTab === "ByApplicants" ? 'Go Back to All Applicants' : currentTab === 'ByMedicalDirective' ? 'Go Back to All Medical Directives' : displayInnerList2 ? 'Go Back to All Medical Directives' : 'Go Back to All Departments'}
                       </div>
                     </div>
                   </div>
@@ -1045,12 +1136,12 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                           <TableTwo
                             tableHeaderValues={innerHeaderValues}
                             tableDataValues={innerTableValues}
-                            tableData={currentTab === "ByApplicants" ? medicalDirectiveSummaryByApplicant : selectedMedicalDirectiveList?.allApplicants}
-                            gridStyle={currentTab === "ByApplicants" ? style.byInnerApplicantGrid : style.byInnerMedicalDirectiveGrid}
+                            tableData={currentTab === "ByApplicants" ? medicalDirectiveSummaryByApplicant : currentTab === 'ByMedicalDirective' ? selectedMedicalDirectiveList?.allApplicants : displayInnerList2 ? selectedMedicalDirectiveList?.allApplicants : innerMedicalDirectiveSummaryByDept}
+                            gridStyle={currentTab === "ByApplicants" ? style.byInnerApplicantGrid : currentTab === 'ByMedicalDirective' ? style.byInnerMedicalDirectiveGrid : displayInnerList2 ? style.byInnerMedicalDirectiveGrid : style.byinnerDeptGrid}
                             // actions={currentTab === "ByApplicants" ? innerActionsDataByApplicant : innerActionsData}
                             actions={[]}
                             scrollStyle={style.contractScrollStyle}
-                            tableSortValues={currentTab === "ByApplicants" ? colSortValuesByInnerApplicants : colSortValuesByInnerMedicalDirective}
+                            tableSortValues={currentTab === "ByApplicants" ? colSortValuesByInnerApplicants : currentTab === 'ByMedicalDirective' ? colSortValuesByInnerMedicalDirective : displayInnerList2 ? colSortValuesByInnerMedicalDirective : colSortValuesByInnerDept}
                             heading={"There are no records to display"}
                             getHandleSort={getHandleSort}
                             sortValue={{ sortBy: sortValue, sortByField: sortField }}

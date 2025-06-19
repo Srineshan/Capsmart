@@ -4,6 +4,7 @@
     height: 100vh;
     width: 100vw;
     background-color: $secondarycolor;
+    padding: 0 80px;
 }
 
 .verticalAlignCenter {
@@ -22,8 +23,15 @@
 }
 
 .heading {
-    text-align: left;
+    text-align: center;
     font: normal normal bold 38px/48px proxima-nova;
+    color: $primarycolor;
+    text-transform: capitalize;
+}
+
+.heading2 {
+    text-align: center;
+    font: normal normal bold 30px/48px proxima-nova;
     color: $primarycolor;
     text-transform: capitalize;
 }
@@ -47,4 +55,15 @@
     box-shadow: 0px 3px 12px #00000052;
     border-radius: 8px;
     opacity: 1;
+}
+
+.linkLike {
+    color: #007bff;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.linkLike:hover {
+    color: #0056b3;
+    text-decoration: underline;
 }
