@@ -28,9 +28,9 @@ const MDManager = () => {
   const [refMetadata, setRefMetadata] = useState({ customCount: [], defaultCount: [], setupRequired: [], reviewForUse: [] })
   const [customCount, setCustomCount] = useState([]);
   const [defaultCount, setDefaultCount] = useState([]);
-  const [step1, setStep1] = useState(true);
+  const [step1, setStep1] = useState(false);
   const [step2, setStep2] = useState(false);
-  const [step3, setStep3] = useState(false);
+  const [step3, setStep3] = useState(true);
   const [mdFile, setMdFile] = useState();
 
   useEffect(() => {
