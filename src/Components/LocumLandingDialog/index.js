@@ -21,6 +21,7 @@ import { GET, PUT, TenantID } from "../../Screens/dataSaver";
 import { format, subDays } from "date-fns";
 import { ErrorToaster, SuccessToaster } from "../../utils/toaster";
 import Cookies from "universal-cookie";
+import { Tooltip } from "@mui/material";
 
 const LocumLandingDialog = ({ getIsOpen, days }) => {
   // const { login, register, sendOTP, verifyOTP } = useDescope();
@@ -369,6 +370,7 @@ const LocumLandingDialog = ({ getIsOpen, days }) => {
                   </ThemeProvider>
                 </div>
                 <div className={style.displayInRow}>
+                  <Tooltip title={"Click to access User Guides & Tutorials"} arrow>
                   <div>
                     <div
                       className={`${style.userGuideButton} ${style.marginTop}`}
@@ -379,6 +381,8 @@ const LocumLandingDialog = ({ getIsOpen, days }) => {
                       USER GUIDES & TUTORIALS
                     </div>
                   </div>
+                  </Tooltip>
+                  <Tooltip title={processReappointment !== '' ? "Click to Begin Application" : ""} arrow>
                   <div>
                     <div
                       className={`${style.continue} ${style.marginTop} ${style.marginLeft} ${processReappointment !== '' ? '' : style.disable}`}
@@ -389,6 +393,7 @@ const LocumLandingDialog = ({ getIsOpen, days }) => {
                       CONTINUE
                     </div>
                   </div>
+                  </Tooltip>
                 </div>
               </div>
             </div>

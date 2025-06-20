@@ -24,6 +24,7 @@ import DatalistInput from 'react-datalist-input';
 import MenuIcon from "@mui/icons-material/Menu";
 import Close from './../../../images/close.png';
 import LocumProgressCard from '../../../Components/LocumProgressCard';
+import { Tooltip } from '@mui/material';
 
 const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) => {
   const [formSchema, setFormSchema] = useState();
@@ -512,18 +513,22 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
               <div
                 className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
               >
+                <Tooltip title={"Click to mark as Yes"} arrow>
                 <div
                   className={`${style.reappointmentButtonOutlined}`}
                   onClick={() => { setYesOrNoSuboxone('Yes'); setUpdatedDateSuboxone(format(new Date(), "yyyy-MM-dd'T'00:00")) }}
                 >
                   YES
                 </div>
+                </Tooltip>
+                <Tooltip title={"Click to mark as No"} arrow>
                 <div
                   className={`${style.reappointmentButtonOutlined} ${style.marginLeft}`}
                   onClick={() => { setYesOrNoSuboxone('No'); setUpdatedDateSuboxone(format(new Date(), "yyyy-MM-dd'T'00:00")) }}
                 >
                   NO
                 </div>
+                </Tooltip>
               </div>
             ) : (
               <>
@@ -542,10 +547,18 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
             )}
           </div>
           <div className={style.threeColForButton}>
+            <Tooltip title={"Click to Skip This Step and Continue Later"} arrow>
             <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
+            </Tooltip>
+            <Tooltip title={"Click to Save your Progress and Continue later"} arrow>
             <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
+            </Tooltip>
+            <Tooltip title={"Click to Go Back to the Previous Step"} arrow>
             <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleBackClick()}>BACK</div>
+            </Tooltip>
+            <Tooltip title={"Click to Proceed to the Next Step"} arrow>
             <div className={`${style.continue} ${style.marginTop} ${yesOrNoSuboxone !== '' ? '' : style.disabledButton}`} onClick={yesOrNoSuboxone !== '' ? () => getMissingFields() : () => { }}>CONTINUE</div>
+            </Tooltip>
           </div>
         </div>
         <div>
@@ -572,12 +585,20 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
             </div>
           </div>
           <div className={`${style.stickyContainer} ${isSaveInProgressOpen || showValidationDialog || showJourneyDialog ? style.hiddenStickyContainer : ""}`}>
+            <Tooltip title={"Click to Skip This Step and Continue Later"} arrow>
             <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
+            </Tooltip>
+            <Tooltip title={"Click to Save your Progress and Continue later"} arrow>
             <div className={`${style.saveInProgress} ${style.marginTop10}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
+            </Tooltip>
             <div className={style.twoColForButton}>
+              <Tooltip title={"Click to Go Back to the Previous Step"} arrow>
               <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleBackClick()}>BACK</div>
+              </Tooltip>
               {/* <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowJourneyDialog(true)}>CONTINUE</div> */}
+              <Tooltip title={"Click to Proceed to the Next Step"} arrow>
               <div className={`${style.continue} ${style.marginTop10} ${yesOrNoSuboxone !== '' ? '' : style.disabledButton}`} onClick={yesOrNoSuboxone !== '' ? () => getMissingFields() : () => { }}>CONTINUE</div>
+              </Tooltip>
 
             </div>
           </div>

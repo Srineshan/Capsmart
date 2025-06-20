@@ -276,7 +276,9 @@ const LocumJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, img, conti
                                         </>
                                     ) : (
                                         <div className={` ${style.displayInRow} ${style.marginTop}`}>
+                                            <Tooltip title={"Click to Logout"} arrow>
                                             <div className={`${style.saveInProgress}`} onClick={() => { getIsOpen(false); handleLogout() }}>LOGOUT</div>
+                                            </Tooltip>
                                             <Tooltip
                                                 title="To submit you have to correct all errors and issues identified."
                                                 arrow

@@ -1212,8 +1212,12 @@ const LocumApplicationFormRequirement = () => {
                                         <Tooltip title={"Click to Open the Interactive Training Guide"} arrow>
                                             <div className={`${style.userGuideButton} ${style.marginTop}`} onClick={() => window.open(basicForm?.reappointmentType === "EXTENSION" ? 'https://xd.adobe.com/view/bdfc27b0-ef87-4661-b3d1-4a4c28a10e33-e8af/?fullscreen' : 'https://xd.adobe.com/view/45fcfe64-b36e-44d7-9c6e-73b3559e0618-10af/?fullscreen')}>Interactive Step-by-Step Training Guide</div>
                                         </Tooltip>
+                                        <Tooltip title={"Click to Save and Do It Later"} arrow>
                                         <div className={`${style.saveInProgress} ${style.marginTop10}`} onClick={() => setIsDoItLaterOpen(true)}>DO IT LATER</div>
+                                        </Tooltip>
+                                        <Tooltip title={"Click to Start the Application Now"} arrow>
                                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowPrivilegesForSign(true)}>GET STARTED NOW</div>
+                                        </Tooltip>
                                     </div>
                                 </div>
                             </div>
@@ -1251,6 +1255,7 @@ const LocumApplicationFormRequirement = () => {
                                                 <div
                                                     className={`${style.displayInRowRev} ${style.verticalAlignCenter} ${style.marginTop10}`}
                                                 >
+                                                    <Tooltip title={"Click to Continue"} arrow>
                                                     <div
                                                         className={`${style.reappointmentButton} ${style.marginLeft} ${(((selectedPrivilegeForDisplay?.[0]?.privilegeDetails
                                                             ?.restrictedPrivileges?.esign !== null &&
@@ -1330,6 +1335,7 @@ const LocumApplicationFormRequirement = () => {
                                                     >
                                                         {(selectedPrivilegeForDisplay?.length + selectedAdditionalPrivilegeForDisplay?.length) === indexForSign + 1 ? `CONTINUE` : 'NEXT'}
                                                     </div>
+                                                    </Tooltip>
                                                 </div>
                                             </>
                                         ) : (
@@ -1338,6 +1344,7 @@ const LocumApplicationFormRequirement = () => {
                                                 <div
                                                     className={`${style.displayInRowRev} ${style.verticalAlignCenter} ${style.marginTop10}`}
                                                 >
+                                                    <Tooltip title={"Click to Continue"} arrow>
                                                     <div
                                                         className={`${style.reappointmentButton} ${style.marginLeft} ${(((selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
                                                             ?.restrictedPrivileges?.esign !== null &&
@@ -1412,6 +1419,7 @@ const LocumApplicationFormRequirement = () => {
                                                     >
                                                         {selectedAdditionalPrivilegeForDisplay?.length === indexForSign + 1 ? `CONTINUE` : 'NEXT'}
                                                     </div>
+                                                    </Tooltip>
                                                 </div>
                                             </>
                                         )}
