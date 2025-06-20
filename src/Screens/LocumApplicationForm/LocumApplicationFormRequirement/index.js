@@ -1212,6 +1212,9 @@ const LocumApplicationFormRequirement = () => {
                                         <Tooltip title={"Click to Open the Interactive Training Guide"} arrow>
                                             <div className={`${style.userGuideButton} ${style.marginTop}`} onClick={() => window.open(basicForm?.reappointmentType === "EXTENSION" ? 'https://xd.adobe.com/view/bdfc27b0-ef87-4661-b3d1-4a4c28a10e33-e8af/?fullscreen' : 'https://xd.adobe.com/view/45fcfe64-b36e-44d7-9c6e-73b3559e0618-10af/?fullscreen')}>Interactive Step-by-Step Training Guide</div>
                                         </Tooltip>
+                                        <Tooltip title={"Click to Download the PDF Training Guidee"} arrow>
+                                            <div className={`${style.userGuideButton} ${style.marginTop10}`} onClick={() => window.open(basicForm?.reappointmentType === "EXTENSION" ? 'https://capm-prod-entity-mgmt-service.s3.ca-central-1.amazonaws.com/Locum+Extension+application+User+Guide.pdf' : 'https://capm-prod-entity-mgmt-service.s3.ca-central-1.amazonaws.com/Locum+Renewal+application+User+Guide.pdf')}>PDF Step-by-Step Training Guide</div>
+                                        </Tooltip>
                                         <div className={`${style.saveInProgress} ${style.marginTop10}`} onClick={() => setIsDoItLaterOpen(true)}>DO IT LATER</div>
                                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowPrivilegesForSign(true)}>GET STARTED NOW</div>
                                     </div>
