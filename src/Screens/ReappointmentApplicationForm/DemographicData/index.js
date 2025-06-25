@@ -662,7 +662,7 @@ if (data === `forms[${formIndex}].data.contactAddress2.isMailingAddressSameAsHom
         label = {
             ...label,
             mandatory: true,
-            label: "isMailingAddressSameAsHomeAddress"
+            label: "Mailing address: Home or different?"
         };
     }
 
@@ -670,7 +670,7 @@ if (data === `forms[${formIndex}].data.contactAddress2.isMailingAddressSameAsHom
         label = {
             ...label,
             mandatory: true,
-            label: "isBusinessAddressSameAsHomeAddressOrMailingAddress"
+            label: "Business address: Home or Mailing or Different?"
         };
     }
             keyValuePair.push({

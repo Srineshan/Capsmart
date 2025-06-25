@@ -12,6 +12,7 @@ import LoadingScreen from "../LoadingScreen";
 import CommonInputField from "../CommonFields/CommonInputField";
 import DocumentClarificationDialog from "../DocumentClarificationDialog"
 import { Tooltip } from "@mui/material";
+import { convert } from 'html-to-text';
 
 const ClarificationDialog = ({ getIsOpen, data, type, getDocumentClarificationDialog, dateFormat, getActiveApplicationView, selectedTab }) => {
   let cookie = new Cookie();
@@ -145,11 +146,39 @@ const ClarificationDialog = ({ getIsOpen, data, type, getDocumentClarificationDi
 
   const handleSubmitRequestForClarification = async () => {
     const user = JSON.parse(sessionStorage.getItem('user'));
-    let clarificationRequiredForTitle = data?.title
+    let clarificationRequiredForTitle = data?.title;
+    const cleanedUserNotes = convert(userNotes || '', {
+      wordwrap: false,   // Don't wrap lines artificially
+      selectors: [
+        {
+          selector: 'a',
+          options: { ignoreHref: true }
+        },
+        {
+          selector: 'strong',
+          format: 'inline' // Output just text (no **)
+        },
+        {
+          selector: 'br',
+          format: 'lineBreak'
+        },
+        {
+          selector: 'p',
+          format: 'block' // Add double line breaks between paragraphs
+        }
+      ],
+      formatters: {
+        // Customize bold behavior: keep text, but don’t wrap in markdown
+        inline: (elem, walk, builder) => {
+          walk(elem.children, builder);
+        }
+      }
+    });
+
     let temp = {
       clarificationRequiredFor: clarificationRequiredForTitle,
       clarificationTitle: clarificationSubject,
-      clarificationDescription: userNotes,
+      clarificationDescription: cleanedUserNotes,
       clarificationRequiredFrom: type,
       clarificationRequestType: data?.schemaCategory === "UploadYourDoc" ? 'REQUEST_ADDITIONAL_DOCUMENTS' : 'NA',
       clarificationRequestedBy: {

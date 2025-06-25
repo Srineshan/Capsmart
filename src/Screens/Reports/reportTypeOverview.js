@@ -303,6 +303,7 @@ const ReportTypeOverview = () => {
                 setIsLoading(false);
                 break;
             case 'staffReappointmentTracker':
+                getSubmittedTimesheetsPaymentStatus('withoutParameter');
                 break;
             case 'locumStaffRenewalStatusTracker':
                 getSubmittedTimesheetsPaymentStatus('withParameter');

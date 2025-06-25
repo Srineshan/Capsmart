@@ -24,7 +24,7 @@ const DoItLaterDialog = ({ getIsOpen }) => {
                             />
                         </div>
                     </div>
-                    <p className={`${style.description} ${style.marginTop}`}>No problem! You can start your application anytime you're ready by clicking the link in the original email you received.</p>
+                    <p className={`${style.description} ${style.marginTop}`}>No problem! You can start your Reappointment application anytime you're ready by clicking the link in the original email you received.</p>
                     <div className={`${style.justifyCenter} ${style.displayInRow} ${style.marginTop}`}>
                         <Tooltip arrow title={"Click to Close"}>
                         <div className={`${style.saveInProgress}`} onClick={() => { getIsOpen(false); }}>CANCEL</div></Tooltip>
