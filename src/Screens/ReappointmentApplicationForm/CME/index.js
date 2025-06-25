@@ -435,9 +435,7 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
             .then(response => {
                 console.log(response)
                 SuccessToaster("Application Updated Successfully");
-                if (actionType !== "save") {
                     getPreApplication(); // only fetch data again if not "save"
-                  }
             })
             .catch((error) => {
                 console.log(error)
