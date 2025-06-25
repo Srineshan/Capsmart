@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Dialog, Classes } from '@blueprintjs/core';
 import CrossPink from "../../images/crossPink.png";
 import Cookie from 'universal-cookie';
-
+import { useNavigate } from 'react-router-dom';
 import style from './index.module.scss'
 import { useDescope } from '@descope/react-sdk';
 import { Tooltip } from '@mui/material';
@@ -10,13 +10,15 @@ import { Tooltip } from '@mui/material';
 const DoItLaterDialog = ({ getIsOpen }) => {
     const [isContinue, setIsContinue] = useState(false);
     const { logout } = useDescope();
-    // const handleLogout = () => {
-    //     var cookies = new Cookie();
-    //     // cookies.remove("user", { path: "/" });
-    //     cookies.remove("entityId", { path: "/" });
-    //     // cookies.remove("authorization", { path: "/" });
-    //     logout()
-    // }
+    const navigate = useNavigate()
+    const handleLogout = () => {
+        var cookies = new Cookie();
+        // cookies.remove("user", { path: "/" });
+        cookies.remove("entityId", { path: "/" });
+        cookies.remove("authorization", { path: "/" });
+        logout();
+        navigate('/')
+    }
     return (
         <Dialog isOpen={getIsOpen} onClose={() => getIsOpen(false)} className={`${style.eSignDialog} ${style.eSignDialogBackground}`} canOutsideClickClose={false} canEscapeKeyClose={false}>
             <div>
@@ -37,7 +39,7 @@ const DoItLaterDialog = ({ getIsOpen }) => {
                         <Tooltip arrow title={"Click to Close"}>
                         <div className={`${style.saveInProgress}`} onClick={() => { getIsOpen(false); }}>CANCEL</div></Tooltip>
                         <Tooltip title="Click to Confirm and Logout" arrow>
-                        <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { logout(); }}>CONFIRM</div></Tooltip>
+                        <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { handleLogout(); }}>CONFIRM</div></Tooltip>
                     </div>
                 </div>
 

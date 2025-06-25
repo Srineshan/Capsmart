@@ -98,6 +98,20 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
     const [deleteData, setDeleteData] = useState();
     const [refetchRefDoc, setRefetchRefDoc] = useState(false);
+    const requiredShortNames = (basicForm?.documentsRequired || [])
+    .filter((doc) => doc?.required)
+    .map((doc) => doc?.document?.shortName);
+    const uploadedDocs = tempValue?.table || [];
+    const isContinueEnabled = requiredShortNames.every((shortName) => {
+    const uploadedDoc = uploadedDocs.find(
+        (doc) => doc.documentType === shortName
+    );
+    return uploadedDoc && uploadedDoc.valid === true; // must exist and be valid
+    });
+    const uploadedDocumentTypes = tempValue?.table?.map((row) => row?.documentType) || [];
+    const allDocumentsUploaded = requiredShortNames.every((shortName) =>
+        uploadedDocumentTypes.includes(shortName)
+    );
     useEffect(() => {
         if (basicForm) {
             getFormSchema()
@@ -502,7 +516,9 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                 // temp.push({ "type": "action", "value": array?.map(innerData => actions) })
                 temp.push({
                     "type": "icon", "icon": array?.map(innerData =>
-                        <img src={DeleteIcon} alt="" className={style.docTypeImgStyle} onClick={() => { setDeleteData(innerData); setShowDeleteConfirmation(true) }} />
+                         <Tooltip title="Click to Delete" arrow>
+                        <img src={DeleteIcon} alt="" className={`${style.docTypeImgStyle} ${style.cursorPointer}`} onClick={() => { setDeleteData(innerData); setShowDeleteConfirmation(true) }} />
+                        </Tooltip>
                     ), 'isShowHoverText': false
                 });
             }
@@ -513,7 +529,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                         const rowId = innerData?.rowId;
                         return (
                             <Tooltip title="Click to Edit" arrow>
-                                <ModeEditOutlinedIcon alt="" className={style.docTypeEditImgStyle} onClick={() => { setIsLoadingDocs(true); setShowFileWithFields(true); getDocument(rowId); }} />
+                                <ModeEditOutlinedIcon alt="" className={`${style.docTypeEditImgStyle} ${style.cursorPointer}`} onClick={() => { setIsLoadingDocs(true); setShowFileWithFields(true); getDocument(rowId); }} />
                             </Tooltip>
                         );
                     }),
@@ -911,9 +927,13 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                     </div>
                     <div className={style.threeColForButton}>
                         <div></div>
+                        <Tooltip title={"Click to Save your Progress and Continue later"} arrow>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
+                        </Tooltip>
                         {/* <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleBackClick()}>BACK</div> */}
+                        <Tooltip title={"Click to Proceed to the Next Step"} arrow>
                         <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleContinue()}>CONTINUE</div>
+                        </Tooltip>
                     </div>
                 </div>
 
@@ -951,9 +971,16 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
 
                     <div className={`${style.stickyContainer} ${isSaveInProgressOpen || isShowESignDialog || showJourneyDialog || isShowUploadValidation
                         || showFileDisplayDialog || isShowESignConfirmationDialog ? style.hiddenStickyContainer : ""}`}>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>
+                        <Tooltip title={"Click to Skip This Step and Continue Later"} arrow>
+                       <div className={`${!isContinueEnabled ? `${style.saveInProgress} ${style.marginTop}`  : `${style.saveInProgress} ${style.marginTop} ${style.disabledButton}` }`}  onClick={!isContinueEnabled ? handleContinue : undefined}>
+                            SKIP FOR NOW
+                        </div>
+                        </Tooltip>
+                        <Tooltip title={"Click to Save your Progress and Continue later"} arrow>
+                        <div className={`${style.saveInProgress} ${style.marginTop10}`} onClick={() => getIsSaveInProgressOpen(true)}>
                             SAVE IN PROGRESS
                         </div>
+                        </Tooltip>
                         {/* <div
                         className={`${style.saveInProgress} ${style.marginTop10} ${basicForm?.forms?.[formIndex]?.data !== null &&
                             getMissingDocs()?.length === 0
@@ -990,7 +1017,10 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                         >
                             CONTINUE
                         </div> */}
-                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue()}>CONTINUE</div>
+                        {/* <Tooltip title={"Click to Proceed to the Next Step"} arrow> */}
+                        <Tooltip title={isContinueEnabled ? "Click to Proceed to the Next Step" : "Please upload all required documents"} arrow>
+                        <div className={`${isContinueEnabled ? `${style.continue} ${style.marginTop10}`  : `${style.continue} ${style.marginTop10} ${style.disabledButton}` }`} onClick={isContinueEnabled ? handleContinue : undefined}>CONTINUE</div>
+                        </Tooltip>
                         {/* </div> */}
                     </div>
                     {/* <div className={style.marginTop}>
