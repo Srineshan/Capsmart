@@ -342,7 +342,17 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
         // setWarningFields(missingKeys);
     };
 
-    const getIsSaveInProgressOpen = (value) => {
+    // const getIsSaveInProgressOpen = (value) => {
+    //     setIsSaveInProgressOpen(value);
+    // }
+
+      const getIsSaveInProgressOpen = (value) => {
+        if (value) {
+            handleSubmitApplicationReq("save")
+                .then(() => getAllMissingFields("save"))
+                .catch((error) => console.error("Error processing skip action:", error));
+        }
+        setUpdateFrom('');
         setIsSaveInProgressOpen(value);
     }
 
@@ -643,11 +653,29 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
         let hasMandatoryMissingFields = [];
 
         metadata?.forEach((data, index) => {
+            let label = labels[index] || uniqueLabels?.find(labelData => labelData?.path === data);
+ 
+// Force mandatory true for the two specific paths
+if (data === `forms[${formIndex}].data.contactAddress2.isMailingAddressSameAsHomeAddress`) {
+        label = {
+            ...label,
+            mandatory: true,
+            label: "Mailing address: Home or different?"
+        };
+    }
+ 
+    if (data === `forms[${formIndex}].data.contactAddress3.isBusinessAddressSameAsHomeAddressOrMailingAddress`) {
+        label = {
+            ...label,
+            mandatory: true,
+            label: "Business address: Home or Mailing or Different?"
+        };
+    }
             keyValuePair.push({
                 key: data,
                 value: getValueByPath(basicForm, data),
                 // Assign correct label from either Basic Info or Contact Info labels
-                label: labels[index] || uniqueLabels?.find(labelData => labelData?.path === data)
+                label: label
             });
         });
 
@@ -728,15 +756,17 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
         allMissingFields = allMissingKeys;
         hasMandatoryMissingFields = allMissingKeys?.find(field => field?.label?.mandatory === true);
 
-        if (data === "skipped") {
+        if(data === "skipped" || data === "save"){
             handleContactAddressSubmit();
+            if (data === "skipped") {
             if (sessionStorage.getItem('fromSummary') === "true") {
                 navigate(-1);
             } else {
                 navigate(navigateURL)
             }
         }
-        if (data !== "skipped") {
+        }
+     else {
             if (hasMandatoryMissingFields) {
                 setShowValidationDialog(true);
             } else {

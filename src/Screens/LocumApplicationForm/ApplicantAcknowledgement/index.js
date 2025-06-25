@@ -98,7 +98,14 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
         setShowJourneyDialog(value);
     }
 
-    const getIsSaveInProgressOpen = (value) => {
+    // const getIsSaveInProgressOpen = (value) => {
+    //     setIsSaveInProgressOpen(value);
+    // }
+      const getIsSaveInProgressOpen = (value) => {
+        if (value) {
+            handleSubmitApplicationReq("save")
+                .catch((error) => console.error("Error processing skip action:", error));
+        }
         setIsSaveInProgressOpen(value);
     }
 
@@ -179,14 +186,23 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
         navigate(navigateBackURL)
     }
 
-    const handleSubmitApplicationReq = async () => {
+    const handleSubmitApplicationReq = async (data) => {
         setIsLoading(true)
-        if (isSigned) {
+        // if (isSigned) {
+        let unFilledFields = ["continue"];
+        if (data === "skipped") {
+        unFilledFields = ["skipped"];
+        } else if (data === "save" && !isSigned) {
+        unFilledFields = ["skipped"];
+        } else if (data === "save" && isSigned) {
+        unFilledFields = ["continue"];
+        }
             let temp = {
                 schemaId: basicForm?.forms?.[formIndex]?.schemaId,
-                data: !isEdited ? basicForm?.forms?.[formIndex]?.data : { esignDate: isSigned ? name + " " + currentDate : '' },
+                 data: data !== "skipped" ? (!isEdited ? basicForm?.forms?.[formIndex]?.data : { esignDate: isSigned ? `${name} ${currentDate}` : '' }) : {},
                 acknowledged: isSigned,
-                esign: { esign: isSigned ? encryptedText : '', name: isSigned ? name : '', signedDate: isSigned ? currentDate : '' }
+                unFilledFields,
+                esign: data !== "skipped" ? { esign: isSigned ? encryptedText : '', name: isSigned ? name : '', signedDate: isSigned ? currentDate : '' } : null
             }
             await PUT(`application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
                 .then(response => {
@@ -207,15 +223,15 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
                     console.log(error)
                     ErrorToaster("Unexpected Error Updating Application");
                 });
-        }
-        else {
-            setIsLoading(false)
-            // if (sessionStorage.getItem('fromSummary') === 'true') {
-            //     navigate(-1);
-            // } else {
-            //     navigate('/applicationForm/section1/acknowledgementStep2')
-            // }
-        }
+        // }
+        // else {
+        //     setIsLoading(false)
+        //     // if (sessionStorage.getItem('fromSummary') === 'true') {
+        //     //     navigate(-1);
+        //     // } else {
+        //     //     navigate('/applicationForm/section1/acknowledgementStep2')
+        //     // }
+        // }
     }
     return (
         <div>
@@ -279,6 +295,9 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
                     </div>
                     <div className={style.threeColForButton}>
                         <div></div>
+                        <Tooltip title={"Click to Skip This Step and Continue Later"} arrow>
+                            <div className={`${style.saveInProgress} ${style.marginTop} ${isSigned ? style.disabledButton : ''}`} onClick={isSigned ? () => { } : () => {handleSubmitApplicationReq("skipped");setShowJourneyDialog(true)}}>SKIP FOR NOW</div>
+                        </Tooltip>
                         <Tooltip title={"Click to Save your progress and Continue later"} arrow>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                         </Tooltip>
@@ -286,7 +305,7 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
                         <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleBackClick()}>BACK</div>
                         </Tooltip>
                         <Tooltip title={"Click to Proceed to the Next Step"} arrow>
-                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => { handleSubmitApplicationReq(); setShowJourneyDialog(true) }}>CONTINUE</div>
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={!isSigned ? () => { } : () => { handleSubmitApplicationReq(); setShowJourneyDialog(true) }} >CONTINUE</div>
                         </Tooltip>
                     </div>
                 </div>
@@ -314,15 +333,18 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
                         </div>
                     </div>
                     <div className={`${style.stickyContainer} ${isSaveInProgressOpen || showJourneyDialog ? style.hiddenStickyContainer : ""}`}>
+                        <Tooltip title={"Click to Skip This Step and Continue Later"} arrow>
+                            <div className={`${style.saveInProgress} ${style.marginTop} ${isSigned ? style.disabledButton : ''}`} onClick={isSigned ? () => { } : () => {handleSubmitApplicationReq("skipped");setShowJourneyDialog(true)}}>SKIP FOR NOW</div>
+                        </Tooltip>
                         <Tooltip title={"Click to Save your progress and Continue later"} arrow>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
+                        <div className={`${style.saveInProgress} ${style.marginTop10}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                         </Tooltip>
                         <div className={style.twoColForButton}>
                             <Tooltip title={"Click to Go Back to the Previous Step"} arrow>
                             <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleBackClick()}>BACK</div>
                             </Tooltip>
                             <Tooltip title={"Click to Proceed to the Next Step"} arrow>
-                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => { handleSubmitApplicationReq(); setShowJourneyDialog(true) }} >CONTINUE</div>
+                            <div className={`${style.continue} ${style.marginTop10} ${!isSigned ? style.disabledButton : ''}`} onClick={!isSigned ? () => { } : () => { handleSubmitApplicationReq(); setShowJourneyDialog(true) }} >CONTINUE</div>
                             </Tooltip>
                         </div>
                     </div>

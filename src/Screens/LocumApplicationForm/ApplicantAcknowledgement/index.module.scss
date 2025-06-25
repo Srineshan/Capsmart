@@ -388,6 +388,12 @@
     z-index: 9999;
 }
 
+.disabledButton {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+}
+
+
 
 /* Responsive adjustments */
 // @media (max-width: 1024px) {
