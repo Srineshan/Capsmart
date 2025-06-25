@@ -4726,6 +4726,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
             {/* {basicForm?.privileges?.obligatedPrivileges?.map((data, index) => ( */}
             <div>{getFieldsForSign(selectedPrivilegeForDisplay?.[indexForSign]?.id, indexForSign, selectedPrivilegeForDisplay?.[indexForSign])}</div>
             {/* ))} */}
+            <Tooltip title={"Click to Continue"} arrow>
             <div
               className={`${style.displayInRowRev} ${style.verticalAlignCenter} ${style.marginTop10}`}
             >
@@ -4827,6 +4828,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                 {selectedPrivilegeForDisplay?.length === indexForSign + 1 ? `CONTINUE` : 'NEXT'}
               </button>
             </div>
+            </Tooltip>
           </div>
         </div>
       </Dialog>
@@ -4857,6 +4859,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
             {/* {basicForm?.privileges?.obligatedPrivileges?.map((data, index) => ( */}
             <div>{getFieldsForSign(selectedAdditionalPrivilegeForDisplay?.[indexForSign]?.id, indexForSign, selectedAdditionalPrivilegeForDisplay?.[indexForSign])}</div>
             {/* ))} */}
+            <Tooltip title={"Click to Continue"} arrow>
             <div
               className={`${style.displayInRowRev} ${style.verticalAlignCenter} ${style.marginTop10}`}
             >
@@ -4958,6 +4961,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                 {selectedAdditionalPrivilegeForDisplay?.length === indexForSign + 1 ? `CONTINUE` : 'NEXT'}
               </button>
             </div>
+            </Tooltip>
           </div>
         </div>
       </Dialog>

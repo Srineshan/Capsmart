@@ -930,7 +930,7 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen, getActiveApplicationView, date
                             {formDetails?.basicDetails?.applicant?.name?.firstName
                               ? formDetails?.updatedBy?.name?.firstName.charAt(0).toUpperCase() +
                               formDetails?.updatedBy?.name?.firstName.slice(1).toLowerCase()
-                              : ""}{formDetails?.updatedBy?.name?.lastName?.toUpperCase()}, {formDetails?.updatedBy?.title?.title}
+                              : ""}{formDetails?.updatedBy?.name?.lastName?.toUpperCase()} {formDetails?.updatedBy?.title?.title  ? `, ${formDetails?.updatedBy?.title?.title}`: ""}
                           </span>
                         </div>
                       </div>

@@ -18,6 +18,7 @@ import ReappointmentJourneyDialog from '../../../Components/reappointmentJourney
 import MenuIcon from "@mui/icons-material/Menu";
 import Close from './../../../images/close.png';
 import LocumProgressCard from '../../../Components/LocumProgressCard';
+import { Tooltip } from '@mui/material';
 
 const MedicalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [formSchema, setFormSchema] = useState();
@@ -77,6 +78,7 @@ const MedicalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
 
 
     const getIsSaveInProgressOpen = (value) => {
+        getMissingFields("save");
         setIsSaveInProgressOpen(value);
     }
 
@@ -171,21 +173,23 @@ const MedicalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
         allMissingFields = missingKeys;
         hasMandatoryMissingFields = missingKeys?.find(field => field?.label?.mandatory === true);
 
-        if (data === "skipped") {
-            handleSubmitApplicationReq();
+        if (data === "skipped" || data === "save") {
+            handleSubmitApplicationReq(data);
         }
 
-        if (data !== "skipped") {
+        // if (data !== "skipped") {
+        else{
             if (hasMandatoryMissingFields) {
                 setShowValidationDialog(true);
             } else {
-                handleSubmitApplicationReq();
+                handleSubmitApplicationReq(data);
             }
         }
+    // }
         console.log(keyValuePair, 'medicalHistoryMetadata', missingKeys, hasMandatoryMissingFields, allMissingFields)
     }
 
-    const handleSubmitApplicationReq = async (data) => {
+    const handleSubmitApplicationReq = async (actionType) => {
         // if (isEdited) {
         console.log("MissingmedicalHistory", allMissingFields)
         let temp = {
@@ -195,7 +199,7 @@ const MedicalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
             // unFilledFields: Array.isArray(warningFields) 
             // ? warningFields.map(field => JSON.stringify(field))
             // : [],
-            acknowledged: data === "skipped" ? false : true
+            acknowledged: true
         }
         await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
             .then(response => {
@@ -203,6 +207,7 @@ const MedicalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
                 setBasicForm(response?.data)
                 SuccessToaster("Application Updated Successfully");
                 getPreApplication();
+                 if (actionType === "continue" || actionType === "skipped") {
                 if (sessionStorage.getItem('fromSummary') === "true") {
                     navigate(-1);
                 }
@@ -210,6 +215,7 @@ const MedicalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
                     navigate(navigateURL)
 
                 }
+            }
             })
             .catch((error) => {
                 console.log(error)
@@ -255,10 +261,18 @@ const MedicalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
                         )}
                     </div>
                     <div className={style.threeColForButton}>
+                        <Tooltip title={"Click to Skip This Step and Continue Later"} arrow>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
+                        </Tooltip>
+                        <Tooltip title={"Click to Save your Progress and Continue later"} arrow>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
+                        </Tooltip>
+                        <Tooltip title={"Click to Go Back to the Previous Step"} arrow>
                         <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleBackClick()}>BACK</div>
-                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => getMissingFields()}>CONTINUE</div>
+                        </Tooltip>
+                         <Tooltip title={"Click to Proceed to the Next Step"} arrow>
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => getMissingFields("continue")}>CONTINUE</div>
+                        </Tooltip>
                     </div>
                 </div>
                 <div>
@@ -285,12 +299,20 @@ const MedicalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
                         </div>
                     </div>
                     <div className={`${style.stickyContainer} ${isSaveInProgressOpen || showValidationDialog || showJourneyDialog ? style.hiddenStickyContainer : ""}`}>
+                        <Tooltip title={"Click to Skip This Step and Continue Later"} arrow>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
+                        </Tooltip>
+                        <Tooltip title={"Click to Save your Progress and Continue later"} arrow>
                         <div className={`${style.saveInProgress} ${style.marginTop10}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
+                        </Tooltip>
                         <div className={style.twoColForButton}>
+                            <Tooltip title={"Click to Go Back to the Previous Step"} arrow>
                             <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleBackClick()}>BACK</div>
+                            </Tooltip>
                             {/* <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowJourneyDialog(true)}>CONTINUE</div> */}
-                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()}>CONTINUE</div>
+                            <Tooltip title={"Click to Proceed to the Next Step"} arrow>
+                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields("continue")}>CONTINUE</div>
+                            </Tooltip>
                         </div>
                     </div>
 

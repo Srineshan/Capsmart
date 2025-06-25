@@ -293,6 +293,12 @@ const NewActiveApplication = ({
     borderStyle: "dashed",
     borderRadius: 5,
   };
+  const visibleNotes = form?.notesDetails
+  ?.filter((log) => {
+    if (!log?.notes?.notes) return false;
+    if (log?.private && log?.user?.id !== users?.id) return false;
+    return true;
+  }) || [];
 
   console.log("dataLevel", users?.id)
 
@@ -12271,6 +12277,7 @@ const NewActiveApplication = ({
                                   </Tooltip>
                                 </div>
                               </div>
+                              {visibleNotes.length > 0 ? (
                               <div
                                 className={`${style.displayInRow} ${style.verticalAlignCenter}`}
                               >
@@ -12300,6 +12307,9 @@ const NewActiveApplication = ({
                                   )}
                                 </div>
                               </div>
+                              ) : (
+                                <div className={`${style.tableHeaderHeadingNoneTextStyle}`}>None</div>
+                              )}
                             </div>
                             {expandStates.section5 && (
                               // <>
@@ -12386,7 +12396,7 @@ const NewActiveApplication = ({
                                                     />
                                                   </div>
                                                   <div
-                                                    className={`${style.cursorPointer} ${style.notesTitle}`}
+                                                    className={`${style.cursorPointer} ${style.overFlowHidden} ${style.notesTitle}`}
                                                     onClick={() => {
                                                       setShowFileDisplayDialog(true);
                                                       setselectedFile(file);
@@ -12485,7 +12495,8 @@ const NewActiveApplication = ({
                                 <div
                                   className={`${style.marginLeft10} ${style.tableDataFontStyle1}`} onClick={() => toggleExpand("section1")}
                                 >
-                                  {expandStates.section1 ? (
+                                  {(form?.forms?.filter((data) => data?.clarifications?.length > 0)?.length > 0) ? (
+                                  expandStates.section1 ? (
                                     <Tooltip title="Collapse Section" arrow>
                                       <RemoveIcon
                                         sx={{
@@ -12506,6 +12517,8 @@ const NewActiveApplication = ({
                                         }}
                                       />
                                     </Tooltip>
+                                  )) : (
+                                   <div className={`${style.tableHeaderHeadingNoneTextStyle}`}>None</div>
                                   )}
                                 </div>
                               </div>

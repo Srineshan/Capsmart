@@ -163,7 +163,7 @@ const FileDisplayDialog = ({ getIsOpen, file }) => {
           <div className={Classes.DIALOG_BODY}>
             {/* <div className={` ${isExpanded ? style.dialog :Classes.DIALOG_BODY}`}> */}
             <div className={style.spaceBetween}>
-              <div className={style.heading}>{file?.fileUploaded !== undefined ? `${file?.documentType} ${file?.fileUploaded}` : file?.fileName !== undefined ? ` ${file?.fileName}` : ''}</div>
+              <div className={`${style.heading} ${style.overFlowHidden}`}>{file?.fileUploaded !== undefined ? `${file?.documentType} ${file?.fileUploaded}` : file?.fileName !== undefined ? ` ${file?.fileName}` : ''}</div>
               <div className={style.displayInRow}>
                 <div
                   className={`${isPrintClicked && style.addStyle} ${style.alignCenter
