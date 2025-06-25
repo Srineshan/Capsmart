@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { GET } from './../dataSaver';
-import Tile from '../../Components/Tile';
-import Table from '../../Components/TableDesign';
-import LevelTwoHeader from '../../Components/LevelTwoHeader';
+import { GET } from './../../dataSaver';
+import Tile from '../../../Components/Tile';
+import Table from '../../../Components/TableDesign';
+import LevelTwoHeader from '../../../Components/LevelTwoHeader';
 import MessageIcon from '@mui/icons-material/Message';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import { format, startOfWeek, endOfWeek } from 'date-fns';
 import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
-import FeedbackTicketResolution from '../../Components/FeedbackTicketResolution';
+import FeedbackTicketResolution from '../../../Components/FeedbackTicketResolution';
 
 import style from './index.module.scss';
 

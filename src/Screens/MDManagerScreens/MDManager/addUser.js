@@ -1,28 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import { Dialog, Classes, Icon, Intent } from '@blueprintjs/core';
-import { POST, TenantID, GET, PUT, DELETE } from './../dataSaver';
-import { ErrorToaster2, SuccessToaster2 } from './../../utils/toaster';
+import { POST, TenantID, GET, PUT, DELETE } from './../../dataSaver';
+import { ErrorToaster2, SuccessToaster2 } from './../../../utils/toaster';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
-import { FormatPhoneNumber } from '../../utils/formatting';
-import CommonLabel from '../../Components/CommonFields/CommonLabel';
-import SuffixList from './../../Components/SuffixList';
-import CommonSwitch from "../../Components/CommonFields/CommonSwitch";
-import AddUserStep2 from '../../images/addUserStep2.png';
-import AddUserStep3 from '../../images/addUserStep3.png';
-import AddUserStep1Selected from '../../images/addUserStep1Selected.png';
-import AddUserStep2Selected from '../../images/addUserStep2Selected.png';
-import AddUserStep3Selected from '../../images/addUserStep3Selected.png';
-import AddUserStep1Completed from '../../images/addUserStep1Completed.png';
-import AddUserStep2Completed from '../../images/addUserStep2Completed.png';
+import { FormatPhoneNumber } from '../../../utils/formatting';
+import CommonLabel from '../../../Components/CommonFields/CommonLabel';
+import SuffixList from './../../../Components/SuffixList';
+import CommonSwitch from "../../../Components/CommonFields/CommonSwitch";
+import AddUserStep2 from '../../../images/addUserStep2.png';
+import AddUserStep3 from '../../../images/addUserStep3.png';
+import AddUserStep1Selected from '../../../images/addUserStep1Selected.png';
+import AddUserStep2Selected from '../../../images/addUserStep2Selected.png';
+import AddUserStep3Selected from '../../../images/addUserStep3Selected.png';
+import AddUserStep1Completed from '../../../images/addUserStep1Completed.png';
+import AddUserStep2Completed from '../../../images/addUserStep2Completed.png';
 import CancelIcon from '@mui/icons-material/Cancel';
 import style from './index.module.scss';
-import CommonTextField from '../../Components/CommonFields/CommonTextField';
-import CommonPhoneField from '../../Components/CommonFields/CommonPhoneField';
-import UserCreatedSuccessfullyDialog from '../../Components/UserCreatedSuccessfullyDialog';
+import CommonTextField from '../../../Components/CommonFields/CommonTextField';
+import CommonPhoneField from '../../../Components/CommonFields/CommonPhoneField';
+import UserCreatedSuccessfullyDialog from '../../../Components/UserCreatedSuccessfullyDialog';
 
 const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
     const [selectedDepartments, setSelectedDepartments] = useState([])

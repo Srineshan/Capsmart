@@ -1,4 +1,4 @@
-@import "../../index.scss";
+@import "../../../index.scss";
 
 .smallCardGrid {
     display: grid;
@@ -28,8 +28,20 @@
     padding: 0 20px;
 }
 
+.padding40 {
+    padding: 0 40px;
+}
+
 .marginLeft30 {
     margin-left: 30px;
+}
+
+.marginLeft {
+    margin-left: 20px;
+}
+
+.marginLeft10 {
+    margin-left: 10px;
 }
 
 .grid3 {
@@ -131,10 +143,22 @@
     grid-gap: 10px;
 }
 
-.registeredUsersGrid {
+.mdListGrid {
     display: grid;
-    grid-template-columns: 5% 20% 20% 8% 10% 15% 9% 5%;
-    grid-gap: 10px;
+    grid-template-columns: 3% 30% 10% 23% 12% 10% 5%;
+    grid-gap: 1%;
+}
+
+.draftGrid {
+    display: grid;
+    grid-template-columns: 3% 18% 10% 20% 16% 10% 10% 5%;
+    grid-gap: 1%;
+}
+
+.revisionGrid {
+    display: grid;
+    grid-template-columns: 3% 18% 10% 20% 16% 10% 10% 5%;
+    grid-gap: 1%;
 }
 
 .registeredUsersMultiSiteGrid {
@@ -143,10 +167,10 @@
     grid-gap: 1%;
 }
 
-.invitedUsersGrid {
+.outstandingGrid {
     display: grid;
-    grid-template-columns: 5% 15% 10% 13% 10% 15% 8% 10% 5%;
-    grid-gap: 10px;
+    grid-template-columns: 23% 15% 15% 15% 15% 5% 5%;
+    grid-gap: 1%;
 }
 
 .bigCardStyle {
@@ -224,8 +248,14 @@
 }
 
 .addNewMDDialog {
-    height: 30vh !important;
+    height: 32vh !important;
     width: 35% !important;
+}
+
+.attestationDialog {
+    height: 95vh !important;
+    width: 85% !important;
+    overflow: scroll;
 }
 
 .extensionStyle {
@@ -297,7 +327,7 @@
 }
 
 .fullWidth {
-    width: 100%;
+    width: 100% !important;
 }
 
 .buttonStyle {
@@ -619,4 +649,113 @@
     text-align: left;
     font: normal normal normal 14px/32px proxima-nova;
     color: $textgrey;
+}
+
+.createGroupButton {
+    background: transparent radial-gradient(closest-side at 50% 50%, $primarycolor 0%, #03313D 100%) 0% 0% no-repeat padding-box;
+    border-radius: 8px;
+    width: 180px;
+    height: 35px;
+}
+
+.attestationGrid {
+    display: grid;
+    grid-template-columns: 80% 20%;
+}
+
+.attestationGroupCard {
+    background: $secondarycolor 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 6px #1D243752;
+    border: 0.20000000298023224px solid #9AAFB5;
+    border-radius: 4px;
+}
+
+.attestationDescStyle {
+    text-align: left;
+    font: normal normal normal 14px/20px proxima-nova;
+    color: $textgrey;
+}
+
+.attestationViewButton {
+    text-align: left;
+    font: normal normal bold 14px/17px proxima-nova;
+    color: $primarycolor;
+    text-transform: capitalize;
+    opacity: 0.5;
+}
+
+.attestationDialogHeaderCard {
+    background: rgba(6, 97, 122, 0.1);
+    border-radius: 4px;
+}
+
+.attestationDialogTitle {
+    text-align: left;
+    font: normal normal bold 16px/26px proxima-nova;
+    color: $primarycolor;
+}
+
+.attestationGroupGrid {
+    display: grid;
+    grid-template-columns: 43% 10% 43%;
+    gap: 2%;
+}
+
+.attestationGroupLeftCard {
+    background: rgba(20, 53, 143, 0.5);
+    border: 0.20000000298023224px solid #14358F;
+    border-radius: 8px;
+    padding: 20px;
+    height: 300px;
+    overflow: scroll
+}
+
+.attestationGroupRightCard {
+    background: $secondarycolor 0% 0% no-repeat padding-box;
+    border: 0.20000000298023224px solid #9AAFB5;
+    border-radius: 8px;
+    padding: 20px;
+    height: 300px;
+    overflow: scroll;
+}
+
+.displayInCol {
+    display: flex;
+    flex-direction: column;
+}
+
+.moveCard {
+    background: $secondarycolor 0% 0% no-repeat padding-box;
+    border: 0.20000000298023224px solid #9AAFB5;
+    border-radius: 8px;
+    height: 50px;
+    width: 100px;
+}
+
+.groupGrid {
+    display: grid;
+    grid-template-columns: 60% 38%;
+    gap: 1%;
+}
+
+.staffName {
+    text-align: left;
+    font: normal normal medium 16px/24px proxima-nova;
+    letter-spacing: 0px;
+    color: $textgrey;
+}
+
+.selectedStaff {
+    font-weight: bolder;
+}
+
+.disabledView {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.groupDisplayGrid {
+    display: grid;
+    grid-template-columns: 30% 52% 15%;
+    gap: 1%;
 }

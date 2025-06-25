@@ -38,8 +38,8 @@ const ReportTypeOverview = React.lazy(() =>
   import("./Screens/Reports/reportTypeOverview")
 );
 const Home = React.lazy(() => import("./Screens/CustomerSystemAdmin"));
-const MDManager = React.lazy(() => import("./Screens/MDManager"));
-const MDManagerStep1 = React.lazy(() => import("./Screens/MDManager/step1"));
+const MDManager = React.lazy(() => import("./Screens/MDManagerScreens/MDManager"));
+const MDManagerStep1 = React.lazy(() => import("./Screens/MDManagerScreens/MDManager/step1"));
 const HistoricalData = React.lazy(() => import("./Screens/StaffApplication/fillHistoricalData"));
 const ApplicationSubmitted = React.lazy(() => import("./Components/ApplicationSubmitted"));
 const FunctionalTitleForCustomer = React.lazy(() =>

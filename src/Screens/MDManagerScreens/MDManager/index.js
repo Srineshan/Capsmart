@@ -1,16 +1,16 @@
 import React, { useState, useEffect, Fragment } from "react";
-import { GET } from "./../dataSaver";
-import SideBar from "../../Components/Sidebar";
-import Navbar from "../../Components/Navbar";
-import Tile from "../../Components/Tile";
-import Table from "../../Components/TableDesign";
+import { GET } from "./../../dataSaver";
+import SideBar from "../../../Components/Sidebar";
+import Navbar from "../../../Components/Navbar";
+import Tile from "../../../Components/Tile";
+import Table from "../../../Components/TableDesign";
 import { useNavigate } from "react-router-dom";
 import style from "./index.module.scss";
-import SearchBar from "../../Components/SearchBar";
+import SearchBar from "../../../Components/SearchBar";
 import ManageMedicalDirectives from "./manageMedicalDirectives";
 import DataUpload from "./dataUpload";
 import FeedbackTicket from "./feedbackTicket";
-import ReferenceList from "./../ReferenceList";
+import ReferenceList from "./../../ReferenceList";
 import MDManagerStep1 from "./step1";
 import MDManagerStep2 from "./step2";
 import MDManagerStep3 from "./step3";
@@ -30,8 +30,9 @@ const MDManager = () => {
   const [defaultCount, setDefaultCount] = useState([]);
   const [step1, setStep1] = useState(false);
   const [step2, setStep2] = useState(false);
-  const [step3, setStep3] = useState(true);
+  const [step3, setStep3] = useState(false);
   const [mdFile, setMdFile] = useState();
+  const [mdValue, setMdValue] = useState();
 
   useEffect(() => {
     console.log(selectedOption, 'option')
@@ -212,14 +213,18 @@ const MDManager = () => {
     setIsExpanded(value);
   };
 
+  const getMD = (value) => {
+    setMdValue(value)
+  }
+
   console.log('ref', refMetadata);
 
   return step1 ? (
-    <MDManagerStep1 setStep1={setStep1} setStep2={setStep2} />
+    <MDManagerStep1 setStep1={setStep1} setStep2={setStep2} mdFile={mdFile} getMD={getMD} />
   ) : step2 ? (
-    <MDManagerStep2 setStep3={setStep3} setStep2={setStep2} />
+    <MDManagerStep2 setStep3={setStep3} setStep2={setStep2} mdValue={mdValue} getMD={getMD} />
   ) : step3 ? (
-    <MDManagerStep3 setStep3={setStep3} />
+    <MDManagerStep3 setStep3={setStep3} mdValue={mdValue} />
   ) : (
     <Fragment>
       <Navbar />

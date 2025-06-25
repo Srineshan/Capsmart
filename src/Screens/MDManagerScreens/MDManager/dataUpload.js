@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { GET } from './../dataSaver';
-import Tile from '../../Components/Tile';
-import Table from '../../Components/TableDesign';
-import LevelTwoHeader from '../../Components/LevelTwoHeader';
+import { GET } from './../../dataSaver';
+import Tile from '../../../Components/Tile';
+import Table from '../../../Components/TableDesign';
+import LevelTwoHeader from '../../../Components/LevelTwoHeader';
 import { format, startOfWeek, endOfWeek } from 'date-fns';
 
 import style from './index.module.scss';

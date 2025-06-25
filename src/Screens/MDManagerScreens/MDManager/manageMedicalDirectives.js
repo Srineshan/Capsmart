@@ -1,28 +1,30 @@
 import React, { useState, useEffect, createRef, useCallback, useRef } from 'react';
 import { Classes, Dialog } from '@blueprintjs/core';
-import { GET, PUT } from './../dataSaver';
-import Tile from '../../Components/Tile';
-import Table from '../../Components/TableDesign';
+import { GET, PUT } from './../../dataSaver';
+import Tile from '../../../Components/Tile';
+import Table from '../../../Components/TableDesign';
 import { format, startOfWeek, endOfWeek } from 'date-fns';
 // import SearchBar from '../../Components/SearchBar';
-import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
-import LevelTwoHeader from '../../Components/LevelTwoHeader';
+import { ErrorToaster, SuccessToaster } from './../../../utils/toaster';
+import LevelTwoHeader from '../../../Components/LevelTwoHeader';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import { toPDF } from '../../Components/ConvertToPdf';
+import { toPDF } from '../../../Components/ConvertToPdf';
 import PrintOutlinedIcon from '@mui/icons-material/PrintOutlined';
 import DownloadIcon from '@mui/icons-material/Download';
 import { useReactToPrint } from "react-to-print";
-import Download from '../../images/download.png'
+import Download from '../../../images/download.png'
 import AddIcon from "@mui/icons-material/Add";
 import style from './index.module.scss';
-import DeleteConfirmation from '../../Components/DeleteConfirmation';
+import DeleteConfirmation from '../../../Components/DeleteConfirmation';
 import AddUserInCustomerAdmin from './addUser';
-import TileApplication from '../../Components/TileApplication';
+import TileApplication from '../../../Components/TileApplication';
 import MDManagerStep1 from './step1';
+import TableTwo from '../../../Components/TableDesignTwo';
 
 const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile }) => {
     const PDFRef = createRef();
     const componentRef = useRef(null);
+    const [mdList, setMdList] = useState([]);
 
     const reactToPrintContent = useCallback(() => {
         return componentRef.current;
@@ -44,23 +46,63 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile }) => 
     const [showAddUserDialog, setShowAddUserDialog] = useState(false);
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
     let isMultiSiteEntity = sessionStorage.getItem('isMultiSiteEntity') === 'true' ? true : false;
-    const entityTableHeaderValues = isMultiSiteEntity ? ["", "USER NAME", "TITLE", "SITE NAME", "PROXY", "SURROGATE", "LAST LOGIN DATE/TIME", "AVG LOGIN PER DAY", "AVG DURATION PER LOGIN (MIN)", "ACTION"] : ["", "USER NAME", "TITLE", "PROXY", "SURROGATE", "LAST LOGIN DATE/TIME", "AVG LOGIN PER DAY", "ACTION"];
-    const deactivatedTableHeaderValues = ["", "USER NAME", "TITLE", "SITE NAME", "DEPARTMENT", "LAST LOGIN DATE/TIME", "DEACTIVATED DATE/TIME", "DEACTIVATED BY", "ACTION"];
-    const invitedTableHeaderValues = ["", "USER NAME", "USER AFFILIATION", "TITLE", "SITE NAME", "DEPARTMENT", "INVITED DATE/TIME", "INVITED BY", "ACTION"];
+    const currentTableHeaderValues = [
+        "No.",
+        "Title",
+        "MD ID",
+        "Department / Division",
+        "First Published",
+        "Last Revision",
+        "",
+    ];
+    const revisionTableHeaderValues = [
+        "No.",
+        "Title",
+        "MD ID",
+        "Department / Division",
+        "Revision Assigned To",
+        "Due Date",
+        "Last Updated",
+        "",
+    ];
+    const outstandingTableHeaderValues = [
+        "Attestation Categories",
+        "Total Count",
+        "Attestated all",
+        "Not Attestated",
+        "Partially Attested",
+        "",
+    ];
+    const draftTableHeaderValues = [
+        "",
+        "Title",
+        "MD ID",
+        "Department / Division",
+        "Author",
+        "Due Date",
+        "Last Updated",
+        "",
+    ];
 
-    const tableHeaderValues = (selectedOption === 'Current Medical Directives' || selectedOption === "Draft Medical Directives")
-        ? entityTableHeaderValues : selectedOption === "Medical Directives Revisions" ? deactivatedTableHeaderValues
-            : invitedTableHeaderValues;
+    const tableHeaderValues = selectedOption === 'Current Medical Directives' ? currentTableHeaderValues : selectedOption === "Draft Medical Directives"
+        ? draftTableHeaderValues : selectedOption === "Medical Directives Revisions" ? revisionTableHeaderValues
+            : outstandingTableHeaderValues;
 
     const valuesToUse = viewRegistered ? (selectedOption === 'Current Medical Directives' ? registeredUsers : selectedOption === 'Draft Medical Directives' ? contractedServiceProviderUsers : selectedOption === 'Medical Directives Revisions' ? deactivatedUsers : invitedUsers) : blockedUsers;
 
     useEffect(() => {
         getUser();
+        getMDList()
     }, [selectedOption, showAddUserDialog]);
 
     useEffect(() => {
         userTileValues();
     }, [from, to, showAddUserDialog]);
+
+    const getMDList = async () => {
+        const { data: mdList } = await GET(`medical-directive-service/medicalDirectives`);
+        setMdList(mdList)
+    }
 
     const getUser = async () => {
         if (selectedOption === 'Current Medical Directives') {
@@ -224,97 +266,97 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile }) => 
             return 'Contract';
         }
     }
-
     let dot = [];
     let dotTooltipValues = [];
-    let userName = [];
-    let userAffiliation = [];
+    let no = [];
     let title = [];
-    let proxy = [];
-    let siteName = [];
+    let mdId = [];
     let department = [];
-    let surrogate = [];
-    let lastLoginDateOrTime = [];
-    let avgLoginPerDay = [];
-    let angDurationPerLogin = [];
-    let deactivatedDateOrTime = [];
-    let deactivatedBy = [];
-    let invitedDateOrTime = [];
-    let invitedBy = [];
+    let firstPublished = [];
+    let lastRevision = [];
+    let author = [];
+    let dueDate = [];
+    let attestationCategory = [];
+    let totalCount = [];
+    let attestedAll = [];
+    let notAttested = [];
+    let partiallyAttested = [];
+    let revisionAssignedTo = [];
     let action = [];
 
     const getValues = () => {
         dot = [];
         dotTooltipValues = [];
-        userName = [];
-        userAffiliation = [];
+        no = [];
         title = [];
-        proxy = [];
-        siteName = [];
+        mdId = [];
         department = [];
-        surrogate = [];
-        lastLoginDateOrTime = [];
-        avgLoginPerDay = [];
-        angDurationPerLogin = [];
-        deactivatedDateOrTime = [];
-        deactivatedBy = [];
-        invitedDateOrTime = [];
-        invitedBy = [];
+        firstPublished = [];
+        lastRevision = [];
+        author = [];
+        dueDate = [];
+        attestationCategory = [];
+        totalCount = [];
+        attestedAll = [];
+        notAttested = [];
+        partiallyAttested = [];
+        revisionAssignedTo = [];
         action = [];
 
-        valuesToUse?.map(data => {
+        mdList?.map((data, index) => {
             dot.push(data?.activated ? 'green' : 'grey');
             dotTooltipValues.push(data?.activated ? 'Activated' : 'Deactivated');
-            userName.push(`${data?.name?.firstName} ${data?.name?.lastName}`);
-            userAffiliation.push(getUserAffiliation(data));
-            title.push(data?.sites !== null ? data?.sites?.sites?.[0]?.siteResponsibility?.title : '-');
-            proxy.push('-');
-            surrogate.push('-');
-            siteName.push(data?.sites?.sites ? data?.sites?.sites : []);
-            department.push(data?.sites?.sites ? data?.sites?.sites : []);
-            lastLoginDateOrTime.push(data?.lastLogin !== null ? format(new Date(data?.lastLogin), 'MM-dd-yyyy HH:mm') : '-');
-            avgLoginPerDay.push(data?.avgLoginCount);
-            angDurationPerLogin.push(data?.avgLoginSession !== null ? millisToMinutesAndSeconds(data?.avgLoginSession?.milliseconds) : '0:00');
-            deactivatedDateOrTime.push(data?.userBlockedOrDeactivatedDate !== null ? format(new Date(data?.userBlockedOrDeactivatedDate), 'MM-dd-yyyy HH:mm') : '-');
-            deactivatedBy.push(data?.deactivatedBy !== null ? data?.deactivatedBy?.name : '-');
-            invitedDateOrTime.push(data?.userCreatedDate !== null ? format(new Date(data?.userCreatedDate), 'MM-dd-yyyy HH:mm') : '-');
-            invitedBy.push(data?.invitedBy !== null ? data?.invitedBy?.name : '-');
+            no.push(index + 1);
+            title.push(data?.title);
+            mdId.push(data?.mdID);
+            department.push(data?.departments?.map(data => data?.name)?.join(', '));
+            firstPublished.push(data?.initialPublishedDate ? format(new Date(data?.initialPublishedDate), 'MMM dd, yyyy') : '-');
+            lastRevision.push(data?.lastModifiedDate ? format(new Date(data?.lastModifiedDate), 'MMM dd, yyyy') : '-');
+            author.push(data?.author ? data?.author?.name : '-');
+            dueDate.push('-');
+            attestationCategory.push('-');
+            totalCount.push('-');
+            attestedAll.push('-');
+            notAttested.push('-');
+            partiallyAttested.push('-');
+            revisionAssignedTo.push('-');
             action.push(true);
         })
 
-        return (selectedOption === 'Current Medical Directives' || selectedOption === 'Draft Medical Directives') ? [
-            { "type": "dot", "value": dot, 'tooltipValue': dotTooltipValues },
-            { "type": "text", "value": userName },
+        return selectedOption === 'Current Medical Directives' ? [
+            { "type": "text", "value": no },
             { "type": "text", "value": title },
-            ...(isMultiSiteEntity ? [{ "type": "site", "value": siteName }] : []),
-            { "type": "text", "value": proxy },
-            { "type": "text", "value": surrogate },
-            { "type": "text", "value": lastLoginDateOrTime },
-            { "type": "text", "value": avgLoginPerDay },
-            // { "type": "text", "value": angDurationPerLogin },
+            { "type": "text", "value": mdId },
+            { "type": "text", "value": department },
+            { "type": "text", "value": firstPublished },
+            { "type": "text", "value": lastRevision },
             { "type": "action", "value": action },
-        ] : selectedOption === 'Medical Directives Revisions' ?
-            [
-                { "type": "dot", "value": dot, 'tooltipValue': dotTooltipValues },
-                { "type": "text", "value": userName },
-                { "type": "text", "value": title },
-                { "type": "site", "value": siteName },
-                { "type": "department", "value": department, 'count': getDeptCount(department) },
-                { "type": "text", "value": lastLoginDateOrTime },
-                { "type": "text", "value": deactivatedDateOrTime },
-                { "type": "text", "value": deactivatedBy },
-                { "type": "action", "value": action },
-            ] : [
-                { "type": "dot", "value": dot, 'tooltipValue': dotTooltipValues },
-                { "type": "text", "value": userName },
-                { "type": "text", "value": userAffiliation },
-                { "type": "text", "value": title },
-                { "type": "site", "value": siteName },
-                { "type": "department", "value": department, 'count': getDeptCount(department) },
-                { "type": "text", "value": invitedDateOrTime },
-                { "type": "text", "value": invitedBy },
-                { "type": "action", "value": action },
-            ]
+        ] : selectedOption === 'Medical Directives Revisions' ? [
+            { "type": "text", "value": no },
+            { "type": "text", "value": title },
+            { "type": "text", "value": mdId },
+            { "type": "text", "value": department },
+            { "type": "text", "value": revisionAssignedTo },
+            { "type": "text", "value": dueDate },
+            { "type": "text", "value": lastRevision },
+            { "type": "action", "value": action },
+        ] : selectedOption === 'Draft Medical Directives' ? [
+            { "type": "dot", "value": dot, 'tooltipValue': dotTooltipValues },
+            { "type": "text", "value": title },
+            { "type": "text", "value": mdId },
+            { "type": "text", "value": department },
+            { "type": "text", "value": author },
+            { "type": "text", "value": dueDate },
+            { "type": "text", "value": lastRevision },
+            { "type": "action", "value": action },
+        ] : [
+            { "type": "text", "value": attestationCategory },
+            { "type": "text", "value": totalCount },
+            { "type": "text", "value": attestedAll },
+            { "type": "text", "value": notAttested },
+            { "type": "text", "value": partiallyAttested },
+            { "type": "action", "value": action },
+        ]
     }
 
     const registeredActionsData = [{ 'data': 'Modify', 'onClick': handleModify },
@@ -433,12 +475,24 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile }) => 
                 </div> */}
                 <div ref={componentRef} className={style.marginTop20}>
                     <div className={`${style.reduceMarginTop10} registeredUsers`} ref={PDFRef}>
-                        <Table
+                        {/* <Table
                             tableHeaderValues={tableHeaderValues}
                             tableDataValues={getValues()}
                             tableData={valuesToUse}
-                            gridStyle={selectedOption === 'Attestations Outstanding' ? style.invitedUsersGrid : isMultiSiteEntity ? (selectedOption === 'Current Medical Directives' || selectedOption === 'Draft Medical Directives') ? style.registeredUsersMultiSiteGrid : style.registeredUsersGrid : style.registeredUsersGrid}
+                            gridStyle={selectedOption === 'Attestations Outstanding' ? style.invitedUsersGrid : isMultiSiteEntity ? (selectedOption === 'Current Medical Directives' || selectedOption === 'Draft Medical Directives') ? style.registeredUsersMultiSiteGrid : style.mdListGrid : style.mdListGrid}
                             actions={actionsData}
+                            hidePagination={true}
+                        /> */}
+                        <TableTwo
+                            tableHeaderValues={tableHeaderValues}
+                            tableDataValues={getValues()}
+                            tableData={mdList}
+                            gridStyle={selectedOption === 'Attestations Outstanding' ? style.outstandingGrid : selectedOption === 'Current Medical Directives' ? style.mdListGrid : selectedOption === 'Draft Medical Directives' ? style.draftGrid : style.revisionGrid}
+                            actions={[]}
+                            // scrollStyle={style.contractScrollStyle}
+                            tableSortValues={[]}
+                            heading={"There are no Record for you to manage"}
+                            onClickFunction={() => { }}
                             hidePagination={true}
                         />
                     </div>
@@ -458,7 +512,8 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile }) => 
                     />
                     <div>
                         <div className={`${style.spaceBetween} ${style.marginTop20}`}>
-                            <button className={`${style.outlinedButton} `} onClick={() => setShowAddNewMedicalDirectives(false)} >NO, AUTHOR NEW</button>
+                            {/* <button className={`${style.outlinedButton} `} onClick={() => setShowAddNewMedicalDirectives(false)} >NO, AUTHOR NEW</button> */}
+                            <div></div>
                             <button className={`${style.buttonStyle} `} onClick={() => handleUploadCopy()} >YES, UPLOAD COPY</button>
                         </div>
                     </div>

@@ -2,11 +2,10 @@ import React, { useEffect, useState } from "react";
 import * as pdfjsLib from "pdfjs-dist/build/pdf";
 import PdfPage from "./pdfPageView";
 import pdfjsWorker from "pdfjs-dist/build/pdf.worker.entry";
-import { corsUrl } from "../../../utils/formatting";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
-const PdfViewer = ({ pdfurl, setIsScrolledToBottom }) => {
+const CommonPdfViewer = ({ pdfurl, setIsScrolledToBottom }) => {
     const [pages, setPages] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -62,4 +61,4 @@ const PdfViewer = ({ pdfurl, setIsScrolledToBottom }) => {
     );
 };
 
-export default PdfViewer;
+export default CommonPdfViewer;
