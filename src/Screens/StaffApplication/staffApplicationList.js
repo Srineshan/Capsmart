@@ -1641,15 +1641,19 @@ const StaffApplicationList = ({
 
   useEffect(() => {
     getWorkflowUserData();
-    setShowAssignee(false);
+    // setShowAssignee(false);
     // getNotesDialog();
     getReFetchMetaData(true);
     console.log("getReFetchMetaData", reFetchMetaData)
   }, [showNotesDialog, showCCDateDialog, approvalnotesCommentsBoxDept, showBulkApproveDialog, showBulkMoveDialog, activeApplicationTask, applicationType, showOverRideRequestDialog, showOverRideRequestApprovalDialog, showOverRideRequestDeclineDialog, activeApplicationView]);
 
-  // useEffect(() => {
-  //   getApplicationCreationType();
-  // }, [applicationCreationType]);
+  useEffect(() => {
+    setShowAssignee(false);
+  }, [activeApplicationView]);
+
+    useEffect(() => {
+    getRejectionData(rejectionTab);
+  }, [rejectionTab, showApplicationRejectionDialog]);
 
 
   useEffect(() => {
@@ -1849,9 +1853,10 @@ useEffect(() => {
           const assignedUserIdsParam = shouldIncludeAssignee ? `&assignedUserIds=${users?.id}` : "";
           const departmentParam = selectedDepartment || selectedServiceArea ? `&departmentSpecialties=${selectedDepartment}%23${selectedServiceArea}` : "";
           const positionTypeParam = applicationType === "LOCUM" ? `&positionType=${applicationType}` : "&positionType=PERMANENT";
+          const selectedTabFlow = selectedTab === "ReviewedApplications" ? "level-2" : selectedTab
           setIsLoadingImage(true);
           response = await GET(
-            `application-management-service/application/workflowUser?tab=${selectedTab}&sortBy=${sortValue}&sortByField=${sortField}${positionTypeParam}&limit=${limit}&offset=${page - 1}&role=${role}&searchText=${searchTermForTable}&applicationCreationType=${applicationType === "LOCUM" ? "REAPPOINTMENT" : applicationType}&isPaginationRequired=${limit === 9999 ? false : true}${departmentParam}${assignedUserIdsParam}`
+            `application-management-service/application/workflowUser?tab=${selectedTabFlow}&sortBy=${sortValue}&sortByField=${sortField}${positionTypeParam}&limit=${limit}&offset=${page - 1}&role=${role}&searchText=${searchTermForTable}&applicationCreationType=${applicationType === "LOCUM" ? "REAPPOINTMENT" : applicationType}&isPaginationRequired=${limit === 9999 ? false : true}${departmentParam}${assignedUserIdsParam}`
           );
           let applications = response?.data?.applications || [];
 
@@ -1902,9 +1907,10 @@ useEffect(() => {
         const assignedUserIdsParam = shouldIncludeAssignee ? `&assignedUserIds=${users?.id}` : "";
         const departmentParam = selectedDepartment || selectedServiceArea ? `&departmentSpecialties=${selectedDepartment}%23${selectedServiceArea}` : "";
         const positionTypeParam = applicationType === "LOCUM" ? `&positionType=${applicationType}` : "&positionType=PERMANENT";
+        const selectedTabFlow = selectedTab === "ReviewedApplications" ? "level-3" : selectedTab
         setIsLoadingImage(true);
         response = await GET(
-          `application-management-service/application/workflowUser?tab=${selectedTab}&sortBy=${sortValue}&sortByField=${sortField}&applicationCreationType=${applicationType}&limit=${limit}&offset=${page - 1}&role=${role}&searchText=${searchTermForTable}&isPaginationRequired=${limit === 9999 ? false : true}${departmentParam}${assignedUserIdsParam}${positionTypeParam}`
+          `application-management-service/application/workflowUser?tab=${selectedTabFlow}&sortBy=${sortValue}&sortByField=${sortField}&applicationCreationType=${applicationType}&limit=${limit}&offset=${page - 1}&role=${role}&searchText=${searchTermForTable}&isPaginationRequired=${limit === 9999 ? false : true}${departmentParam}${assignedUserIdsParam}${positionTypeParam}`
         );
 
         let applications = response?.data?.applications || [];
@@ -1917,7 +1923,7 @@ useEffect(() => {
             return ccWorkflow && ccWorkflow?.approvalType === null;
           });
         } else if (selectedTab === "ReviewedApplications" && workModeType === "Credentialing Committee") {
-          setShowAssignee(false)
+          // setShowAssignee(false)
           applications = applications?.filter(app => {
             const ccWorkflow = app?.completedWorkflows?.find(wf => wf?.role === "Credentialing Committee");
             console.log("Application dataaaaaaaaaaaaaaaaa", ccWorkflow);

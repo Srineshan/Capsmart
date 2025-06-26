@@ -645,6 +645,17 @@ body::-webkit-scrollbar {
   text-transform: capitalize;
 }
 
+.tableHeaderHeadingNoneTextStyle {
+  text-align: left;
+  font: normal normal normal 16px/23px proxima-nova;
+  letter-spacing: 0px;
+  color: #06617A;
+  opacity: 0.7;
+  text-transform: capitalize;
+  font-style: italic;
+  align-content: center;
+}
+
 .progressMargin {
   margin: -5px 0 20px 0;
 }
@@ -5599,4 +5610,9 @@ input[type="number"] {
   color: #ec7e7b;
   text-transform: capitalize;
   padding: 1px;
+}
+
+.overFlowHidden {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

@@ -143,3 +143,8 @@
     align-items: center;
     z-index: 9999;
   }
+
+  .overFlowHidden {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

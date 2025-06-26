@@ -779,7 +779,7 @@ const App = ({ props }) => {
         method: "GET",
         headers: {
           "Authorization": `Bearer ${authorization}`,
-          "X-subdomain": 'master',
+          "X-subdomain": 'cmh-hospital',
         },
       };
     console.log(requestHeader, 'requestHeader')
@@ -819,7 +819,7 @@ const App = ({ props }) => {
         "Content-Type": "application/json",
         "X-tenantID": id,
         "Authorization": `Bearer ${authorization}`,
-        "X-subdomain": 'master',
+        "X-subdomain": 'cmh-hospital',
       },
     }
     fetch(`${baseUrl()}/user-management-service/auth/login`, requestOptions)
@@ -913,7 +913,7 @@ const App = ({ props }) => {
           // return(
           //   <WorkModeDialog getIsOpen={true} />
           // ) 
-          if (localStorage?.getItem('initialRoute') !== undefined && localStorage?.getItem('initialRoute') !== 'undefined' && localStorage?.getItem('initialRoute') !== null && localStorage?.getItem('initialRoute')?.includes('/applicationById/REAPPOINTMENT')) {
+          if (localStorage?.getItem('initialRoute') !== undefined && localStorage?.getItem('initialRoute') !== 'undefined' && localStorage?.getItem('initialRoute') !== null && localStorage?.getItem('initialRoute')?.includes('/applicationById/REAPPOINTMENT') && localStorage?.getItem('initialRoute')?.includes('/applicationById/LOCUM')) {
             sessionStorage.setItem("workModeType", roles[0]);
             window.location.pathname = localStorage?.getItem('initialRoute');
           } else {

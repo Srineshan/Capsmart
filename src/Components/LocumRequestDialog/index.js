@@ -39,6 +39,7 @@ const LocumRequestDialog = ({ getIsOpen, selectedTab }) => {
   const { setValue, value } = useComboboxControls({ initialValue: "" });
   const users = jwt(userDetails);
   const [userRole, setUserRole] = useState("");
+  const [form, setForm] = useState();
   const [formDetails, setFormDetails] = useState([]);
   const [formIndex, setFormIndex] = useState(0);
   const [isApproveEnabled, setIsApproveEnabled] = useState(false);
@@ -161,11 +162,11 @@ const LocumRequestDialog = ({ getIsOpen, selectedTab }) => {
   const isCustomEndDateValid = customEndDate && isValid(new Date(customEndDate));
 
   const startDateStr =
-    selectedTab === "ACTIVELOCUM" && isExpireDateValid
+    selectDataLocum?.locumRenewalDetails?.reappointmentType === "EXTENSION" && isExpireDateValid
       ? format(addDays(ExpireDate, 1), "yyyy-MM-dd")
       : format(addDays(new Date(), 1), "yyyy-MM-dd");
   const endDateStr =
-    selectedTab === "ACTIVELOCUM" || selectedTab === "EXPIREDLOCUM"
+    selectDataLocum?.locumRenewalDetails?.reappointmentType === "EXTENSION" || selectDataLocum?.locumRenewalDetails?.reappointmentType === "RENEWAL"
       ? selectedMonth === "Custom" && isCustomEndDateValid
         ? format(new Date(customEndDate), "yyyy-MM-dd")
         : selectedMonth
@@ -196,6 +197,8 @@ const LocumRequestDialog = ({ getIsOpen, selectedTab }) => {
     format(new Date(), "dd-MM-yyyy")
   );
   const [limit, setLimit] = useState(9999);
+  const [extensionRequiredValue, setExtensionRequiredValue] = useState("REQUESTED");
+  const [notRequiredComments, setNotRequiredComments] = useState('');
   const [isLoadingPage, setIsLoadingPage] = useState(false);
   const publicKey =
     "-----BEGIN PUBLIC KEY-----MIGeMA0GCSqGSIb3DQEBAQUAA4GMADCBiAKBgHA5SDu30/8uQAqqkQE0NuY4ePBptMGufG6AWnC/88YVLXi4thh7M8VU6kElVJkfXL5DwlfVnwPb08+PK1EcaOWWtp2gdQitkohjZLB9zVE+0OtRrzSc33wItf7Iwisi5dHPggHvfOp5fr+QYWFMa/kKYl3SgNo8fryeLbKKalmdAgMBAAE=-----END PUBLIC KEY-----";
@@ -237,6 +240,7 @@ const LocumRequestDialog = ({ getIsOpen, selectedTab }) => {
 
 
   useEffect(() => {
+    getPreApplicationStaff();
     getActiveUserData();
     setSelectedPrivilegesForDisplayMultiple(
       formDetails?.privileges?.obligatedPrivileges
@@ -396,6 +400,10 @@ const LocumRequestDialog = ({ getIsOpen, selectedTab }) => {
     }
   };
 
+  const handleChangeRequired = (event) => {
+    setExtensionRequiredValue(event.target.value);
+  };
+
   const onClickExtensiveRequest = async () => {
     setIsLoadingImage(true);
 
@@ -494,6 +502,63 @@ const LocumRequestDialog = ({ getIsOpen, selectedTab }) => {
         console.log(error);
       });
   };
+
+   const onClickNotRequiredExtensionFunction = () => {
+      handleUpdateStaffRequest(true)
+        .then(() => {
+          return handleUpdateStaffRequestNotes(true);
+        })
+        .then(() => {
+          getIsOpen(false);
+          console.log('Application successfully moved to next step.');
+        })
+        .catch((error) => {
+          console.error('Error processing application:', error);
+        });
+    };
+  
+    const getPreApplicationStaff = async () => {
+        try {
+          setIsLoadingImage(true);
+          const { data: basicForm } = await GET(`application-management-service/staff/${selectDataLocum?.staff?.id}`);
+          setForm(basicForm);
+          setIsLoadingImage(false)
+        } catch (error) {
+          console.error('Error fetching application:', error);
+        }
+      };
+  
+      const handleUpdateStaffRequestNotes = async () => {
+        try {
+          const formData = new FormData();
+          const payload = {
+            notes: {
+              notes: notRequiredComments || "",
+            },
+          };
+           const blob = new Blob([JSON.stringify(payload)], {
+              type: "application/json"
+            });
+            formData.append('notesDTO', blob);
+          const response = await PUT(`application-management-service/staff/${selectDataLocum?.staff?.id}/addNote`, formData);
+          console.log('Update successful:', response?.data);
+          await getActiveUserData();
+          
+        } catch (error) {
+          console.error('Update failed:', error);
+        }
+      };
+  
+      const handleUpdateStaffRequest = async () => {
+        try {
+          form.extensionRequestStatus = extensionRequiredValue;
+          const response = await PUT(`application-management-service/staff/${selectDataLocum?.staff?.id}`, form);
+          console.log('Update successful:', response?.data);
+          // await getActiveUserData();
+        } catch (error) {
+          console.error('Update failed:', error);
+        }
+      };
 
   const sendEmail = async () => {
 
@@ -2762,15 +2827,32 @@ const LocumRequestDialog = ({ getIsOpen, selectedTab }) => {
   console.log("1111111111111111111111", getMonthOrDays("2025-04-30", "2025-05-30"), monthOptionsToView, selectedMonth, startDateStr, endDateStr); // 2 month(s)
 
   const isValidDateRange = () => {
-    if (selectDataLocum?.locumRenewalDetails?.reappointmentType === "RENEWAL") {
-      return customStartDate && customEndDate;
+    if (showSelectedPrivilegeLocum === true) {
+      const hasObligatedPrivileges = formDetails?.privileges?.obligatedPrivileges?.length >= 1;
+      const hasAdditionalPrivileges = formDetails?.privileges?.additionalPrivileges?.length >= 1;
+
+      const isPrivilegeSetValid =
+       hasObligatedPrivileges;
+
+      const isAdditionalPrivilegeValid =
+        additionalPrivilegeChangeYesOrNo === "No" || hasAdditionalPrivileges;
+
+      return isPrivilegeSetValid && isAdditionalPrivilegeValid;
+    } else {
+       if (extensionRequiredValue === "NOT_REQUESTED") {
+        return notRequiredComments;
+      }
+      if (selectDataLocum?.locumRenewalDetails?.reappointmentType === "RENEWAL" && extensionRequiredValue === "REQUESTED") {
+        return customStartDate && customEndDate;
+      }
+      if (selectedMonth === "Custom") {
+        return customEndDate;
+      }
+      return selectedMonth;
     }
-    if (selectedMonth === "Custom") {
-      return customEndDate;
-    }
-    return selectedMonth;
   };
 
+  console.log("notRequiredComments",notRequiredComments,extensionRequiredValue)
   return (
     <>
       {isLoadingImage && (
@@ -2860,7 +2942,7 @@ const LocumRequestDialog = ({ getIsOpen, selectedTab }) => {
                   <div className={`${style.rejectionHeadingTextStyle}`}>
                     {selectDataLocum?.locumRenewalDetails?.reappointmentType === "EXTENSION" ? `Locum Period Expiring On ${formattedExpiringDate} (${daysRemaining} Days)` : "New Locum Period"}
                   </div>
-                  <div className={`${style.rejectionTextStyle} ${style.marginBottom10}`}>
+                  <div className={`${style.rejectionTextStyle}`}>
                     {selectDataLocum?.locumRenewalDetails?.reappointmentType === "EXTENSION"
                       ? "Extend the Period & Privileges for "
                       : "The renewal Start & End Date for "}
@@ -2877,6 +2959,20 @@ const LocumRequestDialog = ({ getIsOpen, selectedTab }) => {
                     </span>
                     {selectDataLocum?.locumRenewalDetails?.reappointmentType === "EXTENSION" && <span> By </span>}
                   </div>
+                  <div>
+                      <CommonRadio
+                        onChange={handleChangeRequired}
+                        value={extensionRequiredValue}
+                        radioValue={["REQUESTED", "NOT_REQUESTED"]}
+                        label={
+                          selectDataLocum?.locumRenewalDetails?.reappointmentType === "EXTENSION"
+                            ? ["Extension Required", "Extension Not Required"]
+                            : ["Renewal Required", "Renewal Not Required"]
+                        }
+                      />
+                    </div>
+                    {extensionRequiredValue === "REQUESTED" && (
+                    <div>
                   <div>
                     {/* <CommonRadio
            className={style.leftAlign}
@@ -3110,6 +3206,51 @@ const LocumRequestDialog = ({ getIsOpen, selectedTab }) => {
                       ) : null}
                     </div>
                   </div>
+                  </div>
+                  )}
+                  {extensionRequiredValue === "NOT_REQUESTED" && (
+                    <div>
+                    <div className={`${style.lableStyle} ${style.marginTop10}`}>Reason For Locum Staff {selectDataLocum?.locumRenewalDetails?.reappointmentType === "EXTENSION" ? "Extension" : "Renewal"} Not Required*</div>
+                      <div className={`${style.marginTop10}`}>
+                        <CKEditor
+                          editor={ClassicEditor}
+                          data={notRequiredComments}
+                          onChange={(event, editor) => {
+                            const data = editor.getData();
+                            setNotRequiredComments(data);
+                          }}
+                          config={{
+                            placeholder: "Enter Notes / Comments",
+                            toolbar: {
+                              shouldNotGroupWhenFull: true,
+                              sticky: true,
+                              items: [
+                                'undo', 'redo',
+                                '|',
+                                'heading',
+                                '|',
+                                'fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor',
+                                '|',
+                                'bold', 'italic', 'strikethrough', 'subscript', 'superscript', 'code',
+                                '|',
+                                'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'
+                              ],
+                            },
+                            autoGrow: false,
+                          }}
+                          onReady={(editor) => {
+                            editor.editing.view.change((writer) => {
+                              writer.setStyle(
+                                "height",
+                                "150px",
+                                editor.editing.view.document.getRoot()
+                              );
+                            });
+                          }}
+                        />
+                      </div>
+                      </div>
+                  )}
                 </div>
               )}
             </div>
@@ -3242,7 +3383,7 @@ const LocumRequestDialog = ({ getIsOpen, selectedTab }) => {
                               className={`${style.privilegeContentChangeCard} ${style.marginTop10}`}
                             >
                               <div className={`${style.privilegeHeadingReappointment}`}>
-                                Change for Locum {selectedTab === "ACTIVELOCUM" ? "Extension" : "Renewals"}
+                                Change for Locum {selectDataLocum?.locumRenewalDetails?.reappointmentType === "EXTENSION" ? "Extension" : "Renewals"}
                               </div>
                               {privilegeSetChangeYesOrNo === "Yes" ? (
                                 <>
@@ -3321,7 +3462,7 @@ const LocumRequestDialog = ({ getIsOpen, selectedTab }) => {
                           </div>
                           {formDetails?.forms?.[formIndex]?.data?.additionalPrivilegeChangeYesOrNo !== '' && formDetails?.forms?.[formIndex]?.data?.additionalPrivilegeChangeYesOrNo !== undefined && (
                             <div className={`${style.privilegeContentChangeCard} ${style.marginTop10}`}>
-                              <div className={`${style.privilegeHeadingReappointment}`}>{additionalPrivilegeChangeYesOrNo === 'No' ? 'Privileges Requested' : `Change for Locum ${selectedTab === 'ACTIVELOCUM' ? 'Extension' : 'Renewal'}`}</div>
+                              <div className={`${style.privilegeHeadingReappointment}`}>{additionalPrivilegeChangeYesOrNo === 'No' ? 'Privileges Requested' : `Change for Locum ${selectDataLocum?.locumRenewalDetails?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'}`}</div>
                               {additionalPrivilegeChangeYesOrNo === 'No' ? (
                                 <div className={`${style.privilegeHeading}`}>None</div>
                               ) : (
@@ -4196,11 +4337,13 @@ const LocumRequestDialog = ({ getIsOpen, selectedTab }) => {
                   onClick={() => {
                     if (!isValidDateRange()) return;
 
-                    if (!showSelectedPrivilegeLocum) {
+                    if (!showSelectedPrivilegeLocum && extensionRequiredValue === "REQUESTED") {
                       onClickExtensiveRequest();
-                    } else {
+                    } else if (showSelectedPrivilegeLocum){
                       sendEmail();
                       setEmailSendDialog(true);
+                    } else if (!showSelectedPrivilegeLocum && extensionRequiredValue === "NOT_REQUESTED" ) {
+                      onClickNotRequiredExtensionFunction();
                     }
                   }}
                 >
@@ -4519,7 +4662,7 @@ const LocumRequestDialog = ({ getIsOpen, selectedTab }) => {
       >
         {/* <div className={style.spaceBetween}> */}
         <div className={style.heading1}>
-          Locum {selectedTab === "ACTIVELOCUM" ? "Extension" : "Renewal"} Request has been sent
+          Locum {selectDataLocum?.locumRenewalDetails?.reappointmentType === "EXTENSION" ? "Extension" : "Renewal"} Request has been sent
         </div>
         {/* <div className={style.displayInRow}>
               <img
