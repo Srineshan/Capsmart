@@ -212,6 +212,58 @@ const CriminalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
         return keys.reduce((acc, key) => acc && acc[isNaN(key) ? key : Number(key)], basicForm);
     };
 
+    const CriminalDisclosureValueLaw = getValueByPath(
+    basicForm,
+    `forms[${formIndex}].data.disclosures.criminalCivilSuitDisclosure.defendantInAnyCivilLaw`
+    );
+
+    const CriminalDisclosureValueLawText = getValueByPath(
+    basicForm,
+    `forms[${formIndex}].data.disclosures.criminalCivilSuitDisclosure.defendantInAnyCivilLawText`
+    );
+
+    const CriminalDisclosureValueLawFile = getValueByPath(
+    basicForm,
+    `forms[${formIndex}].data.disclosures.criminalCivilSuitDisclosure.defendantInAnyCivilLawFile`
+    );
+
+    const CriminalDisclosureValueAction = getValueByPath(
+    basicForm,
+    `forms[${formIndex}].data.disclosures.criminalCivilSuitDisclosure.anyCivilOrCriminalActions`
+    );
+
+    const CriminalDisclosureValueActionText = getValueByPath(
+    basicForm,
+    `forms[${formIndex}].data.disclosures.criminalCivilSuitDisclosure.anyCivilOrCriminalActionsText`
+    );
+
+    const CriminalDisclosureValueActionFile = getValueByPath(
+    basicForm,
+    `forms[${formIndex}].data.disclosures.criminalCivilSuitDisclosure.anyCivilOrCriminalActionsFile`
+    );
+
+    const isSkipForNowDisabled = 
+    (CriminalDisclosureValueLaw === "No" && CriminalDisclosureValueAction === "No") ||
+    
+    (CriminalDisclosureValueLaw === "Yes" && 
+    CriminalDisclosureValueLawText && 
+    CriminalDisclosureValueLawFile && 
+    CriminalDisclosureValueAction === "No") ||
+    
+    (CriminalDisclosureValueAction === "Yes" && 
+    CriminalDisclosureValueActionText && 
+    CriminalDisclosureValueActionFile && 
+    CriminalDisclosureValueLaw === "No") ||
+    
+    (CriminalDisclosureValueLaw === "Yes" && 
+    CriminalDisclosureValueLawText && 
+    CriminalDisclosureValueLawFile && 
+    CriminalDisclosureValueAction === "Yes" && 
+    CriminalDisclosureValueActionText && 
+    CriminalDisclosureValueActionFile);
+
+    console.log('CriminalDisclosureValue value:',CriminalDisclosureValueLaw,CriminalDisclosureValueLawText,CriminalDisclosureValueLawFile,CriminalDisclosureValueAction,CriminalDisclosureValueActionText,CriminalDisclosureValueActionFile);
+
     const getIsEdited = (value) => {
         setIsEdited(value)
     }
@@ -238,7 +290,7 @@ const CriminalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
                     </div>
                     <div className={style.threeColForButton}>
                         <Tooltip title={"Click to Skip This Step and Continue Later"} arrow>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
+                        <div className={`${style.saveInProgress} ${style.marginTop} ${isSkipForNowDisabled ? style.disabledButton : ""}`} onClick={() => { if (!isSkipForNowDisabled) {getSkipClicked(true)}}}>SKIP FOR NOW</div>
                         </Tooltip>
                         <Tooltip title={"Click to Save your Progress and Continue later"} arrow>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
@@ -276,7 +328,7 @@ const CriminalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
                     </div>
                     <div className={`${style.stickyContainer} ${isSaveInProgressOpen || showValidationDialog || showJourneyDialog ? style.hiddenStickyContainer : ""}`}>
                         <Tooltip title={"Click to Skip This Step and Continue Later"} arrow>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
+                        <div className={`${style.saveInProgress} ${style.marginTop}  ${isSkipForNowDisabled ? style.disabledButton : ""}`} onClick={() => { if (!isSkipForNowDisabled) {getSkipClicked(true)}}}>SKIP FOR NOW</div>
                         </Tooltip>
                         <Tooltip title={"Click to Save your Progress and Continue later"} arrow>
                         <div className={`${style.saveInProgress} ${style.marginTop10}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>

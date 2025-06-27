@@ -4113,7 +4113,7 @@ useEffect(() => {
       if (credCommittee) {
         ccdate.push(
           credCommittee?.meetingDate
-            ? format(new Date(`${credCommittee?.meetingDate}T00:00`), "MM/dd/yyyy")
+            ? format(new Date(`${credCommittee?.meetingDate}T00:00`), "dd/MM/yyyy")
             : "-"
         );
       }
@@ -4258,7 +4258,7 @@ useEffect(() => {
       // }
       if (credCommittee) {
         const reviewDate = credCommittee?.reviewedDate
-          ? format(new Date(`${credCommittee?.reviewedDate}T00:00`), "MM/dd/yyyy")
+          ? format(new Date(`${credCommittee?.reviewedDate}T00:00`), "dd/MM/yyyy")
           : '-';
 
         submitted.push(reviewDate);
@@ -4427,7 +4427,7 @@ useEffect(() => {
       if (credCommittee) {
         ccdate.push(
           credCommittee?.meetingDate
-            ? format(new Date(`${credCommittee?.meetingDate}T00:00`), "MM/dd/yyyy")
+            ? format(new Date(`${credCommittee?.meetingDate}T00:00`), "dd/MM/yyyy")
             : "-"
         );
       }
@@ -4476,7 +4476,7 @@ useEffect(() => {
         ccMemberReviewedMember = approverDetails?.filter(approver => approver?.approvalType != null)?.map((approver) => {
           const name = `${approver?.approverDetail?.name?.firstName || ""} ${approver?.approverDetail?.name?.lastName || ""}`.trim();
           const reviewDate = approver?.reviewedDate
-            ? format(new Date(`${approver.reviewedDate}T00:00`), "MM/dd/yyyy")
+            ? format(new Date(`${approver.reviewedDate}T00:00`), "dd/MM/yyyy")
             : "-";
 
           if (approver?.approvalType != null) doneReview += 1;
@@ -4602,7 +4602,7 @@ useEffect(() => {
       // }
       if (credCommittee) {
         const reviewDate = credCommittee?.reviewedDate
-          ? format(new Date(`${credCommittee?.reviewedDate}T00:00`), "MM/dd/yyyy")
+          ? format(new Date(`${credCommittee?.reviewedDate}T00:00`), "dd/MM/yyyy")
           : '-';
 
         submitted.push(reviewDate);
@@ -4883,7 +4883,7 @@ useEffect(() => {
       if (workflow) {
         macdate.push(
           workflow?.meetingDate
-            ? format(new Date(`${workflow?.meetingDate}T00:00`), "MM/dd/yyyy")
+            ? format(new Date(`${workflow?.meetingDate}T00:00`), "dd/MM/yyyy")
             : "-"
         );
       }
@@ -5153,7 +5153,7 @@ useEffect(() => {
       if (workflow) {
         macdate.push(
           workflow?.meetingDate
-            ? format(new Date(`${workflow?.meetingDate}T00:00`), "MM/dd/yyyy")
+            ? format(new Date(`${workflow?.meetingDate}T00:00`), "dd/MM/yyyy")
             : "-"
         );
       }
@@ -5476,7 +5476,7 @@ useEffect(() => {
       if (workflow) {
         boddate.push(
           workflow?.meetingDate
-            ? format(new Date(`${workflow?.meetingDate}T00:00`), "MM/dd/yyyy")
+            ? format(new Date(`${workflow?.meetingDate}T00:00`), "dd/MM/yyyy")
             : "-"
         );
       }
@@ -5784,7 +5784,7 @@ useEffect(() => {
       if (workflow) {
         boddate.push(
           workflow?.meetingDate
-            ? format(new Date(`${workflow?.meetingDate}T00:00`), "MM/dd/yyyy")
+            ? format(new Date(`${workflow?.meetingDate}T00:00`), "dd/MM/yyyy")
             : "-"
         );
       }

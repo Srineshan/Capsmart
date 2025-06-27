@@ -245,6 +245,47 @@ const MedicalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
     const getIsEdited = (value) => {
         setIsEdited(value)
     }
+
+    const MedicalDisclosureValue = getValueByPath(
+    basicForm,
+    `forms[${formIndex}].data.disclosures.medicalDisclosures.anyHealthProblems`
+    );
+
+    const MedicalDisclosureValueText = getValueByPath(
+    basicForm,
+    `forms[${formIndex}].data.disclosures.medicalDisclosures.anyHealthProblemsText`
+    );
+
+    const MedicalDisclosureValueFile = getValueByPath(
+    basicForm,
+    `forms[${formIndex}].data.disclosures.medicalDisclosures.anyHealthProblemsFile`
+    );
+
+    const MedicalDisclosureValueFacility = getValueByPath(
+    basicForm,
+    `forms[${formIndex}].data.disclosures.medicalDisclosures.nameOfFacility`
+    );
+
+    const MedicalDisclosureValueProvider = getValueByPath(
+    basicForm,
+    `forms[${formIndex}].data.disclosures.medicalDisclosures.treatingPhysicianOrProvider`
+    );
+
+    const MedicalDisclosureValueEmailId = getValueByPath(
+    basicForm,
+    `forms[${formIndex}].data.disclosures.medicalDisclosures.emailId`
+    );
+
+    const MedicalDisclosureValuecellPhone = getValueByPath(
+    basicForm,
+    `forms[${formIndex}].data.disclosures.medicalDisclosures.cellPhone`
+    );
+
+    const isSkipForNowDisabled = 
+    MedicalDisclosureValue === "No" || 
+    (MedicalDisclosureValue === "Yes" && MedicalDisclosureValueText && MedicalDisclosureValueFile && MedicalDisclosureValueFacility && MedicalDisclosureValueProvider && MedicalDisclosureValueEmailId && MedicalDisclosureValuecellPhone);
+
+    console.log('MedicalDisclosure value:', MedicalDisclosureValue,MedicalDisclosureValueText,MedicalDisclosureValueFile,MedicalDisclosureValueFacility,MedicalDisclosureValueProvider,MedicalDisclosureValueEmailId,MedicalDisclosureValuecellPhone);
     return (
         <div>
             {showInfo && <div className={style.bgdrop} onClick={() => setShowInfo(false)}></div>}
@@ -262,7 +303,7 @@ const MedicalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
                     </div>
                     <div className={style.threeColForButton}>
                         <Tooltip title={"Click to Skip This Step and Continue Later"} arrow>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
+                        <div className={`${style.saveInProgress} ${style.marginTop} ${isSkipForNowDisabled ? style.disabledButton : ""}`} onClick={() => { if (!isSkipForNowDisabled) {getSkipClicked(true)}}}>SKIP FOR NOW</div>
                         </Tooltip>
                         <Tooltip title={"Click to Save your Progress and Continue later"} arrow>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
@@ -300,7 +341,7 @@ const MedicalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
                     </div>
                     <div className={`${style.stickyContainer} ${isSaveInProgressOpen || showValidationDialog || showJourneyDialog ? style.hiddenStickyContainer : ""}`}>
                         <Tooltip title={"Click to Skip This Step and Continue Later"} arrow>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
+                        <div className={`${style.saveInProgress} ${style.marginTop} ${isSkipForNowDisabled ? style.disabledButton : ""}`} onClick={() => { if (!isSkipForNowDisabled) {getSkipClicked(true)}}}>SKIP FOR NOW</div>
                         </Tooltip>
                         <Tooltip title={"Click to Save your Progress and Continue later"} arrow>
                         <div className={`${style.saveInProgress} ${style.marginTop10}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
