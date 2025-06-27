@@ -9,8 +9,10 @@ import AppsIcon from '@mui/icons-material/Apps';
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 import { useDescope } from "@descope/react-sdk";
 import Cookies from "universal-cookie";
+import { useNavigate } from 'react-router-dom';
 
 const ApplicantHeader = () => {
+    const navigate = useNavigate();
     const { logout } = useDescope();
     let cookie = new Cookies();
     const handleLogout = () => {
@@ -18,6 +20,7 @@ const ApplicantHeader = () => {
         cookie.remove("entityId", { path: "/" });
         cookie.remove("authorization", { path: "/" });
         logout();
+        navigate('/')
     }
     return (
         <div className={`${style.headerCard}`}>

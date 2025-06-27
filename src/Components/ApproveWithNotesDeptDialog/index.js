@@ -16,7 +16,7 @@ import TextField from "@mui/material/TextField";
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import Dropzone from "react-dropzone";
-import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
+import { SuccessToaster, ErrorToaster,SuccessToaster2 } from "../../utils/toaster";
 import DescriptionIcon from '@mui/icons-material/Description';
 import { fileLoadingURL, FormatPhoneNumber, FormatPostalCode } from "../../utils/formatting";
 import LoadingScreen from "../LoadingScreen";
@@ -264,7 +264,7 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen, getActiveApplicationView, date
       setIsLoadingImageDocs(true);
       const response = await POST(`application-management-service/application/${id}/files/bulk?isLLMRequired=${false}`, formData);
       console.log("API Response:", response);
-      SuccessToaster('File Uploaded Successfully');
+      SuccessToaster2("File Uploaded Successfully");
       console.log("Response data:", response?.data);
       setUploadFileData(prevData => {
         // Merge previous data with new data
@@ -591,7 +591,7 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen, getActiveApplicationView, date
   const onClickApproveMoveFunction = () => {
     handleApplicationApprove(true)
       .then(() => {
-        return SuccessToaster('Sent for Review Successfully');
+        return SuccessToaster2('Sent for Review Successfully');
       })
       .then(() => {
         return getApplicationMoveToNext(true);
@@ -785,7 +785,7 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen, getActiveApplicationView, date
 
     await PUT(`application-management-service/application/${id}/workflow/move?workflowAction=APPROVED&isDelegate=${isDelegate}`, payload)
       .then(response => {
-        SuccessToaster('Sent for Review Successfully');
+        // SuccessToaster2('Sent for Review Successfully');
         console.log('successfull');
         onClose();
       })

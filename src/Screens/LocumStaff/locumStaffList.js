@@ -1974,7 +1974,8 @@ const LocumStaffList = ({
                     </div>
                   </div>
                 </div>
-                <div className={`${style.viewCurrentStatusText} ${style.marginTop10} ${style.cursorPointer}`} onClick={() => onClickDepttrackerDialog()}>VIEW CURRENT STATUS</div>
+                <Tooltip title={'Click to View Current Status'} arrow >
+                <div className={`${style.viewCurrentStatusText} ${style.marginTop10} ${style.cursorPointer}`} onClick={() => onClickDepttrackerDialog()}>VIEW CURRENT STATUS</div></Tooltip>
               </div>
             </div>
             <div

@@ -122,6 +122,28 @@ const PatientConcern = ({ basicForm, setBasicForm, getPreApplication }) => {
         navigate(navigateBackURL)
     }
 
+ 
+    const PatientDisclosureValue = getValueByPath(
+    basicForm,
+    `forms[${formIndex}].data.disclosures.patientConcernDisclosure.haveSubjectedToPatientConcerns`
+    );
+
+    const PatientDisclosureValueText = getValueByPath(
+    basicForm,
+    `forms[${formIndex}].data.disclosures.patientConcernDisclosure.haveSubjectedToPatientConcernsText`
+    );
+
+    const PatientDisclosureValueFile = getValueByPath(
+    basicForm,
+    `forms[${formIndex}].data.disclosures.patientConcernDisclosure.haveSubjectedToPatientConcernsFile`
+    );
+
+    const isSkipForNowDisabled = 
+    PatientDisclosureValue === "No" || 
+    (PatientDisclosureValue === "Yes" && PatientDisclosureValueText && PatientDisclosureValueFile);
+
+    console.log('haveSubjectedToPatientConcerns value:', PatientDisclosureValue,PatientDisclosureValueText,PatientDisclosureValueFile);
+
     const getMissingFields = (data) => {
         let missingKeys = [];
         let keyValuePair = [];
@@ -231,7 +253,7 @@ const PatientConcern = ({ basicForm, setBasicForm, getPreApplication }) => {
                     </div>
                     <div className={style.threeColForButton}>
                         <Tooltip title={"Click to Skip This Step and Continue Later"} arrow>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
+                        <div className={`${style.saveInProgress} ${style.marginTop} ${isSkipForNowDisabled ? style.disabledButton : ""}`} onClick={() => { if (!isSkipForNowDisabled) {getSkipClicked(true)}}}>SKIP FOR NOW</div>
                         </Tooltip>
                         <Tooltip title={"Click to Save your Progress and Continue later"} arrow>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
@@ -269,7 +291,7 @@ const PatientConcern = ({ basicForm, setBasicForm, getPreApplication }) => {
                     </div>
                     <div className={`${style.stickyContainer} ${isSaveInProgressOpen || showValidationDialog || showJourneyDialog ? style.hiddenStickyContainer : ""}`}>
                         <Tooltip title={"Click to Skip This Step and Continue Later"} arrow>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
+                        <div className={`${style.saveInProgress} ${style.marginTop} ${isSkipForNowDisabled ? style.disabledButton : ""}`} onClick={() => { if (!isSkipForNowDisabled) {getSkipClicked(true)}}}>SKIP FOR NOW</div>
                         </Tooltip>
                         <Tooltip title={"Click to Save your Progress and Continue later"} arrow>
                         <div className={`${style.saveInProgress} ${style.marginTop10}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>

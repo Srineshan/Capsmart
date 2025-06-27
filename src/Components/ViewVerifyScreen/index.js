@@ -12267,6 +12267,12 @@ const NewActiveApplication = ({
                                 <span className={`${style.tableHeaderHeadingTextStyle1}`}>
                                   Notes
                                 </span>
+                                {!((workModeType === "Staff Manager" && selectedTab === "level-2" && applicationType === "REAPPOINTMENT") || 
+                                 (workModeType === "Department Head" && selectedTab === "level-2" && applicationType === "REAPPOINTMENT" && isApproverDept === "NotApproved") || 
+                                 (workModeType === "Chief Of Staff" &&  selectedTab === "level-2" && applicationType === "REAPPOINTMENT" && isApproverDept === "NotApproved") ||
+                                 (workModeType === 'Credentialing Committee' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" && isApproverCred === "NotApproved") ||
+                                 (workModeType === 'Credentialing Committee' && selectedTab === 'level-2' && applicationType === "LOCUM" && isApproverCred === "NotApproved") ||
+                                 (workModeType === 'Chief Of Staff' && selectedTab === 'level-2' && applicationType === "LOCUM" && isApproverCred === "NotApproved")) && (
                                 <div
                                   className={`${style.marginTop5} ${style.marginLeft10} ${style.tableDataFontStyle1}`}
                                 >
@@ -12277,6 +12283,7 @@ const NewActiveApplication = ({
                                     />
                                   </Tooltip>
                                 </div>
+                                )}
                               </div>
                               {visibleNotes.length > 0 ? (
                               <div
@@ -12352,7 +12359,7 @@ const NewActiveApplication = ({
                                         <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.notesTextStyle} ${style.marginBottom0}`}>
                                           <div dangerouslySetInnerHTML={{ __html: log.notes.notes }} />
                                         </div>
-                                        {log?.user?.id === users?.id && (
+                                        {log?.user?.id === users?.id &&  !(workModeType === "Staff Manager" &&  selectedTab === "level-2" &&applicationType === "REAPPOINTMENT") && (
                                           <div>
                                             <Tooltip title="Edit a Note" arrow>
                                               <EditOutlinedIcon
@@ -12363,7 +12370,7 @@ const NewActiveApplication = ({
                                             </Tooltip>
                                           </div>
                                         )}
-                                        {log?.user?.id === users?.id && (
+                                        {log?.user?.id === users?.id &&  !(workModeType === "Staff Manager" &&  selectedTab === "level-2" &&applicationType === "REAPPOINTMENT") && (
                                           <div>
                                             <Tooltip title="Delete a Note" arrow>
                                               <DeleteOutlineIcon

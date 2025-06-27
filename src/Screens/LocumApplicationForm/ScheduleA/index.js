@@ -286,7 +286,7 @@ const ScheduleA = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
                                 <div className={style.verticalAlignCenter}>
                                     <div className={style.displayInRow}>
                                         <div className={style.dateTitle}>Date: </div>
-                                        <div className={`${style.date} ${style.marginLeft}`}>{isSigned ? (basicForm?.forms?.[formIndex]?.esign?.signedDate !== '' && basicForm?.forms?.[formIndex]?.esign?.signedDate !== undefined) ? basicForm?.forms?.[formIndex]?.esign?.signedDate : "" : ""}</div>
+                                        <div className={`${style.date} ${style.marginLeft}`}>{isSigned ? (basicForm?.forms?.[formIndex]?.esign?.signedDate !== '' && basicForm?.forms?.[formIndex]?.esign?.signedDate !== undefined) ? basicForm?.forms?.[formIndex]?.esign?.signedDate : currentDate : ""}</div>
                                     </div>
                                 </div>
                             </div>
