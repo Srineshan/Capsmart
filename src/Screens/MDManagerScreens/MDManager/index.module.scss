@@ -759,3 +759,16 @@
     grid-template-columns: 30% 52% 15%;
     gap: 1%;
 }
+
+.searchFieldCard {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 6px #1713380F;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.advancedSearchText {
+    font: normal normal normal 16px/24px proxima-nova;
+    color: $primarycolor;
+    text-align: left;
+}

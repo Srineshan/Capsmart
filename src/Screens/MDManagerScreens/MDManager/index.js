@@ -11,9 +11,15 @@ import ManageMedicalDirectives from "./manageMedicalDirectives";
 import DataUpload from "./dataUpload";
 import FeedbackTicket from "./feedbackTicket";
 import ReferenceList from "./../../ReferenceList";
+import CommonSelectField from '../../../Components/CommonFields/CommonSelectField';
+import CommonInputField from '../../../Components/CommonFields/CommonInputField';
 import MDManagerStep1 from "./step1";
 import MDManagerStep2 from "./step2";
 import MDManagerStep3 from "./step3";
+import CommonSearchField from "../../../Components/CommonFields/CommonSearchField";
+import CommonDateField from "../../../Components/CommonFields/CommonDateField";
+import { TextField } from "@material-ui/core";
+import { format } from "date-fns";
 
 const MDManager = () => {
   const navigate = useNavigate();
@@ -31,9 +37,26 @@ const MDManager = () => {
   const [step1, setStep1] = useState(false);
   const [step2, setStep2] = useState(false);
   const [step3, setStep3] = useState(false);
+  const [departmentList, setDepartmentList] = useState([]);
+  const [selectedDepartment, setSelectedDepartment] = useState('');
+  const [selectedServiceArea, setSelectedServiceArea] = useState("");
   const [mdFile, setMdFile] = useState();
   const [mdValue, setMdValue] = useState();
-
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchData, setSearchData] = useState([]);
+  const [searchCount, setSearchCount] = useState(0);
+  const [searchTermForTable, setSearchTermForTable] = useState('');
+  const [showAdvancedSearch, setShowAdvancedSearch] = useState(false);
+  const [mdId, setMdId] = useState('');
+  const [staffList, setStaffList] = useState([]);
+  const [groupList, setGroupList] = useState([]);
+  const [mdTitle, setMdTitle] = useState('');
+  const [selectedDepartmentSpecialities, setSelectedDepartmentSpecialities] = useState([]);
+  const [selectedGroups, setSelectedGroups] = useState('');
+  const [selectedAuthor, setSelectedAuthor] = useState('');
+  const [from, setFrom] = useState(null);
+  const [to, setTo] = useState(null);
+  const [calendarStart, setCalendarStart] = useState(false);
   useEffect(() => {
     console.log(selectedOption, 'option')
     if (selectedOptionValue !== undefined && selectedOptionValue !== null) {
@@ -45,6 +68,9 @@ const MDManager = () => {
     feedBackTileValues();
     userTileValues();
     getEntity();
+    getDepartmentList();
+    getStaffList();
+    getGroupList();
   }, []);
 
   useEffect(() => {
@@ -54,6 +80,38 @@ const MDManager = () => {
   }, [entityId]);
 
   const togglePin = () => { };
+
+  const transformedOptions = departmentList?.flatMap((department) => {
+    const departmentEntry = {
+      value: department?.id,
+      label: department?.departmentName?.name,
+      type: 'department'
+    };
+
+    const serviceAreaEntries = department.serviceAreas?.map((serviceArea) => ({
+      value: `${department.id}|${serviceArea.id}`,
+      label: (
+        <span className={style.marginLeft}>
+          {serviceArea?.name}
+        </span>
+      ),
+      type: 'serviceArea'
+    })) || [];
+
+    return [departmentEntry, ...serviceAreaEntries]; // Include department first, then service areas
+  }) || [];
+
+  const advancedSearch = {
+    departmentSpecialties: selectedDepartment !== "" ? [selectedServiceArea ? `${selectedDepartment}#${selectedServiceArea}` : selectedDepartment] : [],
+    mdID: mdId,
+    title: mdTitle,
+    groupIds: selectedGroups !== "" ? [selectedGroups] : [],
+    authorIds: selectedAuthor !== "" ? [selectedAuthor] : [],
+    fromDate: from,
+    toDate: to,
+    // "noOfDays": 0,
+    searchText: searchTerm
+  }
 
   const getSelectedOption = (value) => {
     setSelectedOption(value);
@@ -72,6 +130,39 @@ const MDManager = () => {
     );
     setUserMetadata(user);
   };
+
+  const handleChange = (e) => {
+    const selectedValue = e.target.value;
+    const [departmentId, serviceAreaId] = selectedValue.split("|");
+
+    setSelectedDepartment(departmentId || "");
+    setSelectedServiceArea(serviceAreaId || "");
+
+    console.log("selectedDept", selectedValue)
+  }
+
+  const getDepartmentList = async () => {
+    const { data: department } = await GET(
+      `entity-service/department`
+    );
+    setDepartmentList(department);
+  }
+
+  const getGroupList = async () => {
+    const response = await GET(
+      `medical-directive-service/attestationGroup`
+    );
+    console.log(response.data);
+    setGroupList(response?.data)
+  }
+
+  const getStaffList = async () => {
+    const response = await GET(
+      `application-management-service/staff?status=ACTIVE&sortByField=STAFF_NAME&isPaginationRequired=${false}&limit=${9999}`
+    );
+    console.log(response.data);
+    setStaffList(response?.data?.staffs)
+  }
 
   const getEntity = async () => {
     const { data: entity } = await GET(`entity-service/entity`);
@@ -217,6 +308,15 @@ const MDManager = () => {
     setMdValue(value)
   }
 
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
+  }
+
+  const handleShowForSearch = () => {
+    console.log('search', searchTerm)
+    setSearchTermForTable(searchTerm)
+  }
+
   console.log('ref', refMetadata);
 
   return step1 ? (
@@ -234,12 +334,146 @@ const MDManager = () => {
       >
         <div>
           <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
-            <div></div>
+            <div>
+              <div className={style.searchFieldCard} onClick={() => setShowAdvancedSearch(!showAdvancedSearch)}>
+                <CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} isOnClickAvailable={false} onClickFunc={() => { }} placeholder={"Search For A Medical Directive By ID Or Title"} />
+              </div>
+              <div className={style.searchFieldCard}>
+                <div className={style.advancedSearchText}>Advanced MD Search Criteria</div>
+                <div className={style.marginTop10}>
+                  <div className={style.labelStyle}>Medical Directive ID</div>
+                  <CommonInputField
+                    value={mdId}
+                    onChange={(e) => setMdId(e.target.value)}
+                    type="text"
+                    placeholder="Enter MD ID"
+                  />
+                </div>
+                <div className={style.marginTop10}>
+                  <div className={style.labelStyle}>Medical Directive Title</div>
+                  <CommonInputField
+                    value={mdTitle}
+                    onChange={(e) => setMdTitle(e.target.value)}
+                    type="text"
+                    placeholder="Contains"
+                  />
+                </div>
+                <div className={style.marginTop10}>
+                  <CommonSelectField
+                    value={selectedDepartment}
+                    onChange={handleChange}
+                    className={style.fullWidth}
+                    // firstOptionLabel={'All'}
+                    // firstOptionValue={''}
+                    valueList={transformedOptions.map(option => option?.value)}
+                    labelList={transformedOptions.map(option => option?.label)}
+                    disabledList={transformedOptions.map(() => false)}
+                    required={true}
+                    label={'Department / Division'}
+                  />
+                </div>
+                <div className={style.marginTop10}>
+                  <CommonSelectField
+                    value={selectedGroups}
+                    onChange={(e) => setSelectedGroups(e.target.value)}
+                    className={style.fullWidth}
+                    // firstOptionLabel={'All'}
+                    // firstOptionValue={''}
+                    valueList={groupList?.map(option => option?.id)}
+                    labelList={groupList?.map(option => `${option?.name}`)}
+                    disabledList={groupList?.map(() => false)}
+                    required={false}
+                    label={'Attestation Groups'}
+                  />
+                </div>
+                <div className={style.marginTop10}>
+                  <CommonSelectField
+                    value={selectedAuthor}
+                    onChange={(e) => setSelectedAuthor(e.target.value)}
+                    className={style.fullWidth}
+                    // firstOptionLabel={'All'}
+                    // firstOptionValue={''}
+                    valueList={staffList?.map(option => option?.id)}
+                    labelList={staffList?.map(option => `${option?.applicant?.name?.firstName} ${option?.applicant?.name?.lastName}`)}
+                    disabledList={staffList?.map(() => false)}
+                    required={false}
+                    label={'Author / Owner Responsible'}
+                  />
+                </div>
+                <div className={style.marginTop10}>
+                  <div className={style.labelStyle}>Last Published</div>
+                  <div className={style.twoCol}>
+                    <CommonDateField
+                      className={style.fullWidth}
+                      open={calendarStart}
+                      onOpen={() => setCalendarStart(true)}
+                      onClose={() => setCalendarStart(false)}
+                      // minDate={sub(new Date(), { years: 3 })}
+                      // maxDate={add(new Date(), { months: 6 })}
+                      value={from}
+                      onChange={(newValue) =>
+                        setFrom(format(new Date(newValue), "yyyy-MM-dd"))
+                      }
+                      // minDate={minDate}
+                      // maxDate={maxDate}
+                      InputProps={{
+                        style: {
+                          fontSize: 14,
+                          height: 30,
+                        },
+                      }}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          inputProps={{
+                            ...params.inputProps,
+                            placeholder: 'From',
+                            readOnly: true
+                          }}
+                          fullWidth
+                        />
+                      )}
+                    />
+                    <CommonDateField
+                      className={style.fullWidth}
+                      open={calendarStart}
+                      onOpen={() => setCalendarStart(true)}
+                      onClose={() => setCalendarStart(false)}
+                      // minDate={sub(new Date(), { years: 3 })}
+                      // maxDate={add(new Date(), { months: 6 })}
+                      value={to}
+                      onChange={(newValue) =>
+                        setTo(format(new Date(newValue), "yyyy-MM-dd"))
+                      }
+                      // minDate={minDate}
+                      // maxDate={maxDate}
+                      InputProps={{
+                        style: {
+                          fontSize: 14,
+                          height: 30,
+                        },
+                      }}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          inputProps={{
+                            ...params.inputProps,
+                            placeholder: 'To',
+                            readOnly: true
+                          }}
+                          fullWidth
+                        />
+                      )}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
           </SideBar>
         </div>
         <div>
           {selectedOption === "MANAGE MEDICAL DIRECTIVES" ? (
-            <ManageMedicalDirectives getSelectedOption={getSelectedOption} setStep1={setStep1} setMdFile={setMdFile} />
+            <ManageMedicalDirectives getSelectedOption={getSelectedOption} setStep1={setStep1} setMdFile={setMdFile} advancedSearch={advancedSearch} />
           ) : selectedOption === "OPEN FEEDBACK TICKETS" ? (
             <FeedbackTicket getSelectedOption={getSelectedOption} />
           ) : selectedOption === "DATA UPLOADS" ? (

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, createRef, useCallback, useRef } from 'react';
 import { Classes, Dialog } from '@blueprintjs/core';
-import { GET, PUT } from './../../dataSaver';
+import { GET, POST, PUT } from './../../dataSaver';
 import Tile from '../../../Components/Tile';
 import Table from '../../../Components/TableDesign';
 import { format, startOfWeek, endOfWeek } from 'date-fns';
@@ -21,7 +21,7 @@ import TileApplication from '../../../Components/TileApplication';
 import MDManagerStep1 from './step1';
 import TableTwo from '../../../Components/TableDesignTwo';
 
-const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile }) => {
+const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advancedSearch }) => {
     const PDFRef = createRef();
     const componentRef = useRef(null);
     const [mdList, setMdList] = useState([]);
@@ -38,13 +38,29 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile }) => 
     const [invitedUsers, setInvitedUsers] = useState([]);
     const [blockedUsers, setBlockedUsers] = useState([]);
     const [userMetadata, setUserMetadata] = useState([]);
+    const [dashboardData, setDashboardData] = useState([]);
+    const [dashboardMetaData, setDashboardMetaData] = useState([]);
     const [from, setFrom] = useState(startOfWeek(new Date()));
     const [to, setTo] = useState(endOfWeek(new Date()));
     const [userId, setUserId] = useState('');
     const [isEdit, setIsEdit] = useState(false);
+    const [limit, setLimit] = useState(9999);
+    const isPaginationRequired = limit === 9999 ? false : true;
+    const [page, setPage] = useState(1);
+    const [totalTableCount, setTotalTableCount] = useState(0);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [searchData, setSearchData] = useState([]);
+    const [searchCount, setSearchCount] = useState(0);
+    const [searchTermForTable, setSearchTermForTable] = useState('');
     const [showAddNewMedicalDirectives, setShowAddNewMedicalDirectives] = useState(false);
     const [showAddUserDialog, setShowAddUserDialog] = useState(false);
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+    const [newMdCount, setNewMdCount] = useState(0);
+    const [upcomingMdCount, setUpcomingMdCount] = useState(0);
+    const [currentMdCount, setCurrentMdCount] = useState(0);
+    const [revisionMdCount, setRevisionMdCount] = useState(0);
+    const [outstandingMdCount, setOutstandingMdCount] = useState(0);
+    const [draftMdCount, setDraftMdCount] = useState(0);
     let isMultiSiteEntity = sessionStorage.getItem('isMultiSiteEntity') === 'true' ? true : false;
     const currentTableHeaderValues = [
         "No.",
@@ -92,8 +108,18 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile }) => 
 
     useEffect(() => {
         getUser();
-        getMDList()
+        getMDList();
+        getDashboardMetadata();
     }, [selectedOption, showAddUserDialog]);
+
+    useEffect(() => {
+        const controller = new AbortController();
+        const signal = controller.signal;
+
+        getDashboard(signal);
+
+        return () => controller.abort();
+    }, [selectedOption, showAddUserDialog, limit, page, advancedSearch]);
 
     useEffect(() => {
         userTileValues();
@@ -127,6 +153,23 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile }) => 
         }
     };
 
+    const getDashboard = async (signal) => {
+        const { data: dashboardData } = await POST(`medical-directive-service/medicalDirectives/dashboard?offset=${page - 1}&limit=${limit}&isPaginationRequired=${isPaginationRequired}&tab=${selectedOption === "Current Medical Directives" ? "active_md" : selectedOption === "Medical Directives Revisions" ? "md_revisions" : selectedOption === "Draft Medical Directives" ? "draft_md" : ""}`, advancedSearch, { signal });
+        setDashboardData(dashboardData?.medicalDirectives);
+        setTotalTableCount(dashboardData?.numberOfElements);
+    }
+
+    const getDashboardMetadata = async () => {
+        const { data: dashboardMetadata } = await GET(`medical-directive-service/medicalDirectives/dashboard/meta`);
+        setDashboardMetaData(dashboardMetadata);
+        setNewMdCount(dashboardMetadata?.active_md?.newDirectivesCount);
+        setUpcomingMdCount(dashboardMetadata?.active_md?.upcomingForReviewCount);
+        setCurrentMdCount(dashboardMetadata?.active_md?.numberOfElements)
+        setRevisionMdCount(dashboardMetadata?.md_revisions?.numberOfElements)
+        setOutstandingMdCount(dashboardMetadata?.active_md?.numberOfElements)
+        setDraftMdCount(dashboardMetadata?.draft_md?.numberOfElements)
+    }
+
     const userTileValues = async () => {
         const { data: user } = await GET(`user-management-service/user/metadata?startDate=${format(new Date(from), 'yyyy-MM-dd')}&endDate=${format(new Date(to), 'yyyy-MM-dd')}`);
         setUserMetadata(user);
@@ -135,6 +178,14 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile }) => 
     const togglePin = () => {
 
     }
+
+    const getSelectedPage = (value) => {
+        setPage(value);
+    }
+
+    const handleLimitChange = (newLimit) => {
+        setLimit(newLimit);
+    };
 
     const getSelectedOptionLevelTwo = (value) => {
         setSelectedOption(value)
@@ -270,6 +321,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile }) => 
     let dotTooltipValues = [];
     let no = [];
     let title = [];
+    let desc = [];
     let mdId = [];
     let department = [];
     let firstPublished = [];
@@ -289,6 +341,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile }) => 
         dotTooltipValues = [];
         no = [];
         title = [];
+        desc = [];
         mdId = [];
         department = [];
         firstPublished = [];
@@ -303,15 +356,16 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile }) => 
         revisionAssignedTo = [];
         action = [];
 
-        mdList?.map((data, index) => {
+        dashboardData?.map((data, index) => {
             dot.push(data?.activated ? 'green' : 'grey');
             dotTooltipValues.push(data?.activated ? 'Activated' : 'Deactivated');
             no.push(index + 1);
             title.push(data?.title);
+            desc.push(data?.title)
             mdId.push(data?.mdID);
             department.push(data?.departments?.map(data => data?.name)?.join(', '));
             firstPublished.push(data?.initialPublishedDate ? format(new Date(data?.initialPublishedDate), 'MMM dd, yyyy') : '-');
-            lastRevision.push(data?.lastModifiedDate ? format(new Date(data?.lastModifiedDate), 'MMM dd, yyyy') : '-');
+            lastRevision.push(data?.lastRevisionDate ? format(new Date(data?.lastRevisionDate), 'MMM dd, yyyy') : '-');
             author.push(data?.author ? data?.author?.name : '-');
             dueDate.push('-');
             attestationCategory.push('-');
@@ -325,7 +379,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile }) => 
 
         return selectedOption === 'Current Medical Directives' ? [
             { "type": "text", "value": no },
-            { "type": "text", "value": title },
+            { "type": "text", "value": title, tooltipValueText: desc },
             { "type": "text", "value": mdId },
             { "type": "text", "value": department },
             { "type": "text", "value": firstPublished },
@@ -409,20 +463,20 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile }) => 
     }
     return (
         <div>
-            <div className={`${style.grid4} ${style.marginTop20}`}>
-                <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Current Medical Directives" bigNumber={userMetadata?.registeredUsers?.registeredUsersCount} smallNum1={userMetadata?.registeredUsers?.newRegisteredUsersCount} smallNum2={userMetadata?.registeredUsers?.blockedRegisteredUserCount} smallText1="New Directives" smallText2="Upcoming For Review" currentTile="Current Medical Directives" topText='' smallNum1Color={style.greenSmallNumber} smallNum2Color={style.yellowSmallNumber} smallNum1SelectedColor={style.greenSmallNumberSelected} smallNum2SelectedColor={style.yellowSmallNumberSelected} />
-                <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Medical Directives Revisions" bigNumber={userMetadata?.deactivatedUsers?.usersDeactivatedInSpecifiedTimePeriod} smallNum1="" smallNum2="" currentTile="Medical Directives Revisions" topText='' />
+            <div className={`${style.grid4} ${style.marginTop10}`}>
+                <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Current Medical Directives" bigNumber={currentMdCount} smallNum1={newMdCount} smallNum2={upcomingMdCount} smallText1="New Directives" smallText2="Upcoming For Review" currentTile="Current Medical Directives" topText='' smallNum1Color={style.greenSmallNumber} smallNum2Color={style.yellowSmallNumber} smallNum1SelectedColor={style.greenSmallNumberSelected} smallNum2SelectedColor={style.yellowSmallNumberSelected} />
+                <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Medical Directives Revisions" bigNumber={revisionMdCount} smallNum1="" smallNum2="" currentTile="Medical Directives Revisions" topText='' />
                 <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Attestations Outstanding" bigNumber={userMetadata?.invitedUsers?.invitedUsers} smallNum1={0} smallNum2={userMetadata?.invitedUsers?.pastDueUsers} smallText1="Not Started" smallText2="Past Due" currentTile="Attestations Outstanding" topText='' smallNum1Color={style.redSmallNumber} smallNum1SelectedColor={style.redSmallNumberSelected} smallNum2Color={style.redSmallNumber} smallNum2SelectedColor={style.redSmallNumberSelected} />
-                <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Draft Medical Directives" bigNumber={userMetadata?.contractedServiceProviderUsers?.contractedServiceProviderUsersCount} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="Draft Medical Directives" topText='' smallNum1Color={style.greenSmallNumber} smallNum2Color={style.redSmallNumber} smallNum1SelectedColor={style.greenSmallNumberSelected} smallNum2SelectedColor={style.redSmallNumberSelected} />
+                <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Draft Medical Directives" bigNumber={draftMdCount} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="Draft Medical Directives" topText='' smallNum1Color={style.greenSmallNumber} smallNum2Color={style.redSmallNumber} smallNum1SelectedColor={style.greenSmallNumberSelected} smallNum2SelectedColor={style.redSmallNumberSelected} />
             </div>
             <div
                 className={`${style.spaceBetween} ${style.marginLeft30} ${style.marginTop20} `}
             >
                 <div className={`${style.tabs}`}>
-                    <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Current" tileCount={userMetadata?.registeredUsers?.registeredUsersCount} currentTile="Current Medical Directives" />
-                    <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Revisions" tileCount={userMetadata?.registeredUsers?.registeredUsersCount} currentTile="Medical Directives Revisions" />
-                    <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Attestations Outstanding" tileCount={userMetadata?.registeredUsers?.registeredUsersCount} currentTile="Attestations Outstanding" />
-                    <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Draft Medical Directives" tileCount={userMetadata?.registeredUsers?.registeredUsersCount} currentTile="Draft Medical Directives" />
+                    <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Current" tileCount={currentMdCount} currentTile="Current Medical Directives" />
+                    <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Revisions" tileCount={revisionMdCount} currentTile="Medical Directives Revisions" />
+                    <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Attestations Outstanding" tileCount={0} currentTile="Attestations Outstanding" />
+                    <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Draft Medical Directives" tileCount={draftMdCount} currentTile="Draft Medical Directives" />
                 </div>
                 <div>
                     <button
@@ -486,14 +540,21 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile }) => 
                         <TableTwo
                             tableHeaderValues={tableHeaderValues}
                             tableDataValues={getValues()}
-                            tableData={mdList}
+                            tableData={dashboardData}
                             gridStyle={selectedOption === 'Attestations Outstanding' ? style.outstandingGrid : selectedOption === 'Current Medical Directives' ? style.mdListGrid : selectedOption === 'Draft Medical Directives' ? style.draftGrid : style.revisionGrid}
                             actions={[]}
                             // scrollStyle={style.contractScrollStyle}
                             tableSortValues={[]}
                             heading={"There are no Record for you to manage"}
                             onClickFunction={() => { }}
-                            hidePagination={true}
+                            hidePagination={false}
+                            getSelectedPage={getSelectedPage}
+                            totalCount={totalTableCount}
+                            page={page}
+                            searchTermForTable={searchTermForTable}
+                            searchCount={searchCount}
+                            setSearchTermForTable={setSearchTermForTable}
+                            onLimitChange={handleLimitChange}
                         />
                     </div>
                 </div>
