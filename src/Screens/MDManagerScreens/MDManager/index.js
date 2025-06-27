@@ -20,6 +20,7 @@ import CommonSearchField from "../../../Components/CommonFields/CommonSearchFiel
 import CommonDateField from "../../../Components/CommonFields/CommonDateField";
 import { TextField } from "@material-ui/core";
 import { format } from "date-fns";
+import CommonMultiSelectField from "../../../Components/CommonFields/CommonMultiSelectField";
 
 const MDManager = () => {
   const navigate = useNavigate();
@@ -38,8 +39,9 @@ const MDManager = () => {
   const [step2, setStep2] = useState(false);
   const [step3, setStep3] = useState(false);
   const [departmentList, setDepartmentList] = useState([]);
-  const [selectedDepartment, setSelectedDepartment] = useState('');
-  const [selectedServiceArea, setSelectedServiceArea] = useState("");
+  const [selectedCombinations, setSelectedCombinations] = useState([]);
+  const [selectedDepartment, setSelectedDepartment] = useState([]);
+  const [selectedServiceArea, setSelectedServiceArea] = useState([]);
   const [mdFile, setMdFile] = useState();
   const [mdValue, setMdValue] = useState();
   const [searchTerm, setSearchTerm] = useState('');
@@ -52,7 +54,7 @@ const MDManager = () => {
   const [groupList, setGroupList] = useState([]);
   const [mdTitle, setMdTitle] = useState('');
   const [selectedDepartmentSpecialities, setSelectedDepartmentSpecialities] = useState([]);
-  const [selectedGroups, setSelectedGroups] = useState('');
+  const [selectedGroups, setSelectedGroups] = useState([]);
   const [selectedAuthor, setSelectedAuthor] = useState('');
   const [from, setFrom] = useState(null);
   const [to, setTo] = useState(null);
@@ -102,10 +104,10 @@ const MDManager = () => {
   }) || [];
 
   const advancedSearch = {
-    departmentSpecialties: selectedDepartment !== "" ? [selectedServiceArea ? `${selectedDepartment}#${selectedServiceArea}` : selectedDepartment] : [],
+    departmentSpecialties: selectedCombinations?.map(item => item.replaceAll("|", "#")),
     mdID: mdId,
     title: mdTitle,
-    groupIds: selectedGroups !== "" ? [selectedGroups] : [],
+    groupIds: selectedGroups?.length !== 0 ? selectedGroups : [],
     authorIds: selectedAuthor !== "" ? [selectedAuthor] : [],
     fromDate: from,
     toDate: to,
@@ -132,14 +134,23 @@ const MDManager = () => {
   };
 
   const handleChange = (e) => {
-    const selectedValue = e.target.value;
-    const [departmentId, serviceAreaId] = selectedValue.split("|");
+    console.log(e.target.value)
+    const selectedValues = Array.from(e.target.value);
+    setSelectedCombinations(selectedValues);
 
-    setSelectedDepartment(departmentId || "");
-    setSelectedServiceArea(serviceAreaId || "");
+    const departments = [];
+    const serviceAreas = [];
 
-    console.log("selectedDept", selectedValue)
-  }
+    selectedValues.forEach(value => {
+      const [departmentId, serviceAreaId] = value.split("|");
+      if (departmentId) departments.push(departmentId);
+      if (serviceAreaId) serviceAreas.push(serviceAreaId);
+    });
+
+    console.log("Selected Departments:", departments);
+    console.log("Selected Service Areas:", serviceAreas);
+    console.log(selectedValues)
+  };
 
   const getDepartmentList = async () => {
     const { data: department } = await GET(
@@ -317,6 +328,16 @@ const MDManager = () => {
     setSearchTermForTable(searchTerm)
   }
 
+  const handleGroupSelect = (id) => {
+    console.log(id)
+    if (Array.isArray(id)) {
+      const newIds = id.filter(item => !selectedGroups.includes(item));
+      if (newIds.length > 0) {
+        setSelectedGroups(prev => [...prev, ...newIds]);
+      }
+    }
+  }
+
   console.log('ref', refMetadata);
 
   return step1 ? (
@@ -359,24 +380,46 @@ const MDManager = () => {
                   />
                 </div>
                 <div className={style.marginTop10}>
-                  <CommonSelectField
-                    value={selectedDepartment}
+                  <div className={style.labelStyle}>Department / Division</div>
+                  <CommonMultiSelectField
+                    value={selectedCombinations}
                     onChange={handleChange}
                     className={style.fullWidth}
+                    widthValue='250px'
                     // firstOptionLabel={'All'}
                     // firstOptionValue={''}
                     valueList={transformedOptions.map(option => option?.value)}
                     labelList={transformedOptions.map(option => option?.label)}
                     disabledList={transformedOptions.map(() => false)}
+                    renderValue={(selected) =>
+                      selected
+                        ?.map(val => {
+                          const option = transformedOptions.find(o => o.value === val);
+                          if (option?.type === 'department') {
+                            return option.label;
+                          } else if (option?.type === 'serviceArea') {
+                            const serviceAreaId = val.split('|')[1];
+                            const department = departmentList.find(dept =>
+                              dept.serviceAreas?.some(sa => sa.id === serviceAreaId)
+                            );
+                            const serviceArea = department?.serviceAreas?.find(sa => sa.id === serviceAreaId);
+                            return serviceArea?.name || '';
+                          }
+                          return '';
+                        })
+                        .join(', ')
+                    }
                     required={true}
                     label={'Department / Division'}
                   />
                 </div>
                 <div className={style.marginTop10}>
-                  <CommonSelectField
+                  <div className={style.labelStyle}>Attestation Groups</div>
+                  <CommonMultiSelectField
                     value={selectedGroups}
-                    onChange={(e) => setSelectedGroups(e.target.value)}
+                    onChange={(e) => handleGroupSelect(e.target.value)}
                     className={style.fullWidth}
+                    widthValue='250px'
                     // firstOptionLabel={'All'}
                     // firstOptionValue={''}
                     valueList={groupList?.map(option => option?.id)}

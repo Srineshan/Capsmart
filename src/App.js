@@ -315,6 +315,7 @@ const MDRequestAttest = React.lazy(() =>
   import("./Screens/MDRequestAttest")
 );
 const MDAttest = React.lazy(() => import("./Screens/MDRequestAttest/MedicalDirectivesAttest"));
+const MDAttestStatus = React.lazy(() => import("./Screens/MDManagerScreens/MDManager/MedicalDirectivesAttestStatus"));
 
 
 const App = ({ props }) => {
@@ -1360,6 +1361,10 @@ const App = ({ props }) => {
                 <Route
                   path="/medicalDirectiveAttest/:entityId/:medicalDirectivesId"
                   element={<ProtectedRoute><MDAttest /></ProtectedRoute>}
+                />
+                <Route
+                  path="/mdManager/mdAttestStatus/:entityId/:medicalDirectivesId"
+                  element={<ProtectedRoute><MDAttestStatus /></ProtectedRoute>}
                 />
                 <Route
                   path="/locumApplicationForm/:applicationId/:section/:step"
