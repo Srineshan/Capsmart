@@ -486,10 +486,12 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                                     </Tooltip>
                                 )}
                                 {allMedicalDirectives?.completed?.length !== 0 && (
+                                    <Tooltip title="Click to View and Attest Completed Medical Directives" arrow>
                                     <div className={`${style.completedCard} ${style.marginTop} ${style.displayInRow} ${style.cursorPointer}`} onClick={() => { setShowMedicalDirectives(true); setMedicalDirectivesStatus('completed'); setSelectedMedicalDirectiveList(allMedicalDirectives?.completed) }}>
                                         <div className={`${style.iconBackgroundCompleted} ${style.verticalAlignCenter} ${style.justifyCenter}`}><CheckCircleOutlineIcon sx={{ fontSize: 18, color: '#FFFFFF' }} /></div>
                                         <div className={`${style.marginLeft} ${style.textTransform}`}> {medicalDirectives?.length === allMedicalDirectives?.completed?.length ? 'All Medical Directives Completed & Up-To-Date' : `${allMedicalDirectives?.completed?.length} Completed`}</div>
                                     </div>
+                                    </Tooltip>
                                 )}
                                 {/* {medicalDirectives?.length === allMedicalDirectives?.completed?.length && (
                                     <div className={`${style.description} ${style.marginTop}`}>You have attested to all of the Medical Directives.</div>

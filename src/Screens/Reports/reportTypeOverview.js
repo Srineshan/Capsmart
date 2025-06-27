@@ -96,7 +96,7 @@ const ReportTypeOverview = () => {
     const [totalSubmittedTimesheets, setTotalSubmittedTimesheets] = useState(0);
     const [notPaidTimesheetsData, setNotPaidTimesheetsData] = useState();
     const [timesheetProcessingSummaryData, setTimesheetProcessingSummaryData] = useState();
-    const [staffReappointmentTrackerData, setSubmittedTimesheetsPaymentStatusData] = useState();
+    const [staffReappointmentTrackerData, setStaffReappointmentTrackerData] = useState();
     const [isNonCompliantReportTileClicked, setIsNonCompliantReportTileClicked] = useState(false);
     const [activityTrackServices, setActivityTrackServices] = useState([]);
     const [paymentTrackValues, setPaymentTrackValues] = useState();
@@ -303,7 +303,7 @@ const ReportTypeOverview = () => {
                 setIsLoading(false);
                 break;
             case 'staffReappointmentTracker':
-                getSubmittedTimesheetsPaymentStatus('withoutParameter');
+                getStaffReappointmentStatusTracker();
                 break;
             case 'locumStaffRenewalStatusTracker':
                 getSubmittedTimesheetsPaymentStatus('withParameter');
@@ -1102,6 +1102,33 @@ const ReportTypeOverview = () => {
         setIsLoading(false)
     }
 
+
+    const getStaffReappointmentStatusTracker = async () => {
+        try {
+            setIsLoading(true);
+            const departmentParam = dataToUseInReport?.selectedDepartments !== "" ? `&departmentId=${dataToUseInReport?.selectedDepartments}` : "";
+            const applicantParam = dataToUseInReport?.selectedStaffType !== ""  ? `&applicantTypeId=${dataToUseInReport?.selectedStaffType}` : "";
+            const privilegeParam = dataToUseInReport?.selectedPrivilegeCategory !== "" ? `&privilegingCategoryId=${dataToUseInReport?.selectedPrivilegeCategory}` : "";
+            const { data } = await GET(`application-management-service/staff/reappointmentStatusDetails?positionType=PERMANENT&limit=9999${departmentParam}${applicantParam}${privilegeParam}`)
+            setStaffReappointmentTrackerData(data?.applications || []);
+            console.log("tracker", data?.applications);
+            
+        } catch (error) {
+            console.error("Error fetching reappointment status:", error);
+            setStaffReappointmentTrackerData([]);
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
+    console.log("staff", dataToUseInReport?.selectedStaffType,dataToUseInReport?.selectedDepartments,dataToUseInReport?.selectedPrivilegeCategory);
+    
+    
+
+useEffect(() => {
+    getStaffReappointmentStatusTracker();
+}, [dataToUseInReport?.selectedStaffType,dataToUseInReport?.selectedDepartments,dataToUseInReport?.selectedPrivilegeCategory])
+
     const getCurrentApplicationNotesSummary = async (signal) => {
         // if (!isMyReport) {
         const queryParams = new URLSearchParams({
@@ -1633,6 +1660,84 @@ const ReportTypeOverview = () => {
             { type: "text", value: lastUpdated },
         ];
     };
+
+
+    const headerValuesStaffsReappointmentStatusTracker = [
+        "No.",
+        "Staff Name",
+        "Staff Type",
+        "Department / Speciality",
+        "Current Application Status",
+        "Last Updated"
+    ];
+    const colSortValuesStaffsReappointmentStatusTracker = [false, false, false, false, false, false];
+
+    const getStaffsReappointmentStatusTrackerTableValues = () => {
+        const No = [];
+        const staffName = [];
+        const staffType = [];
+        const department = [];
+        const currentApplicationStatus = [];
+        const lastUpdated = [];
+
+        staffReappointmentTrackerData?.map((data, index) => {
+            No.push(index + 1 + ".")
+            staffName.push(
+                `${formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName)}` || " "
+            );
+            staffType.push(data?.basicDetailReferences?.applicantType?.serviceProviderType);
+            department.push(
+                `${data?.basicDetailReferences?.department?.name || "-"} ${data?.basicDetailReferences?.specialty?.name ? ` / ${data?.basicDetailReferences?.specialty?.name}` : ""}`
+            );
+            if (Array.isArray(data?.completedWorkflows) && data?.completedWorkflows?.length > 0) {
+                let lastApproval = data?.completedWorkflows
+                    .filter(item => item.approvalType !== null)
+                    .pop();
+
+                if (lastApproval) {
+                    const formattedApprovalType = lastApproval?.approvalType.replace(/_/g, " ").split(" ").map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(" ");
+                    currentApplicationStatus.push(`${lastApproval?.role}, ${formattedApprovalType}`);
+                } else {
+                    if (data?.status === "DECLINED") {
+                        currentApplicationStatus.push(`${applicationType === "LOCUM" ? '' : 'Reappointment'} Application Declined`);
+                    } else if (data?.formFillingStatus === "COMPLETED" && data?.status === "CREATED") {
+                        currentApplicationStatus.push(`${applicationType === "LOCUM" ? '' : 'Reappointment'} Application Not Submitted`);
+                    } else if (data?.formFillingStatus === "IN_PROGRESS") {
+                        currentApplicationStatus.push(`${applicationType === "LOCUM" ? '' : 'Reappointment'} Application In-Progress`);
+                    } else {
+                        currentApplicationStatus.push("MSO Verification Not Started");
+                    }
+                }
+            } else {
+                if (data?.status === "DECLINED") {
+                    currentApplicationStatus.push(`${applicationType === "LOCUM" ? '' : 'Reappointment'} Application Declined`);
+                } else if (data?.formFillingStatus === "COMPLETED" && data?.status === "CREATED") {
+                    currentApplicationStatus.push(`${applicationType === "LOCUM" ? '' : 'Reappointment'} Application Not Submitted`);
+                } else if (data?.formFillingStatus === "IN_PROGRESS") {
+                    currentApplicationStatus.push(`${applicationType === "LOCUM" ? '' : 'Reappointment'} Application In-Progress`);
+                } else {
+                    currentApplicationStatus.push(`${applicationType === "LOCUM" ? '' : 'Reappointment'} Application Not Started`);
+                }
+            }
+            lastUpdated.push(
+                <div>
+                    <div>{data?.updatedBy?.name?.firstName}</div>
+                    <div>{data?.lastModifiedDate ? format(new Date(data?.lastModifiedDate), 'MMM dd, yyyy') : ''}</div>
+                </div>
+            )
+
+        });
+
+        return [
+            { type: "text", value: No },
+            { type: "text", value: staffName },
+            { type: "text", value: staffType },
+            { type: "text", value: department },
+            { type: "text", value: currentApplicationStatus },
+            { type: "text", value: lastUpdated },
+        ];
+    };
+
 
 
     let activityPerformed = [];
@@ -2990,7 +3095,7 @@ const ReportTypeOverview = () => {
                                                                 </>
                                                             ) : reportType === "staffReappointmentTracker" ? (
                                                                 <div className={style.marginTop20}>
-                                                                    {staffReappointmentTrackerData?.timesheetPayment?.length !== 0 ? (
+                                                                    {staffReappointmentTrackerData?.length !== 0  ? (
                                                                         <>
                                                                             {/* <ReportsTable
                                                                             tableType={''}
@@ -3000,11 +3105,11 @@ const ReportTypeOverview = () => {
                                                                             styleName={style.grid12}
                                                                         /> */}
                                                                             <TableTwo
-                                                                                tableHeaderValues={headerValuesStatus}
-                                                                                tableDataValues={getTableValues()}
-                                                                                tableData={tableData}
-                                                                                gridStyle={style.permanentStaffGrid}
-                                                                                tableSortValues={colSortValues}
+                                                                                tableHeaderValues={headerValuesStaffsReappointmentStatusTracker}
+                                                                                tableDataValues={getStaffsReappointmentStatusTrackerTableValues()}
+                                                                                tableData={staffReappointmentTrackerData}
+                                                                                gridStyle={style.statusTrackerGrid}
+                                                                                tableSortValues={colSortValuesStaffsReappointmentStatusTracker}
                                                                                 heading={"There are no record to display"}
                                                                                 className={`${style.tableRow} ${style.reportSection}`}
                                                                                 hidePagination={true}
