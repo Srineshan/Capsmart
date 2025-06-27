@@ -254,6 +254,58 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, getPreApplication }) => 
     const getIsEdited = (value) => {
         setIsEdited(value)
     }
+
+    const ProfessionalDisclosureValueBody = getValueByPath(
+    basicForm,
+    `forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.formalComplaintToLicensingBody`
+    );
+
+    const ProfessionalDisclosureValueBodyText = getValueByPath(
+    basicForm,
+    `forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.formalComplaintToLicensingBodyText`
+    );
+
+    const ProfessionalDisclosureValueBodyFile = getValueByPath(
+    basicForm,
+    `forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.formalComplaintToLicensingBodyFile`
+    );
+
+    const ProfessionalDisclosureValueCPSO = getValueByPath(
+    basicForm,
+    `forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.presentlyInvestigatedByCPSO`
+    );
+
+    const ProfessionalDisclosureValueCPSOText = getValueByPath(
+    basicForm,
+    `forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.presentlyInvestigatedByCPSOText`
+    );
+
+    const ProfessionalDisclosureValueCPSOFile = getValueByPath(
+    basicForm,
+    `forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.presentlyInvestigatedByCPSOFile`
+    );
+
+    const isSkipForNowDisabled = 
+    (ProfessionalDisclosureValueBody === "No" && ProfessionalDisclosureValueCPSO === "No") ||
+    
+    (ProfessionalDisclosureValueBody === "Yes" && 
+    ProfessionalDisclosureValueBodyText && 
+    ProfessionalDisclosureValueBodyFile && 
+    ProfessionalDisclosureValueCPSO === "No") ||
+    
+    (ProfessionalDisclosureValueCPSO === "Yes" && 
+    ProfessionalDisclosureValueCPSOText && 
+    ProfessionalDisclosureValueCPSOFile && 
+    ProfessionalDisclosureValueBody === "No") ||
+    
+    (ProfessionalDisclosureValueBody === "Yes" && 
+    ProfessionalDisclosureValueBodyText && 
+    ProfessionalDisclosureValueBodyFile && 
+    ProfessionalDisclosureValueCPSO === "Yes" && 
+    ProfessionalDisclosureValueCPSOText && 
+    ProfessionalDisclosureValueCPSOFile);
+
+    console.log('CriminalDisclosureValue value:',ProfessionalDisclosureValueBody,ProfessionalDisclosureValueBodyText,ProfessionalDisclosureValueBodyFile,ProfessionalDisclosureValueCPSO,ProfessionalDisclosureValueCPSOText,ProfessionalDisclosureValueCPSOFile);
     return (
         <div>
             {showInfo && <div className={style.bgdrop} onClick={() => setShowInfo(false)}></div>}
@@ -271,7 +323,7 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, getPreApplication }) => 
                     </div>
                     <div className={style.threeColForButton}>
                         <Tooltip title={"Click to Skip This Step and Continue Later"} arrow>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
+                        <div className={`${style.saveInProgress} ${style.marginTop} ${isSkipForNowDisabled ? style.disabledButton : ""}`} onClick={() => { if (!isSkipForNowDisabled) {getSkipClicked(true)}}}>SKIP FOR NOW</div>
                         </Tooltip>
                          <Tooltip title={"Click to Save your Progress and Continue later"} arrow>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
@@ -311,7 +363,7 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, getPreApplication }) => 
 
                     <div className={`${style.stickyContainer} ${isSaveInProgressOpen || showValidationDialog || showJourneyDialog ? style.hiddenStickyContainer : ""}`}>
                         <Tooltip title={"Click to Skip This Step and Continue Later"} arrow>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
+                        <div className={`${style.saveInProgress} ${style.marginTop} ${isSkipForNowDisabled ? style.disabledButton : ""}`} onClick={() => { if (!isSkipForNowDisabled) {getSkipClicked(true)}}}>SKIP FOR NOW</div>
                         </Tooltip>
                          <Tooltip title={"Click to Save your Progress and Continue later"} arrow>
                         <div className={`${style.saveInProgress} ${style.marginTop10}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>

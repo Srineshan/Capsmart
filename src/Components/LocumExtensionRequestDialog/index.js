@@ -430,9 +430,16 @@ const LocumExtensiveRequestDialog = ({ getIsOpen, tableDataValue, selectedTab })
   const minDateValue =
     selectedTab === 'ACTIVELOCUM'
       ? ExpireDate
-        ? addDays(new Date(ExpireDate), 1)
+        ? addDays(new Date(ExpireDate), 30)
         : null
       : currentDateNow;
+
+  const minDateValueValid =
+  selectedTab === 'ACTIVELOCUM'
+    ? ExpireDate
+      ? addDays(new Date(ExpireDate), 30)
+      : null
+    : addDays(currentDateNow,30);
 
   const maxDateValue =
     selectedTab === 'ACTIVELOCUM'
@@ -649,7 +656,7 @@ const LocumExtensiveRequestDialog = ({ getIsOpen, tableDataValue, selectedTab })
                             open={calendarStart}
                             onOpen={() => setCalendarStart(true)}
                             onClose={() => setCalendarStart(false)}
-                            minDate={minDateValue}
+                            minDate={minDateValueValid}
                             maxDate={maxDateValue}
                             // minDate={ExpireDate ? addDays(new Date(ExpireDate), 1) : null}
                             // maxDate={ExpireDate ? addYears(new Date(ExpireDate), 1) : null}
