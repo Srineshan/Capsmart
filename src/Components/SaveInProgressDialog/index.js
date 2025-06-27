@@ -5,12 +5,13 @@ import Cookie from 'universal-cookie';
 
 import style from './index.module.scss'
 import { GET, PUT } from '../../Screens/dataSaver';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { ErrorToaster } from '../../utils/toaster';
 import { useDescope } from '@descope/react-sdk';
 import { Tooltip } from '@mui/material';
 
 const SaveInProgressDialog = ({ getIsOpen }) => {
+    const navigate = useNavigate();
     const [isContinue, setIsContinue] = useState(false);
     const [taskDetails, setTaskDetails] = useState(false);
     const { applicationId, section, step } = useParams()
@@ -37,6 +38,7 @@ const SaveInProgressDialog = ({ getIsOpen }) => {
         cookies.remove("entityId", { path: "/" });
         cookies.remove("authorization", { path: "/" });
         logout()
+        navigate('/');
     }
 
     const handleSubmit = async () => {
@@ -67,21 +69,21 @@ const SaveInProgressDialog = ({ getIsOpen }) => {
                         <div className={style.heading}>Save In Progress!</div>
                         <div className={style.displayInRow}>
                             <Tooltip title={"Click to Close"} arrow>
-                            <img
-                                src={CrossPink}
-                                alt="cross"
-                                className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft} `}
-                                onClick={() => { getIsOpen(false) }}
-                            />
+                                <img
+                                    src={CrossPink}
+                                    alt="cross"
+                                    className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft} `}
+                                    onClick={() => { getIsOpen(false) }}
+                                />
                             </Tooltip>
                         </div>
                     </div>
                     <p className={`${style.description} ${style.marginTop}`}>Your progress has been saved. You can continue from where you left off when you log in again! By clicking Confirm, you will be logged out.</p>
                     <div className={`${style.justifyCenter} ${style.displayInRow} ${style.marginTop}`}>
-                    <Tooltip title={"Click to Cancel"} arrow>
-                        <div className={`${style.saveInProgress}`} onClick={() => { getIsOpen(false); }}>CANCEL</div></Tooltip>
+                        <Tooltip title={"Click to Cancel"} arrow>
+                            <div className={`${style.saveInProgress}`} onClick={() => { getIsOpen(false); }}>CANCEL</div></Tooltip>
                         <Tooltip title={"Click to Confirm"} arrow>
-                        <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { handleSubmit(); }}>CONFIRM</div>
+                            <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { handleSubmit(); }}>CONFIRM</div>
                         </Tooltip>
                     </div>
                 </div>
