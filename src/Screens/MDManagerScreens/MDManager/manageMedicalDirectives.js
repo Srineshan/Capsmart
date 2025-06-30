@@ -156,7 +156,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
     };
 
     const getDashboard = async (signal) => {
-        const { data: dashboardData } = await POST(`medical-directive-service/medicalDirectives/dashboard?offset=${page - 1}&limit=${limit}&isPaginationRequired=${isPaginationRequired}&tab=${selectedOption === "Current Medical Directives" ? "active_md" : selectedOption === "Medical Directives Revisions" ? "md_revisions" : selectedOption === "Draft Medical Directives" ? "draft_md" : ""}`, {}, { signal });
+        const { data: dashboardData } = await POST(`medical-directive-service/medicalDirectives/dashboard?offset=${page - 1}&limit=${limit}&isPaginationRequired=${isPaginationRequired}&tab=${selectedOption === "Current Medical Directives" ? "active_md" : selectedOption === "Medical Directives Revisions" ? "md_revisions" : selectedOption === "Draft Medical Directives" ? "draft_md" : ""}`, advancedSearch, { signal });
         setDashboardData(dashboardData?.medicalDirectives);
         setTotalTableCount(dashboardData?.numberOfElements);
     }
