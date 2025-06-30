@@ -929,21 +929,21 @@ const Navbar = () => {
                     <div className={`${style.options1} ${style.cursorPointer}`}
                       onClick={() => window.open('https://xd.adobe.com/view/f0004e4f-105c-496c-bde9-348ab57c0aa7-a553/?fullscreen')}
                     >
-                      Step-By-Step Guide for Locum Privileges Extension & Renewal by Department Head</div>
+                      Step-By-Step Guide for Locum Privileges Extension by Department Head</div>
                   </div>
 
                 ) : ""}
-                {/* {workModeType === "Department Head" ? (
+                {workModeType === "Department Head" ? (
                   <div
                     className={style.noFontStyle1}
                   >
                     <div className={`${style.options1} ${style.cursorPointer}`}
-                      onClick={() => window.open('https://xd.adobe.com/view/bdfc27b0-ef87-4661-b3d1-4a4c28a10e33-e8af/?fullscreen')}
+                      onClick={() => window.open('https://xd.adobe.com/view/8af00843-80f5-4874-89c2-15fec5e889ca-dfa3/?fullscreen')}
                     >
-                      Step-By-Step Guide for Locum Extension Application Review</div>
+                      Step-By-Step Guide for Locum Privileges Renewal by Department Head</div>
                   </div>
 
-                ) : ""} */}
+                ) : ""}
                 <div
                   className={style.noFontStyle1}
                 >
