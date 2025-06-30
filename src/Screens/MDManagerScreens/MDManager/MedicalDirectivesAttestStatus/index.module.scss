@@ -163,6 +163,13 @@
     opacity: 0.5 !important;
 }
 
+.groupAttestationDescription {
+    text-align: left;
+    font: normal normal bold 16px/20px proxima-nova;
+    letter-spacing: 0px;
+    color: $primarycolor;
+}
+
 // .disabled :hover {
 //     cursor: not-allowed !important;
 //     opacity: 0.5 !important;

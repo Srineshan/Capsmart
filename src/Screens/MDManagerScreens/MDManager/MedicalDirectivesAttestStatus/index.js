@@ -17,6 +17,7 @@ import CommonPdfViewer from '../../../../Components/CommonPdfViewer';
 const MDAttestStatus = () => {
     const { entityId, medicalDirectivesId } = useParams();
     const [medicalDirectives, setMedicalDirectives] = useState()
+    const [medicalDirectivesSummary, setMedicalDirectivesSummary] = useState()
     const [medicalDirectivesAttestationLog, setMedicalDirectivesAttestationLog] = useState()
     const iframeRef = useRef(null);
     const navigate = useNavigate()
@@ -109,7 +110,11 @@ const MDAttestStatus = () => {
                 `medical-directive-service/medicalDirectives/${medicalDirectivesId}`
             );
             setMedicalDirectives(medicalDirectives);
-            console.log(medicalDirectives, 'medicalDirectives')
+            const { data: medicalDirectivesSummary } = await GET(
+                `medical-directive-service/medicalDirectives/${medicalDirectivesId}/attestationSummaryByGroup`
+            );
+            setMedicalDirectivesSummary(medicalDirectivesSummary);
+            console.log(medicalDirectives, 'medicalDirectives', medicalDirectivesSummary)
         }
     }
 
@@ -253,15 +258,19 @@ const MDAttestStatus = () => {
                         </div> */}
                         <div className={`${style.medicalDirectivesCard}`}>
                             <div className={style.title}><strong>{`Attestation Group Status`} </strong></div>
-                            {medicalDirectivesAttestationLog?.map(data => (
-                                <div className={`${style.marginTop10} ${style.description}`}>{format(new Date(data?.createdDate), 'MMM dd, yyyy HH:mm')}</div>
+                            {medicalDirectivesSummary?.groups?.map(data => (
+                                <div>
+                                    <div className={`${style.marginTop10} ${style.title}`}>{data?.groupName}</div>
+                                    <div className={`${style.marginTop10} ${style.groupAttestationDescription}`}>{`${data?.attestedCount} out of ${data?.members?.length} Signed`}</div>
+                                </div>
                             ))}
                         </div>
                         <div className={`${style.medicalDirectivesCard} ${!isScrolledToBottom ? style.marginTop : ''}`}>
                             <div className={style.title}><strong>{`Update History`} </strong></div>
-                            {medicalDirectivesAttestationLog?.map(data => (
-                                <div className={`${style.marginTop10} ${style.description}`}>{format(new Date(data?.createdDate), 'MMM dd, yyyy HH:mm')}</div>
-                            ))}
+                            {medicalDirectivesSummary?.groups?.map(data =>
+                                data?.members?.map((innerData, innerIndex) => (
+                                    <div className={`${style.marginTop10} ${style.description}`}>{`${innerData?.attestationLog?.esign?.signedDate}, ${innerData?.attestationLog?.esign?.name}`}</div>
+                                )))}
                         </div>
                     </div>
                 </div>
