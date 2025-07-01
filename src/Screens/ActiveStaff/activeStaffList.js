@@ -817,7 +817,7 @@ const ActiveStaffList = ({
         <div>
           <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
             <div className={style.searchFieldAlignment}>
-              <CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} isOnClickAvailable={true} placeholder={'Search By Staff Name'} />
+              <CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} isOnClickAvailable={false} placeholder={'Search By Staff Name'} />
             </div>
           </SideBar>
         </div>
