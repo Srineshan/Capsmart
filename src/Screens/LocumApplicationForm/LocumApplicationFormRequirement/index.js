@@ -17,6 +17,7 @@ import RequiredDocumentCard from '../../../Components/RequiredDocumentCard';
 import { GET, POST, PUT, DELETE } from '../../dataSaver';
 import jwt from 'jwt-decode';
 import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
+import { fileLoadingURL } from "../../../utils/formatting";
 import ApplicationFieldCard from '../../../Components/ApplicationFieldCard';
 import Cookie from "universal-cookie";
 import { differenceInDays, format } from 'date-fns';
@@ -61,6 +62,7 @@ const LocumApplicationFormRequirement = () => {
     const [uploadFormSchema, setUploadFormSchema] = useState();
     const [selectedPrivilegeForDisplay, setSelectedPrivilegeForDisplay] =
         useState([]);
+    const [isLoadingImageDocs, setIsLoadingImageDocs] = useState(false);
 
     const [privilegeSetChangeYesOrNo, setPrivilegeSetChangeYesOrNo] = useState("");
     const [additionalPrivilegeChangeYesOrNo, setAdditionalPrivilegeChangeYesOrNo] = useState("No");
@@ -129,6 +131,93 @@ const LocumApplicationFormRequirement = () => {
             }
         }
     }, [selectedPrivilegeForDisplay])
+
+      const addNewDocument = async (file) => {
+        console.log(file, file?.name, "Test");
+        let fileName = {
+          fileName: file?.name,
+        };
+        const formData = new FormData();
+    
+        if (file !== null) {
+          formData.append(
+            "files",
+            new Blob([JSON.stringify(fileName)], {
+              type: "application/json",
+            })
+          );
+          formData.append("documents", file);
+          try {
+            setIsLoadingImageDocs(true)
+            const response = await POST(
+              `application-management-service/application/${applicationId}/files?isLLMRequired=true`,
+              formData
+            );
+            console.log("response123",response)
+            setIsLoadingImageDocs(false)
+            SuccessToaster("File Uploaded Successfully");
+            try {
+              if (
+                response?.data?.file?.classification !== null
+              ) {
+                await PUT(
+                  `application-management-service/application/${applicationId}/form/updateData`,
+                  {
+                    documentType:
+                      response?.data?.classification !== null
+                        ? response?.data?.classification
+                        : "",
+                    fileSize: `${(file?.size / (1024 * 1024)).toFixed(2)} Mb`,
+                    fileURL: response?.data?.fileURL,
+                    fileType: response?.data?.fileType,
+                    fileUploaded: file?.name,
+                    requirement:
+                      response?.data?.classification !== null
+                        ? basicForm?.documentsRequired?.filter(
+                          (data) =>
+                            data?.document?.name ===
+                            response?.data?.classification
+                        )?.[0]?.required
+                          ? "Required"
+                          : "Recommended"
+                        : "",
+                    valid: response?.data?.valid,
+                    verified: response?.data?.verified,
+                  }
+                );
+              }
+              console.log(response);
+            } catch (error) {
+              console.log(error);
+            }
+            console.log(response?.data);
+            return response?.data;
+          } catch (error) {
+            ErrorToaster("File Upload Failed");
+            console.error(error);
+            return null;
+          }
+        }
+      };
+
+    const handleRestrictedFileSelection = async (
+    index,
+    categoriesIndex,
+    privilegesIndex,
+    value,
+    type,
+    basicOrAdditional
+  ) => {
+    let file = await addNewDocument(value);
+    handleRestrictedSelection(
+      index,
+      categoriesIndex,
+      privilegesIndex,
+      file,
+      type,
+      basicOrAdditional
+    );
+  };
 
     const getIsOpen = (value) => {
         setIsOpen(value);
@@ -792,11 +881,11 @@ const LocumApplicationFormRequirement = () => {
                                                                                     >
                                                                                         Upload any supporting documents
                                                                                         for evidence of qualification and
-                                                                                        competence
+                                                                                        competence(Optional)
                                                                                     </div>
                                                                                     <div>
                                                                                         <label
-                                                                                            for={`file-upload-dynamic-basic${privilegesIndex}`}
+                                                                                            for={`locum-file-upload-dynamic-basic${privilegesIndex}`}
                                                                                             className={` ${style.uploadTextButton} ${style.cursorPointer} ${style.verticalAlignCenter}`}
                                                                                         >
                                                                                             Click to upload
@@ -805,18 +894,18 @@ const LocumApplicationFormRequirement = () => {
                                                                                 </div>
                                                                             </div>
                                                                             <input
-                                                                                id={`file-upload-dynamic-basic${privilegesIndex}`}
+                                                                                id={`locum-file-upload-dynamic-basic${privilegesIndex}`}
                                                                                 type="file"
                                                                                 accept=".pdf,.doc,.png,.xls,.xlsx,.jpeg,.gif,.docx"
-                                                                            // onChange={(e) => {
-                                                                            //     handleRestrictedFileSelection(
-                                                                            //         privilegeSetIndex,
-                                                                            //         categoriesIndex,
-                                                                            //         privilegesIndex,
-                                                                            //         e.target.files[0],
-                                                                            //         "file"
-                                                                            //     );
-                                                                            // }}
+                                                                            onChange={(e) => {
+                                                                                handleRestrictedFileSelection(
+                                                                                    privilegeSetIndex,
+                                                                                    categoriesIndex,
+                                                                                    privilegesIndex,
+                                                                                    e.target.files[0],
+                                                                                    "file"
+                                                                                );
+                                                                            }}
                                                                             />
                                                                         </div>
                                                                         {privileges?.file !== null &&
@@ -1006,6 +1095,13 @@ const LocumApplicationFormRequirement = () => {
 
     return (
         <div>
+            {isLoadingImageDocs && (
+                <div
+                    className={`${style.verticalAlignCenter} ${style.justifyCenter} ${style.loadingOverlay}`}
+                >
+                    <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle1} />
+                </div>
+                )}
             {isLoading && (
                 <div
                     className={`${style.verticalAlignCenter} ${style.justifyCenter} ${style.loadingOverlay}`}
