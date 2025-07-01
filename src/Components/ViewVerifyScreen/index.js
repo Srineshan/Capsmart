@@ -293,6 +293,12 @@ const NewActiveApplication = ({
     borderStyle: "dashed",
     borderRadius: 5,
   };
+  const visibleNotes = form?.notesDetails
+    ?.filter((log) => {
+      if (!log?.notes?.notes) return false;
+      if (log?.private && log?.user?.id !== users?.id) return false;
+      return true;
+    }) || [];
 
   console.log("dataLevel", users?.id)
 
@@ -737,10 +743,10 @@ const NewActiveApplication = ({
     // let lastName = CredCommApproverDetails?.approverDetail?.name?.lastName;
     // let approvalType = CredCommApproverDetails?.approvalType
     const matchedApprover = approverDetailsArray.find((approver) => {
-    const firstName = approver?.approverDetail?.name?.firstName;
-    const lastName = approver?.approverDetail?.name?.lastName;
-    return firstName === userFirstName && lastName === userLastName;
-  });
+      const firstName = approver?.approverDetail?.name?.firstName;
+      const lastName = approver?.approverDetail?.name?.lastName;
+      return firstName === userFirstName && lastName === userLastName;
+    });
 
     // console.log(`Approver cred: ${firstName} ${lastName}`);
     console.log("workModeType:", workModeType);
@@ -2885,7 +2891,7 @@ const NewActiveApplication = ({
                 actions={[]}
                 // scrollStyle={style.contractScrollStyle}
                 tableSortValues={[]}
-                heading={"There are no Record for you to manage"}
+                heading={"There are no Records for you to manage"}
                 onClickFunction={() => { }}
                 isUploadYourDocTable={isUploadYourDoc}
               />
@@ -2924,7 +2930,7 @@ const NewActiveApplication = ({
               actions={[]}
               // scrollStyle={style.contractScrollStyle}
               tableSortValues={[]}
-              heading={"There are no Record for you to manage"}
+              heading={"There are no Records for you to manage"}
               onClickFunction={() => { }}
             />
           </>
@@ -3753,7 +3759,7 @@ const NewActiveApplication = ({
                 actions={[]}
                 // scrollStyle={style.contractScrollStyle}
                 tableSortValues={[]}
-                heading={"There are no Record for you to manage"}
+                heading={"There are no Records for you to manage"}
                 onClickFunction={() => { }}
                 isUploadYourDocTable={isUploadYourDoc}
                 hasVerificationAttempted={hasVerificationAttempted}
@@ -3870,7 +3876,8 @@ const NewActiveApplication = ({
                         <span>
                           <CommonCheckBox checked={form?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours < 25 ? false : form?.forms?.[formIndex]?.acknowledged}
                             // onChange={form?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours < 25 ? () => { } : (e) => handleIsChecked(e.target.checked)} 
-                            bigCheckbox={true} />
+                            bigCheckbox={true}
+                            cursorDefault={true} />
                         </span>
                       )}
                       <div
@@ -3937,7 +3944,7 @@ const NewActiveApplication = ({
                 actions={[]}
                 // scrollStyle={style.contractScrollStyle}
                 tableSortValues={[]}
-                heading={"There are no Record for you to manage"}
+                heading={"There are no Records for you to manage"}
                 onClickFunction={() => { }}
                 hidePagination={true}
               />
@@ -4410,7 +4417,7 @@ const NewActiveApplication = ({
                                     //   setSelectedPrivilege(data?.id);
                                     // }}
                                     >
-                                      {data?.privilegeSetTitle} {data?.privilegeDetails?.corePrivileges?.esign?.signedDate !== undefined && (<span className={style.signedOnText}>signed on {data?.privilegeDetails?.corePrivileges?.esign?.signedDate}</span>)}
+                                      {data?.privilegeSetTitle} {data?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ? data?.descriptiveContent?.esign?.signedDate !== undefined && (<span className={style.signedOnText}>signed on {data?.descriptiveContent?.esign?.signedDate}</span>) : data?.privilegeDetails?.corePrivileges?.esign?.signedDate !== undefined && (<span className={style.signedOnText}>signed on {data?.privilegeDetails?.corePrivileges?.esign?.signedDate}</span>)}
                                     </div>
                                   )
                                 )}
@@ -4427,7 +4434,7 @@ const NewActiveApplication = ({
                                     //   setSelectedPrivilege(data?.id);
                                     // }}
                                     >
-                                      {data?.privilegeSetTitle} {data?.privilegeDetails?.corePrivileges?.esign?.signedDate !== undefined && (<span className={style.signedOnText}>signed on {data?.privilegeDetails?.corePrivileges?.esign?.signedDate}</span>)}
+                                      {data?.privilegeSetTitle} {data?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ? data?.descriptiveContent?.esign?.signedDate !== undefined && (<span className={style.signedOnText}>signed on {data?.descriptiveContent?.esign?.signedDate}</span>) : data?.privilegeDetails?.corePrivileges?.esign?.signedDate !== undefined && (<span className={style.signedOnText}>signed on {data?.privilegeDetails?.corePrivileges?.esign?.signedDate}</span>)}
                                     </div>
                                   )
                                 )}
@@ -4484,7 +4491,7 @@ const NewActiveApplication = ({
                                   <div
                                     className={`${style.privilegeHeading}`}
                                   // onClick={() => { setShowCurrentPrivileges(true); setCurrentPrivilegesCategory('Additional'); setSelectedPrivilege(data?.id) }}
-                                  >{data?.privilegeSetTitle} {data?.privilegeDetails?.corePrivileges?.esign?.signedDate !== undefined && (<span className={style.signedOnText}>signed on {data?.privilegeDetails?.corePrivileges?.esign?.signedDate}</span>)}</div>
+                                  >{data?.privilegeSetTitle} {data?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ? data?.descriptiveContent?.esign?.signedDate !== undefined && (<span className={style.signedOnText}>signed on {data?.descriptiveContent?.esign?.signedDate}</span>) : data?.privilegeDetails?.corePrivileges?.esign?.signedDate !== undefined && (<span className={style.signedOnText}>signed on {data?.privilegeDetails?.corePrivileges?.esign?.signedDate}</span>)}</div>
                                 ))}
                               </>
                             )}
@@ -12260,46 +12267,57 @@ const NewActiveApplication = ({
                                 <span className={`${style.tableHeaderHeadingTextStyle1}`}>
                                   Notes
                                 </span>
-                                <div
-                                  className={`${style.marginTop5} ${style.marginLeft10} ${style.tableDataFontStyle1}`}
-                                >
-                                  <Tooltip title="Create a Note" arrow>
-                                    <CreateOutlinedIcon
-                                      className={`${style.notesIcon} ${style.cursorPointer}`}
-                                      onClick={onClickNotesFunction}
-                                    />
-                                  </Tooltip>
-                                </div>
-                              </div>
-                              <div
-                                className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                              >
-                                <div
-                                  className={`${style.marginLeft10} ${style.tableDataFontStyle1}`} onClick={() => toggleExpand("section5")}
-                                >
-                                  {expandStates.section5 ? (
-                                    <Tooltip title={"Click to Minimize"} arrow>
-                                      <RemoveIcon
-                                        sx={{
-                                          fontSize: 20,
-                                          color: "#94979A",
-                                          cursor: "pointer",
-                                        }}
-                                      />
-                                    </Tooltip>
-                                  ) : (
-                                    <Tooltip title={"Click to Expand"} arrow>
-                                      <AddIcon
-                                        sx={{
-                                          fontSize: 20,
-                                          color: "#94979A",
-                                          cursor: "pointer",
-                                        }}
-                                      />
-                                    </Tooltip>
+                                {!((workModeType === "Staff Manager" && selectedTab === "level-2" && applicationType === "REAPPOINTMENT") ||
+                                  (workModeType === "Department Head" && selectedTab === "level-2" && applicationType === "REAPPOINTMENT" && isApproverDept === "NotApproved") ||
+                                  (workModeType === "Chief Of Staff" && selectedTab === "level-2" && applicationType === "REAPPOINTMENT" && isApproverDept === "NotApproved") ||
+                                  (workModeType === 'Credentialing Committee' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" && isApproverCred === "NotApproved") ||
+                                  (workModeType === 'Credentialing Committee' && selectedTab === 'level-2' && applicationType === "LOCUM" && isApproverCred === "NotApproved") ||
+                                  (workModeType === 'Chief Of Staff' && selectedTab === 'level-2' && applicationType === "LOCUM" && isApproverCred === "NotApproved")) && (
+                                    <div
+                                      className={`${style.marginTop5} ${style.marginLeft10} ${style.tableDataFontStyle1}`}
+                                    >
+                                      <Tooltip title="Create a Note" arrow>
+                                        <CreateOutlinedIcon
+                                          className={`${style.notesIcon} ${style.cursorPointer}`}
+                                          onClick={onClickNotesFunction}
+                                        />
+                                      </Tooltip>
+                                    </div>
                                   )}
-                                </div>
                               </div>
+                              {visibleNotes.length > 0 ? (
+                                <div
+                                  className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                                >
+                                  <div
+                                    className={`${style.marginLeft10} ${style.tableDataFontStyle1}`} onClick={() => toggleExpand("section5")}
+                                  >
+                                    {expandStates.section5 ? (
+                                      <Tooltip title={"Click to Minimize"} arrow>
+                                        <RemoveIcon
+                                          sx={{
+                                            fontSize: 20,
+                                            color: "#94979A",
+                                            cursor: "pointer",
+                                          }}
+                                        />
+                                      </Tooltip>
+                                    ) : (
+                                      <Tooltip title={"Click to Expand"} arrow>
+                                        <AddIcon
+                                          sx={{
+                                            fontSize: 20,
+                                            color: "#94979A",
+                                            cursor: "pointer",
+                                          }}
+                                        />
+                                      </Tooltip>
+                                    )}
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className={`${style.tableHeaderHeadingNoneTextStyle}`}>None</div>
+                              )}
                             </div>
                             {expandStates.section5 && (
                               // <>
@@ -12341,7 +12359,7 @@ const NewActiveApplication = ({
                                         <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.notesTextStyle} ${style.marginBottom0}`}>
                                           <div dangerouslySetInnerHTML={{ __html: log.notes.notes }} />
                                         </div>
-                                        {log?.user?.id === users?.id && (
+                                        {log?.user?.id === users?.id && !(workModeType === "Staff Manager" && selectedTab === "level-2" && applicationType === "REAPPOINTMENT") && (
                                           <div>
                                             <Tooltip title="Edit a Note" arrow>
                                               <EditOutlinedIcon
@@ -12352,7 +12370,7 @@ const NewActiveApplication = ({
                                             </Tooltip>
                                           </div>
                                         )}
-                                        {log?.user?.id === users?.id && (
+                                        {log?.user?.id === users?.id && !(workModeType === "Staff Manager" && selectedTab === "level-2" && applicationType === "REAPPOINTMENT") && (
                                           <div>
                                             <Tooltip title="Delete a Note" arrow>
                                               <DeleteOutlineIcon
@@ -12386,7 +12404,7 @@ const NewActiveApplication = ({
                                                     />
                                                   </div>
                                                   <div
-                                                    className={`${style.cursorPointer} ${style.notesTitle}`}
+                                                    className={`${style.cursorPointer} ${style.overFlowHidden} ${style.notesTitle}`}
                                                     onClick={() => {
                                                       setShowFileDisplayDialog(true);
                                                       setselectedFile(file);
@@ -12485,27 +12503,30 @@ const NewActiveApplication = ({
                                 <div
                                   className={`${style.marginLeft10} ${style.tableDataFontStyle1}`} onClick={() => toggleExpand("section1")}
                                 >
-                                  {expandStates.section1 ? (
-                                    <Tooltip title="Collapse Section" arrow>
-                                      <RemoveIcon
-                                        sx={{
-                                          fontSize: 20,
-                                          color: "#94979A",
-                                          cursor: "pointer",
-                                        }}
-                                        onClick={() => setExpandStates((prev) => ({ ...prev, section6: false }))}
-                                      />
-                                    </Tooltip>
-                                  ) : (
-                                    <Tooltip title="Expand Section" arrow>
-                                      <AddIcon
-                                        sx={{
-                                          fontSize: 20,
-                                          color: "#94979A",
-                                          cursor: "pointer",
-                                        }}
-                                      />
-                                    </Tooltip>
+                                  {(form?.forms?.filter((data) => data?.clarifications?.length > 0)?.length > 0) ? (
+                                    expandStates.section1 ? (
+                                      <Tooltip title="Collapse Section" arrow>
+                                        <RemoveIcon
+                                          sx={{
+                                            fontSize: 20,
+                                            color: "#94979A",
+                                            cursor: "pointer",
+                                          }}
+                                          onClick={() => setExpandStates((prev) => ({ ...prev, section6: false }))}
+                                        />
+                                      </Tooltip>
+                                    ) : (
+                                      <Tooltip title="Expand Section" arrow>
+                                        <AddIcon
+                                          sx={{
+                                            fontSize: 20,
+                                            color: "#94979A",
+                                            cursor: "pointer",
+                                          }}
+                                        />
+                                      </Tooltip>
+                                    )) : (
+                                    <div className={`${style.tableHeaderHeadingNoneTextStyle}`}>None</div>
                                   )}
                                 </div>
                               </div>
@@ -12598,16 +12619,16 @@ const NewActiveApplication = ({
                                                     {/* <div className={style.twoColumnGrid}> */}
                                                     <div>
                                                       {clarification?.clarificationStatus === "NA" && (
-                                                      <div
-                                                        className={`${style.buttonCardStyleDoc} ${style.cursorPointer}`}
-                                                        onClick={() => onClickDocumentClarificationFunction(clarification, data)}
-                                                      >
-                                                        <Tooltip title={"Click to Resolve Clarification"} arrow>
-                                                          <div className={`${style.buttonTextStyleDocs} ${style.alignCenter}`}>
-                                                            Resolve Clarification
-                                                          </div>
-                                                        </Tooltip>
-                                                      </div>
+                                                        <div
+                                                          className={`${style.buttonCardStyleDoc} ${style.cursorPointer}`}
+                                                          onClick={() => onClickDocumentClarificationFunction(clarification, data)}
+                                                        >
+                                                          <Tooltip title={"Click to Resolve Clarification"} arrow>
+                                                            <div className={`${style.buttonTextStyleDocs} ${style.alignCenter}`}>
+                                                              Resolve Clarification
+                                                            </div>
+                                                          </Tooltip>
+                                                        </div>
                                                       )}
                                                       {/* <div className={`${style.bigButtonStyle1} ${style.cursorPointer}`}>
                                                           <div className={`${style.bigButtonTextStyle} ${style.alignCenter}`}>

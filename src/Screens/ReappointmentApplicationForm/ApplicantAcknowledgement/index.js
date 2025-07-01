@@ -97,6 +97,7 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
     }
 
     const getIsSaveInProgressOpen = (value) => {
+        handleSubmitApplicationReq("save");
         setIsSaveInProgressOpen(value);
     }
 

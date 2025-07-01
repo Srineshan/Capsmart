@@ -709,25 +709,25 @@ body::-webkit-scrollbar {
 
 .requestLocumStaffGrid {
   display: grid;
-  grid-template-columns: 14% 3% 8% 9% 14% 11% 11% 9% 13%;
+  grid-template-columns: 14% 3% 8% 9% 14% 11% 11% 13% 9%;
   grid-gap: 1%;
 }
 
 .expiredLocumStaffGrid {
   display: grid;
-  grid-template-columns: 15% 4% 12% 17% 6% 15% 9% 15%;
+  grid-template-columns: 15% 4% 12% 17% 6% 15% 14% 10%;
   grid-gap: 1%;
 }
 
 .activeLocumStaffGrid {
   display: grid;
-  grid-template-columns: 15% 3% 11% 15% 6% 11% 11% 11% 9%;
+  grid-template-columns: 13% 3% 11% 15% 6% 11% 11% 12% 9%;
   grid-gap: 10px;
 }
 
 .tempPrivilegesLocumStaffGrid {
   display: grid;
-  grid-template-columns: 15% 3% 19% 25% 10% 11% 10%;
+  grid-template-columns: 15% 3% 12% 20% 10% 11% 11% 11%;
   grid-gap: 1%;
 }
 

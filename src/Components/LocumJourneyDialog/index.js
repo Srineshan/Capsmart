@@ -64,6 +64,7 @@ const LocumJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, img, conti
     const MiscellaneousQuestion = basicForm?.forms?.find(form => form?.schemaCategory === 'MISCELLANEOUS_QUESTIONS');
     const ScheduleA = basicForm?.forms?.find(form => form?.schemaCategory === 'ScheduleA');
     const ScheduleB = basicForm?.forms?.find(form => form?.schemaCategory === 'ScheduleB');
+    const Acknowledgement = basicForm?.forms?.find(form => form?.schemaCategory === 'ApplicantAcknowledgement');
 
 
     const unFilledFields = uploadDocForm?.unFilledFields ?? [];
@@ -114,14 +115,16 @@ const LocumJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, img, conti
 
     const ScheduleAUpdate = ScheduleA?.unFilledFields ?? [];
     const ScheduleBUpdate = ScheduleB?.unFilledFields ?? [];
+    const AcknowledgementUpdate = Acknowledgement?.unFilledFields ?? [];
 
 
     let hasMissingScheduleA = ScheduleAUpdate?.includes("skipped");
     let hasMissingScheduleB = ScheduleBUpdate?.includes("skipped");
+    let hasMissingAcknowledgement = AcknowledgementUpdate?.includes("skipped");
 
     // const isSubmissionBlocked = missingRequiredDocs?.length !== 0 || hasMandatoryTrueDemoGraphicData?.length !== 0 || hasMandatoryTrueprofessionalConduct?.length !== 0 || hasMandatoryTruecriminalHistory?.length !== 0 || hasMandatoryTruemedicalHistory?.length !== 0 || hasMandatoryTrueprivilegeAtOtherHosiptal !== 0 || hasMandatoryTruepatientConern !== 0 || hasMandatoryTrueCME || hasMandatoryTruemedicalDirectives || hasMandatoryTrueMiscellaneousQuestion !== 0
     // const isSubmissionBlocked = missingRequiredDocs?.length !== 0 || hasMandatoryTrueDemoGraphicData?.length !== 0 || hasMandatoryTrueprofessionalConduct?.length !== 0 || hasMandatoryTruecriminalHistory?.length !== 0 || hasMandatoryTruemedicalHistory?.length !== 0 || hasMandatoryTrueprivilegeAtOtherHosiptal !== 0 || hasMandatoryTruepatientConern !== 0
-    const isSubmissionBlocked = missingRequiredDocs?.length !== 0 || hasMandatoryTrueDemoGraphicData?.length !== 0 || hasMandatoryTrueprofessionalConduct?.length !== 0 || hasMandatoryTruecriminalHistory?.length !== 0 || hasMandatoryTruemedicalHistory?.length !== 0 || hasMandatoryTrueprivilegeAtOtherHosiptal?.length !== 0 || hasMandatoryTruepatientConern?.length !== 0 || hasMandatoryTrueCME || hasMandatoryTruemedicalDirectives || hasMandatoryTrueMiscellaneousQuestion.length !== 0 || hasMissingScheduleA || hasMissingScheduleB
+    const isSubmissionBlocked = missingRequiredDocs?.length !== 0 || hasMandatoryTrueDemoGraphicData?.length !== 0 || hasMandatoryTrueprofessionalConduct?.length !== 0 || hasMandatoryTruecriminalHistory?.length !== 0 || hasMandatoryTruemedicalHistory?.length !== 0 || hasMandatoryTrueprivilegeAtOtherHosiptal?.length !== 0 || hasMandatoryTruepatientConern?.length !== 0 || hasMandatoryTrueCME || hasMandatoryTruemedicalDirectives || hasMandatoryTrueMiscellaneousQuestion.length !== 0 || hasMissingScheduleA || hasMissingScheduleB || hasMissingAcknowledgement
 
     const handleLogout = () => {
         var cookies = new Cookie();
@@ -276,11 +279,17 @@ const LocumJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, img, conti
                                         </>
                                     ) : (
                                         <div className={` ${style.displayInRow} ${style.marginTop}`}>
+                                            <Tooltip title={"Click to Logout"} arrow>
                                             <div className={`${style.saveInProgress}`} onClick={() => { getIsOpen(false); handleLogout() }}>LOGOUT</div>
+                                            </Tooltip>
                                             <Tooltip
-                                                title="To submit you have to correct all errors and issues identified."
+                                                 title={
+                                                    isSubmissionBlocked
+                                                    ? "To submit you have to correct all errors and issues identified."
+                                                    : "Click to submit"
+                                                }
                                                 arrow
-                                                {...(!isSubmissionBlocked && { open: false })}
+                                                // {...(!isSubmissionBlocked && { open: false })}
                                             >
                                                 <div className={`${style.continue} ${style.marginLeft} ${isSubmissionBlocked ? style.disabledButton : ''}`} onClick={isSubmissionBlocked ? () => { } : () => { continueClick(); handleSubmitApplication() }}>SUBMIT</div>
                                             </Tooltip>

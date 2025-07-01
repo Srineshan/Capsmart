@@ -465,10 +465,7 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
       }
 
       lastUpdated.push(
-        <>
-          {data?.updatedBy?.name?.firstName}<br />
-          {format(new Date(data?.lastModifiedDate), "MM/dd/yyyy")}
-        </>
+        `${data?.updatedBy?.name?.firstName} ${format(new Date(data?.lastModifiedDate), "MM/dd/yyyy")}`
       );
       action.push(true);
     });
@@ -662,7 +659,7 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
                         actions={departmentHeadActionsData}
                         scrollStyle={style.contractScrollStyle}
                         tableSortValues={colSortValues}
-                        heading={"There are no record to display"}
+                        heading={"There are no records to display"}
                         getHandleSort={getHandleSort}
                         sortValue={{ sortBy: sortValue, sortByField: sortField }}
                         getSelectedPage={getSelectedPage}

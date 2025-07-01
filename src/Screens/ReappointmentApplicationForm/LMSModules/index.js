@@ -77,6 +77,7 @@ const LMSModules = ({ basicForm, setBasicForm, getPreApplication }) => {
     }
 
     const getIsSaveInProgressOpen = (value) => {
+        handleSubmitApplicationReq("save");
         setIsSaveInProgressOpen(value);
     }
 
@@ -104,7 +105,7 @@ const LMSModules = ({ basicForm, setBasicForm, getPreApplication }) => {
         if (missingKeys?.length !== 0) {
             setShowValidationDialog(true)
         } else {
-            handleSubmitApplicationReq()
+            handleSubmitApplicationReq("continue")
         }
         setWarningFields(missingKeys)
         console.log('Metadata', missingKeys)
@@ -116,14 +117,15 @@ const LMSModules = ({ basicForm, setBasicForm, getPreApplication }) => {
             schemaId: basicForm?.forms?.[formIndex]?.schemaId,
             data: { yesOrNo: yesOrNo, updatedDate: updatedDate },
             unFilledFields: warningFields?.map(data => data?.label),
-            acknowledged: data === "skipped" ? false : true
+            acknowledged: data === "skipped" || data === "save" ? false : true
         }
         await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
             .then(response => {
                 console.log(response)
                 setBasicForm(response?.data)
                 SuccessToaster("Application Updated Successfully");
-                getPreApplication();
+                getPreApplication();  
+                if (data !== "save") {
                 if (sessionStorage.getItem('fromSummary') === "true") {
                     navigate(-1);
                 }
@@ -131,6 +133,7 @@ const LMSModules = ({ basicForm, setBasicForm, getPreApplication }) => {
                     navigate(navigateURL)
 
                 }
+            }
             })
             .catch((error) => {
                 console.log(error)

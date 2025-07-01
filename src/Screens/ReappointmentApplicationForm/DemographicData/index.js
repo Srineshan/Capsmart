@@ -340,6 +340,12 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
     };
 
     const getIsSaveInProgressOpen = (value) => {
+        if (value) {
+            handleSubmitApplicationReq("save")
+                .then(() => getAllMissingFields("save"))
+                .catch((error) => console.error("Error processing skip action:", error));
+        }
+        setUpdateFrom('');
         setIsSaveInProgressOpen(value);
     }
 
@@ -395,7 +401,23 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
         let keyValuePair = [];
         let hasMandatoryMissingFields = [];
         metadata?.map((data, index) => {
-            keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: uniqueLabels?.find(labelData => labelData?.path === data) || {} })
+          let label =  uniqueLabels?.find(labelData => labelData?.path === data) || {}    
+            if (data === `forms[${formIndex}].data.contactAddress2.isMailingAddressSameAsHomeAddress`) {
+        label = {
+            ...label,
+            mandatory: true,
+            label: "Mailing address: Home or different?"
+        };
+    }
+
+    if (data === `forms[${formIndex}].data.contactAddress3.isBusinessAddressSameAsHomeAddressOrMailingAddress`) {
+        label = {
+            ...label,
+            mandatory: true,
+            label: "Business address: Home or Mailing or Different?"
+        };
+    }
+            keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label:label})
         })
         const validateBusinessPhone = (phone) => {
             const phoneRegex = /^[0-9]{10}$/; // Example: validate if phone is a 10-digit number
@@ -633,11 +655,29 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
         let hasMandatoryMissingFields = [];
         
         metadata?.forEach((data, index) => {
+            let label = labels[index] || uniqueLabels?.find(labelData => labelData?.path === data);
+
+// Force mandatory true for the two specific paths
+if (data === `forms[${formIndex}].data.contactAddress2.isMailingAddressSameAsHomeAddress`) {
+        label = {
+            ...label,
+            mandatory: true,
+            label: "Mailing address: Home or different?"
+        };
+    }
+
+    if (data === `forms[${formIndex}].data.contactAddress3.isBusinessAddressSameAsHomeAddressOrMailingAddress`) {
+        label = {
+            ...label,
+            mandatory: true,
+            label: "Business address: Home or Mailing or Different?"
+        };
+    }
             keyValuePair.push({
                 key: data,
                 value: getValueByPath(basicForm, data),
                 // Assign correct label from either Basic Info or Contact Info labels
-                label: labels[index] || uniqueLabels?.find(labelData => labelData?.path === data)
+                label: label
             });
         });
 
@@ -699,6 +739,30 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
             },
         value:emailValue });
         }
+    //     const isBusinessAddressSameAsHomeAddressOrMailingAddressPath = `forms[${formIndex}].data.contactAddress3.isBusinessAddressSameAsHomeAddressOrMailingAddress`;
+    //     const RegisteredBusinessPath = `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`
+    //     const RegisteredBusinessAddressValue = getValueByPath(basicForm,RegisteredBusinessPath)
+    //     const isBusinessAddressSameAsHomeAddressOrMailingAddressValue = getValueByPath(basicForm, isBusinessAddressSameAsHomeAddressOrMailingAddressPath);
+    //     if (RegisteredBusinessAddressValue === false) {
+    //       if (!isBusinessAddressSameAsHomeAddressOrMailingAddressValue) {
+    //         allMissingKeys.push({ key: isBusinessAddressSameAsHomeAddressOrMailingAddressPath, label: {
+    //             label:"isBusinessAddressSameAsHomeAddressOrMailingAddress",
+    //             mandatory:true,
+    //             path:isBusinessAddressSameAsHomeAddressOrMailingAddressPath
+    //         },
+    //     value:isBusinessAddressSameAsHomeAddressOrMailingAddressValue });
+    //     }
+    // }
+    //     const isMailingAddressSameAsHomeAddressPath = `forms[${formIndex}].data.contactAddress2.isMailingAddressSameAsHomeAddress`;
+    //     const isMailingAddressSameAsHomeAddressValue = getValueByPath(basicForm, isMailingAddressSameAsHomeAddressPath);
+    //       if (!isMailingAddressSameAsHomeAddressValue) {
+    //         allMissingKeys.push({ key: isMailingAddressSameAsHomeAddressPath, label: {
+    //             label:"isMailingAddressSameAsHomeAddress",
+    //             mandatory:true,
+    //             path:isMailingAddressSameAsHomeAddressPath
+    //         },
+    //     value:isMailingAddressSameAsHomeAddressValue });
+    //     }
         // Validate specialty selection based on department
         if (
             !formSchemaWholeObject?.schema?.properties?.departmentSpecialty?.dependencies?.department?.oneOf
@@ -714,15 +778,17 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
         allMissingFields = allMissingKeys;
         hasMandatoryMissingFields = allMissingKeys?.find(field => field?.label?.mandatory === true);
 
-        if(data === "skipped"){
+        if(data === "skipped" || data === "save"){
             handleContactAddressSubmit();
+            if (data === "skipped") {
             if (sessionStorage.getItem('fromSummary') === "true") {
                 navigate(-1);
             } else {
                 navigate(navigateURL)
             }
         }
-     if (data !== "skipped"){
+        }
+     else {
         if (hasMandatoryMissingFields) {
             setShowValidationDialog(true);
         } else {

@@ -28,7 +28,8 @@ import CircleIcon from "@mui/icons-material/Circle";
 import { SuccessToaster } from "../../utils/toaster";
 import { ErrorToaster } from "../../utils/toaster";
 import Tooltip from "@mui/material/Tooltip";
-import {formatFirstNameLastName } from "../../utils/formatting";
+import { formatFirstNameLastName } from "../../utils/formatting";
+import CommonSearchField from "../../Components/CommonFields/CommonSearchField";
 
 const ActiveStaffList = ({
   isLoading,
@@ -37,7 +38,7 @@ const ActiveStaffList = ({
   getTitleCounts,
   getActiveApplicationView,
   getStaffView
-  
+
 }) => {
   const PDFRef = createRef();
   const navigate = useNavigate();
@@ -49,7 +50,9 @@ const ActiveStaffList = ({
   const [showCardDetails, setShowCardDetails] = useState(false);
   const [showCardAppointment, setShowCardAppointment] = useState(false);
   const [showCardCompletion, setShowCardCompletion] = useState(false);
-
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchData, setSearchData] = useState([]);
+  const [searchTermForTable, setSearchTermForTable] = useState('');
   const [applicationRejected, setApplicationRejected] = useState({
     totalRejections: 0,
     appointmentRequestsDenied: 0,
@@ -61,15 +64,16 @@ const ActiveStaffList = ({
   const [rejectionListData, setRejectionListData] = useState([]);
   const [sortField, setSortField] = useState("DEFAULT");
   const [sortValue, setSortValue] = useState("DESCENDING");
-
+  const [searchCount, setSearchCount] = useState(0);
+  const [limit, setLimit] = useState(9999);
   const permanentHeaderValues = ["", "Staff Name", "Staff ID", "Staff Type", "Docs", "Notes", "Last Updated", "Action"];
   const locumHeaderValues = ["", "Staff Name", "Staff ID", "Staff Type", "CR", "COS", "CC", "CC Date", "Last Updated", "Action"];
   const temporaryStaffHeaderValues = ["Staff Name", "Staff ID", "Staff Type", "CC Approval", "COS Approval", "Last Updated"];
   const approvedHeaderValues = ["", "Staff Name", "Type", "Notes", "Last Updated On", ""];
 
 
-  const permanentColSortValues = [false, false, false, false, false, , false, false, false];
-  const locumColSortValues = [false, false, false, false, false, false, false, false, false, false];
+  const permanentColSortValues = [false, true, false, true, false, false, true, false];
+  const locumColSortValues = [false, true, false, true, false, false, false, false, true, false];
   const temporaryStaffColSortValues = [false, false, false, false, false, false];
   const approvedColSortValues = [false, false, false, false, false, false, false, false, false];
 
@@ -90,10 +94,15 @@ const ActiveStaffList = ({
   //   getActiveApplicationView(true);
   // }
 
+  const handleLimitChange = (newLimit) => {
+    setLimit(newLimit);
+  };
+
   const onClickViewAndVerifyFunction = (data) => {
     getActiveApplicationView(true);
+    sessionStorage.setItem('applicationCreationType', 'REAPPOINTMENT');
     sessionStorage.setItem("applicationId", data?.currentApplication?.id);
-    console.log("id",data?.currentApplication?.id)
+    console.log("id", data?.currentApplication?.id)
     getStaffView(true);
   };
 
@@ -109,8 +118,24 @@ const ActiveStaffList = ({
   }, []);
 
   useEffect(() => {
+    if (searchTerm.trim() === "") {
+      setSearchData([]); // Clear results if input is empty
+      return;
+    }
+
+    const controller = new AbortController(); // Create an AbortController instance
+    const signal = controller.signal;
+
+    // getActiveUserDataSearch(signal); // Call API function with signal
+    console.log("Triggering search with:", searchTerm, selectedTab);
+    getActiveUserDataSearch(signal, searchTerm);
+
+    return () => controller.abort(); // Cleanup: Cancel previous request if a new one starts
+  }, [searchTerm, selectedTab]);
+
+  useEffect(() => {
     getActiveUserData(selectedTab);
-  }, [selectedTab,sortField, sortValue,page,totalCount]);
+  }, [selectedTab, sortField, sortValue, page, totalCount, searchTermForTable, limit]);
 
   const getReFetchMetaData = (value) => {
     setReFetchMetaData(value);
@@ -118,8 +143,16 @@ const ActiveStaffList = ({
 
   const getSelectedPage = (value) => {
     setPage(value);
-}
+  }
 
+  const handleShowForSearch = () => {
+    console.log('search', searchTerm)
+    setSearchTermForTable(searchTerm)
+  }
+
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
+  }
 
   const reappointmentApplication = async (id) => {
     await POST(`application-management-service/staff/${id}/reappoint`)
@@ -135,16 +168,36 @@ const ActiveStaffList = ({
       });
   };
 
+  const getActiveUserDataSearch = async (signal) => {
+    try {
+      let apiUrl = `application-management-service/staff?status=ACTIVE&searchText=${searchTerm}`;
+
+      const response = await GET(apiUrl, { signal });
+
+      console.log("Application data", response?.data?.staffs);
+      setSearchData(response?.data?.staffs.map(item => ({
+        id: item.id,
+        name: `${formatFirstNameLastName(item?.applicant?.name?.firstName, item?.applicant?.name?.lastName)}` || " ",
+        desc: `${item?.basicDetailReferences?.department?.name} | ${item?.basicDetailReferences?.applicantType?.serviceProviderType}`
+      })));
+      return response?.data?.staffs || [];
+    } catch (error) {
+      console.error("Error fetching applications:", error);
+      return [];
+    }
+  };
+
   const getActiveUserData = async () => {
     try {
       const response = await GET(
         // `application-management-service/application/workflowUser?tab=${selectedTab}`
         //  `application-management-service/application/workflowUser?tab=${selectedTab}&sortBy=${sortValue}&sortByField=${sortField}&applicationCreationType=REAPPOINTMENT`
-        `application-management-service/staff?type=${selectedTab}&status=ACTIVE&limit=${10}&offset=${page - 1}`
+        `application-management-service/staff?type=${selectedTab}&status=ACTIVE&limit=${limit}&offset=${page - 1}&searchText=${searchTermForTable}&sortBy=${sortValue}&sortByField=${sortField}`
       );
       console.log("Application data", response?.data?.staffs);
       setTableData(response?.data?.staffs);
       setTotalCount(response?.data?.numberOfElements);
+      setSearchCount(response?.data?.numberOfElements || 0);
       return response?.data || [];
     } catch (error) {
       console.error("Error fetching applications:", error);
@@ -342,8 +395,8 @@ const ActiveStaffList = ({
             : "grey"
       );
       applicantName.push(
-              `${formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName)}` || " "
-            );
+        `${formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName)}` || " "
+      );
       // applicantId.push(data?.displayId || "123");
       applicantId.push(data?.staffId || "123");
       // applicantType.push(data?.providerType?.serviceProviderType || "Doctor");
@@ -408,7 +461,7 @@ const ActiveStaffList = ({
 
       // taskListStatus.push(data?.tasks.completedCount + "/" + data?.tasks.totalCount);
       lastUpdated.push(
-        format(new Date(data?.lastModifiedDate), "MM/dd/yyyy")
+        format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
       );
       lastUpdatedBy.push(["-"]);
       // const lastUpdatedDate = new Date(data?.lastModifiedDate);
@@ -764,203 +817,14 @@ const ActiveStaffList = ({
       <div className={isExpanded ? style.bigCardGrid : style.smallCardGrid}>
         <div>
           <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
-            {/* <div className={`${style.addStyle}  ${style.applicationButton} ${style.spaceBetween} ${style.marginTop10} ${style.alignCenter} ${style.cursorPointer} ${style.cardStyle}`} >
-              <div className={`${style.displayInRow} ${style.marginLeftRight10} `} onClick={() => navigate('/createStaffMemberApplication')}>
-                CREATE NEW APPLICATION
-              </div>
-              <div className={`${style.displayInRow} ${style.marginLeft20} `} >
-                <AddCircleOutlineIcon sx={{ fontSize: 20, color: 'white' }} />
-              </div>
-            </div> */}
-
-            {/* <div className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
-              <div className={`${style.spaceBetween}  ${style.marginLeftRight10}`}>
-                <div className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}>
-                  Requests For Appointment ({requestAppointment})
-                </div>
-                <div className={`${style.marginLeft10} `} >
-                  {!showCardAppointment ? (
-                    <AddIcon sx={{ fontSize: 20, color: '#06617A
-
-
-', cursor: 'pointer' }} onClick={() => setShowCardAppointment(!showCardAppointment)} />
-                  ) : (
-                    <RemoveIcon sx={{ fontSize: 20, color: '#06617A
-
-
-', cursor: 'pointer' }} onClick={() => setShowCardAppointment(!showCardAppointment)} />
-                  )}
-                </div>
-              </div>
-              {showCardAppointment && (<>
-                <div>
-                  <div className={`${style.displayInCol} ${style.marginTop}`}>
-                    <div className={`${style.warningTextAlign} ${style.staffTextStyle} ${style.marginRight10}`}>
-                      <p className={style.staffPragraphStyle}>Dave FILIP <span style={{
-                        color: "#2C2C2C",
-                        font: "normal normal bold $tabledatatext2 proxima-nova"
-                      }}> (Doctor) </span> <span className={style.dayTextStyle}
-                        style={{
-                          border: "0.4px solid #14B15A",
-                          color: "#14B15A"
-                        }}> +1 Day</span> </p> <span>
-                        <PermIdentityIcon sx={{ fontSize: 20, color: '#06617A
-
-
-', marginRight: "5px" }} />
-                      </span>
-                    </div>
-                  </div>
-                  <div className={`${style.displayInCol} ${style.marginTop}`}>
-                    <div className={`${style.warningTextAlign} ${style.staffTextStyle} ${style.marginRight10}`}>
-                      <p className={style.staffPragraphStyle}>Dave FILIP <span style={{
-                        color: "#2C2C2C",
-                        font: "normal normal bold $tabledatatext2 proxima-nova"
-                      }}> (Doctor) </span> <span className={style.dayTextStyle}
-                        style={{
-                          border: "0.4px solid #FFCA27",
-                          color: "#FFCA27"
-                        }}> +1 Day</span> </p> <span>
-                        <PublicIcon sx={{ fontSize: 20, color: '#06617A
-
-
-', marginRight: "5px" }} />
-                      </span>
-                    </div>
-                  </div>
-                  <div className={`${style.displayInCol} ${style.marginTop}`}>
-                    <div className={`${style.warningTextAlign} ${style.staffTextStyle} ${style.marginRight10}`}>
-                      <p className={style.staffPragraphStyle}>Anna KARIN <span style={{
-                        color: "#2C2C2C",
-                        font: "normal normal bold $tabledatatext2 proxima-nova"
-                      }}> (Doctor) </span> <span className={style.dayTextStyle}
-                        style={{
-                          border: "0.4px solid #F94848",
-                          color: "#F94848"
-                        }}> +1 Day</span> </p> <span>
-                        <PublicIcon sx={{ fontSize: 20, color: '#06617A
-
-
-', marginRight: "5px" }} />
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </>)}
-            </div> */}
-
-            {/* <div className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
-              <div className={`${style.spaceBetween}  ${style.marginLeftRight10}`}>
-                <div className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}>
-                  Sent for Completion ({sentCompletion})
-                </div>
-                <div className={`${style.marginLeft10} `} >
-                  {!showCardCompletion ? (
-                    <AddIcon sx={{ fontSize: 20, color: '#06617A
-
-
-', cursor: 'pointer' }} onClick={() => setShowCardCompletion(!showCardCompletion)} />
-                  ) : (
-                    <RemoveIcon sx={{ fontSize: 20, color: '#06617A
-
-
-', cursor: 'pointer' }} onClick={() => setShowCardCompletion(!showCardCompletion)} />
-                  )}
-                </div>
-              </div>
-              {showCardCompletion && (<>
-                <div className={`${style.displayInCol} ${style.marginTop}`}>
-                  <div className={`${style.warningTextAlign} ${style.staffTextStyle}`}>
-                    <div className={style.progressbarStyle}>
-                      <div className={style.spaceBetween}>
-                        <div className={style.statisticsProgress}>
-                          <div className={`${style.greyDotStyle} `}></div>
-                          <div className={style.marginLeft10}>Jane DOE</div> <span className={style.textStyleProgress}> (Nurse) </span></div>
-                        <p className={style.progressTopText}>Due in 15 Days</p>
-                      </div>
-                      <ProgressBar completed={6} isLabelVisible={false} height='5px' bgColor='#06617A
-
-
-' baseBgColor="#E9E9F0" className={style.marginLeft20} />
-                      <div className={style.progressBottomText}>95% remaining</div>
-                    </div>
-                  </div>
-                </div>
-                <div className={`${style.displayInCol} ${style.marginTop}`}>
-                  <div className={`${style.warningTextAlign} ${style.staffTextStyle}`}>
-                    <div className={style.progressbarStyle}>
-                      <div className={style.spaceBetween}>
-                        <div className={style.statisticsProgress}>
-                          <div className={`${style.greenDotStyle} `}></div>
-                          <div className={style.marginLeft10}>Jane DOE</div> <span className={style.textStyleProgress}> (Nurse) </span></div>
-                        <p className={style.progressTopText}>Due in 2 Days</p>
-                      </div>
-                      <ProgressBar completed={100} isLabelVisible={false} height='5px' bgColor='#06617A
-
-
-' baseBgColor="#E9E9F0" className={style.marginLeft20} />
-                      <div className={style.progressBottomText}>0% remaining</div>
-                    </div>
-                  </div>
-                </div>
-                <div className={`${style.displayInCol} ${style.marginTop}`}>
-                  <div className={`${style.warningTextAlign} ${style.staffTextStyle}`}>
-                    <div className={style.progressbarStyle}>
-                      <div className={style.spaceBetween}>
-                        <div className={style.statisticsProgress}>
-                          <div className={`${style.yellowDotStyle} `}></div>
-                          <div className={style.marginLeft10}>Kate SLATE</div> <span className={style.textStyleProgress}> (Doctor) </span></div>
-                        <p className={style.progressTopText}>Due in 7 Days</p>
-                      </div>
-                      <ProgressBar completed={60} isLabelVisible={false} height='5px' bgColor='#06617A
-
-
-' baseBgColor="#E9E9F0" className={style.marginLeft20} />
-                      <div className={style.progressBottomText}>40% remaining</div>
-                    </div>
-                  </div>
-                </div>
-              </>)}
-            </div> */}
-
-            {/* <div className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
-              <div className={`${style.displayInRow}  ${style.marginLeftRight10}`}>
-                <div className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}>
-                  Rejected/Declined ({applicationRejected.totalRejections})
-                </div>
-                <div className={`${style.marginLeft10} `} >
-                  {!showCardDetails ? (
-                    <AddIcon sx={{ fontSize: 20, color: '#06617A
-
-
-', cursor: 'pointer' }} onClick={() => setShowCardDetails(!showCardDetails)} />
-                  ) : (
-                    <RemoveIcon sx={{ fontSize: 20, color: '#06617A
-
-
-', cursor: 'pointer' }} onClick={() => setShowCardDetails(!showCardDetails)} />
-                  )}
-                </div>
-              </div>
-              {
-                showCardDetails && (<>
-                  <div className={`${style.borderStyle} ${style.marginTop} ${style.textStyle}`}>
-                    Appointment Requests Denied ({applicationRejected.appointmentRequestsDenied})
-                  </div>
-                  <div className={`${style.borderStyle} ${style.marginTop} ${style.textStyle}`}>
-                    Applications Rejected ({applicationRejected.applicationsRejected})
-                  </div>
-                  <div className={`${style.borderStyle} ${style.marginTop} ${style.textStyle}`}>
-                    Applications Approved But Declined ({applicationRejected.applicationsApprovedButDenied})
-                  </div>
-                </>)
-              }
-            </div> */}
+            <div className={style.searchFieldAlignment}>
+              <CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} isOnClickAvailable={false} placeholder={'Search By Staff Name'} />
+            </div>
           </SideBar>
         </div>
         <div>
           <div className={`${style.displayInRow} ${style.spaceBetween} ${style.headingForStaffs} ${style.bottomTextStyle}`}>
-            {`STAFF MANAGER > ACTIVE STAFF`}
+            {`PRIVILEGED STAFF > PERMANENT STAFF`}
           </div>
 
           <div
@@ -974,7 +838,7 @@ const ActiveStaffList = ({
             />
 
             <div className={`${style.spaceBetween} ${style.marginLeft} `}>
-              <div
+              {/* <div
                 className={`${isPrintClicked && style.addStyle} ${style.alignCenter
                   } ${style.cursorPointer} ${style.marginRight20}`}
               >
@@ -984,28 +848,28 @@ const ActiveStaffList = ({
                     color: isPrintClicked ? "#fff" : "#06617A",
                   }}
                 />
-              </div>
+              </div> */}
               <Tooltip title="Fill Historical Data" arrow>
-              <div
-                className={`${style.alignCenter
-                  } ${style.cursorPointer} ${style.marginRight20}`}
+                <div
+                  className={`${style.alignCenter
+                    } ${style.cursorPointer} ${style.marginRight20}`}
                   onClick={() => navigate("/historicalData")}
-              >
-              <AddCircleOutlineIcon sx={{ fontSize: 25, color: '#06617A' }} />
-              </div>
+                >
+                  <AddCircleOutlineIcon sx={{ fontSize: 25, color: '#06617A' }} />
+                </div>
               </Tooltip>
               <Tooltip title="Print" arrow>
-              <div
-                className={`${isPrintClicked && style.addStyle} ${style.alignCenter
-                  } ${style.cursorPointer} ${style.marginRight}`}
-              >
-                <PrintOutlinedIcon
-                  sx={{
-                    fontSize: isPrintClicked ? 20 : 25,
-                    color: isPrintClicked ? "#fff" : "#06617A",
-                  }}
-                />
-              </div>
+                <div
+                  className={`${isPrintClicked && style.addStyle} ${style.alignCenter
+                    } ${style.cursorPointer} ${style.marginRight}`}
+                >
+                  <PrintOutlinedIcon
+                    sx={{
+                      fontSize: isPrintClicked ? 20 : 25,
+                      color: isPrintClicked ? "#fff" : "#06617A",
+                    }}
+                  />
+                </div>
               </Tooltip>
             </div>
           </div>
@@ -1031,13 +895,17 @@ const ActiveStaffList = ({
                     actions={actions}
                     scrollStyle={style.contractScrollStyle}
                     tableSortValues={tableSortValues}
-                    heading={"There are no Record for you to manage"}
+                    heading={"There are no Records for you to manage"}
                     onClickFunction={() => { }}
                     getHandleSort={getHandleSort}
                     sortValue={{ sortBy: sortValue, sortByField: sortField }}
                     getSelectedPage={getSelectedPage}
                     totalCount={totalCount}
                     page={page}
+                    searchTermForTable={searchTermForTable}
+                    searchCount={searchCount}
+                    setSearchTermForTable={setSearchTermForTable}
+                    onLimitChange={handleLimitChange}
                   />
                 </div>
               </div>

@@ -107,6 +107,7 @@ const ApplicantPortalRFC = () => {
         cookie.remove("entityId", { path: "/" });
         cookie.remove("authorization", { path: "/" });
         logout();
+        navigate('/');
     }
 
     useEffect(() => {
@@ -461,7 +462,7 @@ const ApplicantPortalRFC = () => {
         temp.push({
             "type": "icon", "icon": array?.map(innerData =>
                 <Tooltip title="Click to Delete File" arrow>
-                <img src={DeleteIcon} alt="" className={style.docTypeImgStyle} onClick={() => { setDeleteData(innerData); setShowDeleteConfirmation(true) }} /></Tooltip>
+                    <img src={DeleteIcon} alt="" className={style.docTypeImgStyle} onClick={() => { setDeleteData(innerData); setShowDeleteConfirmation(true) }} /></Tooltip>
             ), 'isShowHoverText': false
         });
         if (clarificationType !== "REQUEST_ADDITIONAL_DOCUMENTS") {
@@ -724,15 +725,15 @@ const ApplicantPortalRFC = () => {
                                     <div><strong>CME / CEU Transcript</strong></div>
                                     <div className={style.leftAlign}>{form?.forms?.[formIndex]?.data?.cmeTranscripts?.file?.fileName}</div>
                                     <Tooltip title="Click to view uploaded file" arrow>
-                                    <img
-                                        src={VerifiedImage}
-                                        alt=""
-                                        className={`${style.imgIcon} ${style.cursorPointer}`}
-                                        onClick={() => {
-                                            setShowFileDisplayDialog(true); setselectedFile(form?.forms?.[formIndex]?.data?.cmeTranscripts?.file);
-                                        }
-                                        }
-                                    />
+                                        <img
+                                            src={VerifiedImage}
+                                            alt=""
+                                            className={`${style.imgIcon} ${style.cursorPointer}`}
+                                            onClick={() => {
+                                                setShowFileDisplayDialog(true); setselectedFile(form?.forms?.[formIndex]?.data?.cmeTranscripts?.file);
+                                            }
+                                            }
+                                        />
                                     </Tooltip>
                                 </div>
                             )}
@@ -876,7 +877,7 @@ const ApplicantPortalRFC = () => {
                                 actions={[]}
                                 // scrollStyle={style.contractScrollStyle}
                                 tableSortValues={[]}
-                                heading={"There are no Record for you to manage"}
+                                heading={"There are no Records for you to manage"}
                                 onClickFunction={() => { }}
                                 hidePagination={true}
                             />
@@ -1760,7 +1761,7 @@ const ApplicantPortalRFC = () => {
                 </div>
             )}
             <ApplicationHeader
-                title={`${form?.creationType === "NEW" ? "Clarification Required For New Application For" : "Clarification Required For Reappointment Application For"}   ${form?.basicDetails?.applicant?.name?.firstName !== undefined
+                title={`${form?.creationType === "NEW" ? "Clarification Required For New Application For" : form?.creationType === "REAPPOINTMENT" && form?.privilegeCategoryType === "LOCUM" ? "Clarification Required For Application For" : "Clarification Required For Reappointment Application For"}   ${form?.basicDetails?.applicant?.name?.firstName !== undefined
                     ? form?.basicDetails?.applicant?.name?.firstName
                     : "{First Name}"
                     } ${form?.basicDetails?.applicant?.name?.lastName !== undefined
@@ -1787,16 +1788,16 @@ const ApplicantPortalRFC = () => {
                                         Prior Reference
                                     </div>
                                     {collapseOpen ? (
-                                         <Tooltip title="Click to Collapse" arrow>
-                                        <div onClick={() => setCollapseOpen(false)} className={style.cursorPointer}>
-                                            <RemoveIcon sx={{ fontSize: '25px' }} />
-                                        </div>
+                                        <Tooltip title="Click to Collapse" arrow>
+                                            <div onClick={() => setCollapseOpen(false)} className={style.cursorPointer}>
+                                                <RemoveIcon sx={{ fontSize: '25px' }} />
+                                            </div>
                                         </Tooltip>
                                     ) : (
                                         <Tooltip title="Click to Expand" arrow>
-                                        <div onClick={() => setCollapseOpen(true)} className={style.cursorPointer}>
-                                            <AddIcon sx={{ fontSize: '25px' }} />
-                                        </div>
+                                            <div onClick={() => setCollapseOpen(true)} className={style.cursorPointer}>
+                                                <AddIcon sx={{ fontSize: '25px' }} />
+                                            </div>
                                         </Tooltip>
                                     )}
                                 </div>
@@ -2020,10 +2021,10 @@ const ApplicantPortalRFC = () => {
                     <div>
                         {!showInfo && (
                             <div>
-                                 <Tooltip title="Click to Show" arrow>
-                                <div className={`${style.toggleButton}`} onClick={() => setShowInfo(!showInfo)}>
-                                    <MenuIcon className={style.toggleIcon} />
-                                </div>
+                                <Tooltip title="Click to Show" arrow>
+                                    <div className={`${style.toggleButton}`} onClick={() => setShowInfo(!showInfo)}>
+                                        <MenuIcon className={style.toggleIcon} />
+                                    </div>
                                 </Tooltip>
                                 <div className={`${style.headerData}`}>
                                     <span style={{ marginLeft: '20px' }}>Required Clarification for the Documents</span>
@@ -2032,8 +2033,8 @@ const ApplicantPortalRFC = () => {
                         )}
                         <div>
                             <div className={`${style.infoContainer} ${showInfo ? style.show : ""}`}>
-                            <Tooltip title="Click to Close Info Panel" arrow>
-                                <img src={Close} alt="Close" className={style.closeIcon} onClick={() => setShowInfo(false)} /></Tooltip>
+                                <Tooltip title="Click to Close Info Panel" arrow>
+                                    <img src={Close} alt="Close" className={style.closeIcon} onClick={() => setShowInfo(false)} /></Tooltip>
                                 {/* <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} /> */}
                                 <div >
                                     <ApplicationAssistanceCard
@@ -2046,17 +2047,17 @@ const ApplicantPortalRFC = () => {
                             </div>
                         </div>
                         <div className={`${style.stickyContainer}`}>
-                        <Tooltip title="Save your Progress and Continue later" arrow>
-                            <div className={`${style.saveInProgress} ${style.marginTop20}`}
-                                onClick={() => getClarificationResponse(true)}
-                            >
-                                SAVE IN PROGRESS
-                            </div>
+                            <Tooltip title="Save your Progress and Continue later" arrow>
+                                <div className={`${style.saveInProgress} ${style.marginTop20}`}
+                                    onClick={() => getClarificationResponse(true)}
+                                >
+                                    SAVE IN PROGRESS
+                                </div>
                             </Tooltip>
                             <Tooltip title="Submit your Response and Logout" arrow>
-                            <div className={`${style.continue} ${style.marginTop10}`}
-                                onClick={() => getClarificationResponse()}
-                            >SUBMIT & LOGOUT</div>
+                                <div className={`${style.continue} ${style.marginTop10}`}
+                                    onClick={() => getClarificationResponse()}
+                                >SUBMIT & LOGOUT</div>
                             </Tooltip>
                         </div>
                     </div>
