@@ -100,6 +100,7 @@ const ActiveStaffList = ({
 
   const onClickViewAndVerifyFunction = (data) => {
     getActiveApplicationView(true);
+    sessionStorage.setItem('applicationCreationType', 'REAPPOINTMENT');
     sessionStorage.setItem("applicationId", data?.currentApplication?.id);
     console.log("id", data?.currentApplication?.id)
     getStaffView(true);
