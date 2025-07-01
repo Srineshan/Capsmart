@@ -1,6 +1,6 @@
 // main applicationFieldCard
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useRef } from "react";
 import CommonPhoneField from "../../Components/CommonFields/CommonPhoneField";
 import CommonInputField from "../CommonFields/CommonInputField";
 import CommonSelectField from "../CommonFields/CommonSelectField";
@@ -105,6 +105,9 @@ const ApplicationFieldCard = ({
   const { setValue, value } = useComboboxControls({ initialValue: "" });
   const canadaData = JSON.parse(sessionStorage.getItem("canadaData")) || {};
   let user = JSON.parse(sessionStorage.getItem("user"));
+  const hometimeoutRef = useRef(null);
+  const mailingTimeoutRef = useRef(null);
+  const businessTimeoutRef = useRef(null);
 
   console.log(user);
   useEffect(() => {
@@ -1158,7 +1161,12 @@ const ApplicationFieldCard = ({
         baseKey?.split(".")[0] === "contactAddress3")
     ) {
       if (validateCanadianPostalCode(isHomeAddressPincodeEntered)) {
-        fetchData();
+        if (hometimeoutRef.current) {
+          clearTimeout(hometimeoutRef.current);
+        }
+        hometimeoutRef.current = setTimeout(() => {
+          fetchData();
+        }, 2000);
       } else {
         setBasicForm((prevData) => {
           let tempContactAddress1 = { ...prevData };
@@ -1206,7 +1214,12 @@ const ApplicationFieldCard = ({
         baseKey?.split(".")[0] === "contactAddress3")
     ) {
       if (validateCanadianPostalCode(isMailingAddressPincodeEntered)) {
-        fetchData();
+        if (mailingTimeoutRef.current) {
+          clearTimeout(mailingTimeoutRef.current);
+        }
+        mailingTimeoutRef.current = setTimeout(() => {
+          fetchData();
+        }, 2000);
       } else {
         setBasicForm((prevData) => {
           let tempContactAddress2 = { ...prevData };
@@ -1255,7 +1268,12 @@ const ApplicationFieldCard = ({
         baseKey?.split(".")[0] === "contactAddress3")
     ) {
       if (validateCanadianPostalCode(isBusinessAddressPincodeEntered)) {
-        fetchData();
+        if (businessTimeoutRef.current) {
+          clearTimeout(businessTimeoutRef.current);
+        }
+        businessTimeoutRef.current = setTimeout(() => {
+          fetchData();
+        }, 2000);
       } else {
         setBasicForm((prevData) => {
           let tempContactAddress3 = { ...prevData };
@@ -2355,6 +2373,25 @@ const ApplicationFieldCard = ({
           const ckEditorFields = additionalFields.filter(key => parentData?.properties?.[key]?.fieldType === "ckeditor");
           const fileUploadFields = additionalFields.filter(key => parentData?.properties?.[key]?.fieldType === "fileupload");
 
+const isRequired =
+  !isLableEmpty(fieldData.label) &&
+  (object.required?.includes(fieldKey) ||
+    (parentData?.required?.includes(fieldKey) ?? false));
+
+const insertAsteriskBeforeClosingP = (html) => {
+  return isRequired
+    ? html.replace(
+        /<\/p>/i,
+        '<span style="color:#171A1A;"> *</span></p>'
+      )
+    : html;
+};
+
+const labelWithAsterisk = insertAsteriskBeforeClosingP(fieldData.label);
+
+
+
+
           return (
             <div
               className={`${style.disclosureGrid} ${style.verticalAlignCenter}`}
@@ -2371,18 +2408,11 @@ const ApplicationFieldCard = ({
                   className={`${style.lableRadioStyle} ${!isPOD ? fieldData.serialNumber !== null ? style.marginLeft10 : "" : ""
                     } ${fieldData.label !== null ? style.marginRight : ""} ${style.displayInRow}`} style={{ display: 'inline' }}
                 >
-                  <span className={style.description}
-                    dangerouslySetInnerHTML={{
-                      __html: fieldData.label
-                    }}
-                  />
-                  {/* <span>{(isLableEmpty(fieldData.label)
-                    ? false
-                    : object.required?.includes(fieldKey) ||
-                    (parentData !== null
-                      ? parentData.required?.includes(fieldKey)
-                      : false)) && "*"}
-                  </span> */}
+ <span
+    dangerouslySetInnerHTML={{
+      __html: labelWithAsterisk,
+    }}
+  />
                 </div>
               </div>
               {isPOD ? (

@@ -2891,7 +2891,7 @@ const NewActiveApplication = ({
                 actions={[]}
                 // scrollStyle={style.contractScrollStyle}
                 tableSortValues={[]}
-                heading={"There are no Record for you to manage"}
+                heading={"There are no Records for you to manage"}
                 onClickFunction={() => { }}
                 isUploadYourDocTable={isUploadYourDoc}
               />
@@ -2930,7 +2930,7 @@ const NewActiveApplication = ({
               actions={[]}
               // scrollStyle={style.contractScrollStyle}
               tableSortValues={[]}
-              heading={"There are no Record for you to manage"}
+              heading={"There are no Records for you to manage"}
               onClickFunction={() => { }}
             />
           </>
@@ -3759,7 +3759,7 @@ const NewActiveApplication = ({
                 actions={[]}
                 // scrollStyle={style.contractScrollStyle}
                 tableSortValues={[]}
-                heading={"There are no Record for you to manage"}
+                heading={"There are no Records for you to manage"}
                 onClickFunction={() => { }}
                 isUploadYourDocTable={isUploadYourDoc}
                 hasVerificationAttempted={hasVerificationAttempted}
@@ -3876,7 +3876,8 @@ const NewActiveApplication = ({
                         <span>
                           <CommonCheckBox checked={form?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours < 25 ? false : form?.forms?.[formIndex]?.acknowledged}
                             // onChange={form?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours < 25 ? () => { } : (e) => handleIsChecked(e.target.checked)} 
-                            bigCheckbox={true} />
+                            bigCheckbox={true}
+                            cursorDefault={true} />
                         </span>
                       )}
                       <div
@@ -3943,7 +3944,7 @@ const NewActiveApplication = ({
                 actions={[]}
                 // scrollStyle={style.contractScrollStyle}
                 tableSortValues={[]}
-                heading={"There are no Record for you to manage"}
+                heading={"There are no Records for you to manage"}
                 onClickFunction={() => { }}
                 hidePagination={true}
               />

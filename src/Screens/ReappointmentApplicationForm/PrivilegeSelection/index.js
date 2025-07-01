@@ -479,6 +479,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
   };
 
   const getIsSaveInProgressOpen = (value) => {
+    handleSubmitAcknowledgement(false);
     setIsSaveInProgressOpen(value);
   };
 
@@ -1200,11 +1201,11 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
   };
 
   const handleContinue = async (isNavigate) => {
+    getPreApplication();
     if (isNavigate) {
       if (sessionStorage.getItem("fromSummary") === "true") {
         navigate(-1);
       } else {
-        getPreApplication();
         if (isContinueEnabled) {
           navigate(navigateURL);
         }
