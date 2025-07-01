@@ -410,6 +410,8 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
     setDisplayInnerList(true);
     setSelectedApplicant(data);
     getMedicalDirectiveSummaryByApplicant(data)
+    setSelectedDepartment("");
+    setSelectedServiceArea("");
   }
 
   const handleSelectDataByDept = (data) => {
@@ -743,7 +745,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
       if (displayInnerList2) {
         setDisplayInnerList2(false);
       } else {
-        setSelectedDepartment();
+        setSelectedDepartment("");
         setDisplayInnerList(false);
       }
     } else {
@@ -837,7 +839,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                             color: "#06617A",
                           }}
                           className={style.cursorPointer}
-                          onClick={() => { setSelectedDepartment(); setSelectedServiceArea() }}
+                          onClick={() => { setSelectedDepartment(""); setSelectedServiceArea("") }}
                         />
                       </Tooltip>
                     </div>
@@ -852,11 +854,12 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                             color: "#06617A",
                           }}
                           className={style.cursorPointer}
-                          onClick={() => setSelectedApplicantType()}
+                          onClick={() => setSelectedApplicantType("")}
                         />
                       </Tooltip>
                     </div>
                   )}
+                  {currentTab !== "ByDepartments" && (
                   <div
                     className={`${style.alignCenter} ${style.cursorPointer
                       }`}
@@ -875,6 +878,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                       />
                     </Tooltip>
                   </div>
+                  )}
                   <div
                     className={`${style.alignCenter
                       } ${style.cursorPointer} ${style.marginLeft10}`}
@@ -901,7 +905,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                   </Tooltip>
                 </div>
               </div>
-              {showFilter && (
+              {showFilter && currentTab !== "ByDepartments" && (
                 <div className={`${style.departmentContainer}`}>
                   <div>
                     <CommonSelectField
@@ -966,7 +970,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                             </Tooltip>
                           </div>
                           <div className={`${style.marginLeftAuto} ${style.noPrint}`}>
-                            <CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} placeholder={currentTab === "ByApplicants" ? 'Search By Applicant Name' : 'Search By MD Name'} />
+                            <CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} placeholder={currentTab === "ByApplicants" ? 'Search By Applicant Name' : 'Search By MD ID'} />
                           </div>
                         </div>
                         <div className={` staffApplicationList`}>
@@ -1026,7 +1030,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                             color: "#06617A",
                           }}
                           className={style.cursorPointer}
-                          onClick={() => { setSelectedDepartment(); setSelectedServiceArea() }}
+                          onClick={() => { setSelectedDepartment(""); setSelectedServiceArea("") }}
                         />
                       </Tooltip>
                     </div>
@@ -1041,12 +1045,13 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                             color: "#06617A",
                           }}
                           className={style.cursorPointer}
-                          onClick={() => setSelectedApplicantType()}
+                          onClick={() => setSelectedApplicantType("")}
                         />
                       </Tooltip>
                     </div>
                   )}
-                  {/* <div
+                  {currentTab !== "ByApplicants" && (
+                      <div
                     className={`${style.alignCenter} ${style.cursorPointer
                       }`}
                     style={{
@@ -1063,7 +1068,8 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
 
                       />
                     </Tooltip>
-                  </div> */}
+                  </div>
+                  )}
                   <div
                     className={`${style.alignCenter
                       } ${style.cursorPointer} ${style.marginLeft10}`}
@@ -1090,7 +1096,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                   </Tooltip>
                 </div>
               </div>
-              {showFilter && (
+              {showFilter && currentTab !== "ByApplicants" && (
                 <div className={style.departmentContainer}>
                   <div>
                     <CommonSelectField
@@ -1106,7 +1112,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                       required={false}
                     />
                   </div>
-                  <div>
+                  {/* <div>
                     <CommonSelectField
                       value={selectedApplicantType}
                       onChange={(e) => setSelectedApplicantType(e.target.value)}
@@ -1119,7 +1125,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                       label={'Staff Type'}
                       required={false}
                     />
-                  </div>
+                  </div> */}
                 </div>
               )}
               <div className={`${style.marginTop10}`}>
