@@ -75,6 +75,7 @@ const CriminalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
     }
     
     const getIsSaveInProgressOpen = (value) => {
+        getMissingFields("save");
         setIsSaveInProgressOpen(value);
     }
 
@@ -97,16 +98,6 @@ const CriminalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
             getMissingFields("skipped");
         }
     };
-
-    const handleContinue = async () => {
-        if (sessionStorage.getItem('fromSummary') === "true") {
-            navigate(-1);
-        }
-        else {
-            navigate(navigateURL)
-
-        }
-    }
 
     const getMissingFields = (data) => {
         let missingKeys = [];
@@ -144,21 +135,21 @@ const CriminalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
         allMissingFields = missingKeys;
         hasMandatoryMissingFields = missingKeys?.find(field => field?.label?.mandatory === true);
 
-        if (data === "skipped") {
-                handleSubmitApplicationReq();
+        if (data === "skipped" || data === "save") {
+                handleSubmitApplicationReq(data);
         }
     
-        if(data !== "skipped"){
+        else {
             if (hasMandatoryMissingFields) {
             setShowValidationDialog(true);
           } else {
-            handleSubmitApplicationReq();
+            handleSubmitApplicationReq(data);
           }
         }
         console.log(keyValuePair, 'MetadataCriminalHistory', missingKeys, hasMandatoryMissingFields, allMissingFields)
     }
 
-    const handleSubmitApplicationReq = async (data) => {
+    const handleSubmitApplicationReq = async (actionType) => {
         // if (isEdited) {
             console.log("MissingCriminalHistory", allMissingFields)
             let temp = {
@@ -176,6 +167,7 @@ const CriminalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
                     setBasicForm(response?.data)
                     SuccessToaster("Application Updated Successfully");
                     getPreApplication();
+                    if (actionType === "continue" || actionType === "skipped") {
                     if (sessionStorage.getItem('fromSummary') === "true") {
                         navigate(-1);
                     }
@@ -183,6 +175,7 @@ const CriminalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
                         navigate(navigateURL)
 
                     }
+                }
                 })
                 .catch((error) => {
                     console.log(error)
@@ -237,7 +230,7 @@ const CriminalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
                         <Tooltip title={"Click to Go Back to the Previous Step"} arrow>
                         <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleBackClick()}>BACK</div></Tooltip>
                         <Tooltip title={"Click to Proceed to the Next Step"} arrow>
-                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => getMissingFields()}>CONTINUE</div></Tooltip>
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => getMissingFields("continue")}>CONTINUE</div></Tooltip>
                     </div>
                 </div>
                 <div>
@@ -274,7 +267,7 @@ const CriminalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
                             <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleBackClick()}>BACK</div></Tooltip>
                             {/* <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowJourneyDialog(true)}>CONTINUE</div> */}
                             <Tooltip title={"Click to Proceed to the Next Step"} arrow>
-                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()}>CONTINUE</div></Tooltip>
+                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields("continue")}>CONTINUE</div></Tooltip>
                         </div>
                     </div>
 

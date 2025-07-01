@@ -156,9 +156,12 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
         }
     }
 
-    const getIsSaveInProgressOpen = (value) => {
-        setIsSaveInProgressOpen(value);
-    }
+    const getIsSaveInProgressOpen = async (value) => {
+        if (value) {
+            await handleContinue("save");
+            setIsSaveInProgressOpen(value);
+        }
+    };
 
     const getFormSchema = async () => {
         if (basicForm?.forms?.[formIndex]?.schemaId !== undefined) {
@@ -305,7 +308,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
     }, [])
 
 
-    const handleContinue = async () => {
+    const handleContinue = async (data) => {
         // if (isSigned) {
         console.log(medicalDirectives)
         const totalCount = (allMedicalDirectives?.completed?.length || 0) +
@@ -335,8 +338,9 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
         await PUT(`application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
             .then(response => {
                 console.log(response)
-                getPreApplication()
                 SuccessToaster("Application Updated Successfully");
+                if (data !== "save") {
+                    getPreApplication();
                 if (sessionStorage.getItem('fromSummary') === "true") {
                     sessionStorage.removeItem('fromSummary')
                     navigate(-1);
@@ -345,6 +349,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                     navigate(navigateURL)
 
                 }
+            }
             })
             .catch((error) => {
                 console.log(error)
@@ -517,7 +522,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                                             actions={[]}
                                             // scrollStyle={style.contractScrollStyle}
                                             tableSortValues={[]}
-                                            heading={"There are no Record for you to manage"}
+                                            heading={"There are no Records for you to manage"}
                                             onClickFunction={() => { }}
                                         />
                                     ) : (
@@ -541,7 +546,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                                             actions={actions}
                                             // scrollStyle={style.contractScrollStyle}
                                             tableSortValues={[]}
-                                            heading={"There are no Record for you to manage"}
+                                            heading={"There are no Records for you to manage"}
                                             onClickFunction={() => { }}
                                             checkedIds={selectedIds?.map(data => data?.id)}
                                             handleCheckboxClick={handleCheckboxClick}

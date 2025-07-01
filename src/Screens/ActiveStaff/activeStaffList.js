@@ -100,6 +100,7 @@ const ActiveStaffList = ({
 
   const onClickViewAndVerifyFunction = (data) => {
     getActiveApplicationView(true);
+    sessionStorage.setItem('applicationCreationType', 'REAPPOINTMENT');
     sessionStorage.setItem("applicationId", data?.currentApplication?.id);
     console.log("id", data?.currentApplication?.id)
     getStaffView(true);
@@ -817,7 +818,7 @@ const ActiveStaffList = ({
         <div>
           <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
             <div className={style.searchFieldAlignment}>
-              <CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} isOnClickAvailable={true} placeholder={'Search By Staff Name'} />
+              <CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} isOnClickAvailable={false} placeholder={'Search By Staff Name'} />
             </div>
           </SideBar>
         </div>
@@ -894,7 +895,7 @@ const ActiveStaffList = ({
                     actions={actions}
                     scrollStyle={style.contractScrollStyle}
                     tableSortValues={tableSortValues}
-                    heading={"There are no Record for you to manage"}
+                    heading={"There are no Records for you to manage"}
                     onClickFunction={() => { }}
                     getHandleSort={getHandleSort}
                     sortValue={{ sortBy: sortValue, sortByField: sortField }}

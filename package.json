@@ -39,6 +39,7 @@
     "draft-js": "^0.11.7",
     "history": "^5.3.0",
     "hoist-non-react-statics": "^3.3.2",
+    "html-to-text": "^9.0.5",
     "html2pdf.js": "^0.10.2",
     "jwt-decode": "^3.1.2",
     "konva": "^8.3.9",
@@ -86,8 +87,8 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "NODE_OPTIONS='--max-old-space-size=4096' react-scripts start",
+    "build": "NODE_OPTIONS='--max-old-space-size=4096' react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

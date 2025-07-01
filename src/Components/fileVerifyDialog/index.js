@@ -548,19 +548,18 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
 
                 setHasVerificationAttempted(true)
                // Determine toaster message
-if (file?.isVerified) {
-    SuccessToaster2(`${file?.documentType} Document Verification Reverted Successfully`);
-} else {
-    SuccessToaster2(
-        documentStatus === "REJECT_AND_REPLACE_DOCUMENT"
-            ? `${file?.documentType} Document Rejected & Replaced Successfully`
-            : documentStatus === "REJECT_DOCUMENT"
-            ? `${file?.documentType} Document Rejected Successfully`
-            : documentStatus === "ACCEPT_DOCUMENT"
-            ? `${file?.documentType} Document Accepted Successfully`
-            : ""
-    );
-}
+               if (file?.isVerified) {
+                SuccessToaster2(`${file?.documentType} Document Verification Reverted Successfully`);
+            } else {
+                SuccessToaster2(
+                    documentStatus === "REJECT_AND_REPLACE_DOCUMENT"
+                        ? `${file?.documentType} Document Rejected & Replaced Successfully`
+                        : documentStatus === "REJECT_DOCUMENT"
+                        ? `${file?.documentType} Document Rejected Successfully`
+                        : `${file?.documentType} Document Accepted Successfully`
+                );
+            }
+            
 
             })
             .catch((error) => {
@@ -821,7 +820,10 @@ if (file?.isVerified) {
                                                 <Tooltip arrow title="Revert Verification">
                                                     <div
                                                         className={`${style.greenButtonVerify}`}
-                                                        onClick={handleDocVerify}
+                                                        onClick={() => {
+                                                            setDocumentStatus("");
+                                                            handleDocVerify();
+                                                        }}
                                                     >
                                                         <div className={`${style.buttonGreyTextStyle} ${style.alignCenter} ${style.cursorPointer}`}>
                                                             VERIFIED
@@ -831,7 +833,8 @@ if (file?.isVerified) {
                                                 <Tooltip arrow title={"Accept Document"}>
                                                     <div
                                                         className={`${style.purpleButtonVerify}`}
-                                                        onClick={() => {
+                                                            onClick={() => {
+                                                            setDocumentStatus("ACCEPT_DOCUMENT");
                                                             handleDocVerify();
                                                             if (selectedFileIndex === fileArray?.length - 1) {
                                                                 setTimeout(() => getIsOpen(false), 500);

@@ -219,9 +219,12 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
         }
     }
 
-    const getIsSaveInProgressOpen = (value) => {
-        setIsSaveInProgressOpen(value);
-    }
+    const getIsSaveInProgressOpen = async (value) => {
+        if (value) {
+          await handleContinue("save"); 
+          setIsSaveInProgressOpen(value);
+        }
+      };
 
     const getIsOpenFileWithFields = (value) => {
         setShowFileWithFields(value);
@@ -424,7 +427,7 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
             data: tempData,
             unFilledFields: checkingCondition,
             acknowledged: true,
-            esign: actionType === "skip"
+            esign: actionType === "skip" || actionType ==="save"
                 ? { esign: '', name: '', signedDate: '' }
                 : { esign: isSigned ? encryptedText : '', name: isSigned ? name : '', signedDate: isSigned ? currentDate : '' }
         }
@@ -432,12 +435,13 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
             .then(response => {
                 console.log(response)
                 SuccessToaster("Application Updated Successfully");
-                getPreApplication()
+                    getPreApplication(); // only fetch data again if not "save"
             })
             .catch((error) => {
                 console.log(error)
                 ErrorToaster("Unexpected Error Updating Application");
             })
+        if (actionType === "continue" || actionType === "skip") {
         if (sessionStorage.getItem('fromSummary') === "true") {
             navigate(-1);
         }
@@ -445,6 +449,7 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
             navigate(navigateURL)
 
         }
+    }
     }
 
     const getValueByPath = (obj, path) => {
@@ -976,7 +981,7 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                         <Tooltip title={"Click to Go Back to the Previous Step"} arrow>
                         <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleBackClick()}>BACK</div></Tooltip>
                         <Tooltip title={isContinueEnabled ? "Click to Proceed to the Next Step" : ""} arrow>
-                        <div className={`${style.continue} ${style.marginTop} ${isContinueEnabled ? '' : style.disabledButton}`} onClick={isContinueEnabled ? () => handleContinue() : () => { }}>CONTINUE</div></Tooltip>
+                        <div className={`${style.continue} ${style.marginTop} ${isContinueEnabled ? '' : style.disabledButton}`} onClick={isContinueEnabled ? () => handleContinue("continue") : () => { }}>CONTINUE</div></Tooltip>
                     </div>
                 </div>
                 <div>
@@ -1004,14 +1009,14 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                     </div>
                     <div className={`${style.stickyContainer} ${isSaveInProgressOpen || showValidationDialog ? style.hiddenStickyContainer : ""}`}>
                     <Tooltip title={"Click to Skip This Step and Continue Later"} arrow>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => handleContinue()}>SKIP FOR NOW</div></Tooltip>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => handleContinue("skip")}>SKIP FOR NOW</div></Tooltip>
                         <Tooltip title={"Click to Save your Progress and Continue later"} arrow>
                         <div className={`${style.saveInProgress} ${style.marginTop10}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div></Tooltip>
                         <div className={style.twoColForButton}>
                         <Tooltip title={"Click to Go Back to the Previous Step"} arrow>
                             <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleBackClick()}>BACK</div></Tooltip>
                             <Tooltip title={isContinueEnabled ? "Click to Proceed to the Next Step" : ""} arrow>
-                            <div className={`${style.continue} ${style.marginTop10} ${isContinueEnabled ? '' : style.disabledButton}`} onClick={isContinueEnabled ? () => handleContinue() : () => { }}>CONTINUE</div></Tooltip>
+                            <div className={`${style.continue} ${style.marginTop10} ${isContinueEnabled ? '' : style.disabledButton}`} onClick={isContinueEnabled ? () => handleContinue("continue") : () => { }}>CONTINUE</div></Tooltip>
                         </div>
                     </div>
 

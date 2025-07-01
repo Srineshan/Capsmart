@@ -1339,6 +1339,10 @@ body::-webkit-scrollbar {
   cursor: not-allowed;
 }
 
+.defaultCursor {
+  cursor: default !important;
+}
+
 .continueDisabled {
   cursor: not-allowed !important;
   opacity: 0.3;

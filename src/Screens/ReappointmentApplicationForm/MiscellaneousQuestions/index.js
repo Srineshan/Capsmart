@@ -218,6 +218,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
   }
 
   const getIsSaveInProgressOpen = (value) => {
+    getMissingFields("save");
     setIsSaveInProgressOpen(value);
   }
 
@@ -369,13 +370,13 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
     allMissingFields = missingKeys;
     hasMandatoryMissingFields = missingKeys?.find(field => field?.label?.mandatory === true);
 
-    if (data === "skipped") {
+    if (data === "skipped" || data === "save") {
       handleSubmit()
         .then(() => {
           return getPreApplication();
         })
         .then(() => {
-          return handleSubmitApplicationReq();
+          return handleSubmitApplicationReq(data);
         })
         .catch((error) => {
           console.error("Error during API calls:", error);
@@ -383,7 +384,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
     }
 
 
-    if (data !== "skipped") {
+    else {
       if (hasMandatoryMissingFields) {
         setShowValidationDialog(true)
       } else {
@@ -392,7 +393,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
             return getPreApplication();
           })
           .then(() => {
-            return handleSubmitApplicationReq();
+            return handleSubmitApplicationReq(data);
           })
           .catch((error) => {
             console.error("Error during API calls:", error);
@@ -451,7 +452,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
         coverageDetails: { covererName: covererName, obstetricsCovererName: obstetricsCovererName, providerType: providerType, obstetricsProviderType: obstetricsProviderType },
       },
       unFilledFields: allMissingFields?.map(field => JSON.stringify(field)),
-      acknowledged: data === "skipped" ? false : true
+      acknowledged: data === "skipped" || data === "save" ? false : true
     }
     await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
       .then(response => {
@@ -459,6 +460,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
         setBasicForm(response?.data)
         SuccessToaster("Application Updated Successfully");
         getPreApplication();
+        if (data !== "save"){
         if (sessionStorage.getItem('fromSummary') === "true") {
           navigate(-1);
         }
@@ -466,6 +468,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
           navigate(navigateURL)
 
         }
+      }
       })
       .catch((error) => {
         console.log(error)
@@ -1117,7 +1120,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
               && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics') ? (yesOrNoLMS !== '' && yesOrNoSuboxone !== '' && yesOrNoMRP !== '')
               : (yesOrNoLMS !== '' && yesOrNoSuboxone !== '')) ? '' : style.disabledButton}`} onClick={((basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children'
                 && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics') ? (yesOrNoLMS !== '' && yesOrNoSuboxone !== '' && yesOrNoMRP !== '') :
-                (yesOrNoLMS !== '' && yesOrNoSuboxone !== '')) ? () => getMissingFields() : () => { }}>CONTINUE</div></Tooltip>
+                (yesOrNoLMS !== '' && yesOrNoSuboxone !== '')) ? () => getMissingFields("continue") : () => { }}>CONTINUE</div></Tooltip>
           </div>
         </div>
         <div>
@@ -1160,7 +1163,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                 && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics') ? (yesOrNoLMS !== '' && yesOrNoSuboxone !== '' && yesOrNoMRP !== '')
                 : (yesOrNoLMS !== '' && yesOrNoSuboxone !== '')) ? '' : style.disabledButton}`} onClick={((basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children'
                   && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics') ? (yesOrNoLMS !== '' && yesOrNoSuboxone !== '' && yesOrNoMRP !== '') :
-                  (yesOrNoLMS !== '' && yesOrNoSuboxone !== '')) ? () => getMissingFields() : () => { }}>CONTINUE</div></Tooltip>
+                  (yesOrNoLMS !== '' && yesOrNoSuboxone !== '')) ? () => getMissingFields("continue") : () => { }}>CONTINUE</div></Tooltip>
 
             </div>
           </div>
