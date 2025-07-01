@@ -101,37 +101,37 @@ const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicati
                 );
             case "datepicker":
                 const minDate =
-        field.name === "expiry_date" && changedData?.test_date
-            ? new Date(changedData.test_date)
-            : null;
+                    field.name === "expiry_date" && changedData?.test_date
+                        ? new Date(changedData.test_date)
+                        : null;
 
-                 const dateValue = changedData?.[field?.name] 
-        ? parseISO(changedData[field.name])
-        : null;
+                const dateValue = changedData?.[field?.name]
+                    ? parseISO(changedData[field.name])
+                    : null;
                 return (
                     <CommonDateField
                         className={style.fullWidth}
                         open={calendarStart}
                         onOpen={() => setCalendarStart(true)}
                         onClose={() => setCalendarStart(false)}
-                       value={dateValue}
-            onChange={(newValue) => {
-                if (newValue && isValid(newValue)) {
-                    // Format to backend-compatible string (yyyy-MM-dd'T'00:00)
-                    const backendFormattedDate = format(newValue, "yyyy-MM-dd'T'00:00");
-                    setChangedData({ 
-                        ...changedData, 
-                        [field.name]: backendFormattedDate 
-                    });
-                } else {
-                    // Clear the field if invalid
-                    setChangedData({ 
-                        ...changedData, 
-                        [field.name]: null 
-                    });
-                }
-                setIsEdited(true);
-            }}
+                        value={dateValue}
+                        onChange={(newValue) => {
+                            if (newValue && isValid(newValue)) {
+                                // Format to backend-compatible string (yyyy-MM-dd'T'00:00)
+                                const backendFormattedDate = format(newValue, "yyyy-MM-dd'T'00:00");
+                                setChangedData({
+                                    ...changedData,
+                                    [field.name]: backendFormattedDate
+                                });
+                            } else {
+                                // Clear the field if invalid
+                                setChangedData({
+                                    ...changedData,
+                                    [field.name]: null
+                                });
+                            }
+                            setIsEdited(true);
+                        }}
                         minDate={minDate}
                         InputProps={{
                             style: {
@@ -148,12 +148,12 @@ const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicati
                                 }}
                                 color={""}
                                 fullWidth
-                                           error={changedData?.[field.name] && !isValid(parseISO(changedData[field.name]))}
-                    helperText={
-                        changedData?.[field.name] && !isValid(parseISO(changedData[field.name]))
-                            ? "Invalid date"
-                            : ""
-                    }
+                                error={changedData?.[field.name] && !isValid(parseISO(changedData[field.name]))}
+                                helperText={
+                                    changedData?.[field.name] && !isValid(parseISO(changedData[field.name]))
+                                        ? "Invalid date"
+                                        : ""
+                                }
                             />
                         )}
                         label={field.label}
@@ -232,19 +232,19 @@ const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicati
                                 />
                             </div> */}
                             {!isExpanded ? (
-                                 <Tooltip title={"Click to Expand"} arrow>
-                                <FullscreenSharpIcon
-                                    className={`${style.iconStyle} ${style.cursorPointer} `}
-                                    onClick={toggleExpand}
-                                    sx={{ color: '#06617A' }}
-                                />
+                                <Tooltip title={"Click to Expand"} arrow>
+                                    <FullscreenSharpIcon
+                                        className={`${style.iconStyle} ${style.cursorPointer} `}
+                                        onClick={toggleExpand}
+                                        sx={{ color: '#06617A' }}
+                                    />
                                 </Tooltip>) : (
-                                    <Tooltip title={"Click to Minimize"} arrow>
-                                <FullscreenExitIcon
-                                    className={`${style.iconStyle} ${style.cursorPointer} `}
-                                    onClick={toggleExpand}
-                                    sx={{ color: '#06617A' }}
-                                />
+                                <Tooltip title={"Click to Minimize"} arrow>
+                                    <FullscreenExitIcon
+                                        className={`${style.iconStyle} ${style.cursorPointer} `}
+                                        onClick={toggleExpand}
+                                        sx={{ color: '#06617A' }}
+                                    />
                                 </Tooltip>
                             )
                             }
@@ -254,12 +254,12 @@ const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicati
                                 sx={{ color: '#06617A' }} 
                             /> */}
                             <Tooltip title={"Click to Close"} arrow>
-                            <img
-                                src={CrossPink}
-                                alt="cross"
-                                className={`${style.crossStyle} ${style.cursorPointer} `}
-                                onClick={() => { getIsOpen(false) }}
-                            />
+                                <img
+                                    src={CrossPink}
+                                    alt="cross"
+                                    className={`${style.crossStyle} ${style.cursorPointer} `}
+                                    onClick={() => { getIsOpen(false) }}
+                                />
                             </Tooltip>
                         </div>
                     </div>
@@ -338,8 +338,8 @@ const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicati
                         ))}
                     </div> */}
                     <div className={`${style.justifyRight} ${style.displayInRow} ${style.marginTop}`}>
-                    <Tooltip title={"Click to Continue"} arrow>
-                        <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { handleContinue(); }}>CONTINUE</div>
+                        <Tooltip title={"Click to Continue"} arrow>
+                            <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { handleContinue(); }}>CONTINUE</div>
                         </Tooltip>
                     </div>
                 </div>

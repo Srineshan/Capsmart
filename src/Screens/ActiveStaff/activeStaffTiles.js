@@ -3,23 +3,23 @@ import TileApplication from '../../Components/TileApplication';
 import style from './index.module.scss';
 import { GET } from './../../Screens/dataSaver';
 
-const ActiveStaffTiles = ({ getSelectedTab, selectedTab,reFetchMetaData,setReFetchMetaData }) => {
+const ActiveStaffTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, setReFetchMetaData }) => {
   const [counts, setCounts] = useState({
-    LOCUM : 0,
-    PERMANENT : 0,
-    PROVISIONAL : 0,
+    LOCUM: 0,
+    PERMANENT: 0,
+    PROVISIONAL: 0,
   });
 
   useEffect(() => {
     getTitleCounts();
   }, []);
 
-  useEffect(() =>{
-    if(reFetchMetaData === true){
+  useEffect(() => {
+    if (reFetchMetaData === true) {
       getTitleCounts();
     }
-  },[reFetchMetaData] )
-  
+  }, [reFetchMetaData])
+
   const getTitleCounts = async () => {
     await GET('application-management-service/staff/meta')
       .then(response => {
@@ -32,13 +32,13 @@ const ActiveStaffTiles = ({ getSelectedTab, selectedTab,reFetchMetaData,setReFet
         console.log('errorrrrrrrrrrrrrrrr', error);
       })
   };
-  
+
 
   return (
     <div className={`${style.tabs}`}>
       <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="Full Time" tileCount={counts?.PERMANENT} currentTile="PERMANENT" />
       <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="Locum Tennens" tileCount={counts?.LOCUM} currentTile="LOCUM" />
-      <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="Temporary" tileCount={counts?.PROVISIONAL} currentTile="PROVISIONAL" />
+      {/* <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="Temporary" tileCount={counts?.PROVISIONAL} currentTile="PROVISIONAL" /> */}
     </div>
   )
 }

@@ -755,6 +755,7 @@ if (data === `forms[${formIndex}].data.contactAddress2.isMailingAddressSameAsHom
         setAllWarningFields(allMissingKeys);
         allMissingFields = allMissingKeys;
         hasMandatoryMissingFields = allMissingKeys?.find(field => field?.label?.mandatory === true);
+        handleSubmitApplicationReq();
 
         if(data === "skipped" || data === "save"){
             handleContactAddressSubmit();
@@ -787,6 +788,149 @@ if (data === `forms[${formIndex}].data.contactAddress2.isMailingAddressSameAsHom
         console.log(path, keys.reduce((acc, key) => acc && acc[isNaN(key) ? key : Number(key)], basicForm), basicForm, 'if')
         return keys.reduce((acc, key) => acc && acc[isNaN(key) ? key : Number(key)], basicForm);
     };
+
+    const DemographicApplicantFirstName = getValueByPath(
+    basicForm,
+    `basicDetails.applicant.name.firstName`
+    );
+
+    const DemographicApplicantMiddleName = getValueByPath(
+    basicForm,
+    `basicDetails.applicant.name.middleName`
+    );
+
+    const DemographicApplicantLastName = getValueByPath(
+    basicForm,
+    `basicDetails.applicant.name.lastName`
+    );
+
+    const DemographicApplicantEmailId = getValueByPath(
+    basicForm,
+    `basicDetails.applicant.email.officialEmail`
+    );
+
+    const DemographicApplicantDOB = getValueByPath(
+    basicForm,
+    `basicDetails.applicant.dateOfBirth`
+    );
+
+    const DemographicApplicantProfessionalNo = getValueByPath(
+    basicForm,
+    `basicDetails.applicant.licenseNumber`
+    );
+
+    const DemographicApplicantOHIPNo = getValueByPath(
+    basicForm,
+    `basicDetails.applicant.ohipNumber`
+    );
+
+     const DemographicApplicantHomeAddressStreet = getValueByPath(
+    basicForm,
+    `forms[${formIndex}].data.contactAddress1.homeAddress.streetName`
+    );
+
+    const DemographicApplicantHomeAddressPostal = getValueByPath(
+    basicForm,
+    `forms[${formIndex}].data.contactAddress1.homeAddress.pinCode`
+    );
+
+    const DemographicApplicantHomeAddressCity = getValueByPath(
+    basicForm,
+    `forms[${formIndex}].data.contactAddress1.homeAddress.city`
+    );
+
+    const DemographicApplicantHomeAddressProvince = getValueByPath(
+    basicForm,
+    `forms[${formIndex}].data.contactAddress1.homeAddress.province`
+    );
+
+    const DemographicApplicantMailAddressValue = getValueByPath(
+    basicForm,
+    `forms[${formIndex}].data.contactAddress2.isMailingAddressSameAsHomeAddress`
+    );
+
+    const DemographicApplicantMailAddressStreet = getValueByPath(
+    basicForm,
+    `forms[${formIndex}].data.contactAddress2.mailingAddress.streetName`
+    );
+
+    const DemographicApplicantMailAddressPostal = getValueByPath(
+    basicForm,
+    `forms[${formIndex}].data.contactAddress2.mailingAddress.pinCode`
+    );
+
+    const DemographicApplicantMailAddressCity = getValueByPath(
+    basicForm,
+    `forms[${formIndex}].data.contactAddress2.mailingAddress.city`
+    );
+
+    const DemographicApplicantMailAddressProvince = getValueByPath(
+    basicForm,
+    `forms[${formIndex}].data.contactAddress2.mailingAddress.province`
+    ); 
+
+    const DemographicApplicantBusinessAddressValue = getValueByPath(
+    basicForm,
+    `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`
+    );
+
+     const DemographicApplicantBusinessAddressType = getValueByPath(
+    basicForm,
+    `forms[${formIndex}].data.contactAddress3.isBusinessAddressSameAsHomeAddressOrMailingAddress`
+    );
+
+    const DemographicApplicantBusinessAddressStreet = getValueByPath(
+    basicForm,
+    `forms[${formIndex}].data.contactAddress3.business.businessAddress.streetName`
+    );
+
+    const DemographicApplicantBusinessAddressPostal = getValueByPath(
+    basicForm,
+    `forms[${formIndex}].data.contactAddress3.business.businessAddress.pinCode`
+    );
+
+    const DemographicApplicantBusinessAddressCity = getValueByPath(
+    basicForm,
+    `forms[${formIndex}].data.contactAddress3.business.businessAddress.city`
+    );
+
+    const DemographicApplicantBusinessAddressProvince = getValueByPath(
+    basicForm,
+    `forms[${formIndex}].data.contactAddress3.business.businessAddress.province`
+    );
+
+    const DemographicApplicantBusinessName = getValueByPath(
+    basicForm,
+    `forms[${formIndex}].data.contactAddress3.business.businessName`
+    );
+
+    const DemographicApplicantBusinessPhone = getValueByPath(
+    basicForm,
+    `forms[${formIndex}].data.contactAddress3.business.businessPhone`
+    );
+
+    const DemographicApplicantBusinessSite = getValueByPath(
+    basicForm,
+    `forms[${formIndex}].data.contactAddress3.business.businessWebsite`
+    );
+
+    const isSkipForNowDisabled = (DemographicApplicantFirstName && DemographicApplicantMiddleName && DemographicApplicantLastName && DemographicApplicantEmailId && DemographicApplicantDOB && DemographicApplicantEmailId && DemographicApplicantProfessionalNo && DemographicApplicantOHIPNo
+         && DemographicApplicantHomeAddressStreet && DemographicApplicantHomeAddressPostal && DemographicApplicantHomeAddressCity && DemographicApplicantHomeAddressProvince
+        && DemographicApplicantMailAddressValue && DemographicApplicantMailAddressStreet && DemographicApplicantMailAddressPostal && DemographicApplicantMailAddressCity && DemographicApplicantMailAddressProvince &&
+    (
+        DemographicApplicantBusinessAddressValue === false || 
+        (
+            DemographicApplicantBusinessAddressValue === true &&
+            DemographicApplicantBusinessAddressType &&
+            DemographicApplicantBusinessAddressStreet && 
+            DemographicApplicantBusinessAddressPostal && 
+            DemographicApplicantBusinessAddressCity && 
+            DemographicApplicantBusinessAddressProvince && 
+            DemographicApplicantBusinessName && 
+            DemographicApplicantBusinessPhone && 
+            DemographicApplicantBusinessSite
+        )
+    ));
 
     console.log(getValueByPath(basicForm, 'basicDetails.departmentSpecialty.department'), fieldPaths)
     console.log('Metadata', metadata);
@@ -984,7 +1128,7 @@ if (data === `forms[${formIndex}].data.contactAddress2.isMailingAddressSameAsHom
                     </div>
                     <div className={style.threeColForButton}>
                          <Tooltip title={"Click to Skip This Step and Continue Later"} arrow>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
+                        <div className={`${style.saveInProgress} ${style.marginTop} ${isSkipForNowDisabled ? style.disabledButtonLook : ""}`} onClick={() => { if (!isSkipForNowDisabled) {getSkipClicked(true)}}}>SKIP FOR NOW</div>
                         </Tooltip>
                         <Tooltip title={"Click to Save your Progress and Continue later"} arrow>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
@@ -1036,7 +1180,7 @@ if (data === `forms[${formIndex}].data.contactAddress2.isMailingAddressSameAsHom
                             SKIP FOR NOW
                         </div> */}
                     <div className={`${style.stickyContainer} ${isSaveInProgressOpen || showValidationDialog || showJourneyDialog ? style.hiddenStickyContainer : ""}`}>
-                       <Tooltip title={"Click to Skip This Step and Continue Later"} arrow><div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div> </Tooltip> 
+                       <Tooltip title={"Click to Skip This Step and Continue Later"} arrow><div className={`${style.saveInProgress} ${style.marginTop} ${isSkipForNowDisabled ? style.disabledButtonLook : ""}`} onClick={() => { if (!isSkipForNowDisabled) {getSkipClicked(true)}}}>SKIP FOR NOW</div> </Tooltip> 
                         <Tooltip title={"Click to Save your Progress and Continue later"} arrow>
                         <div
                             className={`${style.saveInProgress} ${style.marginTop10}`}

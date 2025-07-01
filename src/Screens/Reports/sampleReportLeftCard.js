@@ -16,6 +16,7 @@ import { useParams } from 'react-router-dom';
 import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
 
 import style from './index.module.scss';
+import CommonMultiSelectField from '../../Components/CommonFields/CommonMultiSelectField';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -65,6 +66,10 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
     const [user, setUsers] = useState([]);
     const [from, setFrom] = useState(startOfMonth(new Date()));
     const [to, setTo] = useState(endOfMonth(new Date()));
+    const [selectedCombinations, setSelectedCombinations] = useState([]);
+    const [selectedDepartment, setSelectedDepartment] = useState([]);
+    const [selectedServiceArea, setSelectedServiceArea] = useState([]);
+
     const generateMonthYearOptions = () => {
         const startDate = subYears(new Date(), 1); // Start from one year ago
         const monthsList = [];
@@ -153,6 +158,46 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         return () => controller.abort();
         console.log(selectedStaffType, 'selectedStaffType')
     }, [selectedStaffType])
+
+    const transformedOptions = departments?.flatMap((department) => {
+        const departmentEntry = {
+            value: department?.id,
+            label: department?.departmentName?.name,
+            type: 'department'
+        };
+
+        const serviceAreaEntries = department.serviceAreas?.map((serviceArea) => ({
+            value: `${department.id}|${serviceArea.id}`,
+            label: (
+                <span className={style.marginLeft20}>
+                    {serviceArea?.name}
+                </span>
+            ),
+            type: 'serviceArea'
+        })) || [];
+
+        return [departmentEntry, ...serviceAreaEntries]; // Include department first, then service areas
+    }) || [];
+
+    const handleChangeDept = (e) => {
+        console.log(e.target.value)
+        const selectedValues = Array.from(e.target.value);
+        setSelectedCombinations(selectedValues);
+
+        const departments = [];
+        const serviceAreas = [];
+
+        selectedValues.forEach(value => {
+            const [departmentId, serviceAreaId] = value.split("|");
+            if (departmentId) departments.push(departmentId);
+            if (serviceAreaId) serviceAreas.push(serviceAreaId);
+        });
+
+        console.log("Selected Departments:", departments);
+        console.log("Selected Service Areas:", serviceAreas);
+        console.log(selectedValues)
+    };
+
 
     const setUserDetails = async () => {
         const { data: user } = await GET(`user-management-service/user/${userId}`);
@@ -380,7 +425,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                 setSelectedDepartments([defaultOption]);
             }
         } else if (selectedDepartments?.length >= 2 && selectedDepartments.includes(defaultOption)) {
-            setSelectedDepartments(selectedDepartments.filter(value => value !== defaultOption))
+            setSelectedDepartments(selectedDepartments?.filter(value => value !== defaultOption))
         }
 
         if (selectedContractedServiceProvider?.length === 0) {
@@ -549,25 +594,75 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                 typeof value === 'string' ? staffType?.filter(data => value.split(',')?.includes(data?.id))?.map(data => data) : staffType?.filter(data => value?.includes(data?.id))?.map(data => data),
             );
         }
+        setSelectedPrivilegeCategory([defaultOption]);
+        setSelectedPrivilegeCategoryToSend([]);
     }
+
+    // const handleChangePrivilegeCategory = (event) => {
+    //     const {
+    //         target: { value },
+    //     } = event;
+    //     console.log(value[value?.length - 1], value)
+    //     if (value?.length >= 2 && value[value?.length - 1] === defaultOption) {
+    //         setSelectedPrivilegeCategory([defaultOption]);
+    //         setSelectedPrivilegeCategoryToSend([]);
+    //     } else {
+    //         setSelectedPrivilegeCategory(
+    //             typeof value === 'string' ? value.split(',') : value
+    //         );
+    //         setSelectedPrivilegeCategoryToSend(
+    //             typeof value === 'string' ? privilegeCategory?.filter(data => value.split(',')?.includes(data?.id))?.map(data => data) : privilegeCategory?.filter(data => value?.includes(data?.id))?.map(data => data),
+    //         );
+    //     }
+    // }
 
     const handleChangePrivilegeCategory = (event) => {
         const {
             target: { value },
         } = event;
-        console.log(value[value?.length - 1], value)
-        if (value?.length >= 2 && value[value?.length - 1] === defaultOption) {
+
+        const selected = typeof value === 'string' ? value.split(',') : value;
+        const previous = selectedPrivilegeCategory;
+
+        // Handle "All Categories"
+        if (selected.length >= 2 && selected[selected.length - 1] === defaultOption) {
             setSelectedPrivilegeCategory([defaultOption]);
             setSelectedPrivilegeCategoryToSend([]);
-        } else {
-            setSelectedPrivilegeCategory(
-                typeof value === 'string' ? value.split(',') : value
-            );
-            setSelectedPrivilegeCategoryToSend(
-                typeof value === 'string' ? privilegeCategory?.filter(data => value.split(',')?.includes(data?.id))?.map(data => data) : privilegeCategory?.filter(data => value?.includes(data?.id))?.map(data => data),
-            );
+            return;
         }
-    }
+
+        // Identify the item that was added or removed
+        const difference = selected.length > previous.length
+            ? selected.find((id) => !previous.includes(id))
+            : previous.find((id) => !selected.includes(id));
+
+        const changedItem = privilegeCategory.find((item) => item.id === difference);
+        const categoryName = changedItem?.category;
+
+        if (!categoryName) return;
+
+        // All IDs in this category
+        const matchingIds = privilegeCategory
+            .filter((item) => item.category === categoryName)
+            .map((item) => item.id);
+
+        let updatedSelected;
+
+        if (selected.length > previous.length) {
+            // ➕ User added one → select the entire group
+            updatedSelected = Array.from(new Set([...previous, ...matchingIds]));
+        } else {
+            // ➖ User removed one → remove the entire group
+            updatedSelected = previous.filter((id) => !matchingIds.includes(id));
+        }
+
+        setSelectedPrivilegeCategory(updatedSelected);
+
+        const selectedData = privilegeCategory.filter((item) =>
+            updatedSelected.includes(item.id)
+        );
+        setSelectedPrivilegeCategoryToSend(selectedData);
+    };
 
     const handleMonthChange = (event) => {
         setSelectedMonth(event.target.value);
@@ -785,6 +880,41 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 ))}
                             </Select>
                         </FormControl>
+                        {/* <div>
+                            <InputLabel id="demo-multiple-name-label2" className={style.headingtextStyle}>Departments</InputLabel>
+                            <CommonMultiSelectField
+                                value={selectedCombinations}
+                                onChange={handleChangeDept}
+                                className={style.fullWidth}
+                                widthValue='250px'
+                                variant="standard"
+                                // firstOptionLabel={'All'}
+                                // firstOptionValue={''}
+                                valueList={transformedOptions?.map(option => option?.value)}
+                                labelList={transformedOptions?.map(option => option?.label)}
+                                disabledList={transformedOptions?.map(() => false)}
+                                renderValue={(selected) =>
+                                    selected
+                                        ?.map(val => {
+                                            const option = transformedOptions?.find(o => o.value === val);
+                                            if (option?.type === 'department') {
+                                                return option.label;
+                                            } else if (option?.type === 'serviceArea') {
+                                                const serviceAreaId = val.split('|')[1];
+                                                const department = departments?.find(dept =>
+                                                    dept.serviceAreas?.some(sa => sa.id === serviceAreaId)
+                                                );
+                                                const serviceArea = department?.serviceAreas?.find(sa => sa.id === serviceAreaId);
+                                                return serviceArea?.name || '';
+                                            }
+                                            return '';
+                                        })
+                                        .join(', ')
+                                }
+                                required={true}
+                                label={'Department / Division'}
+                            />
+                        </div> */}
                         {/* <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                             <InputLabel id="demo-multiple-name-label2" className={style.headingtextStyle}>Division / Speciality</InputLabel>
                             <Select

@@ -184,10 +184,23 @@ const LocumRequestDialog = ({ getIsOpen, selectedTab }) => {
   // ? monthsList.find(month => month.value === selectedMonth)?.label
   // : "Custom End Date";
   const currentDateNow = new Date();
-   const minDateValue =
-    ExpireDateRequest
-        ? new Date(ExpireDateRequest)
-        : null
+  //  const minDateValue =
+  //   ExpireDateRequest
+  //       ? new Date(ExpireDateRequest)
+  //       : null
+  const minDateValue =
+     selectDataLocum?.locumRenewalDetails?.reappointmentType === 'EXTENSION'
+        ? ExpireDate
+          ? addDays(new Date(ExpireDate), 30)
+          : null
+        : currentDateNow;
+
+          const minDateValueValid =
+     selectDataLocum?.locumRenewalDetails?.reappointmentType === 'EXTENSION'
+        ? ExpireDate
+          ? addDays(new Date(ExpireDate), 30)
+          : null
+        : addDays(currentDateNow,30);;
 
   const maxDateValue = ExpireDateRequest
         ? addYears(new Date(ExpireDateRequest), 1)
@@ -3074,7 +3087,7 @@ const LocumRequestDialog = ({ getIsOpen, selectedTab }) => {
                               open={calendarStart}
                               onOpen={() => setCalendarStart(true)}
                               onClose={() => setCalendarStart(false)}
-                              minDate={minDateValue}
+                              minDate={minDateValueValid}
                               maxDate={maxDateValue}
                               // minDate={ExpireDate ? addDays(new Date(ExpireDate), 1) : null}
                               // maxDate={ExpireDate ? addYears(new Date(ExpireDate), 1) : null}

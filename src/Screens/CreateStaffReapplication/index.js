@@ -923,7 +923,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
         </div>
         <div className={`${style.bigCardStyle1} ${style.marginTop5}`}>
           <div className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginLeftRight20} ${style.marginBottom10}`}>
-            <Tooltip title={selectedReappointmentStatus === "SENT" ? "Click to Remove Filter" :"Click to Filter Sent Applications"} arrow>
+            <Tooltip title={selectedReappointmentStatus === "SENT" ? "Click to Remove Filter" : "Click to Filter Sent Applications"} arrow>
               <div className={`${selectedReappointmentStatus === "SENT" ? style.filterTypeGreenActive : style.filterTypeGreen} ${style.marginBottom5} ${style.cursorPointer}`} onClick={() => selectedReappointmentStatus ? setSelectedReappointmentStatus("") : setSelectedReappointmentStatus("SENT")}>
                 Sent {tableData?.filter(data => (data?.reappointmentStatus === "SENT"))?.length}
               </div>
@@ -935,7 +935,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
               </div>
             </Tooltip>
             {/* <div className={style.verticalBorder}></div> */}
-            <Tooltip title={selectedReappointmentStatus === "RE_SENT" ? "Click to Remove Filter" :"Click to Filter Reminders Sent Applications"} arrow>
+            <Tooltip title={selectedReappointmentStatus === "RE_SENT" ? "Click to Remove Filter" : "Click to Filter Reminders Sent Applications"} arrow>
               <div className={`${selectedReappointmentStatus === "RE_SENT" ? style.filterTypeGreyActive : style.filterTypeGrey} ${style.marginLeft30} ${style.marginBottom5} ${style.cursorPointer}`} onClick={() => selectedReappointmentStatus ? setSelectedReappointmentStatus("") : setSelectedReappointmentStatus("RE_SENT")}>
                 Reminders Sent {tableData?.filter(data => data?.reappointmentStatus === "RE_SENT")?.length}
               </div>

@@ -103,7 +103,7 @@ const LocumStaffList = ({
   const activeLocumHeaderValues = ["Staff Name", "", "Staff Type", "Department", "Docs", "Start Date", "Expiry Date", "Days to Expiration", "Action"];
   const expiredLocumHeaderValues = ["Staff Name", "", "Staff Type", "Department", "Docs", "Last End Date", "Days Since Expired", "Action"];
   const requestLocumHeaderValues = ["Staff Name", "", "Staff Status", "Staff Type", "Department", "Request By", "Expiry Date", "Days to Expiration", ""];
-  const tempPrivilegedLocumHeaderValues = ["Staff Name", "", "Staff Type", "Department", "Start Date", "Expiry Date","Override Date","Override By"];
+  const tempPrivilegedLocumHeaderValues = ["Staff Name", "", "Staff Type", "Department", "Start Date", "Expiry Date", "Override Date", "Override By"];
 
 
   const activeLocumColSortValues = [true, false, true, true, false, true, true, true, false];
@@ -693,12 +693,12 @@ const LocumStaffList = ({
             const createdDate = lastRequest?.createdDate
               ? format(new Date(lastRequest?.createdDate), "MMM dd, yyyy hh:mm a")
               : "-";
-           sentOutStatus = `Extension Request Sent By Staff Manager To ${role} On ${createdDate}`;
+            sentOutStatus = `Extension Request Sent By Staff Manager To ${role} On ${createdDate}`;
           } else {
-           sentOutStatus = "Locum Extension Request Sent";
+            sentOutStatus = "Locum Extension Request Sent";
           }
         } else if (data?.reAppointmentInitiated === true) {
-         sentOutStatus = `Extension Application Sent By Dept Head on ${format(
+          sentOutStatus = `Extension Application Sent By Dept Head on ${format(
             new Date(data?.reAppointmentSentDate),
             "MMM dd, yyyy"
           )}`;
@@ -731,9 +731,9 @@ const LocumStaffList = ({
 
         if (lastApproval) {
           const formattedApprovalType = lastApproval?.approvalType.replace(/_/g, " ").split(" ").map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(" ");
-           reappointValue = `${lastApproval?.role}, ${formattedApprovalType}`;
+          reappointValue = `${lastApproval?.role}, ${formattedApprovalType}`;
         } else {
-            if (data?.onGoingApplication?.status === "DECLINED") {
+          if (data?.onGoingApplication?.status === "DECLINED") {
             reappointValue = `${applicationType === "LOCUM" ? '' : 'Reappointment '}Application Declined`;
           } else if (
             data?.onGoingApplication?.completionPercentage === 100 &&
@@ -756,7 +756,7 @@ const LocumStaffList = ({
           reappointValue = `${applicationType === "LOCUM" ? '' : 'Reappointment '}Application Not Submitted`;
         } else if (data?.onGoingApplication?.completionPercentage < 100 && data?.onGoingApplication?.status === "CREATED") {
           reappointValue = `${applicationType === "LOCUM" ? '' : 'Reappointment '}Application In-Progress`;
-        } else if(data?.extensionRequestStatus === "NOT_REQUESTED") {
+        } else if (data?.extensionRequestStatus === "NOT_REQUESTED") {
           reappointValue = ""
         } else {
           reappointValue = `${applicationType === "LOCUM" ? '' : 'Reappointment '}Application Not Started`;
@@ -869,7 +869,7 @@ const LocumStaffList = ({
 
     return [
       // { type: "dot", value: dot, tooltipValue: dotTooltipValues },
-      { type: "text", value: applicantName, tooltipValueText: applicantNameHoverText,  onClickFunction: (data, index) => onClickViewAndVerifyFunction(data.id) },
+      { type: "text", value: applicantName, tooltipValueText: applicantNameHoverText, onClickFunction: (data, index) => onClickViewAndVerifyFunction(data.id) },
       {
         type: "iconWithCount",
         icon: iconStatus,
@@ -1061,7 +1061,7 @@ const LocumStaffList = ({
         } else if (data?.extensionRequestStatus === "NOT_REQUESTED") {
           sentOutStatus = "Extension Application Not Requested"
         }
-         else {
+        else {
           // reappointDate.push(["Extension Application Not Yet Sent By Dept Head"]);
           sentOutStatus = "Extension Application Not Yet Sent By Dept Head"
         }
@@ -1074,9 +1074,9 @@ const LocumStaffList = ({
 
         if (lastApproval) {
           const formattedApprovalType = lastApproval?.approvalType.replace(/_/g, " ").split(" ").map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(" ");
-           reappointValue = `${lastApproval?.role}, ${formattedApprovalType}`;
+          reappointValue = `${lastApproval?.role}, ${formattedApprovalType}`;
         } else {
-            if (data?.onGoingApplication?.status === "DECLINED") {
+          if (data?.onGoingApplication?.status === "DECLINED") {
             reappointValue = `${applicationType === "LOCUM" ? '' : 'Reappointment '}Application Declined`;
           } else if (
             data?.onGoingApplication?.completionPercentage === 100 &&
@@ -1097,16 +1097,16 @@ const LocumStaffList = ({
           data?.onGoingApplication?.status === "CREATED"
         ) {
           reappointValue = `${applicationType === "LOCUM" ? '' : 'Reappointment '}Application Not Submitted`;
-        } else if (data?.onGoingApplication?.completionPercentage < 100 && data?.onGoingApplication?.status === "CREATED" ) {
+        } else if (data?.onGoingApplication?.completionPercentage < 100 && data?.onGoingApplication?.status === "CREATED") {
           reappointValue = `${applicationType === "LOCUM" ? '' : 'Reappointment '}Application In-Progress`;
-        } else if(data?.extensionRequestStatus === "NOT_REQUESTED") {
+        } else if (data?.extensionRequestStatus === "NOT_REQUESTED") {
           reappointValue = ""
-        } else{
+        } else {
           reappointValue = `${applicationType === "LOCUM" ? '' : 'Reappointment '}Application Not Started`;
         }
       }
 
-     reappointDate.push([sentOutStatus, reappointValue]);
+      reappointDate.push([sentOutStatus, reappointValue]);
       applicantId.push(data?.staffId || "123");
       notes.push("0");
       notesIcon.push(
@@ -1160,7 +1160,7 @@ const LocumStaffList = ({
 
     return [
       // { type: "dot", value: dot },
-      { type: "text", value: applicantName, tooltipValueText: applicantNameHoverText,  onClickFunction: (data, index) => onClickViewAndVerifyFunction(data.id)},
+      { type: "text", value: applicantName, tooltipValueText: applicantNameHoverText, onClickFunction: (data, index) => onClickViewAndVerifyFunction(data.id) },
       {
         type: "iconWithCount",
         icon: iconStatus,
@@ -1243,9 +1243,9 @@ const LocumStaffList = ({
       console.log(data, 'dataCheck', `${startDateFormat ? format(new Date(startDateFormat), "MMM dd, yyyy") : "-"} - ${endDateFormat ? format(new Date(endDateFormat), "MMM dd, yyyy") : ''}`)
 
       const expiredDays = differenceInDays(new Date(data?.tenure?.to), new Date());
-       let overRideApprovedDate = "-";
-       let overRideApprovedBy = "-";
-       const OnGoingApplicationId = data?.onGoingApplication?.id
+      let overRideApprovedDate = "-";
+      let overRideApprovedBy = "-";
+      const OnGoingApplicationId = data?.onGoingApplication?.id
       applicantName.push(
         `${formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName)}` || " "
       );
@@ -1364,9 +1364,9 @@ const LocumStaffList = ({
 
         if (lastApproval) {
           const formattedApprovalType = lastApproval?.approvalType.replace(/_/g, " ").split(" ").map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(" ");
-           reappointValue = `${lastApproval?.role}, ${formattedApprovalType}`;
+          reappointValue = `${lastApproval?.role}, ${formattedApprovalType}`;
         } else {
-            if (data?.onGoingApplication?.status === "DECLINED") {
+          if (data?.onGoingApplication?.status === "DECLINED") {
             reappointValue = `${applicationType === "LOCUM" ? '' : 'Reappointment '}Application Declined`;
           } else if (
             data?.onGoingApplication?.completionPercentage === 100 &&
@@ -1549,7 +1549,7 @@ const LocumStaffList = ({
         // hoverText: lastUpdatedBy,
         // isShowHoverText: true,
       },
-       {
+      {
         type: "iconWithCount",
         value: overRideDate,
         // hoverText: lastUpdatedBy,
@@ -1633,19 +1633,19 @@ const LocumStaffList = ({
             ? "Extension"
             : "Renewal"
           } Request Sent on ${format(new Date(data?.createdDate), "dd/MM/yyyy")}`
-          : data?.extensionRequestStatus === "NOT_REQUESTED" ? "Extension Application Not Requested" 
-          :"Locum Extension Not Sent";
+          : data?.extensionRequestStatus === "NOT_REQUESTED" ? "Extension Application Not Requested"
+            : "Locum Extension Not Sent";
 
-       if (Array.isArray(data?.onGoingApplication?.completedWorkflows) && data?.onGoingApplication?.completedWorkflows?.length > 0) {
+      if (Array.isArray(data?.onGoingApplication?.completedWorkflows) && data?.onGoingApplication?.completedWorkflows?.length > 0) {
         let lastApproval = data?.onGoingApplication?.completedWorkflows
           .filter(item => item?.approvalType !== null)
           .pop();
 
         if (lastApproval) {
           const formattedApprovalType = lastApproval?.approvalType.replace(/_/g, " ").split(" ").map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(" ");
-           reappointValue = `${lastApproval?.role}, ${formattedApprovalType}`;
+          reappointValue = `${lastApproval?.role}, ${formattedApprovalType}`;
         } else {
-            if (data?.onGoingApplication?.status === "DECLINED") {
+          if (data?.onGoingApplication?.status === "DECLINED") {
             reappointValue = `${applicationType === "LOCUM" ? '' : 'Reappointment '}Application Declined`;
           } else if (
             data?.onGoingApplication?.completionPercentage === 100 &&
@@ -1668,7 +1668,7 @@ const LocumStaffList = ({
           reappointValue = `${applicationType === "LOCUM" ? '' : 'Reappointment '}Application Not Submitted`;
         } else if (data?.onGoingApplication?.completionPercentage < 100) {
           reappointValue = `${applicationType === "LOCUM" ? '' : 'Reappointment '}Application In-Progress`;
-        } else if(data?.extensionRequestStatus === "NOT_REQUESTED") {
+        } else if (data?.extensionRequestStatus === "NOT_REQUESTED") {
           reappointValue = ""
         } else {
           reappointValue = `${applicationType === "LOCUM" ? '' : 'Reappointment '}Application Not Started`;
@@ -1732,7 +1732,7 @@ const LocumStaffList = ({
 
     return [
       // { type: "dot", value: dot, tooltipValue: dotTooltipValues },
-      { type: "text", value: applicantName,onClickFunction: (data, index) => onClickViewAndVerifyFunction(data?.staff?.id) },
+      { type: "text", value: applicantName, onClickFunction: (data, index) => onClickViewAndVerifyFunction(data?.staff?.id) },
       {
         type: "iconWithCount",
         icon: iconStatus,
@@ -1974,7 +1974,8 @@ const LocumStaffList = ({
                     </div>
                   </div>
                 </div>
-                <div className={`${style.viewCurrentStatusText} ${style.marginTop10} ${style.cursorPointer}`} onClick={() => onClickDepttrackerDialog()}>VIEW CURRENT STATUS</div>
+                <Tooltip title={'Click to View Current Status'} arrow >
+                  <div className={`${style.viewCurrentStatusText} ${style.marginTop10} ${style.cursorPointer}`} onClick={() => onClickDepttrackerDialog()}>VIEW CURRENT STATUS</div></Tooltip>
               </div>
             </div>
             <div
@@ -2057,7 +2058,7 @@ const LocumStaffList = ({
               totalRequestCount={totalRequestCount}
             />
           </div>
-         {/* <PeopleOutlinedIcon
+          {/* <PeopleOutlinedIcon
           sx={{
             fontSize: 25,
             color: "#06617A",
