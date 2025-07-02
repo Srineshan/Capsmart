@@ -43,6 +43,7 @@ import ApplicationFieldCard from '../../Components/ApplicationFieldCard';
 import ESignature from '../../Components/ESignature';
 import VerifiedImage from "./../../images/verifiedImage.png";
 import FileDisplayDialog from '../../Components/fileDisplayDialog';
+import { convert } from 'html-to-text';
 
 
 const ApplicantPortalRFC = () => {
@@ -501,11 +502,39 @@ const ApplicantPortalRFC = () => {
             description: item?.file?.description ?? uploadFileData?.[index]?.description,
         }));
 
+        const cleanedUserNotes = convert(userNotes || '', {
+              wordwrap: false,   // Don't wrap lines artificially
+              selectors: [
+                {
+                  selector: 'a',
+                  options: { ignoreHref: true }
+                },
+                {
+                  selector: 'strong',
+                  format: 'inline' // Output just text (no **)
+                },
+                {
+                  selector: 'br',
+                  format: 'lineBreak'
+                },
+                {
+                  selector: 'p',
+                  format: 'block' // Add double line breaks between paragraphs
+                }
+              ],
+              formatters: {
+                // Customize bold behavior: keep text, but don’t wrap in markdown
+                inline: (elem, walk, builder) => {
+                  walk(elem.children, builder);
+                }
+              }
+            });
+
         let temp = {
             clarificationResponseBy: "APPLICANT",
             responseMethod: '',
             title: respondentName,
-            clarificationDescription: userNotes,
+            clarificationDescription: cleanedUserNotes,
             attachedDocuments: files,
         };
         if (clarificationType !== undefined && clarificationType !== "" && clarificationType !== null && clarificationType !== 'NA') {

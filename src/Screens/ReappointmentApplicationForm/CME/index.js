@@ -419,6 +419,25 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
 
     const handleContinue = async (actionType) => {
         let tempData = basicForm?.forms?.[formIndex]?.data !== null ? basicForm?.forms?.[formIndex]?.data : {};
+        if (yesOrNoCMETranscript === "No") {
+            setYesOrNoCME("No");
+    
+            if (tempData?.cmeTranscripts?.file?.fileName) {
+                try {
+                    await DELETE(
+                        `application-management-service/application/${applicationId}/deleteFiles?applicationDocumentIds=${[tempData?.cmeTranscripts?.rowId]}`,
+                        [tempData?.cmeTranscripts]
+                    );
+                    SuccessToaster("Transcript File Deleted Successfully");
+                } catch (error) {
+                    ErrorToaster("Unexpected Error Deleting Transcript File");
+                }
+            }
+    
+            delete tempData.cmeTranscripts;
+            delete tempData.esign;
+        }
+    
         tempData.yesOrNoCME = yesOrNoCME;
         tempData.yesOrNoCMETranscript = yesOrNoCMETranscript;
         tempData.notes = notes;
@@ -427,9 +446,18 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
             data: tempData,
             unFilledFields: checkingCondition,
             acknowledged: true,
-            esign: actionType === "skip" || actionType ==="save"
-                ? { esign: '', name: '', signedDate: '' }
-                : { esign: isSigned ? encryptedText : '', name: isSigned ? name : '', signedDate: isSigned ? currentDate : '' }
+            ...(yesOrNoCMETranscript === "Yes"
+                ? {
+                      esign:
+                          actionType === "skip" || actionType === "save"
+                              ? { esign: '', name: '', signedDate: '' }
+                              : {
+                                    esign: isSigned ? encryptedText : '',
+                                    name: isSigned ? name : '',
+                                    signedDate: isSigned ? currentDate : ''
+                                }
+                  }
+                : {})
         }
         await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
             .then(response => {

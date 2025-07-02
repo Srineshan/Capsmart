@@ -543,7 +543,7 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
                           color: "#06617A",
                         }}
                         className={style.cursorPointer}
-                        onClick={() => { setSelectedDepartment(); setSelectedServiceArea() }}
+                        onClick={() => { setSelectedDepartment(""); setSelectedServiceArea("") }}
                       />
                     </Tooltip>
                   </div>
@@ -558,7 +558,7 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
                           color: "#06617A",
                         }}
                         className={style.cursorPointer}
-                        onClick={() => setSelectedApplicantType()}
+                        onClick={() => setSelectedApplicantType("")}
                       />
                     </Tooltip>
                   </div>
