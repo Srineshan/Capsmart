@@ -862,7 +862,7 @@ const Navbar = () => {
             <>
               <Link to={"/mdManager"} className={style.noFontStyle}>
                 <div
-                  className={`${style.menuStyle} ${window.location.pathname.includes("/mdManager") &&
+                  className={`${style.menuStyle} ${(window.location.pathname.includes("/mdManager") && window.location.pathname === "/mdManager") &&
                     style.activeMenuColor
                     }`}
                 >
@@ -876,7 +876,7 @@ const Navbar = () => {
                 aria-owns={openStaff ? "mouse-over-popover" : undefined}
                 aria-haspopup="true"
               >
-                <div className={`${style.menuStyle} ${style?.cursorPointer} ${(window.location.pathname.includes("/locumStaff") || window.location.pathname.includes("/activeStaff")) &&
+                <div className={`${style.menuStyle} ${style?.cursorPointer} ${(window.location.pathname.includes("/manageAttestation") || window.location.pathname.includes("/manageGroupAttestation")) &&
                   style.activeMenuColor
                   }`}>
                   <p>ATTESTATIONS</p>
@@ -918,9 +918,9 @@ const Navbar = () => {
                     {/* ) : ""} */}
                     <Link
                       className={style.noFontStyle1}
-                      to={"/locumStaff"}
+                      to={"/mdManager/manageAttestation"}
                     >
-                      <div className={`${style.options1} ${style.cursorPointer} ${window.location.pathname.includes("/locumStaff")}`}> Manage Attestations</div>
+                      <div className={`${style.options1} ${style.cursorPointer}`}> Manage Attestations</div>
                     </Link>
                   </div>
                 </Popover>
