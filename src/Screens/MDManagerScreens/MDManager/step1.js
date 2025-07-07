@@ -18,6 +18,8 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD }) => {
     const [keyword, setKeyword] = useState('');
     const [mdId, setMdId] = useState('');
     const [mdTitle, setMdTitle] = useState('');
+    const [mdFileName, setMdFileName] = useState('');
+    const [mdDescription, setMdDescription] = useState('');
     const [selectedDepartment, setSelectedDepartment] = useState('');
     const [selectedServiceArea, setSelectedServiceArea] = useState("");
     const [departmentList, setDepartmentList] = useState([]);
@@ -199,13 +201,40 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD }) => {
                     <div className={`${style.pdfFileText} ${style.margin20}`}>{mdFile?.name}</div>
                     <div className={`${style.step1Grid} ${style.margin20}`}>
                         <div>
+                            <div className={style.labelStyle}>File Name</div>
+                            <CommonInputField
+                                value={mdFileName}
+                                onChange={(e) => setMdFileName(e.target.value)}
+                                type="text"
+                                placeholder="Enter File Name"
+                            />
+                        </div>
+                        <div>
                             <div className={style.labelStyle}>Medical Directive Title*</div>
+                            <CommonInputField
+                                value={mdTitle}
+                                onChange={(e) => setMdTitle(e.target.value)}
+                                type="text"
+                                placeholder="Enter Title"
+                            />
+                        </div>
+                        <div>
+                            <div className={style.labelStyle}>Medical Directive ID *</div>
+                            <CommonInputField
+                                value={mdId}
+                                onChange={(e) => setMdId(e.target.value)}
+                                type="text"
+                                placeholder="Enter MD ID"
+                            />
+                        </div>
+                        <div>
+                            <div className={style.labelStyle}>Medical Directive Description*</div>
                             <CKEditor
                                 editor={ClassicEditor}
-                                data={mdTitle}
+                                data={mdDescription}
                                 onChange={(event, editor) => {
                                     const data = editor.getData();
-                                    setMdTitle(data);
+                                    setMdDescription(data);
                                 }}
                                 onReady={(editor) => {
                                     editor.editing.view.change((writer) => {
@@ -238,15 +267,6 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD }) => {
                             />
                         </div>
                         <div>
-                            <div className={style.labelStyle}>Medical Directive ID *</div>
-                            <CommonInputField
-                                value={mdId}
-                                onChange={(e) => setMdId(e.target.value)}
-                                type="text"
-                                placeholder="Enter MD ID"
-                            />
-                        </div>
-                        <div>
                             <CommonSelectField
                                 value={selectedDepartment}
                                 onChange={handleChange}
@@ -260,18 +280,6 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD }) => {
                                 label={'Department / Division or Speciality'}
                             />
                         </div>
-                        <CommonSelectField
-                            //   value={selectedCategory}
-                            //   onChange={(e) => setSelectedCategory(e.target.value)}
-                            className={style.fullWidth1}
-                            //   firstOptionLabel={'Select Category'}
-                            //   firstOptionValue={''}
-                            valueList={["Emergency Department Registered Users", "Every 2 Year", "Every 3 Year"]}
-                            labelList={["Emergency Department Registered Users", "Every 2 Year", "Every 3 Year"]}
-                            disabledList={false}
-                            required={true}
-                            label={"Authorized Implementers / Responsible Disciplines"}
-                        />
                         <CommonSelectField
                             value={reviewFrequency}
                             onChange={(e) => setReviewFrequency(e.target.value)}

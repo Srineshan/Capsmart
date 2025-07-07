@@ -228,22 +228,6 @@ const MDManagerStep3 = ({ setStep3, mdValue }) => {
                     <div className={style.stepsTitleText}>Attestation Rules to apply</div>
                 </div>
                 <div className={`${style.padding40} ${style.marginTop20}`}>
-                    <CommonSelectField
-                        value={attestationReviewFrequency}
-                        onChange={(e) => setAttestationReviewFrequency(e.target.value)}
-                        className={style.fullWidth1}
-                        //   firstOptionLabel={'Select Category'}
-                        //   firstOptionValue={''}
-                        valueList={["EVERY_1_YEAR", "EVERY_2_YEARS", "EVERY_3_YEARS"]}
-                        labelList={["Every 1 Year", "Every 2 Years", "Every 3 Years"]}
-                        disabledList={false}
-                        required={false}
-                        label={"Frequency of Review for Attestation (if none within the period selected)"}
-                    />
-                    <div className={`${style.marginTop20} ${style.twoCol}`}>
-                        <div className={style.labelStyle}>Auto trigger reviews and attestations on revision / update of Medical Directive</div>
-                        <CommonSwitch label={autoTriggerOnUpdate ? 'YES' : 'NO'} checked={autoTriggerOnUpdate} onChange={(e) => setAutoTriggerOnUpdate(e.target.checked)} labelName={''} />
-                    </div>
                     <div className={`${style.marginTop20} ${style.twoCol}`}>
                         <div className={style.labelStyle}>Target Staff for Medical Directive review and attestation</div>
                         <CommonRadio
@@ -254,7 +238,19 @@ const MDManagerStep3 = ({ setStep3, mdValue }) => {
                         />
                     </div>
                     {targetStaff === "SELECTED_GROUPS" && (
-                        <div>
+                        <div className={style.padding20}>
+                            <CommonSelectField
+                                //   value={selectedCategory}
+                                //   onChange={(e) => setSelectedCategory(e.target.value)}
+                                className={style.fullWidth1}
+                                //   firstOptionLabel={'Select Category'}
+                                //   firstOptionValue={''}
+                                valueList={["Emergency Department Registered Users", "Every 2 Year", "Every 3 Year"]}
+                                labelList={["Emergency Department Registered Users", "Every 2 Year", "Every 3 Year"]}
+                                disabledList={false}
+                                required={true}
+                                label={"Authorized Implementers / Responsible Disciplines"}
+                            />
                             <div className={style.labelStyle}>Select Attestation Groups for Medical Directive reviews</div>
                             <div className={style.attestationGrid}>
                                 <div ref={containerRef} onFocus={() => setShowAttestationGroupList(true)} onBlur={handleBlur}
@@ -299,12 +295,30 @@ const MDManagerStep3 = ({ setStep3, mdValue }) => {
                         </div>
                     )}
                     <div className={`${style.marginTop20} ${style.twoCol}`}>
+                        <div className={style.labelStyle}>Auto trigger reviews and attestations on revision / update of Medical Directive</div>
+                        <CommonSwitch label={autoTriggerOnUpdate ? 'YES' : 'NO'} checked={autoTriggerOnUpdate} onChange={(e) => setAutoTriggerOnUpdate(e.target.checked)} labelName={''} />
+                    </div>
+                    <div className={`${style.marginTop20} ${style.twoCol}`}>
                         <div className={style.labelStyle}>Auto trigger review and attestations for approved new staff applicant</div>
                         <CommonSwitch label={autoTriggerForNewAppointment ? 'YES' : 'NO'} checked={autoTriggerForNewAppointment} onChange={(e) => setAutoTriggerForNewAppointment(e.target.checked)} labelName={''} />
                     </div>
                     <div className={`${style.marginTop20} ${style.twoCol}`}>
                         <div className={style.labelStyle}>Auto trigger review and attestations for staff reappointment</div>
                         <CommonSwitch label={autoTriggerForReappointment ? 'YES' : 'NO'} checked={autoTriggerForReappointment} onChange={(e) => setAutoTriggerForReappointment(e.target.checked)} labelName={''} />
+                    </div>
+                    <div className={`${style.marginTop20} ${style.twoCol}`}>
+                        <CommonSelectField
+                            value={attestationReviewFrequency}
+                            onChange={(e) => setAttestationReviewFrequency(e.target.value)}
+                            className={style.fullWidth1}
+                            //   firstOptionLabel={'Select Category'}
+                            //   firstOptionValue={''}
+                            valueList={["EVERY_1_YEAR", "EVERY_2_YEARS", "EVERY_3_YEARS"]}
+                            labelList={["Every 1 Year", "Every 2 Years", "Every 3 Years"]}
+                            disabledList={false}
+                            required={false}
+                            label={"Frequency of Review for Attestation (if none within the period selected)"}
+                        />
                     </div>
                 </div>
             </div>

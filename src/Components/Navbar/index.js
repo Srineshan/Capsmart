@@ -907,7 +907,7 @@ const Navbar = () => {
                     {/* {workModeType === "Department Head" || workModeType === "Credentialing Committee" ? ( */}
                     <Link
                       className={style.noFontStyle1}
-                      to={"/activeStaff"}
+                      to={"/mdManager/manageAttestationGroups"}
                     >
                       <div className={`${style.options1} ${style.cursorPointer} ${window.location.pathname.includes("/activeStaff")
                         }`}

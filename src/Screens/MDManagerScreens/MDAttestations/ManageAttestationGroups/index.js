@@ -1,31 +1,37 @@
 import React, { useState, useEffect, Fragment, useCallback, useRef, createRef } from "react";
 import { Classes, Dialog } from '@blueprintjs/core';
-import { GET, PUT } from "./../../../dataSaver";
+import { GET, POST, PUT } from "../../../dataSaver";
 import SideBar from "../../../../Components/Sidebar";
 import Navbar from "../../../../Components/Navbar";
 import { useNavigate } from "react-router-dom";
 import style from "./index.module.scss";
 import AddIcon from "@mui/icons-material/Add";
+import { CKEditor } from '@ckeditor/ckeditor5-react';
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import CommonSelectField from '../../../../Components/CommonFields/CommonSelectField';
 import CommonInputField from '../../../../Components/CommonFields/CommonInputField';
 import CommonSearchField from "../../../../Components/CommonFields/CommonSearchField";
 import CommonDateField from "../../../../Components/CommonFields/CommonDateField";
 import { TextField, Tooltip } from "@material-ui/core";
 import { format } from "date-fns";
+import DeleteIcon from './../../../../images/deleteHcRow.png';
+import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
+import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
 import CommonCheckBox from '../../../../Components/CommonFields/CommonCheckBox';
 import CommonMultiSelectField from "../../../../Components/CommonFields/CommonMultiSelectField";
 import Tile from "../../../../Components/Tile";
+import ModeEditOutlinedIcon from '@mui/icons-material/ModeEditOutlined';
 import CryptoJS from 'crypto-js';
 import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
-import ESignature from './../../../../Components/ESignature';
+import ESignature from '../../../../Components/ESignature';
 import TableTwo from '../../../../Components/TableDesignTwo';
 import TileApplication from "../../../../Components/TileApplication";
-import ESignConfirmationUserDialog from "../../../../Components/ESignConfirmationUser";
-import ESignDialogUser from "../../../../Components/ESignDialogUser";
-import ApplicationFieldCard from "../../../../Components/ApplicationFieldCard";
+import { ErrorToaster2, SuccessToaster2 } from "../../../../utils/toaster";
 
-const ManageAttestation = () => {
+const ManageAttestationGroups = () => {
     const navigate = useNavigate();
     const PDFRef = createRef();
     const componentRef = useRef(null);
@@ -59,7 +65,6 @@ const ManageAttestation = () => {
     const [mdValue, setMdValue] = useState();
     const [searchTerm, setSearchTerm] = useState('');
     const [searchData, setSearchData] = useState([]);
-    const [uploadFormSchema, setUploadFormSchema] = useState();
     const [dashboardData, setDashboardData] = useState([]);
     const [searchCount, setSearchCount] = useState(0);
     const [searchTermForTable, setSearchTermForTable] = useState('');
@@ -67,6 +72,9 @@ const ManageAttestation = () => {
     const [mdId, setMdId] = useState('');
     const [staffList, setStaffList] = useState([]);
     const [groupList, setGroupList] = useState([]);
+    const [groupTitle, setGroupTitle] = useState('');
+    const [groupDesc, setGroupDesc] = useState('');
+    const [groupById, setGroupById] = useState();
     const [mdTitle, setMdTitle] = useState('');
     const [selectedDepartmentSpecialities, setSelectedDepartmentSpecialities] = useState([]);
     const [selectedGroups, setSelectedGroups] = useState([]);
@@ -77,12 +85,11 @@ const ManageAttestation = () => {
     const [limit, setLimit] = useState(9999);
     const isPaginationRequired = limit === 9999 ? false : true;
     const [page, setPage] = useState(1);
-    const [applicantProfile, setApplicantProfile] = useState();
-    const [isShowESignConfirmationDialog, setIsShowESignConfirmationDialog] = useState(true);
-    const [isShowESignDialog, setIsShowESignDialog] = useState(false);
     const [medicalDirectivesAttestation, setMedicalDirectivesAttestation] = useState(false);
     const [totalTableCount, setTotalTableCount] = useState(0);
-    const [showReviewAndAttestDialog, setShowReviewAndAttestDialog] = useState(false);
+    const [showAttestationGroup, setShowAttestationGroup] = useState(false);
+    const [selectedStaffs, setSelectedStaffs] = useState([]);
+    const [selectedStaffForMove, setSelectedStaffForMove] = useState([]);
     useEffect(() => {
         console.log(selectedOption, 'option')
         if (selectedOptionValue !== undefined && selectedOptionValue !== null) {
@@ -110,11 +117,16 @@ const ManageAttestation = () => {
         }
     }, [entityId]);
 
-    useEffect(() => {
-        getApplicantProfile();
-    }, [])
-
     const togglePin = () => { };
+
+    const filteredStaffArray = selectedStaffs?.map((id) => {
+        const matchedStaff = staffList?.find((staff) => staff.id === id);
+        return {
+            id: id,
+            name: matchedStaff?.applicant?.name,
+            email: matchedStaff?.applicant?.email,
+        };
+    });
 
     const transformedOptions = departmentList?.flatMap((department) => {
         const departmentEntry = {
@@ -166,29 +178,6 @@ const ManageAttestation = () => {
         setUserMetadata(user);
     };
 
-    const getIsOpenESignConfirmation = (value) => {
-        setIsShowESignConfirmationDialog(value);
-    }
-
-    const getIsOpenESignDialog = (value) => {
-        setIsShowESignDialog(value);
-    }
-
-    const updateFunc = () => {
-        setIsShowESignDialog(true);
-    }
-
-    const confirmESign = async () => {
-        setIsShowESignConfirmationDialog(false)
-    }
-
-    const getApplicantProfile = async () => {
-        // const { data: profile } = await GET(
-        //     `application-management-service/application/${applicationId}/profile`
-        // );
-        // setApplicantProfile(profile)
-    }
-
     const handleChange = (e) => {
         console.log(e.target.value)
         const selectedValues = Array.from(e.target.value);
@@ -208,6 +197,12 @@ const ManageAttestation = () => {
         console.log(selectedValues)
     };
 
+    const handleGroupDialogClose = () => {
+        setGroupById();
+        getGroupList();
+        setShowAttestationGroup(false);
+    }
+
     const getDepartmentList = async () => {
         const { data: department } = await GET(
             `entity-service/department`
@@ -215,11 +210,23 @@ const ManageAttestation = () => {
         setDepartmentList(department);
     }
 
+    const getGroupListById = async (id) => {
+        const response = await GET(
+            `medical-directive-service/attestationGroup/${id}`
+        );
+        console.log(response.data);
+        setGroupTitle(response?.data?.name)
+        setGroupDesc(response?.data?.description)
+        setSelectedStaffs(response?.data?.members?.map(data => data?.id))
+        setGroupById(response?.data)
+        setShowAttestationGroup(true)
+    }
+
     const getGroupList = async () => {
         const response = await GET(
             `medical-directive-service/attestationGroup`
         );
-        console.log(response.data);
+        console.log(response.data, 'group');
         setGroupList(response?.data)
     }
 
@@ -285,13 +292,10 @@ const ManageAttestation = () => {
 
 
     const reviewAndAttestHeaderValues = [
+        "Group Name",
+        "Members",
+        "Description",
         "",
-        "",
-        "Title",
-        "MD ID",
-        "Type",
-        "Attestation Due Date",
-        "Last Updated",
         ""
     ];
     const attestedHeaderValues = [
@@ -303,6 +307,9 @@ const ManageAttestation = () => {
 
     const tableHeaderValues = selectedOption === "REVIEW & ATTEST" ? reviewAndAttestHeaderValues : attestedHeaderValues
 
+    let name = [];
+    let members = [];
+    let description = [];
     let pin = [];
     let alert = [];
     let alertType = [];
@@ -311,29 +318,42 @@ const ManageAttestation = () => {
     let action = [];
 
     const getActiveFilesValues = () => {
-        pin = [];
-        alert = [];
-        alertType = [];
-        alertName = [];
-        alertDateAndTime = [];
+        name = [];
+        members = [];
+        description = [];
         action = [];
 
-        alertsData?.map((data) => {
-            pin.push("pin");
-            alert.push(data?.fileId);
-            alertType.push(data?.processingStatus);
-            alertName.push(data?.fileName);
-            alertDateAndTime.push("-");
-            action.push(true);
+        groupList?.map((data) => {
+            name.push(data?.name);
+            members.push(data?.members?.length);
+            description.push(data?.description);
+            // action.push(true);
         });
 
         return [
-            { type: "dot", value: pin },
-            { type: "text", value: alert },
-            { type: "text", value: alertType },
-            { type: "text", value: alertName },
-            { type: "text", value: alertDateAndTime },
-            { type: "action", value: action },
+            { type: "text", value: name },
+            { type: "text", value: members },
+            { type: "text", value: description },
+            {
+                type: "icon", icon: groupList?.map(innerData => {
+                    return (
+                        <Tooltip title="Click to Edit" arrow>
+                            <ModeEditOutlinedIcon alt="" className={`${style.docTypeEditImgStyle} ${style.cursorPointer}`} onClick={() => { getGroupListById(innerData?.id) }} />
+                        </Tooltip>
+                    );
+                }),
+                isShowHoverText: false
+            },
+            {
+                "type": "icon", "icon": groupList?.map(innerData => {
+                    return (
+                        <Tooltip title="Click to Delete" arrow>
+                            <img src={DeleteIcon} alt="" className={`${style.docTypeImgStyle} ${style.cursorPointer}`} onClick={() => { }} />
+                        </Tooltip>
+                    );
+                }), 'isShowHoverText': false
+            }
+            // { type: "action", value: action },
         ];
     };
 
@@ -396,18 +416,66 @@ const ManageAttestation = () => {
         setSearchTermForTable(searchTerm)
     }
 
+    const handleMove = () => {
+        if (!selectedStaffs?.includes(selectedStaffForMove)) {
+            setSelectedStaffs(prev => [...prev, selectedStaffForMove]);
+        }
+    }
+
+    const handleRemove = () => {
+        console.log('filterCheck')
+        setSelectedStaffs(selectedStaffs?.filter(data => data !== selectedStaffForMove))
+    }
+
+    const handleMoveBulk = () => {
+        console.log('filterCheck')
+        setSelectedStaffs(staffList?.map(data => data?.id))
+    }
+
+    const handleRemoveBulk = () => {
+        console.log('filterCheck')
+        setSelectedStaffs([])
+    }
+
     const handleGroupSelect = (id) => {
-        console.log(id)
-        if (Array.isArray(id)) {
-            const newIds = id.filter(item => !selectedGroups.includes(item));
-            if (newIds.length > 0) {
-                setSelectedGroups(prev => [...prev, ...newIds]);
-            }
+        if (!selectedGroups?.includes(id)) {
+            setSelectedGroups(prev => [...prev, id]);
         }
     }
 
     const handleSubmit = () => {
 
+    }
+
+    const handleAddGroup = async () => {
+        let data = {
+            "name": groupTitle,
+            "description": groupDesc,
+            "members": filteredStaffArray
+        }
+
+        console.log(data)
+        if (!groupById) {
+            await POST(`medical-directive-service/attestationGroup`, data)
+                .then(response => {
+                    SuccessToaster2('Group Added Successfully');
+                    console.log(response?.data)
+                    handleGroupDialogClose()
+                })
+                .catch(error => {
+                    ErrorToaster2('Something Failed. Please Try later!');
+                })
+        } else {
+            await PUT(`medical-directive-service/attestationGroup/${groupById?.id}`, data)
+                .then(response => {
+                    SuccessToaster2('Group Updated Successfully');
+                    console.log(response?.data)
+                    handleGroupDialogClose()
+                })
+                .catch(error => {
+                    ErrorToaster2('Something Failed. Please Try later!');
+                })
+        }
     }
 
     console.log('ref', refMetadata);
@@ -579,25 +647,20 @@ const ManageAttestation = () => {
                         </SideBar>
                     </div>
                     <div>
-                        <div className={`${style.grid2} ${style.marginTop10}`}>
-                            <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="REVIEW & ATTEST" bigNumber={0} smallNum1={0} smallNum2={0} smallText1="Not Done" smallText2="Past Due" currentTile="REVIEW & ATTEST" topText='' smallNum1Color={style.redSmallNumber} smallNum2Color={style.redSmallNumber} smallNum1SelectedColor={style.redSmallNumberSelected} smallNum2SelectedColor={style.redSmallNumberSelected} />
-                            <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="ATTESTED" bigNumber={0} smallNum1="" smallNum2="" currentTile="ATTESTED" topText='IN THE PAST 12 MONTHS' />
-                        </div>
                         <div
-                            className={`${style.spaceBetween} ${style.marginLeft30} ${style.marginTop20} `}
+                            className={`${style.spaceBetween} ${style.marginLeft30} ${style.marginTop10} `}
                         >
                             <div className={`${style.tabs}`}>
                                 <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Review & Attest" tileCount={0} currentTile="REVIEW & ATTEST" />
-                                <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Attested" tileCount={0} currentTile="ATTESTED" />
                             </div>
                             <div>
                                 <button
                                     className={`${style.borderNone} ${style.backgroundBlue} ${style.borderRadius5} ${style.cursorPointer}`}
-                                    onClick={() => setShowReviewAndAttestDialog(true)} // Open dialog on button click
+                                    onClick={() => setShowAttestationGroup(true)} // Open dialog on button click
                                 >
                                     <div className={` ${style.addNewButton} ${style.textColorWhite}`}>
                                         <AddIcon />
-                                        <span>Review & Attest</span>
+                                        <span>Create New Group</span>
                                     </div>
                                 </button>
                             </div>
@@ -608,7 +671,7 @@ const ManageAttestation = () => {
                                     <TableTwo
                                         tableHeaderValues={tableHeaderValues}
                                         tableDataValues={getActiveFilesValues()}
-                                        tableData={dashboardData}
+                                        tableData={groupList}
                                         gridStyle={selectedOption === 'REVIEW & ATTEST' ? style.reviewAndAttestGrid : style.attestedGrid}
                                         actions={actionsData}
                                         // scrollStyle={style.contractScrollStyle}
@@ -628,69 +691,119 @@ const ManageAttestation = () => {
                             </div>
                         </div>
                     </div>
-                    <Dialog isOpen={showReviewAndAttestDialog} onClose={() => setShowReviewAndAttestDialog(false)} className={`${style.attestMDDialogBackground} ${style.attestMDDialog}`}>
+                    <Dialog isOpen={showAttestationGroup} onClose={() => handleGroupDialogClose()} className={`${style.addMDDialogBackground} ${style.attestationDialog}`}>
                         <div className={Classes.DIALOG_BODY}>
-                            <div className={style.dialogTitle}>Medical Directives Review & Attestations</div>
-                            <div className={`${style.dialogDesc} ${style.marginTop20}`}>You are attesting to {5} Medical Directives that were assigned to you for review.</div>
+                            <div className={style.attestationDialogHeaderCard}>
+                                <div className={`${style.attestationDialogTitle} ${style.padding20}`}>Attestation Group</div>
+                            </div>
+                            <div className={style.marginTop10}>
+                                <div className={style.labelStyle}>Group Title*</div>
+                                <CommonInputField
+                                    className={style.fullWidth}
+                                    value={groupTitle}
+                                    onChange={(e) => setGroupTitle(e.target.value)}
+                                    type="text"
+                                // placeholder="Enter Keywords / Tags"
+                                />
+                            </div>
                             <div>
-                                <div className={` ${style.marginTop10} ${style.leftAlign}`}>
-                                    <CommonCheckBox checked={medicalDirectivesAttestation} label={'I certify that I have read the Medical Directives assigned to me and have a good understanding of them.'}
-                                        onChange={(e) => setMedicalDirectivesAttestation(e.target.checked)} />
+                                <div className={style.marginTop10}>
+                                    <div className={style.labelStyle}>Group Description</div>
+                                    <CKEditor
+                                        editor={ClassicEditor}
+                                        data={groupDesc}
+                                        onChange={(event, editor) => {
+                                            const data = editor.getData();
+                                            setGroupDesc(data);
+                                        }}
+                                        onReady={(editor) => {
+                                            editor.editing.view.change((writer) => {
+                                                writer.setStyle(
+                                                    "height",
+                                                    "50px",
+                                                    editor.editing.view.document.getRoot()
+                                                );
+                                            });
+                                        }}
+                                        config={{
+                                            placeholder: "Type your content here...",
+                                            toolbar: {
+                                                shouldNotGroupWhenFull: true,
+                                                sticky: true,
+                                                items: [
+                                                    'undo', 'redo',
+                                                    '|',
+                                                    'heading',
+                                                    '|',
+                                                    'fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor',
+                                                    '|',
+                                                    'bold', 'italic', 'strikethrough', 'subscript', 'superscript', 'code',
+                                                    '|',
+                                                    'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'
+                                                ],
+                                            },
+                                            autoGrow: false,
+                                        }}
+                                    />
                                 </div>
-                                <div className={`${medicalDirectivesAttestation ? "" : style.disabled} ${style.displayInRow} ${style.verticalAlignCenter}`}>
-                                    <div onClick={medicalDirectivesAttestation ? () => { setIsSigned(!isSigned); } : () => { }}>
-                                        <ESignature
-                                            userName={isSigned ? `${users?.userName} ` : ""}
-                                            encData={isSigned ? encryptedText : ''}
-                                            showData={isSigned}
-                                            showDatais={true}
-                                            removePadding={true}
-                                            alternateSignature={users?.userName}
-                                        />
+                            </div>
+                            <div className={style.marginTop10}>
+                                <div className={style.attestationGroupGrid}>
+                                    <div>
+                                        <div className={style.labelStyle}>Available Staff Members ({staffList?.filter(staff => !selectedStaffs?.includes(staff.id))?.length})</div>
+
+                                        <div className={style.attestationGroupRightCard}>
+                                            {staffList?.filter(staff => !selectedStaffs?.includes(staff.id))?.map((data, index) => (
+                                                <div className={style.groupGrid} key={index}>
+                                                    <div className={`${style.staffName} ${style.cursorPointer} ${selectedStaffForMove === data?.id ? style.selectedStaff : ''}`} onClick={() => setSelectedStaffForMove(data?.id)}>{`${data?.applicant?.name?.firstName} ${data?.applicant?.name?.lastName}`}</div>
+                                                    {/* <div className={style.staffName}></div> */}
+                                                    <div className={`${style.labelStyle} ${selectedStaffForMove === data?.id ? style.selectedStaff : ''}`}>{data?.basicDetailReferences?.department?.name}</div>
+                                                </div>
+                                            ))}
+                                        </div>
                                     </div>
                                     <div className={style.verticalAlignCenter}>
-                                        <div className={`${style.displayInRow} ${style.marginLeft}`}>
-                                            <div className={`${style.dateTitle}`}>Date: </div>
-                                            <div className={`${style.date} ${style.marginLeft}`}>{isSigned ? currentDate : ""}</div>
+                                        <div className={`${style.displayInCol}`}>
+                                            <div className={`${style.moveCard} ${style.justifyCenter} ${style.verticalAlignCenter} ${staffList?.filter(staff => !selectedStaffs?.includes(staff.id))?.length === 0 ? style.disabledView : style.cursorPointer}`} onClick={staffList?.filter(staff => !selectedStaffs?.includes(staff.id))?.length === 0 ? () => { } : () => handleMove()}>
+                                                <KeyboardArrowRightIcon sx={{ color: '#06617A' }} />
+                                            </div>
+                                            <div className={`${style.moveCard} ${style.marginTop10} ${style.justifyCenter} ${style.verticalAlignCenter} ${staffList?.filter(staff => !selectedStaffs?.includes(staff.id))?.length === 0 ? style.disabledView : style.cursorPointer}`} onClick={staffList?.filter(staff => !selectedStaffs?.includes(staff.id))?.length === 0 ? () => { } : () => handleMoveBulk()}>
+                                                <KeyboardDoubleArrowRightIcon sx={{ color: '#06617A' }} />
+                                            </div>
+                                            <div className={`${style.moveCard} ${style.marginTop20} ${style.justifyCenter} ${style.verticalAlignCenter} ${staffList?.filter(staff => selectedStaffs?.includes(staff.id))?.length === 0 ? style.disabledView : style.cursorPointer}`} onClick={staffList?.filter(staff => selectedStaffs?.includes(staff.id))?.length === 0 ? () => { } : () => handleRemove()}>
+                                                <KeyboardArrowLeftIcon sx={{ color: '#06617A' }} />
+                                            </div>
+                                            <div className={`${style.moveCard} ${style.marginTop10} ${style.justifyCenter} ${style.verticalAlignCenter} ${staffList?.filter(staff => selectedStaffs?.includes(staff.id))?.length === 0 ? style.disabledView : style.cursorPointer}`} onClick={staffList?.filter(staff => selectedStaffs?.includes(staff.id))?.length === 0 ? () => { } : () => handleRemoveBulk()}>
+                                                <KeyboardDoubleArrowLeftIcon sx={{ color: '#06617A' }} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div className={style.labelStyle}>Attestation Group Members ({staffList?.filter(staff => selectedStaffs?.includes(staff.id))?.length})</div>
+                                        <div className={style.attestationGroupRightCard}>
+                                            {staffList?.filter(staff => selectedStaffs?.includes(staff.id))?.map((data, index) => (
+                                                <div className={style.groupGrid} key={index}>
+                                                    <div className={`${style.staffName} ${style.cursorPointer} ${selectedStaffForMove === data?.id ? style.selectedStaff : ''}`} onClick={() => setSelectedStaffForMove(data?.id)}>{`${data?.applicant?.name?.firstName} ${data?.applicant?.name?.lastName}`}</div>
+                                                    {/* <div className={style.staffName}></div> */}
+                                                    <div className={`${style.labelStyle} ${selectedStaffForMove === data?.id ? style.selectedStaff : ''}`}>{data?.basicDetailReferences?.department?.name}</div>
+                                                </div>
+                                            ))}
                                         </div>
                                     </div>
                                 </div>
-                                <div className={style.justifyCenter}>
-                                    <Tooltip arrow title={"Click to Submit"}>
-                                        <div className={`${style.continue} ${style.marginTop} ${isSigned ? "" : style.disabled}`} onClick={isSigned ? () => handleSubmit() : () => { }}>SUBMIT</div>
-                                    </Tooltip>
+                            </div>
+                            <div>
+                                <div className={`${style.spaceBetween} ${style.marginTop20}`}>
+                                    <button className={`${style.outlinedButton} `} onClick={() => handleGroupDialogClose()} >CANCEL</button>
+                                    <button className={`${style.buttonStyle} `} onClick={() => handleAddGroup()} >{groupById ? 'UPDATE' : 'ADD'}</button>
                                 </div>
                             </div>
                         </div>
                     </Dialog >
-                    {
-                        isShowESignConfirmationDialog && (
-                            <ESignConfirmationUserDialog
-                                getIsOpen={getIsOpenESignConfirmation}
-                                updateFunc={updateFunc}
-                                confirmFunc={confirmESign}
-                                hideCross={true}
-                            />
-                        )
-                    }
-                    {
-                        isShowESignDialog && (
-                            <ESignDialogUser
-                                getIsOpen={getIsOpenESignDialog}
-                                // baseKey={"setUpYourSignature"}
-                                // applicationId={applicationId}
-                                // basicForm={basicForm}
-                                // setBasicForm={setBasicForm}
-                                // getPreApplication={getPreApplication}
-                                hideCross={true}
-                            >
-                            </ESignDialogUser>
-                        )
-                    }
                 </div>
             </div>
         </Fragment>
     );
 };
 
-export default ManageAttestation;
+export default ManageAttestationGroups;
