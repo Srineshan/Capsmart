@@ -13,6 +13,8 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, subMonths, addMonths, subYears, subDays, startOfQuarter, endOfQuarter, startOfYear, endOfYear, add, sub } from 'date-fns';
 import SaveReport from './saveReport';
 import { useParams } from 'react-router-dom';
+import { Tooltip } from "@mui/material";
+import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
 
 import style from './index.module.scss';
@@ -69,6 +71,11 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
     const [selectedCombinations, setSelectedCombinations] = useState([]);
     const [selectedDepartment, setSelectedDepartment] = useState([]);
     const [selectedServiceArea, setSelectedServiceArea] = useState([]);
+    // const selectedDepartmentName = departments?.find(data => data?.id === selectedDepartments)?.departmentName?.name;
+    const selectedDepartmentNames = departments
+  ?.filter(dep => selectedDepartments.includes(dep.id))
+  ?.map(dep => dep.departmentName?.name);
+    console.log("selectedDepartmentName",selectedDepartmentsToSend)
 
     const generateMonthYearOptions = () => {
         const startDate = subYears(new Date(), 1); // Start from one year ago
@@ -725,12 +732,14 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
     return (
         <div>
             <div className={`${style.leftCard} ${style.leftCardDisplay} ${style.marginTop20} ${style.bigCalendarLeftCardWidth}`}>
+                <Tooltip title="Save This Parameter Selection As My Report" arrow>
                 <div className={`${style.reporttypeLeftBackGround}`}>
-                    <div className={`${style.reportLeftTextStyle} ${style.cursorPointer}`} onClick={() => setShowSaveReport(true)}>{!isMyReport ? 'Save Parameter Selection As My Report' : "Update Parameter Selection"}</div>
+                    <div className={`${style.reportLeftTextStyle} ${style.cursorPointer}`} onClick={() => setShowSaveReport(true)}>{!isMyReport ? 'Save Parameter Selection' : "Update Parameter Selection"}</div>
                 </div>
+                </Tooltip>
                 {(reportType === "staffReappointmentsNotes" || reportType === "staffReappointments" || reportType === "locumRenewalOrExtensionApplicationsSummary" || reportType === "privilegedStaffSummary" ||
                     reportType === "submittedApplicationsReviewSummary" || reportType === "staffReappointmentTracker" || reportType === "ohipBillingNumbersByCareProvider" || reportType === "careProviderCareerMilestoneSummary" ||
-                    reportType === "declinedOrNotRenewedStaffSummary" || reportType === "reappointmentApplicationNotStarted" || reportType === "currentNotesSummary" || reportType === "staffReappointmentStatusSummary") ? (
+                    reportType === "declinedOrNotRenewedStaffSummary" || reportType === "reappointmentApplicationNotStarted" || reportType === "currentNotesSummary" || reportType === "staffReappointmentStatusSummary" || reportType === "staffbyTypes" || reportType === "locumStaffRenewalStatusTracker")  ? (
                     <>
                         {/* {reportType === "staffReappointmentsNotes" && (
                             <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
@@ -791,7 +800,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                             </Select>
                         </FormControl> */}
                         <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                            <InputLabel id="demo-multiple-name-label1">Reporting Time Period</InputLabel>
+                            <InputLabel id="demo-multiple-name-label1" className={style.headingtextStyle}>Reporting Time Period</InputLabel>
                             <Select
                                 labelId="demo-multiple-name-label1"
                                 id="demo-multiple-name1"
@@ -799,6 +808,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 value={reportingTimePeriod}
                                 onChange={(e) => { setReportingTimePeriod(e.target.value) }}
                                 disabled={isLoading}
+                                className={`${style.textAlignLeft} ${style.Font}`}
                             >
                                 <MenuItem value={'Current Week'} disabled={isLoading}>Current Week</MenuItem>
                                 <MenuItem value={'Last Week'} disabled={isLoading}>Last Week</MenuItem>
@@ -865,6 +875,18 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 onChange={handleChangeDepartments}
                                 MenuProps={MenuProps}
                                 disabled={isLoading}
+                                className={style.textAlignLeft}
+                                renderValue={(selected) => {
+                                if (selected?.length === 1) {
+                                const dept = departments?.find(dep => dep?.id === selected[0]);
+                                console.log("")
+                                return dept?.departmentName?.name || 'All';
+                                } else if (selected.length > 1) {
+                                return `${selected.length} Selected`;
+                                } else {
+                                return '';
+                                }
+                            }}
                             >
                                 {departments?.length >= 2 && (
                                     <MenuItem value={defaultOption} disabled={isLoading}>All</MenuItem>
@@ -880,6 +902,38 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 ))}
                             </Select>
                         </FormControl>
+                       {selectedDepartmentsToSend?.length > 0 && (
+                    <div className={`${style.grid2Gap} ${style.marginLeft5}`}>
+                        {selectedDepartments.map((id) => {
+                        const dept = departments?.find(dep => dep?.id === id);
+                        return (
+                            <div key={id} className={`${style.spaceBetween} ${style.marginRight5} ${style.filterBackground}`}>
+                            <div className={`${style.filtertextStyle}`}>{dept?.departmentName?.name}</div>
+                            <Tooltip title="Remove Filter" arrow>
+                                <CancelOutlinedIcon
+                                sx={{
+                                    fontSize: 15,
+                                    color: "#06617A",
+                                    marginLeft: "5px",
+                                }}
+                                className={style.cursorPointer}
+                                onClick={() => {
+                                const updatedDepartments = selectedDepartments.filter(depId => depId !== id);
+                                setSelectedDepartments(updatedDepartments);
+
+                                const updatedDepartmentsToSend = departments
+                                    ?.filter(data => updatedDepartments.includes(data?.id))
+                                    ?.map(data => data);
+
+                                setSelectedDepartmentsToSend(updatedDepartmentsToSend);
+                            }}
+                                />
+                            </Tooltip>
+                            </div>
+                        );
+                        })}
+                    </div>
+                    )}
                         {/* <div>
                             <InputLabel id="demo-multiple-name-label2" className={style.headingtextStyle}>Departments</InputLabel>
                             <CommonMultiSelectField
@@ -950,6 +1004,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 onChange={handleChangeStaffType}
                                 MenuProps={MenuProps}
                                 disabled={isLoading}
+                                className={style.textAlignLeft}
                             >
                                 {staffType?.length >= 2 && (
                                     <MenuItem value={defaultOption} disabled={isLoading}>All</MenuItem>
@@ -981,6 +1036,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 onChange={handleChangePrivilegeCategory}
                                 MenuProps={MenuProps}
                                 disabled={isLoading}
+                                className={style.textAlignLeft}
                             >
                                 {privilegeCategory?.length >= 2 && (
                                     <MenuItem value={defaultOption} disabled={isLoading}>All Categories</MenuItem>
@@ -1012,6 +1068,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                     onChange={(e) => { setSelectedApplicationType(e.target.value) }}
                                     MenuProps={MenuProps}
                                     disabled={isLoading}
+                                    className={style.textAlignLeft}
                                 >
                                     <MenuItem value={''} disabled={isLoading}>All</MenuItem>
                                     <MenuItem value={'NEW'} disabled={isLoading}>New Applicants</MenuItem>
@@ -1030,6 +1087,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                     onChange={(e) => { setSelectedReappointmentStatus(e.target.value) }}
                                     MenuProps={MenuProps}
                                     disabled={isLoading}
+                                    className={style.textAlignLeft}
                                 >
                                     <MenuItem value={''} disabled={isLoading}>All</MenuItem>
                                     <MenuItem value={'NOT_RENEWED'} disabled={isLoading}>Not Renewed</MenuItem>
@@ -1088,6 +1146,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                     onChange={handleChangeContractedServiceProviders}
                                     MenuProps={MenuProps}
                                     disabled={isMyReport || isLoading}
+                                    className={style.textAlignLeft}
                                 >
                                     {contractedServiceProviders?.length >= 2 && (
                                         <MenuItem value={defaultOption} disabled={isMyReport || isLoading}>All Contracted Service Providers</MenuItem>
@@ -1115,6 +1174,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                         onChange={handleChangeContractedServiceProviders}
                                         MenuProps={MenuProps}
                                         disabled={isMyReport || isLoading}
+                                        className={style.textAlignLeft}
                                     >
                                         {contractedServiceProviders?.length >= 2 && (
                                             <MenuItem value={defaultOption} disabled={isMyReport || isLoading}>All Contracted Service Providers</MenuItem>
@@ -1141,6 +1201,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                             onChange={handleChangeTimesheetInterval}
                                             MenuProps={{ MenuProps }}
                                             disabled={isMyReport || isLoading}
+                                            className={style.textAlignLeft}
                                         >
                                             {timesheetIntervals?.map((data) => (
                                                 <MenuItem
@@ -1163,6 +1224,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                             onChange={(e) => setSelectedTimesheetInterval([e.target.value])}
                                             MenuProps={{ MenuProps }}
                                             disabled={isMyReport || isLoading}
+                                            className={style.textAlignLeft}
                                         >
                                             {timesheetIntervals?.map((data) => (
                                                 <MenuItem
@@ -1189,6 +1251,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                         onChange={(e) => { setContractStatus(e.target.value) }}
                                         MenuProps={MenuProps}
                                         disabled={isMyReport || isLoading}
+                                        className={style.textAlignLeft}
                                     >
                                         <MenuItem value={'ACTIVE'} disabled={isMyReport || isLoading}>Active</MenuItem>
                                         <MenuItem value={'DRAFT'} disabled={isMyReport || isLoading}>Draft</MenuItem>
@@ -1229,6 +1292,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                     label="Proof of Documentation"
                                     MenuProps={MenuProps}
                                     disabled={isMyReport || isLoading}
+                                    className={style.textAlignLeft}
                                 >
                                     {podTypes?.map((data, index) => (
                                         <MenuItem value={data} key={index} disabled={isMyReport || isLoading}>{data}</MenuItem>
@@ -1248,6 +1312,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 value={reportingTimePeriod}
                                 onChange={(e) => { setReportingTimePeriod(e.target.value) }}
                                 disabled={isMyReport || isLoading}
+                                className={style.textAlignLeft}
                             >
                                 <MenuItem value={'Current Week'} disabled={isMyReport || isLoading}>Current Week</MenuItem>
                                 <MenuItem value={'Last Week'} disabled={isMyReport || isLoading}>Last Week</MenuItem>
@@ -1336,6 +1401,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 onChange={handleChangeSites}
                                 MenuProps={MenuProps}
                                 disabled={isMyReport || isLoading}
+                                className={style.textAlignLeft}
                             >
                                 {sites?.length >= 2 && (
                                     <MenuItem value={defaultOption} disabled={isMyReport || isLoading}>All Sites</MenuItem>
@@ -1363,6 +1429,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 onChange={handleChangeDepartments}
                                 MenuProps={MenuProps}
                                 disabled={isMyReport || isLoading}
+                                className={style.textAlignLeft}
                             >
                                 {departments?.length >= 2 && (
                                     <MenuItem value={defaultOption} disabled={isMyReport || isLoading}>All Departments</MenuItem>
@@ -1395,6 +1462,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 onChange={handleChangeContracts}
                                 // MenuProps={MenuProps}
                                 disabled={isMyReport || isLoading}
+                                className={style.textAlignLeft}
                             >
                                 {contracts?.length >= 2 && (
                                     <MenuItem value={defaultOption} disabled={isMyReport || isLoading}>All Contracts</MenuItem>
@@ -1421,6 +1489,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                     onChange={handleChangeContractedServiceProviders}
                                     MenuProps={MenuProps}
                                     disabled={isMyReport || isLoading}
+                                    className={style.textAlignLeft}
                                 >
                                     <MenuItem
                                         value={currentUserDetails?.id} disabled={isMyReport || isLoading}
@@ -1440,6 +1509,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                     onChange={handleChangeContractedServiceProviders}
                                     MenuProps={MenuProps}
                                     disabled={isMyReport || isLoading}
+                                    className={style.textAlignLeft}
                                 >
                                     {contractedServiceProviders?.length >= 2 && (
                                         <MenuItem value={defaultOption} disabled={isMyReport || isLoading}>All Contracted Service Providers</MenuItem>
@@ -1489,6 +1559,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 onChange={handleChangeContracts}
                                 MenuProps={MenuProps}
                                 disabled={isMyReport || isLoading}
+                                className={style.textAlignLeft}
                             >
                                 {contracts?.length >= 2 && (
                                     <MenuItem value={defaultOption} disabled={isMyReport || isLoading}>All Contracts</MenuItem>

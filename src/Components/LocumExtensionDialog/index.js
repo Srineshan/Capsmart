@@ -33,7 +33,7 @@ import ESignature from "../../Components/ESignature";
 import CancelIcon from '@mui/icons-material/Cancel';
 import AdditionalPrivilegesDialog from "../../Screens/ReappointmentApplicationForm/PrivilegeSelection/AdditionalPrivilegesDialog";
 
-const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
+const LocumExtensiveDialog = ({ getIsOpen, selectedTab,requestedType }) => {
   let cookie = new Cookie();
   let userDetails = cookie.get("user");
   const { setValue, value } = useComboboxControls({ initialValue: "" });
@@ -117,11 +117,13 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
   const [emailSendDialog, setEmailSendDialog] = useState(false);
   const prevDepartment = formDetails?.basicDetailReferences?.department?.id;
   const prevSpeciality = formDetails?.basicDetailReferences?.specialty?.id;
+  const canadaData = sessionStorage.getItem('canadaData') !== 'undefined' ? JSON.parse(sessionStorage.getItem('canadaData')) : {};
+  const dateFormat = canadaData?.dateFormat || 'MMM dd, yyyy';
   const [currentDate, setCurrentDate] = useState(
-    format(new Date(), "dd-MM-yyyy")
+    format(new Date(), dateFormat)
   );
   const [limit, setLimit] = useState(9999);
-  const [extensionRequiredValue, setExtensionRequiredValue] = useState("REQUESTED");
+  const [extensionRequiredValue, setExtensionRequiredValue] = useState(requestedType);
   const [notRequiredComments, setNotRequiredComments] = useState('');
   const [isLoadingPage, setIsLoadingPage] = useState(false);
   const publicKey =
@@ -129,7 +131,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
   const workModeType = sessionStorage.getItem("workModeType");
   let staffLocumId;
   let name = `${formDetails?.basicDetails?.applicant?.name?.firstName} ${formDetails?.basicDetails?.applicant?.name?.lastName} `;
-
+console.log("requestedType",requestedType)
 
   console.log("tableDataValue", selectApplicant, covererNameList, covererId, selectedTab)
   useEffect(() => {
@@ -2698,7 +2700,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
     ? new Date(selectDataLocum?.tenure?.to).toISOString().split('T')[0] + 'T00:00'
     : null;
   
-    console.log("Date to Expire :", ExpireDate ,"expire Date add one day :", format(addDays(new Date(ExpireDate), 1), "MMM dd, yyyy"))  
+    console.log("Date to Expire :", ExpireDate ,"expire Date add one day :", format(addDays(new Date(ExpireDate), 1), dateFormat))  
 
   // Validate date before using
   const isExpireDateValid = ExpireDate && isValid(ExpireDate);
@@ -2751,8 +2753,8 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
   const monthOptions = getNext12MonthsFromCreatedDate(referenceDate);
 
   const lastModifiedDate = formDetails?.lastModifiedDate;
-  const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), "MMM dd, yyyy") : "-";
-  const formattedExpiringDate = ExpireDate ? format(new Date(ExpireDate), "MMM dd, yyyy") : "-";
+  const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), dateFormat) : "-";
+  const formattedExpiringDate = ExpireDate ? format(new Date(ExpireDate), dateFormat) : "-";
   const daysRemaining = ExpireDate ? Math.abs(differenceInDays(new Date(ExpireDate), new Date())) : null;
   //  const monthsList = getNext12MonthsFromCreatedDate(format(new Date(selectDataLocum?.tenure?.to), "MMM dd, yyyy"));
   // const selectedMonthLabel = selectedMonth === "Custom"
@@ -3003,9 +3005,9 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
                           <span className={`${style.rejectionTextStyle}`}>
                             {selectedTab === "ACTIVELOCUM"
                               ? (ExpireDate
-                                ? format(addDays(new Date(ExpireDate), 1), "MMM dd, yyyy")
+                                ? format(addDays(new Date(ExpireDate), 1), dateFormat)
                                 : "N/A")
-                              : format(new Date(), "MMM dd, yyyy")}
+                              : format(new Date(), dateFormat)}
                           </span>
                         )}
                       </div>
@@ -3014,7 +3016,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
                         End Date <br />
                         <span className={`${style.dateTextStyle}`}>
                           {selectedMonth && selectedMonth !== "Custom"
-                            ? format(new Date(selectedMonth), "MMM dd, yyyy")
+                            ? format(new Date(selectedMonth), dateFormat)
                             : selectedMonth === "Custom"
                               ? ''
                               : selectedTab === "EXPIREDLOCUM"
@@ -4618,7 +4620,15 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
       >
         {/* <div className={style.spaceBetween}> */}
         <div className={style.heading1}>
-          Locum {selectedTab === "ACTIVELOCUM" ? "Extension" : "Renewal"} Request has been sent
+          Locum {selectedTab === "ACTIVELOCUM" ? "Extension" : "Renewal"} Application has been sent to
+           {selectDataLocum?.applicant?.name?.lastName?.charAt(0).toUpperCase() +
+            selectDataLocum?.applicant?.name?.lastName?.slice(1).toLowerCase()}
+          {", "}
+          {selectDataLocum?.applicant?.name?.firstName
+            ? selectDataLocum?.applicant?.name?.firstName.charAt(0).toUpperCase() +
+            selectDataLocum?.applicant?.name?.firstName.slice(1).toLowerCase()
+            : ""} 
+          {/* Locum {selectedTab === "ACTIVELOCUM" ? "Extension" : "Renewal"} Request has been sent */}
         </div>
         {/* <div className={style.displayInRow}>
               <img

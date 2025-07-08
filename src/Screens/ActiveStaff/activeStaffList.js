@@ -66,6 +66,8 @@ const ActiveStaffList = ({
   const [sortValue, setSortValue] = useState("DESCENDING");
   const [searchCount, setSearchCount] = useState(0);
   const [limit, setLimit] = useState(9999);
+  const canadaData = sessionStorage.getItem('canadaData') !== 'undefined' ? JSON.parse(sessionStorage.getItem('canadaData')) : {};
+  const dateFormat = canadaData?.dateFormat || 'MMM dd, yyyy';
   const permanentHeaderValues = ["", "Staff Name", "Staff ID", "Staff Type", "Docs", "Notes", "Last Updated", "Action"];
   const locumHeaderValues = ["", "Staff Name", "Staff ID", "Staff Type", "CR", "COS", "CC", "CC Date", "Last Updated", "Action"];
   const temporaryStaffHeaderValues = ["Staff Name", "Staff ID", "Staff Type", "CC Approval", "COS Approval", "Last Updated"];
@@ -461,7 +463,7 @@ const ActiveStaffList = ({
 
       // taskListStatus.push(data?.tasks.completedCount + "/" + data?.tasks.totalCount);
       lastUpdated.push(
-        format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
+        format(new Date(data?.lastModifiedDate), dateFormat)
       );
       lastUpdatedBy.push(["-"]);
       // const lastUpdatedDate = new Date(data?.lastModifiedDate);
@@ -590,7 +592,7 @@ const ActiveStaffList = ({
       // } else { ccdate.push("-") }
       ccdate.push("-")
       lastUpdatedOn.push(
-        format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
+        format(new Date(data?.lastModifiedDate), dateFormat)
       );
       // lastUpdatedBy.push([data?.updatedBy || "-"]);
       action.push(true);
@@ -663,7 +665,7 @@ const ActiveStaffList = ({
       // } else { cosapproval.push("-") }
       // taskListStatus.push("2/3");
       lastUpdated.push(
-        format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
+        format(new Date(data?.lastModifiedDate), dateFormat)
       );
       // lastUpdatedBy.push(["-"]);
       // const lastUpdatedDate = new Date(data?.lastModifiedDate);
@@ -708,7 +710,7 @@ const ActiveStaffList = ({
       applicantType.push(data?.providerType.serviceProviderType);
       approvedNotes.push(data?.approvedNotes);
       lastUpdatedOn.push(
-        format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
+        format(new Date(data?.lastModifiedDate), dateFormat)
       );
       action.push(true);
     });

@@ -20,7 +20,7 @@ import LoadingScreen from "../LoadingScreen";
 import CommonInputField from "../CommonFields/CommonInputField";
 import { Tooltip } from "@mui/material";
 
-const OverRideRequestDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, selectedTab }) => {
+const OverRideRequestDialog = ({ getIsOpen, getActiveApplicationView, selectedTab }) => {
   let cookie = new Cookie();
   let userDetails = cookie.get('user');
   const users = jwt(userDetails);
@@ -49,6 +49,8 @@ const OverRideRequestDialog = ({ getIsOpen, dateFormat, getActiveApplicationView
   const [uploadFileData, setUploadFileData] = useState('');
   const [documentDesc, setDocumentDesc] = useState("");
   const [documentTitle, setDocumentTitle] = useState("");
+  const canadaData = sessionStorage.getItem('canadaData') !== 'undefined' ? JSON.parse(sessionStorage.getItem('canadaData')) : {};
+  const dateFormat = canadaData?.dateFormat || 'MMM dd, yyyy';
   const dropzoneStyle = {
     width: "100%",
     height: "auto",
@@ -336,10 +338,10 @@ console.log("files123",files)
 
   // const userRoleTab = getUserRole(selectedTab);
   const lastModifiedDate = formDetails?.lastModifiedDate;
-  const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), "MM/dd/yyyy") : "-";
+  const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), dateFormat) : "-";
   const lastSubmittedLog = logDetails?.logs?.find((log) => log.workflowStatus === "SUBMITTED");
   const lastSubmittedDate = lastSubmittedLog ? lastSubmittedLog.lastModifiedDate : null;
-  const formattedSubmissionDate = lastSubmittedDate ? format(new Date(lastSubmittedDate), "MM/dd/yyyy") : "-";
+  const formattedSubmissionDate = lastSubmittedDate ? format(new Date(lastSubmittedDate), dateFormat) : "-";
 
   // if (!userRole?.includes('Credentialing Committee') && !userRole?.includes('Department Head')) {
   //   return null;

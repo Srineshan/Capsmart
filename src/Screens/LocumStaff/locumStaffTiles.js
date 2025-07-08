@@ -40,7 +40,7 @@ const LocumStaffTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, setReFe
       <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="ACTIVE LOCUMS" tileCount={locumCount} currentTile="ACTIVELOCUM" />
       <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="EXPIRED LOCUMS" tileCount={locumexpireCount} currentTile="EXPIREDLOCUM" />
       <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="LOCUMS WITH TEMPORARY PRIVILEGES" tileCount={locumTempPrivilegeCount} currentTile="TEMPORARYPRIVILEGEDLOCUM" />
-      {(workModeType === "Department Head" || workModeType === "Chief Of Staff") && <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="REQUEST" tileCount={totalRequestCount} currentTile="REQUEST" />}
+      {(workModeType === "Chief Of Staff") && <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="REQUEST" tileCount={totalRequestCount} currentTile="REQUEST" />}
     </div>
   )
 }

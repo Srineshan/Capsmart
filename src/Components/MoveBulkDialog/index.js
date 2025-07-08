@@ -26,6 +26,8 @@ const BulkMoveDialog = ({ checkedIds, getBulkApproveDialogOpen, onClose, selecte
   const [selectedDateForApproval, setSelectedDateForApproval] = useState(null);
   const workModeType = sessionStorage.getItem('workModeType')
   const applicationType = sessionStorage.getItem('applicationCreationType') ?? 'REAPPOINTMENT';
+  const canadaData = sessionStorage.getItem('canadaData') !== 'undefined' ? JSON.parse(sessionStorage.getItem('canadaData')) : {};
+  const dateFormat = canadaData?.dateFormat || 'MMM dd, yyyy';
 
   useEffect(() => {
     sessionStorage.setItem("fromSummary", false);
@@ -173,10 +175,10 @@ const BulkMoveDialog = ({ checkedIds, getBulkApproveDialogOpen, onClose, selecte
     return multiFormDetails.map((formDetails, index) => {
       const logDetails = multiLogDetails[index] || {};
       const lastModifiedDate = formDetails?.lastModifiedDate;
-      const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), "MM/dd/yyyy") : "-";
+      const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), dateFormat) : "-";
       const lastSubmittedLog = logDetails?.logs?.find((log) => log.workflowStatus === "SUBMITTED");
       const lastSubmittedDate = lastSubmittedLog?.lastModifiedDate;
-      const formattedSubmissionDate = lastSubmittedDate ? format(new Date(lastSubmittedDate), "MM/dd/yyyy") : "-";
+      const formattedSubmissionDate = lastSubmittedDate ? format(new Date(lastSubmittedDate), dateFormat) : "-";
 
       return (
         <div key={formDetails?.displayId} className={`${style.rejectionBorderStyle} ${style.declineBorderStyle} ${style.marginTop10}`}>
@@ -299,7 +301,7 @@ const BulkMoveDialog = ({ checkedIds, getBulkApproveDialogOpen, onClose, selecte
                 }}
                 onClick={onClickApproveMoveFunction}
               >
-                <Tooltip title={isApproveEnabled ? "Click to Save" : ""} arrow>
+                <Tooltip title={isApproveEnabled ? "Click to Send" : ""} arrow>
                   <div className={style.reviewButton}>Send as Mail</div></Tooltip>
               </div>
             </div>

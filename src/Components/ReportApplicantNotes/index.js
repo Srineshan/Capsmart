@@ -10,6 +10,8 @@ const ReportsApplicantTable = ({ tableData}) => {
  const [multiLogDetails, setMultiLogDetails] = useState([]);
  const temp = tableData.map(item => item.id);
  const [entity, setEntity] = useState([]);
+ const canadaData = sessionStorage.getItem('canadaData') !== 'undefined' ? JSON.parse(sessionStorage.getItem('canadaData')) : {};
+ const dateFormat = canadaData?.dateFormat || 'MMM dd, yyyy';
 
  console.log("Extracted IDs:", temp);
 
@@ -69,10 +71,10 @@ const getApplicationLog = async () => {
      return multiFormDetails.map((formDetails, index) => {
        const logDetails = multiLogDetails[index] || {};
        const lastModifiedDate = formDetails?.lastModifiedDate;
-       const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), "MM/dd/yyyy") : "-";
+       const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), dateFormat) : "-";
        const lastSubmittedLog = logDetails?.logs?.find((log) => log.workflowStatus === "SUBMITTED");
        const lastSubmittedDate = lastSubmittedLog?.lastModifiedDate;
-       const formattedSubmissionDate = lastSubmittedDate ? format(new Date(lastSubmittedDate), "MM/dd/yyyy") : "-";
+       const formattedSubmissionDate = lastSubmittedDate ? format(new Date(lastSubmittedDate), dateFormat) : "-";
  
        return (
          <div key={formDetails?.displayId} className={`${style.rejectionBorderStyle} ${style.declineBorderStyle} ${style.marginTop10}`}>
@@ -138,7 +140,7 @@ const getApplicationLog = async () => {
             .map((log, index) => (
             <div key={index}>
                 <div className={`${style.NotesTitleTextStyle} ${style.marginLeftRight20} ${style.marginBottom10} ${style.marginTop10}`}>
-                {log?.private && <span className={style.privateBorderText}>Private</span>}{" "}{log?.user?.name?.firstName}{log?.user?.name?.lastName},{" "}{log?.title}{" "}{format(new Date(log?.createdDate), 'MM/dd/yyyy, H.mm')}
+                {log?.private && <span className={style.privateBorderText}>Private</span>}{" "}{log?.user?.name?.firstName}{log?.user?.name?.lastName},{" "}{log?.title}{" "}{format(new Date(log?.createdDate), `${dateFormat}, HH:mm`)}
                 </div>
                 <div className={`${style.marginLeftRight20} ${style.NotesApplicantTextStyle}`}>
                 <div dangerouslySetInnerHTML={{ __html: log.notes.notes }} />

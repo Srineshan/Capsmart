@@ -48,6 +48,14 @@
     margin-right: 20px !important;
 }
 
+.marginLeft5 {
+  margin-left: 5px !important;
+}
+
+.marginRight5 {
+  margin-right: 5px !important;
+}
+
 .bigCardGrid {
     display: grid;
     grid-template-columns: 1fr 4fr;
@@ -119,8 +127,8 @@
 }
 
 .displayInRow {
-    display: flex;
-    flex-direction: row;
+  display: flex;
+  align-items: center;
 }
 
 .displayInCol {
@@ -953,6 +961,12 @@
     grid-gap: 20px;
 }
 
+.grid2Gap {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 5px;
+}
+
 .grid3WithoutGap {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
@@ -1232,7 +1246,7 @@
 }
 
 .reportTypeBackground {
-    background: #F8FCFF 0% 0% no-repeat padding-box;
+    background: #F5F8F8 0% 0% no-repeat padding-box;
     padding: 100px;
 }
 
@@ -1311,7 +1325,7 @@
 }
 
 .reportRunByTextStyle {
-    text-align: left;
+    text-align: right;
     font: normal normal bold $tabledatatext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
@@ -1812,10 +1826,24 @@
     grid-template-columns: 15% 15% 13% 10% 13% 10% 13% 10%;
 }
 
+// .reporttypeLeftBackGround {
+//     // background: transparent radial-gradient(at 28% -9%, #0995BC 0%, #06617A 100%) 0% 0% no-repeat padding-box;
+//     // background: transparent radial-gradient(closest-side at 28% -9%, #0BA5D0 0%, #054D61 100%) 0% 0% no-repeat padding-box;
+//     background: radial-gradient(100px 100px at 50% 0%, #0BA5D0 0%, #054D61 100%);
+//     border-radius: 8px;
+//     opacity: 1;
+// }
+
 .reporttypeLeftBackGround {
-    background: transparent radial-gradient(at 28% -9%, #0995BC 0%, #06617A 100%) 0% 0% no-repeat padding-box;
-    border-radius: 8px;
-    opacity: 1;
+  background: radial-gradient(80px 100px at 28% -9%, #0BA5D0 0%, $primarycolor 100%);
+  border-radius: 8px;
+  opacity: 1;
+}
+
+.reporttypeLeftBackGround:hover {
+  background: radial-gradient(50px 100px at 28% -9%, #0BA5D0 0%, #054D61 100%);
+  border-radius: 8px;
+  opacity: 1;
 }
 
 .reportLeftTextStyle {
@@ -2011,4 +2039,31 @@
         font-size: 12px;
         margin-top: auto;
     }
+}
+
+textarea {
+  resize: none;
+}
+
+.filterBackground {
+  background-color: rgba(6, 97, 122, 0.1);
+  border-radius: 20px;
+  padding: 5px;
+  max-height: min-content;
+  align-items: center;
+}
+
+.filtertextStyle {
+  text-align: left;
+  font: italic normal medium 14px/22px proxima-nova;
+  letter-spacing: 0px;
+  color: #06617A;
+  opacity: 1;
+}
+
+.individualTag {
+  background-color: #f1f1f1;
+  padding: 4px 8px;
+  border-radius: 12px;
+  margin-bottom: 4px;
 }

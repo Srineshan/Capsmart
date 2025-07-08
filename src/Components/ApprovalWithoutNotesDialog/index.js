@@ -60,6 +60,9 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
   const [isLoadingImage, setIsLoadingImage] = useState(false);
   const [isLoadingImageDocs, setIsLoadingImageDocs] = useState(false);
   const workModeType = sessionStorage.getItem('workModeType')
+  const canadaData = sessionStorage.getItem('canadaData') !== 'undefined' ? JSON.parse(sessionStorage.getItem('canadaData')) : {};
+  const dateFormatType = canadaData?.dateFormat || 'MMM dd, yyyy';
+
   // useEffect(() => {
   //   if (dateFormat) {
   //     setCurrentDate(format(new Date(), dateFormat));
@@ -584,10 +587,10 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
 
   // const userRoleTab = getUserRole(selectedTab);
   const lastModifiedDate = formDetails?.lastModifiedDate;
-  const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), "MM/dd/yyyy") : "-";
+  const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), dateFormatType) : "-";
   const lastSubmittedLog = logDetails?.logs?.find((log) => log.workflowStatus === "SUBMITTED");
   const lastSubmittedDate = lastSubmittedLog ? lastSubmittedLog.lastModifiedDate : null;
-  const formattedSubmissionDate = lastSubmittedDate ? format(new Date(lastSubmittedDate), "MM/dd/yyyy") : "-";
+  const formattedSubmissionDate = lastSubmittedDate ? format(new Date(lastSubmittedDate), dateFormatType) : "-";
   // if (!userRole?.includes('Credentialing Committee') && !userRole?.includes('Department Head')) {
   //   return null;
   // }
