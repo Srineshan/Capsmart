@@ -77,6 +77,8 @@ const LocumExtensiveRequestDialog = ({ getIsOpen, tableDataValue, selectedTab })
     borderStyle: "dashed",
     borderRadius: 5,
   };
+  const canadaData = sessionStorage.getItem('canadaData') !== 'undefined' ? JSON.parse(sessionStorage.getItem('canadaData')) : {};
+  const dateFormat = canadaData?.dateFormat || 'MMM dd, yyyy';
 
   console.log("tableDataValue", tableDataValue)
   useEffect(() => {
@@ -416,15 +418,15 @@ const LocumExtensiveRequestDialog = ({ getIsOpen, tableDataValue, selectedTab })
   const monthOptions = getNext12MonthsFromCreatedDate(referenceDate);
 
   const lastModifiedDate = formDetails?.lastModifiedDate;
-  const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), "MM/dd/yyyy") : "-";
+  const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), dateFormat) : "-";
   //  const ExpireDate = selectDataLocum?.tenure?.to;
  const ExpireDate = selectDataLocum?.tenure?.to
   ? new Date(selectDataLocum?.tenure?.to).toISOString().split('T')[0] + 'T00:00'
   : null;
 
-  console.log("Date to Expire :", ExpireDate ,"expire Date add one day :", format(addDays(new Date(ExpireDate), 1), "MMM dd, yyyy"))  
+  console.log("Date to Expire :", ExpireDate ,"expire Date add one day :", format(addDays(new Date(ExpireDate), 1), dateFormat))  
 
-  const formattedExpiringDate = ExpireDate ? format(new Date(ExpireDate), "MMM dd, yyyy") : "-";
+  const formattedExpiringDate = ExpireDate ? format(new Date(ExpireDate), dateFormat) : "-";
   const daysRemaining = ExpireDate ? Math.abs(differenceInDays(new Date(ExpireDate), new Date())) : null;
   const currentDateNow = new Date();
   const minDateValue =
@@ -629,9 +631,9 @@ const LocumExtensiveRequestDialog = ({ getIsOpen, tableDataValue, selectedTab })
                         <span className={`${style.rejectionTextStyle}`}>
                           {selectedTab === "ACTIVELOCUM"
                             ? (ExpireDate
-                              ? format(addDays(new Date(ExpireDate), 1), "MMM dd, yyyy")
+                              ? format(addDays(new Date(ExpireDate), 1), dateFormat)
                               : "N/A")
-                            : format(new Date(), "MMM dd, yyyy")}
+                            : format(new Date(), dateFormat)}
                         </span>
                       )}
                     </div>
@@ -640,7 +642,7 @@ const LocumExtensiveRequestDialog = ({ getIsOpen, tableDataValue, selectedTab })
                       End Date <br />
                       <span className={`${style.dateTextStyle}`}>
                         {selectedMonth && selectedMonth !== "Custom"
-                          ? format(new Date(selectedMonth), "MMM dd, yyyy")
+                          ? format(new Date(selectedMonth), dateFormat)
                           : selectedMonth === "Custom"
                             ? ''
                             : selectedTab === "EXPIREDLOCUM"
@@ -912,6 +914,7 @@ const LocumExtensiveRequestDialog = ({ getIsOpen, tableDataValue, selectedTab })
               {/* <div className={`${style.cursorPointer}`} onClick={() => getIsOpen(false)}>
                 <div className={`${style.cancelButton} ${style.cancelButtonTextStyle}`}>Cancel</div>
               </div> */}
+              <Tooltip title="Click to Continue" arrow >
               <div
                 className={`${style.reviewButtonStyle}
                  ${style.cursorPointer}
@@ -938,6 +941,7 @@ const LocumExtensiveRequestDialog = ({ getIsOpen, tableDataValue, selectedTab })
               >
                 <div className={style.reviewButton}>Continue</div>
               </div>
+              </Tooltip>
             </div>
           </div>
         </Dialog>

@@ -6,8 +6,9 @@ import CloseIcon from '@mui/icons-material/Close';
 import style from './index.module.scss';
 import { GET, TenantID } from '../../Screens/dataSaver';
 import Cookies from 'universal-cookie';
+import PrintOutlinedIcon from "@mui/icons-material/PrintOutlined";
 
-const ApplicationHeaders = ({ title, close, closeClick }) => {
+const ApplicationHeaders = ({ title, close, closeClick, print, printPage }) => {
     // const { logout } = useDescope();
     // const handleSignOut = () => {
     //     logout()
@@ -44,6 +45,9 @@ const ApplicationHeaders = ({ title, close, closeClick }) => {
                 <div></div>
                 {close && (
                     <div className={style.verticalAlignCenter}>
+                        {print && (
+                          <PrintOutlinedIcon className={style.marginRight20} sx={{ fontSize: 40, color: '#06617A', cursor: 'pointer' }} onClick={printPage} />
+                        )}
                         {/* <img
                             src={CrossPink}
                             alt="cross"

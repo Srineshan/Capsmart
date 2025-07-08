@@ -84,6 +84,7 @@ const ApplicationFieldCard = ({
   isEdited,
   yesOrNoDemographic,
   setYesOrNoDemographic,
+  setIsApplicantUpdated
 }) => {
   const [calendarStart, setCalendarStart] = useState(false);
   const { section, step } = useParams();
@@ -3232,6 +3233,8 @@ const labelWithAsterisk = insertAsteriskBeforeClosingP(fieldData.label);
     delete basicForm[baseKey];
     delete basicForm.undefined;
     getIsSubmitClicked(true);
+    setIsEdited(false);
+    setIsApplicantUpdated(true);
     // setIsChanged(false);
   };
 

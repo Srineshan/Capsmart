@@ -48,6 +48,8 @@ const EditNotesDialog = ({ getIsOpen, showEditNotesID, showEditNotes, showEditNo
   const [documentDesc, setDocumentDesc] = useState("");
   const [documentTitle, setDocumentTitle] = useState("");
   const [notesVisible, setNotesVisible] = useState(showEditNotesPrivate ? false : true);
+  const canadaData = sessionStorage.getItem('canadaData') !== 'undefined' ? JSON.parse(sessionStorage.getItem('canadaData')) : {};
+  const dateFormat = canadaData?.dateFormat || 'MMM dd, yyyy';
   const dropzoneStyle = {
     width: "100%",
     height: "auto",
@@ -100,7 +102,10 @@ const EditNotesDialog = ({ getIsOpen, showEditNotesID, showEditNotes, showEditNo
   const newFilesArray = Array.from(event);
   console.log("Converted files array:", newFilesArray);
      
-  const existingFileNames = (files || []).map(file => file.name);
+  const existingFileNames = [
+    ...(files || []).map(file => file.name),
+    ...(uploadFileData || []).map(file => file?.file?.fileName || file?.fileName)
+  ];
   const seenInCurrentSelection = new Set();
   const filteredNewFiles = [];
      
@@ -272,10 +277,10 @@ const EditNotesDialog = ({ getIsOpen, showEditNotesID, showEditNotes, showEditNo
     }
   };
   const lastModifiedDate = formDetails?.lastModifiedDate;
-  const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), "MM/dd/yyyy") : "-";
+  const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), dateFormat) : "-";
   const lastSubmittedLog = logDetails?.logs?.find((log) => log.workflowStatus === "SUBMITTED");
   const lastSubmittedDate = lastSubmittedLog ? lastSubmittedLog.lastModifiedDate : null;
-  const formattedSubmissionDate = lastSubmittedDate ? format(new Date(lastSubmittedDate), "MM/dd/yyyy") : "-";
+  const formattedSubmissionDate = lastSubmittedDate ? format(new Date(lastSubmittedDate), dateFormat) : "-";
 
   return (
     <>

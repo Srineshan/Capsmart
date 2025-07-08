@@ -66,6 +66,8 @@ const ActiveStaffList = ({
   const [sortValue, setSortValue] = useState("DESCENDING");
   const [searchCount, setSearchCount] = useState(0);
   const [limit, setLimit] = useState(9999);
+  const canadaData = sessionStorage.getItem('canadaData') !== 'undefined' ? JSON.parse(sessionStorage.getItem('canadaData')) : {};
+  const dateFormat = canadaData?.dateFormat || 'MMM dd, yyyy';
   const permanentHeaderValues = ["", "Staff Name", "Staff ID", "Staff Type", "Docs", "Notes", "Last Updated", "Action"];
   const locumHeaderValues = ["", "Staff Name", "Staff ID", "Staff Type", "CR", "COS", "CC", "CC Date", "Last Updated", "Action"];
   const temporaryStaffHeaderValues = ["Staff Name", "Staff ID", "Staff Type", "CC Approval", "COS Approval", "Last Updated"];
@@ -401,33 +403,38 @@ const ActiveStaffList = ({
       applicantId.push(data?.staffId || "123");
       // applicantType.push(data?.providerType?.serviceProviderType || "Doctor");
       applicantType.push(data?.basicDetailReferences?.applicantType?.serviceProviderType || "Doctor");
-      // department.push(
-      //   data?.basicDetails?.departmentSpecialty?.department || "-"
-      // );
-      // docs.push(data?.documents?.verifiedCount + "/" + data?.documents?.uploadedCount  || "1/2");
-      docs.push("1/2");
-      // docsHoverText.push([
-      //   "Immunization History Verification From PCP pending",
-      // ]);
-      // const documentDetails = data?.documents?.documentDetails || [];
-      // const docHoverTextArray = documentDetails.length > 0 ? documentDetails.map(doc => doc.documentType) : ["-"];
-      // docsHoverText.push(docHoverTextArray);
-      // docsIcon.push(
-      //   <TextSnippetOutlinedIcon
-      //     style={{ fontSize: 20, color: `#2C2C2C` }}
-      //   />
-      // );
+      if (data?.documents?.length === 0) {
+        docs.push("-");
+        docsIcon.push("");
+        docsHoverText.push("");
+      } else {
+        docs.push(data?.documents?.filter(data => data?.documentStatus)?.length + "/" + data?.documents?.length);
 
-      // if (data?.documents?.verifiedCount === data?.documents?.uploadedCount) {
-      //   docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#14B15A` }}/>);
-      // } else if (data?.documents?.verifiedCount === 0) {
-      //   docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#94979A` }}/>);
-      // } else {
-      //   docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#FFCA27` }}/>);
-      // }
-      docsIcon.push(
-        <TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#FFCA27` }} />
-      );
+        docsIcon.push(
+          <TextSnippetOutlinedIcon style={{ fontSize: 20, color: data?.documents?.filter(data => data?.documentStatus)?.length === data?.documents?.length ? `#00C07F` : '#FFCA27' }} />
+        );
+
+        const documentDetails = data?.documents || [];
+
+        const docHoverTextArray = documentDetails.map((doc, index) => {
+          const verifiedIndicator = doc?.documentStatus
+            ? <CircleIcon style={{ color: '#8ED12B', fontSize: '12px', marginRight: '5px' }} />
+            : <CircleIcon style={{ color: '#FFCA27', fontSize: '12px', marginRight: '5px' }} />;
+
+          return (
+            <div key={index} className={style.fullWidth}>
+              <span>
+                {verifiedIndicator} {doc?.shortName}
+              </span>
+              {index !== documentDetails.length - 1 && (
+                <hr style={{ margin: '5px 0px -10px 0' }} />
+              )}
+            </div>
+          );
+        });
+
+        docsHoverText.push(docHoverTextArray);
+      }
       // dataStatus.push(data?.dataStatus || "green");
       // dataStatus.push(data?.dataStatus === "REVIEW_INPROGRESS"
       //   ? "yellow"
@@ -445,10 +452,7 @@ const ActiveStaffList = ({
       );
       // const notesDetails = data?.notes || [];
       // const notesHoverTextArray = notesDetails.length > 0 ? notesDetails.map(note => note.notes) : ["-"];
-      notesHoverText.push([
-        "June 13 00:00, Nina Grealy",
-        "Lorem ipsum dolor sit amet, consetetur sadipscing.",
-      ]);
+      notesHoverText.push("");
       // notesHoverText.push(notesHoverTextArray);
 
       // if (data?.tasks?.completedCount === data?.tasks?.totalCount) {
@@ -461,7 +465,7 @@ const ActiveStaffList = ({
 
       // taskListStatus.push(data?.tasks.completedCount + "/" + data?.tasks.totalCount);
       lastUpdated.push(
-        format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
+        format(new Date(data?.lastModifiedDate), dateFormat)
       );
       lastUpdatedBy.push(["-"]);
       // const lastUpdatedDate = new Date(data?.lastModifiedDate);
@@ -481,8 +485,8 @@ const ActiveStaffList = ({
       {
         type: "iconWithCount",
         value: docs,
-        // hoverText: docsHoverText,
-        // isShowHoverText: true,
+        hoverText: docsHoverText,
+        isShowHoverText: true,
         icon: docsIcon,
       },
       // { type: "dot", value: dataStatus },
@@ -590,7 +594,7 @@ const ActiveStaffList = ({
       // } else { ccdate.push("-") }
       ccdate.push("-")
       lastUpdatedOn.push(
-        format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
+        format(new Date(data?.lastModifiedDate), dateFormat)
       );
       // lastUpdatedBy.push([data?.updatedBy || "-"]);
       action.push(true);
@@ -663,7 +667,7 @@ const ActiveStaffList = ({
       // } else { cosapproval.push("-") }
       // taskListStatus.push("2/3");
       lastUpdated.push(
-        format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
+        format(new Date(data?.lastModifiedDate), dateFormat)
       );
       // lastUpdatedBy.push(["-"]);
       // const lastUpdatedDate = new Date(data?.lastModifiedDate);
@@ -708,7 +712,7 @@ const ActiveStaffList = ({
       applicantType.push(data?.providerType.serviceProviderType);
       approvedNotes.push(data?.approvedNotes);
       lastUpdatedOn.push(
-        format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
+        format(new Date(data?.lastModifiedDate), dateFormat)
       );
       action.push(true);
     });

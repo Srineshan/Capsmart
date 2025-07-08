@@ -22,6 +22,7 @@ const LocumStaff = () => {
     const [showLocumRequestDialog, setShowLocumRequestDialog] = useState(false);
     const [showNotesDialog, setShowNotesDialog] = useState(false);
     const [showSummaryDialog, setShowSummaryDialog] = useState(false);
+    const [requestedNeed, setRequestedNeed] = useState(false);
 
     useEffect(() => {
         const fetchSessionDetails = async () => {
@@ -90,8 +91,9 @@ const LocumStaff = () => {
         setStaffView(value);
     }
 
-    const getLocumExtensiveDialog = (value) => {
+    const getLocumExtensiveDialog = (value,data) => {
         setShowLocumExtensiveDialog(value);
+        setRequestedNeed(data)
     };
 
     const getLocumExtensiveRequestDialog = (value) => {
@@ -148,7 +150,7 @@ const LocumStaff = () => {
                         <SummaryDialog isLoading={isLoading} getIsOpen={getSummaryDialog} getApplicantDetailsViewScreen={getApplicantDetailsViewScreen} />
                     )}
                     {showLocumExtensiveDialog && (
-                        <LocumExtensionDialog isLoading={isLoading} getIsOpen={getLocumExtensiveDialog} selectedTab={selectedTab} getApplicantDetailsViewScreen={getApplicantDetailsViewScreen} />
+                        <LocumExtensionDialog isLoading={isLoading} requestedType={requestedNeed} getIsOpen={getLocumExtensiveDialog} selectedTab={selectedTab} getApplicantDetailsViewScreen={getApplicantDetailsViewScreen} />
                     )}
                     {showLocumExtensiveRequestDialog && (
                         <LocumExtensionRequestDialog isLoading={isLoading} getIsOpen={getLocumExtensiveRequestDialog} selectedTab={selectedTab} getApplicantDetailsViewScreen={getApplicantDetailsViewScreen} />

@@ -12,7 +12,7 @@ import { fileLoadingURL, FormatPhoneNumber, FormatPostalCode } from "../../utils
 import LoadingScreen from "../LoadingScreen";
 import { Tooltip } from "@mui/material";
 
-const NotesCommentsDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, selectedTab }) => {
+const NotesCommentsDialog = ({ getIsOpen, getActiveApplicationView, selectedTab }) => {
   let cookie = new Cookie();
   let userDetails = cookie.get('user');
   const users = jwt(userDetails);
@@ -52,6 +52,8 @@ const NotesCommentsDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, 
   const [isApproverCred, setIsApproverCred] = useState(false);
   const [userFirstName, setUserFirstName] = useState('');
   const [userLastName, setUserLastName] = useState('');
+  const canadaData = sessionStorage.getItem('canadaData') !== 'undefined' ? JSON.parse(sessionStorage.getItem('canadaData')) : {};
+  const dateFormat = canadaData?.dateFormat || 'MMM dd, yyyy';
   let approverDetailsDept;
   let approverDetailsCred;
 
@@ -422,12 +424,12 @@ const NotesCommentsDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, 
     template.replace(/{(.*?)}/g, (_, key) => values[key] || '');
 
   const lastModifiedDate = formDetails?.lastModifiedDate;
-  const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), "MM/dd/yyyy") : "-";
+  const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), dateFormat) : "-";
   const lastSubmittedLog = logDetails?.logs?.find((log) => log.workflowStatus === "SUBMITTED");
   const lastSubmittedDate = lastSubmittedLog ? lastSubmittedLog.lastModifiedDate : null;
-  const formattedSubmissionDate = lastSubmittedDate ? format(new Date(lastSubmittedDate), "MM/dd/yyyy") : "-";
+  const formattedSubmissionDate = lastSubmittedDate ? format(new Date(lastSubmittedDate), dateFormat) : "-";
   const CredUpcomingDate = formDetails?.upcomingCredCommitteeMeetingDate;
-  const upcomingCredCommitteeMeetingDate = CredUpcomingDate ? format(new Date(CredUpcomingDate), "MM/dd/yyyy") : "-";
+  const upcomingCredCommitteeMeetingDate = CredUpcomingDate ? format(new Date(CredUpcomingDate), dateFormat) : "-";
 
   if (
     workModeType === 'Staff Manager'

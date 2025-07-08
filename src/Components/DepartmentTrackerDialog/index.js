@@ -58,6 +58,9 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
   const selectedApplicantTypeName = applicantType?.find(data => data?.id === selectedApplicantType)?.applicantType;
   const [limit, setLimit] = useState(9999);
   const workModeType = sessionStorage.getItem('workModeType')
+  const canadaData = sessionStorage.getItem('canadaData') !== 'undefined' ? JSON.parse(sessionStorage.getItem('canadaData')) : {};
+  const dateFormat = canadaData?.dateFormat || 'MMM dd, yyyy';
+
 
   const transformedOptions = departmentList?.flatMap((department) => {
     const departmentEntry = {
@@ -243,7 +246,7 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
   const getActiveUserData = async () => {
     try {
       setIsLoadingImage(true);
-      const departmentParam = selectedDepartment || selectedServiceArea ? `&departmentSpecialties=${selectedDepartment}%23${selectedServiceArea}` : "";
+      const departmentParam = selectedDepartment || selectedServiceArea ? `&departmentId=${selectedDepartment}%23${selectedServiceArea}` : "";
       const url = `application-management-service/staff/reappointmentStatusDetails?sortBy=${sortValue}&sortByField=${sortField}&positionType=${applicationType === "LOCUM" ? "LOCUM" : "PERMANENT"}&limit=${limit}&searchText=${searchTermForTable}&isPaginationRequired=${limit === 9999 ? false : true}&offset=${page - 1}${departmentParam}${selectedApplicantType ? `&applicantTypeId=${selectedApplicantType}` : ''}`;
 
       const response = await GET(url);
@@ -362,7 +365,7 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
         assignedColor: color
       });
 
-      expirationDate.push(data?.priorCyclePeriod?.to ? format(new Date(data?.priorCyclePeriod?.to), 'MM/dd/yyyy') : '-')
+      expirationDate.push(data?.priorCyclePeriod?.to ? format(new Date(data?.priorCyclePeriod?.to), dateFormat) : '-')
 
       if (workflowStaffManagerRole) {
         const color = workflowStaffManagerRole?.approvalType === "VERIFIED_AND_ACCEPTED" ? "darkgreen"
@@ -465,7 +468,10 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
       }
 
       lastUpdated.push(
-        `${data?.updatedBy?.name?.firstName} ${format(new Date(data?.lastModifiedDate), "MM/dd/yyyy")}`
+        <>
+        <div>{`${data?.updatedBy?.name?.firstName} ${data?.updatedBy?.name?.lastName}`}<br></br>
+        <span>{format(new Date(data?.lastModifiedDate), dateFormat)}</span></div>
+      </>
       );
       action.push(true);
     });
@@ -505,7 +511,7 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
         type: "text",
         value: lastUpdated
       },
-      { type: "action", value: action },
+      // { type: "action", value: action },
     ];
   };
 

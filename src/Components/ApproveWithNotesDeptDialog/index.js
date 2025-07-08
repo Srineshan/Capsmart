@@ -22,7 +22,7 @@ import { fileLoadingURL, FormatPhoneNumber, FormatPostalCode } from "../../utils
 import LoadingScreen from "../LoadingScreen";
 import { Tooltip } from "@mui/material";
 
-const ApprovalWithNotesDeptDialog = ({ getIsOpen, getActiveApplicationView, dateFormat, selectedTab }) => {
+const ApprovalWithNotesDeptDialog = ({ getIsOpen, getActiveApplicationView, selectedTab }) => {
   let cookie = new Cookie();
   let userDetails = cookie.get('user');
   const users = jwt(userDetails);
@@ -81,17 +81,14 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen, getActiveApplicationView, date
   const workModeType = sessionStorage.getItem('workModeType');
   const [logDetails, setLogDetails] = useState([]);
   const [transformedRoles, setTransformedRoles] = useState([]);
+  const canadaData = sessionStorage.getItem('canadaData') !== 'undefined' ? JSON.parse(sessionStorage.getItem('canadaData')) : {};
+  const dateFormat = canadaData?.dateFormat || 'MMM dd, yyyy';
+
   // const isApproveEnabled = 
   //   // userRoleComments.trim() !== '' && 
   // selectedDateForDept !== null && 
   // selectedRoleCred !== '' &&
   // documentTitle !== '';
-
-  // useEffect(() => {
-  //   if (dateFormat) {
-  //     setCurrentDate(format(new Date(), dateFormat));
-  //   }
-  // }, [dateFormat]);
 
   const onClicksignFunction = () => {
     setTodayDate();
@@ -828,10 +825,10 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen, getActiveApplicationView, date
   // }
 
   const lastModifiedDate = formDetails?.lastModifiedDate;
-  const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), "MM/dd/yyyy") : "-";
+  const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), dateFormat) : "-";
   const lastSubmittedLog = logDetails?.logs?.find((log) => log.workflowStatus === "SUBMITTED");
   const lastSubmittedDate = lastSubmittedLog ? lastSubmittedLog.lastModifiedDate : null;
-  const formattedSubmissionDate = lastSubmittedDate ? format(new Date(lastSubmittedDate), "MM/dd/yyyy") : "-";
+  const formattedSubmissionDate = lastSubmittedDate ? format(new Date(lastSubmittedDate), dateFormat) : "-";
   return (
     <>
       {isLoadingImageDocs && (

@@ -341,6 +341,10 @@
   text-align: center;
 }
 
+.reviewButton:hover {
+  background: $primarycolorHover 0% 0% no-repeat padding-box;
+}
+
 .rejectionBorderStyle {
   background: #FFFFFF 0% 0% no-repeat padding-box;
   box-shadow: 0px 5px 20px #52575D14;

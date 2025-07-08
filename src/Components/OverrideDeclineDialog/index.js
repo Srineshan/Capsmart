@@ -23,7 +23,7 @@ import { fileLoadingURL, FormatPhoneNumber, FormatPostalCode } from "../../utils
 import LoadingScreen from "../LoadingScreen";
 import { Tooltip } from "@mui/material";
 
-const OverRideDeclineDialog = ({ getIsOpen, getActiveApplicationView, dateFormat, selectedTab }) => {
+const OverRideDeclineDialog = ({ getIsOpen, getActiveApplicationView, selectedTab }) => {
   let cookie = new Cookie();
   let userDetails = cookie.get('user');
   const users = jwt(userDetails);
@@ -81,9 +81,11 @@ const OverRideDeclineDialog = ({ getIsOpen, getActiveApplicationView, dateFormat
   );
   const requestId = sessionStorage.getItem('requestId');
   const [logDetails, setLogDetails] = useState([]);
+  const canadaData = sessionStorage.getItem('canadaData') !== 'undefined' ? JSON.parse(sessionStorage.getItem('canadaData')) : {};
+  const dateFormat = canadaData?.dateFormat || 'MMM dd, yyyy';
   const rawExpireDate = formDetails?.priorCyclePeriod?.to ?? null;
   const ExpireDate = rawExpireDate ? parseISO(rawExpireDate) : null;
-  const formattedExpiringDate = ExpireDate ? format(new Date(ExpireDate), "MMM dd, yyyy") : "-";
+  const formattedExpiringDate = ExpireDate ? format(new Date(ExpireDate), dateFormat) : "-";
   const daysRemaining = ExpireDate ? Math.abs(differenceInDays(new Date(ExpireDate), new Date())) : null
 
   useEffect(() => {
@@ -373,10 +375,10 @@ const OverRideDeclineDialog = ({ getIsOpen, getActiveApplicationView, dateFormat
   }
 
   const lastModifiedDate = formDetails?.lastModifiedDate;
-  const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), "MM/dd/yyyy") : "-";
+  const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), dateFormat) : "-";
   const lastSubmittedLog = logDetails?.logs?.find((log) => log.workflowStatus === "SUBMITTED");
   const lastSubmittedDate = lastSubmittedLog ? lastSubmittedLog.lastModifiedDate : null;
-  const formattedSubmissionDate = lastSubmittedDate ? format(new Date(lastSubmittedDate), "MM/dd/yyyy") : "-";
+  const formattedSubmissionDate = lastSubmittedDate ? format(new Date(lastSubmittedDate), dateFormat) : "-";
   return (
     <>
       {isLoadingImageDocs && (

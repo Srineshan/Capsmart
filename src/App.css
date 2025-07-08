@@ -168,6 +168,10 @@ select {
 	text-align: left !important;
 }
 
+.css-kk1bwy-MuiButtonBase-root-MuiMenuItem-root {
+  font-family: "Proxima Nova", sans-serif !important;
+}
+
 .bp4-timepicker .bp4-timepicker-input {
 	width: 20px !important;
 }

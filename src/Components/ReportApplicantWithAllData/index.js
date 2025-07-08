@@ -5,6 +5,8 @@ import style from './index.module.scss';
 
 const ReportsApplicantWithAllDataTable = ({ tableData, declinedReport }) => {
   const [entity, setEntity] = useState([]);
+  const canadaData = sessionStorage.getItem('canadaData') !== 'undefined' ? JSON.parse(sessionStorage.getItem('canadaData')) : {};
+  const dateFormat = canadaData?.dateFormat || 'MMM dd, yyyy';
 
   useEffect(() => {
     sessionStorage.setItem("fromSummary", false);
@@ -24,8 +26,8 @@ const ReportsApplicantWithAllDataTable = ({ tableData, declinedReport }) => {
   const renderApplicationDetails = () => {
     return tableData?.map((formDetails, index) => {
       const lastModifiedDate = formDetails?.lastModifiedDate;
-      const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), "MMM dd, yyyy") : "-";
-      const formattedSubmissionDate = formDetails?.submittedDate ? format(new Date(formDetails?.submittedDate), "MMM dd, yyyy") : "-";
+      const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), dateFormat) : "-";
+      const formattedSubmissionDate = formDetails?.submittedDate ? format(new Date(formDetails?.submittedDate), dateFormat) : "-";
 
       return (
         <div key={formDetails?.displayId} className={`${style.rejectionBorderStyle} ${style.declineBorderStyle} ${style.marginTop10}`}>
