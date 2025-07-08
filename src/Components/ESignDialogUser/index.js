@@ -20,23 +20,23 @@ const ESignDialogUser = ({ getIsOpen, tempValue, baseKey, applicationId, basicFo
     const [isShowDrawCanvas, setIsShowDrawCanvas] = useState(false);
     const [isShowType, setIsShowType] = useState(false);
     const sigCanvas = useRef({});
-    const contentRef = useRef(null);
-    // const [applicantProfile, setApplicantProfile] = useState();
-    const [formIndex, setFormIndex] = useState();
-    const { section, step } = useParams()
-    let eSignImg = getValueByPath(basicForm, `forms[${formIndex}].data.setUpYourSignature.file`);
-    let eSignTypeContent = getValueByPath(basicForm, `forms[${formIndex}].data.setUpYourSignature.type.text`);
-    let eSignTypeContentStyle = getValueByPath(basicForm, `forms[${formIndex}].data.setUpYourSignature.type.style`);
-    const [selectedESignTypeStyle, setSelectedESignTypeStyle] = useState(eSignTypeContentStyle !== undefined ? eSignTypeContentStyle : 'fave-script-pro');
-    const [eSignType, setESignType] = useState(eSignTypeContent !== undefined ? eSignTypeContent : '');
-    const [eSignImgState, setESignImgState] = useState(eSignImg !== undefined ? eSignImg : '');
-    const [signatureData, setSignatureData] = useState(null);
     let cookie = new Cookie();
     let userDetails = cookie.get('user');
     const users = jwt(userDetails);
     const [userData, setUserData] = useState();
     const [title, setTitle] = useState('');
     const [initial, setInitial] = useState('');
+    const contentRef = useRef(null);
+    // const [applicantProfile, setApplicantProfile] = useState();
+    const [formIndex, setFormIndex] = useState();
+    const { section, step } = useParams()
+    let eSignImg = userData?.esignature?.file;
+    let eSignTypeContent = userData?.esignature?.type ? userData?.esignature?.type?.text : '';
+    let eSignTypeContentStyle = userData?.esignature?.type ? userData?.esignature?.type?.style : 'fave-script-pro';
+    const [selectedESignTypeStyle, setSelectedESignTypeStyle] = useState(eSignTypeContentStyle !== undefined ? eSignTypeContentStyle : 'fave-script-pro');
+    const [eSignType, setESignType] = useState(eSignTypeContent !== undefined ? eSignTypeContent : '');
+    const [eSignImgState, setESignImgState] = useState(eSignImg !== undefined ? eSignImg : '');
+    const [signatureData, setSignatureData] = useState(null);
 
     console.log(eSignTypeContent, eSignType, eSignImg, 'eSignImg')
     const clearSignature = () => {
@@ -53,6 +53,8 @@ const ESignDialogUser = ({ getIsOpen, tempValue, baseKey, applicationId, basicFo
         const { data: userData } = await GET(`user-management-service/user/${users?.id}`);
         console.log("userdataaaa" + JSON.stringify(userData))
         setUserData(userData)
+        setInitial(userData?.esignature?.initial)
+        setTitle(userData?.esignature?.title)
     }
 
     useEffect(() => {
@@ -130,20 +132,30 @@ const ESignDialogUser = ({ getIsOpen, tempValue, baseKey, applicationId, basicFo
             let fileName = {
                 "fileName": `signature.png`
             };
+            let temp = {
+                initial: initial,
+                title: title,
+                file: {
+                    filePath: "string",
+                    fileName: `signature.png`,
+                    fileURL: "string",
+                    fileType: "string"
+                }
+            }
             const blob = new Blob([blobFormat], { type: `image/png` });
             const formData = new FormData();
 
-            formData.append('files', new Blob([JSON.stringify(fileName)], {
+            formData.append('eSignDTO', new Blob([JSON.stringify(temp)], {
                 type: "application/json"
             }));
-            formData.append('documents', blob, fileName?.fileName);
+            formData.append('file', blob, fileName?.fileName);
             try {
                 const response = await PUT(`user-management-service/user/${users?.id}/updateESignature`, formData);
                 SuccessToaster('File Uploaded Successfully');
                 console.log(response?.data);
                 let temp = {};
                 temp.file = response?.data?.file;
-                handleSubmit(temp, "file")
+                // handleSubmit(temp, "file")
             } catch (error) {
                 ErrorToaster('File Upload Failed');
                 console.error(error);
@@ -169,26 +181,29 @@ const ESignDialogUser = ({ getIsOpen, tempValue, baseKey, applicationId, basicFo
         let temp = {
             initial: initial,
             title: title,
-
+            type: data?.type,
+            file: userData?.esignature?.file
         }
 
-        if (type === "type") {
+        const formData = new FormData();
 
-        }
-
-        console.log(data)
-        // await PUT(`user-management-service/user/${users?.id}/updateESignature`, data)
-        //     .then(response => {
-        //         console.log(response)
-        //         setBasicForm(response?.data)
-        //         getPreApplication()
-        //         SuccessToaster("Application Updated Successfully");
-        //         getIsOpen(false)
-        //     })
-        //     .catch((error) => {
-        //         console.log(error)
-        //         ErrorToaster("Unexpected Error Updating Application");
-        //     });
+        formData.append('eSignDTO', new Blob([JSON.stringify(temp)], {
+            type: "application/json"
+        }));
+        console.log(data, formData)
+        await PUT(`user-management-service/user/${users?.id}/updateESignature`, formData)
+            .then(response => {
+                console.log(response)
+                setBasicForm(response?.data)
+                // getPreApplication()
+                SuccessToaster("Application Updated Successfully");
+                setIsContinue(true);
+                getIsOpen(false)
+            })
+            .catch((error) => {
+                console.log(error)
+                ErrorToaster("Unexpected Error Updating Application");
+            });
     }
     return (
         <Dialog isOpen={getIsOpen} onClose={() => getIsOpen(false)} className={`${style.eSignDialog} ${style.eSignDialogBackground}`} canOutsideClickClose={false} canEscapeKeyClose={false}>

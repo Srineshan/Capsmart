@@ -41,6 +41,7 @@ const Home = React.lazy(() => import("./Screens/CustomerSystemAdmin"));
 const MDManager = React.lazy(() => import("./Screens/MDManagerScreens/MDManager"));
 const ManageAttestation = React.lazy(() => import("./Screens/MDManagerScreens/MDAttestations/ManageAttestations"));
 const ManageAttestationGroups = React.lazy(() => import("./Screens/MDManagerScreens/MDAttestations/ManageAttestationGroups"));
+const MDLibrary = React.lazy(() => import("./Screens/MDManagerScreens/MDLibrary"));
 const MDManagerStep1 = React.lazy(() => import("./Screens/MDManagerScreens/MDManager/step1"));
 const HistoricalData = React.lazy(() => import("./Screens/StaffApplication/fillHistoricalData"));
 const ApplicationSubmitted = React.lazy(() => import("./Components/ApplicationSubmitted"));
@@ -1327,6 +1328,7 @@ const App = ({ props }) => {
                 <Route path="/mdManager" element={<ProtectedRoute><MDManager /></ProtectedRoute>} />
                 <Route path="/mdManager/manageAttestation" element={<ProtectedRoute><ManageAttestation /></ProtectedRoute>} />
                 <Route path="/mdManager/manageAttestationGroups" element={<ProtectedRoute><ManageAttestationGroups /></ProtectedRoute>} />
+                <Route path="/mdManager/libraries" element={<MDLibrary />} />
                 <Route path="/mdManager/step1" element={<ProtectedRoute><MDManagerStep1 /></ProtectedRoute>} />
                 <Route path="/thankyou" element={<ProtectedRoute><Thankyou /></ProtectedRoute>} />
                 <Route path="/reportType" element={<ProtectedRoute><ReportType /></ProtectedRoute>} />

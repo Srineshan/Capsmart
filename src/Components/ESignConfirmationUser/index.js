@@ -1,22 +1,37 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Dialog, Classes } from '@blueprintjs/core';
 import CrossPink from "../../images/crossPink.png";
-import { POST, PUT } from '../../Screens/dataSaver';
+import { GET, POST, PUT } from '../../Screens/dataSaver';
 import { ErrorToaster, SuccessToaster } from '../../utils/toaster';
 import style from './index.module.scss'
 import CommonSelectField from '../CommonFields/CommonSelectField';
 import { getValueByPath } from '../../utils/formatting';
 import { Tooltip } from '@mui/material';
+import Cookie from 'universal-cookie';
+import jwt from 'jwt-decode';
 
 const ESignConfirmationUserDialog = ({ getIsOpen, basicForm, updateFunc, confirmFunc, hideCross }) => {
-    let eSignImg = getValueByPath(basicForm, `forms[${basicForm?.forms?.findIndex(data => data?.schemaCategory === 'UploadYourDoc')}].data.setUpYourSignature.file`);
-    let eSignTypeContent = getValueByPath(basicForm, `forms[${basicForm?.forms?.findIndex(data => data?.schemaCategory === 'UploadYourDoc')}].data.setUpYourSignature.type.text`);
-    let eSignTypeContentStyle = getValueByPath(basicForm, `forms[${basicForm?.forms?.findIndex(data => data?.schemaCategory === 'UploadYourDoc')}].data.setUpYourSignature.type.style`);
-    let eSignInitial = getValueByPath(basicForm, `forms[${basicForm?.forms?.findIndex(data => data?.schemaCategory === 'UploadYourDoc')}].data.setUpYourSignature.initial`);
-    let eSignTitle = getValueByPath(basicForm, `forms[${basicForm?.forms?.findIndex(data => data?.schemaCategory === 'UploadYourDoc')}].data.setUpYourSignature.title`);
+    let cookie = new Cookie();
+    let userDetails = cookie.get('user');
+    const users = jwt(userDetails);
+    const [userData, setUserData] = useState();
+    let eSignImg = userData?.esignature?.file;
+    let eSignTypeContent = userData?.esignature?.type ? userData?.esignature?.type?.text : '';
+    let eSignTypeContentStyle = userData?.esignature?.type ? userData?.esignature?.type?.style : '';
+    let eSignInitial = userData?.esignature?.initial;
+    let eSignTitle = userData?.esignature?.title;
     const [eSignType, setESignType] = useState(eSignTypeContent !== undefined ? eSignTypeContent : '');
     console.log(eSignTypeContent, eSignType)
 
+    useEffect(() => {
+        setUserDetails();
+    }, [users?.id])
+
+    const setUserDetails = async () => {
+        const { data: userData } = await GET(`user-management-service/user/${users?.id}`);
+        console.log("userdataaaa" + JSON.stringify(userData))
+        setUserData(userData)
+    }
 
     const handleSubmitApplicationReq = async (data) => {
         let temp = {
