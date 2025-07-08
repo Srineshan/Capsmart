@@ -12,7 +12,7 @@ import { fileLoadingURL, FormatPhoneNumber, FormatPostalCode } from "../../utils
 import LoadingScreen from "../LoadingScreen";
 import Dropzone from "react-dropzone";
 import DescriptionIcon from '@mui/icons-material/Description';
-import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
+import { ErrorToaster2, SuccessToaster2 } from "../../utils/toaster";
 import CommonInputField from "../CommonFields/CommonInputField";
 import CommonSwitch from "../CommonFields/CommonSwitch";
 import axios from "axios";
@@ -84,14 +84,38 @@ const NotesDialog = ({ getIsOpen, getActiveApplicationView, selectedTab }) => {
 
   const changeHandler = async (event) => {
     console.log("Event received:", event);
-    const filesArray = Array.from(event);
-    console.log("Converted files array:", filesArray);
-    setFiles(filesArray);
+  
+    const newFilesArray = Array.from(event);
+    console.log("Converted files array:", newFilesArray);
+  
+    const existingFileNames = (files || []).map(file => file.name);
+    const seenInCurrentSelection = new Set();
+    const filteredNewFiles = [];
+  
+    newFilesArray.forEach(file => {
+      if (existingFileNames.includes(file.name)) {
+        ErrorToaster2(`File "${file.name}" already exists`);
+      } else if (seenInCurrentSelection.has(file.name)) {
+        ErrorToaster2(`Duplicate file "${file.name}" selected in this upload`);
+      } else {
+        seenInCurrentSelection.add(file.name);
+        filteredNewFiles.push(file);
+      }
+    });
+  
+    if (filteredNewFiles.length === 0) {
+      return; 
+    }
+  
+    const updatedFiles = [...(files || []), ...filteredNewFiles];
+    setFiles(updatedFiles);
+  
+
 
     const formData = new FormData();
     let fileNameArray = [];
 
-    filesArray.forEach(file => {
+    filteredNewFiles.forEach(file => {
       const fileInfo = {
         "filePath": file.path || '',
         "fileName": file.name,
@@ -114,7 +138,7 @@ const NotesDialog = ({ getIsOpen, getActiveApplicationView, selectedTab }) => {
       setIsLoadingImageDocs(true);
       const response = await POST(`application-management-service/application/${id}/files/bulk?isLLMRequired=${false}`, formData);
       console.log("API Response:", response);
-      SuccessToaster('File Uploaded Successfully');
+      SuccessToaster2('File Uploaded Successfully');
       console.log("Response data:", response?.data);
       setUploadFileData(prevData => {
         // Merge previous data with new data
@@ -124,7 +148,7 @@ const NotesDialog = ({ getIsOpen, getActiveApplicationView, selectedTab }) => {
       console.log("Responseupload:", uploadFileData);
       return response?.data;
     } catch (error) {
-      ErrorToaster('File Upload Failed');
+      ErrorToaster2('File Upload Failed');
       console.error("Error:", error);
       setIsLoading(false);
       return null;

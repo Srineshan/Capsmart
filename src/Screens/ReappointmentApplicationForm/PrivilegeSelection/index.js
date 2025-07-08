@@ -4064,12 +4064,12 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                             >
                               SAVE
                             </div> */}
-                            <Tooltip title={"Click to Cancel"} arrow>
+                            <Tooltip title={"Click to Close"} arrow>
                               <div
                                 className={`${style.reappointmentButtonOutlined}`}
                                 onClick={() => { setIsPrivilegeSetChanging(false); setPrivilegeSetChangeYesOrNo('') }}
                               >
-                                CANCEL
+                                CLOSE
                               </div>
                             </Tooltip>
                           </div>
