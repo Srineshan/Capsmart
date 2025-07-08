@@ -197,10 +197,16 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
     } else {
       setIsContinueEnabled(false);
     }
+    if (privilegeChangeYesOrNo === 'No' && isPrivilegeSetChanging && basicForm?.privileges?.obligatedPrivileges?.length > 1) {
+      setIsContinueEnabled(true);
+    }
+    if (additionalPrivilegeChangeYesOrNo === 'Yes' && isAdditionalPrivilegeCategoryChanging && basicForm?.privileges?.additionalPrivileges?.length > 1) {
+      setIsContinueEnabled(true);
+    }
     if (basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory === ('Courtesy Staff With Admitting Privileges' || 'Courtesy Staff Without Admitting Privileges') && privilegeChangeYesOrNo !== '' && privilegeAtOtherHospitalYesOrNo === 'Yes' && departmentChangeYesOrNo !== '') {
       setIsContinueEnabled(true);
     }
-  }, [privilegeChangeYesOrNo, privilegeSetChangeYesOrNo, additionalPrivilegeChangeYesOrNo, privilegeAtOtherHospitalYesOrNo, departmentChangeYesOrNo])
+  }, [privilegeChangeYesOrNo, privilegeSetChangeYesOrNo,isPrivilegeSetChanging,isAdditionalPrivilegeCategoryChanging, additionalPrivilegeChangeYesOrNo, privilegeAtOtherHospitalYesOrNo, departmentChangeYesOrNo])
 
   useEffect(() => {
     if (isSubmit) {

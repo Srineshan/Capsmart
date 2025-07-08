@@ -102,7 +102,10 @@ const EditNotesDialog = ({ getIsOpen, showEditNotesID, showEditNotes, showEditNo
   const newFilesArray = Array.from(event);
   console.log("Converted files array:", newFilesArray);
      
-  const existingFileNames = (files || []).map(file => file.name);
+  const existingFileNames = [
+    ...(files || []).map(file => file.name),
+    ...(uploadFileData || []).map(file => file?.file?.fileName || file?.fileName)
+  ];
   const seenInCurrentSelection = new Set();
   const filteredNewFiles = [];
      
