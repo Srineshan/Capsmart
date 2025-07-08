@@ -1106,12 +1106,24 @@ const ReportTypeOverview = () => {
     const getStaffReappointmentStatusTracker = async () => {
         try {
             setIsLoading(true);
-            const departmentParam = dataToUseInReport?.selectedDepartments !== "" ? `&departmentId=${dataToUseInReport?.selectedDepartments}` : "";
-            const applicantParam = dataToUseInReport?.selectedStaffType !== ""  ? `&applicantTypeId=${dataToUseInReport?.selectedStaffType}` : "";
-            const privilegeParam = dataToUseInReport?.selectedPrivilegeCategory !== "" ? `&privilegingCategoryId=${dataToUseInReport?.selectedPrivilegeCategory}` : "";
-            const { data } = await GET(`application-management-service/staff/reappointmentStatusDetails?positionType=PERMANENT&limit=9999${departmentParam}${applicantParam}${privilegeParam}`)
-            setStaffReappointmentTrackerData(data?.applications || []);
-            console.log("tracker", data?.applications);
+
+            const isValidArray = (val) => Array.isArray(val) && val.length > 0 && val.some(item => item && item.trim() !== "");
+            const departmentParam = isValidArray(dataToUseInReport?.selectedDepartments)
+            ? `&departmentId=${dataToUseInReport?.selectedDepartments}`
+            : "";
+
+        const applicantParam = isValidArray(dataToUseInReport?.selectedStaffType)
+            ? `&applicantTypeId=${dataToUseInReport?.selectedStaffType}`
+            : "";
+
+        const privilegeParam = isValidArray(dataToUseInReport?.selectedPrivilegeCategory)
+            ? `&privilegingCategoryId=${dataToUseInReport?.selectedPrivilegeCategory}`
+            : "";
+            const response = await GET(
+                `application-management-service/staff/reappointmentStatusDetails?positionType=PERMANENT&limit=9999${applicantParam}${departmentParam}${privilegeParam}`
+            );
+            setStaffReappointmentTrackerData(response?.data?.applications || []);
+            console.log("tracker", response?.data?.applications);
             
         } catch (error) {
             console.error("Error fetching reappointment status:", error);
@@ -1125,9 +1137,9 @@ const ReportTypeOverview = () => {
     
     
 
-useEffect(() => {
-    getStaffReappointmentStatusTracker();
-}, [dataToUseInReport?.selectedStaffType,dataToUseInReport?.selectedDepartments,dataToUseInReport?.selectedPrivilegeCategory])
+// useEffect(() => {
+//     getStaffReappointmentStatusTracker();
+// }, [dataToUseInReport?.selectedStaffType,dataToUseInReport?.selectedDepartments,dataToUseInReport?.selectedPrivilegeCategory])
 
     const getCurrentApplicationNotesSummary = async (signal) => {
         // if (!isMyReport) {
@@ -2523,7 +2535,7 @@ useEffect(() => {
                                                     <div className={`${style.entityNameBolderStyle} ${style.textAlignCenter} ${style.marginTop5} `}>
                                                         {isMyReport ? myReportContent?.title : reportTitleList[reportType]}
                                                     </div>
-                                                    {(dataToUseInReport?.reportingTimePeriod !== "") && (
+                                                    {(dataToUseInReport?.reportingTimePeriod !== "" && reportType !== "staffReappointmentTracker") && (
                                                         <div className={`${style.reportRunByTextStyle} ${style.textAlignCenter} ${style.marginTop5} `}>Reporting Period used for this report : {dataToUseInReport?.reportingTimePeriod} ({dataToUseInReport?.fromToDisplay} to {dataToUseInReport?.toToDisplay}) </div>
                                                     )}
                                                     {/* {(reportType === "paymentProcessingStatusTracker") && (

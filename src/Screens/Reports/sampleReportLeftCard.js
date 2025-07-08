@@ -790,27 +790,28 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 ))}
                             </Select>
                         </FormControl> */}
-                        <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                            <InputLabel id="demo-multiple-name-label1">Reporting Time Period</InputLabel>
-                            <Select
-                                labelId="demo-multiple-name-label1"
-                                id="demo-multiple-name1"
-                                MenuProps={MenuProps}
-                                value={reportingTimePeriod}
-                                onChange={(e) => { setReportingTimePeriod(e.target.value) }}
-                                disabled={isLoading}
-                            >
-                                <MenuItem value={'Current Week'} disabled={isLoading}>Current Week</MenuItem>
-                                <MenuItem value={'Last Week'} disabled={isLoading}>Last Week</MenuItem>
-                                <MenuItem value={'Current Month'} disabled={isLoading}>Current Month</MenuItem>
-                                <MenuItem value={'Last Month'} disabled={isLoading}>Last Month</MenuItem>
-                                <MenuItem value={'Current Qtr'} disabled={isLoading}>Current Quarter</MenuItem>
-                                <MenuItem value={'Last Qtr'} disabled={isLoading}>Last Quarter</MenuItem>
-                                <MenuItem value={'Current Year'} disabled={isLoading}>Current Year</MenuItem>
-                                <MenuItem value={'Last Year'} disabled={isLoading}>Last Year</MenuItem>
-                                <MenuItem value={'Custom'} disabled={isLoading}>Custom</MenuItem>
-                            </Select>
-                        </FormControl>
+                            {reportType !== "staffReappointmentTracker" && (
+                                <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                                    <InputLabel id="demo-multiple-name-label1">Reporting Time Period</InputLabel>
+                                    <Select
+                                        labelId="demo-multiple-name-label1"
+                                        id="demo-multiple-name1"
+                                        MenuProps={MenuProps}
+                                        value={reportingTimePeriod}
+                                        onChange={(e) => { setReportingTimePeriod(e.target.value) }}
+                                        disabled={isLoading}
+                                    >
+                                        <MenuItem value={'Current Week'} disabled={isLoading}>Current Week</MenuItem>
+                                        <MenuItem value={'Last Week'} disabled={isLoading}>Last Week</MenuItem>
+                                        <MenuItem value={'Current Month'} disabled={isLoading}>Current Month</MenuItem>
+                                        <MenuItem value={'Last Month'} disabled={isLoading}>Last Month</MenuItem>
+                                        <MenuItem value={'Current Qtr'} disabled={isLoading}>Current Quarter</MenuItem>
+                                        <MenuItem value={'Last Qtr'} disabled={isLoading}>Last Quarter</MenuItem>
+                                        <MenuItem value={'Current Year'} disabled={isLoading}>Current Year</MenuItem>
+                                        <MenuItem value={'Last Year'} disabled={isLoading}>Last Year</MenuItem>
+                                        <MenuItem value={'Custom'} disabled={isLoading}>Custom</MenuItem>
+                                    </Select>
+                                </FormControl>)}
                         {reportingTimePeriod === "Custom" && (
                             <>
                                 <div className={style.marginTop10}>

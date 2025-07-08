@@ -52,6 +52,8 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [yesOrNoAddress, setYesOrNoAddress] = useState('YES');
     const [showInfo, setShowInfo] = useState(false);
     const [applicantProfile, setApplicantProfile] = useState();
+    const [isApplicantUpdated, setIsApplicantUpdated] = useState(false);
+    const [isContactUpdated, setIsContactUpdated] = useState(false);
     let allMissingFields = [];
     useEffect(() => {
         if (basicForm && !formSchema) {
@@ -812,6 +814,14 @@ if (data === `forms[${formIndex}].data.contactAddress2.isMailingAddressSameAsHom
 
     console.log(getValueByPath(basicForm, 'basicDetails.departmentSpecialty.department'), fieldPaths)
     console.log('Metadata', metadata);
+
+    const shouldEnableActionButtons = isApplicantUpdated || isContactUpdated;
+    const shouldEnableActionButtons2 =
+  isApplicantUpdated ||
+  isContactUpdated &&
+  yesOrNoAddress !== '' &&
+  yesOrNoDemographic !== '';
+
     return (
         <div>
             {showInfo && <div className={style.bgdrop} onClick={() => setShowInfo(false)}></div>}
@@ -852,6 +862,7 @@ if (data === `forms[${formIndex}].data.contactAddress2.isMailingAddressSameAsHom
                                 setIsView={setViewDemographicInfo}
                                 yesOrNoDemographic={yesOrNoDemographic}
                                 setYesOrNoDemographic={setYesOrNoDemographic}
+                                setIsApplicantUpdated={setIsApplicantUpdated}
                             />
                             {/* )}
                             <div className={style.displayInRow}>
@@ -947,6 +958,8 @@ if (data === `forms[${formIndex}].data.contactAddress2.isMailingAddressSameAsHom
                                                     // setShowContactInfo(false);
                                                     getMissingFields()
                                                     setUpdateFrom('contact')
+                                                    setIsContactInfoEdited(false);
+                                                    setIsContactUpdated(true);
                                                 } : () => { }}
                                                 disabled={!isContactInfoEdited}
                                             >
@@ -1014,11 +1027,11 @@ if (data === `forms[${formIndex}].data.contactAddress2.isMailingAddressSameAsHom
                     <Tooltip title={"Click to Skip This Step and Continue Later"} arrow>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div></Tooltip>
                         <Tooltip title={"Click to Save your Progress and Continue later"} arrow>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div></Tooltip>
+                        <div className={`${style.saveInProgress} ${style.marginTop}${!shouldEnableActionButtons ? style.disabledButtonLook : ''}`} onClick={() => shouldEnableActionButtons && getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div></Tooltip>
                         <Tooltip title={"Click to Go Back to the Previous Step"} arrow>
                         <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleBackClick()}>BACK</div></Tooltip>
                         <Tooltip title={"Click to Proceed to the Next Step"} arrow>
-                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => getAllMissingFields()}>CONTINUE</div></Tooltip>
+                        <div className={`${style.continue} ${style.marginTop} ${!shouldEnableActionButtons ? style.disabledButtonLook : ''}`} onClick={() => shouldEnableActionButtons && getAllMissingFields()}>CONTINUE</div></Tooltip>
                     </div>
                 </div>
 
@@ -1063,8 +1076,8 @@ if (data === `forms[${formIndex}].data.contactAddress2.isMailingAddressSameAsHom
                     <Tooltip title={"Click to Skip This Step and Continue Later"} arrow> <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div></Tooltip>
                     <Tooltip title={"Click to Save your Progress and Continue later"} arrow>
                         <div
-                            className={`${style.saveInProgress} ${style.marginTop10}`}
-                            onClick={() => getIsSaveInProgressOpen(true)}
+                            className={`${style.saveInProgress} ${style.marginTop} ${!shouldEnableActionButtons ? style.disabledButtonLook : ''}`}
+                            onClick={() => shouldEnableActionButtons && getIsSaveInProgressOpen(true)}
                         >
                             SAVE IN PROGRESS
                         </div>
@@ -1086,7 +1099,11 @@ if (data === `forms[${formIndex}].data.contactAddress2.isMailingAddressSameAsHom
                             CONTINUE
                         </div> */}
                                                 <Tooltip title={"Click to Proceed to the Next Step"} arrow>
-                            <div className={` ${style.continue} ${style.marginTop10} ${(yesOrNoAddress === '' || yesOrNoDemographic === '') ? style.disabledButtonLook : ''}`} onClick={() => (yesOrNoAddress !== '' && yesOrNoDemographic !== '') && getAllMissingFields()}>CONTINUE</div></Tooltip>
+                                <div className={` ${style.continue} ${style.marginTop10} ${!shouldEnableActionButtons2 ? style.disabledButtonLook : ''}`} onClick={() => {
+    if (shouldEnableActionButtons2) {
+      getAllMissingFields();
+    }
+  }}>CONTINUE</div></Tooltip>
                         </div>
 
                     </div>

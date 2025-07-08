@@ -79,6 +79,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import IconButton from '@mui/material/IconButton';
 import LoadingScreen from "../LoadingScreen";
+import DeleteConfirmationDialog from "../../Components/DeleteConfirmation"
 const NewActiveApplication = ({
   contracts,
   getNewContract,
@@ -265,6 +266,8 @@ const NewActiveApplication = ({
   // const userLastName = userData?.name?.lastName || "No Last Name";
   const [hasVerificationAttempted, setHasVerificationAttempted] = useState(false);
   const [approvalType, setApprovalType] = useState(false);
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [noteToDelete, setNoteToDelete] = useState(null);
   const canadaData =
     sessionStorage.getItem("canadaData") !== "undefined"
       ? JSON.parse(sessionStorage.getItem("canadaData"))
@@ -628,7 +631,19 @@ const NewActiveApplication = ({
   const handlePopoverClose = () => {
     setAnchorEl(null);
   };
+    const getShowDeleteConfirmation = (value) => {
+        setShowDeleteConfirmation(value);
+    }
 
+    const getDeleteConfirmation = (value) => {
+        if (value && noteToDelete) {
+    handleDeleteNote(noteToDelete);
+  }
+    }
+const onDeleteClick = (id) => {
+  setNoteToDelete(id);
+  setShowDeleteConfirmation(true);
+};
   useEffect(() => {
     getFormSchema(formSchemaId);
   }, [formSchemaId]);
@@ -12376,7 +12391,7 @@ const NewActiveApplication = ({
                                               <DeleteOutlineIcon
                                                 sx={{ fontSize: 20 }}
                                                 className={`${style.notesIconDelete} ${style.cursorPointer}`}
-                                                onClick={() => handleDeleteNote(log?.id)}
+                                                onClick={() =>onDeleteClick(log?.id) }
                                               />
                                             </Tooltip>
                                           </div>
@@ -13230,6 +13245,13 @@ const NewActiveApplication = ({
               getPreApplicationForReplace={getPreApplication}
             />
           )}
+           {
+                          showDeleteConfirmation && (
+                              <DeleteConfirmationDialog getShowDeleteConfirmation={getShowDeleteConfirmation}
+                                  getDeleteConfirmation={getDeleteConfirmation}
+                                  confirmationText="Do you want to delete this Notes?" />
+                          )
+                      }
           {/* <Dialog isOpen={showCurrentPrivileges} onClose={() => setShowCurrentPrivileges(false)} className={`${style.eSignDialog} ${style.eSignDialogBackground}`} canOutsideClickClose={false} canEscapeKeyClose={false}>
           <div>
             <div className={Classes.DIALOG_BODY}>
