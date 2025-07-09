@@ -480,7 +480,7 @@ const ClarificationDialog = ({ getIsOpen, data, form, dateFormat, getActiveAppli
               )}
 
               <div className={`${style.marginTop10} ${style.spaceBetween}`}>
-                <div className={`${style.cursorPointer}`} onClick={() => getIsOpen(false)}>
+                <div className={`${style.cursorPointer}`} onClick={() => getClarificationResponse()}>
                 <Tooltip title="Click to Save Your Progress" arrow>
                   <div className={`${style.cancelButton} ${style.cancelButtonTextStyle}`}>SAVE IN PROGRESS</div>
                   </Tooltip>
