@@ -614,19 +614,19 @@
 }
 
 .step1Grid> :nth-child(1) {
-    grid-column: span 6;
-}
-
-.step1Grid> :nth-child(2) {
     grid-column: span 4;
 }
 
-.step1Grid> :nth-child(3) {
+.step1Grid> :nth-child(2) {
     grid-column: span 2;
 }
 
-.step1Grid> :nth-child(4) {
+.step1Grid> :nth-child(3) {
     grid-column: span 6;
+}
+
+.step1Grid> :nth-child(4) {
+    grid-column: span 2;
 }
 
 .step1Grid> :nth-child(5) {
@@ -650,10 +650,6 @@
 }
 
 .step1Grid> :nth-child(10) {
-    grid-column: span 2;
-}
-
-.step1Grid> :nth-child(11) {
     grid-column: span 2;
 }
 

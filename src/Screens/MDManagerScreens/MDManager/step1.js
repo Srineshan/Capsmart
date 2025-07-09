@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import CommonInputField from '../../../Components/CommonFields/CommonInputField';
@@ -10,6 +10,8 @@ import CommonSelectField from '../../../Components/CommonFields/CommonSelectFiel
 import { format } from 'date-fns';
 import { GET, POST } from '../../dataSaver';
 import { ErrorToaster2, SuccessToaster2 } from '../../../utils/toaster';
+import CommonMultiSelectField from '../../../Components/CommonFields/CommonMultiSelectField';
+import { area } from 'd3';
 
 const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD }) => {
     const [calendarStart, setCalendarStart] = useState(false);
@@ -20,8 +22,8 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD }) => {
     const [mdTitle, setMdTitle] = useState('');
     const [mdFileName, setMdFileName] = useState('');
     const [mdDescription, setMdDescription] = useState('');
-    const [selectedDepartment, setSelectedDepartment] = useState('');
-    const [selectedServiceArea, setSelectedServiceArea] = useState("");
+    const [selectedDepartment, setSelectedDepartment] = useState([]);
+    const [selectedServiceArea, setSelectedServiceArea] = useState([]);
     const [departmentList, setDepartmentList] = useState([]);
     const [staffList, setStaffList] = useState([]);
     const [selectedStaff, setSelectedStaff] = useState('');
@@ -48,6 +50,21 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD }) => {
             }
         };
     }, [previewUrl]);
+
+    const filteredServiceAreas = useMemo(() => {
+        const areas = departmentList
+            .filter(dept => selectedDepartment.includes(dept.id))
+            .flatMap(dept => dept?.serviceAreas || []);
+        console.log(areas, departmentList, selectedDepartment)
+        // Optional: remove duplicates
+        return [...new Set(areas)];
+    }, [departmentList, selectedDepartment]);
+
+    useEffect(() => {
+        setSelectedServiceArea(prev =>
+            prev.filter(area => filteredServiceAreas?.map(data => data?.id)?.includes(area))
+        );
+    }, [filteredServiceAreas]);
 
     const handleEnter = () => {
         console.log('Enter pressed! Value:', keyword);
@@ -85,6 +102,26 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD }) => {
         return [departmentEntry, ...serviceAreaEntries]; // Include department first, then service areas
     }) || [];
 
+    const handleDepartmentSelect = (id) => {
+        console.log(id)
+        if (Array.isArray(id)) {
+            const newIds = id.filter(item => !selectedDepartment.includes(item));
+            if (newIds.length > 0) {
+                setSelectedDepartment(prev => [...prev, ...newIds]);
+            }
+        }
+    }
+
+    const handleServiceAreaSelect = (id) => {
+        console.log(id)
+        if (Array.isArray(id)) {
+            const newIds = id.filter(item => !selectedServiceArea.includes(item));
+            if (newIds.length > 0) {
+                setSelectedServiceArea(prev => [...prev, ...newIds]);
+            }
+        }
+    }
+
     const handleChange = (e) => {
         const selectedValue = e.target.value;
         const [departmentId, serviceAreaId] = selectedValue.split("|");
@@ -115,26 +152,32 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD }) => {
 
         let data = {
             title: mdTitle,
+            description: mdDescription,
             mdID: mdId,
-            departments: [
+            departments: selectedDepartment?.map(deptData => (
                 {
-                    id: selectedDepartment,
-                    name: departmentList?.filter(data => data?.id === selectedDepartment)?.[0]?.departmentName?.name,
-                    serviceAreas: departmentList?.filter(data => data?.id === selectedDepartment)?.[0]?.serviceAreas?.filter(serviceData => serviceData?.id === selectedServiceArea),
+                    id: deptData,
+                    name: departmentList?.filter(data => data?.id === deptData)?.[0]?.departmentName?.name,
+                    serviceAreas: filteredServiceAreas?.filter(data => data?.department?.id === deptData)?.filter(area =>
+                        selectedServiceArea?.includes(area?.id)
+                    ),
                     excludedServiceAreas: [],
                     serviceAreasExcluded: false,
-                    serviceAreaSpecific: selectedServiceArea !== "" ? true : false
+                    serviceAreaSpecific: selectedServiceArea?.length !== 0 ? true : false
                 }
-            ],
+            )),
             // implementers: [],
-            reviewFrequency: reviewFrequency !== '' ? reviewFrequency : 'NA',
+            reviewFrequency: {
+                value: reviewFrequency === "EVERY_1_YEAR" ? 1 : reviewFrequency === "EVERY_2_YEARS" ? 2 : reviewFrequency === "EVERY_3_YEARS" ? 3 : 0,
+                unit: "YEARS"
+            },
             author: {
                 id: selectedStaff,
                 name: staffList?.filter(data => data?.id === selectedStaff)?.[0]?.applicant?.name,
                 email: staffList?.filter(data => data?.id === selectedStaff)?.[0]?.applicant?.email,
             },
             publishedDate: SelectedDate,
-            tags: keywordList,
+            // tags: keywordList,
             file: {
                 fileName: mdFile?.name,
             },
@@ -200,7 +243,7 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD }) => {
                     </div>
                     <div className={`${style.pdfFileText} ${style.margin20}`}>{mdFile?.name}</div>
                     <div className={`${style.step1Grid} ${style.margin20}`}>
-                        <div>
+                        {/* <div>
                             <div className={style.labelStyle}>File Name</div>
                             <CommonInputField
                                 value={mdFileName}
@@ -208,7 +251,7 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD }) => {
                                 type="text"
                                 placeholder="Enter File Name"
                             />
-                        </div>
+                        </div> */}
                         <div>
                             <div className={style.labelStyle}>Medical Directive Title*</div>
                             <CommonInputField
@@ -266,7 +309,7 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD }) => {
                                 }}
                             />
                         </div>
-                        <div>
+                        {/* <div>
                             <CommonSelectField
                                 value={selectedDepartment}
                                 onChange={handleChange}
@@ -279,6 +322,60 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD }) => {
                                 required={true}
                                 label={'Department / Division or Speciality'}
                             />
+                        </div> */}
+                        <div>
+                            <div className={style.labelStyle}>Department*</div>
+                            <CommonMultiSelectField
+                                value={selectedDepartment}
+                                onChange={(e) => handleDepartmentSelect(e.target.value)}
+                                className={style.fullWidth}
+                                // firstOptionLabel={'All'}
+                                // firstOptionValue={''}
+                                valueList={departmentList?.map(option => option?.id)}
+                                labelList={departmentList?.map(option => `${option?.departmentName?.name}`)}
+                                disabledList={departmentList?.map(() => false)}
+                                required={true}
+                                label={'Department'}
+                            />
+                            <div>
+                                <div className={`${style.chipsContainer} ${style.marginTop10}`}>
+                                    {selectedDepartment?.map(data => {
+                                        return (
+                                            <div className={`${style.chips} ${style.displayInRow}`}>
+                                                <div>{departmentList?.filter(deptData => data === deptData?.id)?.[0]?.departmentName?.name}</div> <div className={`${style.verticalAlignCenter} ${style.marginLeft10} ${style.cursorPointer}`}
+                                                    onClick={() => setSelectedDepartment(selectedDepartment?.filter(innerData => innerData !== data))}
+                                                ><CancelIcon sx={{ color: '#06617A', fontSize: 20 }} /></div></div>
+                                        )
+                                    })}
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div className={style.labelStyle}>Division / Service Area</div>
+                            <CommonMultiSelectField
+                                value={selectedServiceArea}
+                                onChange={(e) => handleServiceAreaSelect(e.target.value)}
+                                className={style.fullWidth}
+                                // firstOptionLabel={'All'}
+                                // firstOptionValue={''}
+                                valueList={filteredServiceAreas?.map(option => option?.id)}
+                                labelList={filteredServiceAreas?.map(option => `${option?.name}`)}
+                                disabledList={filteredServiceAreas?.map(() => false)}
+                                required={true}
+                                label={'Division / Service Area'}
+                            />
+                            <div>
+                                <div className={`${style.chipsContainer} ${style.marginTop10}`}>
+                                    {selectedServiceArea?.map(data => {
+                                        return (
+                                            <div className={`${style.chips} ${style.displayInRow}`}>
+                                                <div>{filteredServiceAreas?.filter(divisionData => data === divisionData?.id)?.[0]?.name}</div> <div className={`${style.verticalAlignCenter} ${style.marginLeft10} ${style.cursorPointer}`}
+                                                    onClick={() => setSelectedServiceArea(selectedServiceArea?.filter(innerData => innerData !== data))}
+                                                ><CancelIcon sx={{ color: '#06617A', fontSize: 20 }} /></div></div>
+                                        )
+                                    })}
+                                </div>
+                            </div>
                         </div>
                         <CommonSelectField
                             value={reviewFrequency}

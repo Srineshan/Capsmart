@@ -11,6 +11,11 @@
     justify-content: space-between;
 }
 
+.justifyCenter {
+    display: flex;
+    justify-content: center;
+}
+
 .marginLeft10 {
     margin-left: 10px;
 }
@@ -31,6 +36,12 @@
 
 .screenBackground {
     padding: 20px 80px;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
+    height: calc(100vh - 60px);
+}
+
+.innerScreenBackground {
+    padding: 20px 20px;
     background: $secondarycolor 0% 0% no-repeat padding-box;
     height: calc(100vh - 60px);
 }
@@ -82,8 +93,14 @@
 
 .mdCard {
     background: #FFFFFF 0% 0% no-repeat padding-box;
-    border-radius: 20px;
+    border-radius: 10px;
     padding: 20px;
+}
+
+.mdInnerCard {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    border-radius: 10px;
+    padding: 10px;
 }
 
 .mdCardTitle {
@@ -118,7 +135,7 @@
 
 .deptCardGrid {
     display: grid;
-    grid-template-columns: 5% 87% 5%;
+    grid-template-columns: 3% 91% 3%;
     gap: 1%;
 }
 
@@ -130,4 +147,72 @@
     color: #F0F2F7;
     height: 125px;
     padding: 20px;
+}
+
+.button {
+    background: $primarycolor 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 6px #1713380F;
+    border-radius: 8px;
+    text-align: center;
+    font: normal normal bold 15px/20px proxima-nova;
+    color: #F0F2F7;
+    padding: 5px 10px;
+}
+
+.cursorPointer {
+    cursor: pointer;
+}
+
+.searchGrid {
+    display: grid;
+    grid-template-columns: 80% 18%;
+    gap: 2%;
+}
+
+.bigCardGrid {
+    display: grid;
+    grid-template-columns: 23% 76%;
+    grid-gap: 1%;
+}
+
+.twoCol {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 10px;
+}
+
+.typeCard {
+    background: #14358F0F 0% 0% no-repeat padding-box;
+    border: 0.4000000059604645px solid #F5F7FB;
+    border-radius: 10px;
+    padding: 10px 20px;
+}
+
+.typeText {
+    text-align: center;
+    font: normal normal bold 16px/20px proxima-nova;
+    color: $textgrey;
+    opacity: 0.6;
+}
+
+.allDeptText {
+    text-align: left;
+    font: normal normal medium 16px/24px proxima-nova;
+    color: $textgrey;
+}
+
+.deptFilterCard {
+    background: $secondarycolor 0% 0% no-repeat padding-box;
+    border-radius: 6px;
+    text-align: left;
+    font: normal normal medium 16px/24px proxima-nova;
+    color: $textgrey;
+    padding: 5px 20px;
+}
+
+.deptTableHeading {
+    text-align: left;
+    font: normal normal bold 18px/24px proxima-nova;
+    letter-spacing: 0px;
+    color: $primarycolor;
 }
