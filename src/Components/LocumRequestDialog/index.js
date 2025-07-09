@@ -439,19 +439,19 @@ const LocumRequestDialog = ({ getIsOpen, selectedTab }) => {
 
   const getActiveUserData = async () => {
     try {
-      let filteredData;
+      // let filteredData;
       const urls = ['PENDING', 'APPROVED'].map(status =>
         `application-management-service/application/request?requestType=LOCUM_RENEWAL_REQUEST&status=${status}&isPaginationRequired=${limit === 9999 ? false : true}&limit=${limit}`
       );
       const responses = await Promise.all(urls.map(url => GET(url)));
       const allStaffs = responses.flatMap(response => response?.data?.requests || []);
-      if (selectedTab === "REQUEST"){
-         filteredData = allStaffs.find(item => item?.id === id);
-      } else {
-        filteredData = allStaffs.find(item => item?.staff?.id === id);
-      }
+      // if (selectedTab === "REQUEST"){
+      //    filteredData = allStaffs.find(item => item?.id === id);
+      // } else {
+      //   filteredData = allStaffs.find(item => item?.staff?.id === id);
+      // }
 
-      // const filteredData = allStaffs.find(item => item?.id === id);
+      const filteredData = allStaffs.find(item => item?.staff?.id === id);
       console.log("Filtered Application Data11111111", filteredData);
       setSelectDataLocum(filteredData);
       console.log("applicationmanage", selectDataLocum)

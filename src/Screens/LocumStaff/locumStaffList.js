@@ -1889,7 +1889,7 @@ const LocumStaffList = ({
       data: "Review?",
       requiredValue: "boolean",
       onClick: onClickRequestLocumDialog,
-      conditionToShow: `data?.extensionRequestStatus === "REQUESTED" && data?.reAppointmentInitiated === false`,
+      conditionToShow: `data?.extensionRequestStatus === "REQUESTED" && data?.reAppointmentInitiated === false && data?.requests?.[data?.requests?.length - 1]?.requestedTo?.[0]?.role === workModeType`,
     },
     // {
     //   data: "Create Note",
@@ -1930,7 +1930,7 @@ const LocumStaffList = ({
       data: "Review?",
       requiredValue: "boolean",
       onClick: onClickRequestLocumDialog,
-      conditionToShow: `data?.extensionRequestStatus === "REQUESTED" && data?.reAppointmentInitiated === false`,
+      conditionToShow: `data?.extensionRequestStatus === "REQUESTED" && data?.reAppointmentInitiated === false && data?.requests?.[data?.requests?.length - 1]?.requestedTo?.[0]?.role === workModeType`,
     },
     // {
     //   data: "Create Note",
@@ -2027,11 +2027,11 @@ const LocumStaffList = ({
             ? totalRequestCount
             : totalCount
   let actions =
-    selectedTab === "ACTIVELOCUM" && workModeType === "Department Head"
+    selectedTab === "ACTIVELOCUM" && (workModeType === "Department Head" || workModeType === "Chief Of Staff")
     ? activeLocumActionsData
     :selectedTab === "ACTIVELOCUM"
       ? activeLocumActionsSMData
-        : selectedTab === "EXPIREDLOCUM" && workModeType === "Department Head"
+        : selectedTab === "EXPIREDLOCUM" && (workModeType === "Department Head" || workModeType === "Chief Of Staff")
           ? expiredLocumActionsData
           : selectedTab === "EXPIREDLOCUM"
             ? expiredLocumActionsSMData
