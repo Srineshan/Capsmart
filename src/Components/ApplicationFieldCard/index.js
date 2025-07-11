@@ -3229,7 +3229,7 @@ const labelWithAsterisk = insertAsteriskBeforeClosingP(fieldData.label);
     }
   };
 
-  const handleReappointmentUpdate = (type, skip) => {
+  const handleReappointmentUpdate = () => {
     delete basicForm[baseKey];
     delete basicForm.undefined;
     getIsSubmitClicked(true);
