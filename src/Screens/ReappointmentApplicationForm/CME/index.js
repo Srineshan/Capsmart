@@ -139,6 +139,11 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
         const isSigned = basicForm?.forms?.[formIndex]?.esign;
         const applicantType = basicForm?.basicDetails?.applicant?.applicantType;
 
+        if (tempData.yesOrNoCMETranscript === 'No' && notes) {
+            setCheckingCondition(['Completed']);
+            return;
+        }
+
         if (applicantType === "Midwife") {
             if (!tempData.yesOrNoCMETranscript || fileData == null) {
                 setCheckingCondition(['notYetStarted']);

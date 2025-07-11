@@ -191,23 +191,155 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
     getHospitalMaster();
   }, []);
 
-  useEffect(() => {
-    if (privilegeChangeYesOrNo !== '' && privilegeSetChangeYesOrNo !== '' && additionalPrivilegeChangeYesOrNo !== '' && privilegeAtOtherHospitalYesOrNo !== '' && departmentChangeYesOrNo !== '') {
-      setIsContinueEnabled(true);
-    } else {
-      setIsContinueEnabled(false);
-    }
-    if (privilegeChangeYesOrNo === 'No' && isPrivilegeSetChanging && basicForm?.privileges?.obligatedPrivileges?.length > 1) {
-      setIsContinueEnabled(true);
-    }
-    if (additionalPrivilegeChangeYesOrNo === 'Yes' && isAdditionalPrivilegeCategoryChanging && basicForm?.privileges?.additionalPrivileges?.length > 1) {
-      setIsContinueEnabled(true);
-    }
-    if (basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory === ('Courtesy Staff With Admitting Privileges' || 'Courtesy Staff Without Admitting Privileges') && privilegeChangeYesOrNo !== '' && privilegeAtOtherHospitalYesOrNo === 'Yes' && departmentChangeYesOrNo !== '') {
-      setIsContinueEnabled(true);
-    }
-  }, [privilegeChangeYesOrNo, privilegeSetChangeYesOrNo,isPrivilegeSetChanging,isAdditionalPrivilegeCategoryChanging, additionalPrivilegeChangeYesOrNo, privilegeAtOtherHospitalYesOrNo, departmentChangeYesOrNo])
+  // useEffect(() => {
+  //   if (privilegeChangeYesOrNo !== '' && privilegeSetChangeYesOrNo !== '' && additionalPrivilegeChangeYesOrNo !== '' && privilegeAtOtherHospitalYesOrNo !== '' && departmentChangeYesOrNo !== '') {
+  //     setIsContinueEnabled(true);
+  //   } else {
+  //     setIsContinueEnabled(false);
+  //   }
+  //   if (privilegeChangeYesOrNo === 'No' && isPrivilegeSetChanging && basicForm?.privileges?.obligatedPrivileges?.length > 0) {
+  //     setIsContinueEnabled(true);
+  //   }
+  //   if (additionalPrivilegeChangeYesOrNo === 'Yes' && 
+  //     isAdditionalPrivilegeCategoryChanging && 
+  //     selectedAdditionalDepartment != null && 
+  //     typeof selectedAdditionalDepartment === 'string' && 
+  //     selectedAdditionalDepartment.trim() !== '' && 
+  //     basicForm?.privileges?.additionalPrivileges?.length > 0) {
+  //   setIsContinueEnabled(true);
+  // }
+  //   if (basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory === ('Courtesy Staff With Admitting Privileges' || 'Courtesy Staff Without Admitting Privileges') && privilegeChangeYesOrNo !== '' && privilegeAtOtherHospitalYesOrNo === 'Yes' && departmentChangeYesOrNo !== '') {
+  //     setIsContinueEnabled(true);
+  //   }
+  // }, [privilegeChangeYesOrNo, privilegeSetChangeYesOrNo,isPrivilegeSetChanging,isAdditionalPrivilegeCategoryChanging, additionalPrivilegeChangeYesOrNo, privilegeAtOtherHospitalYesOrNo, departmentChangeYesOrNo,selectedAdditionalDepartment,basicForm?.privileges?.additionalPrivileges ])
 
+
+  useEffect(() => {
+    let shouldEnable = false;
+  
+    // ===== 1. BASE REQUIREMENTS (ALWAYS NEEDED) =====
+    const baseRequirementsMet = (
+      privilegeChangeYesOrNo !== '' &&
+      privilegeSetChangeYesOrNo !== '' &&
+      privilegeAtOtherHospitalYesOrNo !== '' &&
+      departmentChangeYesOrNo !== ''
+    );
+  
+    // ===== 2. CHECK ADDITIONAL PRIVILEGE CASES =====
+    if (additionalPrivilegeChangeYesOrNo === 'No') {
+      // CASE A: User said NO to additional privileges
+      shouldEnable = baseRequirementsMet;
+    } 
+    else if (additionalPrivilegeChangeYesOrNo === 'Yes') {
+      // CASE B: User said YES to additional privileges
+      const hasValidDepartment = (
+        selectedAdditionalDepartment != null &&
+        typeof selectedAdditionalDepartment === 'string' &&
+        selectedAdditionalDepartment.trim() !== ''
+      );
+      const hasAdditionalPrivileges = basicForm?.privileges?.additionalPrivileges?.length > 0;
+  
+      shouldEnable = (
+        baseRequirementsMet &&
+        isAdditionalPrivilegeCategoryChanging &&
+        hasValidDepartment &&
+        hasAdditionalPrivileges
+      );
+    }
+  
+    // ===== 3. SPECIAL OVERRIDE CASES =====
+    // Case 1: No privilege change but has obligated privileges
+    if (!shouldEnable && privilegeChangeYesOrNo === 'No' && isPrivilegeSetChanging && 
+        basicForm?.privileges?.obligatedPrivileges?.length > 0) {
+      shouldEnable = true;
+    }
+  
+    // Case 2: Courtesy Staff exception
+    if (!shouldEnable && 
+        (basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory === 'Courtesy Staff With Admitting Privileges' || 
+         basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory === 'Courtesy Staff Without Admitting Privileges') &&
+        privilegeChangeYesOrNo !== '' && 
+        privilegeAtOtherHospitalYesOrNo === 'Yes' && 
+        departmentChangeYesOrNo !== '') {
+      shouldEnable = true;
+    }
+  
+    setIsContinueEnabled(shouldEnable);
+  }, [
+    // All dependencies
+    privilegeChangeYesOrNo,
+    privilegeSetChangeYesOrNo,
+    isPrivilegeSetChanging,
+    additionalPrivilegeChangeYesOrNo,
+    isAdditionalPrivilegeCategoryChanging,
+    privilegeAtOtherHospitalYesOrNo,
+    departmentChangeYesOrNo,
+    selectedAdditionalDepartment,
+    basicForm?.privileges?.additionalPrivileges,
+    basicForm?.privileges?.obligatedPrivileges,
+    basicForm?.basicDetails?.credentialingPrivilegeCategory
+  ]);
+
+  // useEffect(() => {
+  //   const hasObligatedPrivileges = basicForm?.privileges?.obligatedPrivileges?.length > 0;
+  //   const hasAdditionalPrivileges = basicForm?.privileges?.additionalPrivileges?.length > 0;
+  //   const selectedDepartmentValid = !!selectedAdditionalDepartment?.trim();
+  
+  //   const category = basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory;
+  
+  //   let shouldEnable = false;
+  
+  //   if (
+  //     privilegeChangeYesOrNo !== '' &&
+  //     privilegeSetChangeYesOrNo !== '' &&
+  //     additionalPrivilegeChangeYesOrNo !== '' &&
+  //     privilegeAtOtherHospitalYesOrNo !== '' &&
+  //     departmentChangeYesOrNo !== ''
+  //   ) {
+  //     shouldEnable = true;
+  //   }
+  
+  //   if (
+  //     privilegeChangeYesOrNo === 'No' &&
+  //     isPrivilegeSetChanging &&
+  //     hasObligatedPrivileges
+  //   ) {
+  //     shouldEnable = true;
+  //   }
+  
+  //   if (
+  //     additionalPrivilegeChangeYesOrNo === 'Yes' &&
+  //     isAdditionalPrivilegeCategoryChanging === true &&
+  //     selectedDepartmentValid &&
+  //     hasAdditionalPrivileges
+  //   ) {
+  //     shouldEnable = true;
+  //   }
+  
+    
+  //   if (
+  //     (category === 'Courtesy Staff With Admitting Privileges' ||
+  //       category === 'Courtesy Staff Without Admitting Privileges') &&
+  //     privilegeChangeYesOrNo !== '' &&
+  //     privilegeAtOtherHospitalYesOrNo === 'Yes' &&
+  //     departmentChangeYesOrNo !== ''
+  //   ) {
+  //     shouldEnable = true;
+  //   }
+  
+  //   setIsContinueEnabled(shouldEnable);
+  // }, [
+  //   privilegeChangeYesOrNo,
+  //   privilegeSetChangeYesOrNo,
+  //   isPrivilegeSetChanging,
+  //   isAdditionalPrivilegeCategoryChanging,
+  //   additionalPrivilegeChangeYesOrNo,
+  //   privilegeAtOtherHospitalYesOrNo,
+  //   departmentChangeYesOrNo,
+  //   selectedAdditionalDepartment,
+  //   basicForm
+  // ]);
+  
   useEffect(() => {
     if (isSubmit) {
       handleSubmitPrivilegesAtOtherHospital(true);
@@ -4191,14 +4323,16 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                               const matchedItem = getAdditionalDeptItems(departmentList)?.find(item => item.value === inputValue);
 
                               if (matchedItem) {
-                                // If user types a valid department/speciality name, set corresponding IDs
                                 if (matchedItem.specialityId !== "") {
                                   setSelectedAdditionalDepartment(matchedItem.departmentId);
-                                  setSelectedAdditionalSpeciality("")
+                                  setSelectedAdditionalSpeciality("");
                                 } else {
                                   setSelectedAdditionalDepartment(matchedItem.id);
-                                  setSelectedAdditionalSpeciality(matchedItem.specialityId)
+                                  setSelectedAdditionalSpeciality(matchedItem.specialityId);
                                 }
+                              } else {
+                                setSelectedAdditionalDepartment("");
+                                setSelectedAdditionalSpeciality("");
                               }
                             }}
 
@@ -4267,12 +4401,12 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                       >
                         SAVE
                       </div> */}
-                      <Tooltip title={"Click to Cancel"} arrow>
+                      <Tooltip title={"Click to Close"} arrow>
                         <div
                           className={`${style.reappointmentButtonOutlined}`}
                           onClick={() => { setAdditionalPrivilegeChangeYesOrNo(''); setIsAdditionalPrivilegeCategoryChanging(false); }}
                         >
-                          CANCEL
+                          CLOSE
                         </div>
                       </Tooltip>
                     </div>
