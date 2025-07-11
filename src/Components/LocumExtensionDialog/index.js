@@ -33,12 +33,13 @@ import ESignature from "../../Components/ESignature";
 import CancelIcon from '@mui/icons-material/Cancel';
 import AdditionalPrivilegesDialog from "../../Screens/ReappointmentApplicationForm/PrivilegeSelection/AdditionalPrivilegesDialog";
 
-const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
+const LocumExtensiveDialog = ({ getIsOpen, selectedTab,requestedType }) => {
   let cookie = new Cookie();
   let userDetails = cookie.get("user");
   const { setValue, value } = useComboboxControls({ initialValue: "" });
   const users = jwt(userDetails);
   const [userRole, setUserRole] = useState("");
+  const [form, setForm] = useState();
   const [formDetails, setFormDetails] = useState([]);
   const [formIndex, setFormIndex] = useState(0);
   const [isApproveEnabled, setIsApproveEnabled] = useState(false);
@@ -116,17 +117,21 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
   const [emailSendDialog, setEmailSendDialog] = useState(false);
   const prevDepartment = formDetails?.basicDetailReferences?.department?.id;
   const prevSpeciality = formDetails?.basicDetailReferences?.specialty?.id;
+  const canadaData = sessionStorage.getItem('canadaData') !== 'undefined' ? JSON.parse(sessionStorage.getItem('canadaData')) : {};
+  const dateFormat = canadaData?.dateFormat || 'MMM dd, yyyy';
   const [currentDate, setCurrentDate] = useState(
-    format(new Date(), "dd-MM-yyyy")
+    format(new Date(), dateFormat)
   );
   const [limit, setLimit] = useState(9999);
+  const [extensionRequiredValue, setExtensionRequiredValue] = useState(requestedType);
+  const [notRequiredComments, setNotRequiredComments] = useState('');
   const [isLoadingPage, setIsLoadingPage] = useState(false);
   const publicKey =
     "-----BEGIN PUBLIC KEY-----MIGeMA0GCSqGSIb3DQEBAQUAA4GMADCBiAKBgHA5SDu30/8uQAqqkQE0NuY4ePBptMGufG6AWnC/88YVLXi4thh7M8VU6kElVJkfXL5DwlfVnwPb08+PK1EcaOWWtp2gdQitkohjZLB9zVE+0OtRrzSc33wItf7Iwisi5dHPggHvfOp5fr+QYWFMa/kKYl3SgNo8fryeLbKKalmdAgMBAAE=-----END PUBLIC KEY-----";
   const workModeType = sessionStorage.getItem("workModeType");
   let staffLocumId;
   let name = `${formDetails?.basicDetails?.applicant?.name?.firstName} ${formDetails?.basicDetails?.applicant?.name?.lastName} `;
-
+console.log("requestedType",requestedType)
 
   console.log("tableDataValue", selectApplicant, covererNameList, covererId, selectedTab)
   useEffect(() => {
@@ -152,6 +157,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
 
 
   useEffect(() => {
+    getPreApplicationStaff();
     getActiveUserData();
     setSelectedPrivilegesForDisplayMultiple(
       formDetails?.privileges?.obligatedPrivileges
@@ -292,6 +298,10 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
     }
   };
 
+  const handleChangeRequired = (event) => {
+    setExtensionRequiredValue(event.target.value);
+  };
+
   const onClickExtensiveRequest = async () => {
     setIsLoadingImage(true);
 
@@ -330,8 +340,8 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
 
   const reappointmentApplication = async () => {
     const startDate = selectDataLocum?.tenure?.to
-    ? new Date(selectDataLocum?.tenure?.to).toISOString().split('T')[0] + 'T00:00'
-    : null;
+      ? new Date(selectDataLocum?.tenure?.to).toISOString().split('T')[0] + 'T00:00'
+      : null;
     const fromDate = selectedTab === "ACTIVELOCUM"
       ? format(addDays(new Date(startDate), 1), 'yyyy-MM-dd')
       : selectedTab === "EXPIREDLOCUM" && customStartDate
@@ -371,6 +381,63 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
       });
   };
 
+  const onClickNotRequiredExtensionFunction = () => {
+    handleUpdateStaffRequest(true)
+      .then(() => {
+        return handleUpdateStaffRequestNotes(true);
+      })
+      .then(() => {
+        getIsOpen(false);
+        console.log('Application successfully moved to next step.');
+      })
+      .catch((error) => {
+        console.error('Error processing application:', error);
+      });
+  };
+
+  const getPreApplicationStaff = async () => {
+    try {
+      setIsLoadingImage(true);
+      const { data: basicForm } = await GET(`application-management-service/staff/${selectDataLocum?.id}`);
+      setForm(basicForm);
+      setIsLoadingImage(false)
+    } catch (error) {
+      console.error('Error fetching application:', error);
+    }
+  };
+
+  const handleUpdateStaffRequestNotes = async () => {
+    try {
+      const formData = new FormData();
+      const payload = {
+        notes: {
+          notes: notRequiredComments || "",
+        },
+      };
+      const blob = new Blob([JSON.stringify(payload)], {
+        type: "application/json"
+      });
+      formData.append('notesDTO', blob);
+      const response = await PUT(`application-management-service/staff/${selectDataLocum?.id}/addNote`, formData);
+      console.log('Update successful:', response?.data);
+      await getActiveUserData();
+
+    } catch (error) {
+      console.error('Update failed:', error);
+    }
+  };
+
+  const handleUpdateStaffRequest = async () => {
+    try {
+      form.extensionRequestStatus = extensionRequiredValue;
+      const response = await PUT(`application-management-service/staff/${selectDataLocum?.id}`, form);
+      console.log('Update successful:', response?.data);
+      // await getActiveUserData();
+    } catch (error) {
+      console.error('Update failed:', error);
+    }
+  };
+
   const sendEmail = async () => {
 
     await POST(`application-management-service/application/${selectDataLocum?.onGoingApplication?.id}/sendEmail`)
@@ -395,11 +462,11 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
   };
 
   const handleDateChangeStart = (date, field) => {
-      const formattedDate = format(new Date(date), "yyyy-MM-dd'T'00:00")
-      setCustomStartDate(formattedDate);
-      setCalendarStart(false);
-  
-    };
+    const formattedDate = format(new Date(date), "yyyy-MM-dd'T'00:00")
+    setCustomStartDate(formattedDate);
+    setCalendarStart(false);
+
+  };
 
   const handleSelectedAdditionalPrivilegesForDisplayMultiple = (data) => {
     let temp = selectedAdditionalPrivilegesForDisplayMultiple;
@@ -2633,7 +2700,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
     ? new Date(selectDataLocum?.tenure?.to).toISOString().split('T')[0] + 'T00:00'
     : null;
   
-    console.log("Date to Expire :", ExpireDate ,"expire Date add one day :", format(addDays(new Date(ExpireDate), 1), "MMM dd, yyyy"))  
+    console.log("Date to Expire :", ExpireDate ,"expire Date add one day :", format(addDays(new Date(ExpireDate), 1), dateFormat))  
 
   // Validate date before using
   const isExpireDateValid = ExpireDate && isValid(ExpireDate);
@@ -2686,8 +2753,8 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
   const monthOptions = getNext12MonthsFromCreatedDate(referenceDate);
 
   const lastModifiedDate = formDetails?.lastModifiedDate;
-  const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), "MMM dd, yyyy") : "-";
-  const formattedExpiringDate = ExpireDate ? format(new Date(ExpireDate), "MMM dd, yyyy") : "-";
+  const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), dateFormat) : "-";
+  const formattedExpiringDate = ExpireDate ? format(new Date(ExpireDate), dateFormat) : "-";
   const daysRemaining = ExpireDate ? Math.abs(differenceInDays(new Date(ExpireDate), new Date())) : null;
   //  const monthsList = getNext12MonthsFromCreatedDate(format(new Date(selectDataLocum?.tenure?.to), "MMM dd, yyyy"));
   // const selectedMonthLabel = selectedMonth === "Custom"
@@ -2700,9 +2767,16 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
   const minDateValue =
     selectedTab === 'ACTIVELOCUM'
       ? ExpireDate
-        ? addDays(new Date(ExpireDate), 1)
+        ? addDays(new Date(ExpireDate), 30)
         : null
       : currentDateNow;
+
+  const minDateValueValid =
+    selectedTab === 'ACTIVELOCUM'
+      ? ExpireDate
+        ? addDays(new Date(ExpireDate), 30)
+        : null
+      : addDays(currentDateNow, 30);
 
   const maxDateValue =
     selectedTab === 'ACTIVELOCUM'
@@ -2712,13 +2786,29 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
       : addYears(currentDateNow, 1);
 
   const isValidDateRange = () => {
-    if (selectedTab === "EXPIREDLOCUM") {
-      return customStartDate && customEndDate;
+    if (showSelectedPrivilegeLocum === true) {
+      const hasObligatedPrivileges = formDetails?.privileges?.obligatedPrivileges?.length >= 1;
+      const hasAdditionalPrivileges = formDetails?.privileges?.additionalPrivileges?.length >= 1;
+
+      const isPrivilegeSetValid =
+        hasObligatedPrivileges;
+
+      const isAdditionalPrivilegeValid =
+        additionalPrivilegeChangeYesOrNo === "No" || hasAdditionalPrivileges;
+
+      return isPrivilegeSetValid && isAdditionalPrivilegeValid;
+    } else {
+      if (selectedTab === "EXPIREDLOCUM" && extensionRequiredValue === "REQUESTED") {
+        return customStartDate && customEndDate;
+      }
+      if (selectedMonth === "Custom") {
+        return customEndDate;
+      }
+      if (extensionRequiredValue === "NOT_REQUESTED") {
+        return notRequiredComments;
+      }
+      return selectedMonth;
     }
-    if (selectedMonth === "Custom") {
-      return customEndDate;
-    }
-    return selectedMonth;
   };
 
   return (
@@ -2745,18 +2835,18 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
                     : "Reactivate Locum Staff"}
                 </div>
                 {!showSelectedPrivilegeLocum && (
-                 <div className={style.displayInRow}>
-                  <Tooltip title="Click to Close" arrow >
-                    <img
-                      src={CrossPink}
-                      alt="cross"
-                      className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft}`}
-                      onClick={() => {
-                        getIsOpen(false);
-                      }}
-                    />
-                  </Tooltip>
-                </div>
+                  <div className={style.displayInRow}>
+                    <Tooltip title="Click to Close" arrow >
+                      <img
+                        src={CrossPink}
+                        alt="cross"
+                        className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft}`}
+                        onClick={() => {
+                          getIsOpen(false);
+                        }}
+                      />
+                    </Tooltip>
+                  </div>
                 )}
               </div>
               <div className={`${style.rejectionBorderStyle} ${style.declineBorderStyle} ${style.marginTop10}`}>
@@ -2810,7 +2900,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
                   <div className={`${style.rejectionHeadingTextStyle}`}>
                     {selectedTab === "ACTIVELOCUM" ? `Locum Period Expiring On ${formattedExpiringDate} (${daysRemaining} Days)` : "New Locum Period"}
                   </div>
-                  <div className={`${style.rejectionTextStyle} ${style.marginBottom10}`}>
+                  <div className={`${style.rejectionTextStyle}`}>
                     {selectedTab === "ACTIVELOCUM"
                       ? "Extend the Period & Privileges for "
                       : "The renewal Start & End Date for "}
@@ -2828,162 +2918,176 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
                     {selectedTab === "ACTIVELOCUM" && <span> By </span>}
                   </div>
                   <div>
-                    {/* <CommonRadio
+                    <CommonRadio
+                      onChange={handleChangeRequired}
+                      value={extensionRequiredValue}
+                      radioValue={["REQUESTED", "NOT_REQUESTED"]}
+                      label={
+                        selectedTab === "ACTIVELOCUM"
+                          ? ["Extension Required", "Extension Not Required"]
+                          : ["Renewal Required", "Renewal Not Required"]
+                      }
+                    />
+                  </div>
+                  {extensionRequiredValue === "REQUESTED" && (
+                    <div>
+                      <div>
+                        {/* <CommonRadio
            className={style.leftAlign}
            value={processReappointment}
            onChange={(e) => setProcessReappointment(e.target.value)}
            radioValue={["Yes"]}
            label={["Yes, I would like to have this Locum Staff Privileges to be extended"]}
           /> */}
-                    <div className={`${style.flexCenter}`}>
-                      {/* <div className={`${style.halfWidth}`}> */}
-                      {selectedTab === "ACTIVELOCUM" && (
-                        <div className={`${style.halfWidth}`}>
-                          <CommonSelectField
-                            value={selectedMonth}
-                            onChange={(e) => setSelectedMonth(e.target.value)}
-                            // onChange={(e) => {
-                            //   if (e.target.value === "Custom end Date") {
-                            //     setSelectedMonth("Custom end Date");
-                            //     setCustomEndDate(new Date()); // Set a default date when selecting custom
-                            //   } else {
-                            //     setSelectedMonth(e.target.value);
-                            //     setCustomEndDate(null); // Reset custom date when selecting a month
-                            //   }
-                            // }}
-                            className={style.fullWidth}
-                            firstOptionLabel={"Select Period"}
-                            firstOptionValue={""}
-                            valueList={monthOptions.map((month) => month.value)}
-                            labelList={monthOptions.map((month) => month.label)}
-                            disabledList={monthOptions.map(() => false)}
-                            required={false}
-                          />
-                        </div>
-                      )}
-                      {/* </div> */}
-                      {/* <div> */}
-                      {/* </div> */}
-                      <div className={`${selectedTab === "ACTIVELOCUM" ? style.marginLeft : ""} ${style.rejectionHeadingTextStyle}`}>
-                        Start Date <br />
-                        {selectedTab === "EXPIREDLOCUM" ? (
-                          <div className={`${style.marginTopLess}`}>
-                            <CommonDateField
-                              className={`${style.fullWidth}`}
-                              onChange={(date) => handleDateChangeStart(date)}
-                              open={calendarStart}
-                              onOpen={() => setCalendarStart(true)}
-                              onClose={() => setCalendarStart(false)}
-                              minDate={minDateValue}
-                              maxDate={maxDateValue}
-                              value={customStartDate ? new Date(customStartDate) : null}
-                              InputProps={{
-                                style: {
-                                  fontSize: 14,
-                                  height: 30,
-                                },
-                              }}
-                              renderInput={(params) => (
-                                <TextField
-                                  {...params}
-                                  inputProps={{
-                                    ...params.inputProps,
-                                    placeholder: 'Enter Start Date',
-                                    readOnly: true
+                        <div className={`${style.flexCenter}`}>
+                          {/* <div className={`${style.halfWidth}`}> */}
+                          {selectedTab === "ACTIVELOCUM" && (
+                            <div className={`${style.halfWidth}`}>
+                              <CommonSelectField
+                                value={selectedMonth}
+                                onChange={(e) => setSelectedMonth(e.target.value)}
+                                // onChange={(e) => {
+                                //   if (e.target.value === "Custom end Date") {
+                                //     setSelectedMonth("Custom end Date");
+                                //     setCustomEndDate(new Date()); // Set a default date when selecting custom
+                                //   } else {
+                                //     setSelectedMonth(e.target.value);
+                                //     setCustomEndDate(null); // Reset custom date when selecting a month
+                                //   }
+                                // }}
+                                className={style.fullWidth}
+                                firstOptionLabel={"Select Period"}
+                                firstOptionValue={""}
+                                valueList={monthOptions.map((month) => month.value)}
+                                labelList={monthOptions.map((month) => month.label)}
+                                disabledList={monthOptions.map(() => false)}
+                                required={false}
+                              />
+                            </div>
+                          )}
+                          {/* </div> */}
+                          {/* <div> */}
+                          {/* </div> */}
+                          <div className={`${selectedTab === "ACTIVELOCUM" ? style.marginLeft : ""} ${style.rejectionHeadingTextStyle}`}>
+                            Start Date <br />
+                            {selectedTab === "EXPIREDLOCUM" ? (
+                              <div className={`${style.marginTopLess}`}>
+                                <CommonDateField
+                                  className={`${style.fullWidth}`}
+                                  onChange={(date) => handleDateChangeStart(date)}
+                                  open={calendarStart}
+                                  onOpen={() => setCalendarStart(true)}
+                                  onClose={() => setCalendarStart(false)}
+                                  minDate={minDateValue}
+                                  maxDate={maxDateValue}
+                                  value={customStartDate ? new Date(customStartDate) : null}
+                                  InputProps={{
+                                    style: {
+                                      fontSize: 14,
+                                      height: 30,
+                                    },
                                   }}
-                                  variant="outlined"
-                                  margin="normal"
+                                  renderInput={(params) => (
+                                    <TextField
+                                      {...params}
+                                      inputProps={{
+                                        ...params.inputProps,
+                                        placeholder: 'Enter Start Date',
+                                        readOnly: true
+                                      }}
+                                      variant="outlined"
+                                      margin="normal"
+                                    />
+                                  )}
                                 />
-                              )}
-                            />
+                              </div>
+                            ) : (
+                              <span className={`${style.rejectionTextStyle}`}>
+                                {selectedTab === "ACTIVELOCUM"
+                                  ? (ExpireDate
+                                    ? format(addDays(new Date(ExpireDate), 1), dateFormat)
+                                    : "N/A")
+                                  : format(new Date(), dateFormat)}
+                              </span>
+                            )}
                           </div>
-                        ) : (
-                          <span className={`${style.rejectionTextStyle}`}>
-                            {selectedTab === "ACTIVELOCUM"
-                              ? (ExpireDate
-                                ? format(addDays(new Date(ExpireDate), 1), "MMM dd, yyyy")
-                                : "N/A")
-                              : format(new Date(), "MMM dd, yyyy")}
-                          </span>
-                        )}
-                      </div>
-                      <div className={`${style.marginLeft} ${style.rejectionTextStyle}`}> To </div>
-                      <div className={`${style.marginLeft} ${style.rejectionHeadingTextStyle}`}>
-                        End Date <br />
-                        <span className={`${style.dateTextStyle}`}>
-                          {selectedMonth && selectedMonth !== "Custom"
-                            ? format(new Date(selectedMonth), "MMM dd, yyyy")
-                            : selectedMonth === "Custom"
-                              ? ''
-                              : selectedTab === "EXPIREDLOCUM"
-                                ? ''  // Leave blank since the CommonDateField will appear
-                                : "-"}
-                        </span>
+                          <div className={`${style.marginLeft} ${style.rejectionTextStyle}`}> To </div>
+                          <div className={`${style.marginLeft} ${style.rejectionHeadingTextStyle}`}>
+                            End Date <br />
+                            <span className={`${style.dateTextStyle}`}>
+                              {selectedMonth && selectedMonth !== "Custom"
+                                ? format(new Date(selectedMonth), dateFormat)
+                                : selectedMonth === "Custom"
+                                  ? ''
+                                  : selectedTab === "EXPIREDLOCUM"
+                                    ? ''  // Leave blank since the CommonDateField will appear
+                                    : "-"}
+                            </span>
 
-                        {(selectedMonth === "Custom" || selectedTab === "EXPIREDLOCUM") && (
-                          <div className={`${style.marginTopLess}`}>
-                            <CommonDateField
-                              className={`${style.fullWidth}`}
-                              onChange={(date) => handleDateChange(date)}
-                              open={calendarStart}
-                              onOpen={() => setCalendarStart(true)}
-                              onClose={() => setCalendarStart(false)}
-                              minDate={minDateValue}
-                              maxDate={maxDateValue}
-                              // minDate={ExpireDate ? addDays(new Date(ExpireDate), 1) : null}
-                              // maxDate={ExpireDate ? addYears(new Date(ExpireDate), 1) : null}
-                              // minDate={
-                              //   selectedTab === "ACTIVELOCUM"
-                              //     ? (ExpireDate ? addDays(new Date(ExpireDate), 1) : null)
-                              //     : currentDate
-                              // }
-                              // maxDate={
-                              //   selectedTab === "ACTIVELOCUM"
-                              //     ? (ExpireDate ? addYears(new Date(ExpireDate), 1) : null)
-                              //     : addYears(currentDate, 1)
-                              // }
-                              value={customEndDate ? new Date(customEndDate) : null}
-                              InputProps={{
-                                style: {
-                                  fontSize: 14,
-                                  height: 30,
-                                },
-                              }}
-                              renderInput={(params) => (
-                                <TextField
-                                  {...params}
-                                  inputProps={{
-                                    ...params.inputProps,
-                                    placeholder: 'Enter Extend Date',
-                                    readOnly: true
+                            {(selectedMonth === "Custom" || selectedTab === "EXPIREDLOCUM") && (
+                              <div className={`${style.marginTopLess}`}>
+                                <CommonDateField
+                                  className={`${style.fullWidth}`}
+                                  onChange={(date) => handleDateChange(date)}
+                                  open={calendarStart}
+                                  onOpen={() => setCalendarStart(true)}
+                                  onClose={() => setCalendarStart(false)}
+                                  minDate={minDateValueValid}
+                                  maxDate={maxDateValue}
+                                  // minDate={ExpireDate ? addDays(new Date(ExpireDate), 1) : null}
+                                  // maxDate={ExpireDate ? addYears(new Date(ExpireDate), 1) : null}
+                                  // minDate={
+                                  //   selectedTab === "ACTIVELOCUM"
+                                  //     ? (ExpireDate ? addDays(new Date(ExpireDate), 1) : null)
+                                  //     : currentDate
+                                  // }
+                                  // maxDate={
+                                  //   selectedTab === "ACTIVELOCUM"
+                                  //     ? (ExpireDate ? addYears(new Date(ExpireDate), 1) : null)
+                                  //     : addYears(currentDate, 1)
+                                  // }
+                                  value={customEndDate ? new Date(customEndDate) : null}
+                                  InputProps={{
+                                    style: {
+                                      fontSize: 14,
+                                      height: 30,
+                                    },
                                   }}
-                                  variant="outlined"
-                                  margin="normal"
+                                  renderInput={(params) => (
+                                    <TextField
+                                      {...params}
+                                      inputProps={{
+                                        ...params.inputProps,
+                                        placeholder: 'Enter Extend Date',
+                                        readOnly: true
+                                      }}
+                                      variant="outlined"
+                                      margin="normal"
+                                    />
+                                  )}
                                 />
-                              )}
-                            />
+                              </div>
+                            )}
                           </div>
-                        )}
-                      </div>
-                    </div>
-                    {/* <CommonRadio
+                        </div>
+                        {/* <CommonRadio
            className={style.leftAlign}
            value={processReappointment}
            onChange={(e) => setProcessReappointment(e.target.value)}
            radioValue={["No"]}
            label={["No, I do not want to have Privileges Extended for this Locum staff"]}
           /> */}
-                  </div>
-                  {monthOptionsToView === '12' && (
-                    <div className={`${style.marginTop10} ${style.noteHeadingTextStyle}`}>The maximum duration for a Locum Staff is 12 months</div>
-                  )}
-                  <div className={`${style.flexCenter} ${style.marginTop10}`}>
-                    <div className={`${style.fullWidth}`}>
-                      <div className={`${style.fieldWrapper}`}>
-                        <div className={`${style.lableStyle}`}>
-                          {'Coverage Required For (Optional)'}
-                        </div>
-                        {/* <CommonSelectField
+                      </div>
+                      {monthOptionsToView === '12' && (
+                        <div className={`${style.marginTop10} ${style.noteHeadingTextStyle}`}>The maximum duration for a Locum Staff is 12 months</div>
+                      )}
+                      <div className={`${style.flexCenter} ${style.marginTop10}`}>
+                        <div className={`${style.fullWidth}`}>
+                          <div className={`${style.fieldWrapper}`}>
+                            <div className={`${style.lableStyle}`}>
+                              {'Coverage Required For (Optional)'}
+                            </div>
+                            {/* <CommonSelectField
               value={covererName}
               onChange={(e) => setCovererName(e.target.value)}
               className={style.fullWidth}
@@ -3000,66 +3104,111 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
                   `Who covers your hospital patients when you are not available?`
                 )}
             /> */}
-                        <DatalistInput
-                          items={getItemsSingle(applicantOptions) || []}
-                          setValue={setValue}
-                          onSelect={(item) => {
-                            setValue("");
-                            setCovererName(item.label);
-                            setCovererId(item.id);
-                            setCovererNameList(prevCheckedIds => {
-                              // return prevCheckedIds?.includes(item.id)
-                              //   ? prevCheckedIds.filter(checkedId => checkedId !== item.id)
-                              //   : [...prevCheckedIds, item.id];
-                              const filteredIds = (Array.isArray(prevCheckedIds) ? prevCheckedIds : []).filter((id) => id !== item.id);
-                              return [...filteredIds, item.id];
-                            });
+                            <DatalistInput
+                              items={getItemsSingle(applicantOptions) || []}
+                              setValue={setValue}
+                              onSelect={(item) => {
+                                setValue("");
+                                setCovererName(item.label);
+                                setCovererId(item.id);
+                                setCovererNameList(prevCheckedIds => {
+                                  // return prevCheckedIds?.includes(item.id)
+                                  //   ? prevCheckedIds.filter(checkedId => checkedId !== item.id)
+                                  //   : [...prevCheckedIds, item.id];
+                                  const filteredIds = (Array.isArray(prevCheckedIds) ? prevCheckedIds : []).filter((id) => id !== item.id);
+                                  return [...filteredIds, item.id];
+                                });
+                              }}
+                              className={`${style.fullWidth} ${style.marginTop10}`}
+                              maxLength={50}
+                              placeholder={`Select from Privileged Staff from ${departmentName}`}
+                              value={value}
+                              required={true}
+                              error={!covererName}
+                              // warning={warningFields
+                              //   ?.map((data) => data?.label)
+                              //   ?.includes(
+                              //     `Who covers your hospital patients when you are not available?`
+                              //   )}
+                              listboxProps={{
+                                style: {
+                                  maxHeight: '80px',
+                                  overflowY: 'scroll',
+                                  background: '#fff',
+                                  border: '1px solid #2c2c2c',
+                                }
+                              }}
+                            />
+                          </div>
+                        </div>
+                        <div className={`${style.chipsContainer} ${style.marginTop30} ${style.marginLeft10}`}>
+                          {covererNameList?.map ? (
+                            covererNameList.map((data, index) => (
+                              <div key={index} className={`${style.privilegeCategoryChips} ${style.displayInRow}`}>
+                                {/* <div>{name}</div> */}
+                                {/* <div>{selectApplicant?.filter(optionData => optionData?.id === data)?.[0]?.applicant?.name?.firstName}</div>   */}
+                                <div>
+                                  {selectApplicant?.filter(optionData => optionData?.id === data)?.[0]?.applicant?.name?.firstName}{" "}
+                                  {selectApplicant?.filter(optionData => optionData?.id === data)?.[0]?.applicant?.name?.middleName}{" "}
+                                  {selectApplicant?.filter(optionData => optionData?.id === data)?.[0]?.applicant?.name?.lastName}
+                                </div>
+
+                                <div
+                                  className={`${style.verticalAlignCenter} ${style.marginLeft} ${style.cursorPointer}`}
+                                  onClick={() => handleRemoveChip(index)} // Optional: Add a remove handler
+                                >
+                                  <CancelIcon sx={{ color: '#06617A', fontSize: 20 }} />
+                                </div>
+                              </div>
+                            ))
+                          ) : null}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  {extensionRequiredValue === "NOT_REQUESTED" && (
+                    <div>
+                      <div className={`${style.lableStyle} ${style.marginTop10}`}>Reason For Locum Staff {selectedTab === "ACTIVELOCUM" ? "Extension" : "Renewal"} Not Required*</div>
+                      <div className={`${style.marginTop10}`}>
+                        <CKEditor
+                          editor={ClassicEditor}
+                          data={notRequiredComments}
+                          onChange={(event, editor) => {
+                            const data = editor.getData();
+                            setNotRequiredComments(data);
                           }}
-                          className={`${style.fullWidth} ${style.marginTop10}`}
-                          maxLength={50}
-                          placeholder={`Select from Privileged Staff from ${departmentName}`}
-                          value={value}
-                          required={true}
-                          error={!covererName}
-                          // warning={warningFields
-                          //   ?.map((data) => data?.label)
-                          //   ?.includes(
-                          //     `Who covers your hospital patients when you are not available?`
-                          //   )}
-                          listboxProps={{
-                            style: {
-                              maxHeight: '80px',
-                              overflowY: 'scroll',
-                              background: '#fff',
-                              border: '1px solid #2c2c2c',
-                            }
+                          config={{
+                            placeholder: "Enter Notes / Comments",
+                            toolbar: {
+                              shouldNotGroupWhenFull: true,
+                              sticky: true,
+                              items: [
+                                'undo', 'redo',
+                                '|',
+                                'heading',
+                                '|',
+                                'fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor',
+                                '|',
+                                'bold', 'italic', 'strikethrough', 'subscript', 'superscript', 'code',
+                                '|',
+                                'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'
+                              ],
+                            },
+                            autoGrow: false,
+                          }}
+                          onReady={(editor) => {
+                            editor.editing.view.change((writer) => {
+                              writer.setStyle(
+                                "height",
+                                "150px",
+                                editor.editing.view.document.getRoot()
+                              );
+                            });
                           }}
                         />
                       </div>
                     </div>
-                    <div className={`${style.chipsContainer} ${style.marginTop30} ${style.marginLeft10}`}>
-                      {covererNameList?.map ? (
-                        covererNameList.map((data, index) => (
-                          <div key={index} className={`${style.privilegeCategoryChips} ${style.displayInRow}`}>
-                            {/* <div>{name}</div> */}
-                            {/* <div>{selectApplicant?.filter(optionData => optionData?.id === data)?.[0]?.applicant?.name?.firstName}</div>   */}
-                            <div>
-                              {selectApplicant?.filter(optionData => optionData?.id === data)?.[0]?.applicant?.name?.firstName}{" "}
-                              {selectApplicant?.filter(optionData => optionData?.id === data)?.[0]?.applicant?.name?.middleName}{" "}
-                              {selectApplicant?.filter(optionData => optionData?.id === data)?.[0]?.applicant?.name?.lastName}
-                            </div>
-
-                            <div
-                              className={`${style.verticalAlignCenter} ${style.marginLeft} ${style.cursorPointer}`}
-                              onClick={() => handleRemoveChip(index)} // Optional: Add a remove handler
-                            >
-                              <CancelIcon sx={{ color: '#06617A', fontSize: 20 }} />
-                            </div>
-                          </div>
-                        ))
-                      ) : null}
-                    </div>
-                  </div>
+                  )}
                 </div>
               )}
             </div>
@@ -4146,11 +4295,13 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
                   onClick={() => {
                     if (!isValidDateRange()) return;
 
-                    if (!showSelectedPrivilegeLocum) {
+                    if (!showSelectedPrivilegeLocum && extensionRequiredValue === "REQUESTED") {
                       onClickExtensiveRequest();
-                    } else {
+                    } else if (showSelectedPrivilegeLocum) {
                       sendEmail();
                       setEmailSendDialog(true);
+                    } else if (!showSelectedPrivilegeLocum && extensionRequiredValue === "NOT_REQUESTED") {
+                      onClickNotRequiredExtensionFunction();
                     }
                   }}
                 >
@@ -4469,7 +4620,15 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
       >
         {/* <div className={style.spaceBetween}> */}
         <div className={style.heading1}>
-          Locum {selectedTab === "ACTIVELOCUM" ? "Extension" : "Renewal"} Request has been sent
+          Locum {selectedTab === "ACTIVELOCUM" ? "Extension" : "Renewal"} Application has been sent to
+           {selectDataLocum?.applicant?.name?.lastName?.charAt(0).toUpperCase() +
+            selectDataLocum?.applicant?.name?.lastName?.slice(1).toLowerCase()}
+          {", "}
+          {selectDataLocum?.applicant?.name?.firstName
+            ? selectDataLocum?.applicant?.name?.firstName.charAt(0).toUpperCase() +
+            selectDataLocum?.applicant?.name?.firstName.slice(1).toLowerCase()
+            : ""} 
+          {/* Locum {selectedTab === "ACTIVELOCUM" ? "Extension" : "Renewal"} Request has been sent */}
         </div>
         {/* <div className={style.displayInRow}>
               <img

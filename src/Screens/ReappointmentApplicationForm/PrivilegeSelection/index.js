@@ -191,17 +191,155 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
     getHospitalMaster();
   }, []);
 
-  useEffect(() => {
-    if (privilegeChangeYesOrNo !== '' && privilegeSetChangeYesOrNo !== '' && additionalPrivilegeChangeYesOrNo !== '' && privilegeAtOtherHospitalYesOrNo !== '' && departmentChangeYesOrNo !== '') {
-      setIsContinueEnabled(true);
-    } else {
-      setIsContinueEnabled(false);
-    }
-    if (basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory === ('Courtesy Staff With Admitting Privileges' || 'Courtesy Staff Without Admitting Privileges') && privilegeChangeYesOrNo !== '' && privilegeAtOtherHospitalYesOrNo === 'Yes' && departmentChangeYesOrNo !== '') {
-      setIsContinueEnabled(true);
-    }
-  }, [privilegeChangeYesOrNo, privilegeSetChangeYesOrNo, additionalPrivilegeChangeYesOrNo, privilegeAtOtherHospitalYesOrNo, departmentChangeYesOrNo])
+  // useEffect(() => {
+  //   if (privilegeChangeYesOrNo !== '' && privilegeSetChangeYesOrNo !== '' && additionalPrivilegeChangeYesOrNo !== '' && privilegeAtOtherHospitalYesOrNo !== '' && departmentChangeYesOrNo !== '') {
+  //     setIsContinueEnabled(true);
+  //   } else {
+  //     setIsContinueEnabled(false);
+  //   }
+  //   if (privilegeChangeYesOrNo === 'No' && isPrivilegeSetChanging && basicForm?.privileges?.obligatedPrivileges?.length > 0) {
+  //     setIsContinueEnabled(true);
+  //   }
+  //   if (additionalPrivilegeChangeYesOrNo === 'Yes' && 
+  //     isAdditionalPrivilegeCategoryChanging && 
+  //     selectedAdditionalDepartment != null && 
+  //     typeof selectedAdditionalDepartment === 'string' && 
+  //     selectedAdditionalDepartment.trim() !== '' && 
+  //     basicForm?.privileges?.additionalPrivileges?.length > 0) {
+  //   setIsContinueEnabled(true);
+  // }
+  //   if (basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory === ('Courtesy Staff With Admitting Privileges' || 'Courtesy Staff Without Admitting Privileges') && privilegeChangeYesOrNo !== '' && privilegeAtOtherHospitalYesOrNo === 'Yes' && departmentChangeYesOrNo !== '') {
+  //     setIsContinueEnabled(true);
+  //   }
+  // }, [privilegeChangeYesOrNo, privilegeSetChangeYesOrNo,isPrivilegeSetChanging,isAdditionalPrivilegeCategoryChanging, additionalPrivilegeChangeYesOrNo, privilegeAtOtherHospitalYesOrNo, departmentChangeYesOrNo,selectedAdditionalDepartment,basicForm?.privileges?.additionalPrivileges ])
 
+
+  useEffect(() => {
+    let shouldEnable = false;
+  
+    // ===== 1. BASE REQUIREMENTS (ALWAYS NEEDED) =====
+    const baseRequirementsMet = (
+      privilegeChangeYesOrNo !== '' &&
+      privilegeSetChangeYesOrNo !== '' &&
+      privilegeAtOtherHospitalYesOrNo !== '' &&
+      departmentChangeYesOrNo !== ''
+    );
+  
+    // ===== 2. CHECK ADDITIONAL PRIVILEGE CASES =====
+    if (additionalPrivilegeChangeYesOrNo === 'No') {
+      // CASE A: User said NO to additional privileges
+      shouldEnable = baseRequirementsMet;
+    } 
+    else if (additionalPrivilegeChangeYesOrNo === 'Yes') {
+      // CASE B: User said YES to additional privileges
+      const hasValidDepartment = (
+        selectedAdditionalDepartment != null &&
+        typeof selectedAdditionalDepartment === 'string' &&
+        selectedAdditionalDepartment.trim() !== ''
+      );
+      const hasAdditionalPrivileges = basicForm?.privileges?.additionalPrivileges?.length > 0;
+  
+      shouldEnable = (
+        baseRequirementsMet &&
+        isAdditionalPrivilegeCategoryChanging &&
+        hasValidDepartment &&
+        hasAdditionalPrivileges
+      );
+    }
+  
+    // ===== 3. SPECIAL OVERRIDE CASES =====
+    // Case 1: No privilege change but has obligated privileges
+    if (!shouldEnable && privilegeChangeYesOrNo === 'No' && isPrivilegeSetChanging && 
+        basicForm?.privileges?.obligatedPrivileges?.length > 0) {
+      shouldEnable = true;
+    }
+  
+    // Case 2: Courtesy Staff exception
+    if (!shouldEnable && 
+        (basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory === 'Courtesy Staff With Admitting Privileges' || 
+         basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory === 'Courtesy Staff Without Admitting Privileges') &&
+        privilegeChangeYesOrNo !== '' && 
+        privilegeAtOtherHospitalYesOrNo === 'Yes' && 
+        departmentChangeYesOrNo !== '') {
+      shouldEnable = true;
+    }
+  
+    setIsContinueEnabled(shouldEnable);
+  }, [
+    // All dependencies
+    privilegeChangeYesOrNo,
+    privilegeSetChangeYesOrNo,
+    isPrivilegeSetChanging,
+    additionalPrivilegeChangeYesOrNo,
+    isAdditionalPrivilegeCategoryChanging,
+    privilegeAtOtherHospitalYesOrNo,
+    departmentChangeYesOrNo,
+    selectedAdditionalDepartment,
+    basicForm?.privileges?.additionalPrivileges,
+    basicForm?.privileges?.obligatedPrivileges,
+    basicForm?.basicDetails?.credentialingPrivilegeCategory
+  ]);
+
+  // useEffect(() => {
+  //   const hasObligatedPrivileges = basicForm?.privileges?.obligatedPrivileges?.length > 0;
+  //   const hasAdditionalPrivileges = basicForm?.privileges?.additionalPrivileges?.length > 0;
+  //   const selectedDepartmentValid = !!selectedAdditionalDepartment?.trim();
+  
+  //   const category = basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory;
+  
+  //   let shouldEnable = false;
+  
+  //   if (
+  //     privilegeChangeYesOrNo !== '' &&
+  //     privilegeSetChangeYesOrNo !== '' &&
+  //     additionalPrivilegeChangeYesOrNo !== '' &&
+  //     privilegeAtOtherHospitalYesOrNo !== '' &&
+  //     departmentChangeYesOrNo !== ''
+  //   ) {
+  //     shouldEnable = true;
+  //   }
+  
+  //   if (
+  //     privilegeChangeYesOrNo === 'No' &&
+  //     isPrivilegeSetChanging &&
+  //     hasObligatedPrivileges
+  //   ) {
+  //     shouldEnable = true;
+  //   }
+  
+  //   if (
+  //     additionalPrivilegeChangeYesOrNo === 'Yes' &&
+  //     isAdditionalPrivilegeCategoryChanging === true &&
+  //     selectedDepartmentValid &&
+  //     hasAdditionalPrivileges
+  //   ) {
+  //     shouldEnable = true;
+  //   }
+  
+    
+  //   if (
+  //     (category === 'Courtesy Staff With Admitting Privileges' ||
+  //       category === 'Courtesy Staff Without Admitting Privileges') &&
+  //     privilegeChangeYesOrNo !== '' &&
+  //     privilegeAtOtherHospitalYesOrNo === 'Yes' &&
+  //     departmentChangeYesOrNo !== ''
+  //   ) {
+  //     shouldEnable = true;
+  //   }
+  
+  //   setIsContinueEnabled(shouldEnable);
+  // }, [
+  //   privilegeChangeYesOrNo,
+  //   privilegeSetChangeYesOrNo,
+  //   isPrivilegeSetChanging,
+  //   isAdditionalPrivilegeCategoryChanging,
+  //   additionalPrivilegeChangeYesOrNo,
+  //   privilegeAtOtherHospitalYesOrNo,
+  //   departmentChangeYesOrNo,
+  //   selectedAdditionalDepartment,
+  //   basicForm
+  // ]);
+  
   useEffect(() => {
     if (isSubmit) {
       handleSubmitPrivilegesAtOtherHospital(true);
@@ -479,6 +617,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
   };
 
   const getIsSaveInProgressOpen = (value) => {
+    handleSubmitAcknowledgement(false);
     setIsSaveInProgressOpen(value);
   };
 
@@ -1200,11 +1339,11 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
   };
 
   const handleContinue = async (isNavigate) => {
+    getPreApplication();
     if (isNavigate) {
       if (sessionStorage.getItem("fromSummary") === "true") {
         navigate(-1);
       } else {
-        getPreApplication();
         if (isContinueEnabled) {
           navigate(navigateURL);
         }
@@ -1502,74 +1641,113 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
     }
   };
 
-  const handleSign = (type, basicOrAdditional, index = 0) => {
+  const handleSign = (type, basicOrAdditional, index = 0, isPrivilegeSpecificationType) => {
+    console.log(selectedPrivilegeForDisplay)
     if (basicOrAdditional === "Basic") {
-      setSelectedPrivilegeForDisplay((prevData) => {
-        const temp = [...prevData];
-        if (
-          type === "Core" &&
-          (temp[index].privilegeDetails.corePrivileges.esign === null ||
-            temp[index].privilegeDetails.corePrivileges.esign === undefined)
-        ) {
-          temp[index].privilegeDetails.corePrivileges.esign = {
-            esign: CryptoJS.AES.encrypt(
-              name + new Date().toISOString(),
-              publicKey
-            ).toString(),
-            name: name,
-            signedDate: currentDate,
-          };
-        } else if (
-          type === "Restricted" &&
-          (temp[index].privilegeDetails.restrictedPrivileges.esign === null ||
-            temp[index].privilegeDetails.restrictedPrivileges.esign === undefined)
-        ) {
-          temp[index].privilegeDetails.restrictedPrivileges.esign = {
-            esign: CryptoJS.AES.encrypt(
-              name + new Date().toISOString(),
-              publicKey
-            ).toString(),
-            name: name,
-            signedDate: currentDate,
-          };
-        }
+      if (isPrivilegeSpecificationType) {
+        setSelectedPrivilegeForDisplay((prevData) => {
+          const temp = [...prevData];
+          if ((temp?.[index]?.descriptiveContent === null || temp?.[index]?.descriptiveContent?.esign === null ||
+            temp?.[index]?.descriptiveContent?.esign === undefined)
+          ) {
+            temp[index].descriptiveContent.esign = {
+              esign: CryptoJS.AES.encrypt(
+                name + new Date().toISOString(),
+                publicKey
+              ).toString(),
+              name: name,
+              signedDate: currentDate,
+            };
+          }
+          return temp;
+        });
+      } else {
+        setSelectedPrivilegeForDisplay((prevData) => {
+          const temp = [...prevData];
+          if (
+            type === "Core" &&
+            (temp[index].privilegeDetails.corePrivileges.esign === null ||
+              temp[index].privilegeDetails.corePrivileges.esign === undefined)
+          ) {
+            temp[index].privilegeDetails.corePrivileges.esign = {
+              esign: CryptoJS.AES.encrypt(
+                name + new Date().toISOString(),
+                publicKey
+              ).toString(),
+              name: name,
+              signedDate: currentDate,
+            };
+          } else if (
+            type === "Restricted" &&
+            (temp[index].privilegeDetails.restrictedPrivileges.esign === null ||
+              temp[index].privilegeDetails.restrictedPrivileges.esign === undefined)
+          ) {
+            temp[index].privilegeDetails.restrictedPrivileges.esign = {
+              esign: CryptoJS.AES.encrypt(
+                name + new Date().toISOString(),
+                publicKey
+              ).toString(),
+              name: name,
+              signedDate: currentDate,
+            };
+          }
 
-        return temp;
-      });
+          return temp;
+        });
+      }
     } else {
-      setSelectedAdditionalPrivilegeForDisplay((prevData) => {
-        const temp = [...prevData];
-        if (
-          type === "Core" &&
-          (temp[index].privilegeDetails.corePrivileges.esign === null ||
-            temp[index].privilegeDetails.corePrivileges.esign === undefined)
-        ) {
-          temp[index].privilegeDetails.corePrivileges.esign = {
-            esign: CryptoJS.AES.encrypt(
-              name + new Date().toISOString(),
-              publicKey
-            ).toString(),
-            name: name,
-            signedDate: currentDate,
-          };
-        } else if (
-          type === "Restricted" &&
-          (temp[index].privilegeDetails.restrictedPrivileges.esign === null ||
-            temp[index].privilegeDetails.restrictedPrivileges.esign ===
-            undefined)
-        ) {
-          temp[index].privilegeDetails.restrictedPrivileges.esign = {
-            esign: CryptoJS.AES.encrypt(
-              name + new Date().toISOString(),
-              publicKey
-            ).toString(),
-            name: name,
-            signedDate: currentDate,
-          };
-        }
+      if (isPrivilegeSpecificationType) {
+        setSelectedAdditionalPrivilegeForDisplay((prevData) => {
+          const temp = [...prevData];
+          if ((temp?.[index]?.descriptiveContent === null || temp?.[index]?.descriptiveContent?.esign === null ||
+            temp?.[index]?.descriptiveContent?.esign === undefined)
+          ) {
+            temp[index].descriptiveContent.esign = {
+              esign: CryptoJS.AES.encrypt(
+                name + new Date().toISOString(),
+                publicKey
+              ).toString(),
+              name: name,
+              signedDate: currentDate,
+            };
+          }
+          return temp;
+        });
+      } else {
+        setSelectedAdditionalPrivilegeForDisplay((prevData) => {
+          const temp = [...prevData];
+          if (
+            type === "Core" &&
+            (temp[index].privilegeDetails.corePrivileges.esign === null ||
+              temp[index].privilegeDetails.corePrivileges.esign === undefined)
+          ) {
+            temp[index].privilegeDetails.corePrivileges.esign = {
+              esign: CryptoJS.AES.encrypt(
+                name + new Date().toISOString(),
+                publicKey
+              ).toString(),
+              name: name,
+              signedDate: currentDate,
+            };
+          } else if (
+            type === "Restricted" &&
+            (temp[index].privilegeDetails.restrictedPrivileges.esign === null ||
+              temp[index].privilegeDetails.restrictedPrivileges.esign ===
+              undefined)
+          ) {
+            temp[index].privilegeDetails.restrictedPrivileges.esign = {
+              esign: CryptoJS.AES.encrypt(
+                name + new Date().toISOString(),
+                publicKey
+              ).toString(),
+              name: name,
+              signedDate: currentDate,
+            };
+          }
 
-        return temp;
-      });
+          return temp;
+        });
+      }
     }
   };
 
@@ -1742,43 +1920,51 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
               }`}</div>
 
             {selectedPrivilegeForDisplay?.map((data) =>
-              data?.privilegeDetails?.corePrivileges?.privilegesByCategories?.map(
-                (categories, index) => (
-                  <div>
-                    <div className={style.categoryGrid}>
-                      <div className={style.itemLeft}>
-                        <strong>
-                          {categories?.category === null
-                            ? ""
-                            : categories?.category}
-                        </strong>
-                      </div>
-                    </div>
-                    <>
-                      {categories?.privileges?.map((privileges) => (
-                        <div className={style.privilegeCodeGrid}>
-                          <div className={style.itemLeft}>
-                            <strong>{privileges?.privilegeId || ""}</strong>
-                          </div>
-                          <div className={style.itemLeft}>
-                            {privileges?.title || ""}
-                          </div>
-                        </div>
-                      ))}
-                    </>
-                  </div>
+              data?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ?
+                (
+                  <div
+                    className={` ${style.marginTop} ${style.descriptionStyle}`}
+                    dangerouslySetInnerHTML={{ __html: data?.descriptiveContent?.content }}
+                  />
                 )
-              )
+                :
+                data?.privilegeDetails?.corePrivileges?.privilegesByCategories?.map(
+                  (categories, index) => (
+                    <div>
+                      <div className={style.categoryGrid}>
+                        <div className={style.itemLeft}>
+                          <strong>
+                            {categories?.category === null
+                              ? ""
+                              : categories?.category}
+                          </strong>
+                        </div>
+                      </div>
+                      <>
+                        {categories?.privileges?.map((privileges) => (
+                          <div className={style.privilegeCodeGrid}>
+                            <div className={style.itemLeft}>
+                              <strong>{privileges?.privilegeId || ""}</strong>
+                            </div>
+                            <div className={style.itemLeft}>
+                              {privileges?.title || ""}
+                            </div>
+                          </div>
+                        ))}
+                      </>
+                    </div>
+                  )
+                )
             )}
-            {selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges
+            {(selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges
               ?.privilegesByCategories?.[0]?.privileges?.length !== 0 &&
               selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges
                 ?.privilegesByCategories?.[0]?.privileges?.length !==
-              undefined && (
+              undefined || (selectedPrivilegeForDisplay?.[0]?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" && selectedPrivilegeForDisplay?.[0]?.descriptiveContent?.content)) && (
                 <div className={style.twoCol}>
-                  <div onClick={() => handleSign("Core", "Basic")}>
+                  <div onClick={() => handleSign("Core", "Basic", 0, selectedPrivilegeForDisplay?.[0]?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT")}>
                     <ESignature
-                      userName={
+                      userName={selectedPrivilegeForDisplay?.[0]?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ? selectedPrivilegeForDisplay?.[0]?.descriptiveContent?.esign !== null ? selectedPrivilegeForDisplay?.[0]?.descriptiveContent?.esign?.name : "" :
                         selectedPrivilegeForDisplay?.[0]?.privilegeDetails
                           ?.corePrivileges?.esign !== null
                           ? selectedPrivilegeForDisplay?.[0]?.privilegeDetails
@@ -1786,19 +1972,21 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                           : ""
                       }
                       encData={
-                        selectedPrivilegeForDisplay?.[0]?.privilegeDetails
-                          ?.corePrivileges?.esign !== null
-                          ? selectedPrivilegeForDisplay?.[0]?.privilegeDetails
-                            ?.corePrivileges?.esign?.esign
-                          : ""
+                        selectedPrivilegeForDisplay?.[0]?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ? selectedPrivilegeForDisplay?.[0]?.descriptiveContent?.esign !== null ? selectedPrivilegeForDisplay?.[0]?.descriptiveContent?.esign?.esign : "" :
+                          selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                            ?.corePrivileges?.esign !== null
+                            ? selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                              ?.corePrivileges?.esign?.esign
+                            : ""
                       }
                       showData={
-                        selectedPrivilegeForDisplay?.[0]?.privilegeDetails
-                          ?.corePrivileges?.esign !== null &&
+                        selectedPrivilegeForDisplay?.[0]?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ? selectedPrivilegeForDisplay?.[0]?.descriptiveContent?.esign ? true : false :
                           selectedPrivilegeForDisplay?.[0]?.privilegeDetails
-                            ?.corePrivileges?.esign !== undefined
-                          ? true
-                          : false
+                            ?.corePrivileges?.esign !== null &&
+                            selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                              ?.corePrivileges?.esign !== undefined
+                            ? true
+                            : false
                       }
                       showDatais={true}
                     />
@@ -1807,21 +1995,23 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                     <div className={style.displayInRow}>
                       <div className={style.dateTitle}>Date: </div>
                       <div className={`${style.date} ${style.marginLeft}`}>
-                        {selectedPrivilegeForDisplay?.[0]?.privilegeDetails
-                          ?.corePrivileges?.esign !== null
-                          ? selectedPrivilegeForDisplay?.[0]?.privilegeDetails
-                            ?.corePrivileges?.esign?.signedDate
-                          : ""}
+                        {selectedPrivilegeForDisplay?.[0]?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ? selectedPrivilegeForDisplay?.[0]?.descriptiveContent?.esign ? selectedPrivilegeForDisplay?.[0]?.descriptiveContent?.esign?.signedDate : "" :
+                          selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                            ?.corePrivileges?.esign !== null
+                            ? selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                              ?.corePrivileges?.esign?.signedDate
+                            : ""}
                       </div>
                     </div>
                   </div>
                 </div>
               )}
-          </div>
+          </div >
 
-          {selectedPrivilegeForDisplay?.[0]?.privilegeDetails
-            ?.restrictedPrivileges?.privilegesByCategories?.[0]?.privileges
-            ?.length !== 0 &&
+          {
+            selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+              ?.restrictedPrivileges?.privilegesByCategories?.[0]?.privileges
+              ?.length !== 0 &&
             selectedPrivilegeForDisplay?.[0]?.privilegeDetails
               ?.restrictedPrivileges?.privilegesByCategories?.[0]?.privileges
               ?.length !== undefined && (
@@ -2099,7 +2289,8 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                   </div>
                 </div>
               </div>
-            )}
+            )
+          }
         </>
       );
     }
@@ -2130,57 +2321,65 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
               }`}</div>
 
             {selectedAdditionalPrivilegeForDisplay?.map((data) =>
-              data?.privilegeDetails?.corePrivileges?.privilegesByCategories?.map(
-                (categories, index) => (
-                  <div>
-                    <div className={style.categoryGrid}>
-                      <div className={style.itemLeft}>
-                        <strong>
-                          {categories?.category === null
-                            ? ""
-                            : categories?.category}
-                        </strong>
-                      </div>
-                    </div>
-                    <>
-                      {categories?.privileges?.map((privileges) => (
-                        <div className={style.privilegeCodeGrid}>
-                          <div className={style.itemLeft}>
-                            <strong>{privileges?.privilegeId || ""}</strong>
-                          </div>
-                          <div className={style.itemLeft}>
-                            {privileges?.title || ""}
-                          </div>
-                        </div>
-                      ))}
-                    </>
-                  </div>
+              data?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ?
+                (
+                  <div
+                    className={` ${style.marginTop} ${style.descriptionStyle}`}
+                    dangerouslySetInnerHTML={{ __html: data?.descriptiveContent?.content }}
+                  />
                 )
-              )
+                :
+                data?.privilegeDetails?.corePrivileges?.privilegesByCategories?.map(
+                  (categories, index) => (
+                    <div>
+                      <div className={style.categoryGrid}>
+                        <div className={style.itemLeft}>
+                          <strong>
+                            {categories?.category === null
+                              ? ""
+                              : categories?.category}
+                          </strong>
+                        </div>
+                      </div>
+                      <>
+                        {categories?.privileges?.map((privileges) => (
+                          <div className={style.privilegeCodeGrid}>
+                            <div className={style.itemLeft}>
+                              <strong>{privileges?.privilegeId || ""}</strong>
+                            </div>
+                            <div className={style.itemLeft}>
+                              {privileges?.title || ""}
+                            </div>
+                          </div>
+                        ))}
+                      </>
+                    </div>
+                  )
+                )
             )}
-            {selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges
+            {(selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges
               ?.privilegesByCategories?.[0]?.privileges?.length !== 0 &&
               selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges
                 ?.privilegesByCategories?.[0]?.privileges?.length !==
-              undefined && (
+              undefined || (selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" && selectedAdditionalPrivilegeForDisplay?.[0]?.descriptiveContent?.content)) && (
                 <div className={style.twoCol}>
-                  <div onClick={() => handleSign("Core", "Additional")}>
+                  <div onClick={() => handleSign("Core", "Additional", 0, selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT")}>
                     <ESignature
-                      userName={
+                      userName={selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ? selectedAdditionalPrivilegeForDisplay?.[0]?.descriptiveContent?.esign !== null ? selectedAdditionalPrivilegeForDisplay?.[0]?.descriptiveContent?.esign?.name : "" :
                         selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
                           ?.corePrivileges?.esign !== null
                           ? selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
                             ?.corePrivileges?.esign?.name
                           : ""
                       }
-                      encData={
+                      encData={selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ? selectedAdditionalPrivilegeForDisplay?.[0]?.descriptiveContent?.esign !== null ? selectedAdditionalPrivilegeForDisplay?.[0]?.descriptiveContent?.esign?.esign : "" :
                         selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
                           ?.corePrivileges?.esign !== null
                           ? selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
                             ?.corePrivileges?.esign?.esign
                           : ""
                       }
-                      showData={
+                      showData={selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ? selectedAdditionalPrivilegeForDisplay?.[0]?.descriptiveContent?.esign ? true : false :
                         selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
                           ?.corePrivileges?.esign !== null &&
                           selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
@@ -2195,11 +2394,12 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                     <div className={style.displayInRow}>
                       <div className={style.dateTitle}>Date: </div>
                       <div className={`${style.date} ${style.marginLeft}`}>
-                        {selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
-                          ?.corePrivileges?.esign !== null
-                          ? selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
-                            ?.corePrivileges?.esign?.signedDate
-                          : ""}
+                        {selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ? selectedAdditionalPrivilegeForDisplay?.[0]?.descriptiveContent?.esign ? selectedAdditionalPrivilegeForDisplay?.[0]?.descriptiveContent?.esign?.signedDate : "" :
+                          selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
+                            ?.corePrivileges?.esign !== null
+                            ? selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
+                              ?.corePrivileges?.esign?.signedDate
+                            : ""}
                       </div>
                     </div>
                   </div>
@@ -2515,40 +2715,47 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
           <div className={style.marginTop}>
             <div className={style.cardTitle}>{`${privilegeData?.privilegeSetTitle?.toUpperCase()}`}</div>
 
-            {privilegeData?.privilegeDetails?.corePrivileges?.privilegesByCategories?.map(
-              (categories, index) => (
-                <div>
-                  <div className={style.categoryGrid}>
-                    <div className={style.itemLeft}>
-                      <strong>
-                        {categories?.category === null
-                          ? ""
-                          : categories?.category}
-                      </strong>
-                    </div>
-                  </div>
-                  <>
-                    {categories?.privileges?.map((privileges) => (
-                      <div className={style.privilegeCodeGrid}>
-                        <div className={style.itemLeft}>
-                          <strong>{privileges?.privilegeId || ""}</strong>
-                        </div>
-                        <div className={style.itemLeft}>
-                          {privileges?.title || ""}
-                        </div>
-                      </div>
-                    ))}
-                  </>
-                </div>
+            {privilegeData?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ?
+              (
+                <div
+                  className={` ${style.marginTop} ${style.descriptionStyle}`}
+                  dangerouslySetInnerHTML={{ __html: privilegeData?.descriptiveContent?.content }}
+                />
               )
-            )}
+              : privilegeData?.privilegeDetails?.corePrivileges?.privilegesByCategories?.map(
+                (categories, index) => (
+                  <div>
+                    <div className={style.categoryGrid}>
+                      <div className={style.itemLeft}>
+                        <strong>
+                          {categories?.category === null
+                            ? ""
+                            : categories?.category}
+                        </strong>
+                      </div>
+                    </div>
+                    <>
+                      {categories?.privileges?.map((privileges) => (
+                        <div className={style.privilegeCodeGrid}>
+                          <div className={style.itemLeft}>
+                            <strong>{privileges?.privilegeId || ""}</strong>
+                          </div>
+                          <div className={style.itemLeft}>
+                            {privileges?.title || ""}
+                          </div>
+                        </div>
+                      ))}
+                    </>
+                  </div>
+                )
+              )}
             {privilegeData?.privilegeDetails?.corePrivileges
               ?.privilegesByCategories?.[0]?.privileges?.length !== 0 &&
               privilegeData?.privilegeDetails?.corePrivileges
                 ?.privilegesByCategories?.[0]?.privileges?.length !==
               undefined && (
                 <div className={style.twoCol}>
-                  <div onClick={() => handleSign("Core", "Basic", privilegeSetIndex)}>
+                  <div onClick={() => handleSign("Core", "Basic", privilegeSetIndex, privilegeData?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT")}>
                     <ESignature
                       userName={
                         privilegeData?.privilegeDetails
@@ -2824,7 +3031,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                 <div className={style.twoCol}>
                   <div
                     onClick={() => {
-                      handleSign("Restricted", "Basic", privilegeSetIndex);
+                      handleSign("Restricted", "Basic", privilegeSetIndex, privilegeData?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT");
                     }}
                   >
                     <ESignature
@@ -3222,7 +3429,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                                       setSelectedPrivilege(data?.id);
                                     }}
                                   >
-                                    {data?.privilegeSetTitle} {data?.privilegeDetails?.corePrivileges?.esign?.signedDate !== undefined && (<span className={style.signedOnText}>signed on {data?.privilegeDetails?.corePrivileges?.esign?.signedDate}</span>)}
+                                    {data?.privilegeSetTitle} {data?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ? data?.descriptiveContent?.esign?.signedDate !== undefined && (<span className={style.signedOnText}>signed on {data?.descriptiveContent?.esign?.signedDate}</span>) : data?.privilegeDetails?.corePrivileges?.esign?.signedDate !== undefined && (<span className={style.signedOnText}>signed on {data?.privilegeDetails?.corePrivileges?.esign?.signedDate}</span>)}
                                   </div>
                                 )
                               )}
@@ -3278,7 +3485,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                               {basicForm?.privileges?.additionalPrivileges?.map(data => (
                                 <div
                                   className={`${style.privilegeHeadingWithHover} ${style.cursorPointer}`} onClick={() => { setShowCurrentPrivileges(true); setCurrentPrivilegesCategory('Additional'); setSelectedPrivilege(data?.id) }}
-                                >{data?.privilegeSetTitle} {data?.privilegeDetails?.corePrivileges?.esign?.signedDate !== undefined && (<span className={style.signedOnText}>signed on {data?.privilegeDetails?.corePrivileges?.esign?.signedDate}</span>)}</div>
+                                >{data?.privilegeSetTitle} {data?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ? data?.descriptiveContent?.esign?.signedDate !== undefined && (<span className={style.signedOnText}>signed on {data?.descriptiveContent?.esign?.signedDate}</span>) : data?.privilegeDetails?.corePrivileges?.esign?.signedDate !== undefined && (<span className={style.signedOnText}>signed on {data?.privilegeDetails?.corePrivileges?.esign?.signedDate}</span>)}</div>
                               ))}
                             </>
                           )}
@@ -3948,7 +4155,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                                       ?.includes(data?.id) ? (
                                       // <Tooltip title="Click To Remove">
                                       <div className={`${style.displayInRow} ${style.floatRight}`}>
-                                        <span className={style.signedOnText}>signed on {selectedPrivilegesForDisplayMultiple?.filter((privilegeSet) => privilegeSet?.id === data?.id)?.[0]?.privilegeDetails?.corePrivileges?.esign?.signedDate}</span>
+                                        <span className={style.signedOnText}>signed on {selectedPrivilegesForDisplayMultiple?.filter((privilegeSet) => privilegeSet?.id === data?.id)?.[0]?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ? selectedPrivilegesForDisplayMultiple?.filter((privilegeSet) => privilegeSet?.id === data?.id)?.[0]?.descriptiveContent?.esign?.signedDate : selectedPrivilegesForDisplayMultiple?.filter((privilegeSet) => privilegeSet?.id === data?.id)?.[0]?.privilegeDetails?.corePrivileges?.esign?.signedDate}</span>
                                         <div>
                                           <img
                                             src={DeleteIcon}
@@ -3995,12 +4202,12 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                             >
                               SAVE
                             </div> */}
-                            <Tooltip title={"Click to Cancel"} arrow>
+                            <Tooltip title={"Click to Close"} arrow>
                               <div
                                 className={`${style.reappointmentButtonOutlined}`}
                                 onClick={() => { setIsPrivilegeSetChanging(false); setPrivilegeSetChangeYesOrNo('') }}
                               >
-                                CANCEL
+                                CLOSE
                               </div>
                             </Tooltip>
                           </div>
@@ -4116,14 +4323,16 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                               const matchedItem = getAdditionalDeptItems(departmentList)?.find(item => item.value === inputValue);
 
                               if (matchedItem) {
-                                // If user types a valid department/speciality name, set corresponding IDs
                                 if (matchedItem.specialityId !== "") {
                                   setSelectedAdditionalDepartment(matchedItem.departmentId);
-                                  setSelectedAdditionalSpeciality("")
+                                  setSelectedAdditionalSpeciality("");
                                 } else {
                                   setSelectedAdditionalDepartment(matchedItem.id);
-                                  setSelectedAdditionalSpeciality(matchedItem.specialityId)
+                                  setSelectedAdditionalSpeciality(matchedItem.specialityId);
                                 }
+                              } else {
+                                setSelectedAdditionalDepartment("");
+                                setSelectedAdditionalSpeciality("");
                               }
                             }}
 
@@ -4156,7 +4365,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                                   <div className={style.privilegeHeading}>{data?.privilegeSetTitle}</div>
                                   {selectedAdditionalPrivilegesForDisplayMultiple?.map(data => data?.id)?.includes(data?.id) ? (
                                     <div className={`${style.displayInRow} ${style.floatRight}`}>
-                                      <span className={style.signedOnText}>signed on {selectedAdditionalPrivilegesForDisplayMultiple?.filter((privilegeSet) => privilegeSet?.id === data?.id)?.[0]?.privilegeDetails?.corePrivileges?.esign?.signedDate}</span>
+                                      <span className={style.signedOnText}>signed on {selectedAdditionalPrivilegesForDisplayMultiple?.filter((privilegeSet) => privilegeSet?.id === data?.id)?.[0]?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ? selectedAdditionalPrivilegesForDisplayMultiple?.filter((privilegeSet) => privilegeSet?.id === data?.id)?.[0]?.descriptiveContent?.esign?.signedDate : selectedAdditionalPrivilegesForDisplayMultiple?.filter((privilegeSet) => privilegeSet?.id === data?.id)?.[0]?.privilegeDetails?.corePrivileges?.esign?.signedDate}</span>
                                       <div>
                                         <img
                                           src={DeleteIcon}
@@ -4192,12 +4401,12 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                       >
                         SAVE
                       </div> */}
-                      <Tooltip title={"Click to Cancel"} arrow>
+                      <Tooltip title={"Click to Close"} arrow>
                         <div
                           className={`${style.reappointmentButtonOutlined}`}
                           onClick={() => { setAdditionalPrivilegeChangeYesOrNo(''); setIsAdditionalPrivilegeCategoryChanging(false); }}
                         >
-                          CANCEL
+                          CLOSE
                         </div>
                       </Tooltip>
                     </div>
@@ -4507,64 +4716,69 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
             >
               <Tooltip title={"Click to Continue"} arrow>
                 <button
-                  className={`${style.reappointmentButton} ${style.marginLeft} ${(((selectedPrivilegeForDisplay?.[0]?.privilegeDetails
-                    ?.restrictedPrivileges?.esign !== null &&
-                    selectedPrivilegeForDisplay?.[0]?.privilegeDetails
-                      ?.restrictedPrivileges?.esign !== undefined) ||
-                    selectedPrivilegeForDisplay?.[0]?.privilegeDetails
-                      ?.restrictedPrivileges?.privilegesByCategories?.length ===
-                    0 ||
-                    (selectedPrivilegeForDisplay?.[0]?.privilegeDetails
-                      ?.restrictedPrivileges?.privilegesByCategories?.[0]
-                      ?.privileges?.length === 0 &&
-                      selectedPrivilegeForDisplay?.[0]?.privilegeDetails
-                        ?.restrictedPrivileges?.privilegesByCategories?.[0]
-                        ?.privileges?.length !== undefined)) &&
-                    ((selectedPrivilegeForDisplay?.[0]?.privilegeDetails
-                      ?.corePrivileges?.esign !== null &&
-                      selectedPrivilegeForDisplay?.[0]?.privilegeDetails
-                        ?.corePrivileges?.esign !== undefined) ||
-                      selectedPrivilegeForDisplay?.[0]?.privilegeDetails
-                        ?.corePrivileges?.privilegesByCategories?.length === 0 ||
-                      (selectedPrivilegeForDisplay?.[0]?.privilegeDetails
-                        ?.corePrivileges?.privilegesByCategories?.[0]?.privileges
-                        ?.length === 0 &&
+                  className={`${style.reappointmentButton} ${style.marginLeft} ${(
+                    selectedPrivilegeForDisplay?.[0]?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ?
+                      (selectedPrivilegeForDisplay?.[0]?.descriptiveContent?.esign)
+                      : (((selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                        ?.restrictedPrivileges?.esign !== null &&
                         selectedPrivilegeForDisplay?.[0]?.privilegeDetails
-                          ?.corePrivileges?.privilegesByCategories?.[0]
-                          ?.privileges?.length !== undefined)) && getIsRestrictedValuesFilled(selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                          ?.restrictedPrivileges?.esign !== undefined) ||
+                        selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                          ?.restrictedPrivileges?.privilegesByCategories?.length ===
+                        0 ||
+                        (selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                          ?.restrictedPrivileges?.privilegesByCategories?.[0]
+                          ?.privileges?.length === 0 &&
+                          selectedPrivilegeForDisplay?.[0]?.privilegeDetails
                             ?.restrictedPrivileges?.privilegesByCategories?.[0]
-                            ?.privileges))
+                            ?.privileges?.length !== undefined)) &&
+                        ((selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                          ?.corePrivileges?.esign !== null &&
+                          selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                            ?.corePrivileges?.esign !== undefined) ||
+                          selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                            ?.corePrivileges?.privilegesByCategories?.length === 0 ||
+                          (selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                            ?.corePrivileges?.privilegesByCategories?.[0]?.privileges
+                            ?.length === 0 &&
+                            selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                              ?.corePrivileges?.privilegesByCategories?.[0]
+                              ?.privileges?.length !== undefined)) && getIsRestrictedValuesFilled(selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                                ?.restrictedPrivileges?.privilegesByCategories?.[0]
+                                ?.privileges)))
                     ? ""
                     : style.disabledButton
                     }`}
                   onClick={
-                    (((selectedPrivilegeForDisplay?.[0]?.privilegeDetails
-                      ?.restrictedPrivileges?.esign !== null &&
-                      selectedPrivilegeForDisplay?.[0]?.privilegeDetails
-                        ?.restrictedPrivileges?.esign !== undefined) ||
-                      selectedPrivilegeForDisplay?.[0]?.privilegeDetails
-                        ?.restrictedPrivileges?.privilegesByCategories?.length ===
-                      0 ||
-                      (selectedPrivilegeForDisplay?.[0]?.privilegeDetails
-                        ?.restrictedPrivileges?.privilegesByCategories?.[0]
-                        ?.privileges?.length === 0 &&
+                    (selectedPrivilegeForDisplay?.[0]?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ?
+                      (selectedPrivilegeForDisplay?.[0]?.descriptiveContent?.esign)
+                      : (((selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                        ?.restrictedPrivileges?.esign !== null &&
                         selectedPrivilegeForDisplay?.[0]?.privilegeDetails
-                          ?.restrictedPrivileges?.privilegesByCategories?.[0]
-                          ?.privileges?.length !== undefined)) &&
-                      ((selectedPrivilegeForDisplay?.[0]?.privilegeDetails
-                        ?.corePrivileges?.esign !== null &&
+                          ?.restrictedPrivileges?.esign !== undefined) ||
                         selectedPrivilegeForDisplay?.[0]?.privilegeDetails
-                          ?.corePrivileges?.esign !== undefined) ||
-                        selectedPrivilegeForDisplay?.[0]?.privilegeDetails
-                          ?.corePrivileges?.privilegesByCategories?.length === 0 ||
+                          ?.restrictedPrivileges?.privilegesByCategories?.length ===
+                        0 ||
                         (selectedPrivilegeForDisplay?.[0]?.privilegeDetails
-                          ?.corePrivileges?.privilegesByCategories?.[0]?.privileges
-                          ?.length === 0 &&
+                          ?.restrictedPrivileges?.privilegesByCategories?.[0]
+                          ?.privileges?.length === 0 &&
                           selectedPrivilegeForDisplay?.[0]?.privilegeDetails
-                            ?.corePrivileges?.privilegesByCategories?.[0]
-                            ?.privileges?.length !== undefined)) && getIsRestrictedValuesFilled(selectedPrivilegeForDisplay?.[0]?.privilegeDetails
-                              ?.restrictedPrivileges?.privilegesByCategories?.[0]
-                              ?.privileges))
+                            ?.restrictedPrivileges?.privilegesByCategories?.[0]
+                            ?.privileges?.length !== undefined)) &&
+                        ((selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                          ?.corePrivileges?.esign !== null &&
+                          selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                            ?.corePrivileges?.esign !== undefined) ||
+                          selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                            ?.corePrivileges?.privilegesByCategories?.length === 0 ||
+                          (selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                            ?.corePrivileges?.privilegesByCategories?.[0]?.privileges
+                            ?.length === 0 &&
+                            selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                              ?.corePrivileges?.privilegesByCategories?.[0]
+                              ?.privileges?.length !== undefined)) && getIsRestrictedValuesFilled(selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                                ?.restrictedPrivileges?.privilegesByCategories?.[0]
+                                ?.privileges)))
                       ? () => {
                         setShowPrivileges(false);
                         handleSelectedPrivilegesForDisplayMultiple(
@@ -4574,19 +4788,21 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                       : () => { }
                   }
                   disabled={
-                    !((((selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.restrictedPrivileges?.esign !== null &&
-                      selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.restrictedPrivileges?.esign !== undefined) ||
-                      selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.length === 0 ||
-                      (selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.[0]?.privileges?.length === 0 &&
-                        selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.[0]?.privileges?.length !== undefined)) &&
-                      ((selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges?.esign !== null &&
-                        selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges?.esign !== undefined) ||
-                        selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges?.privilegesByCategories?.length === 0 ||
-                        (selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges?.privilegesByCategories?.[0]?.privileges?.length === 0 &&
-                          selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges?.privilegesByCategories?.[0]?.privileges?.length !== undefined))) &&
-                      getIsRestrictedValuesFilled(selectedPrivilegeForDisplay?.[0]?.privilegeDetails
-                        ?.restrictedPrivileges?.privilegesByCategories?.[0]
-                        ?.privileges))
+                    !(selectedPrivilegeForDisplay?.[0]?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ?
+                      (selectedPrivilegeForDisplay?.[0]?.descriptiveContent?.esign)
+                      : ((((selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.restrictedPrivileges?.esign !== null &&
+                        selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.restrictedPrivileges?.esign !== undefined) ||
+                        selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.length === 0 ||
+                        (selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.[0]?.privileges?.length === 0 &&
+                          selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.[0]?.privileges?.length !== undefined)) &&
+                        ((selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges?.esign !== null &&
+                          selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges?.esign !== undefined) ||
+                          selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges?.privilegesByCategories?.length === 0 ||
+                          (selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges?.privilegesByCategories?.[0]?.privileges?.length === 0 &&
+                            selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges?.privilegesByCategories?.[0]?.privileges?.length !== undefined))) &&
+                        getIsRestrictedValuesFilled(selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                          ?.restrictedPrivileges?.privilegesByCategories?.[0]
+                          ?.privileges)))
                   }
                 >
                   CONTINUE
@@ -4625,64 +4841,68 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
               <Tooltip title={"Click to Continue"} arrow>
                 <button
                   className={`${style.reappointmentButton} ${style.marginLeft}
-                 ${(((selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
-                      ?.restrictedPrivileges?.esign !== null &&
-                      selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
-                        ?.restrictedPrivileges?.esign !== undefined) ||
-                      selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
-                        ?.restrictedPrivileges?.privilegesByCategories?.length ===
-                      0 ||
-                      (selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
-                        ?.restrictedPrivileges?.privilegesByCategories?.[0]
-                        ?.privileges?.length === 0 &&
+                 ${(selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ?
+                      (selectedAdditionalPrivilegeForDisplay?.[0]?.descriptiveContent?.esign)
+                      : (((selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
+                        ?.restrictedPrivileges?.esign !== null &&
                         selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
-                          ?.restrictedPrivileges?.privilegesByCategories?.[0]
-                          ?.privileges?.length !== undefined)) &&
-                      ((selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
-                        ?.corePrivileges?.esign !== null &&
+                          ?.restrictedPrivileges?.esign !== undefined) ||
                         selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
-                          ?.corePrivileges?.esign !== undefined) ||
-                        selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
-                          ?.corePrivileges?.privilegesByCategories?.length === 0 ||
+                          ?.restrictedPrivileges?.privilegesByCategories?.length ===
+                        0 ||
                         (selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
-                          ?.corePrivileges?.privilegesByCategories?.[0]?.privileges
-                          ?.length === 0 &&
+                          ?.restrictedPrivileges?.privilegesByCategories?.[0]
+                          ?.privileges?.length === 0 &&
                           selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
-                            ?.corePrivileges?.privilegesByCategories?.[0]
-                            ?.privileges?.length !== undefined)) && getIsAdditionalRestrictedValuesFilled(selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
-                              ?.restrictedPrivileges?.privilegesByCategories?.[0]
-                              ?.privileges))
+                            ?.restrictedPrivileges?.privilegesByCategories?.[0]
+                            ?.privileges?.length !== undefined)) &&
+                        ((selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
+                          ?.corePrivileges?.esign !== null &&
+                          selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
+                            ?.corePrivileges?.esign !== undefined) ||
+                          selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
+                            ?.corePrivileges?.privilegesByCategories?.length === 0 ||
+                          (selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
+                            ?.corePrivileges?.privilegesByCategories?.[0]?.privileges
+                            ?.length === 0 &&
+                            selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
+                              ?.corePrivileges?.privilegesByCategories?.[0]
+                              ?.privileges?.length !== undefined)) && getIsAdditionalRestrictedValuesFilled(selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
+                                ?.restrictedPrivileges?.privilegesByCategories?.[0]
+                                ?.privileges)))
                       ? ""
                       : style.disabledButton
                     }`}
                   onClick={
-                    (((selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
-                      ?.restrictedPrivileges?.esign !== null &&
-                      selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
-                        ?.restrictedPrivileges?.esign !== undefined) ||
-                      selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
-                        ?.restrictedPrivileges?.privilegesByCategories?.length ===
-                      0 ||
-                      (selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
-                        ?.restrictedPrivileges?.privilegesByCategories?.[0]
-                        ?.privileges?.length === 0 &&
+                    (selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ?
+                      (selectedAdditionalPrivilegeForDisplay?.[0]?.descriptiveContent?.esign)
+                      : (((selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
+                        ?.restrictedPrivileges?.esign !== null &&
                         selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
-                          ?.restrictedPrivileges?.privilegesByCategories?.[0]
-                          ?.privileges?.length !== undefined)) &&
-                      ((selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
-                        ?.corePrivileges?.esign !== null &&
+                          ?.restrictedPrivileges?.esign !== undefined) ||
                         selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
-                          ?.corePrivileges?.esign !== undefined) ||
-                        selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
-                          ?.corePrivileges?.privilegesByCategories?.length === 0 ||
+                          ?.restrictedPrivileges?.privilegesByCategories?.length ===
+                        0 ||
                         (selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
-                          ?.corePrivileges?.privilegesByCategories?.[0]?.privileges
-                          ?.length === 0 &&
+                          ?.restrictedPrivileges?.privilegesByCategories?.[0]
+                          ?.privileges?.length === 0 &&
                           selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
-                            ?.corePrivileges?.privilegesByCategories?.[0]
-                            ?.privileges?.length !== undefined)) && getIsAdditionalRestrictedValuesFilled(selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
-                              ?.restrictedPrivileges?.privilegesByCategories?.[0]
-                              ?.privileges))
+                            ?.restrictedPrivileges?.privilegesByCategories?.[0]
+                            ?.privileges?.length !== undefined)) &&
+                        ((selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
+                          ?.corePrivileges?.esign !== null &&
+                          selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
+                            ?.corePrivileges?.esign !== undefined) ||
+                          selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
+                            ?.corePrivileges?.privilegesByCategories?.length === 0 ||
+                          (selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
+                            ?.corePrivileges?.privilegesByCategories?.[0]?.privileges
+                            ?.length === 0 &&
+                            selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
+                              ?.corePrivileges?.privilegesByCategories?.[0]
+                              ?.privileges?.length !== undefined)) && getIsAdditionalRestrictedValuesFilled(selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
+                                ?.restrictedPrivileges?.privilegesByCategories?.[0]
+                                ?.privileges)))
                       ? () => {
                         setShowAdditionalPrivileges(false);
                         handleSelectedAdditionalPrivilegesForDisplayMultiple(
@@ -4691,33 +4911,35 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                       }
                       : () => { }
                   }
-                  disabled={!((((selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
-                    ?.restrictedPrivileges?.esign !== null &&
-                    selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
-                      ?.restrictedPrivileges?.esign !== undefined) ||
-                    selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
-                      ?.restrictedPrivileges?.privilegesByCategories?.length ===
-                    0 ||
-                    (selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
-                      ?.restrictedPrivileges?.privilegesByCategories?.[0]
-                      ?.privileges?.length === 0 &&
+                  disabled={!(selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ?
+                    (selectedAdditionalPrivilegeForDisplay?.[0]?.descriptiveContent?.esign)
+                    : ((((selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
+                      ?.restrictedPrivileges?.esign !== null &&
                       selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
-                        ?.restrictedPrivileges?.privilegesByCategories?.[0]
-                        ?.privileges?.length !== undefined)) &&
-                    ((selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
-                      ?.corePrivileges?.esign !== null &&
+                        ?.restrictedPrivileges?.esign !== undefined) ||
                       selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
-                        ?.corePrivileges?.esign !== undefined) ||
-                      selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
-                        ?.corePrivileges?.privilegesByCategories?.length === 0 ||
+                        ?.restrictedPrivileges?.privilegesByCategories?.length ===
+                      0 ||
                       (selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
-                        ?.corePrivileges?.privilegesByCategories?.[0]?.privileges
-                        ?.length === 0 &&
+                        ?.restrictedPrivileges?.privilegesByCategories?.[0]
+                        ?.privileges?.length === 0 &&
                         selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
-                          ?.corePrivileges?.privilegesByCategories?.[0]
-                          ?.privileges?.length !== undefined))) && getIsAdditionalRestrictedValuesFilled(selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
-                            ?.restrictedPrivileges?.privilegesByCategories?.[0]
-                            ?.privileges))
+                          ?.restrictedPrivileges?.privilegesByCategories?.[0]
+                          ?.privileges?.length !== undefined)) &&
+                      ((selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
+                        ?.corePrivileges?.esign !== null &&
+                        selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
+                          ?.corePrivileges?.esign !== undefined) ||
+                        selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
+                          ?.corePrivileges?.privilegesByCategories?.length === 0 ||
+                        (selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
+                          ?.corePrivileges?.privilegesByCategories?.[0]?.privileges
+                          ?.length === 0 &&
+                          selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
+                            ?.corePrivileges?.privilegesByCategories?.[0]
+                            ?.privileges?.length !== undefined))) && getIsAdditionalRestrictedValuesFilled(selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
+                              ?.restrictedPrivileges?.privilegesByCategories?.[0]
+                              ?.privileges)))
                   }
                 >
                   CONTINUE

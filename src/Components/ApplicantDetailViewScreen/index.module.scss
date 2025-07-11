@@ -218,6 +218,12 @@
   color: $primarycolor
 }
 
+// .editInfoIcon {
+//   color: $primarycolor;
+//   height: 10px;
+//   width: 10px;
+// }
+
 .documentTextStyle {
   text-align: left;
   font: normal normal bold 20px/26px proxima-nova;
@@ -248,10 +254,23 @@
   border-radius: 2px;
   padding: 5px;
   text-align: left;
-  font: italic normal bold 14px/16px proxima nova;
+  font: italic normal bold 14px/16px proxima-nova;
   letter-spacing: 0px;
   color: $primarycolor;
   text-transform: capitalize;
+}
+
+.editInfo {
+  text-align: left;
+  font: normal normal bold 16px/31px proxima-nova;
+  letter-spacing: 0px;
+  color: $primarycolor;
+  text-transform: capitalize;
+  opacity: 1;
+}
+
+.editInfo:hover{
+   text-decoration: underline;
 }
 
 // .typeTextStyle{

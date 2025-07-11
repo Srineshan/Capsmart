@@ -2,7 +2,7 @@
 @import "../../index.scss";
 
 body {
-  background: #f8fcff 0% 0% no-repeat padding-box;
+  background: #F5F8F8 0% 0% no-repeat padding-box;
   -ms-overflow-style: none !important;
   scrollbar-width: none !important;
 
@@ -258,6 +258,10 @@ body::-webkit-scrollbar {
   opacity: 1;
   justify-self: end;
 
+}
+
+.purpleButton:hover {
+  background: $primarycolorHover 0% 0% no-repeat padding-box;
 }
 
 .purpleButtonSmall {
@@ -643,6 +647,17 @@ body::-webkit-scrollbar {
   color: #06617A;
   opacity: 1;
   text-transform: capitalize;
+}
+
+.tableHeaderHeadingNoneTextStyle {
+  text-align: left;
+  font: normal normal normal 16px/23px proxima-nova;
+  letter-spacing: 0px;
+  color: #06617A;
+  opacity: 0.7;
+  text-transform: capitalize;
+  font-style: italic;
+  align-content: center;
 }
 
 .progressMargin {
@@ -1326,6 +1341,10 @@ body::-webkit-scrollbar {
 
 .disabled {
   cursor: not-allowed;
+}
+
+.defaultCursor {
+  cursor: default !important;
 }
 
 .continueDisabled {
@@ -4500,6 +4519,10 @@ input[type="number"] {
   opacity: 1;
 }
 
+.bigButtonStyle1:hover {
+  background: $primarycolorHover 0% 0% no-repeat padding-box;
+}
+
 .statusCard {
   background: var(---ffffff) 0% 0% no-repeat padding-box;
   border: 0.4px solid var(--unnamed-color-e9e9f0);
@@ -4566,6 +4589,9 @@ input[type="number"] {
   margin: auto;
 }
 
+.bigButtonStyle2:hover {
+  background: $primarycolorHover 0% 0% no-repeat padding-box;
+}
 
 .bigButtonGreyStyle2 {
   height: 50px;
@@ -5248,7 +5274,7 @@ input[type="number"] {
   width: 23%;
   z-index: 10;
   padding: 20px;
-  background: #F8FCFF 0% 0% no-repeat padding-box;
+  background: #F5F8F8 0% 0% no-repeat padding-box;
 }
 
 .fixedBottom1 {
@@ -5595,4 +5621,9 @@ input[type="number"] {
   color: #ec7e7b;
   text-transform: capitalize;
   padding: 1px;
+}
+
+.overFlowHidden {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

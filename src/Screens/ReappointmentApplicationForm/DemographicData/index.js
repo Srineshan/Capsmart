@@ -52,6 +52,8 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [yesOrNoAddress, setYesOrNoAddress] = useState('YES');
     const [showInfo, setShowInfo] = useState(false);
     const [applicantProfile, setApplicantProfile] = useState();
+    const [isApplicantUpdated, setIsApplicantUpdated] = useState(false);
+    const [isContactUpdated, setIsContactUpdated] = useState(false);
     let allMissingFields = [];
     useEffect(() => {
         if (basicForm && !formSchema) {
@@ -340,6 +342,12 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
     };
 
     const getIsSaveInProgressOpen = (value) => {
+        if (value) {
+            handleSubmitApplicationReq("save")
+                .then(() => getAllMissingFields("save"))
+                .catch((error) => console.error("Error processing skip action:", error));
+        }
+        setUpdateFrom('');
         setIsSaveInProgressOpen(value);
     }
 
@@ -395,7 +403,23 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
         let keyValuePair = [];
         let hasMandatoryMissingFields = [];
         metadata?.map((data, index) => {
-            keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: uniqueLabels?.find(labelData => labelData?.path === data) || {} })
+          let label =  uniqueLabels?.find(labelData => labelData?.path === data) || {}    
+            if (data === `forms[${formIndex}].data.contactAddress2.isMailingAddressSameAsHomeAddress`) {
+        label = {
+            ...label,
+            mandatory: true,
+            label: "Mailing address: Home or different?"
+        };
+    }
+
+    if (data === `forms[${formIndex}].data.contactAddress3.isBusinessAddressSameAsHomeAddressOrMailingAddress`) {
+        label = {
+            ...label,
+            mandatory: true,
+            label: "Business address: Home or Mailing or Different?"
+        };
+    }
+            keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label:label})
         })
         const validateBusinessPhone = (phone) => {
             const phoneRegex = /^[0-9]{10}$/; // Example: validate if phone is a 10-digit number
@@ -633,11 +657,29 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
         let hasMandatoryMissingFields = [];
         
         metadata?.forEach((data, index) => {
+            let label = labels[index] || uniqueLabels?.find(labelData => labelData?.path === data);
+
+// Force mandatory true for the two specific paths
+if (data === `forms[${formIndex}].data.contactAddress2.isMailingAddressSameAsHomeAddress`) {
+        label = {
+            ...label,
+            mandatory: true,
+            label: "Mailing address: Home or different?"
+        };
+    }
+
+    if (data === `forms[${formIndex}].data.contactAddress3.isBusinessAddressSameAsHomeAddressOrMailingAddress`) {
+        label = {
+            ...label,
+            mandatory: true,
+            label: "Business address: Home or Mailing or Different?"
+        };
+    }
             keyValuePair.push({
                 key: data,
                 value: getValueByPath(basicForm, data),
                 // Assign correct label from either Basic Info or Contact Info labels
-                label: labels[index] || uniqueLabels?.find(labelData => labelData?.path === data)
+                label: label
             });
         });
 
@@ -699,6 +741,30 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
             },
         value:emailValue });
         }
+    //     const isBusinessAddressSameAsHomeAddressOrMailingAddressPath = `forms[${formIndex}].data.contactAddress3.isBusinessAddressSameAsHomeAddressOrMailingAddress`;
+    //     const RegisteredBusinessPath = `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`
+    //     const RegisteredBusinessAddressValue = getValueByPath(basicForm,RegisteredBusinessPath)
+    //     const isBusinessAddressSameAsHomeAddressOrMailingAddressValue = getValueByPath(basicForm, isBusinessAddressSameAsHomeAddressOrMailingAddressPath);
+    //     if (RegisteredBusinessAddressValue === false) {
+    //       if (!isBusinessAddressSameAsHomeAddressOrMailingAddressValue) {
+    //         allMissingKeys.push({ key: isBusinessAddressSameAsHomeAddressOrMailingAddressPath, label: {
+    //             label:"isBusinessAddressSameAsHomeAddressOrMailingAddress",
+    //             mandatory:true,
+    //             path:isBusinessAddressSameAsHomeAddressOrMailingAddressPath
+    //         },
+    //     value:isBusinessAddressSameAsHomeAddressOrMailingAddressValue });
+    //     }
+    // }
+    //     const isMailingAddressSameAsHomeAddressPath = `forms[${formIndex}].data.contactAddress2.isMailingAddressSameAsHomeAddress`;
+    //     const isMailingAddressSameAsHomeAddressValue = getValueByPath(basicForm, isMailingAddressSameAsHomeAddressPath);
+    //       if (!isMailingAddressSameAsHomeAddressValue) {
+    //         allMissingKeys.push({ key: isMailingAddressSameAsHomeAddressPath, label: {
+    //             label:"isMailingAddressSameAsHomeAddress",
+    //             mandatory:true,
+    //             path:isMailingAddressSameAsHomeAddressPath
+    //         },
+    //     value:isMailingAddressSameAsHomeAddressValue });
+    //     }
         // Validate specialty selection based on department
         if (
             !formSchemaWholeObject?.schema?.properties?.departmentSpecialty?.dependencies?.department?.oneOf
@@ -714,15 +780,17 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
         allMissingFields = allMissingKeys;
         hasMandatoryMissingFields = allMissingKeys?.find(field => field?.label?.mandatory === true);
 
-        if(data === "skipped"){
+        if(data === "skipped" || data === "save"){
             handleContactAddressSubmit();
+            if (data === "skipped") {
             if (sessionStorage.getItem('fromSummary') === "true") {
                 navigate(-1);
             } else {
                 navigate(navigateURL)
             }
         }
-     if (data !== "skipped"){
+        }
+     else {
         if (hasMandatoryMissingFields) {
             setShowValidationDialog(true);
         } else {
@@ -746,6 +814,14 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
 
     console.log(getValueByPath(basicForm, 'basicDetails.departmentSpecialty.department'), fieldPaths)
     console.log('Metadata', metadata);
+
+    const shouldEnableActionButtons = isApplicantUpdated || isContactUpdated;
+    const shouldEnableActionButtons2 =
+  isApplicantUpdated ||
+  isContactUpdated &&
+  yesOrNoAddress !== '' &&
+  yesOrNoDemographic !== '';
+
     return (
         <div>
             {showInfo && <div className={style.bgdrop} onClick={() => setShowInfo(false)}></div>}
@@ -786,6 +862,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                                 setIsView={setViewDemographicInfo}
                                 yesOrNoDemographic={yesOrNoDemographic}
                                 setYesOrNoDemographic={setYesOrNoDemographic}
+                                setIsApplicantUpdated={setIsApplicantUpdated}
                             />
                             {/* )}
                             <div className={style.displayInRow}>
@@ -881,6 +958,8 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                                                     // setShowContactInfo(false);
                                                     getMissingFields()
                                                     setUpdateFrom('contact')
+                                                    setIsContactInfoEdited(false);
+                                                    setIsContactUpdated(true);
                                                 } : () => { }}
                                                 disabled={!isContactInfoEdited}
                                             >
@@ -948,11 +1027,11 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                     <Tooltip title={"Click to Skip This Step and Continue Later"} arrow>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div></Tooltip>
                         <Tooltip title={"Click to Save your Progress and Continue later"} arrow>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div></Tooltip>
+                        <div className={`${style.saveInProgress} ${style.marginTop}${!shouldEnableActionButtons ? style.disabledButtonLook : ''}`} onClick={() => shouldEnableActionButtons && getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div></Tooltip>
                         <Tooltip title={"Click to Go Back to the Previous Step"} arrow>
                         <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleBackClick()}>BACK</div></Tooltip>
                         <Tooltip title={"Click to Proceed to the Next Step"} arrow>
-                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => getAllMissingFields()}>CONTINUE</div></Tooltip>
+                        <div className={`${style.continue} ${style.marginTop} ${!shouldEnableActionButtons ? style.disabledButtonLook : ''}`} onClick={() => shouldEnableActionButtons && getAllMissingFields()}>CONTINUE</div></Tooltip>
                     </div>
                 </div>
 
@@ -997,8 +1076,8 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                     <Tooltip title={"Click to Skip This Step and Continue Later"} arrow> <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div></Tooltip>
                     <Tooltip title={"Click to Save your Progress and Continue later"} arrow>
                         <div
-                            className={`${style.saveInProgress} ${style.marginTop10}`}
-                            onClick={() => getIsSaveInProgressOpen(true)}
+                            className={`${style.saveInProgress} ${style.marginTop} ${!shouldEnableActionButtons ? style.disabledButtonLook : ''}`}
+                            onClick={() => shouldEnableActionButtons && getIsSaveInProgressOpen(true)}
                         >
                             SAVE IN PROGRESS
                         </div>
@@ -1020,7 +1099,11 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                             CONTINUE
                         </div> */}
                                                 <Tooltip title={"Click to Proceed to the Next Step"} arrow>
-                            <div className={` ${style.continue} ${style.marginTop10} ${(yesOrNoAddress === '' || yesOrNoDemographic === '') ? style.disabledButtonLook : ''}`} onClick={() => (yesOrNoAddress !== '' && yesOrNoDemographic !== '') && getAllMissingFields()}>CONTINUE</div></Tooltip>
+                                <div className={` ${style.continue} ${style.marginTop10} ${!shouldEnableActionButtons2 ? style.disabledButtonLook : ''}`} onClick={() => {
+    if (shouldEnableActionButtons2) {
+      getAllMissingFields();
+    }
+  }}>CONTINUE</div></Tooltip>
                         </div>
 
                     </div>

@@ -77,6 +77,7 @@ const MRP = ({ basicForm, setBasicForm, getPreApplication }) => {
     }
 
     const getIsSaveInProgressOpen = (value) => {
+        getMissingFields("save")
         setIsSaveInProgressOpen(value);
     }
 
@@ -92,11 +93,11 @@ const MRP = ({ basicForm, setBasicForm, getPreApplication }) => {
 
     const getSkipClicked = (value) => {
         if (value) {
-            handleSubmitApplicationReq("skipped")
+            getMissingFields("skipped")
         }
     }
 
-    const getMissingFields = () => {
+    const getMissingFields = (data) => {
         // let missingKeys = [];
         // let keyValuePair = [];
         // metadata?.map((data, index) => {
@@ -110,7 +111,7 @@ const MRP = ({ basicForm, setBasicForm, getPreApplication }) => {
         // if (missingKeys?.length !== 0) {
         //     setShowValidationDialog(true)
         // } else {
-        handleSubmitApplicationReq()
+        handleSubmitApplicationReq(data)
         // }
         // setWarningFields(missingKeys)
         // console.log(keyValuePair, 'Metadata', missingKeys)
@@ -122,7 +123,7 @@ const MRP = ({ basicForm, setBasicForm, getPreApplication }) => {
             schemaId: basicForm?.forms?.[formIndex]?.schemaId,
             data: { yesOrNo: yesOrNo, updatedDate: updatedDate },
             unFilledFields: warningFields?.map(data => data?.label),
-            acknowledged: data === "skipped" ? false : true
+            acknowledged: data === "skipped" || data === "save"? false : true
         }
         await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
             .then(response => {
@@ -130,6 +131,7 @@ const MRP = ({ basicForm, setBasicForm, getPreApplication }) => {
                 setBasicForm(response?.data)
                 SuccessToaster("Application Updated Successfully");
                 getPreApplication();
+                if (data !== "save") {
                 if (sessionStorage.getItem('fromSummary') === "true") {
                     navigate(-1);
                 }
@@ -137,6 +139,7 @@ const MRP = ({ basicForm, setBasicForm, getPreApplication }) => {
                     navigate(navigateURL)
 
                 }
+            }
             })
             .catch((error) => {
                 console.log(error)
@@ -224,7 +227,7 @@ const MRP = ({ basicForm, setBasicForm, getPreApplication }) => {
                             <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div></Tooltip>
                             {/* <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowJourneyDialog(true)}>CONTINUE</div> */}
                             <Tooltip title={"Click to Proceed to the Next Step"} arrow>
-                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()}>CONTINUE</div></Tooltip>
+                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields("continue")}>CONTINUE</div></Tooltip>
                         </div>
                     </div>
                     <div className={style.marginTop}>

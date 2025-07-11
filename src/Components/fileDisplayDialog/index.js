@@ -97,13 +97,20 @@ const FileDisplayDialog = ({ getIsOpen, file }) => {
   };
 
 
-  const handleDownload = (url, fileName) => {
-    if (!url) {
-      console.error("No URL provided for download");
-      return;
-    }
-    downloadPDF(url, fileName);
-  };
+const handleDownload = (url, fileName) => {
+  if (!url) {
+    console.error("No URL provided for download");
+    return;
+  }
+
+  if (!fileName || fileName.trim() === "") {
+    console.error("Invalid file name for download");
+    return;
+  }
+
+  downloadPDF(url, fileName);
+};
+
 
 
   // const handleEmbedPrint = useReactToPrint({
@@ -163,7 +170,7 @@ const FileDisplayDialog = ({ getIsOpen, file }) => {
           <div className={Classes.DIALOG_BODY}>
             {/* <div className={` ${isExpanded ? style.dialog :Classes.DIALOG_BODY}`}> */}
             <div className={style.spaceBetween}>
-              <div className={style.heading}>{file?.fileUploaded !== undefined ? `${file?.documentType} ${file?.fileUploaded}` : file?.fileName !== undefined ? ` ${file?.fileName}` : ''}</div>
+              <div className={`${style.heading} ${style.overFlowHidden}`}>{file?.fileUploaded !== undefined ? `${file?.documentType} ${file?.fileUploaded}` : file?.fileName !== undefined ? ` ${file?.fileName}` : ''}</div>
               <div className={style.displayInRow}>
                 <div
                   className={`${isPrintClicked && style.addStyle} ${style.alignCenter
@@ -186,7 +193,7 @@ const FileDisplayDialog = ({ getIsOpen, file }) => {
                       color: "#06617A",
                     }}
                     className={style.cursorPointer}
-                    onClick={() => handleDownload(pdfUrl, file?.documentType)}
+                    onClick={() => handleDownload(pdfUrl, file?.documentType || file?.title)}
                   />
                 </Tooltip>
                 {!isExpanded ? (

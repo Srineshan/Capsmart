@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
 import NoteAltOutlinedIcon from "@mui/icons-material/NoteAltOutlined";
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import WarningOutlinedIcon from '@mui/icons-material/WarningOutlined';
 import { InputGroup, Icon, Intent, Dialog, Classes } from "@blueprintjs/core";
 import FileImg from "./../../images/fileImg.png";
@@ -50,6 +51,7 @@ import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import ApplicationDecline from "../../Screens/StaffApplication/applicationDeclineDialog";
 import ApplicationHeader from "../../Components/ApplicationHeader";
 import ApplicantDetailNotesView from '../../Components/ApplicantDetailNotesView';
+import ApplicantDetailEditDialog from '../../Components/EditApplicantInfoDialog';
 import ViewandVerifyScreen from '../../Components/ViewVerifyScreen';
 import ApplicationFieldCard from "../../Components/ApplicationFieldCard";
 import CommonDivider from "../../Components/CommonFields/CommonDivider";
@@ -57,7 +59,7 @@ import ESignature from "../../Components/ESignature";
 import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
 import CommonDateField from "../../Components/CommonFields/CommonDateField";
-import { format } from 'date-fns';
+import { format , differenceInDays, parseISO } from 'date-fns';
 import TableTwo from "../../Components/TableDesignTwo";
 import CreateOutlinedIcon from '@mui/icons-material/CreateOutlined';
 import LoadingScreen from "../LoadingScreen";
@@ -86,6 +88,8 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
   const applicationType = sessionStorage.getItem('applicationCreationType') ?? 'REAPPOINTMENT';
   const [isLoadingImage, setIsLoadingImage] = useState(false);
   const workModeType = sessionStorage.getItem('workModeType')
+  const canadaData = sessionStorage.getItem('canadaData') !== 'undefined' ? JSON.parse(sessionStorage.getItem('canadaData')) : {};
+  const dateFormat = canadaData?.dateFormat || 'MMM dd, yyyy';
   const [expandStates, setExpandStates] = useState({
     section1: false,
     section2: false,
@@ -96,6 +100,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
     section7: false,
   });
   const [showNotesDetailsDialog, setShowNotesDetailsDialog] = useState(false);
+  const [showEditInfoDialog, setShowEditInfoDialog] = useState(false);
   const [showViewAndVerifyScreen, setShowViewAndVerifyScreen] = useState(false);
   const [fileArray, setFileArray] = useState([]);
   const [selectedFileIndex, setSelectedFileIndex] = useState(0);
@@ -178,12 +183,12 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
     },
   ];
 
-  // const getNotesDetailsDialogOpen = (value) => {
-  //   setShowNotesDetailsDialog(value)
-  // };
+  const getEditInfoDetailsDialogOpen = (value) => {
+    setShowEditInfoDialog(value)
+  };
 
     useEffect(() => {
-    if (currentDocumentCount > 0) {
+    if (renewedDocumentRequired?.documentsExpiringSoon?.length > 0 || expireDocumentCount > 0 ) {
       setExpandStates(prev => ({
         ...prev,
         section1: true,
@@ -255,6 +260,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
     action = [];
     lastUpdateDate = [];
     status = [];
+    allDocumentDetails = [];
     if (selectedDocsFilter === "allDocuments") {
         allDocumentDetails = documentDetails?.allDocuments || [];
       } else if (selectedDocsFilter === "documentsExpiringSoon") {
@@ -271,17 +277,30 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
         ? new Date(data?.expiryDate).toISOString().split('T')[0] + 'T00:00'
         : null;
       status.push(
-        data?.hasExpiry === false ? (
-          <WarningOutlinedIcon style={{ fontSize: 20, color: "#FFD700" }} />
-        ) : data?.hasExpiry === true ? (
-          <WarningOutlinedIcon style={{ fontSize: 20, color: "#ED2939" }} />
-        ) : null
-      );
+      data?.hasExpiry === false ? (
+        <WarningOutlinedIcon style={{ fontSize: 20, color: "#737575" }} />
+      ) : data?.hasExpiry === true ? (
+        (() => {
+          if (!data?.expiryDate) return null;
+          const expiryDateLevel = parseISO(data?.expiryDate);
+          const currentDate = new Date();
+          const daysDiff = differenceInDays(expiryDateLevel,currentDate);
+          
+          if (daysDiff < 0) {
+            return <WarningOutlinedIcon style={{ fontSize: 20, color: "#ED2939" }} />;
+          } else if (daysDiff <= 90) {
+            return <WarningOutlinedIcon style={{ fontSize: 20, color: "#FFD700" }} />;
+          } else {
+            return <WarningOutlinedIcon style={{ fontSize: 20, color: "#737575" }} />;
+          }
+        })()
+      ) : null
+    );
       documentType.push(`${data?.documentType}` || "Dentist");
       documentName.push(data?.shortName || "dd")
       requirementType.push(data?.required)
       expireDate.push(
-       expiryDateFormat ? format(new Date(expiryDateFormat), "MMM dd, yyyy") : "-"
+       expiryDateFormat ? format(new Date(expiryDateFormat), dateFormat) : "-"
       );
       lastUpdateDate.push(
         // format(new Date(data?.LastUpdated), "MMM dd, yyyy") || '-'
@@ -337,7 +356,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
           style={{ cursor: "pointer", color: "#2C2C2C" }}
         >
            {startDateFormat && endDateFormat
-            ? `${format(new Date(startDateFormat), "MMM dd, yyyy")} - ${format(new Date(endDateFormat), "MMM dd, yyyy")}`
+            ? `${format(new Date(startDateFormat), dateFormat)} - ${format(new Date(endDateFormat), dateFormat)}`
           : data?.appointmentCycle || "-"}
         </span>
       );
@@ -404,7 +423,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
       )
     );
       approvalDate.push(
-        approvalDateFormat ? format(new Date(approvalDateFormat), "MMM dd, yyyy") : "-"
+        approvalDateFormat ? format(new Date(approvalDateFormat), dateFormat) : "-"
       );
       action.push(true);
     });
@@ -473,10 +492,10 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
       mdStatus.push(directive?.creationType)
       mdID.push(directive?.mdID)
       attestationDate.push(
-        attestationDueDateFormat ? format(new Date(attestationDueDateFormat), "MMM dd, yyyy") : "-"
+        attestationDueDateFormat ? format(new Date(attestationDueDateFormat), dateFormat) : "-"
       );
       lastUpdateDate.push(
-        lastModifiedDate ? format(lastModifiedDate, "MMM dd, yyyy") : "-"
+        lastModifiedDate ? format(lastModifiedDate, dateFormat) : "-"
       );
       action.push(true);
     });
@@ -583,11 +602,15 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
   };
 
   const lastModifiedDate = form?.lastModifiedDate;
-  const lastModifiedDateFormat = lastModifiedDate ? format(new Date(lastModifiedDate), "MMM dd, yyyy") : "-";
+  const lastModifiedDateFormat = lastModifiedDate ? format(new Date(lastModifiedDate), dateFormat) : "-";
   const ExpireDate = form?.tenure?.to
     ? new Date(form?.tenure?.to).toISOString().split('T')[0] + 'T00:00'
     : null;
-  const formattedExpiringDate = ExpireDate ? format(new Date(ExpireDate), "MMM dd, yyyy") : "-";
+  const formattedExpiringDate = ExpireDate ? format(new Date(ExpireDate), dateFormat) : "-";
+  const LastApprovedDate = form?.lastApprovedDate
+    ? new Date(form?.lastApprovedDate).toISOString().split('T')[0] + 'T00:00'
+    : null;
+  const formattedLastApprovedDate = LastApprovedDate ? format(new Date(LastApprovedDate), dateFormat) : "-";
 
   let tableHeaderValues = documentHeaderValues;
   let tableSortValues = documentColSortValues;
@@ -712,8 +735,25 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
                       </div>
                     </div>
                     <div>
+                     
+                      <div className={`${style.marginTop10} ${style.editInfo}`}>
+                        <span className={style.cursorPointer} onClick={() => getEditInfoDetailsDialogOpen(true)}>
+                        <Tooltip title="Click to Edit Info" arrow>
+                        Edit Profile Info 
+                        </Tooltip>
+                        </span>
+                        <span>   
+                           <Tooltip title="Click to Edit Info" arrow>
+                          <CreateOutlinedIcon
+                            style={{ fontSize: 20, color: "#06617A", cursor: "pointer" }}
+                            className={`${style.marginLeft10} ${style.cursorPointer}`}
+                          // onClick={onClickNotesFunction}
+                          />
+                          </Tooltip>  
+                        </span> 
+                      </div>
                       <div
-                        className={`${style.marginTop10}`}
+                        // className={`${style.marginTop10}`}
                       >
                         <span className={style.rightAlignTextStyle}>
                           Last Updated on {lastModifiedDateFormat}
@@ -739,9 +779,11 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
                       <div
                         className={`${style.marginTop10}`}
                       >
-                        {/* <span className={style.rightAlignTextStyle}>
-                          Last Approved By BOD on {formattedExpiringDate}
-                        </span> */}
+                        {formattedLastApprovedDate !== "-" && (
+                        <span className={style.rightAlignTextStyle}>
+                          Last Approved By BOD on {formattedLastApprovedDate}
+                        </span>
+                        )}
                         {/* <span
                           className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}
                         >
@@ -761,7 +803,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
                       Document Vault
                       <span className={`${style.marginLeft10} ${style.documentSubHeadingStyle}`}>
                         Only includes documents that have been verified by the MSO.
-                        {currentDocumentCount === 0 && (
+                        {(currentDocumentCount > 1 && expireDocumentCount < 1 && renewedDocumentRequired?.documentsExpiringSoon?.length < 1) && (
                           <strong className={style.greenTextStyle}> (All documents are up to date.)</strong>
                         )}
                       </span>
@@ -922,7 +964,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
                 <div className={`${style.cardLeftStyle} ${style.padding30}`}>
                   <div className={`${style.spaceBetween} ${style.alignItemCenter}`}>
                     <div className={`${style.documentTextStyle}`}>
-                      <img src={MDManager} alt="img" className={style.LogoIcon} /> <span>Medical Directives {(reviewMDCount < 1 && pastDueMDCount < 1) && (<strong className={style.greenTextStyle}> - All Medical Directives are Attested </strong> )}</span>
+                      <img src={MDManager} alt="img" className={style.LogoIcon} /> <span>Medical Directives {(attestedMDCount > 1 && reviewMDCount < 1 && pastDueMDCount < 1) && (<strong className={style.greenTextStyle}> - All Medical Directives are Attested </strong> )}</span>
                     </div>
                     <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
                       <div
@@ -1061,6 +1103,16 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
           <ApplicantDetailNotesView
             getIsOpen={getNotesDetailsDialogOpen}
             notesDetails={notesDetails}
+          // onClose={() => { setShowCCDateDialog(false); setCheckedIds([]); }}
+          />
+        )
+      }
+      {
+        showEditInfoDialog && (
+          <ApplicantDetailEditDialog
+            getIsOpen={getEditInfoDetailsDialogOpen}
+            applicationId={applicationId}
+            // notesDetails={notesDetails}
           // onClose={() => { setShowCCDateDialog(false); setCheckedIds([]); }}
           />
         )

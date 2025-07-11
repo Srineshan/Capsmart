@@ -325,3 +325,8 @@
 .criminalHistoryGrid> :nth-child(6) {
     grid-column: 1 / -1;
 }
+
+.disabledButton {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+}

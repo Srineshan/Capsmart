@@ -99,6 +99,10 @@
   padding: 5px 15px;
 }
 
+.reviewButtonStyle:hover {
+  background: $primarycolorHover 0% 0% no-repeat padding-box;
+}
+
 .reviewButton {
   text-align: center;
   font: normal normal bold 18px/30px proxima-nova;

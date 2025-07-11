@@ -10,6 +10,8 @@ import DescriptionIcon from '@mui/icons-material/Description';
 const ApplicantNotesViewDialog = ({ getIsOpen,notesDetails }) => {
   const id = sessionStorage.getItem("applicationId");
   const applicationType = sessionStorage.getItem('applicationCreationType') ?? 'REAPPOINTMENT';
+  const canadaData = sessionStorage.getItem('canadaData') !== 'undefined' ? JSON.parse(sessionStorage.getItem('canadaData')) : {};
+  const dateFormat = canadaData?.dateFormat || 'MMM dd, yyyy';
   const notesData = [
     {
       title: "Staff Manager Review",
@@ -80,7 +82,7 @@ const ApplicantNotesViewDialog = ({ getIsOpen,notesDetails }) => {
        
           {notesDetails.map((note, index) => {
             const createdDate = note?.createdDate
-              ? format(new Date(note.createdDate), "dd/MM/yyyy, HH:mm")
+              ? format(new Date(note.createdDate), `${dateFormat}, HH:mm`)
               : "";
 
             return (

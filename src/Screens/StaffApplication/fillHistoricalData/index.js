@@ -1307,7 +1307,7 @@ return Object.keys(newErrors).length === 0;
           // actions={!isPOD ? actions : []}
           scrollStyle={style.contractScrollStyle}
           tableSortValues={[]}
-          heading={'There are no record to display'}
+          heading={'There are no records to display'}
           onClickFunction={() => { }}
           hidePagination={true}
         />

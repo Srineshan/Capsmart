@@ -73,6 +73,11 @@
     width: 240px;
 }
 
+.continue:hover {
+  background: $primarycolorHover 0% 0% no-repeat padding-box;
+}
+
+
 .saveInProgress {
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #00000029;
@@ -143,3 +148,8 @@
     align-items: center;
     z-index: 9999;
   }
+
+  .overFlowHidden {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

@@ -10,6 +10,8 @@ const ReportsApplicantTable = ({ tableData }) => {
   const [multiLogDetails, setMultiLogDetails] = useState([]);
   const temp = tableData?.map(item => item.id);
   const [entity, setEntity] = useState([]);
+  const canadaData = sessionStorage.getItem('canadaData') !== 'undefined' ? JSON.parse(sessionStorage.getItem('canadaData')) : {};
+  const dateFormat = canadaData?.dateFormat || 'MMM dd, yyyy';
 
   console.log("Extracted IDs:", temp);
 
@@ -69,10 +71,10 @@ const ReportsApplicantTable = ({ tableData }) => {
     return multiFormDetails.map((formDetails, index) => {
       const logDetails = multiLogDetails[index] || {};
       const lastModifiedDate = formDetails?.lastModifiedDate;
-      const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), "MMM dd, yyyy") : "-";
+      const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), dateFormat) : "-";
       const lastSubmittedLog = logDetails?.logs?.find((log) => log.workflowStatus === "SUBMITTED");
       const lastSubmittedDate = lastSubmittedLog?.lastModifiedDate;
-      const formattedSubmissionDate = lastSubmittedDate ? format(new Date(lastSubmittedDate), "MMM dd, yyyy") : "-";
+      const formattedSubmissionDate = lastSubmittedDate ? format(new Date(lastSubmittedDate), dateFormat) : "-";
 
       return (
         <div key={formDetails?.displayId} className={`${style.rejectionBorderStyle} ${style.declineBorderStyle} ${style.marginTop10}`}>
@@ -124,7 +126,7 @@ const ReportsApplicantTable = ({ tableData }) => {
                   {formDetails?.basicDetails?.applicant?.name?.firstName
                     ? formDetails?.updatedBy?.name?.firstName.charAt(0).toUpperCase() +
                     formDetails?.updatedBy?.name?.firstName.slice(1).toLowerCase()
-                    : ""}{formDetails?.updatedBy?.name?.lastName?.toUpperCase()}, {formDetails?.updatedBy?.title?.title}
+                    : ""}{formDetails?.updatedBy?.name?.lastName?.toUpperCase()} {formDetails?.updatedBy?.title?.title  ? `, ${formDetails?.updatedBy?.title?.title}`: ""}
                 </span>
               </div>
             </div>

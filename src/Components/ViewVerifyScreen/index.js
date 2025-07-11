@@ -79,6 +79,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import IconButton from '@mui/material/IconButton';
 import LoadingScreen from "../LoadingScreen";
+import DeleteConfirmationDialog from "../../Components/DeleteConfirmation"
 const NewActiveApplication = ({
   contracts,
   getNewContract,
@@ -265,10 +266,13 @@ const NewActiveApplication = ({
   // const userLastName = userData?.name?.lastName || "No Last Name";
   const [hasVerificationAttempted, setHasVerificationAttempted] = useState(false);
   const [approvalType, setApprovalType] = useState(false);
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [noteToDelete, setNoteToDelete] = useState(null);
   const canadaData =
     sessionStorage.getItem("canadaData") !== "undefined"
       ? JSON.parse(sessionStorage.getItem("canadaData"))
       : {};
+  const dateFormat = canadaData?.dateFormat || 'MMM dd, yyyy';
   let user =
     sessionStorage.getItem("user") !== undefined
       ? JSON.parse(sessionStorage.getItem("user"))
@@ -293,6 +297,12 @@ const NewActiveApplication = ({
     borderStyle: "dashed",
     borderRadius: 5,
   };
+  const visibleNotes = form?.notesDetails
+    ?.filter((log) => {
+      if (!log?.notes?.notes) return false;
+      if (log?.private && log?.user?.id !== users?.id) return false;
+      return true;
+    }) || [];
 
   console.log("dataLevel", users?.id)
 
@@ -324,30 +334,30 @@ const NewActiveApplication = ({
       (workflow) => workflow?.role === "Board"
     );
     if (workModeType === "Staff Manager" && selectedTab === "level-2" && credentialingCommitteeDate?.meetingDate && applicationType === "LOCUM") {
-      setSelectedDateForReappoint(new Date(`${credentialingCommitteeDate?.meetingDate}T00:00`), "MMM dd, yyyy");
-      setSelectedDateForCC(new Date(`${credentialingCommitteeDate?.meetingDate}T00:00`), "MMM dd, yyyy");
+      setSelectedDateForReappoint(new Date(`${credentialingCommitteeDate?.meetingDate}T00:00`), dateFormat);
+      setSelectedDateForCC(new Date(`${credentialingCommitteeDate?.meetingDate}T00:00`), dateFormat);
       setIsButtonDisabled(false);
     }
     if (workModeType === "Staff Manager" && selectedTab === "level-3" && credentialingCommitteeDate?.meetingDate && applicationType === "REAPPOINTMENT") {
-      setSelectedDateForReappoint(new Date(`${credentialingCommitteeDate?.meetingDate}T00:00`), "MMM dd, yyyy");
-      setSelectedDateForCC(new Date(`${credentialingCommitteeDate?.meetingDate}T00:00`), "MMM dd, yyyy");
+      setSelectedDateForReappoint(new Date(`${credentialingCommitteeDate?.meetingDate}T00:00`), dateFormat);
+      setSelectedDateForCC(new Date(`${credentialingCommitteeDate?.meetingDate}T00:00`), dateFormat);
       setIsButtonDisabled(false);
     }
     if (workModeType === "Staff Manager" && selectedTab === "level-3" && AdvisoryCommitteeDate?.meetingDate && applicationType === "LOCUM") {
-      setSelectedDateForMac(new Date(`${AdvisoryCommitteeDate?.meetingDate}T00:00`), "MMM dd, yyyy");
-      setSelectedDateForCC(new Date(`${AdvisoryCommitteeDate?.meetingDate}T00:00`), "MMM dd, yyyy");
+      setSelectedDateForMac(new Date(`${AdvisoryCommitteeDate?.meetingDate}T00:00`), dateFormat);
+      setSelectedDateForCC(new Date(`${AdvisoryCommitteeDate?.meetingDate}T00:00`), dateFormat);
       setIsButtonDisabled(false);
     }
     if (workModeType === "Staff Manager" && selectedTab === "level-4" && AdvisoryCommitteeDate?.meetingDate && applicationType === "REAPPOINTMENT") {
-      setSelectedDateForMac(new Date(`${AdvisoryCommitteeDate?.meetingDate}T00:00`), "MMM dd, yyyy");
+      setSelectedDateForMac(new Date(`${AdvisoryCommitteeDate?.meetingDate}T00:00`), dateFormat);
       setIsButtonDisabled(false);
     }
     if (workModeType === "Staff Manager" && selectedTab === "level-4" && BoardDate?.meetingDate && applicationType === "LOCUM") {
-      setSelectedDateForBod(new Date(`${BoardDate?.meetingDate}T00:00`), "MMM dd, yyyy");
+      setSelectedDateForBod(new Date(`${BoardDate?.meetingDate}T00:00`), dateFormat);
       setIsButtonDisabled(false);
     }
     if (workModeType === "Staff Manager" && selectedTab === "level-5" && BoardDate?.meetingDate) {
-      setSelectedDateForBod(new Date(`${BoardDate?.meetingDate}T00:00`), "MMM dd, yyyy");
+      setSelectedDateForBod(new Date(`${BoardDate?.meetingDate}T00:00`), dateFormat);
       setIsButtonDisabled(false);
     }
     // if (workModeType === "Staff Manager" && selectedTab === "level-5" && BoardDate?.approvalType) {
@@ -622,7 +632,19 @@ const NewActiveApplication = ({
   const handlePopoverClose = () => {
     setAnchorEl(null);
   };
+    const getShowDeleteConfirmation = (value) => {
+        setShowDeleteConfirmation(value);
+    }
 
+    const getDeleteConfirmation = (value) => {
+        if (value && noteToDelete) {
+    handleDeleteNote(noteToDelete);
+  }
+    }
+const onDeleteClick = (id) => {
+  setNoteToDelete(id);
+  setShowDeleteConfirmation(true);
+};
   useEffect(() => {
     getFormSchema(formSchemaId);
   }, [formSchemaId]);
@@ -737,10 +759,10 @@ const NewActiveApplication = ({
     // let lastName = CredCommApproverDetails?.approverDetail?.name?.lastName;
     // let approvalType = CredCommApproverDetails?.approvalType
     const matchedApprover = approverDetailsArray.find((approver) => {
-    const firstName = approver?.approverDetail?.name?.firstName;
-    const lastName = approver?.approverDetail?.name?.lastName;
-    return firstName === userFirstName && lastName === userLastName;
-  });
+      const firstName = approver?.approverDetail?.name?.firstName;
+      const lastName = approver?.approverDetail?.name?.lastName;
+      return firstName === userFirstName && lastName === userLastName;
+    });
 
     // console.log(`Approver cred: ${firstName} ${lastName}`);
     console.log("workModeType:", workModeType);
@@ -2089,27 +2111,27 @@ const NewActiveApplication = ({
 
   const lastSubmittedLog = logDetails?.logs?.find((log) => log.workflowStatus === "SUBMITTED");
   const lastSubmittedDate = lastSubmittedLog ? lastSubmittedLog.lastModifiedDate : null;
-  const formattedSubmissionDate = lastSubmittedDate ? format(new Date(lastSubmittedDate), "MM/dd/yyyy") : "-";
+  const formattedSubmissionDate = lastSubmittedDate ? format(new Date(lastSubmittedDate), dateFormat) : "-";
   const reappointmentDate = form?.createdDate;
-  const reappointmentStartDate = reappointmentDate ? format(new Date(reappointmentDate), "MM/dd/yyyy") : "-";
+  const reappointmentStartDate = reappointmentDate ? format(new Date(reappointmentDate), dateFormat) : "-";
   const credentialingCommitteeData = form?.completedWorkflows?.find(
     (workflow) => workflow?.role === "Credentialing Committee"
   );
   const ExpireDate = form?.cyclePeriod?.to
     ? new Date(form?.cyclePeriod?.to).toISOString().split('T')[0] + 'T00:00'
     : null;
-  const formattedExpiringDate = ExpireDate ? format(new Date(ExpireDate), "MMM dd, yyyy") : "-";
+  const formattedExpiringDate = ExpireDate ? format(new Date(ExpireDate), dateFormat) : "-";
   const startDate = form?.cyclePeriod?.from
     ? new Date(form?.cyclePeriod?.from).toISOString().split('T')[0] + 'T00:00'
     : null;
-  const formattedStartingDate = startDate ? format(new Date(startDate), "MMM dd, yyyy") : "-";
+  const formattedStartingDate = startDate ? format(new Date(startDate), dateFormat) : "-";
   const reviewedDateCC = credentialingCommitteeData ? new Date(credentialingCommitteeData?.reviewedDate) : null;
   const AdvisoryCommitteeData = form?.completedWorkflows?.find(
     (workflow) => workflow?.role === "Advisory Committee"
   );
   const reviewedDateMAC = AdvisoryCommitteeData ? new Date(AdvisoryCommitteeData?.reviewedDate) : null;
   const paymentmentDate = form?.payment?.paidDateTime;
-  const paymentmentPaidDate = paymentmentDate ? format(new Date(paymentmentDate), "MM/dd/yyyy 'at' h:mm a") : "-";
+  const paymentmentPaidDate = paymentmentDate ? format(new Date(paymentmentDate), `${dateFormat} at HH:mm a`) : "-";
   const isUploadYourDoc = form?.forms?.[1]?.schemaCategory === 'UploadYourDoc';
   const isMedicalDirectives = form?.forms?.[9]?.schemaCategory === 'MEDICAL_DIRECTIVES';
   const allVerified = form?.forms?.[1]?.data?.table?.every(item => item.isVerified === true);
@@ -2140,7 +2162,7 @@ const NewActiveApplication = ({
     try {
       // Safely format each log's approved date
       return log?.createdDate
-        ? format(new Date(log.createdDate), "MMM dd, yyyy, H.mm")
+        ? format(new Date(log.createdDate),`${dateFormat}, HH:mm`)
         : "-";
     } catch (error) {
       console.error("Error formatting date:", error);
@@ -2151,7 +2173,7 @@ const NewActiveApplication = ({
     try {
       // Safely format each log's approved date
       return log?.createdDate
-        ? format(new Date(log?.createdDate), "MMM dd, yyyy")
+        ? format(new Date(log?.createdDate), dateFormat)
         : "-";
     } catch (error) {
       console.error("Error formatting date:", error);
@@ -2885,7 +2907,7 @@ const NewActiveApplication = ({
                 actions={[]}
                 // scrollStyle={style.contractScrollStyle}
                 tableSortValues={[]}
-                heading={"There are no Record for you to manage"}
+                heading={"There are no Records for you to manage"}
                 onClickFunction={() => { }}
                 isUploadYourDocTable={isUploadYourDoc}
               />
@@ -2924,7 +2946,7 @@ const NewActiveApplication = ({
               actions={[]}
               // scrollStyle={style.contractScrollStyle}
               tableSortValues={[]}
-              heading={"There are no Record for you to manage"}
+              heading={"There are no Records for you to manage"}
               onClickFunction={() => { }}
             />
           </>
@@ -2938,7 +2960,7 @@ const NewActiveApplication = ({
                   {formSchema?.properties?.isModulesForReAppointmentCompleted?.label}
                 </div>
                 {form?.forms?.[formIndex]?.data?.lms?.yesOrNo !== undefined && (
-                  <div className={`${style.markedAsText} ${style.marginTop20}`}><strong>Marked as <span className={form?.forms?.[formIndex]?.data?.lms?.yesOrNo === 'Yes' ? style.yesText : style.noText}>{form?.forms?.[formIndex]?.data?.lms?.yesOrNo}</span></strong> on {format(new Date(form?.forms?.[formIndex]?.data?.lms?.updatedDate), "MMM dd, yyyy")}</div>
+                  <div className={`${style.markedAsText} ${style.marginTop20}`}><strong>Marked as <span className={form?.forms?.[formIndex]?.data?.lms?.yesOrNo === 'Yes' ? style.yesText : style.noText}>{form?.forms?.[formIndex]?.data?.lms?.yesOrNo}</span></strong> on {format(new Date(form?.forms?.[formIndex]?.data?.lms?.updatedDate), dateFormat)}</div>
                 )}
               </div>
               <div className={`${style.marginTop20}`}>
@@ -2946,7 +2968,7 @@ const NewActiveApplication = ({
                   {formSchema?.properties?.doYouPrescribeSuboxone?.label}
                 </div>
                 {form?.forms?.[formIndex]?.data?.suboxone?.yesOrNo !== undefined && (
-                  <div className={`${style.markedAsText} ${style.marginTop20}`}><strong>Marked as <span className={form?.forms?.[formIndex]?.data?.suboxone?.yesOrNo === 'Yes' ? style.yesText : style.noText}>{form?.forms?.[formIndex]?.data?.suboxone?.yesOrNo}</span></strong> on {format(new Date(form?.forms?.[formIndex]?.data?.suboxone?.updatedDate), "MMM dd, yyyy")}</div>
+                  <div className={`${style.markedAsText} ${style.marginTop20}`}><strong>Marked as <span className={form?.forms?.[formIndex]?.data?.suboxone?.yesOrNo === 'Yes' ? style.yesText : style.noText}>{form?.forms?.[formIndex]?.data?.suboxone?.yesOrNo}</span></strong> on {format(new Date(form?.forms?.[formIndex]?.data?.suboxone?.updatedDate), dateFormat)}</div>
                 )}
               </div>
               {(form?.basicDetails?.departmentSpecialty?.department === 'Women & Children' && form?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics') && (
@@ -2955,7 +2977,7 @@ const NewActiveApplication = ({
                     {formSchema?.properties?.wishToBeMRP?.label}
                   </div>
                   {form?.forms?.[formIndex]?.data?.mrp?.yesOrNo !== undefined && (
-                    <div className={`${style.markedAsText} ${style.marginTop20}`}><strong>Marked as <span className={form?.forms?.[formIndex]?.data?.mrp?.yesOrNo === 'Yes' ? style.yesText : style.noText}>{form?.forms?.[formIndex]?.data?.mrp?.yesOrNo}</span></strong> on {format(new Date(form?.forms?.[formIndex]?.data?.mrp?.updatedDate), "MMM dd, yyyy")}</div>
+                    <div className={`${style.markedAsText} ${style.marginTop20}`}><strong>Marked as <span className={form?.forms?.[formIndex]?.data?.mrp?.yesOrNo === 'Yes' ? style.yesText : style.noText}>{form?.forms?.[formIndex]?.data?.mrp?.yesOrNo}</span></strong> on {format(new Date(form?.forms?.[formIndex]?.data?.mrp?.updatedDate), dateFormat)}</div>
                   )}
                 </div>
               )}
@@ -3753,7 +3775,7 @@ const NewActiveApplication = ({
                 actions={[]}
                 // scrollStyle={style.contractScrollStyle}
                 tableSortValues={[]}
-                heading={"There are no Record for you to manage"}
+                heading={"There are no Records for you to manage"}
                 onClickFunction={() => { }}
                 isUploadYourDocTable={isUploadYourDoc}
                 hasVerificationAttempted={hasVerificationAttempted}
@@ -3870,7 +3892,8 @@ const NewActiveApplication = ({
                         <span>
                           <CommonCheckBox checked={form?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours < 25 ? false : form?.forms?.[formIndex]?.acknowledged}
                             // onChange={form?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours < 25 ? () => { } : (e) => handleIsChecked(e.target.checked)} 
-                            bigCheckbox={true} />
+                            bigCheckbox={true}
+                            cursorDefault={true} />
                         </span>
                       )}
                       <div
@@ -3937,7 +3960,7 @@ const NewActiveApplication = ({
                 actions={[]}
                 // scrollStyle={style.contractScrollStyle}
                 tableSortValues={[]}
-                heading={"There are no Record for you to manage"}
+                heading={"There are no Records for you to manage"}
                 onClickFunction={() => { }}
                 hidePagination={true}
               />
@@ -3954,7 +3977,7 @@ const NewActiveApplication = ({
                     {allFormSchemas?.[index]?.formSchema?.schema?.properties?.isModulesForReAppointmentCompleted?.properties?.response?.label}
                   </div>
                   {form?.forms?.[formIndex]?.data?.isModulesForReAppointmentCompleted?.response !== undefined && (
-                    <div className={`${style.markedAsText} ${style.marginTop20}`}><strong>Marked as <span className={(form?.forms?.[formIndex]?.data?.isModulesForReAppointmentCompleted?.response === 'Yes' || form?.forms?.[formIndex]?.data?.isModulesForReAppointmentCompleted?.response === true) ? style.yesText : style.noText}>{form?.forms?.[formIndex]?.data?.isModulesForReAppointmentCompleted?.response === true ? 'Yes' : form?.forms?.[formIndex]?.data?.isModulesForReAppointmentCompleted?.response === false ? "No" : form?.forms?.[formIndex]?.data?.isModulesForReAppointmentCompleted?.response}</span></strong> on {(form?.forms?.[formIndex]?.data?.isModulesForReAppointmentCompleted?.date !== '' && form?.forms?.[formIndex]?.data?.isModulesForReAppointmentCompleted?.date !== undefined) ? format(new Date(form?.forms?.[formIndex]?.data?.isModulesForReAppointmentCompleted?.date), "MMM dd, yyyy") : ''}</div>
+                    <div className={`${style.markedAsText} ${style.marginTop20}`}><strong>Marked as <span className={(form?.forms?.[formIndex]?.data?.isModulesForReAppointmentCompleted?.response === 'Yes' || form?.forms?.[formIndex]?.data?.isModulesForReAppointmentCompleted?.response === true) ? style.yesText : style.noText}>{form?.forms?.[formIndex]?.data?.isModulesForReAppointmentCompleted?.response === true ? 'Yes' : form?.forms?.[formIndex]?.data?.isModulesForReAppointmentCompleted?.response === false ? "No" : form?.forms?.[formIndex]?.data?.isModulesForReAppointmentCompleted?.response}</span></strong> on {(form?.forms?.[formIndex]?.data?.isModulesForReAppointmentCompleted?.date !== '' && form?.forms?.[formIndex]?.data?.isModulesForReAppointmentCompleted?.date !== undefined) ? format(new Date(form?.forms?.[formIndex]?.data?.isModulesForReAppointmentCompleted?.date), dateFormat) : ''}</div>
                   )}
                 </div>
               )}
@@ -3963,7 +3986,7 @@ const NewActiveApplication = ({
                   {allFormSchemas?.[index]?.formSchema?.schema?.properties?.doYouPrescribeSuboxone?.properties?.response?.label}
                 </div>
                 {form?.forms?.[formIndex]?.data?.doYouPrescribeSuboxone?.response !== undefined && (
-                  <div className={`${style.markedAsText} ${style.marginTop20}`}><strong>Marked as <span className={(form?.forms?.[formIndex]?.data?.doYouPrescribeSuboxone?.response === 'Yes' || form?.forms?.[formIndex]?.data?.doYouPrescribeSuboxone?.response === true) ? style.yesText : style.noText}>{form?.forms?.[formIndex]?.data?.doYouPrescribeSuboxone?.response === true ? 'Yes' : form?.forms?.[formIndex]?.data?.doYouPrescribeSuboxone?.response === false ? "No" : form?.forms?.[formIndex]?.data?.doYouPrescribeSuboxone?.response}</span></strong> on {(form?.forms?.[formIndex]?.data?.doYouPrescribeSuboxone?.date !== '' && form?.forms?.[formIndex]?.data?.doYouPrescribeSuboxone?.date !== undefined) ? format(new Date(form?.forms?.[formIndex]?.data?.doYouPrescribeSuboxone?.date), "MMM dd, yyyy") : ''}</div>
+                  <div className={`${style.markedAsText} ${style.marginTop20}`}><strong>Marked as <span className={(form?.forms?.[formIndex]?.data?.doYouPrescribeSuboxone?.response === 'Yes' || form?.forms?.[formIndex]?.data?.doYouPrescribeSuboxone?.response === true) ? style.yesText : style.noText}>{form?.forms?.[formIndex]?.data?.doYouPrescribeSuboxone?.response === true ? 'Yes' : form?.forms?.[formIndex]?.data?.doYouPrescribeSuboxone?.response === false ? "No" : form?.forms?.[formIndex]?.data?.doYouPrescribeSuboxone?.response}</span></strong> on {(form?.forms?.[formIndex]?.data?.doYouPrescribeSuboxone?.date !== '' && form?.forms?.[formIndex]?.data?.doYouPrescribeSuboxone?.date !== undefined) ? format(new Date(form?.forms?.[formIndex]?.data?.doYouPrescribeSuboxone?.date), dateFormat) : ''}</div>
                 )}
               </div>
               {form?.basicDetailReferences?.credentialingAndPrivilegingCategory?.type !== "LOCUM" && (
@@ -3974,7 +3997,7 @@ const NewActiveApplication = ({
                         {allFormSchemas?.[index]?.formSchema?.schema?.properties?.wishToBeMRP?.properties?.response?.label}
                       </div>
                       {form?.forms?.[formIndex]?.data?.wishToBeMRP?.response !== undefined && (
-                        <div className={`${style.markedAsText} ${style.marginTop20}`}><strong>Marked as <span className={(form?.forms?.[formIndex]?.data?.wishToBeMRP?.response === true || form?.forms?.[formIndex]?.data?.wishToBeMRP?.response === 'Yes') ? style.yesText : style.noText}>{form?.forms?.[formIndex]?.data?.wishToBeMRP?.response === true ? "Yes" : form?.forms?.[formIndex]?.data?.wishToBeMRP?.response === false ? 'No' : form?.forms?.[formIndex]?.data?.wishToBeMRP?.response}</span></strong> on {(form?.forms?.[formIndex]?.data?.wishToBeMRP?.date !== '' && form?.forms?.[formIndex]?.data?.wishToBeMRP?.date !== undefined) ? format(new Date(form?.forms?.[formIndex]?.data?.wishToBeMRP?.date), "MMM dd, yyyy") : ''}</div>
+                        <div className={`${style.markedAsText} ${style.marginTop20}`}><strong>Marked as <span className={(form?.forms?.[formIndex]?.data?.wishToBeMRP?.response === true || form?.forms?.[formIndex]?.data?.wishToBeMRP?.response === 'Yes') ? style.yesText : style.noText}>{form?.forms?.[formIndex]?.data?.wishToBeMRP?.response === true ? "Yes" : form?.forms?.[formIndex]?.data?.wishToBeMRP?.response === false ? 'No' : form?.forms?.[formIndex]?.data?.wishToBeMRP?.response}</span></strong> on {(form?.forms?.[formIndex]?.data?.wishToBeMRP?.date !== '' && form?.forms?.[formIndex]?.data?.wishToBeMRP?.date !== undefined) ? format(new Date(form?.forms?.[formIndex]?.data?.wishToBeMRP?.date), dateFormat) : ''}</div>
                       )}
                     </div>
                   )}
@@ -4410,7 +4433,7 @@ const NewActiveApplication = ({
                                     //   setSelectedPrivilege(data?.id);
                                     // }}
                                     >
-                                      {data?.privilegeSetTitle} {data?.privilegeDetails?.corePrivileges?.esign?.signedDate !== undefined && (<span className={style.signedOnText}>signed on {data?.privilegeDetails?.corePrivileges?.esign?.signedDate}</span>)}
+                                      {data?.privilegeSetTitle} {data?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ? data?.descriptiveContent?.esign?.signedDate !== undefined && (<span className={style.signedOnText}>signed on {data?.descriptiveContent?.esign?.signedDate}</span>) : data?.privilegeDetails?.corePrivileges?.esign?.signedDate !== undefined && (<span className={style.signedOnText}>signed on {data?.privilegeDetails?.corePrivileges?.esign?.signedDate}</span>)}
                                     </div>
                                   )
                                 )}
@@ -4427,7 +4450,7 @@ const NewActiveApplication = ({
                                     //   setSelectedPrivilege(data?.id);
                                     // }}
                                     >
-                                      {data?.privilegeSetTitle} {data?.privilegeDetails?.corePrivileges?.esign?.signedDate !== undefined && (<span className={style.signedOnText}>signed on {data?.privilegeDetails?.corePrivileges?.esign?.signedDate}</span>)}
+                                      {data?.privilegeSetTitle} {data?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ? data?.descriptiveContent?.esign?.signedDate !== undefined && (<span className={style.signedOnText}>signed on {data?.descriptiveContent?.esign?.signedDate}</span>) : data?.privilegeDetails?.corePrivileges?.esign?.signedDate !== undefined && (<span className={style.signedOnText}>signed on {data?.privilegeDetails?.corePrivileges?.esign?.signedDate}</span>)}
                                     </div>
                                   )
                                 )}
@@ -4484,7 +4507,7 @@ const NewActiveApplication = ({
                                   <div
                                     className={`${style.privilegeHeading}`}
                                   // onClick={() => { setShowCurrentPrivileges(true); setCurrentPrivilegesCategory('Additional'); setSelectedPrivilege(data?.id) }}
-                                  >{data?.privilegeSetTitle} {data?.privilegeDetails?.corePrivileges?.esign?.signedDate !== undefined && (<span className={style.signedOnText}>signed on {data?.privilegeDetails?.corePrivileges?.esign?.signedDate}</span>)}</div>
+                                  >{data?.privilegeSetTitle} {data?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ? data?.descriptiveContent?.esign?.signedDate !== undefined && (<span className={style.signedOnText}>signed on {data?.descriptiveContent?.esign?.signedDate}</span>) : data?.privilegeDetails?.corePrivileges?.esign?.signedDate !== undefined && (<span className={style.signedOnText}>signed on {data?.privilegeDetails?.corePrivileges?.esign?.signedDate}</span>)}</div>
                                 ))}
                               </>
                             )}
@@ -12239,7 +12262,7 @@ const NewActiveApplication = ({
                                           </div>
                                         )}
                                         <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationRoleTextStyle}`}>
-                                          {log?.workflowUser?.name?.firstName}{log?.workflowUser?.name?.lastName}, {log?.role} on {log?.createdDate ? format(new Date(log.createdDate), "MMM dd, yyyy, H.mm") : ""}
+                                          {log?.workflowUser?.name?.firstName}{log?.workflowUser?.name?.lastName}, {log?.role} on {log?.createdDate ? format(new Date(log.createdDate), `${dateFormat}, HH:mm`) : ""}
                                         </div>
                                       </div>
                                     ))}
@@ -12260,46 +12283,57 @@ const NewActiveApplication = ({
                                 <span className={`${style.tableHeaderHeadingTextStyle1}`}>
                                   Notes
                                 </span>
-                                <div
-                                  className={`${style.marginTop5} ${style.marginLeft10} ${style.tableDataFontStyle1}`}
-                                >
-                                  <Tooltip title="Create a Note" arrow>
-                                    <CreateOutlinedIcon
-                                      className={`${style.notesIcon} ${style.cursorPointer}`}
-                                      onClick={onClickNotesFunction}
-                                    />
-                                  </Tooltip>
-                                </div>
-                              </div>
-                              <div
-                                className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                              >
-                                <div
-                                  className={`${style.marginLeft10} ${style.tableDataFontStyle1}`} onClick={() => toggleExpand("section5")}
-                                >
-                                  {expandStates.section5 ? (
-                                    <Tooltip title={"Click to Minimize"} arrow>
-                                      <RemoveIcon
-                                        sx={{
-                                          fontSize: 20,
-                                          color: "#94979A",
-                                          cursor: "pointer",
-                                        }}
-                                      />
-                                    </Tooltip>
-                                  ) : (
-                                    <Tooltip title={"Click to Expand"} arrow>
-                                      <AddIcon
-                                        sx={{
-                                          fontSize: 20,
-                                          color: "#94979A",
-                                          cursor: "pointer",
-                                        }}
-                                      />
-                                    </Tooltip>
+                                {!((workModeType === "Staff Manager" && selectedTab === "level-2" && applicationType === "REAPPOINTMENT") ||
+                                  (workModeType === "Department Head" && selectedTab === "level-2" && applicationType === "REAPPOINTMENT" && isApproverDept === "NotApproved") ||
+                                  (workModeType === "Chief Of Staff" && selectedTab === "level-2" && applicationType === "REAPPOINTMENT" && isApproverDept === "NotApproved") ||
+                                  (workModeType === 'Credentialing Committee' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" && isApproverCred === "NotApproved") ||
+                                  (workModeType === 'Credentialing Committee' && selectedTab === 'level-2' && applicationType === "LOCUM" && isApproverCred === "NotApproved") ||
+                                  (workModeType === 'Chief Of Staff' && selectedTab === 'level-2' && applicationType === "LOCUM" && isApproverCred === "NotApproved")) && (
+                                    <div
+                                      className={`${style.marginTop5} ${style.marginLeft10} ${style.tableDataFontStyle1}`}
+                                    >
+                                      <Tooltip title="Create a Note" arrow>
+                                        <CreateOutlinedIcon
+                                          className={`${style.notesIcon} ${style.cursorPointer}`}
+                                          onClick={onClickNotesFunction}
+                                        />
+                                      </Tooltip>
+                                    </div>
                                   )}
-                                </div>
                               </div>
+                              {visibleNotes.length > 0 ? (
+                                <div
+                                  className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                                >
+                                  <div
+                                    className={`${style.marginLeft10} ${style.tableDataFontStyle1}`} onClick={() => toggleExpand("section5")}
+                                  >
+                                    {expandStates.section5 ? (
+                                      <Tooltip title={"Click to Minimize"} arrow>
+                                        <RemoveIcon
+                                          sx={{
+                                            fontSize: 20,
+                                            color: "#94979A",
+                                            cursor: "pointer",
+                                          }}
+                                        />
+                                      </Tooltip>
+                                    ) : (
+                                      <Tooltip title={"Click to Expand"} arrow>
+                                        <AddIcon
+                                          sx={{
+                                            fontSize: 20,
+                                            color: "#94979A",
+                                            cursor: "pointer",
+                                          }}
+                                        />
+                                      </Tooltip>
+                                    )}
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className={`${style.tableHeaderHeadingNoneTextStyle}`}>None</div>
+                              )}
                             </div>
                             {expandStates.section5 && (
                               // <>
@@ -12335,13 +12369,13 @@ const NewActiveApplication = ({
                                         {log?.private && <span className={style.privateBorderText}>Private</span>}{" "}{log?.title}
                                       </div>
                                       <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationRoleTextStyle}`}>
-                                        {log?.user?.name?.firstName}{log?.user?.name?.lastName}, on {format(new Date(log?.createdDate), 'MMM d, yyyy, H.mm')}
+                                        {log?.user?.name?.firstName}{log?.user?.name?.lastName}, on {format(new Date(log?.createdDate), `${dateFormat}, HH:mm`)}
                                       </div>
                                       <div className={`${style.gridNotes3}`}>
                                         <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.notesTextStyle} ${style.marginBottom0}`}>
                                           <div dangerouslySetInnerHTML={{ __html: log.notes.notes }} />
                                         </div>
-                                        {log?.user?.id === users?.id && (
+                                        {log?.user?.id === users?.id && !(workModeType === "Staff Manager" && selectedTab === "level-2" && applicationType === "REAPPOINTMENT") && (
                                           <div>
                                             <Tooltip title="Edit a Note" arrow>
                                               <EditOutlinedIcon
@@ -12352,13 +12386,13 @@ const NewActiveApplication = ({
                                             </Tooltip>
                                           </div>
                                         )}
-                                        {log?.user?.id === users?.id && (
+                                        {log?.user?.id === users?.id && !(workModeType === "Staff Manager" && selectedTab === "level-2" && applicationType === "REAPPOINTMENT") && (
                                           <div>
                                             <Tooltip title="Delete a Note" arrow>
                                               <DeleteOutlineIcon
                                                 sx={{ fontSize: 20 }}
                                                 className={`${style.notesIconDelete} ${style.cursorPointer}`}
-                                                onClick={() => handleDeleteNote(log?.id)}
+                                                onClick={() =>onDeleteClick(log?.id) }
                                               />
                                             </Tooltip>
                                           </div>
@@ -12386,7 +12420,7 @@ const NewActiveApplication = ({
                                                     />
                                                   </div>
                                                   <div
-                                                    className={`${style.cursorPointer} ${style.notesTitle}`}
+                                                    className={`${style.cursorPointer} ${style.overFlowHidden} ${style.notesTitle}`}
                                                     onClick={() => {
                                                       setShowFileDisplayDialog(true);
                                                       setselectedFile(file);
@@ -12485,27 +12519,30 @@ const NewActiveApplication = ({
                                 <div
                                   className={`${style.marginLeft10} ${style.tableDataFontStyle1}`} onClick={() => toggleExpand("section1")}
                                 >
-                                  {expandStates.section1 ? (
-                                    <Tooltip title="Collapse Section" arrow>
-                                      <RemoveIcon
-                                        sx={{
-                                          fontSize: 20,
-                                          color: "#94979A",
-                                          cursor: "pointer",
-                                        }}
-                                        onClick={() => setExpandStates((prev) => ({ ...prev, section6: false }))}
-                                      />
-                                    </Tooltip>
-                                  ) : (
-                                    <Tooltip title="Expand Section" arrow>
-                                      <AddIcon
-                                        sx={{
-                                          fontSize: 20,
-                                          color: "#94979A",
-                                          cursor: "pointer",
-                                        }}
-                                      />
-                                    </Tooltip>
+                                  {(form?.forms?.filter((data) => data?.clarifications?.length > 0)?.length > 0) ? (
+                                    expandStates.section1 ? (
+                                      <Tooltip title="Collapse Section" arrow>
+                                        <RemoveIcon
+                                          sx={{
+                                            fontSize: 20,
+                                            color: "#94979A",
+                                            cursor: "pointer",
+                                          }}
+                                          onClick={() => setExpandStates((prev) => ({ ...prev, section6: false }))}
+                                        />
+                                      </Tooltip>
+                                    ) : (
+                                      <Tooltip title="Expand Section" arrow>
+                                        <AddIcon
+                                          sx={{
+                                            fontSize: 20,
+                                            color: "#94979A",
+                                            cursor: "pointer",
+                                          }}
+                                        />
+                                      </Tooltip>
+                                    )) : (
+                                    <div className={`${style.tableHeaderHeadingNoneTextStyle}`}>None</div>
                                   )}
                                 </div>
                               </div>
@@ -12583,7 +12620,7 @@ const NewActiveApplication = ({
                                                     <div className={`${style.rfcSubHeadingTextStyle} ${style.marginTop10}`}>
                                                       Clarification requested on{' '}
                                                       {clarification?.clarificationRequest?.createdDate
-                                                        ? format(new Date(clarification.clarificationRequest.createdDate), 'MMM d, yyyy, HH:mm')
+                                                        ? format(new Date(clarification.clarificationRequest.createdDate), `${dateFormat}, HH:mm`)
                                                         : '-'}
                                                     </div>
                                                     <div className={`${style.marginTop10} ${style.rfcResponseTextStyle}`}>
@@ -12598,16 +12635,16 @@ const NewActiveApplication = ({
                                                     {/* <div className={style.twoColumnGrid}> */}
                                                     <div>
                                                       {clarification?.clarificationStatus === "NA" && (
-                                                      <div
-                                                        className={`${style.buttonCardStyleDoc} ${style.cursorPointer}`}
-                                                        onClick={() => onClickDocumentClarificationFunction(clarification, data)}
-                                                      >
-                                                        <Tooltip title={"Click to Resolve Clarification"} arrow>
-                                                          <div className={`${style.buttonTextStyleDocs} ${style.alignCenter}`}>
-                                                            Resolve Clarification
-                                                          </div>
-                                                        </Tooltip>
-                                                      </div>
+                                                        <div
+                                                          className={`${style.buttonCardStyleDoc} ${style.cursorPointer}`}
+                                                          onClick={() => onClickDocumentClarificationFunction(clarification, data)}
+                                                        >
+                                                          <Tooltip title={"Click to Resolve Clarification"} arrow>
+                                                            <div className={`${style.buttonTextStyleDocs} ${style.alignCenter}`}>
+                                                              Resolve Clarification
+                                                            </div>
+                                                          </Tooltip>
+                                                        </div>
                                                       )}
                                                       {/* <div className={`${style.bigButtonStyle1} ${style.cursorPointer}`}>
                                                           <div className={`${style.bigButtonTextStyle} ${style.alignCenter}`}>
@@ -12619,7 +12656,7 @@ const NewActiveApplication = ({
                                                     {clarification?.clarificationStatus !== "NA" && (
                                                       <div>
                                                         <div className={`${style.rfcSubHeadingTextStyle} ${style.marginTop10}`}>
-                                                          Responded from {clarification?.clarificationResponse?.title || 'Applicant'} on {" "} {clarification?.clarificationResponse?.createdDate ? format(new Date(clarification?.clarificationResponse?.createdDate), 'MMM d, yyyy, HH:mm') : "-"}
+                                                          Responded from {clarification?.clarificationResponse?.title || 'Applicant'} on {" "} {clarification?.clarificationResponse?.createdDate ? format(new Date(clarification?.clarificationResponse?.createdDate), `${dateFormat}, HH:mm`) : "-"}
                                                         </div>
                                                         <div className={`${style.marginTop10} ${style.rfcResponseTextStyle}`}>
                                                           <div dangerouslySetInnerHTML={{ __html: clarification?.clarificationResponse?.clarificationDescription }} />
@@ -12753,8 +12790,8 @@ const NewActiveApplication = ({
                                                             <div className={`${style.rfcDateTextStyle} ${style.marginTop5}`}>
                                                               {clarification?.workflowActionDate
                                                                 ? clarification?.clarificationStatus === "REJECTED"
-                                                                  ? `Unresolved on ${format(new Date(clarification?.workflowActionDate), 'dd/MM/yyyy, HH:mm')}`
-                                                                  : `Resolved on ${format(new Date(clarification?.workflowActionDate), 'dd/MM/yyyy, HH:mm')}`
+                                                                  ? `Unresolved on ${format(new Date(clarification?.workflowActionDate), `${dateFormat}, HH:mm`)}`
+                                                                  : `Resolved on ${format(new Date(clarification?.workflowActionDate), `${dateFormat}, HH:mm`)}`
                                                                 : 'Date not available'}
                                                             </div>
                                                           </div>
@@ -13209,6 +13246,13 @@ const NewActiveApplication = ({
               getPreApplicationForReplace={getPreApplication}
             />
           )}
+           {
+                          showDeleteConfirmation && (
+                              <DeleteConfirmationDialog getShowDeleteConfirmation={getShowDeleteConfirmation}
+                                  getDeleteConfirmation={getDeleteConfirmation}
+                                  confirmationText="Do you want to delete this Notes?" />
+                          )
+                      }
           {/* <Dialog isOpen={showCurrentPrivileges} onClose={() => setShowCurrentPrivileges(false)} className={`${style.eSignDialog} ${style.eSignDialogBackground}`} canOutsideClickClose={false} canEscapeKeyClose={false}>
           <div>
             <div className={Classes.DIALOG_BODY}>

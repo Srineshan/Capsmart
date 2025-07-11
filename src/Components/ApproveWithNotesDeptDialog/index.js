@@ -16,13 +16,13 @@ import TextField from "@mui/material/TextField";
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import Dropzone from "react-dropzone";
-import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
+import { SuccessToaster, ErrorToaster,SuccessToaster2 } from "../../utils/toaster";
 import DescriptionIcon from '@mui/icons-material/Description';
 import { fileLoadingURL, FormatPhoneNumber, FormatPostalCode } from "../../utils/formatting";
 import LoadingScreen from "../LoadingScreen";
 import { Tooltip } from "@mui/material";
 
-const ApprovalWithNotesDeptDialog = ({ getIsOpen, getActiveApplicationView, dateFormat, selectedTab }) => {
+const ApprovalWithNotesDeptDialog = ({ getIsOpen, getActiveApplicationView, selectedTab }) => {
   let cookie = new Cookie();
   let userDetails = cookie.get('user');
   const users = jwt(userDetails);
@@ -81,17 +81,14 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen, getActiveApplicationView, date
   const workModeType = sessionStorage.getItem('workModeType');
   const [logDetails, setLogDetails] = useState([]);
   const [transformedRoles, setTransformedRoles] = useState([]);
+  const canadaData = sessionStorage.getItem('canadaData') !== 'undefined' ? JSON.parse(sessionStorage.getItem('canadaData')) : {};
+  const dateFormat = canadaData?.dateFormat || 'MMM dd, yyyy';
+
   // const isApproveEnabled = 
   //   // userRoleComments.trim() !== '' && 
   // selectedDateForDept !== null && 
   // selectedRoleCred !== '' &&
   // documentTitle !== '';
-
-  // useEffect(() => {
-  //   if (dateFormat) {
-  //     setCurrentDate(format(new Date(), dateFormat));
-  //   }
-  // }, [dateFormat]);
 
   const onClicksignFunction = () => {
     setTodayDate();
@@ -264,7 +261,7 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen, getActiveApplicationView, date
       setIsLoadingImageDocs(true);
       const response = await POST(`application-management-service/application/${id}/files/bulk?isLLMRequired=${false}`, formData);
       console.log("API Response:", response);
-      SuccessToaster('File Uploaded Successfully');
+      SuccessToaster2("File Uploaded Successfully");
       console.log("Response data:", response?.data);
       setUploadFileData(prevData => {
         // Merge previous data with new data
@@ -591,6 +588,9 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen, getActiveApplicationView, date
   const onClickApproveMoveFunction = () => {
     handleApplicationApprove(true)
       .then(() => {
+        return SuccessToaster2('Sent for Review Successfully');
+      })
+      .then(() => {
         return getApplicationMoveToNext(true);
       })
       .then(() => {
@@ -624,6 +624,7 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen, getActiveApplicationView, date
   };
 
   const handleApplicationApprove = async () => {
+    setIsLoadingImage(true);
     let role;
     let title;
     const files = (uploadFileData || []).map((item, index) => ({
@@ -701,7 +702,9 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen, getActiveApplicationView, date
     )
       .then(response => {
         console.log('successfull');
-        onClose();
+        setIsLoadingImage(false);
+        SuccessToaster('Sent for Review Successfully');
+        // onClose();
       })
       .catch((error) => {
         console.log(error);
@@ -779,6 +782,7 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen, getActiveApplicationView, date
 
     await PUT(`application-management-service/application/${id}/workflow/move?workflowAction=APPROVED&isDelegate=${isDelegate}`, payload)
       .then(response => {
+        // SuccessToaster2('Sent for Review Successfully');
         console.log('successfull');
         onClose();
       })
@@ -821,10 +825,10 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen, getActiveApplicationView, date
   // }
 
   const lastModifiedDate = formDetails?.lastModifiedDate;
-  const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), "MM/dd/yyyy") : "-";
+  const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), dateFormat) : "-";
   const lastSubmittedLog = logDetails?.logs?.find((log) => log.workflowStatus === "SUBMITTED");
   const lastSubmittedDate = lastSubmittedLog ? lastSubmittedLog.lastModifiedDate : null;
-  const formattedSubmissionDate = lastSubmittedDate ? format(new Date(lastSubmittedDate), "MM/dd/yyyy") : "-";
+  const formattedSubmissionDate = lastSubmittedDate ? format(new Date(lastSubmittedDate), dateFormat) : "-";
   return (
     <>
       {isLoadingImageDocs && (
@@ -923,7 +927,7 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen, getActiveApplicationView, date
                             {formDetails?.basicDetails?.applicant?.name?.firstName
                               ? formDetails?.updatedBy?.name?.firstName.charAt(0).toUpperCase() +
                               formDetails?.updatedBy?.name?.firstName.slice(1).toLowerCase()
-                              : ""}{formDetails?.updatedBy?.name?.lastName?.toUpperCase()}, {formDetails?.updatedBy?.title?.title}
+                              : ""}{formDetails?.updatedBy?.name?.lastName?.toUpperCase()} {formDetails?.updatedBy?.title?.title  ? `, ${formDetails?.updatedBy?.title?.title}`: ""}
                           </span>
                         </div>
                       </div>
@@ -1069,27 +1073,34 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen, getActiveApplicationView, date
                       valueList={userSelectRoleDept?.map(data => data?.id)}
                       // labelList={userSelectRoleDept?.map(data => `${data?.name?.firstName} ${data?.name?.lastName}`)}
                       labelList={userSelectRoleDept?.map(data => {
+                         const firstName = data?.name?.firstName || "";
+                         const lastName = data?.name?.lastName || "";
                         const primaryTitle = data?.title?.title || "";
                         const secondaryTitle = data?.secondaryTitle?.title || "";
                         const combinedTitle = secondaryTitle
-                          ? `${primaryTitle} & ${secondaryTitle}`
+                          ? `${primaryTitle} , ${secondaryTitle}`
                           : primaryTitle;
                         // const departmentName = data?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.departmentName?.name;
                         const departmentName = data?.sites?.sites?.[0]?.departmentList?.departments?.map(
                           department => department?.departmentName?.name
                         ).join(', ');
-                        let label = `${data?.name?.firstName} ${data?.name?.lastName}, ${combinedTitle}`;
+                        // let label = `${data?.name?.firstName} ${data?.name?.lastName}, ${combinedTitle}`;
 
-                        if (departmentName) {
-                          label += `- ${departmentName}`;
+                         if (combinedTitle && departmentName) {
+                          return `${firstName} ${lastName}, ${departmentName} (${combinedTitle})`;
+                        } else if (combinedTitle) {
+                          return `${firstName} ${lastName} (${combinedTitle})`;
+                        } else {
+                          return `${firstName} ${lastName}`;
                         }
-
-                        return label;
                       })}
                       disabledList={false}
                       required={false}
+                      //  menuColor={userSelectRoleDept?.map((_, index) =>
+                      //     index % 2 === 0 ? '#ffffff' : '#f5f5f5'
+                      //   )}
                       // label="Assign a Department Head to Review & Approve*"
-                      label={isUser ? "Assign a Chief / Dep COS to Review & Approve*" : "Assign a Department Head to Review & Approve*"}
+                      label={isUser ? "Assign a Chief / Dep COS to Review & Approve*" : "Assign a Department Head / COS to Review & Approve*"}
                     />
                   </div>
                   )}
@@ -1136,33 +1147,68 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen, getActiveApplicationView, date
                       valueList={userSelectRole?.map(data => data?.id)}
                       // labelList={userSelectRole?.map(data => `${data.name.firstName} ${data.name.lastName}`)}
                       labelList={userSelectRole?.map(data => {
+                        const firstName = data?.name?.firstName || "";
+                        const lastName = data?.name?.lastName || "";
                         const primaryTitle = data?.title?.title || "";
                         const secondaryTitle = data?.secondaryTitle?.title || "";
                         const combinedTitle = secondaryTitle
-                          ? `${primaryTitle} & ${secondaryTitle}`
+                          ? `${primaryTitle} , ${secondaryTitle}`
                           : primaryTitle;
                         const departmentName = data?.sites?.sites?.[0]?.departmentList?.departments?.map(
                           department => department?.departmentName?.name
                         ).join(', ');
-                        let label = `${data?.name?.firstName} ${data?.name?.lastName}, ${combinedTitle}`;
-                        if (departmentName) {
-                          label += `- ${departmentName}`;
-                        }
+                        // let label = `${data?.name?.firstName} ${data?.name?.lastName}, ${combinedTitle}`;
 
-                        return label;
+                       if (combinedTitle && departmentName) {
+                          return `${firstName} ${lastName}, ${departmentName} (${combinedTitle})`;
+                        } else if (combinedTitle) {
+                          return `${firstName} ${lastName} (${combinedTitle})`;
+                        } else {
+                          return `${firstName} ${lastName}`;
+                        }
                       })}
                       disabledList={userSelectRole?.map(() => false)}
                       required={false}
                       label={
                         applicationType === "LOCUM"
-                          ? "Assign Two Credentialing Committee Members to Review & Approve* (Select 2)"
+                          ? <>Assign Two Credentialing Committee Members to Review & Approve*<br />(Select 2)</>
                           : "Assign a Credentialing Committee Member to Review & Approve*"
                       }
                       multiple={applicationType === "LOCUM"}
                       maxSelect={applicationType === "LOCUM" ? 2 : undefined}
                     />
                   </div>
+                  {applicationType === "LOCUM" && Array.isArray(selectedRoleCred) && (
+                    <div className={`${style.alignContent} ${style.marginLeft20}`}>
+                      {selectedRoleCred.map(id => {
+                        const data = userSelectRole?.find(role => role?.id === id);
+                        if (!data) return null;
 
+                        const firstName = data?.name?.firstName || "";
+                        const lastName = data?.name?.lastName || "";
+                        const primaryTitle = data?.title?.title || "";
+                        const secondaryTitle = data?.secondaryTitle?.title || "";
+                        const combinedTitle = [primaryTitle, secondaryTitle].filter(Boolean).join(', ');
+                        const departmentName = data?.sites?.sites?.[0]?.departmentList?.departments?.map(
+                          department => department?.departmentName?.name
+                        ).filter(Boolean).join(', ');
+
+                        if (combinedTitle && departmentName) {
+                          return (
+                            <div key={id} className={`${style.selectedMemberFontStyle} ${style.marginBottom5}`}> <strong>{firstName} {lastName}</strong>{`, ${departmentName} (${combinedTitle})`}</div>
+                          );
+                        } else if (combinedTitle) {
+                          return (
+                            <div key={id} className={`${style.selectedMemberFontStyle} ${style.marginBottom5}`}> <strong>{firstName} {lastName}</strong>{` (${combinedTitle})`}</div>
+                          );
+                        } else {
+                          return (
+                            <div key={id} className={`${style.selectedMemberFontStyle} ${style.marginBottom5}`}> <strong>{firstName} {lastName}</strong></div>
+                          );
+                        }
+                      })}
+                    </div>
+                  )}
                 </div>
 
                 <div className={`${style.marginTop}  ${style.reviewButtonContainer}`}>

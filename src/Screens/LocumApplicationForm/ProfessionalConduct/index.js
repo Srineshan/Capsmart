@@ -20,6 +20,7 @@ import ReappointmentJourneyDialog from '../../../Components/reappointmentJourney
 import MenuIcon from "@mui/icons-material/Menu";
 import Close from './../../../images/close.png';
 import LocumProgressCard from '../../../Components/LocumProgressCard';
+import { Tooltip } from '@mui/material';
 
 const ProfessionalConduct = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [formSchema, setFormSchema] = useState();
@@ -78,6 +79,7 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, getPreApplication }) => 
     }
 
     const getIsSaveInProgressOpen = (value) => {
+        getMissingFields("save");
         setIsSaveInProgressOpen(value);
     }
 
@@ -181,23 +183,24 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, getPreApplication }) => 
         allMissingFields = missingKeys;
         hasMandatoryMissingFields = missingKeys?.find(field => field?.label?.mandatory === true);
 
-        if (data === "skipped") {
-            handleSubmitApplicationReq();
+        if (data === "skipped" || data === "save") {
+            handleSubmitApplicationReq(data);
         }
-
-        if (data !== "skipped") {
+        else{
+        // if (data !== "skipped") {
             if (hasMandatoryMissingFields) {
                 setShowValidationDialog(true);
             } else {
-                handleSubmitApplicationReq();
+                handleSubmitApplicationReq(data);
             }
+        // }
         }
 
         console.log(keyValuePair, 'ProfessionalConductMetadata', missingKeys, isEdited, hasMandatoryMissingFields, allMissingFields)
 
     }
 
-    const handleSubmitApplicationReq = async () => {
+    const handleSubmitApplicationReq = async (actionType) => {
         // if (isEdited) {
         console.log("MissingProfessionalConduct", allMissingFields)
         let temp = {
@@ -213,6 +216,7 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, getPreApplication }) => 
                 setBasicForm(response?.data)
                 SuccessToaster("Application Updated Successfully");
                 getPreApplication();
+                if (actionType !== "save") {
                 if (sessionStorage.getItem('fromSummary') === "true") {
                     navigate(-1);
                 }
@@ -220,6 +224,7 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, getPreApplication }) => 
                     navigate(navigateURL)
 
                 }
+            }
             })
             .catch((error) => {
                 console.log(error)
@@ -249,6 +254,58 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, getPreApplication }) => 
     const getIsEdited = (value) => {
         setIsEdited(value)
     }
+
+    const ProfessionalDisclosureValueBody = getValueByPath(
+    basicForm,
+    `forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.formalComplaintToLicensingBody`
+    );
+
+    const ProfessionalDisclosureValueBodyText = getValueByPath(
+    basicForm,
+    `forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.formalComplaintToLicensingBodyText`
+    );
+
+    const ProfessionalDisclosureValueBodyFile = getValueByPath(
+    basicForm,
+    `forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.formalComplaintToLicensingBodyFile`
+    );
+
+    const ProfessionalDisclosureValueCPSO = getValueByPath(
+    basicForm,
+    `forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.presentlyInvestigatedByCPSO`
+    );
+
+    const ProfessionalDisclosureValueCPSOText = getValueByPath(
+    basicForm,
+    `forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.presentlyInvestigatedByCPSOText`
+    );
+
+    const ProfessionalDisclosureValueCPSOFile = getValueByPath(
+    basicForm,
+    `forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.presentlyInvestigatedByCPSOFile`
+    );
+
+    const isSkipForNowDisabled = 
+    (ProfessionalDisclosureValueBody === "No" && ProfessionalDisclosureValueCPSO === "No") ||
+    
+    (ProfessionalDisclosureValueBody === "Yes" && 
+    ProfessionalDisclosureValueBodyText && 
+    ProfessionalDisclosureValueBodyFile && 
+    ProfessionalDisclosureValueCPSO === "No") ||
+    
+    (ProfessionalDisclosureValueCPSO === "Yes" && 
+    ProfessionalDisclosureValueCPSOText && 
+    ProfessionalDisclosureValueCPSOFile && 
+    ProfessionalDisclosureValueBody === "No") ||
+    
+    (ProfessionalDisclosureValueBody === "Yes" && 
+    ProfessionalDisclosureValueBodyText && 
+    ProfessionalDisclosureValueBodyFile && 
+    ProfessionalDisclosureValueCPSO === "Yes" && 
+    ProfessionalDisclosureValueCPSOText && 
+    ProfessionalDisclosureValueCPSOFile);
+
+    console.log('CriminalDisclosureValue value:',ProfessionalDisclosureValueBody,ProfessionalDisclosureValueBodyText,ProfessionalDisclosureValueBodyFile,ProfessionalDisclosureValueCPSO,ProfessionalDisclosureValueCPSOText,ProfessionalDisclosureValueCPSOFile);
     return (
         <div>
             {showInfo && <div className={style.bgdrop} onClick={() => setShowInfo(false)}></div>}
@@ -265,10 +322,18 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, getPreApplication }) => 
                         )}
                     </div>
                     <div className={style.threeColForButton}>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
+                        <Tooltip title={"Click to Skip This Step and Continue Later"} arrow>
+                        <div className={`${style.saveInProgress} ${style.marginTop} ${isSkipForNowDisabled ? style.disabledButton : ""}`} onClick={() => { if (!isSkipForNowDisabled) {getSkipClicked(true)}}}>SKIP FOR NOW</div>
+                        </Tooltip>
+                         <Tooltip title={"Click to Save your Progress and Continue later"} arrow>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
+                        </Tooltip>
+                         <Tooltip title={"Click to Go Back to the Previous Step"} arrow>
                         <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleBackClick()}>BACK</div>
-                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => getMissingFields()}>CONTINUE</div>
+                        </Tooltip>
+                        <Tooltip title={"Click to Proceed to the Next Step"} arrow>
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => getMissingFields("continue")}>CONTINUE</div>
+                        </Tooltip>
                     </div>
                 </div>
                 <div>
@@ -297,12 +362,20 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, getPreApplication }) => 
                     </div>
 
                     <div className={`${style.stickyContainer} ${isSaveInProgressOpen || showValidationDialog || showJourneyDialog ? style.hiddenStickyContainer : ""}`}>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
+                        <Tooltip title={"Click to Skip This Step and Continue Later"} arrow>
+                        <div className={`${style.saveInProgress} ${style.marginTop} ${isSkipForNowDisabled ? style.disabledButton : ""}`} onClick={() => { if (!isSkipForNowDisabled) {getSkipClicked(true)}}}>SKIP FOR NOW</div>
+                        </Tooltip>
+                         <Tooltip title={"Click to Save your Progress and Continue later"} arrow>
                         <div className={`${style.saveInProgress} ${style.marginTop10}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
+                        </Tooltip>
                         <div className={style.twoColForButton}>
+                            <Tooltip title={"Click to Go Back to the Previous Step"} arrow>
                             <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleBackClick()}>BACK</div>
+                            </Tooltip>
                             {/* <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowJourneyDialog(true)}>CONTINUE</div> */}
+                            <Tooltip title={"Click to Proceed to the Next Step"} arrow>
                             <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()}>CONTINUE</div>
+                            </Tooltip>
                         </div>
                     </div>
 

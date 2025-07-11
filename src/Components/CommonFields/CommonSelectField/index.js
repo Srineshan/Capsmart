@@ -12,6 +12,7 @@ const CommonSelectField = ({ value, onChange, className, firstOptionLabel, first
     const handleBlur = () => {
         setTouched(true);
     };
+    const alternateColors = ['#ffffff', '#f5f5f5']; // white and light gray
     const theme = createTheme({
         palette: {
             error: {
@@ -63,12 +64,12 @@ const CommonSelectField = ({ value, onChange, className, firstOptionLabel, first
                         // disabled={(contractStatus === "ACTIVE" && !window.location.pathname.includes('moveToDraft')) ? true : disabledSelect || false}
                         >
                             {firstOptionLabel !== '' && firstOptionLabel && (
-                                <MenuItem value={firstOptionValue}>{firstOptionLabel}</MenuItem>
+                                <MenuItem  className={style.fontStyle} value={firstOptionValue}>{firstOptionLabel}</MenuItem>
                             )}
                             {valueList?.map((data, index) => {
                             const isSelected = multiple && value?.includes(data);
                             const isDisabled = multiple && maxSelect && value?.length >= maxSelect && !isSelected;
-                            
+                            const bgColor = alternateColors[index % 2];
                             return (
                             <MenuItem
                                 key={index}
@@ -78,6 +79,7 @@ const CommonSelectField = ({ value, onChange, className, firstOptionLabel, first
                                 backgroundColor: menuColor ? menuColor[index] : "",
                                 opacity: disabledList[index] || isDisabled ? 0.4 : 1
                                 }}
+                                className={style.fontStyle}
                             >
                                 {labelList[index]}
                             </MenuItem>

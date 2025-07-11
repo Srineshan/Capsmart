@@ -5,11 +5,11 @@ import { FormControl } from '@mui/material';
 
 import style from './index.module.scss';
 
-const CommonMultiSelectField = ({ value, onChange, className, firstOptionLabel, firstOptionValue, valueList, labelList, disabledList, disabledSelect, defaultValue, widthValue, renderValue }) => {
+const CommonMultiSelectField = ({ value, onChange, className, firstOptionLabel, firstOptionValue, valueList, labelList, disabledList, disabledSelect, defaultValue, widthValue, variant, renderValue }) => {
     const contractStatus = sessionStorage.getItem('Selected Contract Status');
 
     return (
-        <FormControl size="small" className={!widthValue && style.fullWidth} sx={widthValue && { width: widthValue }}>
+        <FormControl variant={variant} size="small" className={!widthValue && style.fullWidth} sx={widthValue && { width: widthValue }}>
             <Select
                 labelId="demo-select-small"
                 id="demo-select-small"
