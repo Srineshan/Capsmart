@@ -150,7 +150,7 @@ const LocumApplicationFormRequirement = () => {
           try {
             setIsLoadingImageDocs(true)
             const response = await POST(
-              `application-management-service/application/${applicationId}/files?isLLMRequired=true`,
+              `application-management-service/application/${applicationId}/files?isLLMRequired=false`,
               formData
             );
             console.log("response123",response)

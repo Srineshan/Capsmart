@@ -86,7 +86,7 @@ const WorkModeDialog = ({ getIsOpen }) => {
                   userRole?.length % 2 === 0 ? style.twoColumnGrid :
                   style.threeColumnGrid
                 } 
-                ${style.padding} ${style.placeCenter}
+                ${style.padding2} ${style.placeCenter}
               `}
              >
               {userRole?.includes("Staff Manager") && (

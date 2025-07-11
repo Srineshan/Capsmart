@@ -2852,6 +2852,10 @@ input[type="file"] {
   min-width: 45px;
 }
 
+.addStyle:hover {
+  background: $primarycolorHover 0% 0% no-repeat padding-box;
+}
+
 .addSmallStyle {
   background: $primarycolor 0% 0% no-repeat padding-box;
   box-shadow: 0px 0px 6px #00000029;
@@ -3924,7 +3928,7 @@ input[type="number"] {
 .applicationButton {
   /* UI Properties */
   height: 65px;
-  background: transparent linear-gradient(174deg, $primarycolor 0%, $primarycolor 47%, $primarycolor 100%) 0% 0% no-repeat padding-box;
+  background: transparent $primarycolor 0% 0% no-repeat padding-box;
   box-shadow: 0px 10px 20px #130D4B1F;
   border-radius: 16px;
   text-align: left;
@@ -5198,7 +5202,7 @@ input[type="number"] {
   width: 23%;
   z-index: 10;
   padding: 20px;
-  background: #F8FCFF 0% 0% no-repeat padding-box;
+  background: #F5F8F8 0% 0% no-repeat padding-box;
 }
 
 .fixedBottom1 {
@@ -5228,6 +5232,10 @@ input[type="number"] {
   cursor: pointer;
   font-size: 16px;
   text-align: center;
+}
+
+.reviewButton:hover {
+  background: $primarycolorHover 0% 0% no-repeat padding-box;
 }
 
 .searchContainer {
@@ -5305,10 +5313,14 @@ input[type="number"] {
   letter-spacing: 0px;
   color: #F5F8F8;
   text-transform: uppercase;
-  background: #06617A 0% 0% no-repeat padding-box;
+  background: $primarycolor 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 6px #00000029;
   border-radius: 8px;
   opacity: 1;
+}
+
+.viewCurrentStatusText:hover {
+  background: $primarycolorHover 0% 0% no-repeat padding-box;
 }
 
 .searchFieldAlignment {

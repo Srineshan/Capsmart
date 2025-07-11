@@ -123,7 +123,7 @@ const CCDateDialog = ({ checkedIds, getCCDateDialogOpen, onClose, selectedTab })
           </div>
           <div className={`${style.actionButtons} ${style.marginTop10}`}>
             <div
-              className={`${style.reviewButtonStyle} ${style.reviewButtonStyle}  ${isButtonDisabled ? undefined : style.cursorPointer}`}
+              className={`${style.reviewButtonStyle}  ${isButtonDisabled ? undefined : style.cursorPointer}`}
               style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
               onClick={isButtonDisabled ? undefined : () => getApplicationDateForCC()}
             >

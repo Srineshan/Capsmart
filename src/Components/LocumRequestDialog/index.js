@@ -121,6 +121,9 @@ const LocumRequestDialog = ({ getIsOpen, selectedTab }) => {
     selectDataLocum?.locumRenewalDetails?.reappointmentType === "EXTENSION" && selectDataLocum?.locumRenewalDetails?.tenure?.from
       ? selectDataLocum?.locumRenewalDetails?.tenure?.from
       : new Date();
+  const canadaData = sessionStorage.getItem('canadaData') !== 'undefined' ? JSON.parse(sessionStorage.getItem('canadaData')) : {};
+  const dateFormat = canadaData?.dateFormat || 'MMM dd, yyyy';
+
 
   const getNext12MonthsFromCreatedDate = (createdDateStr) => {
     const months = [];
@@ -173,8 +176,8 @@ const LocumRequestDialog = ({ getIsOpen, selectedTab }) => {
       : format(new Date(), "yyyy-MM-dd");
 
   const lastModifiedDate = formDetails?.lastModifiedDate;
-  const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), "MMM dd, yyyy") : "-";
-  const formattedExpiringDate = ExpireDate ? format(new Date(ExpireDate), "MMM dd, yyyy") : "-";
+  const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), dateFormat) : "-";
+  const formattedExpiringDate = ExpireDate ? format(new Date(ExpireDate), dateFormat) : "-";
   const daysRemaining = ExpireDate ? Math.abs(differenceInDays(new Date(ExpireDate), new Date())) : null;
   //  const monthsList = getNext12MonthsFromCreatedDate(format(new Date(selectDataLocum?.tenure?.to), "MMM dd, yyyy"));
   // const selectedMonthLabel = selectedMonth === "Custom"
@@ -207,7 +210,7 @@ const LocumRequestDialog = ({ getIsOpen, selectedTab }) => {
     : null
 
   const [currentDate, setCurrentDate] = useState(
-    format(new Date(), "dd-MM-yyyy")
+    format(new Date(), dateFormat)
   );
   const [limit, setLimit] = useState(9999);
   const [extensionRequiredValue, setExtensionRequiredValue] = useState("REQUESTED");
@@ -436,13 +439,19 @@ const LocumRequestDialog = ({ getIsOpen, selectedTab }) => {
 
   const getActiveUserData = async () => {
     try {
+      let filteredData;
       const urls = ['PENDING', 'APPROVED'].map(status =>
         `application-management-service/application/request?requestType=LOCUM_RENEWAL_REQUEST&status=${status}&isPaginationRequired=${limit === 9999 ? false : true}&limit=${limit}`
       );
       const responses = await Promise.all(urls.map(url => GET(url)));
       const allStaffs = responses.flatMap(response => response?.data?.requests || []);
+      if (selectedTab === "REQUEST"){
+         filteredData = allStaffs.find(item => item?.id === id);
+      } else {
+        filteredData = allStaffs.find(item => item?.staff?.id === id);
+      }
 
-      const filteredData = allStaffs.find(item => item?.id === id);
+      // const filteredData = allStaffs.find(item => item?.id === id);
       console.log("Filtered Application Data11111111", filteredData);
       setSelectDataLocum(filteredData);
       console.log("applicationmanage", selectDataLocum)
@@ -3060,9 +3069,9 @@ const LocumRequestDialog = ({ getIsOpen, selectedTab }) => {
                               <span className={`${style.rejectionTextStyle}`}>
                                 {selectDataLocum?.locumRenewalDetails?.reappointmentType === "EXTENSION"
                                   ? (ExpireDateRequest
-                                    ? format(new Date(ExpireDateRequest), "MMM dd, yyyy")
+                                    ? format(new Date(ExpireDateRequest), dateFormat)
                                     : "N/A")
-                                  : format(new Date(), "MMM dd, yyyy")}
+                                  : format(new Date(), dateFormat)}
                               </span>
                             )}
                           </div>
@@ -3071,7 +3080,7 @@ const LocumRequestDialog = ({ getIsOpen, selectedTab }) => {
                             End Date <br />
                             <span className={`${style.dateTextStyle}`}>
                               {selectedMonth && selectedMonth !== "Custom"
-                                ? format(new Date(selectedMonth), "MMM dd, yyyy")
+                                ? format(new Date(selectedMonth), dateFormat)
                                 : selectedMonth === "Custom"
                                   ? ''
                                   : selectDataLocum?.locumRenewalDetails?.reappointmentType === "RENEWAL"
@@ -4675,7 +4684,15 @@ const LocumRequestDialog = ({ getIsOpen, selectedTab }) => {
       >
         {/* <div className={style.spaceBetween}> */}
         <div className={style.heading1}>
-          Locum {selectDataLocum?.locumRenewalDetails?.reappointmentType === "EXTENSION" ? "Extension" : "Renewal"} Request has been sent
+           Locum {selectDataLocum?.locumRenewalDetails?.reappointmentType === "EXTENSION" ? "Extension" : "Renewal"} Application has been sent to {" "}
+          {selectDataLocum?.staff?.applicant?.name?.lastName?.charAt(0).toUpperCase() +
+            selectDataLocum?.staff?.applicant?.name?.lastName?.slice(1).toLowerCase()}
+          {", "}
+          {selectDataLocum?.staff?.applicant?.name?.firstName
+            ? selectDataLocum?.staff?.applicant?.name?.firstName.charAt(0).toUpperCase() +
+            selectDataLocum?.staff?.applicant?.name?.firstName.slice(1).toLowerCase()
+            : ""} 
+          {/* Locum {selectDataLocum?.locumRenewalDetails?.reappointmentType === "EXTENSION" ? "Extension" : "Renewal"} Request has been sent */}
         </div>
         {/* <div className={style.displayInRow}>
               <img

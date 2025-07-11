@@ -820,6 +820,11 @@
   align-self: center;
 }
 
+.reviewButtonStyle:hover {
+  background: $primarycolorHover 0% 0% no-repeat padding-box;
+}
+
+
 .descriptionStyle {
   text-align: left;
   font: normal normal normal 15px/23px proxima-nova;

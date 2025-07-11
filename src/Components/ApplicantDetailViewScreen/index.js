@@ -86,6 +86,8 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
   const applicationType = sessionStorage.getItem('applicationCreationType') ?? 'REAPPOINTMENT';
   const [isLoadingImage, setIsLoadingImage] = useState(false);
   const workModeType = sessionStorage.getItem('workModeType')
+  const canadaData = sessionStorage.getItem('canadaData') !== 'undefined' ? JSON.parse(sessionStorage.getItem('canadaData')) : {};
+  const dateFormat = canadaData?.dateFormat || 'MMM dd, yyyy';
   const [expandStates, setExpandStates] = useState({
     section1: false,
     section2: false,
@@ -295,7 +297,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
       documentName.push(data?.shortName || "dd")
       requirementType.push(data?.required)
       expireDate.push(
-       expiryDateFormat ? format(new Date(expiryDateFormat), "MMM dd, yyyy") : "-"
+       expiryDateFormat ? format(new Date(expiryDateFormat), dateFormat) : "-"
       );
       lastUpdateDate.push(
         // format(new Date(data?.LastUpdated), "MMM dd, yyyy") || '-'
@@ -351,7 +353,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
           style={{ cursor: "pointer", color: "#2C2C2C" }}
         >
            {startDateFormat && endDateFormat
-            ? `${format(new Date(startDateFormat), "MMM dd, yyyy")} - ${format(new Date(endDateFormat), "MMM dd, yyyy")}`
+            ? `${format(new Date(startDateFormat), dateFormat)} - ${format(new Date(endDateFormat), dateFormat)}`
           : data?.appointmentCycle || "-"}
         </span>
       );
@@ -418,7 +420,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
       )
     );
       approvalDate.push(
-        approvalDateFormat ? format(new Date(approvalDateFormat), "MMM dd, yyyy") : "-"
+        approvalDateFormat ? format(new Date(approvalDateFormat), dateFormat) : "-"
       );
       action.push(true);
     });
@@ -487,10 +489,10 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
       mdStatus.push(directive?.creationType)
       mdID.push(directive?.mdID)
       attestationDate.push(
-        attestationDueDateFormat ? format(new Date(attestationDueDateFormat), "MMM dd, yyyy") : "-"
+        attestationDueDateFormat ? format(new Date(attestationDueDateFormat), dateFormat) : "-"
       );
       lastUpdateDate.push(
-        lastModifiedDate ? format(lastModifiedDate, "MMM dd, yyyy") : "-"
+        lastModifiedDate ? format(lastModifiedDate, dateFormat) : "-"
       );
       action.push(true);
     });
@@ -597,15 +599,15 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
   };
 
   const lastModifiedDate = form?.lastModifiedDate;
-  const lastModifiedDateFormat = lastModifiedDate ? format(new Date(lastModifiedDate), "MMM dd, yyyy") : "-";
+  const lastModifiedDateFormat = lastModifiedDate ? format(new Date(lastModifiedDate), dateFormat) : "-";
   const ExpireDate = form?.tenure?.to
     ? new Date(form?.tenure?.to).toISOString().split('T')[0] + 'T00:00'
     : null;
-  const formattedExpiringDate = ExpireDate ? format(new Date(ExpireDate), "MMM dd, yyyy") : "-";
+  const formattedExpiringDate = ExpireDate ? format(new Date(ExpireDate), dateFormat) : "-";
   const LastApprovedDate = form?.lastApprovedDate
     ? new Date(form?.lastApprovedDate).toISOString().split('T')[0] + 'T00:00'
     : null;
-  const formattedLastApprovedDate = LastApprovedDate ? format(new Date(LastApprovedDate), "MMM dd, yyyy") : "-";
+  const formattedLastApprovedDate = LastApprovedDate ? format(new Date(LastApprovedDate), dateFormat) : "-";
 
   let tableHeaderValues = documentHeaderValues;
   let tableSortValues = documentColSortValues;

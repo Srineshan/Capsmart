@@ -117,6 +117,8 @@ const ReportTypeOverview = () => {
     const [apexStackedBarChartDisplay, setApexStackedBarChartDisplay] = useState(
         <ApexStackedBarChart stackedSeries={stackedSeries} stackedCategories={stackedCategories} />
     )
+    const canadaData = sessionStorage.getItem('canadaData') !== 'undefined' ? JSON.parse(sessionStorage.getItem('canadaData')) : {};
+    const dateFormat = canadaData?.dateFormat || 'MMM dd, yyyy';
     let cookie = new Cookie();
     let userDetails = cookie.get('user');
     const userDetail = jwt(userDetails);
@@ -239,6 +241,8 @@ const ReportTypeOverview = () => {
     //     if (myReportIdFromUrl)
     //         getMyReportRecords()
     // }, [myReportIdFromUrl])
+
+    console.log("dataToUseInReport",dataToUseInReport)
 
     useEffect(() => {
         if (dataToUseInReport?.initialValueSet && ((dataToUseInReport?.selectedDepartments?.length !== 1 ? !dataToUseInReport?.selectedDepartments?.includes('') : true) && (dataToUseInReport?.selectedStaffType?.length !== 1 ? !dataToUseInReport?.selectedStaffType?.includes('') : true) && (dataToUseInReport?.selectedPrivilegeCategory?.length !== 1 ? !dataToUseInReport?.selectedPrivilegeCategory?.includes('') : true))) {
@@ -1386,7 +1390,7 @@ const ReportTypeOverview = () => {
 
             lastUpdated.push(
                 <>
-                    {format(new Date(data?.lastModifiedDate), "MM/dd/yyyy")}
+                    {format(new Date(data?.lastModifiedDate), dateFormat)}
                 </>
             );
         });
@@ -1490,8 +1494,8 @@ const ReportTypeOverview = () => {
                 `${data?.basicDetailReferences?.department?.name || "-"}`
             );
             specialtyServiceArea.push(data?.basicDetailReferences?.specialty?.name ? `${data?.basicDetailReferences?.specialty?.name}` : "")
-            careerStartDate.push(data?.initialApprovalDate ? format(new Date(data?.initialApprovalDate), 'MMM dd, yyyy') : '-')
-            milestoneDate.push(data?.initialApprovalDate ? format(addYears(new Date(data?.initialApprovalDate), years), 'MMM dd, yyyy') : '-')
+            careerStartDate.push(data?.initialApprovalDate ? format(new Date(data?.initialApprovalDate), dateFormat) : '-')
+            milestoneDate.push(data?.initialApprovalDate ? format(addYears(new Date(data?.initialApprovalDate), years), dateFormat) : '-')
         });
 
         return [
@@ -1581,7 +1585,7 @@ const ReportTypeOverview = () => {
             department.push(
                 `${data?.basicDetailReferences?.department?.name || "-"} ${data?.basicDetailReferences?.specialty?.name ? ` / ${data?.basicDetailReferences?.specialty?.name}` : ""}`
             );
-            startDate.push(data?.initialApprovalDate ? format(new Date(data?.initialApprovalDate), 'MMM dd, yyyy') : "")
+            startDate.push(data?.initialApprovalDate ? format(new Date(data?.initialApprovalDate), dateFormat) : "")
             privilegeType.push(data?.basicDetailReferences?.credentialingAndPrivilegingCategory?.name)
 
         });
@@ -1657,7 +1661,7 @@ const ReportTypeOverview = () => {
             lastUpdated.push(
                 <div>
                     <div>{data?.updatedBy?.name?.firstName}</div>
-                    <div>{data?.lastModifiedDate ? format(new Date(data?.lastModifiedDate), 'MMM dd, yyyy') : ''}</div>
+                    <div>{data?.lastModifiedDate ? format(new Date(data?.lastModifiedDate), dateFormat) : ''}</div>
                 </div>
             )
 
@@ -1768,8 +1772,8 @@ const ReportTypeOverview = () => {
         siteName = [];
         reportLog?.filter(data => data?.activityStatus === value)?.map(data => {
             activityPerformed.push(data?.activityPerformed?.activity);
-            startDateTime.push(`${format(new Date(data?.activityTimeFrame?.stateDate), 'MM-dd-yyyy')}, ${data?.activityTimeFrame?.startTime}`)
-            endDateTime.push(`${format(new Date(data?.activityTimeFrame?.endDate), 'MM-dd-yyyy')}, ${data?.activityTimeFrame?.endTme}`)
+            startDateTime.push(`${format(new Date(data?.activityTimeFrame?.stateDate), dateFormat)}, ${data?.activityTimeFrame?.startTime}`)
+            endDateTime.push(`${format(new Date(data?.activityTimeFrame?.endDate), dateFormat)}, ${data?.activityTimeFrame?.endTme}`)
             contractProvider.push(data?.user?.name)
             reasonNotDone.push(data?.activityNotes?.notes);
             siteName.push(data?.site?.name)
@@ -1857,8 +1861,8 @@ const ReportTypeOverview = () => {
         if (value === "Not Paid") {
             timesheetProcessingSummaryData?.notPaidTimesheets?.map(data => {
                 timesheet.push(data?.timesheet?.timesheetName);
-                period.push(`${format(new Date(data?.timesheet?.timesheetPeriod?.startDate) || new Date(), 'MMM dd')} - ${format(new Date(data?.timesheet?.timesheetPeriod?.endDate) || new Date(), 'MMM dd yyyy')}`)
-                approvalDate.push(`${format(new Date(data?.activityLoggerList?.filter(filterData => filterData?.workFlowAction === "APPROVED")?.[0]?.createdDate) || new Date(), 'MM-dd-yyyy, HH:mm')}`)
+                period.push(`${format(new Date(data?.timesheet?.timesheetPeriod?.startDate) || new Date(), 'MMM dd')} - ${format(new Date(data?.timesheet?.timesheetPeriod?.endDate) || new Date(), dateFormat)}`)
+                approvalDate.push(`${format(new Date(data?.activityLoggerList?.filter(filterData => filterData?.workFlowAction === "APPROVED")?.[0]?.createdDate) || new Date(), `${dateFormat}, HH:mm`)}`)
                 actionBy.push(data?.activityLoggerList?.filter(filterData => filterData?.workFlowAction === "APPROVED")?.[0]?.workFlowUser?.name?.name)
                 serviceProvider.push(data?.timesheet?.user?.name);
             })
@@ -1866,8 +1870,8 @@ const ReportTypeOverview = () => {
         if (value === "Rejected") {
             timesheetProcessingSummaryData?.rejectedTimesheets?.map(data => {
                 timesheet.push(data?.timesheet?.timesheetName);
-                period.push(`${format(new Date(data?.timesheet?.timesheetPeriod?.startDate) || new Date(), 'MMM dd')} - ${format(new Date(data?.timesheet?.timesheetPeriod?.endDate) || new Date(), 'MMM dd yyyy')}`)
-                approvalDate.push(`${format(new Date(data?.activityLoggerList?.filter(filterData => filterData?.workFlowAction === "REJECTED")?.[0]?.createdDate) || new Date(), 'MM-dd-yyyy, HH:mm')}`)
+                period.push(`${format(new Date(data?.timesheet?.timesheetPeriod?.startDate) || new Date(), 'MMM dd')} - ${format(new Date(data?.timesheet?.timesheetPeriod?.endDate) || new Date(), dateFormat)}`)
+                approvalDate.push(`${format(new Date(data?.activityLoggerList?.filter(filterData => filterData?.workFlowAction === "REJECTED")?.[0]?.createdDate) || new Date(), `${dateFormat}, HH:mm`)}`)
                 actionBy.push(data?.activityLoggerList?.filter(filterData => filterData?.workFlowAction === "REJECTED")?.[0]?.workFlowUser?.name?.name)
                 serviceProvider.push(data?.timesheet?.user?.name);
             })
@@ -1896,7 +1900,7 @@ const ReportTypeOverview = () => {
 
         data?.timesheets?.map(timesheetData => {
             timesheet.push(timesheetData?.timesheetName);
-            period.push(`${format(new Date(timesheetData?.timesheetPeriod?.startDate) || new Date(), 'MMM dd')} - ${format(new Date(timesheetData?.timesheetPeriod?.endDate) || new Date(), 'MMM dd yyyy')}`)
+            period.push(`${format(new Date(timesheetData?.timesheetPeriod?.startDate) || new Date(), 'MMM dd')} - ${format(new Date(timesheetData?.timesheetPeriod?.endDate) || new Date(), dateFormat)}`)
             departmentAndSite.push(timesheetData?.siteDepartmentDetails !== null ? `${Object.values(Object.values(timesheetData?.siteDepartmentDetails?.siteDepartmentDetailMap)?.[0]?.departmentMap)?.[0]?.name}, ${Object.values(timesheetData?.siteDepartmentDetails?.siteDepartmentDetailMap)?.[0]?.name}` : '-')
             currentStatus.push(availableTimesheetStatus[timesheetData?.timesheetStatus?.status]);
             invoiceAmount.push(`$${timesheetData?.policyBasedPayment}`);
@@ -2557,7 +2561,7 @@ const ReportTypeOverview = () => {
                                                     <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop5} `}>Reporting Parameters Applied</div>
                                                     {(reportType === "staffReappointmentsNotes" || reportType === "staffReappointments" || reportType === "locumRenewalOrExtensionApplicationsSummary" || reportType === "privilegedStaffSummary" ||
                                                         reportType === "submittedApplicationsReviewSummary" || reportType === "staffReappointmentTracker" || reportType === "ohipBillingNumbersByCareProvider" || reportType === "careProviderCareerMilestoneSummary" ||
-                                                        reportType === "declinedOrNotRenewedStaffSummary" || reportType === "reappointmentApplicationNotStarted" || reportType === "currentNotesSummary" || reportType === "staffReappointmentStatusSummary") ? (
+                                                        reportType === "declinedOrNotRenewedStaffSummary" || reportType === "reappointmentApplicationNotStarted" || reportType === "currentNotesSummary" || reportType === "staffReappointmentStatusSummary" || reportType === "staffbyTypes" || reportType === "locumStaffRenewalStatusTracker") ? (
                                                         <div className={`${style.grid4} ${style.marginTop20} `}>
                                                             {/* {reportType === "staffReappointmentsNotes" && (
                                                         <div>
@@ -2570,7 +2574,12 @@ const ReportTypeOverview = () => {
                                                         <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedSitesToSend?.map(data => data?.siteName?.siteName).join(', ') || 'All Sites'}</div>
                                                     </div> */}
                                                             <div>
-                                                                <div className={`${style.reportRunByParamStyle} ${style.marginTop5} `}>Departments</div>
+                                                               <div className={`${style.reportRunByParamStyle} ${style.marginTop5}`}>
+                                                                    {(dataToUseInReport?.selectedDepartmentsToSend?.length === 1 &&
+                                                                    dataToUseInReport?.selectedDepartmentsToSend[0]?.departmentName?.name) 
+                                                                    ? 'Department' 
+                                                                    : 'Departments'}
+                                                                </div>
                                                                 <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.departmentName?.name).join(', ') || 'All Departments'}</div>
                                                             </div>
                                                             {/* <div>

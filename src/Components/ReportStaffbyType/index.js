@@ -7,6 +7,8 @@ import LoadingScreen from "../LoadingScreen";
 const ReportsStaffTable = ({ tableData}) => {
  const [isLoadingImage, setIsLoadingImage] = useState(false);
  const [entity, setEntity] = useState([]);
+ const canadaData = sessionStorage.getItem('canadaData') !== 'undefined' ? JSON.parse(sessionStorage.getItem('canadaData')) : {};
+ const dateFormat = canadaData?.dateFormat || 'MMM dd, yyyy';
 
  console.log("tablessssss2:",tableData);
  
@@ -80,10 +82,10 @@ const ReportsStaffTable = ({ tableData}) => {
   const renderApplicationDetails = () => {
 return tableData.map((data, index) => {
   const reappointmentDate = data?.reAppointmentSentDate 
-  ? format(new Date(data.reAppointmentSentDate), "MM/dd/yyyy")
+  ? format(new Date(data.reAppointmentSentDate), dateFormat)
   : "-";
 
-    const dueDate = data?.onGoingApplication.expiryDate ?  format(new Date(data?.onGoingApplication.expiryDate), "MM/dd/yyyy") : "-";
+    const dueDate = data?.onGoingApplication.expiryDate ?  format(new Date(data?.onGoingApplication.expiryDate),dateFormat) : "-";
        return (
          <div className={`${style.rejectionBorderStyle} ${style.declineBorderStyle} ${style.marginTop10}`}>
            <div className={style.marginTop10}>

@@ -13,6 +13,10 @@
 }
 
 .padding {
+  padding: 40px 40px 0px 40px;
+}
+
+.padding2 {
   padding: 20px 40px 0px 40px;
 }
 
@@ -329,17 +333,18 @@
 
 .alignText {
   text-align: center;
-  font: normal normal normal 20px proxima-nova;
 }
 
 .justifyItem {
   justify-items: center;
+  text-align: center;
 }
 
 .roleTitle {
   text-align: center;
   font: normal normal normal 20px/40px proxima-nova;
   letter-spacing: 0px;
+  line-height: 30px;
   color: #9AAFB5;
   opacity: 1;
 }
@@ -348,6 +353,7 @@
   text-align: center;
   font: normal normal normal 20px/40px proxima-nova;
   letter-spacing: 0px;
+  line-height: 30px;
   color: #F5F8F8;
   opacity: 1;
 }
@@ -360,4 +366,5 @@
   padding-top: 20px;
   width: 60%;
   height: 100%;
+  align-content: center
 }

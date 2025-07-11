@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState , useCallback} from 'react';
 
 import style from './index.module.scss';
 import ApplicationHeader from '../../Components/ApplicationHeaders';
@@ -17,8 +17,10 @@ import UserLogo from "./../../images/defaultUserLogo.jpg";
 import PhoneIcon from "./../../images/phoneIcon.png";
 import MailIcon from "./../../images/mailIcon.png";
 import { formatFirstNameLastName } from '../../utils/formatting';
+import ReactToPrint, { useReactToPrint } from "react-to-print";
 
 const MedicalDirectivesAttestDisplay = () => {
+    const componentRef = useRef(null);
     const { applicationId, section, step, medicalDirectivesId } = useParams();
     const [medicalDirectives, setMedicalDirectives] = useState()
     const [medicalDirectivesAttestationLog, setMedicalDirectivesAttestationLog] = useState()
@@ -200,10 +202,24 @@ const MedicalDirectivesAttestDisplay = () => {
     const handleClose = () => {
         navigate(`/applications`);
     }
+
+    const reactToPrintContent = useCallback(() => {
+        return componentRef.current;
+      }, [componentRef.current]);
+    
+      const handlePrintClick = useReactToPrint({
+        content: reactToPrintContent,
+        documentTitle: "Medical Directives",
+        removeAfterPrint: true,
+         pageStyle: `
+            @page {
+            margin: 30px;
+            }`
+      });
     return (
         <div className={style.screenBackground}>
             <div className={style.welcomeText}>
-                <ApplicationHeader title={`${medicalDirectives?.title}`} close={true} closeClick={handleClose} />
+                <ApplicationHeader title={`${medicalDirectives?.title}`} close={true} closeClick={handleClose} print={true} printPage={handlePrintClick}/>
             </div>
             <div className={style.headerData}>
                 <span style={{ marginLeft: '20px' }}>Ordering Of Laboratory Investigations - IPAC</span>
@@ -216,7 +232,7 @@ const MedicalDirectivesAttestDisplay = () => {
                 {/* <div>
                     <div className={style.breadcrumbStyle}>{`REAPPOINTMENT APPLICATION > MEDICAL DIRECTIVES STATUS >> ${medicalDirectives?.title}`}</div>
                 </div> */}
-                <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
+                <div ref={componentRef} className={`${style.applicationScreenGrid} ${style.marginTop}`}>
                     <div>
                         <div className={`${style.cardLeftStyle}`}>
                             <div className={style.userCardGrid}>
