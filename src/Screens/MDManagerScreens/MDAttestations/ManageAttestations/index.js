@@ -1,6 +1,6 @@
 import React, { useState, useEffect, Fragment, useCallback, useRef, createRef } from "react";
 import { Classes, Dialog } from '@blueprintjs/core';
-import { GET, PUT } from "./../../../dataSaver";
+import { GET, POST } from "./../../../dataSaver";
 import SideBar from "../../../../Components/Sidebar";
 import Navbar from "../../../../Components/Navbar";
 import { useNavigate } from "react-router-dom";
@@ -18,6 +18,8 @@ import Tile from "../../../../Components/Tile";
 import CryptoJS from 'crypto-js';
 import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
+import BlueSign from "./../../../../images/blueSign.png";
+import WhiteSign from "./../../../../images/whiteSign.png";
 import ESignature from './../../../../Components/ESignature';
 import TableTwo from '../../../../Components/TableDesignTwo';
 import TileApplication from "../../../../Components/TileApplication";
@@ -38,6 +40,7 @@ const ManageAttestation = () => {
     let cookie = new Cookie();
     let userDetails = cookie.get('user');
     const users = jwt(userDetails);
+    const [userData, setUserData] = useState();
     const [encryptedText, setEncryptedText] = useState(CryptoJS.AES.encrypt(users?.userName + dateTime, publicKey).toString());
     const canadaData = sessionStorage.getItem('canadaData') !== 'undefined' ? JSON.parse(sessionStorage.getItem('canadaData')) : {};
     const [currentDate, setCurrentDate] = useState(format(new Date(), canadaData?.dateFormat || 'dd/MM/yyyy'));
@@ -46,7 +49,7 @@ const ManageAttestation = () => {
     const [feedBackTileData, setFeedBackTileData] = useState([]);
     const [userMetadata, setUserMetadata] = useState([]);
     const [viewAlerts, setViewAlerts] = useState(true);
-    const [selectedOption, setSelectedOption] = useState("REVIEW & ATTEST");
+    const [selectedOption, setSelectedOption] = useState("pending_md");
     const [isExpanded, setIsExpanded] = useState(true);
     let selectedOptionValue = sessionStorage.getItem("selectedOption");
     const [entityId, setEntityId] = useState("");
@@ -65,6 +68,9 @@ const ManageAttestation = () => {
     const [searchTermForTable, setSearchTermForTable] = useState('');
     const [showAdvancedSearch, setShowAdvancedSearch] = useState(false);
     const [mdId, setMdId] = useState('');
+    const [checkedIds, setCheckedIds] = useState([]);
+    const [attestationList, setAttestationList] = useState([]);
+    const [attestationMeta, setAttestationMeta] = useState();
     const [staffList, setStaffList] = useState([]);
     const [groupList, setGroupList] = useState([]);
     const [mdTitle, setMdTitle] = useState('');
@@ -78,7 +84,7 @@ const ManageAttestation = () => {
     const isPaginationRequired = limit === 9999 ? false : true;
     const [page, setPage] = useState(1);
     const [applicantProfile, setApplicantProfile] = useState();
-    const [isShowESignConfirmationDialog, setIsShowESignConfirmationDialog] = useState(true);
+    const [isShowESignConfirmationDialog, setIsShowESignConfirmationDialog] = useState(false);
     const [isShowESignDialog, setIsShowESignDialog] = useState(false);
     const [medicalDirectivesAttestation, setMedicalDirectivesAttestation] = useState(false);
     const [totalTableCount, setTotalTableCount] = useState(0);
@@ -102,17 +108,31 @@ const ManageAttestation = () => {
         getDepartmentList();
         getStaffList();
         getGroupList();
+        getAttestationMetaList();
     }, []);
 
     useEffect(() => {
-        if (entityId !== "" && entityId !== undefined) {
-            getReferenceCustomDefault();
-        }
-    }, [entityId]);
+        getAttestationList();
+    }, [selectedOption]);
+
+    // useEffect(() => {
+    //     if (entityId !== "" && entityId !== undefined) {
+    //         getReferenceCustomDefault();
+    //     }
+    // }, [entityId]);
 
     useEffect(() => {
         getApplicantProfile();
     }, [])
+
+    useEffect(() => {
+        setUserDetails();
+    }, [users?.id])
+
+    const setUserDetails = async () => {
+        const { data: userData } = await GET(`user-management-service/user/${users?.id}`);
+        setUserData(userData)
+    }
 
     const togglePin = () => { };
 
@@ -231,6 +251,22 @@ const ManageAttestation = () => {
         setStaffList(response?.data?.staffs)
     }
 
+    const getAttestationMetaList = async () => {
+        const response = await GET(
+            `medical-directive-service/attestation/byUser/meta`
+        );
+        console.log(response.data);
+        setAttestationMeta(response?.data)
+    }
+
+    const getAttestationList = async () => {
+        const response = await POST(
+            `medical-directive-service/attestation/byUser?offset=${page - 1}&limit=${limit}&isPaginationRequired=${isPaginationRequired}&userId=${users?.id}&tab=${selectedOption}`
+        );
+        console.log(response.data);
+        setAttestationList(response?.data?.medicalDirectives)
+    }
+
     const getEntity = async () => {
         const { data: entity } = await GET(`entity-service/entity`);
         setEntityId(entity?.[0]?.id);
@@ -247,6 +283,25 @@ const ManageAttestation = () => {
     const getSelectedOptionLevelTwo = (value) => {
         setSelectedOption(value)
     }
+
+    const handleSelectAllClick = () => {
+        if (checkedIds?.length === attestationList?.length) {
+            setCheckedIds([]);
+        } else {
+            const allIds = attestationList?.map(data => data?.medicalDirective?.id);
+            setCheckedIds(allIds);
+        }
+    };
+
+    const handleCheckboxClick = (id, innerData) => {
+        setCheckedIds(prevCheckedIds => {
+            // Toggle the ID in the array
+            return prevCheckedIds?.map(data => data?.id)?.includes(innerData?.medicalDirective?.id)
+                ? prevCheckedIds.filter(checkedId => checkedId?.id !== innerData?.medicalDirective?.id)
+                : [...prevCheckedIds, innerData?.medicalDirective?.id];
+        });
+        getAttestationValues()
+    };
 
     const getReferenceCustomDefault = async () => {
         const { data: referenceListCustomDefaultCount } = await GET(
@@ -285,7 +340,11 @@ const ManageAttestation = () => {
 
 
     const reviewAndAttestHeaderValues = [
-        "",
+        <CommonCheckBox
+            size="medium"
+            checked={checkedIds?.length === attestationList?.length}
+            onChange={handleSelectAllClick}
+        />,
         "",
         "Title",
         "MD ID",
@@ -301,39 +360,65 @@ const ManageAttestation = () => {
         "Last Attestation Date",
     ];
 
-    const tableHeaderValues = selectedOption === "REVIEW & ATTEST" ? reviewAndAttestHeaderValues : attestedHeaderValues
+    const tableHeaderValues = selectedOption === "pending_md" ? reviewAndAttestHeaderValues : attestedHeaderValues
 
     let pin = [];
     let alert = [];
     let alertType = [];
     let alertName = [];
     let alertDateAndTime = [];
+    let title = [];
+    let id = [];
+    let type = [];
+    let dueDate = [];
+    let lastUpdated = [];
+    let attestedDate = [];
     let action = [];
+    let signImg = [];
+    let checkbox = [];
 
-    const getActiveFilesValues = () => {
-        pin = [];
-        alert = [];
-        alertType = [];
-        alertName = [];
-        alertDateAndTime = [];
-        action = [];
+    const getAttestationValues = () => {
+        title = [];
+        id = [];
+        type = [];
+        dueDate = [];
+        lastUpdated = [];
+        signImg = [];
+        checkbox = [];
+        attestedDate = [];
 
-        alertsData?.map((data) => {
-            pin.push("pin");
-            alert.push(data?.fileId);
-            alertType.push(data?.processingStatus);
-            alertName.push(data?.fileName);
-            alertDateAndTime.push("-");
-            action.push(true);
+        attestationList?.map((data, index) => {
+            checkbox.push(
+                <CommonCheckBox
+                    size="medium"
+                    checked={checkedIds?.includes(data?.medicalDirective?.id)}
+                    onChange={() => handleCheckboxClick(data?.medicalDirective?.id)}
+                    key={`${data?.medicalDirective?.id}${index}`}
+                />
+            );
+            title.push(data?.medicalDirective?.title);
+            id.push(data?.medicalDirective?.mdID);
+            type.push(data?.medicalDirective?.revisionStatus === "NA" ? 'New' : "Revised");
+            dueDate.push(data?.dueDate);
+            attestedDate.push(data?.attestationLog?.createdDate ? format(new Date(data?.attestationLog?.createdDate), 'MMM dd, yyyy') : '-');
+            lastUpdated.push(data?.medicalDirective?.lastModifiedDate ? format(new Date(data?.medicalDirective?.lastModifiedDate), 'MMM dd, yyyy') : '-');
+            signImg.push(<img src={BlueSign} alt="" className={`${style.blueSignImgStyle} ${style.cursorPointer}`} onClick={() => handleEdit(data)} />);
         });
 
-        return [
-            { type: "dot", value: pin },
-            { type: "text", value: alert },
-            { type: "text", value: alertType },
-            { type: "text", value: alertName },
-            { type: "text", value: alertDateAndTime },
-            { type: "action", value: action },
+        return selectedOption === "pending_md" ? [
+            { type: "checkbox", value: checkbox },
+            { type: "dot", value: title },
+            { type: "text", value: title },
+            { type: "text", value: id },
+            { type: "text", value: type },
+            { type: "text", value: dueDate },
+            { type: "text", value: lastUpdated },
+            { type: "icon", icon: signImg },
+        ] : [
+            { type: "text", value: title },
+            { type: "text", value: id },
+            { type: "text", value: type },
+            { type: "text", value: attestedDate },
         ];
     };
 
@@ -342,9 +427,7 @@ const ManageAttestation = () => {
     let taskType = [];
     let subjectOrReference = [];
     let actionRequired = [];
-    let dueDate = [];
     let assignTo = [];
-    let lastUpdated = [];
     let lastUpdatedBy = [];
 
     const getToDoValues = () => {
@@ -406,11 +489,37 @@ const ManageAttestation = () => {
         }
     }
 
-    const handleSubmit = () => {
-
+    const handleEdit = (data) => {
+        navigate(`/mdManager/manageAttestation/${entityId}/${data?.medicalDirective?.id}`)
     }
 
-    console.log('ref', refMetadata);
+    const handleSubmitAttestBulk = async () => {
+        let temp = {
+            user: {
+                id: userData?.id,
+                name: userData?.name,
+                email: userData?.email
+            },
+            medicalDirectiveIds: checkedIds,
+            esign: {
+                esign: encryptedText,
+                name: `${users?.userName}`,
+                signedDate: currentDate
+            }
+        }
+        console.log(temp, 'checkedIds', users)
+        await POST(`medical-directive-service/medicalDirectives/attest/bulk`, temp)
+            .then(response => {
+                getAttestationList();
+                getAttestationMetaList();
+                setShowReviewAndAttestDialog(false);
+                console.log(response, response?.response?.data)
+            })
+            .catch((error) => {
+                console.log(error)
+            })
+    }
+
 
     return (
         <Fragment>
@@ -580,23 +689,23 @@ const ManageAttestation = () => {
                     </div>
                     <div>
                         <div className={`${style.grid2} ${style.marginTop10}`}>
-                            <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="REVIEW & ATTEST" bigNumber={0} smallNum1={0} smallNum2={0} smallText1="Not Done" smallText2="Past Due" currentTile="REVIEW & ATTEST" topText='' smallNum1Color={style.redSmallNumber} smallNum2Color={style.redSmallNumber} smallNum1SelectedColor={style.redSmallNumberSelected} smallNum2SelectedColor={style.redSmallNumberSelected} />
-                            <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="ATTESTED" bigNumber={0} smallNum1="" smallNum2="" currentTile="ATTESTED" topText='IN THE PAST 12 MONTHS' />
+                            <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="REVIEW & ATTEST" bigNumber={attestationMeta?.pending_md?.totalCount} smallNum1={attestationMeta?.pending_md?.notPastDueCount} smallNum2={attestationMeta?.pending_md?.pastDueCount} smallText1="Not Done" smallText2="Past Due" currentTile="pending_md" topText='' smallNum1Color={style.redSmallNumber} smallNum2Color={style.redSmallNumber} smallNum1SelectedColor={style.redSmallNumberSelected} smallNum2SelectedColor={style.redSmallNumberSelected} />
+                            <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="ATTESTED" bigNumber={attestationMeta?.attested_md?.totalCount} smallNum1="" smallNum2="" currentTile="attested_md" topText='IN THE PAST 12 MONTHS' />
                         </div>
                         <div
                             className={`${style.spaceBetween} ${style.marginLeft30} ${style.marginTop20} `}
                         >
                             <div className={`${style.tabs}`}>
-                                <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Review & Attest" tileCount={0} currentTile="REVIEW & ATTEST" />
-                                <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Attested" tileCount={0} currentTile="ATTESTED" />
+                                <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Review & Attest" tileCount={attestationMeta?.pending_md?.totalCount} currentTile="pending_md" />
+                                <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Attested" tileCount={attestationMeta?.attested_md?.totalCount} currentTile="attested_md" />
                             </div>
                             <div>
                                 <button
-                                    className={`${style.borderNone} ${style.backgroundBlue} ${style.borderRadius5} ${style.cursorPointer}`}
-                                    onClick={() => setShowReviewAndAttestDialog(true)} // Open dialog on button click
+                                    className={`${style.borderNone} ${style.backgroundBlue} ${style.borderRadius5} ${style.cursorPointer} ${checkedIds?.length === 0 ? style.disabled : ''}`}
+                                    onClick={checkedIds?.length === 0 ? () => { } : () => setShowReviewAndAttestDialog(true)} // Open dialog on button click
                                 >
                                     <div className={` ${style.addNewButton} ${style.textColorWhite}`}>
-                                        <AddIcon />
+                                        <img src={WhiteSign} alt="" className={style.whiteSignImgStyle} onClick={() => { }} />
                                         <span>Review & Attest</span>
                                     </div>
                                 </button>
@@ -607,10 +716,10 @@ const ManageAttestation = () => {
                                 <div className={`${style.reduceMarginTop10} registeredUsers`} ref={PDFRef}>
                                     <TableTwo
                                         tableHeaderValues={tableHeaderValues}
-                                        tableDataValues={getActiveFilesValues()}
-                                        tableData={dashboardData}
-                                        gridStyle={selectedOption === 'REVIEW & ATTEST' ? style.reviewAndAttestGrid : style.attestedGrid}
-                                        actions={actionsData}
+                                        tableDataValues={getAttestationValues()}
+                                        tableData={attestationList}
+                                        gridStyle={selectedOption === 'pending_md' ? style.reviewAndAttestGrid : style.attestedGrid}
+                                        // actions={actionsData}
                                         // scrollStyle={style.contractScrollStyle}
                                         tableSortValues={[]}
                                         heading={"There are no Record for you to manage"}
@@ -623,6 +732,8 @@ const ManageAttestation = () => {
                                         searchCount={searchCount}
                                         setSearchTermForTable={setSearchTermForTable}
                                         onLimitChange={handleLimitChange}
+                                        checkedIds={checkedIds}
+                                        handleCheckboxClick={handleCheckboxClick}
                                     />
                                 </div>
                             </div>
@@ -631,7 +742,7 @@ const ManageAttestation = () => {
                     <Dialog isOpen={showReviewAndAttestDialog} onClose={() => setShowReviewAndAttestDialog(false)} className={`${style.attestMDDialogBackground} ${style.attestMDDialog}`}>
                         <div className={Classes.DIALOG_BODY}>
                             <div className={style.dialogTitle}>Medical Directives Review & Attestations</div>
-                            <div className={`${style.dialogDesc} ${style.marginTop20}`}>You are attesting to {5} Medical Directives that were assigned to you for review.</div>
+                            <div className={`${style.dialogDesc} ${style.marginTop20}`}>You are attesting to {checkedIds?.length} Medical Directives that were assigned to you for review.</div>
                             <div>
                                 <div className={` ${style.marginTop10} ${style.leftAlign}`}>
                                     <CommonCheckBox checked={medicalDirectivesAttestation} label={'I certify that I have read the Medical Directives assigned to me and have a good understanding of them.'}
@@ -657,7 +768,7 @@ const ManageAttestation = () => {
                                 </div>
                                 <div className={style.justifyCenter}>
                                     <Tooltip arrow title={"Click to Submit"}>
-                                        <div className={`${style.continue} ${style.marginTop} ${isSigned ? "" : style.disabled}`} onClick={isSigned ? () => handleSubmit() : () => { }}>SUBMIT</div>
+                                        <div className={`${style.continue} ${style.marginTop} ${isSigned ? "" : style.disabled}`} onClick={isSigned ? () => handleSubmitAttestBulk() : () => { }}>SUBMIT</div>
                                     </Tooltip>
                                 </div>
                             </div>

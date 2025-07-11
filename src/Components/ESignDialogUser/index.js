@@ -152,6 +152,8 @@ const ESignDialogUser = ({ getIsOpen, tempValue, baseKey, applicationId, basicFo
             try {
                 const response = await PUT(`user-management-service/user/${users?.id}/updateESignature`, formData);
                 SuccessToaster('File Uploaded Successfully');
+                setIsContinue(true);
+                getIsOpen(false)
                 console.log(response?.data);
                 let temp = {};
                 temp.file = response?.data?.file;

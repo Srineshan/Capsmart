@@ -1,24 +1,23 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Dialog, Classes } from '@blueprintjs/core';
+
 import style from './index.module.scss';
-import ApplicationHeader from '../../../../Components/ApplicationHeaders';
-import { GET, POST } from '../../../dataSaver';
+import ApplicationHeader from '../../../../../Components/ApplicationHeaders';
+import { GET, POST } from '../../../../dataSaver';
 import { useNavigate, useParams } from 'react-router-dom';
 import CryptoJS from 'crypto-js';
-import CommonCheckBox from '../../../../Components/CommonFields/CommonCheckBox';
+import CommonCheckBox from '../../../../../Components/CommonFields/CommonCheckBox';
 import { Tooltip } from '@mui/material';
-import ESignature from '../../../../Components/ESignature';
+import ESignature from '../../../../../Components/ESignature';
 import { format } from 'date-fns';
 import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
 import CloseIcon from '@mui/icons-material/Close';
-import CommonPdfViewer from '../../../../Components/CommonPdfViewer';
-import CommonDivider from '../../../../Components/CommonFields/CommonDivider';
+// import PdfViewer from '../../../../ReappointmentApplicationForm/pdfViewer';
+import CommonPdfViewer from '../../../../../Components/CommonPdfViewer';
 
-const MDAttestStatus = () => {
+const ManageMDAttest = () => {
     const { entityId, medicalDirectivesId } = useParams();
     const [medicalDirectives, setMedicalDirectives] = useState()
-    const [medicalDirectivesSummary, setMedicalDirectivesSummary] = useState()
     const [medicalDirectivesAttestationLog, setMedicalDirectivesAttestationLog] = useState()
     const iframeRef = useRef(null);
     const navigate = useNavigate()
@@ -31,13 +30,10 @@ const MDAttestStatus = () => {
     const canadaData = sessionStorage.getItem('canadaData') !== 'undefined' ? JSON.parse(sessionStorage.getItem('canadaData')) : {};
     const [currentDate, setCurrentDate] = useState(format(new Date(), canadaData?.dateFormat || 'dd/MM/yyyy'));
     const [isSigned, setIsSigned] = useState(false);
-    const [showGroupSignDialog, setShowGroupSignDialog] = useState(false);
     const [isScrolledToBottom, setIsScrolledToBottom] = useState(false);
     const [medicalDirectivesAttestation, setMedicalDirectivesAttestation] = useState(false);
     const [formIndex, setFormIndex] = useState();
     const [userData, setUserData] = useState();
-    const [selectedGroup, setSelectedGroup] = useState();
-    const [mdLog, setMDLog] = useState();
     let cookie = new Cookie();
     let userDetails = cookie.get('user');
     const users = jwt(userDetails);
@@ -49,7 +45,6 @@ const MDAttestStatus = () => {
 
     useEffect(() => {
         getAttestationLog()
-        getMDLogs()
     }, [])
 
     // useEffect(() => {
@@ -115,20 +110,7 @@ const MDAttestStatus = () => {
                 `medical-directive-service/medicalDirectives/${medicalDirectivesId}`
             );
             setMedicalDirectives(medicalDirectives);
-            const { data: medicalDirectivesSummary } = await GET(
-                `medical-directive-service/medicalDirectives/${medicalDirectivesId}/attestationSummaryByGroup`
-            );
-            setMedicalDirectivesSummary(medicalDirectivesSummary);
-            console.log(medicalDirectives, 'medicalDirectives', medicalDirectivesSummary)
-        }
-    }
-
-    const getMDLogs = async () => {
-        if (medicalDirectivesId !== undefined) {
-            const { data: medicalDirectivesLog } = await GET(
-                `medical-directive-service/medicalDirectives/${medicalDirectivesId}/logs?workflowAction=REVISED`
-            );
-            setMDLog(medicalDirectivesLog)
+            console.log(medicalDirectives, 'medicalDirectives')
         }
     }
 
@@ -173,7 +155,7 @@ const MDAttestStatus = () => {
     }
 
     const handleClose = () => {
-        navigate(`/mdManager`);
+        navigate(`/mdManager/manageAttestation`);
     }
     return (
         <div className={style.screenBackground}>
@@ -190,22 +172,22 @@ const MDAttestStatus = () => {
                 {/* <div>
                     <div className={style.breadcrumbStyle}>{`REAPPOINTMENT APPLICATION > MEDICAL DIRECTIVES STATUS >> ${medicalDirectives?.title}`}</div>
                 </div> */}
-                <div className={style.medicalDirectivesCard}>
-                    <div className={style.title}>{`${medicalDirectives?.title}`} <span className={style.mdIDStyle}>{medicalDirectives?.mdID}</span></div>
-                    {/* {(!isScrolledToBottom) && (
-                                <div className={`${style.marginTop10} ${style.description} ${style.attestationRequiredText}`}>You need to scroll to the end of the document before you can certify that it has been viewed by you.</div>
-                            )} */}
-                </div>
                 <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
                     <div>
-                        <div className={`${style.medicalDirectivesCard}`}>
-                            <CommonPdfViewer pdfurl={medicalDirectives?.file?.fileURL} />
+                        <div className={style.medicalDirectivesCard}>
+                            <div className={style.title}>{`${medicalDirectives?.title}`} <span className={style.mdIDStyle}>{medicalDirectives?.mdID}</span></div>
+                            {(!isScrolledToBottom) && (
+                                <div className={`${style.marginTop10} ${style.description} ${style.attestationRequiredText}`}>You need to scroll to the end of the document before you can certify that it has been viewed by you.</div>
+                            )}
+                        </div>
+                        <div className={`${style.medicalDirectivesCard} ${style.marginTop}`}>
+                            <CommonPdfViewer pdfurl={medicalDirectives?.file?.fileURL} setIsScrolledToBottom={setIsScrolledToBottom} />
 
                             {/* <iframe src={`${medicalDirectives?.file?.fileURL}`} className={style.pdfDisplay} ref={iframeRef} /> */}
                         </div>
                     </div>
                     <div>
-                        {/* {!isScrolledToBottom && (
+                        {!isScrolledToBottom && (
                             <div className={style.medicalDirectivesCard}>
                                 <div className={style.title}>{`Attestation Due In ${medicalDirectives?.noOfDaysToAttest} Days`} </div>
                             </div>
@@ -238,6 +220,9 @@ const MDAttestStatus = () => {
                                                 </div>
                                             </div>
                                         </div>
+                                        {/* {(!isScrolledToBottom) && (
+                                            <div className={`${style.marginTop10} ${style.attestationRequiredText}`}>You need to scroll to the end of the document before you can certify the Directive</div>
+                                        )} */}
                                         <Tooltip arrow title={"Click to Submit"}>
                                             <div className={`${style.continue} ${style.marginTop} ${style.disabled}`}>SUBMIT</div></Tooltip>
                                     </div>
@@ -266,58 +251,24 @@ const MDAttestStatus = () => {
                                             </div>
                                         </div>
                                     </div>
+                                    {/* {(!isScrolledToBottom) && (
+                                        <div className={`${style.marginTop10} ${style.attestationRequiredText}`}>You need to scroll to the end of the document before you can certify the Directive</div>
+                                    )} */}
                                     <div className={`${style.continue} ${style.marginTop10} ${(isScrolledToBottom && isSigned) ? '' : style.disabled}`} onClick={(isScrolledToBottom && isSigned) ? () => { handleSubmitAttest() } : () => { }}>SUBMIT</div>
                                 </>
                             )}
-                        </div> */}
-                        <div className={`${style.medicalDirectivesCard}`}>
-                            <div className={style.title}><strong>{`Attestation Group Status`} </strong></div>
-                            {medicalDirectivesSummary?.groups?.map(data => (
-                                <div>
-                                    <div className={`${style.marginTop10} ${style.title}`}>{data?.groupName}</div>
-                                    <div className={`${style.marginTop10} ${style.groupAttestationDescription} ${style.cursorPointer}`} onClick={() => { setSelectedGroup(data); setShowGroupSignDialog(true) }}>{`${data?.attestedCount} out of ${data?.members?.length} Signed`}</div>
-                                </div>
-                            ))}
                         </div>
                         <div className={`${style.medicalDirectivesCard} ${!isScrolledToBottom ? style.marginTop : ''}`}>
-                            <div className={style.title}><strong>{`Update History`} </strong></div>
-                            {mdLog?.map(data =>
-                                <div className={`${style.marginTop10} ${style.description}`}>{`${data?.createdDate ? format(new Date(data?.createdDate), 'MMM dd, yyyy') : ''}, ${data?.workflowUser?.name?.firstName}`}</div>
-                            )}
+                            <div className={style.title}><strong>{`My Attestation Log`} </strong></div>
+                            {medicalDirectivesAttestationLog?.map(data => (
+                                <div className={`${style.marginTop10} ${style.description}`}>{format(new Date(data?.createdDate), 'MMM dd, yyyy HH:mm')}</div>
+                            ))}
                         </div>
                     </div>
                 </div>
             </div>
-            <Dialog isOpen={showGroupSignDialog} onClose={() => setShowGroupSignDialog(false)} className={`${style.groupAttestDialogBackground} ${style.groupAttestDialog}`}>
-                <div className={style.spaceBetween}>
-                    <div className={style.dialogTitle}>{`Atteastation Group Status For ${selectedGroup?.groupName}`}</div>
-                    <span className={style.verticalAlignCenter}>
-                        <CloseIcon sx={{ fontSize: 30, color: '#06617A', cursor: 'pointer', marginLeft: '270px' }} onClick={() => setShowGroupSignDialog(false)} />
-                    </span>
-                </div>
-                {/* <div className={`${style.dialogDesc} ${style.marginTop}`}>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et</div> */}
-                <div className={`${style.dialogTableGrid} ${style.marginTop}`}>
-                    <div></div>
-                    <div className={style.dialogDesc}><strong>Name</strong></div>
-                    <div className={style.dialogDesc}><strong>Title</strong></div>
-                    <div className={style.dialogDesc}><strong>Department / Divison</strong></div>
-                    <div className={style.dialogDesc}><strong>Status</strong></div>
-                    <div className={style.dialogDesc}><strong>Attested on</strong></div>
-                </div>
-                <CommonDivider />
-                {selectedGroup?.members?.map((data, index) => (
-                    <div className={`${style.dialogTableGrid} ${style.marginTop}`}>
-                        <div className={data?.attestationLog ? style.darkGreenDotStyle : style.redDotStyle}></div>
-                        <div>{data?.attestationLog?.user?.name?.firstName}</div>
-                        <div>{data?.user?.title ? data?.user?.title?.title : '-'}</div>
-                        <div>{data?.user?.departments?.map(data => data?.name)?.join(', ')}</div>
-                        <div>{data?.attestationLog ? 'Attested' : 'Not Attested'}</div>
-                        <div>{data?.attestationLog?.createdDate ? format(new Date(data?.attestationLog?.createdDate), 'MMM dd, yyyy') : '-'}</div>
-                    </div>
-                ))}
-            </Dialog >
         </div>
     )
 }
 
-export default MDAttestStatus;
+export default ManageMDAttest;

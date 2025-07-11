@@ -20,8 +20,16 @@
     margin-left: 10px;
 }
 
+.marginLeft20 {
+    margin-left: 20px;
+}
+
 .marginTop {
     margin-top: 20px;
+}
+
+.marginTop10 {
+    margin-top: 10px;
 }
 
 .logo {
@@ -38,12 +46,20 @@
     padding: 20px 80px;
     background: $secondarycolor 0% 0% no-repeat padding-box;
     height: calc(100vh - 60px);
+    overflow: scroll;
+}
+
+.screenPadding {
+    padding: 20px 80px;
+    height: calc(100vh - 80px);
+    overflow: scroll;
 }
 
 .innerScreenBackground {
     padding: 20px 20px;
     background: $secondarycolor 0% 0% no-repeat padding-box;
     height: calc(100vh - 60px);
+    overflow: scroll;
 }
 
 .departmentName {
@@ -93,6 +109,7 @@
 
 .mdCard {
     background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 0px 24px #17133838;
     border-radius: 10px;
     padding: 20px;
 }
@@ -169,6 +186,36 @@
     gap: 2%;
 }
 
+.advancedSearchGrid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+}
+
+.advancedSearchGrid> :nth-child(1) {
+    grid-column: span 2;
+}
+
+.advancedSearchGrid> :nth-child(2) {
+    grid-column: span 2;
+}
+
+.advancedSearchGrid> :nth-child(3) {
+    grid-column: span 2;
+}
+
+.advancedSearchGrid> :nth-child(4) {
+    grid-column: span 2;
+}
+
+.advancedSearchGrid> :nth-child(5) {
+    grid-column: span 2;
+}
+
+.advancedSearchGrid> :nth-child(6) {
+    grid-column: span 2;
+}
+
 .bigCardGrid {
     display: grid;
     grid-template-columns: 23% 76%;
@@ -178,7 +225,7 @@
 .twoCol {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    grid-gap: 10px;
+    gap: 10px;
 }
 
 .typeCard {
@@ -195,6 +242,13 @@
     opacity: 0.6;
 }
 
+.activeTypeCard {
+    font: normal normal bold 18px/20px proxima-nova;
+    font-weight: bold;
+    color: $primarycolor;
+    border: 1px solid $primarycolor;
+}
+
 .allDeptText {
     text-align: left;
     font: normal normal medium 16px/24px proxima-nova;
@@ -207,7 +261,25 @@
     text-align: left;
     font: normal normal medium 16px/24px proxima-nova;
     color: $textgrey;
-    padding: 5px 20px;
+    display: grid;
+    grid-template-columns: 30px 1fr;
+    padding: 5px;
+}
+
+.serviceAreaFilterCard {
+    background: $secondarycolor 0% 0% no-repeat padding-box;
+    border-radius: 6px;
+    text-align: left;
+    font: normal normal medium 16px/24px proxima-nova;
+    color: $textgrey;
+    padding: 5px;
+}
+
+.deptFilterActiveCard {
+    color: $primarycolor;
+    font-size: bold;
+    font: normal normal medium 18px/24px proxima-nova;
+    border: 1px solid $primarycolor;
 }
 
 .deptTableHeading {
@@ -215,4 +287,59 @@
     font: normal normal bold 18px/24px proxima-nova;
     letter-spacing: 0px;
     color: $primarycolor;
+}
+
+.mdGrid {
+    display: grid;
+    grid-template-columns: 61% 10% 10% 15%;
+    grid-gap: 1%;
+}
+
+.labelStyle {
+    text-align: left;
+    font: normal normal normal 14px/32px proxima-nova;
+    color: $textgrey;
+}
+
+.fullWidth {
+    width: 100%;
+}
+
+.folderStyle {
+    height: 20px;
+    width: 20px;
+    object-fit: contain;
+}
+
+.titleText {
+    text-align: center;
+    font: normal normal bold 20px/28px proxima-nova;
+    letter-spacing: 0px;
+    color: $primarycolor;
+    text-transform: capitalize;
+    word-wrap: break-word;
+}
+
+.medicalDirectivesCard {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 5px 20px #52575D4D;
+    border-radius: 8px;
+    border: 0.4000000059604645px solid #e5e6e6;
+    padding: 20px 20px 20px 20px;
+    overflow: scroll;
+}
+
+.title {
+    text-align: left;
+    font: normal normal normal 18px/22px proxima-nova;
+    letter-spacing: 0px;
+    color: #2C2C2C;
+}
+
+.mdIDStyle {
+    text-align: left;
+    font: normal normal normal 16px/23px proxima-nova;
+    letter-spacing: 0px;
+    color: #2C2C2C;
+    opacity: 0.6;
 }

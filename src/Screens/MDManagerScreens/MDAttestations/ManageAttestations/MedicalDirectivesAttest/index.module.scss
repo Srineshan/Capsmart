@@ -1,4 +1,4 @@
-@import "../../../../index.scss";
+@import "../../../../../index.scss";
 
 .screenBackground {
     background: $secondarycolor 0% 0% no-repeat padding-box;
@@ -161,13 +161,6 @@
 .disabled {
     cursor: not-allowed !important;
     opacity: 0.5 !important;
-}
-
-.groupAttestationDescription {
-    text-align: left;
-    font: normal normal bold 16px/20px proxima-nova;
-    letter-spacing: 0px;
-    color: $primarycolor;
 }
 
 // .disabled :hover {
@@ -338,57 +331,4 @@
     display: flex;
     align-items: center;
     height: 100%;
-}
-
-.groupAttestDialogBackground {
-    background: #ffffff 0% 0% no-repeat padding-box;
-    padding: 20px;
-    border-radius: 20px !important;
-    border: 5px solid rgba(255, 255, 255, 0.4);
-}
-
-.groupAttestDialog {
-    width: 75% !important;
-}
-
-.spaceBetween {
-    display: flex;
-    justify-content: space-between;
-}
-
-.dialogTitle {
-    text-align: left;
-    font: normal normal bold 18px/28px proxima-nova;
-    color: $primarycolor;
-}
-
-.dialogDesc {
-    text-align: left;
-    font: normal normal normal 14px/19px proxima-nova;
-    letter-spacing: 0px;
-    color: $textgrey;
-}
-
-.dialogTableGrid {
-    display: grid;
-    grid-template-columns: 2% 20% 27% 25% 10% 12%;
-    gap: 1%;
-}
-
-.darkGreenDotStyle {
-    height: 12px;
-    width: 12px;
-    border-radius: 50%;
-    background-color: $statusgreen;
-}
-
-.redDotStyle {
-    height: 12px;
-    width: 12px;
-    border-radius: 50%;
-    background-color: $statusred;
-}
-
-.cursorPointer {
-    cursor: pointer;
 }

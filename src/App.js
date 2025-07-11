@@ -319,7 +319,7 @@ const MDRequestAttest = React.lazy(() =>
 );
 const MDAttest = React.lazy(() => import("./Screens/MDRequestAttest/MedicalDirectivesAttest"));
 const MDAttestStatus = React.lazy(() => import("./Screens/MDManagerScreens/MDManager/MedicalDirectivesAttestStatus"));
-
+const ManageMDAttest = React.lazy(() => import("./Screens/MDManagerScreens/MDAttestations/ManageAttestations/MedicalDirectivesAttest"));
 
 const App = ({ props }) => {
   const [accessToken, setAccessToken] = useState(Auth());
@@ -1328,7 +1328,7 @@ const App = ({ props }) => {
                 <Route path="/mdManager" element={<ProtectedRoute><MDManager /></ProtectedRoute>} />
                 <Route path="/mdManager/manageAttestation" element={<ProtectedRoute><ManageAttestation /></ProtectedRoute>} />
                 <Route path="/mdManager/manageAttestationGroups" element={<ProtectedRoute><ManageAttestationGroups /></ProtectedRoute>} />
-                <Route path="/mdManager/libraries" element={<MDLibrary />} />
+                <Route path="/mdManager/libraries/:entityId/:departmentId" element={<MDLibrary />} />
                 <Route path="/mdManager/step1" element={<ProtectedRoute><MDManagerStep1 /></ProtectedRoute>} />
                 <Route path="/thankyou" element={<ProtectedRoute><Thankyou /></ProtectedRoute>} />
                 <Route path="/reportType" element={<ProtectedRoute><ReportType /></ProtectedRoute>} />
@@ -1367,6 +1367,10 @@ const App = ({ props }) => {
                 <Route
                   path="/medicalDirectiveAttest/:entityId/:medicalDirectivesId"
                   element={<ProtectedRoute><MDAttest /></ProtectedRoute>}
+                />
+                <Route
+                  path="/mdManager/manageAttestation/:entityId/:medicalDirectivesId"
+                  element={<ProtectedRoute><ManageMDAttest /></ProtectedRoute>}
                 />
                 <Route
                   path="/mdManager/mdAttestStatus/:entityId/:medicalDirectivesId"

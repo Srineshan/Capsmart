@@ -426,7 +426,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                     {(searchTermForTable?.trim() !== "" && searchTermForTable !== undefined) && (
                         <div className={`${style.chipsContainer} ${style.marginTop10}`}>
                             <div className={`${style.searchChips} ${style.displayInRow}`}>
-                                <div>{`Showing All Search Results For `} <span className={style.bold}>{`'${searchTermForTable}'`}</span>{` (${searchCount})`}</div>
+                                <div>{`Showing All Search Results For `} <span className={style.bold}>{`'${searchTermForTable}'`}</span>{` (${searchCount ? searchCount : '-'})`}</div>
                                 <div className={`${style.verticalAlignCenter} ${style.marginLeft10} ${style.cursorPointer}`}
                                     onClick={() => setSearchTermForTable("")}
                                 ><CancelIcon sx={{ color: '#06617A', fontSize: 20 }} /></div></div>
@@ -494,20 +494,18 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                             <Typography className={`${style.verticalAlignCenter} ${style.cursorArrow}`}>
                                                 <div className={`${style.displayInRow} ${style.verticalAlignCenter1}`}>
                                                     <Tooltip title={tableData?.tooltipValue?.[index]} arrow>
-                                                        <div className={`${
-                                                            tableData?.value?.[index] === "green" ? style.green :
+                                                        <div className={`${tableData?.value?.[index] === "green" ? style.green :
                                                             tableData?.value?.[index] === "darkgreen" ? style.darkGreen :
-                                                            tableData?.value?.[index] === "yellow" ? style.yellow :
-                                                            tableData?.value?.[index] === "grey" ? style.grey :
-                                                            tableData?.value?.[index] === "red" ? style.red : ''
-                                                        } ${
-                                                            tableData?.value?.[index] === "green" ? style.greenDotStyle :
-                                                            tableData?.value?.[index] === "darkgreen" ? style.darkGreenDotStyle :
-                                                            tableData?.value?.[index] === "yellow" ? style.yellowDotStyle :
-                                                            tableData?.value?.[index] === "red" ? style.redDotStyle :
-                                                            tableData?.value?.[index] === "grey" ? style.greyDotStyle :
-                                                            tableData?.value?.[index] === 'purple' ? style.purpleDotStyle : ''
-                                                        }`} />
+                                                                tableData?.value?.[index] === "yellow" ? style.yellow :
+                                                                    tableData?.value?.[index] === "grey" ? style.grey :
+                                                                        tableData?.value?.[index] === "red" ? style.red : ''
+                                                            } ${tableData?.value?.[index] === "green" ? style.greenDotStyle :
+                                                                tableData?.value?.[index] === "darkgreen" ? style.darkGreenDotStyle :
+                                                                    tableData?.value?.[index] === "yellow" ? style.yellowDotStyle :
+                                                                        tableData?.value?.[index] === "red" ? style.redDotStyle :
+                                                                            tableData?.value?.[index] === "grey" ? style.greyDotStyle :
+                                                                                tableData?.value?.[index] === 'purple' ? style.purpleDotStyle : ''
+                                                            }`} />
                                                     </Tooltip>
                                                     <p className={`${style.tableDataFontStyle1} ${style.marginTop10} ${style.marginLeft5}`}>
                                                         {tableData?.count?.[index]}

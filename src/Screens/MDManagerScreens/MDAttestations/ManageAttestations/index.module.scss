@@ -261,3 +261,15 @@
     display: flex;
     justify-content: center;
 }
+
+.blueSignImgStyle {
+    height: 30px;
+    width: auto;
+    object-fit: contain;
+}
+
+.whiteSignImgStyle {
+    height: 20px;
+    width: auto;
+    object-fit: contain;
+}
