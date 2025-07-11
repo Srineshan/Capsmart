@@ -452,7 +452,7 @@ const ActiveStaffList = ({
       );
       // const notesDetails = data?.notes || [];
       // const notesHoverTextArray = notesDetails.length > 0 ? notesDetails.map(note => note.notes) : ["-"];
-      notesHoverText.push("");
+      notesHoverText.push([]);
       // notesHoverText.push(notesHoverTextArray);
 
       // if (data?.tasks?.completedCount === data?.tasks?.totalCount) {
@@ -501,7 +501,7 @@ const ActiveStaffList = ({
         type: "iconWithCount",
         value: notes,
         hoverText: notesHoverText,
-        isShowHoverText: true,
+        isShowHoverText: false,
         icon: notesIcon,
       },
       // { type: "iconWithCount",
