@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
 import NoteAltOutlinedIcon from "@mui/icons-material/NoteAltOutlined";
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import WarningOutlinedIcon from '@mui/icons-material/WarningOutlined';
 import { InputGroup, Icon, Intent, Dialog, Classes } from "@blueprintjs/core";
 import FileImg from "./../../images/fileImg.png";
@@ -50,6 +51,7 @@ import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import ApplicationDecline from "../../Screens/StaffApplication/applicationDeclineDialog";
 import ApplicationHeader from "../../Components/ApplicationHeader";
 import ApplicantDetailNotesView from '../../Components/ApplicantDetailNotesView';
+import ApplicantDetailEditDialog from '../../Components/EditApplicantInfoDialog';
 import ViewandVerifyScreen from '../../Components/ViewVerifyScreen';
 import ApplicationFieldCard from "../../Components/ApplicationFieldCard";
 import CommonDivider from "../../Components/CommonFields/CommonDivider";
@@ -98,6 +100,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
     section7: false,
   });
   const [showNotesDetailsDialog, setShowNotesDetailsDialog] = useState(false);
+  const [showEditInfoDialog, setShowEditInfoDialog] = useState(false);
   const [showViewAndVerifyScreen, setShowViewAndVerifyScreen] = useState(false);
   const [fileArray, setFileArray] = useState([]);
   const [selectedFileIndex, setSelectedFileIndex] = useState(0);
@@ -180,9 +183,9 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
     },
   ];
 
-  // const getNotesDetailsDialogOpen = (value) => {
-  //   setShowNotesDetailsDialog(value)
-  // };
+  const getEditInfoDetailsDialogOpen = (value) => {
+    setShowEditInfoDialog(value)
+  };
 
     useEffect(() => {
     if (renewedDocumentRequired?.documentsExpiringSoon?.length > 0 || expireDocumentCount > 0 ) {
@@ -732,8 +735,25 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
                       </div>
                     </div>
                     <div>
+                     
+                      <div className={`${style.marginTop10} ${style.editInfo}`}>
+                        <span className={style.cursorPointer} onClick={() => getEditInfoDetailsDialogOpen(true)}>
+                        <Tooltip title="Click to Edit Info" arrow>
+                        Edit Profile Info 
+                        </Tooltip>
+                        </span>
+                        <span>   
+                           <Tooltip title="Click to Edit Info" arrow>
+                          <CreateOutlinedIcon
+                            style={{ fontSize: 20, color: "#06617A", cursor: "pointer" }}
+                            className={`${style.marginLeft10} ${style.cursorPointer}`}
+                          // onClick={onClickNotesFunction}
+                          />
+                          </Tooltip>  
+                        </span> 
+                      </div>
                       <div
-                        className={`${style.marginTop10}`}
+                        // className={`${style.marginTop10}`}
                       >
                         <span className={style.rightAlignTextStyle}>
                           Last Updated on {lastModifiedDateFormat}
@@ -1083,6 +1103,16 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
           <ApplicantDetailNotesView
             getIsOpen={getNotesDetailsDialogOpen}
             notesDetails={notesDetails}
+          // onClose={() => { setShowCCDateDialog(false); setCheckedIds([]); }}
+          />
+        )
+      }
+      {
+        showEditInfoDialog && (
+          <ApplicantDetailEditDialog
+            getIsOpen={getEditInfoDetailsDialogOpen}
+            applicationId={applicationId}
+            // notesDetails={notesDetails}
           // onClose={() => { setShowCCDateDialog(false); setCheckedIds([]); }}
           />
         )

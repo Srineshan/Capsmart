@@ -1,0 +1,202 @@
+@import "../../index.scss";
+
+.marginTop {
+  margin-top: 20px;
+}
+
+.spaceBetween {
+  display: flex;
+  justify-content: space-between;
+}
+
+.padding{
+  padding: 10px;
+}
+
+.marginTop5 {
+  margin-top: 5px;
+}
+
+.marginright40 {
+  margin-right: 40px;
+}
+
+.marginTop10 {
+  margin-top: 10px !important;
+}
+
+.flex{
+  display: flex;
+}
+
+.twoColumnGridInner2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 5px;
+  align-items: center;
+}
+
+.photoBackground{
+  background: rgba(154, 175, 181, 0.1) 0% 0% no-repeat padding-box;
+  border-radius: 10px;
+  // width: 100px;
+  // height: 100px;
+}
+
+.photoText{
+  width: 93px;
+  height: 89px;
+  transform: matrix(0.74, -0.67, 0.67, 0.74, 0, 0);
+  text-align: left;
+  font: normal normal bold 25px proxima-nova;
+  letter-spacing: 0px;
+  color: #06617A;
+  opacity: 0.1;
+  align-content: center;
+  margin-left: 10px;
+}
+
+.eSignDialog {
+  height: 75%;
+  overflow: hidden;
+  width: 80% !important;
+}
+
+.eSignDialogBackground {
+  background: #ffffff 0% 0% no-repeat padding-box;
+  padding: 20px 40px 20px 40px;
+  border-radius: 20px !important;
+}
+
+.templateHeader {
+  display: grid;
+  justify-content: space-between;
+  grid-template-columns: 90% 3%;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.templateHeadertext {
+  text-align: left;
+  font: normal normal bold 22px proxima-nova;
+  letter-spacing: 0px;
+  color: #06617A;
+  opacity: 1;
+}
+
+.crossStyle {
+  height: 24px;
+  width: 24px;
+}
+
+.cursorPointer {
+  cursor: pointer;
+}
+
+.actionButtons {
+  display: flex;
+  justify-content: end;
+
+}
+
+.reviewButtonStyle {
+  background: $primarycolor 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 6px #00000029;
+  border-radius: 8px;
+  opacity: 1;
+  padding: 5px 15px;
+}
+
+.reviewButtonStyle:hover {
+  background: $primarycolorHover 0% 0% no-repeat padding-box;
+}
+
+.reviewButton {
+  text-align: center;
+  font: normal normal bold 18px/30px proxima-nova;
+  letter-spacing: 0px;
+  color: #FFFFFF;
+  text-transform: uppercase;
+  opacity: 1;
+}
+
+.datetextFormat {
+  text-align: left;
+  font: normal normal bold 16px/23px proxima-nova;
+  letter-spacing: 0px;
+  color: #52575D;
+  text-transform: capitalize;
+  opacity: 1;
+}
+
+.grid1{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.gridPeriod{
+  display: grid;
+  grid-template-columns: 4fr 0.5fr 4fr;
+  gap: 5px;
+}
+
+.grid2{
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+}
+
+.grid3{
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 20px;
+}
+
+.marginTopLess {
+  margin-top: -15px;
+  box-sizing: border-box !important;
+}
+
+.lableStyle {
+    text-align: left;
+    font: normal normal normal 15px/17px proxima-nova;
+    letter-spacing: 0px;
+    color: $textgrey;
+    // text-transform: capitalize;
+    opacity: 1;
+}
+
+.photoBorderStyle {
+  width: 93px;
+  height: 89px;
+}
+
+.profileImage {
+  width: 93px;
+  height: 89px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.rightAlignTextStyle {
+  text-align: right;
+  font: normal normal medium 16px/23px proxima-nova;
+  letter-spacing: 0px;
+  color: #2C2C2C;
+  // text-transform: capitalize;
+  opacity: 0.8;
+}
+
+.loadingOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}

@@ -24,9 +24,10 @@ import ReportsFullScreen from './../../images/reportsFullScreen.png';
 import ReportsShare from './../../images/reportsShare.png';
 import DoctorAnime from './../../images/doctorAnime.png';
 import Info from './../../images/info.png';
+import CrossPink from "./../../images/crossPink.png";
 import SaveReport from './saveReport';
 import { format } from 'date-fns';
-
+import { Tooltip } from "@mui/material";
 import style from './index.module.scss';
 import { GET, POST } from '../dataSaver';
 import CommonSearchField from '../../Components/CommonFields/CommonSearchField';
@@ -545,7 +546,15 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                 <div className={`${Classes.DIALOG_BODY} ${style.deleteEcecutedContractDialogBackground}`}>
                     <div className={style.spaceBetween}>
                         <p className={`${style.extensionStyle} ${style.marginTop} ${style.bold}`}>Save This Report Output</p>
-                        <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => setShowSaveReportOutput(false)} />
+                        <Tooltip title="Click to Close" arrow>
+                        {/* <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => setShowSaveReportOutput(false)} /> */}
+                             <img
+                                src={CrossPink}
+                                alt="cross"
+                                className={`${style.crossStyleSave} ${style.cursorPointer} ${style.marginLeft}`}
+                                onClick={() => setShowSaveReportOutput(false)}
+                                />
+                        </Tooltip>
                     </div>
                     <div className={style.extensionBorder}></div>
                     <div className={`${style.padding10}`}>
@@ -562,18 +571,32 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                             </div>
                             <div>
                                 <div className={`${style.justifyCenter} ${style.marginTop20}`}>
+                                     <Tooltip title="Click to Save" arrow>
                                     <button className={`${style.saveButtonStyle} ${style.marginLeft20} ${style.cursorPointer} `} onClick={() => { handleDownload(); }}>Save</button>
+                                    </Tooltip>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </Dialog>
-            <Dialog isOpen={showReportSavedDialog} onClose={() => setShowReportSavedDialog(false)} className={`${style.reportSavedDialog} ${style.dialogPaddingBottom}`}>
-                <div className={`${Classes.DIALOG_BODY} ${style.deleteEcecutedContractDialogBackground}`}>
-                    <div className={style.justifyCenter}>
+            <Dialog isOpen={showReportSavedDialog} onClose={() => setShowReportSavedDialog(false)} className={`${style.dialogPaddingBottom}`}>
+                <div className={`${Classes.DIALOG_BODY} ${style.deleteEcecutedContractDialogBackgroundSave}`}>
+                    <div className={style.justifyEnd}>
+                     <Tooltip title="Click to Close" arrow>
+                        <img
+                        src={CrossPink}
+                        alt="cross"
+                        className={`${style.crossStyleSave} ${style.cursorPointer} ${style.marginLeft}`}
+                        onClick={() => {
+                            setShowReportSavedDialog(false);
+                        }}
+                        />
+                        </Tooltip>
+                        </div>
+                    {/* <div className={style.justifyCenter}>
                         <div className={style.reportIconStyle}></div>
-                    </div>
+                    </div> */}
                     <div className={style.reportSavedStyle}>Report Saved</div>
                 </div>
             </Dialog>
