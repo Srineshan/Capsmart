@@ -241,7 +241,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
   const getMedicalDirectiveSummaryByApplicant = async (data) => {
     setIsLoadingImage(true);
     const { data: medicalDirectiveSummary } = await GET(
-      `medical-directive-service/medicalDirectives/application/${data?.id}?isNewAppointment=${applicationType === 'NEW' ? true : false}&isReAppointment=${applicationType === 'NEW' ? false : true}&departmentId=${data?.basicDetailReferences?.department?.id}&serviceAreaId=${data?.basicDetailReferences?.specialty?.id ?? ''}`
+      `medical-directive-service/medicalDirectives/byUser?userId=${data?.applicant?.id}`
     );
     setMedicalDirectiveSummaryByApplicant([...medicalDirectiveSummary?.pending, ...medicalDirectiveSummary?.completed, ...medicalDirectiveSummary?.reviewInprogress, ...medicalDirectiveSummary?.pastDue]);
     setTotalCount(medicalDirectiveSummary?.numberOfElements);
@@ -684,7 +684,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
       mdName.push(data?.medicalDirective?.title);
       mdId.push(data?.medicalDirective?.mdID);
       // departmentSpecific.push(data?.medicalDirective?.departmentSpecific ? `${data?.medicalDirective?.departments?.map(data => data?.serviceAreaSpecific ? `${data?.serviceAreas?.map(specialty => `${data?.name} -  ${specialty?.name}`)?.join(', ')}` : data?.name)?.join(', ')}` : 'General');
-      lastAttested.push(data?.status === "COMPLETED" ? data?.medicalDirective?.lastModifiedDate ? format(new Date(data?.medicalDirective?.lastModifiedDate), dateFormat) : '-' : '-');
+      lastAttested.push(data?.status === "COMPLETED" ? data?.attestationLog?.createdDate ? format(new Date(data?.attestationLog?.createdDate), 'MMM dd, yyyy') : '-' : '-');
       // action.push(data?.status === "COMPLETED" ? true : false);
       actionItem.push(
         <div className={style.viewOrRtt} onClick={data?.status === "COMPLETED" ? () => handleInnerSelectDataByApplicant(data) : () => { }}>{data?.status === "COMPLETED" ? 'View' : 'Request'}</div>
@@ -872,24 +872,24 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                     </div>
                   )}
                   {currentTab !== "ByDepartments" && (
-                  <div
-                    className={`${style.alignCenter} ${style.cursorPointer
-                      }`}
-                    style={{
-                      opacity: 1,
-                    }}
-                    onClick={() => setShowFilter(!showFilter)}
-                  >
-                    <Tooltip title="Filter" arrow>
-                      <FilterAltOutlinedIcon
-                        sx={{
-                          fontSize: 25,
-                          color: "#06617A",
-                        }}
+                    <div
+                      className={`${style.alignCenter} ${style.cursorPointer
+                        }`}
+                      style={{
+                        opacity: 1,
+                      }}
+                      onClick={() => setShowFilter(!showFilter)}
+                    >
+                      <Tooltip title="Filter" arrow>
+                        <FilterAltOutlinedIcon
+                          sx={{
+                            fontSize: 25,
+                            color: "#06617A",
+                          }}
 
-                      />
-                    </Tooltip>
-                  </div>
+                        />
+                      </Tooltip>
+                    </div>
                   )}
                   <div
                     className={`${style.alignCenter
@@ -1063,24 +1063,24 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                     </div>
                   )}
                   {currentTab !== "ByApplicants" && (
-                      <div
-                    className={`${style.alignCenter} ${style.cursorPointer
-                      }`}
-                    style={{
-                      opacity: 1,
-                    }}
-                    onClick={() => setShowFilter(!showFilter)}
-                  >
-                    <Tooltip title="Filter" arrow>
-                      <FilterAltOutlinedIcon
-                        sx={{
-                          fontSize: 25,
-                          color: "#06617A",
-                        }}
+                    <div
+                      className={`${style.alignCenter} ${style.cursorPointer
+                        }`}
+                      style={{
+                        opacity: 1,
+                      }}
+                      onClick={() => setShowFilter(!showFilter)}
+                    >
+                      <Tooltip title="Filter" arrow>
+                        <FilterAltOutlinedIcon
+                          sx={{
+                            fontSize: 25,
+                            color: "#06617A",
+                          }}
 
-                      />
-                    </Tooltip>
-                  </div>
+                        />
+                      </Tooltip>
+                    </div>
                   )}
                   <div
                     className={`${style.alignCenter

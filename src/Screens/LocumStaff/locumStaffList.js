@@ -210,7 +210,12 @@ const LocumStaffList = ({
   // }, [selectedTab]);
 
   useEffect(() => {
-    getActiveUserData();
+    const controller = new AbortController();
+    const signal = controller.signal;
+
+    getActiveUserData(signal);
+
+    return () => controller.abort();
   }, [selectedTab, sortField, sortValue, page, totalCount, showLocumExtensiveDialog, searchTermForTable, limit, showLocumExtensiveRequestDialog, showLocumRequestDialog, selectedDepartment]);
 
   const getReFetchMetaData = (value) => {
@@ -407,7 +412,7 @@ const LocumStaffList = ({
     }
   };
 
-  const getActiveUserData = async () => {
+  const getActiveUserData = async (signal) => {
     try {
       setIsLoadingImage(true);
 
@@ -431,7 +436,7 @@ const LocumStaffList = ({
         }
       }
 
-      const response = await GET(apiUrl);
+      const response = await GET(apiUrl, { signal });
 
       if (selectedTab === "REQUEST") {
         setTableData(response?.data?.requests || []);
