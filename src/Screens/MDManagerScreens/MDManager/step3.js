@@ -386,7 +386,7 @@ const MDManagerStep3 = ({ setStep3, mdValue }) => {
                                 <div className={style.attestationGroupRightCard}>
                                     {staffList?.filter(staff => !selectedStaffs?.includes(staff.id))?.map((data, index) => (
                                         <div className={style.groupGrid} key={index}>
-                                            <div className={`${style.staffName} ${style.cursorPointer} ${selectedStaffForMove === data?.id ? style.selectedStaff : ''}`} onClick={() => setSelectedStaffForMove(data?.id)}>{`${data?.applicant?.name?.firstName} ${data?.applicant?.name?.lastName}`}</div>
+                                            <div className={`${style.staffName} ${style.cursorPointer} ${selectedStaffForMove === data?.id ? style.selectedStaff : ''}`} onClick={() => setSelectedStaffForMove(data?.id)}>{`${data?.applicant?.name?.firstName} ${data?.applicant?.name?.lastName?.toUpperCase()}${data?.basicDetailReferences?.applicantType?.serviceProviderType ? `, ${data?.basicDetailReferences?.applicantType?.serviceProviderType}` : ''}`}</div>
                                             {/* <div className={style.staffName}></div> */}
                                             <div className={`${style.labelStyle} ${selectedStaffForMove === data?.id ? style.selectedStaff : ''}`}>{data?.basicDetailReferences?.department?.name}</div>
                                         </div>
@@ -414,7 +414,7 @@ const MDManagerStep3 = ({ setStep3, mdValue }) => {
                                 <div className={style.attestationGroupRightCard}>
                                     {staffList?.filter(staff => selectedStaffs?.includes(staff.id))?.map((data, index) => (
                                         <div className={style.groupGrid} key={index}>
-                                            <div className={`${style.staffName} ${style.cursorPointer} ${selectedStaffForMove === data?.id ? style.selectedStaff : ''}`} onClick={() => setSelectedStaffForMove(data?.id)}>{`${data?.applicant?.name?.firstName} ${data?.applicant?.name?.lastName}`}</div>
+                                            <div className={`${style.staffName} ${style.cursorPointer} ${selectedStaffForMove === data?.id ? style.selectedStaff : ''}`} onClick={() => setSelectedStaffForMove(data?.id)}>{`${data?.applicant?.name?.firstName} ${data?.applicant?.name?.lastName?.toUpperCase()}${data?.basicDetailReferences?.applicantType?.serviceProviderType ? `, ${data?.basicDetailReferences?.applicantType?.serviceProviderType}` : ''}`}</div>
                                             {/* <div className={style.staffName}></div> */}
                                             <div className={`${style.labelStyle} ${selectedStaffForMove === data?.id ? style.selectedStaff : ''}`}>{data?.basicDetailReferences?.department?.name}</div>
                                         </div>

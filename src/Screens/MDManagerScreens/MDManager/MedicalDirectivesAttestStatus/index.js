@@ -37,6 +37,7 @@ const MDAttestStatus = () => {
     const [formIndex, setFormIndex] = useState();
     const [userData, setUserData] = useState();
     const [selectedGroup, setSelectedGroup] = useState();
+    const [showAll, setShowAll] = useState(false);
     const [mdLog, setMDLog] = useState();
     let cookie = new Cookie();
     let userDetails = cookie.get('user');
@@ -49,8 +50,12 @@ const MDAttestStatus = () => {
 
     useEffect(() => {
         getAttestationLog()
-        getMDLogs()
     }, [])
+
+    useEffect(() => {
+        getMDLogs()
+    }, [medicalDirectives])
+
 
     // useEffect(() => {
     //     setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === atob(step)))
@@ -126,7 +131,7 @@ const MDAttestStatus = () => {
     const getMDLogs = async () => {
         if (medicalDirectivesId !== undefined) {
             const { data: medicalDirectivesLog } = await GET(
-                `medical-directive-service/medicalDirectives/${medicalDirectivesId}/logs?workflowAction=REVISED`
+                `medical-directive-service/medicalDirectives/${medicalDirectivesId}/logs?workflowAction=${medicalDirectives?.status === "INACTIVE" ? 'RETIRED' : 'REVISED'}`
             );
             setMDLog(medicalDirectivesLog)
         }
@@ -178,7 +183,7 @@ const MDAttestStatus = () => {
     return (
         <div className={style.screenBackground}>
             <div className={style.welcomeText}>
-                <ApplicationHeader title={`${medicalDirectives?.title}`} close={true} closeClick={handleClose} />
+                <ApplicationHeader title={`${medicalDirectives?.title ? `${medicalDirectives?.mdID} : ${medicalDirectives?.title}` : ''}`} close={true} closeClick={handleClose} />
             </div>
             <div className={style.headerData}>
                 <span style={{ marginLeft: '20px' }}>Ordering Of Laboratory Investigations - IPAC</span>
@@ -190,15 +195,14 @@ const MDAttestStatus = () => {
                 {/* <div>
                     <div className={style.breadcrumbStyle}>{`REAPPOINTMENT APPLICATION > MEDICAL DIRECTIVES STATUS >> ${medicalDirectives?.title}`}</div>
                 </div> */}
-                <div className={style.medicalDirectivesCard}>
-                    <div className={style.title}>{`${medicalDirectives?.title}`} <span className={style.mdIDStyle}>{medicalDirectives?.mdID}</span></div>
-                    {/* {(!isScrolledToBottom) && (
-                                <div className={`${style.marginTop10} ${style.description} ${style.attestationRequiredText}`}>You need to scroll to the end of the document before you can certify that it has been viewed by you.</div>
-                            )} */}
-                </div>
                 <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
                     <div>
-                        <div className={`${style.medicalDirectivesCard}`}>
+                        {medicalDirectives?.description && (
+                            <div className={style.medicalDirectivesCard}>
+                                <div className={style.title}>{`${medicalDirectives?.description}`}</div>
+                            </div>
+                        )}
+                        <div className={`${style.medicalDirectivesCard} ${medicalDirectives?.description ? style.marginTop : ''}`}>
                             <CommonPdfViewer pdfurl={medicalDirectives?.file?.fileURL} />
 
                             {/* <iframe src={`${medicalDirectives?.file?.fileURL}`} className={style.pdfDisplay} ref={iframeRef} /> */}
@@ -270,27 +274,54 @@ const MDAttestStatus = () => {
                                 </>
                             )}
                         </div> */}
-                        <div className={`${style.medicalDirectivesCard}`}>
-                            <div className={style.title}><strong>{`Attestation Group Status`} </strong></div>
-                            {medicalDirectivesSummary?.groups?.map(data => (
-                                <div>
-                                    <div className={`${style.marginTop10} ${style.title}`}>{data?.groupName}</div>
-                                    <div className={`${style.marginTop10} ${style.groupAttestationDescription} ${style.cursorPointer}`} onClick={() => { setSelectedGroup(data); setShowGroupSignDialog(true) }}>{`${data?.attestedCount} out of ${data?.members?.length} Signed`}</div>
+                        {medicalDirectives?.status !== "INACTIVE" ? (
+                            <>
+                                <div className={`${style.medicalDirectivesCard}`}>
+                                    <div className={style.title}><strong>{`Attestations Status`} </strong></div>
+                                    {medicalDirectivesSummary?.groups?.map(data => (
+                                        <div className={style.attestationGrid}>
+                                            <div className={`${style.marginTop10} ${style.title}`}>{data?.groupName}</div>
+                                            <Tooltip title="Click here to see Attestation details">
+                                                <div className={`${style.marginTop10} ${style.groupAttestationDescription} ${style.cursorPointer}`} onClick={() => { setSelectedGroup(data); setShowGroupSignDialog(true) }}>{`- ${data?.attestedCount} / ${data?.members?.length}`}</div>
+                                            </Tooltip>
+                                        </div>
+                                    ))}
                                 </div>
-                            ))}
-                        </div>
-                        <div className={`${style.medicalDirectivesCard} ${!isScrolledToBottom ? style.marginTop : ''}`}>
-                            <div className={style.title}><strong>{`Update History`} </strong></div>
-                            {mdLog?.map(data =>
-                                <div className={`${style.marginTop10} ${style.description}`}>{`${data?.createdDate ? format(new Date(data?.createdDate), 'MMM dd, yyyy') : ''}, ${data?.workflowUser?.name?.firstName}`}</div>
-                            )}
-                        </div>
+                                <div className={`${style.medicalDirectivesCard} ${!isScrolledToBottom ? style.marginTop : ''}`}>
+                                    <div className={style.spaceBetween}>
+                                        <div className={style.title}><strong>{`Update History`} </strong></div>
+                                        {mdLog?.length > 3 && (
+                                            <div className={`${style.showAll} ${style.cursorPointer}`} onClick={() => setShowAll(!showAll)}>{showAll ? 'Show Less' : 'Show All'}</div>
+                                        )}
+                                    </div>
+                                    <div>
+                                        {(showAll ? mdLog : mdLog?.slice(0, 3))?.map(data =>
+                                            <div className={`${style.marginTop10} ${style.description}`}>{`${data?.createdDate ? format(new Date(data?.createdDate), 'MMM dd, yyyy') : ''}, ${data?.workflowUser?.name?.firstName}`}</div>
+                                        )}
+                                    </div>
+                                </div>
+                            </>
+                        ) : (
+                            <div className={`${style.medicalDirectivesCard}`}>
+                                <div className={style.spaceBetween}>
+                                    <div className={style.title}><strong>{`Retired on`} </strong></div>
+                                    {mdLog?.length > 3 && (
+                                        <div className={`${style.showAll} ${style.cursorPointer}`} onClick={() => setShowAll(!showAll)}>{showAll ? 'Show Less' : 'Show All'}</div>
+                                    )}
+                                </div>
+                                <div>
+                                    {(showAll ? mdLog : mdLog?.slice(0, 3))?.map(data =>
+                                        <div className={`${style.marginTop10} ${style.description}`}>{`${data?.createdDate ? format(new Date(data?.createdDate), 'MMM dd, yyyy') : ''}, ${data?.workflowUser?.name?.firstName}`}</div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
             <Dialog isOpen={showGroupSignDialog} onClose={() => setShowGroupSignDialog(false)} className={`${style.groupAttestDialogBackground} ${style.groupAttestDialog}`}>
                 <div className={style.spaceBetween}>
-                    <div className={style.dialogTitle}>{`Atteastation Group Status For ${selectedGroup?.groupName}`}</div>
+                    <div className={style.dialogTitle}>{`Atteastations Status For ${selectedGroup?.groupName}`}</div>
                     <span className={style.verticalAlignCenter}>
                         <CloseIcon sx={{ fontSize: 30, color: '#06617A', cursor: 'pointer', marginLeft: '270px' }} onClick={() => setShowGroupSignDialog(false)} />
                     </span>
@@ -301,18 +332,20 @@ const MDAttestStatus = () => {
                     <div className={style.dialogDesc}><strong>Name</strong></div>
                     <div className={style.dialogDesc}><strong>Title</strong></div>
                     <div className={style.dialogDesc}><strong>Department / Divison</strong></div>
+                    <div className={style.dialogDesc}><strong>Due Date</strong></div>
                     <div className={style.dialogDesc}><strong>Status</strong></div>
                     <div className={style.dialogDesc}><strong>Attested on</strong></div>
                 </div>
                 <CommonDivider />
                 {selectedGroup?.members?.map((data, index) => (
-                    <div className={`${style.dialogTableGrid} ${style.marginTop}`}>
-                        <div className={data?.attestationLog ? style.darkGreenDotStyle : style.redDotStyle}></div>
-                        <div>{data?.attestationLog?.user?.name?.firstName}</div>
+                    <div className={`${style.dialogTableGrid} ${style.marginTop} ${style.verticalAlignCenter}`}>
+                        <div className={data?.attestationDetail?.status === "COMPLETED" ? style.darkGreenDotStyle : style.redDotStyle}></div>
+                        <div>{data?.attestationDetail?.attestationLog?.user?.name?.firstName}</div>
                         <div>{data?.user?.title ? data?.user?.title?.title : '-'}</div>
                         <div>{data?.user?.departments?.map(data => data?.name)?.join(', ')}</div>
-                        <div>{data?.attestationLog ? 'Attested' : 'Not Attested'}</div>
-                        <div>{data?.attestationLog?.createdDate ? format(new Date(data?.attestationLog?.createdDate), 'MMM dd, yyyy') : '-'}</div>
+                        <div>{data?.attestationDetail?.dueDate ? format(new Date(data?.attestationDetail?.dueDate), 'MMM dd, yyyy') : '-'}</div>
+                        <div>{data?.attestationDetail?.status === "COMPLETED" ? 'Attested' : 'Not Attested'}</div>
+                        <div>{data?.attestationDetail?.attestationLog?.createdDate ? format(new Date(data?.attestationDetail?.attestationLog?.createdDate), 'MMM dd, yyyy') : '-'}</div>
                     </div>
                 ))}
             </Dialog >

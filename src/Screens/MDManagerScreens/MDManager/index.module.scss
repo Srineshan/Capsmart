@@ -252,6 +252,10 @@
     width: 35% !important;
 }
 
+.attestationSummaryDialog {
+    width: 85% !important;
+}
+
 .attestationDialog {
     height: 95vh !important;
     width: 85% !important;
@@ -779,4 +783,10 @@
     font: normal normal normal 16px/24px proxima-nova;
     color: $primarycolor;
     text-align: left;
+}
+
+.byInnerMedicalDirectiveGrid {
+    display: grid;
+    grid-template-columns: 5% 20% 19% 20% 15% 15%;
+    grid-gap: 1%;
 }

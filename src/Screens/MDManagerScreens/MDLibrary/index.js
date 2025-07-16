@@ -298,7 +298,7 @@ const MDLibrary = () => {
                         className={style.logo}
                     />
                     {showMD && (
-                        <div className={`${style.titleText} ${style.verticalAlignCenter} ${style.marginLeft20}`}>{selectedMD?.title}</div>
+                        <div className={`${style.titleText} ${style.verticalAlignCenter} ${style.marginLeft20}`}>{selectedMD?.title ? `${selectedMD?.mdID} : ${selectedMD?.title}` : ''}</div>
                     )}
                 </div>
                 <div className={`${style.verticalAlignCenter} ${style.marginLeft20}`}>
@@ -401,10 +401,12 @@ const MDLibrary = () => {
                 </div>
             ) : showMD ? (
                 <div className={style.screenPadding}>
-                    <div className={style.medicalDirectivesCard}>
-                        <div className={style.title}>{`${selectedMD?.title}`} <span className={style.mdIDStyle}>{selectedMD?.mdID}</span></div>
-                    </div>
-                    <div className={`${style.medicalDirectivesCard} ${style.marginTop}`}>
+                    {selectedMD?.description && (
+                        <div className={style.medicalDirectivesCard}>
+                            <div className={style.title}>{`${selectedMD?.description}`}</div>
+                        </div>
+                    )}
+                    <div className={`${style.medicalDirectivesCard} ${selectedMD?.description ? style.marginTop : ''}`}>
                         <CommonPdfViewer pdfurl={selectedMD?.file?.fileURL} />
 
                     </div>

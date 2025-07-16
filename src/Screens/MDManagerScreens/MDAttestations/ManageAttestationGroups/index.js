@@ -1,6 +1,6 @@
 import React, { useState, useEffect, Fragment, useCallback, useRef, createRef } from "react";
 import { Classes, Dialog } from '@blueprintjs/core';
-import { GET, POST, PUT } from "../../../dataSaver";
+import { DELETE, GET, POST, PUT } from "../../../dataSaver";
 import SideBar from "../../../../Components/Sidebar";
 import Navbar from "../../../../Components/Navbar";
 import { useNavigate } from "react-router-dom";
@@ -251,6 +251,23 @@ const ManageAttestationGroups = () => {
         setLimit(newLimit);
     };
 
+    const handleDelete = async (id) => {
+        try {
+            const response = await DELETE(`medical-directive-service/attestationGroup/${id}`);
+            if (response?.response?.status === 400) {
+                ErrorToaster2(response?.response?.data);
+            } else {
+                SuccessToaster2('Group Deleted Successfully');
+            }
+            console.log(response?.response?.status);
+            getGroupList();
+            handleGroupDialogClose();
+        } catch (error) {
+            console.log(error, 'error');
+            ErrorToaster2('Something Failed. Please try later!');
+        }
+    }
+
     const getSelectedOptionLevelTwo = (value) => {
         setSelectedOption(value)
     }
@@ -348,7 +365,7 @@ const ManageAttestationGroups = () => {
                 "type": "icon", "icon": groupList?.map(innerData => {
                     return (
                         <Tooltip title="Click to Delete" arrow>
-                            <img src={DeleteIcon} alt="" className={`${style.docTypeImgStyle} ${style.cursorPointer}`} onClick={() => { }} />
+                            <img src={DeleteIcon} alt="" className={`${style.docTypeImgStyle} ${style.cursorPointer}`} onClick={() => handleDelete(innerData?.id)} />
                         </Tooltip>
                     );
                 }), 'isShowHoverText': false
@@ -651,7 +668,7 @@ const ManageAttestationGroups = () => {
                             className={`${style.spaceBetween} ${style.marginLeft30} ${style.marginTop10} `}
                         >
                             <div className={`${style.tabs}`}>
-                                <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Review & Attest" tileCount={0} currentTile="REVIEW & ATTEST" />
+                                <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Attestation Group" tileCount={groupList?.length} currentTile="REVIEW & ATTEST" />
                             </div>
                             <div>
                                 <button
@@ -659,7 +676,7 @@ const ManageAttestationGroups = () => {
                                     onClick={() => setShowAttestationGroup(true)} // Open dialog on button click
                                 >
                                     <div className={` ${style.addNewButton} ${style.textColorWhite}`}>
-                                        <AddIcon />
+                                        <AddIcon sx={{ color: "#F5F8F8" }} />
                                         <span>Create New Group</span>
                                     </div>
                                 </button>
@@ -755,7 +772,7 @@ const ManageAttestationGroups = () => {
                                         <div className={style.attestationGroupRightCard}>
                                             {staffList?.filter(staff => !selectedStaffs?.includes(staff.id))?.map((data, index) => (
                                                 <div className={style.groupGrid} key={index}>
-                                                    <div className={`${style.staffName} ${style.cursorPointer} ${selectedStaffForMove === data?.id ? style.selectedStaff : ''}`} onClick={() => setSelectedStaffForMove(data?.id)}>{`${data?.applicant?.name?.firstName} ${data?.applicant?.name?.lastName}`}</div>
+                                                    <div className={`${style.staffName} ${style.cursorPointer} ${selectedStaffForMove === data?.id ? style.selectedStaff : ''}`} onClick={() => setSelectedStaffForMove(data?.id)}>{`${data?.applicant?.name?.firstName} ${data?.applicant?.name?.lastName?.toUpperCase()}${data?.basicDetailReferences?.applicantType?.serviceProviderType ? `, ${data?.basicDetailReferences?.applicantType?.serviceProviderType}` : ''}`}</div>
                                                     {/* <div className={style.staffName}></div> */}
                                                     <div className={`${style.labelStyle} ${selectedStaffForMove === data?.id ? style.selectedStaff : ''}`}>{data?.basicDetailReferences?.department?.name}</div>
                                                 </div>
@@ -783,7 +800,9 @@ const ManageAttestationGroups = () => {
                                         <div className={style.attestationGroupRightCard}>
                                             {staffList?.filter(staff => selectedStaffs?.includes(staff.id))?.map((data, index) => (
                                                 <div className={style.groupGrid} key={index}>
-                                                    <div className={`${style.staffName} ${style.cursorPointer} ${selectedStaffForMove === data?.id ? style.selectedStaff : ''}`} onClick={() => setSelectedStaffForMove(data?.id)}>{`${data?.applicant?.name?.firstName} ${data?.applicant?.name?.lastName}`}</div>
+                                                    {/* <Tooltip title="Click to Delete" arrow> */}
+                                                    <div className={`${style.staffName} ${style.cursorPointer} ${selectedStaffForMove === data?.id ? style.selectedStaff : ''}`} onClick={() => setSelectedStaffForMove(data?.id)}>{`${data?.applicant?.name?.firstName} ${data?.applicant?.name?.lastName?.toUpperCase()}${data?.basicDetailReferences?.applicantType?.serviceProviderType ? `, ${data?.basicDetailReferences?.applicantType?.serviceProviderType}` : ''}`}</div>
+                                                    {/* </Tooltip> */}
                                                     {/* <div className={style.staffName}></div> */}
                                                     <div className={`${style.labelStyle} ${selectedStaffForMove === data?.id ? style.selectedStaff : ''}`}>{data?.basicDetailReferences?.department?.name}</div>
                                                 </div>

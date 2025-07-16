@@ -912,7 +912,7 @@ const Navbar = () => {
                       <div className={`${style.options1} ${style.cursorPointer} ${window.location.pathname.includes("/activeStaff")
                         }`}
                       >
-                        Manage attestation Groups</div>
+                        Manage Attestation Groups</div>
                     </Link>
 
                     {/* ) : ""} */}

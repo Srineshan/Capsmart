@@ -118,6 +118,16 @@
     color: #2C2C2C;
 }
 
+.showAll {
+    text-align: left;
+    font: normal normal normal 14px/20px proxima-nova;
+    color: $primarycolor;
+}
+
+.showAll:hover {
+    text-decoration: underline;
+}
+
 .description1 {
     display: flex;
     width: auto;
@@ -371,7 +381,7 @@
 
 .dialogTableGrid {
     display: grid;
-    grid-template-columns: 2% 20% 27% 25% 10% 12%;
+    grid-template-columns: 2% 20% 20% 20% 11% 10% 12%;
     gap: 1%;
 }
 
@@ -391,4 +401,10 @@
 
 .cursorPointer {
     cursor: pointer;
+}
+
+.attestationGrid {
+    display: grid;
+    grid-template-columns: 70% 30%;
+    gap: 10px;
 }

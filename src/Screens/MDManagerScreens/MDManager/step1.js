@@ -8,12 +8,12 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import style from './index.module.scss';
 import CommonSelectField from '../../../Components/CommonFields/CommonSelectField';
 import { format } from 'date-fns';
-import { GET, POST } from '../../dataSaver';
+import { GET, POST, PUT } from '../../dataSaver';
 import { ErrorToaster2, SuccessToaster2 } from '../../../utils/toaster';
 import CommonMultiSelectField from '../../../Components/CommonFields/CommonMultiSelectField';
 import { area } from 'd3';
 
-const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD }) => {
+const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue }) => {
     const [calendarStart, setCalendarStart] = useState(false);
     const [SelectedDate, setSelectedDate] = useState(null);
     const [keywordList, setKeywordList] = useState([]);
@@ -42,6 +42,22 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD }) => {
             setPreviewUrl(url);
         }
     }, [mdFile])
+
+    useEffect(() => {
+        console.log(mdValue, 'mdValue', mdValue?.departments?.flatMap(data => data?.serviceAreas?.map(innerData => innerData?.id) || []) || [])
+        if (mdValue) {
+            setSelectedDepartment(mdValue?.departments?.map(data => data?.id))
+            setFileType(mdValue?.file ? getFileTypeFromUrl(mdValue?.file?.fileURL) : '')
+            setPreviewUrl(mdValue?.file ? mdValue?.file?.fileURL : '')
+            setMdTitle(mdValue?.title)
+            setMdId(mdValue?.mdID)
+            setSelectedDate(mdValue?.publishedDate)
+            setMdDescription(mdValue?.description ? mdValue?.description : '')
+            setReviewFrequency(mdValue?.reviewFrequency?.value === 1 ? 'EVERY_1_YEAR' : mdValue?.reviewFrequency?.value === 2 ? 'EVERY_2_YEARS' : mdValue?.reviewFrequency?.value === 3 ? 'EVERY_3_YEARS' : '');
+            setSelectedStaff(mdValue?.author ? mdValue?.author?.id : '')
+            setSelectedServiceArea(mdValue?.departments?.flatMap(data => data?.serviceAreas?.map(innerData => innerData?.id) || []) || [])
+        }
+    }, [mdValue])
 
     useEffect(() => {
         return () => {
@@ -79,6 +95,32 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD }) => {
     const handleKeyDown = (e) => {
         if (e.key === 'Enter') {
             handleEnter();
+        }
+    };
+
+    const getFileTypeFromUrl = (url) => {
+        const pathname = new URL(url).pathname;
+        const extension = pathname.split('.').pop().toLowerCase();
+
+        switch (extension) {
+            case 'jpg':
+            case 'jpeg':
+            case 'png':
+            case 'gif':
+                return 'image/';
+            case 'pdf':
+                return 'application/pdf';
+            case 'doc':
+            case 'docx':
+                return 'word';
+            case 'xls':
+            case 'xlsx':
+                return 'excel';
+            case 'mp4':
+            case 'webm':
+                return 'video';
+            default:
+                return 'unknown';
         }
     };
 
@@ -178,7 +220,7 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD }) => {
             },
             publishedDate: SelectedDate,
             // tags: keywordList,
-            file: {
+            file: mdValue?.id ? mdValue?.file : {
                 fileName: mdFile?.name,
             },
             autoTriggerOnUpdate: false,
@@ -189,28 +231,46 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD }) => {
             departmentSpecific: selectedDepartment !== '' ? true : false,
         }
 
+        if (mdValue?.id) {
+            data.id = mdValue?.id;
+        }
+
         formData.append(
             "metaDataDTO",
             new Blob([JSON.stringify(data)], {
                 type: "application/json",
             })
         );
-        formData.append("file", mdFile);
+        if (mdFile) {
+            formData.append("file", mdFile);
+        }
 
         console.log(mdFile, data)
-
-        await POST(`medical-directive-service/medicalDirectives`, formData)
-            .then(response => {
-                setStep1(false);
-                setStep2(true);
-                SuccessToaster2('MD Uploaded Successfully');
-                console.log(response?.data)
-                getMD(response?.data);
-            })
-            .catch(error => {
-                ErrorToaster2('MD Upload Failed');
-            })
-
+        if (mdValue?.id) {
+            await PUT(`medical-directive-service/medicalDirectives/${mdValue?.id}`, formData)
+                .then(response => {
+                    setStep1(false);
+                    setStep2(true);
+                    SuccessToaster2('MD Uploaded Successfully');
+                    console.log(response?.data)
+                    getMD(response?.data);
+                })
+                .catch(error => {
+                    ErrorToaster2('MD Upload Failed');
+                })
+        } else {
+            await POST(`medical-directive-service/medicalDirectives`, formData)
+                .then(response => {
+                    setStep1(false);
+                    setStep2(true);
+                    SuccessToaster2('MD Uploaded Successfully');
+                    console.log(response?.data)
+                    getMD(response?.data);
+                })
+                .catch(error => {
+                    ErrorToaster2('MD Upload Failed');
+                })
+        }
     }
     return (
         <div className={style.stepsBackground}>
