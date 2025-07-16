@@ -200,6 +200,9 @@ const ManageAttestationGroups = () => {
     const handleGroupDialogClose = () => {
         setGroupById();
         getGroupList();
+        setSelectedStaffs([]);
+        setGroupTitle('');
+        setGroupDesc('');
         setShowAttestationGroup(false);
     }
 

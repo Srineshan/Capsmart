@@ -39,6 +39,18 @@ const MDManagerStep3 = ({ setStep3, mdValue }) => {
         getGroupList()
     }, [])
 
+    useEffect(() => {
+        console.log(mdValue, 'mdValue', mdValue?.departments?.flatMap(data => data?.serviceAreas?.map(innerData => innerData?.id) || []) || [])
+        if (mdValue) {
+            setAttestationReviewFrequency(mdValue?.attestationPeriod?.value === 1 ? 'EVERY_1_YEAR' : mdValue?.attestationPeriod?.value === 2 ? 'EVERY_2_YEARS' : mdValue?.attestationPeriod?.value === 3 ? 'EVERY_3_YEARS' : '');
+            setAutoTriggerOnUpdate(mdValue?.autoTriggerOnUpdate)
+            setTargetStaff(mdValue?.updateFor);
+            setSelectedGroups(mdValue?.groups?.map(data => data?.id))
+            setAutoTriggerForNewAppointment(mdValue?.triggerForNewAppointment)
+            setAutoTriggerForReappointment(mdValue?.triggerForReAppointment)
+        }
+    }, [mdValue])
+
     const getStaffList = async () => {
         const response = await GET(
             `application-management-service/staff?status=ACTIVE&sortByField=STAFF_NAME&isPaginationRequired=${false}&limit=${9999}`
@@ -128,32 +140,31 @@ const MDManagerStep3 = ({ setStep3, mdValue }) => {
         setShowAttestationGroup(false);
     }
 
+    const handlePublish = async (data) => {
+        try {
+            const { data: publishedMD } = await POST(`medical-directive-service/medicalDirectives/${mdValue?.id}/publish`);
+            SuccessToaster2('Medical Directive published successfully');
+        } catch (error) {
+            console.error(error);
+            ErrorToaster2('Failed to publish Medical Directive');
+        }
+    }
+
 
     const handleContinue = async () => {
         const formData = new FormData();
         console.log(mdValue)
-        let data = {
-            id: mdValue?.id,
-            title: mdValue?.title,
-            mdID: mdValue?.mdID,
-            departments: mdValue?.departments,
-            // implementers: [],
-            reviewFrequency: mdValue?.reviewFrequency,
-            attestationPeriod: {
-                value: attestationReviewFrequency === "EVERY_1_YEAR" ? 1 : attestationReviewFrequency === "EVERY_2_YEARS" ? 2 : attestationReviewFrequency === "EVERY_3_YEARS" ? 3 : 0,
-                unit: "YEARS"
-            },
-            author: mdValue?.author,
-            publishedDate: mdValue?.publishedDate,
-            tags: mdValue?.tags,
-            file: mdValue?.file,
-            autoTriggerOnUpdate: autoTriggerOnUpdate,
-            updateFor: targetStaff,
-            groups: filteredGroupArray,
-            triggerForNewAppointment: autoTriggerForNewAppointment,
-            triggerForReAppointment: autoTriggerForReappointment,
-            departmentSpecific: mdValue?.departmentSpecific,
-        }
+
+        let data = mdValue;
+        data.attestationPeriod = {
+            value: attestationReviewFrequency === "EVERY_1_YEAR" ? 1 : attestationReviewFrequency === "EVERY_2_YEARS" ? 2 : attestationReviewFrequency === "EVERY_3_YEARS" ? 3 : 0,
+            unit: "YEARS"
+        };
+        data.autoTriggerOnUpdate = autoTriggerOnUpdate;
+        data.updateFor = targetStaff;
+        data.groups = filteredGroupArray;
+        data.triggerForNewAppointment = autoTriggerForNewAppointment;
+        data.triggerForReAppointment = autoTriggerForReappointment;
 
         formData.append(
             "metaDataDTO",
@@ -218,6 +229,9 @@ const MDManagerStep3 = ({ setStep3, mdValue }) => {
                 </div>
                 <div className={style.displayInRow}>
                     <div className={`${style.spaceBetween}`}>
+                        {mdValue?.creationType === "RENEW" && (
+                            <button className={`${style.buttonStyle} ${style.marginRight} `} onClick={() => handlePublish()} >{'PUBLISH'}</button>
+                        )}
                         <button className={`${style.outlinedButtonMd} ${style.marginRight} `} onClick={() => { setStep3(false) }} >SAVE IN PROGRESS</button>
                         <button className={`${style.buttonStyleMd} ${style.marginRight} `} onClick={() => { handleContinue() }} >CONTINUE</button>
                     </div>

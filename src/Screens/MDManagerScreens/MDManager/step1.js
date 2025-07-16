@@ -30,6 +30,7 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue }) => {
     const [reviewFrequency, setReviewFrequency] = useState('');
     const [previewUrl, setPreviewUrl] = useState(null);
     const [fileType, setFileType] = useState('');
+    const [isDataLoading, setIdDataLoading] = useState(false);
     useEffect(() => {
         getDepartmentList();
         getStaffList()
@@ -46,6 +47,7 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue }) => {
     useEffect(() => {
         console.log(mdValue, 'mdValue', mdValue?.departments?.flatMap(data => data?.serviceAreas?.map(innerData => innerData?.id) || []) || [])
         if (mdValue) {
+            setIdDataLoading(true)
             setSelectedDepartment(mdValue?.departments?.map(data => data?.id))
             setFileType(mdValue?.file ? getFileTypeFromUrl(mdValue?.file?.fileURL) : '')
             setPreviewUrl(mdValue?.file ? mdValue?.file?.fileURL : '')
@@ -54,8 +56,9 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue }) => {
             setSelectedDate(mdValue?.publishedDate)
             setMdDescription(mdValue?.description ? mdValue?.description : '')
             setReviewFrequency(mdValue?.reviewFrequency?.value === 1 ? 'EVERY_1_YEAR' : mdValue?.reviewFrequency?.value === 2 ? 'EVERY_2_YEARS' : mdValue?.reviewFrequency?.value === 3 ? 'EVERY_3_YEARS' : '');
-            setSelectedStaff(mdValue?.author ? mdValue?.author?.id : '')
+            setSelectedStaff(mdValue?.authors ? mdValue?.authors?.map(data => data.id)?.[0] : '')
             setSelectedServiceArea(mdValue?.departments?.flatMap(data => data?.serviceAreas?.map(innerData => innerData?.id) || []) || [])
+            setIdDataLoading(false)
         }
     }, [mdValue])
 
@@ -77,9 +80,11 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue }) => {
     }, [departmentList, selectedDepartment]);
 
     useEffect(() => {
-        setSelectedServiceArea(prev =>
-            prev.filter(area => filteredServiceAreas?.map(data => data?.id)?.includes(area))
-        );
+        if (!isDataLoading) {
+            setSelectedServiceArea(prev =>
+                prev.filter(area => filteredServiceAreas?.map(data => data?.id)?.includes(area))
+            );
+        }
     }, [filteredServiceAreas]);
 
     const handleEnter = () => {
@@ -213,11 +218,13 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue }) => {
                 value: reviewFrequency === "EVERY_1_YEAR" ? 1 : reviewFrequency === "EVERY_2_YEARS" ? 2 : reviewFrequency === "EVERY_3_YEARS" ? 3 : 0,
                 unit: "YEARS"
             },
-            author: {
+            authors: selectedStaff !== "" ? [{
                 id: selectedStaff,
                 name: staffList?.filter(data => data?.id === selectedStaff)?.[0]?.applicant?.name,
                 email: staffList?.filter(data => data?.id === selectedStaff)?.[0]?.applicant?.email,
-            },
+                title: staffList?.filter(data => data?.id === selectedStaff)?.[0]?.applicant?.jobTitle,
+                department: staffList?.filter(data => data?.id === selectedStaff)?.[0]?.applicant?.department,
+            }] : [],
             publishedDate: SelectedDate,
             // tags: keywordList,
             file: mdValue?.id ? mdValue?.file : {
@@ -233,6 +240,22 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue }) => {
 
         if (mdValue?.id) {
             data.id = mdValue?.id;
+            data.attestationPeriod = mdValue?.attestationPeriod;
+            data.autoTriggerOnUpdate = mdValue?.autoTriggerOnUpdate;
+            data.createdDate = mdValue?.createdDate;
+            data.creationType = mdValue?.creationType;
+            data.groups = mdValue?.groups;
+            data.initialPublishedDate = mdValue?.initialPublishedDate;
+            data.lastModifiedDate = mdValue?.lastModifiedDate;
+            data.lastRevisionDate = mdValue?.lastRevisionDate;
+            data.owner = mdValue?.owner;
+            data.revisionStatus = mdValue?.revisionStatus;
+            data.status = mdValue?.status;
+            data.tags = mdValue?.tags;
+            data.triggerForNewAppointment = mdValue?.triggerForNewAppointment;
+            data.triggerForReAppointment = mdValue?.triggerForReAppointment;
+            data.updateFor = mdValue?.updateFor;
+            data.version = mdValue?.version;
         }
 
         formData.append(
@@ -328,6 +351,7 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue }) => {
                                 onChange={(e) => setMdId(e.target.value)}
                                 type="text"
                                 placeholder="Enter MD ID"
+                                readOnly={mdValue?.id ? true : false}
                             />
                         </div>
                         <div>

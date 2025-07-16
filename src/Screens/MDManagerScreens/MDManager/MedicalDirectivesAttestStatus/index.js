@@ -311,7 +311,11 @@ const MDAttestStatus = () => {
                                 </div>
                                 <div>
                                     {(showAll ? mdLog : mdLog?.slice(0, 3))?.map(data =>
-                                        <div className={`${style.marginTop10} ${style.description}`}>{`${data?.createdDate ? format(new Date(data?.createdDate), 'MMM dd, yyyy') : ''}, ${data?.workflowUser?.name?.firstName}`}</div>
+                                        <>
+                                            <div className={`${style.marginTop10} ${style.description}`}>{`${data?.createdDate ? format(new Date(data?.createdDate), 'MMM dd, yyyy') : ''}, ${data?.workflowUser?.name?.firstName}`}</div>
+                                            <div className={`${style.marginTop10} ${style.description}`} dangerouslySetInnerHTML={{ __html: data?.notes?.notes || "" }} />
+                                            {/* <CommonDivider /> */}
+                                        </>
                                     )}
                                 </div>
                             </div>

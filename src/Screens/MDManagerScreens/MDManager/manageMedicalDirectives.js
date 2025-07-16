@@ -344,15 +344,16 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
     }
 
     const handleModify = (data) => {
-        // setSelectedMdId(data?.id);
-        // setIsEdit(true);
-        // setStep1(true)
+        setSelectedMdId(data?.id);
+        setIsEdit(true);
+        setStep1(true)
     }
 
     const handlePublish = async (data) => {
         try {
             const { data: publishedMD } = await POST(`medical-directive-service/medicalDirectives/${data?.id}/publish`);
             getDashboard();
+            getDashboardMetadata();
             SuccessToaster2('Medical Directive published successfully');
         } catch (error) {
             console.error(error);
@@ -369,33 +370,45 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
         setShowAttestationSummary(true);
     }
 
-    const handleRetiredMD = async (data) => {
+    const handleRetiredMD = async () => {
+        let temp = {
+            notes: retireNotes
+        }
         try {
-            const { data: retiredMD } = await PUT(`medical-directive-service/medicalDirectives/${data?.id}/retire`);
+            const { data: retiredMD } = await PUT(`medical-directive-service/medicalDirectives/${selectedMedicalDirective?.id}/retire`, temp);
             getDashboard();
+            getDashboardMetadata();
+            setSelectedMedicalDirective();
             SuccessToaster2('Medical Directive retired successfully');
         } catch (error) {
             console.error(error);
             ErrorToaster2('Failed to retire Medical Directive');
         }
+        setShowRetireDialog(false)
     }
 
     const handleViewRetiredMD = (data) => {
         setSelectedMedicalDirective(data);
     }
 
+    const handleShowRetireDialog = (data) => {
+        setSelectedMedicalDirective(data);
+        setShowRetireDialog(true);
+    }
+
     const handleReviseMD = async (data) => {
-        // try {
-        //     const { data: revisedMD } = await POST(`medical-directive-service/medicalDirectives/${data?.id}/revise`);
-        //     setSelectedMdId(data?.id);
-        //     setIsEdit(true);
-        //     setStep1(true)
-        //     getDashboard();
-        //     SuccessToaster2('Medical Directive retired successfully');
-        // } catch (error) {
-        //     console.error(error);
-        //     ErrorToaster2('Failed to retire Medical Directive');
-        // }
+        try {
+            const { data: revisedMD } = await POST(`medical-directive-service/medicalDirectives/${data?.id}/revise`);
+            setSelectedMdId(revisedMD?.id);
+            setIsEdit(true);
+            setStep1(true)
+            getDashboard();
+            getDashboardMetadata();
+            SuccessToaster2('Medical Directive retired successfully');
+        } catch (error) {
+            console.error(error);
+            ErrorToaster2('Failed to retire Medical Directive');
+        }
     }
 
     const millisToMinutesAndSeconds = (millis) => {
@@ -581,12 +594,12 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
     const registeredActionsData = [{ 'data': 'View Detail', 'onClick': handleView },
     { 'data': 'Update / Revise Medical Directive', 'onClick': handleReviseMD },
     { 'data': 'Attestation Summary', 'onClick': handleViewAttestationSummary },
-    { 'data': 'Retire Medical Directive', 'onClick': handleRetiredMD },
+    { 'data': 'Retire Medical Directive', 'onClick': handleShowRetireDialog },
         // {'data': 'Assign Surrogate', 'onClick': togglePin}
     ]
 
     const draftActionsData = [
-        { 'data': 'Revise MD', 'onClick': handleModify },
+        { 'data': 'Update MD', 'onClick': handleModify },
         { 'data': 'Publish', 'onClick': handlePublish },
     ]
 
@@ -834,7 +847,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
                     <div>
                         <div className={`${style.spaceBetween} ${style.marginTop20}`}>
                             <div></div>
-                            <button className={`${style.buttonStyle} ${retireNotes === '' ? style.disabledView : ''}`} onClick={retireNotes === '' ? () => { } : () => setShowRetireDialog(false)} >Save</button>
+                            <button className={`${style.buttonStyle} ${retireNotes === '' ? style.disabledView : ''}`} onClick={retireNotes === '' ? () => { } : () => handleRetiredMD()} >Save</button>
                         </div>
                     </div>
                 </div>
