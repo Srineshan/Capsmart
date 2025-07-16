@@ -270,29 +270,35 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue }) => {
 
         console.log(mdFile, data)
         if (mdValue?.id) {
-            await PUT(`medical-directive-service/medicalDirectives/${mdValue?.id}`, formData)
-                .then(response => {
-                    setStep1(false);
-                    setStep2(true);
-                    SuccessToaster2('MD Uploaded Successfully');
-                    console.log(response?.data)
-                    getMD(response?.data);
-                })
-                .catch(error => {
-                    ErrorToaster2('MD Upload Failed');
-                })
+            try {
+                const response = await PUT(`medical-directive-service/medicalDirectives/${mdValue?.id}`, formData)
+                setStep1(false);
+                setStep2(true);
+                SuccessToaster2('MD Uploaded Successfully');
+                console.log(response, 'error')
+                getMD(response?.data);
+            }
+            catch (error) {
+                console.log(error, 'error')
+                ErrorToaster2('MD Upload Failed');
+            }
         } else {
-            await POST(`medical-directive-service/medicalDirectives`, formData)
-                .then(response => {
+            try {
+                const response = await POST(`medical-directive-service/medicalDirectives`, formData)
+                if (response?.response?.status === 409) {
+                    ErrorToaster2(response?.response?.data);
+                } else {
+                    SuccessToaster2('MD Uploaded Successfully');
                     setStep1(false);
                     setStep2(true);
-                    SuccessToaster2('MD Uploaded Successfully');
-                    console.log(response?.data)
                     getMD(response?.data);
-                })
-                .catch(error => {
-                    ErrorToaster2('MD Upload Failed');
-                })
+                }
+                console.log(response, 'error')
+            }
+            catch (error) {
+                console.log(error, 'error')
+                ErrorToaster2('MD Upload Failed');
+            }
         }
     }
     return (

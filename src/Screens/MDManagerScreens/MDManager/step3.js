@@ -151,7 +151,7 @@ const MDManagerStep3 = ({ setStep3, mdValue }) => {
     }
 
 
-    const handleContinue = async () => {
+    const handleContinue = async (isPublish) => {
         const formData = new FormData();
         console.log(mdValue)
 
@@ -178,14 +178,26 @@ const MDManagerStep3 = ({ setStep3, mdValue }) => {
 
         await PUT(`medical-directive-service/medicalDirectives/${mdValue?.id}`, formData)
             .then(response => {
-                SuccessToaster2('MD Uploaded Successfully');
+                if (!isPublish) {
+                    SuccessToaster2('MD Updateded Successfully');
+                }
                 console.log(response?.data)
-                setStep3(false)
             })
             .catch(error => {
-                ErrorToaster2('MD Upload Failed');
+                if (!isPublish) {
+                    ErrorToaster2('MD Upload Failed');
+                }
             })
-
+        if (isPublish) {
+            try {
+                const { data: publishedMD } = await POST(`medical-directive-service/medicalDirectives/${mdValue?.id}/publish`);
+                SuccessToaster2('Medical Directive published successfully');
+            } catch (error) {
+                console.error(error);
+                ErrorToaster2('Failed to publish Medical Directive');
+            }
+        }
+        setStep3(false)
     }
 
     const handleAddGroup = async () => {
@@ -230,7 +242,7 @@ const MDManagerStep3 = ({ setStep3, mdValue }) => {
                 <div className={style.displayInRow}>
                     <div className={`${style.spaceBetween}`}>
                         {mdValue?.creationType === "RENEW" && (
-                            <button className={`${style.buttonStyle} ${style.marginRight} `} onClick={() => handlePublish()} >{'PUBLISH'}</button>
+                            <button className={`${style.buttonStyle} ${style.marginRight} `} onClick={() => handleContinue(true)} >{'PUBLISH'}</button>
                         )}
                         <button className={`${style.outlinedButtonMd} ${style.marginRight} `} onClick={() => { setStep3(false) }} >SAVE IN PROGRESS</button>
                         <button className={`${style.buttonStyleMd} ${style.marginRight} `} onClick={() => { handleContinue() }} >CONTINUE</button>
@@ -253,7 +265,7 @@ const MDManagerStep3 = ({ setStep3, mdValue }) => {
                     </div>
                     {targetStaff === "SELECTED_GROUPS" && (
                         <div className={style.padding20}>
-                            <CommonSelectField
+                            {/* <CommonSelectField
                                 //   value={selectedCategory}
                                 //   onChange={(e) => setSelectedCategory(e.target.value)}
                                 className={style.fullWidth1}
@@ -264,7 +276,7 @@ const MDManagerStep3 = ({ setStep3, mdValue }) => {
                                 disabledList={false}
                                 required={true}
                                 label={"Authorized Implementers / Responsible Disciplines"}
-                            />
+                            /> */}
                             <div className={style.labelStyle}>Select Attestation Groups for Medical Directive reviews</div>
                             <div className={style.attestationGrid}>
                                 <div ref={containerRef} onFocus={() => setShowAttestationGroupList(true)} onBlur={handleBlur}
