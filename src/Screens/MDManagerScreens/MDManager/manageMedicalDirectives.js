@@ -666,7 +666,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
                     <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Revisions" tileCount={revisionMdCount} currentTile="Medical Directives Revisions" />
                     <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Attestations Outstanding" tileCount={0} currentTile="Attestations Outstanding" />
                     <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Draft Medical Directives" tileCount={draftMdCount} currentTile="Draft Medical Directives" />
-                    <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Retire Medical Directives" tileCount={inactiveMdCount} currentTile="Retire Medical Directives" />
+                    <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Retired Medical Directives" tileCount={inactiveMdCount} currentTile="Retire Medical Directives" />
                 </div>
                 <div>
                     <button
