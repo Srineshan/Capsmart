@@ -344,9 +344,9 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
     }
 
     const handleModify = (data) => {
-        setSelectedMdId(data?.id);
-        setIsEdit(true);
-        setStep1(true)
+        // setSelectedMdId(data?.id);
+        // setIsEdit(true);
+        // setStep1(true)
     }
 
     const handlePublish = async (data) => {
@@ -385,17 +385,17 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
     }
 
     const handleReviseMD = async (data) => {
-        try {
-            const { data: revisedMD } = await POST(`medical-directive-service/medicalDirectives/${data?.id}/revise`);
-            setSelectedMdId(data?.id);
-            setIsEdit(true);
-            setStep1(true)
-            getDashboard();
-            SuccessToaster2('Medical Directive retired successfully');
-        } catch (error) {
-            console.error(error);
-            ErrorToaster2('Failed to retire Medical Directive');
-        }
+        // try {
+        //     const { data: revisedMD } = await POST(`medical-directive-service/medicalDirectives/${data?.id}/revise`);
+        //     setSelectedMdId(data?.id);
+        //     setIsEdit(true);
+        //     setStep1(true)
+        //     getDashboard();
+        //     SuccessToaster2('Medical Directive retired successfully');
+        // } catch (error) {
+        //     console.error(error);
+        //     ErrorToaster2('Failed to retire Medical Directive');
+        // }
     }
 
     const millisToMinutesAndSeconds = (millis) => {
