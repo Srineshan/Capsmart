@@ -17,6 +17,7 @@ import CommonInputField from "../CommonFields/CommonInputField";
 import CommonSwitch from "../CommonFields/CommonSwitch";
 import axios from "axios";
 import { Tooltip } from "@mui/material";
+import DeleteIcon from './../../images/deleteHcRow.png';
 // import { WProofreader } from '@webspellchecker/wproofreader-ckeditor5';
 
 const NotesDialog = ({ getIsOpen, getActiveApplicationView, selectedTab }) => {
@@ -481,6 +482,9 @@ const NotesDialog = ({ getIsOpen, getActiveApplicationView, selectedTab }) => {
                           className={style.referenceCardStyleDescription}
                         />
                       </div>
+                      <div className={`${style.displayInRow}`}>
+                        <img src={DeleteIcon} alt="" className={style.docTypeImgStyle}/>
+                        </div>
                     </div>
                   </div>
                 ))}
