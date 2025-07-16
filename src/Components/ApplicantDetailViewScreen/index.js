@@ -785,6 +785,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
                             required={false}
                           />
                       </div> */}
+                      {/* <Tooltip title="Click Here to See Option" arrow> */}
                        <div className={`${style.whiteButton} ${style.cursorPointer}`} onClick={() => toggleDropdown()}>
                         <div className={`${style.spaceEvenly}`}>
                           <div className={`${style.buttonTextStyle} ${style.alignCenter}`}>
@@ -801,6 +802,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
                               }} />}
                         </div>
                       </div>
+                      {/* </Tooltip> */}
 
                       {/* Dropdown Menu */}
                       {isOpenToggle && (
