@@ -27,7 +27,7 @@ const CommonInputField = ({
   // console.log(error)
   return (
     <div>
-      {/* <div className={`${style.lableStyle}`}>{label}{required && '*'}</div> */}
+      <div className={`${style.lableStyle} ${label ? style.marginBottom : ""}`}>{label}{required && '*'}</div>
       <InputGroup
         value={value}
         onChange={onChange}

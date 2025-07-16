@@ -210,7 +210,12 @@ const LocumStaffList = ({
   // }, [selectedTab]);
 
   useEffect(() => {
-    getActiveUserData();
+    const controller = new AbortController();
+    const signal = controller.signal;
+
+    getActiveUserData(signal);
+
+    return () => controller.abort();
   }, [selectedTab, sortField, sortValue, page, totalCount, showLocumExtensiveDialog, searchTermForTable, limit, showLocumExtensiveRequestDialog, showLocumRequestDialog, selectedDepartment]);
 
   const getReFetchMetaData = (value) => {
@@ -407,7 +412,7 @@ const LocumStaffList = ({
     }
   };
 
-  const getActiveUserData = async () => {
+  const getActiveUserData = async (signal) => {
     try {
       setIsLoadingImage(true);
 
@@ -431,7 +436,7 @@ const LocumStaffList = ({
         }
       }
 
-      const response = await GET(apiUrl);
+      const response = await GET(apiUrl, { signal });
 
       if (selectedTab === "REQUEST") {
         setTableData(response?.data?.requests || []);
@@ -1889,7 +1894,7 @@ const LocumStaffList = ({
       data: "Review?",
       requiredValue: "boolean",
       onClick: onClickRequestLocumDialog,
-      conditionToShow: `data?.extensionRequestStatus === "REQUESTED" && data?.reAppointmentInitiated === false`,
+      conditionToShow: `data?.extensionRequestStatus === "REQUESTED" && data?.reAppointmentInitiated === false && data?.requests?.[data?.requests?.length - 1]?.requestedTo?.[0]?.role === workModeType`,
     },
     // {
     //   data: "Create Note",
@@ -1930,7 +1935,7 @@ const LocumStaffList = ({
       data: "Review?",
       requiredValue: "boolean",
       onClick: onClickRequestLocumDialog,
-      conditionToShow: `data?.extensionRequestStatus === "REQUESTED" && data?.reAppointmentInitiated === false`,
+      conditionToShow: `data?.extensionRequestStatus === "REQUESTED" && data?.reAppointmentInitiated === false && data?.requests?.[data?.requests?.length - 1]?.requestedTo?.[0]?.role === workModeType`,
     },
     // {
     //   data: "Create Note",
@@ -2027,11 +2032,11 @@ const LocumStaffList = ({
             ? totalRequestCount
             : totalCount
   let actions =
-    selectedTab === "ACTIVELOCUM" && workModeType === "Department Head"
+    selectedTab === "ACTIVELOCUM" && (workModeType === "Department Head" || workModeType === "Chief Of Staff")
     ? activeLocumActionsData
     :selectedTab === "ACTIVELOCUM"
       ? activeLocumActionsSMData
-        : selectedTab === "EXPIREDLOCUM" && workModeType === "Department Head"
+        : selectedTab === "EXPIREDLOCUM" && (workModeType === "Department Head" || workModeType === "Chief Of Staff")
           ? expiredLocumActionsData
           : selectedTab === "EXPIREDLOCUM"
             ? expiredLocumActionsSMData

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
 import NoteAltOutlinedIcon from "@mui/icons-material/NoteAltOutlined";
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import WarningOutlinedIcon from '@mui/icons-material/WarningOutlined';
 import { InputGroup, Icon, Intent, Dialog, Classes } from "@blueprintjs/core";
 import FileImg from "./../../images/fileImg.png";
@@ -50,6 +51,7 @@ import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import ApplicationDecline from "../../Screens/StaffApplication/applicationDeclineDialog";
 import ApplicationHeader from "../../Components/ApplicationHeader";
 import ApplicantDetailNotesView from '../../Components/ApplicantDetailNotesView';
+import ApplicantDetailEditDialog from '../../Components/EditApplicantInfoDialog';
 import ViewandVerifyScreen from '../../Components/ViewVerifyScreen';
 import ApplicationFieldCard from "../../Components/ApplicationFieldCard";
 import CommonDivider from "../../Components/CommonFields/CommonDivider";
@@ -57,6 +59,7 @@ import ESignature from "../../Components/ESignature";
 import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
 import CommonDateField from "../../Components/CommonFields/CommonDateField";
+import CommonSelectField from "../CommonFields/CommonSelectField";
 import { format , differenceInDays, parseISO } from 'date-fns';
 import TableTwo from "../../Components/TableDesignTwo";
 import CreateOutlinedIcon from '@mui/icons-material/CreateOutlined';
@@ -88,6 +91,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
   const workModeType = sessionStorage.getItem('workModeType')
   const canadaData = sessionStorage.getItem('canadaData') !== 'undefined' ? JSON.parse(sessionStorage.getItem('canadaData')) : {};
   const dateFormat = canadaData?.dateFormat || 'MMM dd, yyyy';
+  const [selectedEditField, setSelectedEditField] = useState('');
   const [expandStates, setExpandStates] = useState({
     section1: false,
     section2: false,
@@ -98,6 +102,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
     section7: false,
   });
   const [showNotesDetailsDialog, setShowNotesDetailsDialog] = useState(false);
+  const [showEditInfoDialog, setShowEditInfoDialog] = useState(false);
   const [showViewAndVerifyScreen, setShowViewAndVerifyScreen] = useState(false);
   const [fileArray, setFileArray] = useState([]);
   const [selectedFileIndex, setSelectedFileIndex] = useState(0);
@@ -117,6 +122,11 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
   const toggleDocsFilter = (filterType) => {
   setSelectedDocsFilter((prevFilter) => prevFilter === filterType ? null : filterType);
   };
+  const [isOpenToggle, setIsOpenToggle] = useState(false);
+  const toggleDropdown = () => setIsOpenToggle((prev) => !prev);
+
+  const valueList = ["NAME", "CONTACT_DETAILS", "HOME_ADDRESS", "DEPARTMENT_DIVISION", "PRIVILEGE_CATEGORY"];
+  const labelList = ["Name", "Contact Details", "Home Address", "Department / Division", "Privilege Category"];
 
   const onClickViewDocDialog = (data) => {
     setShowFileDisplayDialog(true);
@@ -180,9 +190,17 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
     },
   ];
 
-  // const getNotesDetailsDialogOpen = (value) => {
-  //   setShowNotesDetailsDialog(value)
-  // };
+  const getEditInfoDetailsDialogOpen = (value) => {
+    setShowEditInfoDialog(value)
+  };
+
+  useEffect(() => {
+    if(showEditInfoDialog === false){
+    setSelectedEditField("")
+    }
+    getPreApplication()
+  }, [showEditInfoDialog])
+  
 
     useEffect(() => {
     if (renewedDocumentRequired?.documentsExpiringSoon?.length > 0 || expireDocumentCount > 0 ) {
@@ -718,7 +736,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
                           ? `+1 ${form?.applicant?.mobileNumber}`
                           : ""}
                         <span
-                          className={`${style.emailTextBoldStyle} ${style.marginLeft10}`}
+                          className={`${style.emailTextBoldStyle} ${form?.applicant?.mobileNumber ? style.marginLeft10 : ""}`}
                         >
                           <span
                             className={style.cursorPointer}
@@ -732,6 +750,76 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
                       </div>
                     </div>
                     <div>
+                     
+                      {/* <div className={`${style.marginTop10} ${style.editInfo}`}>
+                        <span className={style.cursorPointer} onClick={() => getEditInfoDetailsDialogOpen(true)}>
+                        <Tooltip title="Click to Edit Info" arrow>
+                        Edit Profile Info 
+                        </Tooltip>
+                        </span>
+                        <span>   
+                           <Tooltip title="Click to Edit Info" arrow>
+                          <CreateOutlinedIcon
+                            style={{ fontSize: 20, color: "#06617A", cursor: "pointer" }}
+                            className={`${style.marginLeft10} ${style.cursorPointer}`}
+                          // onClick={onClickNotesFunction}
+                          />
+                          </Tooltip>  
+                        </span> 
+                      </div> */}
+                      {/* <div>
+                        <CommonSelectField
+                            value={selectedEditField}
+                            onChange={(e) => {
+                              setSelectedEditField(e.target.value);
+                              if(e.target.value !== ""){
+                              getEditInfoDetailsDialogOpen(true);
+                              }
+                            }}
+                            className={style.colorCode}
+                            firstOptionLabel={'Modify Staff Data'}
+                            firstOptionValue={''}
+                            valueList={["NAME", "CONTACT_DETAILS", "HOME_ADDRESS","DEPARTMENT_DIVISION","PRIVILEGE_CATEGORY"]}
+                            labelList={['Name', 'Contact Details', "Home Address","Department / Division","Privilege Category"]}
+                            disabledList={false}
+                            required={false}
+                          />
+                      </div> */}
+                       <div className={`${style.whiteButton} ${style.cursorPointer}`} onClick={() => toggleDropdown()}>
+                        <div className={`${style.spaceEvenly}`}>
+                          <div className={`${style.buttonTextStyle} ${style.alignCenter}`}>
+                            {selectedEditField ? labelList[valueList.indexOf(selectedEditField)] : "Modify Staff Data"}
+                          </div>
+                          {isOpenToggle ? <KeyboardArrowUpOutlinedIcon sx={{
+                                fontSize: 20,
+                                color: "#ffffff",
+                                cursor: "pointer",
+                              }}/> : <KeyboardArrowDownOutlinedIcon sx={{
+                                fontSize: 20,
+                                color: "#ffffff",
+                                cursor: "pointer",
+                              }} />}
+                        </div>
+                      </div>
+
+                      {/* Dropdown Menu */}
+                      {isOpenToggle && (
+                        <div className={style.dropdownMenu}>
+                          {valueList.map((value, index) => (
+                            <div
+                              key={value}
+                              className={`${style.dropdownItem} ${selectedEditField === value ? style.selectedItem : ""}`}
+                              onClick={() => {
+                                setSelectedEditField(value);
+                                getEditInfoDetailsDialogOpen(true);
+                                toggleDropdown(); // Close after selection
+                              }}
+                            >
+                              {labelList[index]}
+                            </div>
+                          ))}
+                        </div>
+                      )}
                       <div
                         className={`${style.marginTop10}`}
                       >
@@ -1083,6 +1171,17 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
           <ApplicantDetailNotesView
             getIsOpen={getNotesDetailsDialogOpen}
             notesDetails={notesDetails}
+          // onClose={() => { setShowCCDateDialog(false); setCheckedIds([]); }}
+          />
+        )
+      }
+      {
+        showEditInfoDialog && (
+          <ApplicantDetailEditDialog
+            getIsOpen={getEditInfoDetailsDialogOpen}
+            applicationId={applicationId}
+            selectedEditField={selectedEditField}
+            // notesDetails={notesDetails}
           // onClose={() => { setShowCCDateDialog(false); setCheckedIds([]); }}
           />
         )

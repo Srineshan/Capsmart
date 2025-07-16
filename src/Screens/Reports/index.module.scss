@@ -614,6 +614,15 @@
     cursor: pointer;
 }
 
+.crossStyleSave {
+  height: 24px;
+  width: 24px;
+}
+
+.justifyEnd {
+  justify-self: end;
+}
+
 .extensionBorder {
     background-color: #EBF2F7;
     height: 3px;
@@ -707,6 +716,14 @@
     margin: -20px !important;
     padding: 20px;
     border-radius: 10px;
+}
+
+.deleteEcecutedContractDialogBackgroundSave {
+    // background-color: white;
+    margin: -10px !important;
+    padding: 20px;
+    border-radius: 10px;
+    height: 150px;
 }
 
 .sendMailUserDialog {
