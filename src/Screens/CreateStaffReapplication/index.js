@@ -791,6 +791,8 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
 
   const isDataAvailable = tableData?.length > 0;
 
+const isAllSent = tableData.length > 0 && tableData.every(item => item.reappointmentStatus === "SENT");
+
   // Rest of the render method remains the same
   return (
     <div>
@@ -1143,7 +1145,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
                     style={{ opacity: isDataAvailable && checkedIds?.length > 0 ? 1 : 0.5 }}
 
                   >
-                    {(selectedReappointmentStatus === "SENT" || selectedReappointmentStatus === "RE_SENT" || applicationCreationType === "LOCUM") ? `RESEND ${applicationCreationType === "LOCUM" ? '' : 'REAPPOINTMENT'} APPLICATION` : 'SEND REAPPOINTMENT APPLICATION'}
+                    {(selectedReappointmentStatus === "SENT" || selectedReappointmentStatus === "RE_SENT" || applicationCreationType === "LOCUM" || isAllSent) ? `RESEND ${applicationCreationType === "LOCUM" ? '' : 'REAPPOINTMENT'} APPLICATION` : 'SEND REAPPOINTMENT APPLICATION'}
                   </div>
                 </Tooltip>
               )}

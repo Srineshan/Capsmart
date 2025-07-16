@@ -180,8 +180,15 @@
 
 .threeColumnGrid {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  grid-gap: 10px;
+  grid-template-columns: 30% 30% 30% 2%;
+  grid-gap: 1%;
+}
+
+.docTypeImgStyle {
+  height: 30px;
+  width: auto;
+  object-fit: contain;
+  cursor: pointer;
 }
 
 .marginBottom10 {
