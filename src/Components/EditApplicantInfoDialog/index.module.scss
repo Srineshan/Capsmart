@@ -25,8 +25,20 @@
   margin-top: 10px !important;
 }
 
+.marginLeft10{
+  margin-left: 10px ;
+}
+
 .flex{
   display: flex;
+}
+
+.alignContent{
+  align-content: center;
+}
+
+.alignItem{
+  align-items: center;
 }
 
 .twoColumnGridInner2 {
@@ -59,7 +71,7 @@
 .eSignDialog {
   height: 75%;
   overflow: hidden;
-  width: 80% !important;
+  width: 90% !important;
 }
 
 .eSignDialogBackground {
@@ -91,6 +103,10 @@
 
 .cursorPointer {
   cursor: pointer;
+}
+
+.cursorNA {
+    cursor: not-allowed !important;
 }
 
 .actionButtons {
@@ -186,6 +202,14 @@
   color: #2C2C2C;
   // text-transform: capitalize;
   opacity: 0.8;
+}
+
+.addressLabel{
+  text-align: left;
+font: normal normal medium 20px/24px proxima-nova;
+letter-spacing: 0px;
+color: #52575D;
+opacity: 0.8;
 }
 
 .loadingOverlay {
