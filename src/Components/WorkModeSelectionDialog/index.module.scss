@@ -34,6 +34,36 @@
   // height: 100vh;
 }
 
+.fullHeight {
+  height: 100vh !important;
+}
+
+.justifyCenter {
+  display: flex;
+  justify-content: center;
+}
+
+.verticalAlignCenter {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.workSpaceCard {
+  background: #FFFFFF 0% 0% no-repeat padding-box;
+  box-shadow: 0px 5px 20px #52575D4D;
+  border-radius: 20px;
+  width: 40vw;
+  padding: 30px;
+}
+
+.workSpaceTitle {
+  text-align: left;
+  font: normal normal bold 20px/28px proxima-nova;
+  letter-spacing: 0px;
+  color: $primarycolor;
+}
+
 .spaceBetween {
   display: flex;
   justify-content: space-between;
@@ -192,7 +222,7 @@
   grid-gap: 10px;
 }
 
-.placeCenter{
+.placeCenter {
   place-items: center;
 }
 

@@ -16,7 +16,7 @@ import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArro
 import { ErrorToaster2, SuccessToaster2 } from '../../../utils/toaster';
 import CommonInputField from '../../../Components/CommonFields/CommonInputField';
 
-const MDManagerStep3 = ({ setStep3, mdValue }) => {
+const MDManagerStep3 = ({ setStep2, setStep3, mdValue }) => {
     const containerRef = useRef(null);
     const [targetStaff, setTargetStaff] = useState('ALL_STAFFS');
     const [attestationReviewFrequency, setAttestationReviewFrequency] = useState('');
@@ -241,6 +241,7 @@ const MDManagerStep3 = ({ setStep3, mdValue }) => {
                 </div>
                 <div className={style.displayInRow}>
                     <div className={`${style.spaceBetween}`}>
+                        <button className={`${style.buttonStyleMd} ${style.marginRight} `} onClick={() => { setStep2(true); setStep3(false) }} >BACK</button>
                         {mdValue?.creationType === "RENEW" && (
                             <button className={`${style.buttonStyle} ${style.marginRight} `} onClick={() => handleContinue(true)} >{'PUBLISH'}</button>
                         )}

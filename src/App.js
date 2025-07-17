@@ -784,7 +784,7 @@ const App = ({ props }) => {
         method: "GET",
         headers: {
           "Authorization": `Bearer ${authorization}`,
-          "X-subdomain": 'master',
+          "X-subdomain": 'cmh-hospital',
         },
       };
     console.log(requestHeader, 'requestHeader')
@@ -824,7 +824,7 @@ const App = ({ props }) => {
         "Content-Type": "application/json",
         "X-tenantID": id,
         "Authorization": `Bearer ${authorization}`,
-        "X-subdomain": 'master',
+        "X-subdomain": 'cmh-hospital',
       },
     }
     fetch(`${baseUrl()}/user-management-service/auth/login`, requestOptions)
@@ -912,13 +912,14 @@ const App = ({ props }) => {
       if (Auth()) {
         console.log('login route')
         let roles = jwt(Auth())?.roles?.split(",");
+        let mdRoles = jwt(Auth())?.mdRoles?.split(",");
         console.log("LoginRole", roles)
-        if (roles?.length > 1) {
+        if (roles?.length > 1 || (roles?.length >= 1 && mdRoles?.length >= 1)) {
           console.log("LoginRole1111", roles)
           // return(
           //   <WorkModeDialog getIsOpen={true} />
           // ) 
-          if (localStorage?.getItem('initialRoute') !== undefined && localStorage?.getItem('initialRoute') !== 'undefined' && localStorage?.getItem('initialRoute') !== null && localStorage?.getItem('initialRoute')?.includes('/applicationById/REAPPOINTMENT') && localStorage?.getItem('initialRoute')?.includes('/applicationById/LOCUM')) {
+          if (roles?.length > 1 && (localStorage?.getItem('initialRoute') !== undefined && localStorage?.getItem('initialRoute') !== 'undefined' && localStorage?.getItem('initialRoute') !== null && localStorage?.getItem('initialRoute')?.includes('/applicationById/REAPPOINTMENT') && localStorage?.getItem('initialRoute')?.includes('/applicationById/LOCUM'))) {
             sessionStorage.setItem("workModeType", roles[0]);
             window.location.pathname = localStorage?.getItem('initialRoute');
           } else {
@@ -926,12 +927,16 @@ const App = ({ props }) => {
           }
         }
 
-        if (roles?.length === 1 && localStorage?.getItem('initialRoute') !== undefined && localStorage?.getItem('initialRoute') !== 'undefined' && localStorage?.getItem('initialRoute') !== null) {
-          sessionStorage.setItem("workModeType", roles[0]);
+        if ((roles?.length === 1 || mdRoles?.length === 1) && localStorage?.getItem('initialRoute') !== undefined && localStorage?.getItem('initialRoute') !== 'undefined' && localStorage?.getItem('initialRoute') !== null) {
+          sessionStorage.setItem("workModeType", mdRoles?.length === 1 ? mdRoles[0] : roles[0]);
           window.location.href = `${initialRoute}`;
           localStorage?.removeItem('initialRoute')
         }
-        else if (roles?.length === 1) {
+        else if (roles?.length === 1 || mdRoles?.length === 1) {
+          if (mdRoles?.length === 1) {
+            sessionStorage.setItem("workModeType", mdRoles[0]);
+            // window.location.pathname = "/mdManager";
+          }
           sessionStorage.setItem("workModeType", roles[0]);
           let isAppUser =
             roles?.includes("Approver") ||

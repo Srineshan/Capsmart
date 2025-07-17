@@ -359,9 +359,9 @@ const MDManager = () => {
   return step1 ? (
     <MDManagerStep1 setStep1={setStep1} setStep2={setStep2} mdFile={mdFile} getMD={getMD} mdValue={mdValue} />
   ) : step2 ? (
-    <MDManagerStep2 setStep3={setStep3} setStep2={setStep2} mdValue={mdValue} getMD={getMD} />
+    <MDManagerStep2 setStep1={setStep1} setStep3={setStep3} setStep2={setStep2} mdValue={mdValue} getMD={getMD} />
   ) : step3 ? (
-    <MDManagerStep3 setStep3={setStep3} mdValue={mdValue} />
+    <MDManagerStep3 setStep2={setStep2} setStep3={setStep3} mdValue={mdValue} />
   ) : (
     <Fragment>
       <Navbar />
