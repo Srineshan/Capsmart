@@ -2762,19 +2762,20 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
   // ? monthsList.find(month => month.value === selectedMonth)?.label
   // : "Custom End Date";
   const currentDateNow = new Date();
+  const priorExpireDate = selectDataLocum?.tenure?.to
   const minDateValue =
     selectedTab === 'ACTIVELOCUM'
       ? ExpireDate
         ? addDays(new Date(ExpireDate), 30)
         : null
-      : currentDateNow;
+      : addDays(new Date(priorExpireDate), 1);
 
   const minDateValueValid =
     selectedTab === 'ACTIVELOCUM'
       ? ExpireDate
         ? addDays(new Date(ExpireDate), 30)
         : null
-      : addDays(currentDateNow, 30);
+      : currentDateNow
 
   const maxDateValue =
     selectedTab === 'ACTIVELOCUM'

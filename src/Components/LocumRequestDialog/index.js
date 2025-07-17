@@ -184,6 +184,7 @@ const LocumRequestDialog = ({ getIsOpen, selectedTab }) => {
   // ? monthsList.find(month => month.value === selectedMonth)?.label
   // : "Custom End Date";
   const currentDateNow = new Date();
+  const priorExpireDate = selectDataLocum?.staff?.tenure?.to
   //  const minDateValue =
   //   ExpireDateRequest
   //       ? new Date(ExpireDateRequest)
@@ -193,19 +194,25 @@ const LocumRequestDialog = ({ getIsOpen, selectedTab }) => {
       ? ExpireDate
         ? addDays(new Date(ExpireDate), 30)
         : null
-      : currentDateNow;
+      : addDays(new Date(priorExpireDate), 1);
 
   const minDateValueValid =
     selectDataLocum?.locumRenewalDetails?.reappointmentType === 'EXTENSION'
       ? ExpireDate
         ? addDays(new Date(ExpireDate), 30)
         : null
-      : addDays(currentDateNow, 30);;
+      : currentDateNow
 
-  const maxDateValue = ExpireDateRequest
-    ? addYears(new Date(ExpireDateRequest), 1)
-    : null
+  // const maxDateValue = ExpireDateRequest
+  //   ? addYears(new Date(ExpireDateRequest), 1)
+  //   : null
 
+    const maxDateValue =
+        selectDataLocum?.locumRenewalDetails?.reappointmentType === 'EXTENSION'
+          ? ExpireDateRequest
+            ? addYears(new Date(ExpireDateRequest), 1)
+            : null
+          : addYears(currentDateNow, 1);
   const [currentDate, setCurrentDate] = useState(
     format(new Date(), "dd-MM-yyyy")
   );
