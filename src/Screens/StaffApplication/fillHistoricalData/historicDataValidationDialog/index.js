@@ -14,7 +14,7 @@ const HistoricValidationDialog = ({ getIsOpen, labelList = [] }) => {
             ["officeAddress", "zipCode", "city", "province"].includes(item.key)
         ),
         "Privilege Category": labelList.filter((item) =>
-            ["applicantType", "privilege", "program"].includes(item.key)
+            ["applicantType", "privilege", "department","dateOfStart","dateOfEnd"].includes(item.key)
         )
     };
 
