@@ -504,7 +504,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                     "type": "icon", "icon": array?.map(innerData => {
                         return (
                             <Tooltip title="Click to Delete" arrow>
-                                <img src={DeleteIcon} alt="" className={style.docTypeImgStyle} onClick={() => { setDeleteData(innerData); setShowDeleteConfirmation(true) }} /> </Tooltip>);
+                                <img src={DeleteIcon} alt="" className={`${style.docTypeImgStyle} ${style.justifyCenter}`} onClick={() => { setDeleteData(innerData); setShowDeleteConfirmation(true) }} /> </Tooltip>);
                     }), 'isShowHoverText': false
                 });
             }

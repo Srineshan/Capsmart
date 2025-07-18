@@ -393,8 +393,12 @@
 
 .applicantGrid {
   display: grid;
-  grid-template-columns: 30% 30% 30% 3%;
+  grid-template-columns: 18% 18% 18% 18% 18% 4%;
   grid-gap: 1%;
+}
+
+.marginLeftRight20 {
+  margin: 0 20px !important;
 }
 
 .padding20 {
@@ -448,6 +452,10 @@
 
 .marginBottom20 {
   margin-bottom: 20px;
+}
+
+.marginBottom10 {
+  margin-bottom: 10px;
 }
 
 .lableStyle {
