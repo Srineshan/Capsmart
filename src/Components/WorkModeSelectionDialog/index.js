@@ -116,14 +116,14 @@ const WorkModeDialog = ({ getIsOpen }) => {
           <div className={`${style.fullHeight} ${style.verticalAlignCenter} ${style.justifyCenter}`}>
             <div>
               <div className={style.workSpaceCard}>
-                <div className={style.workSpaceTitle}>Workspace Selection</div>
+                <div className={style.workSpaceTitle}>Application Selection</div>
                 <div className={style.marginTop}>
                   <CommonSelectField
                     value={selectedWorkSpace}
                     onChange={(e) => setSelectedWorkSpace(e.target.value)}
                     className={style.fullWidth1}
                     valueList={["CAP_MANAGER", "MD_MANAGER"]}
-                    labelList={["Staff Manager", "Medical Directive Manager"]}
+                    labelList={["CAP Manager", "Medical Directives Manager"]}
                     disabledList={false}
                     required={true}
                     label={"Select User Workspace"}

@@ -19,6 +19,8 @@ import MDManagerStep3 from "./step3";
 import CommonSearchField from "../../../Components/CommonFields/CommonSearchField";
 import CommonDateField from "../../../Components/CommonFields/CommonDateField";
 import { TextField } from "@material-ui/core";
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { format } from "date-fns";
 import CommonMultiSelectField from "../../../Components/CommonFields/CommonMultiSelectField";
 
@@ -88,6 +90,13 @@ const MDManager = () => {
       getMDByID()
     }
   }, [selectedMdId])
+
+  useEffect(() => {
+    if (!step1 || !step2 || !step3) {
+      setMdValue();
+      setSelectedMdId('');
+    }
+  }, [step1, step2, step3])
 
   const togglePin = () => { };
 
@@ -372,13 +381,21 @@ const MDManager = () => {
         <div>
           <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
             <div>
-              <div className={style.searchFieldCard} onClick={() => setShowAdvancedSearch(!showAdvancedSearch)}>
-                <CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} isOnClickAvailable={false} onClickFunc={() => { }} placeholder={"Search For A Medical Directive By ID Or Title"} />
-              </div>
-              {showAdvancedSearch && (
-                <div className={style.searchFieldCard}>
-                  <div className={style.advancedSearchText}>Advanced MD Search Criteria</div>
-                  {/* <div className={style.marginTop10}>
+              <div className={style.searchFieldCard}>
+                <CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} isOnClickAvailable={false} onClickFunc={() => { }} placeholder={"Search"} />
+                <div className={`${style.spaceBetween} ${style.marginTop10} ${style.cursorPointer}`} onClick={() => setShowAdvancedSearch(!showAdvancedSearch)}>
+                  <div className={`${style.advancedSearchText} ${style.verticalAlignCenter}`}>Advanced Search Criteria</div>
+                  <div className={style.verticalAlignCenter}>
+                    {showAdvancedSearch ? (
+                      <KeyboardArrowDownIcon sx={{ fontSize: '24px', color: '#06617A' }} />
+                    ) : (
+                      <KeyboardArrowRightIcon sx={{ fontSize: '24px', color: '#06617A' }} />
+                    )}
+                  </div>
+                </div>
+                {showAdvancedSearch && (
+                  <>
+                    {/* <div className={style.marginTop10}>
                     <div className={style.labelStyle}>Medical Directive ID</div>
                     <CommonInputField
                       value={mdId}
@@ -396,139 +413,140 @@ const MDManager = () => {
                       placeholder="Contains"
                     />
                   </div> */}
-                  <div className={style.marginTop10}>
-                    <div className={style.labelStyle}>Department / Division</div>
-                    <CommonMultiSelectField
-                      value={selectedCombinations}
-                      onChange={handleChange}
-                      className={style.fullWidth}
-                      widthValue='250px'
-                      // firstOptionLabel={'All'}
-                      // firstOptionValue={''}
-                      valueList={transformedOptions.map(option => option?.value)}
-                      labelList={transformedOptions.map(option => option?.label)}
-                      disabledList={transformedOptions.map(() => false)}
-                      renderValue={(selected) =>
-                        selected
-                          ?.map(val => {
-                            const option = transformedOptions.find(o => o.value === val);
-                            if (option?.type === 'department') {
-                              return option.label;
-                            } else if (option?.type === 'serviceArea') {
-                              const serviceAreaId = val.split('|')[1];
-                              const department = departmentList.find(dept =>
-                                dept.serviceAreas?.some(sa => sa.id === serviceAreaId)
-                              );
-                              const serviceArea = department?.serviceAreas?.find(sa => sa.id === serviceAreaId);
-                              return serviceArea?.name || '';
-                            }
-                            return '';
-                          })
-                          .join(', ')
-                      }
-                      required={true}
-                      label={'Department / Division'}
-                    />
-                  </div>
-                  <div className={style.marginTop10}>
-                    <div className={style.labelStyle}>Attestation Groups</div>
-                    <CommonMultiSelectField
-                      value={selectedGroups}
-                      onChange={(e) => handleGroupSelect(e.target.value)}
-                      className={style.fullWidth}
-                      widthValue='250px'
-                      // firstOptionLabel={'All'}
-                      // firstOptionValue={''}
-                      valueList={groupList?.map(option => option?.id)}
-                      labelList={groupList?.map(option => `${option?.name}`)}
-                      disabledList={groupList?.map(() => false)}
-                      required={false}
-                      label={'Attestation Groups'}
-                    />
-                  </div>
-                  <div className={style.marginTop10}>
-                    <CommonSelectField
-                      value={selectedAuthor}
-                      onChange={(e) => setSelectedAuthor(e.target.value)}
-                      className={style.fullWidth}
-                      // firstOptionLabel={'All'}
-                      // firstOptionValue={''}
-                      valueList={staffList?.map(option => option?.id)}
-                      labelList={staffList?.map(option => `${option?.applicant?.name?.firstName} ${option?.applicant?.name?.lastName}`)}
-                      disabledList={staffList?.map(() => false)}
-                      required={false}
-                      label={'Author / Owner Responsible'}
-                    />
-                  </div>
-                  <div className={style.marginTop10}>
-                    <div className={style.labelStyle}>Last Published</div>
-                    <div className={style.twoCol}>
-                      <CommonDateField
+                    <div className={style.marginTop10}>
+                      <div className={style.labelStyle}>Department / Division</div>
+                      <CommonMultiSelectField
+                        value={selectedCombinations}
+                        onChange={handleChange}
                         className={style.fullWidth}
-                        open={calendarStart}
-                        onOpen={() => setCalendarStart(true)}
-                        onClose={() => setCalendarStart(false)}
-                        // minDate={sub(new Date(), { years: 3 })}
-                        // maxDate={add(new Date(), { months: 6 })}
-                        value={from}
-                        onChange={(newValue) =>
-                          setFrom(format(new Date(newValue), "yyyy-MM-dd"))
+                        widthValue='250px'
+                        // firstOptionLabel={'All'}
+                        // firstOptionValue={''}
+                        valueList={transformedOptions.map(option => option?.value)}
+                        labelList={transformedOptions.map(option => option?.label)}
+                        disabledList={transformedOptions.map(() => false)}
+                        renderValue={(selected) =>
+                          selected
+                            ?.map(val => {
+                              const option = transformedOptions.find(o => o.value === val);
+                              if (option?.type === 'department') {
+                                return option.label;
+                              } else if (option?.type === 'serviceArea') {
+                                const serviceAreaId = val.split('|')[1];
+                                const department = departmentList.find(dept =>
+                                  dept.serviceAreas?.some(sa => sa.id === serviceAreaId)
+                                );
+                                const serviceArea = department?.serviceAreas?.find(sa => sa.id === serviceAreaId);
+                                return serviceArea?.name || '';
+                              }
+                              return '';
+                            })
+                            .join(', ')
                         }
-                        // minDate={minDate}
-                        // maxDate={maxDate}
-                        InputProps={{
-                          style: {
-                            fontSize: 14,
-                            height: 30,
-                          },
-                        }}
-                        renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            inputProps={{
-                              ...params.inputProps,
-                              placeholder: 'From',
-                              readOnly: true
-                            }}
-                            fullWidth
-                          />
-                        )}
-                      />
-                      <CommonDateField
-                        className={style.fullWidth}
-                        open={calendarStart}
-                        onOpen={() => setCalendarStart(true)}
-                        onClose={() => setCalendarStart(false)}
-                        // minDate={sub(new Date(), { years: 3 })}
-                        // maxDate={add(new Date(), { months: 6 })}
-                        value={to}
-                        onChange={(newValue) =>
-                          setTo(format(new Date(newValue), "yyyy-MM-dd"))
-                        }
-                        // minDate={minDate}
-                        // maxDate={maxDate}
-                        InputProps={{
-                          style: {
-                            fontSize: 14,
-                            height: 30,
-                          },
-                        }}
-                        renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            inputProps={{
-                              ...params.inputProps,
-                              placeholder: 'To',
-                              readOnly: true
-                            }}
-                            fullWidth
-                          />
-                        )}
+                        required={true}
+                        label={'Department / Division'}
                       />
                     </div>
-                  </div>
-                </div>
-              )}
+                    <div className={style.marginTop10}>
+                      <div className={style.labelStyle}>Attestation Groups</div>
+                      <CommonMultiSelectField
+                        value={selectedGroups}
+                        onChange={(e) => handleGroupSelect(e.target.value)}
+                        className={style.fullWidth}
+                        widthValue='250px'
+                        // firstOptionLabel={'All'}
+                        // firstOptionValue={''}
+                        valueList={groupList?.map(option => option?.id)}
+                        labelList={groupList?.map(option => `${option?.name}`)}
+                        disabledList={groupList?.map(() => false)}
+                        required={false}
+                        label={'Attestation Groups'}
+                      />
+                    </div>
+                    <div className={style.marginTop10}>
+                      <CommonSelectField
+                        value={selectedAuthor}
+                        onChange={(e) => setSelectedAuthor(e.target.value)}
+                        className={style.fullWidth}
+                        // firstOptionLabel={'All'}
+                        // firstOptionValue={''}
+                        valueList={staffList?.map(option => option?.id)}
+                        labelList={staffList?.map(option => `${option?.applicant?.name?.firstName} ${option?.applicant?.name?.lastName}`)}
+                        disabledList={staffList?.map(() => false)}
+                        required={false}
+                        label={'Author / Owner Responsible'}
+                      />
+                    </div>
+                    <div className={style.marginTop10}>
+                      <div className={style.labelStyle}>Last Published</div>
+                      <div className={style.twoCol}>
+                        <CommonDateField
+                          className={style.fullWidth}
+                          open={calendarStart}
+                          onOpen={() => setCalendarStart(true)}
+                          onClose={() => setCalendarStart(false)}
+                          // minDate={sub(new Date(), { years: 3 })}
+                          // maxDate={add(new Date(), { months: 6 })}
+                          value={from}
+                          onChange={(newValue) =>
+                            setFrom(format(new Date(newValue), "yyyy-MM-dd"))
+                          }
+                          // minDate={minDate}
+                          // maxDate={maxDate}
+                          InputProps={{
+                            style: {
+                              fontSize: 14,
+                              height: 30,
+                            },
+                          }}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              inputProps={{
+                                ...params.inputProps,
+                                placeholder: 'From',
+                                readOnly: true
+                              }}
+                              fullWidth
+                            />
+                          )}
+                        />
+                        <CommonDateField
+                          className={style.fullWidth}
+                          open={calendarStart}
+                          onOpen={() => setCalendarStart(true)}
+                          onClose={() => setCalendarStart(false)}
+                          // minDate={sub(new Date(), { years: 3 })}
+                          // maxDate={add(new Date(), { months: 6 })}
+                          value={to}
+                          onChange={(newValue) =>
+                            setTo(format(new Date(newValue), "yyyy-MM-dd"))
+                          }
+                          // minDate={minDate}
+                          // maxDate={maxDate}
+                          InputProps={{
+                            style: {
+                              fontSize: 14,
+                              height: 30,
+                            },
+                          }}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              inputProps={{
+                                ...params.inputProps,
+                                placeholder: 'To',
+                                readOnly: true
+                              }}
+                              fullWidth
+                            />
+                          )}
+                        />
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
           </SideBar>
         </div>

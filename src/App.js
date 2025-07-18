@@ -911,9 +911,11 @@ const App = ({ props }) => {
       const initialRoute = localStorage.getItem("initialRoute");
       if (Auth()) {
         console.log('login route')
-        let roles = jwt(Auth())?.roles?.split(",");
-        let mdRoles = jwt(Auth())?.mdRoles?.split(",");
-        console.log("LoginRole", roles)
+        const rawRoles = jwt(Auth())?.roles;
+        const rawMdRoles = jwt(Auth())?.mdRoles;
+        let roles = rawRoles ? rawRoles.split(",") : [];
+        let mdRoles = rawMdRoles ? rawMdRoles.split(",") : [];
+        console.log("LoginRole", roles, mdRoles)
         if (roles?.length > 1 || (roles?.length >= 1 && mdRoles?.length >= 1)) {
           console.log("LoginRole1111", roles)
           // return(
@@ -934,73 +936,75 @@ const App = ({ props }) => {
         }
         else if (roles?.length === 1 || mdRoles?.length === 1) {
           if (mdRoles?.length === 1) {
+            console.log("LoginRole", roles, mdRoles[0])
             sessionStorage.setItem("workModeType", mdRoles[0]);
-            // window.location.pathname = "/mdManager";
+            window.location.pathname = "/mdManager";
+          } else {
+            sessionStorage.setItem("workModeType", roles[0]);
+            let isAppUser =
+              roles?.includes("Approver") ||
+              roles?.includes("Reviewer") ||
+              roles?.includes("Activity Logger");
+            let isContractManager = roles?.includes("Contract Manager");
+            let isEntityLevelAdmin =
+              roles?.includes("Super Sys Admin") ||
+              roles?.includes("Entity Sys Admin") ||
+              roles?.includes("Entity Sys User") ||
+              roles?.includes("Distributor Admin");
+            let isStaffManager = roles?.includes("Staff Manager");
+            let isAttester = roles?.includes("Attester");
+            let isDepartmentHead = roles?.includes("Department Head");
+            let isCredentialingCommittee = roles?.includes("Credentialing Committee");
+            let isChiefOfStaff = roles?.includes("Chief Of Staff");
+            let isApplicant = roles?.includes("Applicant");
+            console.log('login route', roles)
+            if (isAppUser) {
+              window.location.href = "/";
+              // navigate("/");
+              return <Login />;
+            } else if (isContractManager) {
+              window.location.pathname = "/contracts";
+              // navigate("/contracts");
+              // window.location.reload();
+              return <ActiveContracts />;
+            }
+            else if (isEntityLevelAdmin) {
+              window.location.pathname = "/entitySitePortal";
+              // navigate("/entitySitePortal");
+              // window.location.reload();
+              return <Home />;
+            }
+            else if (isStaffManager) {
+              console.log('login route', roles, isStaffManager)
+              window.location.pathname = "/applications";
+              // navigate("/applications");
+            } else if (isDepartmentHead) {
+              console.log('login route', roles, isDepartmentHead)
+              window.location.pathname = "/applications";
+              // navigate("/applications");
+            } else if (isCredentialingCommittee) {
+              console.log('login route', roles, isCredentialingCommittee)
+              window.location.pathname = "/applications";
+              // navigate("/applications");
+            } else if (isChiefOfStaff) {
+              console.log('login route', roles, isChiefOfStaff)
+              window.location.pathname = "/applications";
+              // navigate("/applications");
+            } else if (isAttester) {
+              console.log('login route', roles, isAttester)
+              window.location.pathname = "/tenant/64246d491b70b07241d37aa1/medicalDirectives";
+              // navigate("/applications");
+            } else if (isApplicant) {
+              window.location.pathname = "/applicant";
+              // navigate("/applicant");
+            }
+            // else {
+            //   window.location.pathname = "/entitySitePortal";
+            //   // navigate("/entitySitePortal");
+            //   // window.location.reload();
+            //   return <Home />;
+            // }
           }
-          sessionStorage.setItem("workModeType", roles[0]);
-          let isAppUser =
-            roles?.includes("Approver") ||
-            roles?.includes("Reviewer") ||
-            roles?.includes("Activity Logger");
-          let isContractManager = roles?.includes("Contract Manager");
-          let isEntityLevelAdmin =
-            roles?.includes("Super Sys Admin") ||
-            roles?.includes("Entity Sys Admin") ||
-            roles?.includes("Entity Sys User") ||
-            roles?.includes("Distributor Admin");
-          let isStaffManager = roles?.includes("Staff Manager");
-          let isAttester = roles?.includes("Attester");
-          let isDepartmentHead = roles?.includes("Department Head");
-          let isCredentialingCommittee = roles?.includes("Credentialing Committee");
-          let isChiefOfStaff = roles?.includes("Chief Of Staff");
-          let isApplicant = roles?.includes("Applicant");
-          console.log('login route', roles)
-          if (isAppUser) {
-            window.location.href = "/";
-            // navigate("/");
-            return <Login />;
-          } else if (isContractManager) {
-            window.location.pathname = "/contracts";
-            // navigate("/contracts");
-            // window.location.reload();
-            return <ActiveContracts />;
-          }
-          else if (isEntityLevelAdmin) {
-            window.location.pathname = "/entitySitePortal";
-            // navigate("/entitySitePortal");
-            // window.location.reload();
-            return <Home />;
-          }
-          else if (isStaffManager) {
-            console.log('login route', roles, isStaffManager)
-            window.location.pathname = "/applications";
-            // navigate("/applications");
-          } else if (isDepartmentHead) {
-            console.log('login route', roles, isDepartmentHead)
-            window.location.pathname = "/applications";
-            // navigate("/applications");
-          } else if (isCredentialingCommittee) {
-            console.log('login route', roles, isCredentialingCommittee)
-            window.location.pathname = "/applications";
-            // navigate("/applications");
-          } else if (isChiefOfStaff) {
-            console.log('login route', roles, isChiefOfStaff)
-            window.location.pathname = "/applications";
-            // navigate("/applications");
-          } else if (isAttester) {
-            console.log('login route', roles, isAttester)
-            window.location.pathname = "/tenant/64246d491b70b07241d37aa1/medicalDirectives";
-            // navigate("/applications");
-          } else if (isApplicant) {
-            window.location.pathname = "/applicant";
-            // navigate("/applicant");
-          }
-          // else {
-          //   window.location.pathname = "/entitySitePortal";
-          //   // navigate("/entitySitePortal");
-          //   // window.location.reload();
-          //   return <Home />;
-          // }
         }
       } else {
         window.location.pathname = "/loginPage";

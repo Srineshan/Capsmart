@@ -412,6 +412,21 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         }, [ref]);
     }
 
+    const getHighlightedHTML = (htmlString, searchTerm) => {
+        if (!searchTerm?.trim()) return htmlString;
+
+        const escapedSearchTerm = searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const regex = new RegExp(`(${escapedSearchTerm})`, 'gi');
+
+        // Replace search term with highlighted span
+        const highlighted = htmlString.replace(
+            regex,
+            '<span style="background-color: yellow;">$1</span>'
+        );
+
+        return highlighted;
+    };
+
     const differenceInDays = (date1, date2) => {
         const oneDay = 1000 * 60 * 60 * 24;
         const diffInTime = date2.getTime() - date1.getTime();
@@ -601,44 +616,43 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                             </Typography>
                                         </div>
                                     ) : tableData?.type === "dotWithText" ? (
-                                    <div className={style.flex}>
-                                        <Tooltip title={tableData?.tooltipValueText?.[index]} arrow>
-                                        <div
-                                            className={`
-                                            ${
-                                                tableData?.value?.[index] === "green" ? style.greenDotStyle :
-                                                tableData?.value?.[index] === "darkgreen" ? style.darkGreenDotStyle :
-                                                tableData?.value?.[index] === "yellow" ? style.yellowDotStyle :
-                                                tableData?.value?.[index] === "grey" ? style.greyDotStyle :
-                                                tableData?.value?.[index] === "red" ? style.redDotStyle :
-                                                tableData?.value?.[index] === "purple" ? style.purpleDotStyle : ''
-                                            } ${style.alignSelfCenter}
+                                        <div className={style.flex}>
+                                            <Tooltip title={tableData?.tooltipValueText?.[index]} arrow>
+                                                <div
+                                                    className={`
+                                            ${tableData?.value?.[index] === "green" ? style.greenDotStyle :
+                                                            tableData?.value?.[index] === "darkgreen" ? style.darkGreenDotStyle :
+                                                                tableData?.value?.[index] === "yellow" ? style.yellowDotStyle :
+                                                                    tableData?.value?.[index] === "grey" ? style.greyDotStyle :
+                                                                        tableData?.value?.[index] === "red" ? style.redDotStyle :
+                                                                            tableData?.value?.[index] === "purple" ? style.purpleDotStyle : ''
+                                                        } ${style.alignSelfCenter}
                                             `}
-                                        />
-                                        </Tooltip>
-                                        <p
-                                        className={`
+                                                />
+                                            </Tooltip>
+                                            <p
+                                                className={`
                                             ${style.tableDataFontStyle}
                                             ${style.marginLeft5}
                                             ${style.verticalAlignCenter}
                                             ${style.cursorArrow}
                                             ${tableData?.onClickFunction ? `${style.cursorPointer} ${style.textHoverColor}` : ''}
                                         `}
-                                        onClick={
-                                            tableData?.onClickFunction ? () => tableData?.onClickFunction(data, index) : undefined
-                                        }
-                                        >
-                                        {searchTermForTable?.trim()
-                                            ? String(tableData?.textValue?.[index] || '')
-                                                .split(new RegExp(`(${searchTermForTable})`, 'gi'))
-                                                .map((part, i) =>
-                                                part.toLowerCase() === searchTermForTable.toLowerCase()
-                                                    ? <span key={i} style={{ backgroundColor: 'yellow' }}>{part}</span>
-                                                    : part
-                                                )
-                                            : tableData?.textValue?.[index]}
-                                        </p>
-                                    </div> )
+                                                onClick={
+                                                    tableData?.onClickFunction ? () => tableData?.onClickFunction(data, index) : undefined
+                                                }
+                                            >
+                                                {searchTermForTable?.trim()
+                                                    ? String(tableData?.textValue?.[index] || '')
+                                                        .split(new RegExp(`(${searchTermForTable})`, 'gi'))
+                                                        .map((part, i) =>
+                                                            part.toLowerCase() === searchTermForTable.toLowerCase()
+                                                                ? <span key={i} style={{ backgroundColor: 'yellow' }}>{part}</span>
+                                                                : part
+                                                        )
+                                                    : tableData?.textValue?.[index]}
+                                            </p>
+                                        </div>)
                                         : tableData?.type === "checkbox" ? (
                                             <div key={data.id} className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.justifyCenter} ${style.responsive}`}>
                                                 <CommonCheckBox
@@ -652,17 +666,31 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                             </div>
                                         )
                                             : tableData?.type === "text" ? (
+                                                // <Tooltip title={tableData?.tooltipValueText?.[index]} arrow>
+                                                //     <p className={`${style.tableDataFontStyle} ${style.verticalAlignCenter} ${style.cursorArrow} ${tableData?.onClickFunction ? `${style.cursorPointer} ${style.textHoverColor}` : ''}`} onClick={tableData?.onClickFunction ? () => { tableData?.onClickFunction(data, index) } : () => { }}>
+                                                //         {searchTermForTable?.trim() ?
+                                                //             String(tableData?.value?.[index] || '')?.split(new RegExp(`(${searchTermForTable})`, 'gi'))?.map((part, i) =>
+                                                //                 part?.toLowerCase() === searchTermForTable?.toLowerCase() ?
+                                                //                     <span key={i} style={{ backgroundColor: 'yellow' }}>{part}</span> :
+                                                //                     part
+                                                //             ) :
+                                                //             tableData?.value?.[index]
+                                                //         }
+                                                //     </p>
+                                                // </Tooltip>
                                                 <Tooltip title={tableData?.tooltipValueText?.[index]} arrow>
-                                                    <p className={`${style.tableDataFontStyle} ${style.verticalAlignCenter} ${style.cursorArrow} ${tableData?.onClickFunction ? `${style.cursorPointer} ${style.textHoverColor}` : ''}`} onClick={tableData?.onClickFunction ? () => { tableData?.onClickFunction(data, index) } : () => { }}>
-                                                        {searchTermForTable?.trim() ?
-                                                            String(tableData?.value?.[index] || '')?.split(new RegExp(`(${searchTermForTable})`, 'gi'))?.map((part, i) =>
-                                                                part?.toLowerCase() === searchTermForTable?.toLowerCase() ?
-                                                                    <span key={i} style={{ backgroundColor: 'yellow' }}>{part}</span> :
-                                                                    part
-                                                            ) :
-                                                            tableData?.value?.[index]
-                                                        }
-                                                    </p>
+                                                    <div
+                                                        className={`
+                                                                ${style.tableDataFontStyle}
+                                                                ${style.verticalAlignCenter}
+                                                                ${style.cursorArrow}
+                                                                ${tableData?.onClickFunction ? `${style.cursorPointer} ${style.textHoverColor}` : ''}
+                                                            `}
+                                                        onClick={tableData?.onClickFunction ? () => { tableData?.onClickFunction(data, index); } : undefined}
+                                                        dangerouslySetInnerHTML={{
+                                                            __html: getHighlightedHTML(String(tableData?.value?.[index] || ''), searchTermForTable)
+                                                        }}
+                                                    />
                                                 </Tooltip>
                                             ) : tableData?.type === "textWithHover" ? (
                                                 <div onMouseEnter={(e) => handleClickTextWithHover(e, index, tableDataIndex)}

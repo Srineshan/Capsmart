@@ -52,11 +52,14 @@ const MDManagerStep3 = ({ setStep2, setStep3, mdValue }) => {
     }, [mdValue])
 
     const getStaffList = async () => {
+        // const response = await GET(
+        //     `application-management-service/staff?status=ACTIVE&sortByField=STAFF_NAME&isPaginationRequired=${false}&limit=${9999}`
+        // );
         const response = await GET(
-            `application-management-service/staff?status=ACTIVE&sortByField=STAFF_NAME&isPaginationRequired=${false}&limit=${9999}`
+            `user-management-service/user/allStaffs?status=ACTIVE`
         );
         console.log(response.data);
-        setStaffList(response?.data?.staffs)
+        setStaffList(response?.data)
     }
 
     const getGroupList = async () => {
@@ -83,8 +86,8 @@ const MDManagerStep3 = ({ setStep2, setStep3, mdValue }) => {
         const matchedStaff = staffList?.find((staff) => staff.id === id);
         return {
             id: id,
-            name: matchedStaff?.applicant?.name,
-            email: matchedStaff?.applicant?.email,
+            name: matchedStaff?.name,
+            email: matchedStaff?.email,
         };
     });
 
@@ -413,9 +416,11 @@ const MDManagerStep3 = ({ setStep2, setStep3, mdValue }) => {
                                 <div className={style.attestationGroupRightCard}>
                                     {staffList?.filter(staff => !selectedStaffs?.includes(staff.id))?.map((data, index) => (
                                         <div className={style.groupGrid} key={index}>
-                                            <div className={`${style.staffName} ${style.cursorPointer} ${selectedStaffForMove === data?.id ? style.selectedStaff : ''}`} onClick={() => setSelectedStaffForMove(data?.id)}>{`${data?.applicant?.name?.firstName} ${data?.applicant?.name?.lastName?.toUpperCase()}${data?.basicDetailReferences?.applicantType?.serviceProviderType ? `, ${data?.basicDetailReferences?.applicantType?.serviceProviderType}` : ''}`}</div>
+                                            <div className={`${style.staffName} ${style.verticalAlignCenter} ${style.cursorPointer} ${selectedStaffForMove === data?.id ? style.selectedStaff : ''}`} onClick={() => setSelectedStaffForMove(data?.id)}>{`${data?.name?.firstName} ${data?.name?.lastName?.toUpperCase()}${data?.serviceProviderType?.contractedServiceProviderType ? `, ${data?.serviceProviderType?.contractedServiceProviderType}` : ''}`}</div>
                                             {/* <div className={style.staffName}></div> */}
-                                            <div className={`${style.labelStyle} ${selectedStaffForMove === data?.id ? style.selectedStaff : ''}`}>{data?.basicDetailReferences?.department?.name}</div>
+                                            <div className={`${style.labelStyle} ${selectedStaffForMove === data?.id ? style.selectedStaff : ''}`}>{data?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.departmentName?.name ? data?.sites?.sites?.[0]?.departmentList?.departments?.map(
+                                                (dept) => dept?.departmentName?.name
+                                            )?.join(', ') : ''}</div>
                                         </div>
                                     ))}
                                 </div>
@@ -441,9 +446,11 @@ const MDManagerStep3 = ({ setStep2, setStep3, mdValue }) => {
                                 <div className={style.attestationGroupRightCard}>
                                     {staffList?.filter(staff => selectedStaffs?.includes(staff.id))?.map((data, index) => (
                                         <div className={style.groupGrid} key={index}>
-                                            <div className={`${style.staffName} ${style.cursorPointer} ${selectedStaffForMove === data?.id ? style.selectedStaff : ''}`} onClick={() => setSelectedStaffForMove(data?.id)}>{`${data?.applicant?.name?.firstName} ${data?.applicant?.name?.lastName?.toUpperCase()}${data?.basicDetailReferences?.applicantType?.serviceProviderType ? `, ${data?.basicDetailReferences?.applicantType?.serviceProviderType}` : ''}`}</div>
+                                            <div className={`${style.staffName} ${style.verticalAlignCenter} ${style.cursorPointer} ${selectedStaffForMove === data?.id ? style.selectedStaff : ''}`} onClick={() => setSelectedStaffForMove(data?.id)}>{`${data?.name?.firstName} ${data?.name?.lastName?.toUpperCase()}${data?.serviceProviderType?.contractedServiceProviderType ? `, ${data?.serviceProviderType?.contractedServiceProviderType}` : ''}`}</div>
                                             {/* <div className={style.staffName}></div> */}
-                                            <div className={`${style.labelStyle} ${selectedStaffForMove === data?.id ? style.selectedStaff : ''}`}>{data?.basicDetailReferences?.department?.name}</div>
+                                            <div className={`${style.labelStyle} ${selectedStaffForMove === data?.id ? style.selectedStaff : ''}`}>{data?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.departmentName?.name ? data?.sites?.sites?.[0]?.departmentList?.departments?.map(
+                                                (dept) => dept?.departmentName?.name
+                                            )?.join(', ') : ''}</div>
                                         </div>
                                     ))}
                                 </div>
