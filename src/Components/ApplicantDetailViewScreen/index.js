@@ -688,7 +688,9 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
             )
             : "{First Name} {Last Name}"
             }`}</div>
-            <div
+          <div className={`${style.grid2to1} ${style.marginTop10}`}>
+            <div>
+              <div
                 className={`${style.cardLeftStyle}`}
               >
                 <div className={style.gridView}>
@@ -727,6 +729,22 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
                           {form?.basicDetailReferences?.specialty?.name
                             ? `${form?.basicDetailReferences?.department?.name ? ", " : ""}${form.basicDetailReferences.specialty.name}`
                             : ""}
+                        </span>
+                      </div>
+                      <div
+                        className={`${style.cardTextNormalStyle} ${style.marginTop10}`}
+                      >
+                        <span
+                          className={`${style.cardTextNormalStyle}`}
+                        >
+                          {form?.applicant?.licenseNumber
+                            ? `CPSO number : ${form.applicant.licenseNumber}`
+                            : ""}
+                            <span className={`${form?.applicant?.ohipNumber ? style.marginLeft10 : ""}`}>
+                            {form?.applicant?.ohipNumber
+                            ? `OHIP number : ${form.applicant?.ohipNumber}`
+                            : ""}
+                            </span>
                         </span>
                       </div>
                       <div
@@ -785,6 +803,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
                             required={false}
                           />
                       </div> */}
+                      {/* <Tooltip title="Click Here to See Option" arrow> */}
                        <div className={`${style.whiteButton} ${style.cursorPointer}`} onClick={() => toggleDropdown()}>
                         <div className={`${style.spaceEvenly}`}>
                           <div className={`${style.buttonTextStyle} ${style.alignCenter}`}>
@@ -801,6 +820,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
                               }} />}
                         </div>
                       </div>
+                      {/* </Tooltip> */}
 
                       {/* Dropdown Menu */}
                       {isOpenToggle && (
@@ -862,7 +882,6 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
                   </div>
                 </div>
               </div>
-          <div className={style.grid2to1}>
             <div>
               <div className={`${style.marginTop20}`}>
                 <div className={`${style.cardLeftStyle} ${style.padding30}`}>
@@ -1112,11 +1131,12 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
                 </div>
               </div>
             </div>
+            </div>
             <div>
-              <div className={`${style.cardLeftStyle}  ${style.marginTop20}`}>
+              <div className={`${style.cardLeftStyle}`}>
                 <div className={`${style.displayInRow}${style.marginTop20}`}>
                   <div
-                    className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20} ${style.alignItemCenter}`}
+                    className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.alignItemCenter}`}
                   >
                     <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
                       <span className={`${style.tableHeaderHeadingTextStyle1}`}>Notes</span>

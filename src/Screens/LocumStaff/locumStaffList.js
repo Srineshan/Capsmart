@@ -1882,13 +1882,13 @@ const LocumStaffList = ({
       data: "Extend?",
       requiredValue: "boolean",
       onClick: onClickExtensiverequestRequiredLocumDialog,
-      conditionToShow: `data?.extensionRequestStatus !== "NOT_REQUESTED" && data?.reAppointmentInitiated === false && ((new Date(data?.tenure?.to) - new Date()) / (1000 * 60 * 60 * 24)) <= 30`,
+      conditionToShow: `data?.extensionRequestStatus === "NA" && data?.reAppointmentInitiated === false && ((new Date(data?.tenure?.to) - new Date()) / (1000 * 60 * 60 * 24)) <= 30`,
     },
      {
       data: "Extension Not Required?",
       requiredValue: "boolean",
       onClick: onClickExtensiverequestNotRequiredLocumDialog,
-      conditionToShow: `data?.extensionRequestStatus !== "NOT_REQUESTED" && data?.reAppointmentInitiated === false && ((new Date(data?.tenure?.to) - new Date()) / (1000 * 60 * 60 * 24)) <= 30`,
+      conditionToShow: `data?.extensionRequestStatus === "NA" && data?.reAppointmentInitiated === false && ((new Date(data?.tenure?.to) - new Date()) / (1000 * 60 * 60 * 24)) <= 30`,
     },
      {
       data: "Review?",
@@ -1923,13 +1923,13 @@ const LocumStaffList = ({
       data: "Renew?",
       requiredValue: "boolean",
       onClick: onClickExtensiverequestRequiredLocumDialog,
-      conditionToShow: `data?.extensionRequestStatus !== "NOT_REQUESTED" && data?.reAppointmentInitiated === false`,
+      conditionToShow: `data?.extensionRequestStatus === "NA" && data?.reAppointmentInitiated === false`,
     },
     {
       data: "Renewal Not Required?",
       requiredValue: "boolean",
       onClick: onClickExtensiverequestNotRequiredLocumDialog,
-      conditionToShow: `data?.extensionRequestStatus !== "NOT_REQUESTED" && data?.reAppointmentInitiated === false`,
+      conditionToShow: `data?.extensionRequestStatus === "NA" && data?.reAppointmentInitiated === false`,
     },
      {
       data: "Review?",

@@ -1,0 +1,87 @@
+@import "../../index.scss";
+
+.cloneDialog {
+    height: 40%;
+    width: 30% !important;
+}
+
+.deleteDialogBackground {
+    background-color: white;
+    margin: -20px !important;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.dialogPaddingBottom {
+    padding-bottom: 0 !important;
+}
+
+.spaceBetween {
+    display: flex;
+    justify-content: space-between;
+}
+
+.extensionStyle {
+    text-align: left;
+    font: normal normal bold $usernametext proxima-nova;
+    letter-spacing: 0px;
+    color: $primarycolor;
+}
+
+.crossStyle {
+    color: linear-gradient($primarycolor, $statusred) !important;
+    margin-bottom: 15px;
+    cursor: pointer;
+}
+
+.extensionBorder {
+    background-color: #EBF2F7;
+    height: 3px;
+}
+
+.deleteDescriptionStyle {
+    text-align: left;
+    font: normal normal normal 13px/23px proxima-nova;
+    letter-spacing: 0px;
+    opacity: 1;
+    color: #2C2C2C;
+    line-height: 20px;
+}
+
+.marginTop20 {
+    margin-top: 20px !important;
+}
+
+.positionCenter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cloneOutlinedButton {
+    background-color: white;
+    color: $primarycolor;
+    border: 1px solid $primarycolor;
+    box-shadow: 0px 1px 5px $primarycolor;
+    height: 30px;
+    width: 80px;
+    border-radius: 10px;
+}
+
+.cursorPointer {
+    cursor: pointer;
+}
+
+.cloneButtonStyle {
+    background-color: $primarycolor;
+    color: white;
+    border: 1px solid $primarycolor;
+    box-shadow: 0px 1px 5px $primarycolor;
+    height: 30px;
+    width: 80px;
+    border-radius: 10px;
+}
+
+.marginLeft20 {
+    margin-left: 10px;
+}

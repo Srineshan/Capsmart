@@ -9,12 +9,41 @@
   border-radius: 5px;
 }
 
+.displayInRowCenter {
+  align-items: center;
+}
+
+.uploadTextStyle {
+  text-align: left;
+  font: normal normal normal 18px/26px proxima-nova;
+  letter-spacing: 0px;
+  color: black;
+  opacity: 1;
+  padding: 5px;
+}
+
 .margin10 {
   margin: 10px;
 }
 
+.marginLeftRight20 {
+  margin: 0 20px !important;
+}
+.alignItem {
+  align-self: center;
+}
+
 .heading {
   font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-align: left;
+  color: #333;
+  margin-Top: 0;
+}
+
+.heading1 {
+  font-size: 1 rem;
   font-weight: bold;
   margin-bottom: 20px;
   text-align: left;
@@ -79,6 +108,18 @@
 
 .fileUpload {
   flex: 2;
+}
+
+.spaceBetween {
+  display: flex;
+  justify-content: space-between;
+}
+
+.uploadBorderStyle {
+  background: $secondarycolor 0% 0% no-repeat padding-box;
+  border: 0.800000011920929px dashed #173790;
+  border-radius: 4px;
+  opacity: 1;
 }
 
 .inputGroup2 {
@@ -293,10 +334,11 @@
   width: auto;
   object-fit: contain;
   justify-content: center;
+  cursor: pointer;
 }
 
 .contractScrollStyle {
-  height: 300px;
+  height: 550px;
   overflow: scroll;
 }
 
@@ -345,10 +387,18 @@
   margin-left: 20px;
 }
 
+.marginTop {
+  margin-top: 20px;
+}
+
 .applicantGrid {
   display: grid;
-  grid-template-columns: 30% 30% 30% 3%;
+  grid-template-columns: 18% 18% 18% 18% 18% 4%;
   grid-gap: 1%;
+}
+
+.marginLeftRight20 {
+  margin: 0 20px !important;
 }
 
 .padding20 {
@@ -404,6 +454,10 @@
   margin-bottom: 20px;
 }
 
+.marginBottom10 {
+  margin-bottom: 10px;
+}
+
 .lableStyle {
   text-align: left;
   font: normal normal 500 15px/17px proxima-nova;
@@ -422,6 +476,34 @@
 
 .leftAlign {
   text-align: left !important;
+}
+
+.oneColumnGrid {
+  display: grid;
+  grid-template-columns: 95% 4%;
+  grid-gap: 1%;
+}
+
+.displayInRow {
+  display: flex;
+  flex-direction: row;
+}
+
+.referenceCardStyle {
+  background: #dddddf 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 18px #0F0B3129;
+  border: 1px solid $primarycolor;
+  border-radius: 4px;
+  opacity: 0.9;
+  padding: 3px;
+}
+
+.docsIcon {
+  text-align: left;
+  font: normal normal normal 20px/24px la-solid-900;
+  letter-spacing: 0px;
+  color: $primarycolor;
+  opacity: 1;
 }
 
 .gridStyle {

@@ -51,6 +51,7 @@ const WorkModeDialog = ({ getIsOpen }) => {
       localStorage?.removeItem('initialRoute')
     } else {
       window.location.pathname = "/applications";
+      sessionStorage.setItem("applicationCreationType", "REAPPOINTMENT");
     }
     localStorage?.removeItem('initialRoute');
   };

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { GET, PUT, POST, TenantID } from "../../Screens/dataSaver";
+import { GET, PUT, POST, TenantID,DELETE } from "../../Screens/dataSaver";
 import { Dialog, Classes } from "@blueprintjs/core";
 import CrossPink from "../../images/crossPink.png";
 import Cookie from 'universal-cookie';
@@ -17,6 +17,8 @@ import CommonInputField from "../CommonFields/CommonInputField";
 import CommonSwitch from "../CommonFields/CommonSwitch";
 import axios from "axios";
 import { Tooltip } from "@mui/material";
+import DeleteIcon from './../../images/deleteHcRow.png';
+import DeleteConfirmationDialog from './../../Components/DeleteConfirmation';
 // import { WProofreader } from '@webspellchecker/wproofreader-ckeditor5';
 
 const NotesDialog = ({ getIsOpen, getActiveApplicationView, selectedTab }) => {
@@ -45,6 +47,8 @@ const NotesDialog = ({ getIsOpen, getActiveApplicationView, selectedTab }) => {
   const [uploadFileData, setUploadFileData] = useState([]);
   const [documentDesc, setDocumentDesc] = useState("");
   const [documentTitle, setDocumentTitle] = useState("");
+    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [fileToDeleteId, setFileToDeleteId] = useState(null);
   const [notesVisible, setNotesVisible] = useState(true);
   const canadaData = sessionStorage.getItem('canadaData') !== 'undefined' ? JSON.parse(sessionStorage.getItem('canadaData')) : {};
   const dateFormat = canadaData?.dateFormat || 'MMM dd, yyyy';
@@ -153,6 +157,36 @@ const NotesDialog = ({ getIsOpen, getActiveApplicationView, selectedTab }) => {
       setIsLoading(false);
       return null;
     }
+  };
+
+
+   const handleDeleteFile = async (fileId) => {
+    try {
+      setIsLoadingImageDocs(true);
+          const requestBody = [fileId];
+        const { data: response } = await DELETE(
+          'document-management-service/document', requestBody);
+  
+      SuccessToaster2("File deleted successfully");
+  
+      // Filter out from local state
+      setUploadFileData(prev => prev.filter(file => file.id !== fileId));
+  
+      setFileToDeleteId(null);
+      setShowDeleteConfirmation(false);
+      setIsLoadingImageDocs(false);
+    } catch (error) {
+      ErrorToaster2("File deletion failed");
+      console.error("Delete error:", error);
+      setShowDeleteConfirmation(false);
+      setIsLoadingImageDocs(false);
+    }
+  };
+
+  const getDeleteConfirmation = (value) => {
+  if (value) {
+    handleDeleteFile(fileToDeleteId); 
+  }
   };
 
   const getApplicationEntity = async () => {
@@ -481,6 +515,12 @@ const NotesDialog = ({ getIsOpen, getActiveApplicationView, selectedTab }) => {
                           className={style.referenceCardStyleDescription}
                         />
                       </div>
+                      <div className={`${style.displayInRow}`}>
+                        <img src={DeleteIcon} alt="" className={style.docTypeImgStyle} onClick={() => {
+    setFileToDeleteId(file?.id);
+    setShowDeleteConfirmation(true);
+  }}/>
+                        </div>
                     </div>
                   </div>
                 ))}
@@ -505,6 +545,13 @@ const NotesDialog = ({ getIsOpen, getActiveApplicationView, selectedTab }) => {
             </div>
           </div>
         </Dialog>
+      )}
+           {showDeleteConfirmation && (
+        <DeleteConfirmationDialog
+          getShowDeleteConfirmation={(val) => setShowDeleteConfirmation(val)}
+          getDeleteConfirmation={getDeleteConfirmation}
+          confirmationText="Do you want to delete this uploaded Document?"
+        />
       )}
     </>
   );

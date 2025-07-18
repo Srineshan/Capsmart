@@ -11,6 +11,7 @@ import NotificationCount from "./../../images/notificationCount.png";
 import File from "./../../images/file.png";
 import { Link } from "react-router-dom";
 import LogoutIcon1 from "./../../images/logoutIcon.png";
+import { format } from "date-fns";
 import Cookies from "universal-cookie";
 import Popover from "@mui/material/Popover";
 import { isSuperAdminAccess } from "../../Screens/dataSaver";
@@ -33,6 +34,7 @@ import CCimgHover from "../../images/CredentialingCommitteeHover.svg";
 import HODimgHover from "../../images/HeadofDepartmentHover.svg";
 import SAimgHover from "../../images/SystemAdminHover.svg";
 import DoctorAnime from '../../images/doctorAnime.png';
+import { formatFirstNameLastName } from "./../../utils/formatting";
 // import { Logout } from "../../utils/auth";
 
 const useStyles = makeStyles((theme) => ({
@@ -63,8 +65,11 @@ const Navbar = () => {
   const openTracker = Boolean(anchorElTracker);
   const popoverAnchorTracker = useRef(null);
   const [anchorElHelp, setAnchorElHelp] = useState(null);
+  const [anchorElProfile, setAnchorElProfile] = useState(null);
   const openHelp = Boolean(anchorElHelp);
+  const openProfile = Boolean(anchorElProfile);
   const popoverAnchorHelp = useRef(null);
+  const popoverAnchorHelpProfile = useRef(null);
   const [anchorElTools, setAnchorElTools] = useState(null);
   const [anchorElGuide, setAnchorElGuide] = useState(null);
   const [openPrivileged, setOpenPrivileged] = useState(null);
@@ -100,6 +105,8 @@ const Navbar = () => {
   const [currentUserDetails, setCurrentUserDetails] = useState();
   const [user, setUser] = useState();
   const [userId, setUserId] = useState();
+  const canadaData = sessionStorage.getItem('canadaData') !== 'undefined' ? JSON.parse(sessionStorage.getItem('canadaData')) : {};
+  const dateFormat = canadaData?.dateFormat || 'MMM dd, yyyy';
 
   const roleIcons = {
     "Staff Manager": SMimgHover,
@@ -279,6 +286,14 @@ const Navbar = () => {
 
   const handleCloseHelp = () => {
     setAnchorElHelp(null);
+  };
+
+  const handleClickProfile = (event) => {
+    setAnchorElProfile(event.currentTarget);
+  };
+
+  const handleCloseProfile = () => {
+    setAnchorElProfile(null);
   };
 
   const idHelp = open ? "mouse-over-popover" : undefined;
@@ -648,10 +663,10 @@ const Navbar = () => {
                   className={style.optionsCardStyle}
                   onClick={() => handleClose()}
                 >
-                  <Link
+                  {/* <Link
                     to={""}
                     className={style.noFontStyle}
-                  >
+                  > */}
                     <div className={`${style.dropdownContainer}`}>
                       <div className={style.menuWidth}>
                         <div className={style.spaceBetween}>
@@ -659,7 +674,7 @@ const Navbar = () => {
                           <div className={style.marginTopAuto}>
                             {showAllStaffMenu ? (
                               <RemoveIcon
-                                sx={{ fontSize: 20, color: "#F5F9FD", cursor: "pointer", marginRight: '10px' }}
+                                sx={{ fontSize: 20, color: "#F5F9FD",cursor: "pointer", marginRight: '10px' }}
                                 onClick={() =>
                                   setShowAllStaffMenu(false)
                                 } />
@@ -752,7 +767,7 @@ const Navbar = () => {
                         <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`}>Saved Reports Archive</div>
                       </Link> */}
                     </div>
-                  </Link>
+                  {/* </Link> */}
                 </div>
               </Popover>
             </div>
@@ -858,11 +873,70 @@ const Navbar = () => {
         </div>
 
         <div className={`${style.displayInRow} ${style.centerAlignCenter}`}>
-          <Tooltip title={"Go to Your Profile Page"} arrow>
-            <Link to={'/profile'} >
+          {/* <Tooltip title={"Go to Your Profile Page"} arrow>
+            <Link to={'/profile'} > */}
+             <div
+              className={`${style.menuStyleProfile}`}
+              ref={popoverAnchorHelpProfile}
+              onMouseEnter={(e) => handleClickProfile(e)}
+              onMouseLeave={() => handleCloseProfile()}
+              aria-owns={"mouse-over-popover"}
+              aria-haspopup="true"
+            >
               <img src={currentUserDetails?.profilePic?.file?.fileURL ? currentUserDetails?.profilePic?.file?.fileURL : DoctorAnime} className={style.userLogo} />
-            </Link>
-          </Tooltip>
+              <Popover
+                id={"mouse-over-popover"}
+                open={openProfile}
+                anchorEl={popoverAnchorHelpProfile.current}
+                onClose={handleCloseProfile}
+                anchorOrigin={{
+                  vertical: "bottom",
+                  horizontal: "left",
+                }}
+                transformOrigin={{
+                vertical: "top",
+                horizontal: "center",
+              }}
+                classes={{
+                  paper: classes.popoverContent,
+                }}
+                PaperProps={{
+                  onMouseEnter: handleClickProfile,
+                  onMouseLeave: handleCloseProfile,
+                }}
+              >
+                <div className={style.profileCardStyle}>
+                  <strong className={`${style.flexJustifyCenter} ${style.nameTextStyle}`}>
+                    {currentUserDetails?.name?.firstName !== undefined &&
+                    currentUserDetails?.name?.lastName !== undefined
+                      ? formatFirstNameLastName(
+                          currentUserDetails?.name?.firstName,
+                          currentUserDetails?.name?.lastName,
+                        )
+                      : "{First Name} {Last Name}"}
+                  </strong>
+                  <div className={`${style.workModeTextStyle} ${style.marginTop10}`}>{workModeType}</div>
+                  <div className={`${style.lastLoginStyle} ${style.marginTop10}`}>
+                    Last Login:{' '}
+                    {currentUserDetails?.lastLogin
+                      ? format(new Date(currentUserDetails?.lastLogin), `${dateFormat}, HH:mm a`)
+                      : '-'}
+                  </div>
+                  {currentUserDetails?.roles?.length > 1 && (
+                    <Tooltip title={"Click to Switch Workspace"} arrow>
+                      <div
+                        className={`${style.buttonBackgroundStyle} ${style.marginTop10} ${style.cursorPointer}`}
+                        onClick={handleWorkModeSelection}
+                      >
+                        Switch Workspaces
+                      </div>
+                    </Tooltip>
+                  )}
+                </div>
+              </Popover>
+            </div>
+            {/* </Link>
+          </Tooltip> */}
           {/* {!window.location.pathname.includes('reportTypeOverview') && (
                     <>
                         <img src={File} alt="print" className={style.icons} />

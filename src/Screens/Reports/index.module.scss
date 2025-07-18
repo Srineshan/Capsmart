@@ -1852,13 +1852,13 @@
 // }
 
 .reporttypeLeftBackGround {
-  background: radial-gradient(80px 100px at 28% -9%, #0BA5D0 0%, $primarycolor 100%);
+  background: radial-gradient(100px 150px at 25% -10%, #0BA5D0 2%, $primarycolor 100%);
   border-radius: 8px;
   opacity: 1;
 }
 
 .reporttypeLeftBackGround:hover {
-  background: radial-gradient(50px 100px at 28% -9%, #0BA5D0 0%, #054D61 100%);
+  background: radial-gradient(80px 100px at 28% -10%, #0BA5D0 20%, #054D61 100%);
   border-radius: 8px;
   opacity: 1;
 }
@@ -2013,9 +2013,9 @@
         page-break-inside: avoid;
     }
 
-    .reportSection {
-        page-break-before: always;
-    }
+    // .reportSection {
+    //     page-break-before: always;
+    // }
 
     table {
         page-break-inside: auto;
