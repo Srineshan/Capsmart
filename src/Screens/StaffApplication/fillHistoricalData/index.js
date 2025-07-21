@@ -213,7 +213,7 @@ const HistoricalData = () => {
   const [restrictiontext, setRestrictionText] = useState("");
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [selectedFileId, setSelectedFileId] = useState(null);
-  const tableHeader = ['Name', 'Applicant Type', 'Privilege', ''];
+  const tableHeader = ['Staff Name','Email', 'Staff Type','Department','Privilege', 'Action'];
 
   const canadianPostalCodeRegex = /^[A-Za-z]\d[A-Za-z][ -]?\d[A-Za-z]\d$/;
 
@@ -313,6 +313,27 @@ return Object.keys(newErrors).length === 0;
       setDob("");
     }
   };
+
+
+  const scrollToTopAndToast = (message, isSuccess = true) => {
+  const checkScrollAndToast = () => {
+    const scrollTop = window.scrollY || document.documentElement.scrollTop;
+    if (scrollTop === 0) {
+      if (isSuccess) {
+        SuccessToaster2(message);
+      } else {
+        ErrorToaster2(message);
+      }
+      window.removeEventListener("scroll", checkScrollAndToast);
+    }
+  };
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+
+  setTimeout(() => {
+    window.addEventListener("scroll", checkScrollAndToast);
+  }, 100);
+};
 
 
   const handleAgreementChange = (e) => {
@@ -438,9 +459,9 @@ const handleDateOfEndChange = (newDate) => {
     
       newFilesArray.forEach(file => {
         if (existingFileNames.includes(file.name)) {
-          ErrorToaster2(`File "${file.name}" already exists`);
+          scrollToTopAndToast(`File "${file.name}" already exists`,false);
         } else if (seenInCurrentSelection.has(file.name)) {
-          ErrorToaster2(`Duplicate file "${file.name}" selected in this upload`);
+          scrollToTopAndToast(`Duplicate file "${file.name}" selected in this upload`,false);
         } else {
           seenInCurrentSelection.add(file.name);
           filteredNewFiles.push(file);
@@ -485,7 +506,7 @@ const handleDateOfEndChange = (newDate) => {
         formData,
       );
         console.log("API Response:", response);
-        SuccessToaster2('File Uploaded Successfully');
+        scrollToTopAndToast('File Uploaded Successfully',true);
         console.log("Response data:", response?.data);
         setUploadFileData(prevData => {
           // Merge previous data with new data
@@ -495,7 +516,7 @@ const handleDateOfEndChange = (newDate) => {
         console.log("Responseupload:", uploadFileData);
         return response?.data;
       } catch (error) {
-        ErrorToaster2('File Upload Failed');
+        scrollToTopAndToast('File Upload Failed',false);
         console.error("Error:", error);
         setIsLoading(false);
         return null;
@@ -504,24 +525,18 @@ const handleDateOfEndChange = (newDate) => {
 
     const handleDeleteFile = async (fileIdToDelete) => {
   try {
-    const requestBody = [fileIdToDelete]; 
-
-    const { data: response } = await DELETE(
-      'document-management-service/document',
-      {
-        data: requestBody,
-      }
-    );
-
-    SuccessToaster2("File deleted successfully");
+    const requestBody = [fileIdToDelete];
+    console.log("Delete File:",fileIdToDelete);
+    const { data: response } = await DELETE('document-management-service/document', requestBody);
+    scrollToTopAndToast("File deleted successfully",true);
 
     // Remove the deleted file from uploadFileData
     setUploadFileData(prevData =>
-      prevData.filter(file => file.id !== fileIdToDelete)
+      prevData.filter(file => file?.id !== fileIdToDelete)
     );
     setShowDeleteConfirmation(false); // close confirmation dialog
   } catch (error) {
-    ErrorToaster2("File deletion failed");
+    scrollToTopAndToast("File deletion failed",false);
     console.error("Delete error:", error);
     setShowDeleteConfirmation(false); // close even on error
   }
@@ -541,7 +556,7 @@ const getShowDeleteConfirmation = (value) => {
 const getDeleteConfirmation = (value) => {
   if (value && selectedFileId) {
     handleDeleteFile(selectedFileId);
-    setSelectedFileId(null); // reset after deletion
+    setSelectedFileId(null);
   }
 };
 
@@ -767,7 +782,7 @@ const getDeleteConfirmation = (value) => {
     );
 
     if (isDuplicate) {
-      ErrorToaster2("This Hospital and Privilege Category pair already exists.");
+      scrollToTopAndToast("This Hospital and Privilege Category pair already exists.",false);
       console.log("Duplicate Hospital and Privilege Category pair:", selectedHospital?.name, selectedPrivilegeCategory?.id); 
       setHospitalName("");
       setHospitalPrivilege("");
@@ -1045,26 +1060,65 @@ const getDeleteConfirmation = (value) => {
 
   const getTableDataValues = () => {
     let name = [];
+    let email = [];
     let applicantType = [];
+    let department = [];
     let privilege = [];
-    let editIcon = [];
+    let action = []
+
 
     applicationOldData.map(data => {
-      name.push(data?.demographics.name.firstName);
-      applicantType.push(data?.applicantType.category);
-      privilege.push(data?.privilegeCategory.status.category);
-      editIcon.push(<EditIcon className={style.editColor} onClick={() => handleEditClick(data)} />)
+      name.push(data?.demographics?.name?.firstName);
+      email.push(data?.demographics?.email);
+      applicantType.push(data?.applicantType?.category || "-");
+      department.push(data?.privilegeCategory?.program?.name);
+      privilege.push(data?.privilegeCategory?.status?.category);
+      action.push(true);
+
+
     })
     return [
       { type: "text", value: name },
+      {type: "text", value: email },
       { type: "text", value: applicantType },
+      { type: "text", value: department },
       { type: "text", value: privilege },
-      {
-        type: "icon",
-        icon: editIcon,
-        isShowHoverText: false,
-      }]
+      { type: "action", value: action }]
   }
+
+  const HistoricalActionData = [
+      {
+      data: "Modify",
+      requiredValue: "boolean",
+      onClick: (application) => handleEditClick(application),
+      conditionToShow: `data?.staff === null || data?.staff === undefined || data?.staff === ""`,
+    },
+      {
+      data: "Activate",
+      requiredValue: "boolean",
+      onClick: (data) => handleActivateApplication(data),
+      conditionToShow: `data?.staff === null || data?.staff === undefined || data?.staff === ""`
+    }
+   ]
+
+  
+const handleActivateApplication = async (data) => {
+  const importedDataId = data?.id;
+  if (!importedDataId) {
+    ErrorToaster2("Invalid application data.");
+    return;
+  }
+
+  try {
+    const { data } = await GET(`application-management-service/application/oldData/${importedDataId}/activate`);
+    console.log("Activation response:", data);
+    SuccessToaster2("Application activated successfully");
+    getApplicationOldData();
+  } catch (error) {
+    ErrorToaster2(error);
+  }
+};
+
 
   useEffect(() => {
     if (selectedApplication && isEdit) {
@@ -1452,13 +1506,13 @@ const getDeleteConfirmation = (value) => {
         });
     }
   };
-  return (
+  return (  
     <>
       {!showForm ? (
         <>
           <Navbar />
           <div className={style.applicantList} >
-            <div className={`${style.floatRight} ${style.marginTop20} ${style.marginBottom20}`}>
+            <div className={`${style.floatRight} ${style.marginTop10} ${style.marginBottom10}`}>
               <button
                 className={style.buttonStyle}
                 onClick={() => handleAddClick()}
@@ -1466,18 +1520,19 @@ const getDeleteConfirmation = (value) => {
                 ADD NEW
               </button>
             </div>
+            <div className={`${style.marginLeftRight20}`}>
             <TableTwo
               tableHeaderValues={tableHeader}
               tableDataValues={getTableDataValues()}
               tableData={applicationOldData}
               gridStyle={style.applicantGrid}
-              // actions={!isPOD ? actions : []}
+              actions={HistoricalActionData}
               scrollStyle={style.contractScrollStyle}
               tableSortValues={[]}
               heading={'There are no records to display'}
-              onClickFunction={() => { }}
               hidePagination={true}
             />
+            </div>
           </div>
         </>) : (
           <>

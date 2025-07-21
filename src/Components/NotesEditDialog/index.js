@@ -181,11 +181,7 @@ const [fileToDeleteId, setFileToDeleteId] = useState(null);
     setIsLoadingImageDocs(true);
         const requestBody = [fileId];
       const { data: response } = await DELETE(
-          'document-management-service/document',
-          {
-            data: requestBody,
-          }
-        );
+        'document-management-service/document', requestBody);
 
     SuccessToaster2("File deleted successfully");
 
