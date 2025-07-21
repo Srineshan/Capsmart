@@ -908,6 +908,10 @@ const App = ({ props }) => {
         console.log('login route')
         let roles = jwt(Auth())?.roles?.split(",");
         console.log("LoginRole", roles)
+         if (initialRoute === "/applications") {
+          console.log("initialRoute",initialRoute)
+          sessionStorage.setItem("applicationCreationType", "REAPPOINTMENT");
+        }
         if (roles?.length > 1) {
           console.log("LoginRole1111", roles)
           // return(
@@ -925,6 +929,7 @@ const App = ({ props }) => {
           sessionStorage.setItem("workModeType", roles[0]);
           // sessionStorage.setItem("applicationCreationType", "REAPPOINTMENT");
           window.location.href = `${initialRoute}`;
+          console.log("initialRoute",initialRoute)
           localStorage?.removeItem('initialRoute')
         }
         else if (roles?.length === 1) {
