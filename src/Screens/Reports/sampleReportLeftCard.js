@@ -1110,15 +1110,35 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                         marginLeft: "5px",
                                     }}
                                     className={style.cursorPointer}
-                                    onClick={() => {
-                                    const updatedDepartments = selectedPrivilegeCategory.filter(depId => depId !== id);
-                                    setSelectedPrivilegeCategory(updatedDepartments);
+                                //     onClick={() => {
+                                //     const updatedPrivilegeCategory = selectedPrivilegeCategory.filter(depId => depId !== id);
+                                //     setSelectedPrivilegeCategory(updatedPrivilegeCategory);
 
-                                    const updatedDepartmentsToSend = privilegeCategory
-                                        ?.filter(data => updatedDepartments.includes(data?.id))
-                                        ?.map(data => data);
+                                //     const updatedPrivilegeCategoryToSend = privilegeCategory
+                                //         ?.filter(data => updatedPrivilegeCategory.includes(data?.id))
+                                //         ?.map(data => data);
 
-                                    setSelectedPrivilegeCategoryToSend(updatedDepartmentsToSend);
+                                //     setSelectedPrivilegeCategoryToSend(updatedPrivilegeCategoryToSend);
+                                // }}
+                                onClick={() => {
+                                    const privilege = privilegeCategory.find(privilege => privilege?.id === id);
+                                    const categoryName = privilege?.category;
+
+                                    if (!categoryName) return;
+
+                                    const matchingIds = privilegeCategory
+                                        .filter(item => item.category === categoryName)
+                                        .map(item => item.id);
+
+                                    const updatedSelected = selectedPrivilegeCategory.filter(
+                                        (id) => !matchingIds.includes(id)
+                                    );
+                                    setSelectedPrivilegeCategory(updatedSelected);
+
+                                    const updatedData = privilegeCategory.filter((item) =>
+                                        updatedSelected.includes(item.id)
+                                    );
+                                    setSelectedPrivilegeCategoryToSend(updatedData);
                                 }}
                                     />
                                 </Tooltip>

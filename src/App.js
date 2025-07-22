@@ -923,11 +923,13 @@ const App = ({ props }) => {
 
         if (roles?.length === 1 && localStorage?.getItem('initialRoute') !== undefined && localStorage?.getItem('initialRoute') !== 'undefined' && localStorage?.getItem('initialRoute') !== null) {
           sessionStorage.setItem("workModeType", roles[0]);
+          // sessionStorage.setItem("applicationCreationType", "REAPPOINTMENT");
           window.location.href = `${initialRoute}`;
           localStorage?.removeItem('initialRoute')
         }
         else if (roles?.length === 1) {
           sessionStorage.setItem("workModeType", roles[0]);
+          sessionStorage.setItem("applicationCreationType", "REAPPOINTMENT");
           let isAppUser =
             roles?.includes("Approver") ||
             roles?.includes("Reviewer") ||
@@ -968,14 +970,17 @@ const App = ({ props }) => {
           } else if (isDepartmentHead) {
             console.log('login route', roles, isDepartmentHead)
             window.location.pathname = "/applications";
+            sessionStorage.setItem("applicationCreationType", "REAPPOINTMENT");
             // navigate("/applications");
           } else if (isCredentialingCommittee) {
             console.log('login route', roles, isCredentialingCommittee)
             window.location.pathname = "/applications";
+            sessionStorage.setItem("applicationCreationType", "REAPPOINTMENT");
             // navigate("/applications");
           } else if (isChiefOfStaff) {
             console.log('login route', roles, isChiefOfStaff)
             window.location.pathname = "/applications";
+            sessionStorage.setItem("applicationCreationType", "REAPPOINTMENT");
             // navigate("/applications");
           } else if (isAttester) {
             console.log('login route', roles, isAttester)

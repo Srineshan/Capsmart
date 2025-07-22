@@ -183,7 +183,7 @@ const EditInfoDialog = ({ checkedIds, getIsOpen, onClose,applicationId,selectedE
   setBusinessPostalCode(form?.applicant?.contactAddress3?.business?.businessAddress?.pinCode ?? "");
   setBusinessPhone(form?.applicant?.contactAddress3?.business?.businessPhone ?? "");
   setBusinessWebsite(form?.applicant?.contactAddress3?.business?.businessWebsite ?? "");
-  setBusinessAddressNeed(form?.applicant?.contactAddress3?.business?.businessAddress === null ? false : true)
+  setBusinessAddressNeed(!form?.applicant?.contactAddress3 || !form?.applicant?.contactAddress3?.business?.businessAddress ? false : true)
   setSameAddressInMailing(form?.applicant?.contactAddress3?.business?.sameAsHomeAddress === true ? "SAME_CURRENT" : form?.applicant?.contactAddress3?.business?.sameAsMailingAddress === true ? "SAME_MAILING" : "DIFFERENT_ADDRESS")
   setSameAddress(form?.applicant?.contactAddress2?.sameAsHomeAddress === true ? "SAME_CURRENT" :form?.applicant?.contactAddress2?.sameAsBusinessAddress === true ? "BUSINESS_ADDRESS": "DIFFERENT_ADDRESS")
   setExceptedStartDate(form?.initialApprovalDate ?? "")
@@ -304,8 +304,7 @@ useEffect(() => {
       mailingPostalCode !== ""
     : true;
 
-  // Business Address Validation: All fields must have value if businessAddressNeed is true
-  const isBusinessAddressValid = businessAddressNeed
+  const isBusinessAddressValid = (businessAddressNeed && selectedEditField === "HOME_ADDRESS")
     ? businessName !== "" &&
       businessStreetAddress !== "" &&
       businessCity !== "" &&
