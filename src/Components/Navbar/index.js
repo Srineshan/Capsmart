@@ -98,6 +98,7 @@ const Navbar = () => {
   const [isSystemAdministrationAvailable, setIsSystemAdministrationAvailable] =
     useState(false);
   const [isSupportAvailable, setIsSupportAvailable] = useState(false);
+  const [isPopoverHovered, setIsPopoverHovered] = useState(false);
   const [showStaffApplicationMenu, setShowStaffApplicationMenu] = useState(false);
   const [showAllStaffMenu, setShowAllStaffMenu] = useState(false);
   // let selectedWorkingMode = sessionStorage.getItem("SelectedWorkingMode");
@@ -231,6 +232,25 @@ const Navbar = () => {
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+const handleMouseEnter = (event) => {
+  setAnchorEl(event.currentTarget);
+};
+
+const handleMouseLeave = () => {
+  if (!isPopoverHovered) {
+    setAnchorEl(null);
+  }
+};
+
+const handlePopoverEnter = () => {
+  setIsPopoverHovered(true);
+};
+
+const handlePopoverLeave = () => {
+  setIsPopoverHovered(false);
+  setAnchorEl(null);
+};
 
   const handleClickTracker = (event) => {
     setAnchorElTracker(event.currentTarget);
@@ -636,8 +656,10 @@ const Navbar = () => {
                 style.activeMenuColor
                 }`}
               ref={popoverAnchor}
-              onMouseEnter={(e) => handleClick(e)}
-              onMouseLeave={() => handleClose()}
+              // onMouseEnter={(e) => handleClick(e)}
+              // onMouseLeave={() => handleClose()}
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
               aria-owns={open ? "mouse-over-popover" : undefined}
               aria-haspopup="true"
             >
@@ -646,7 +668,7 @@ const Navbar = () => {
                 id={"mouse-over-popover"}
                 open={open}
                 anchorEl={popoverAnchor.current}
-                onClose={handleClose}
+                onClose={() => handleMouseLeave()}
                 anchorOrigin={{
                   vertical: "bottom",
                   horizontal: "left",
@@ -655,13 +677,13 @@ const Navbar = () => {
                   paper: classes.popoverContent,
                 }}
                 PaperProps={{
-                  onMouseEnter: handleClick,
-                  onMouseLeave: handleClose,
+                  onMouseEnter: handlePopoverEnter,
+                  onMouseLeave: handlePopoverLeave,
                 }}
               >
                 <div
                   className={style.optionsCardStyle}
-                  onClick={() => handleClose()}
+                  onClick={() => handleMouseLeave()}
                 >
                   {/* <Link
                     to={""}

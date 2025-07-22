@@ -533,6 +533,13 @@ const ReportTypeOverview = () => {
     //     }
     // }
 
+    useEffect(() => {
+        if(reportType === "careProvidersSummary"){
+         setIsLoading(false)
+        }
+    }, [reportType])
+    
+
     const setAddOnServices = () => {
         setAddOnAcceptedReportLog(addOnServicesValues?.approvedActivities);
         setAddOnRejectedReportLog(addOnServicesValues?.rejectedActivities);
@@ -2561,7 +2568,7 @@ const ReportTypeOverview = () => {
                                                     <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop5} `}>Reporting Parameters Applied</div>
                                                     {(reportType === "staffReappointmentsNotes" || reportType === "staffReappointments" || reportType === "locumRenewalOrExtensionApplicationsSummary" || reportType === "privilegedStaffSummary" ||
                                                         reportType === "submittedApplicationsReviewSummary" || reportType === "staffReappointmentTracker" || reportType === "ohipBillingNumbersByCareProvider" || reportType === "careProviderCareerMilestoneSummary" ||
-                                                        reportType === "declinedOrNotRenewedStaffSummary" || reportType === "reappointmentApplicationNotStarted" || reportType === "currentNotesSummary" || reportType === "staffReappointmentStatusSummary" || reportType === "staffbyTypes" || reportType === "locumStaffRenewalStatusTracker") ? (
+                                                        reportType === "declinedOrNotRenewedStaffSummary" || reportType === "reappointmentApplicationNotStarted" || reportType === "currentNotesSummary" || reportType === "staffReappointmentStatusSummary" || reportType === "staffbyTypes" || reportType === "locumStaffRenewalStatusTracker" || reportType === "careProvidersSummary") ? (
                                                         <div className={`${style.grid4} ${style.marginTop20} `}>
                                                             {/* {reportType === "staffReappointmentsNotes" && (
                                                         <div>
@@ -3169,6 +3176,13 @@ const ReportTypeOverview = () => {
                                                                             subHeading={'Try again by changing some of the parameters on the left. If there are any qualifying records, the report will get displayed.'} />
                                                                     )}
 
+                                                                </div>
+                                                            ) : reportType === "careProvidersSummary" ? (
+                                                                 <div className={style.marginTop20}>
+                                                                    <ReportNoDataBox
+                                                                        heading={'Based on the parameters selected and applied, there were NO RECORDS found to include in the report.'}
+                                                                        subHeading={'Try again by changing some of the parameters on the left. If there are any qualifying records, the report will get displayed.'}
+                                                                    />
                                                                 </div>
                                                             ) : reportType === "ohipBillingNumbersByCareProvider" ? (
                                                                 <div className={style.marginTop20}>

@@ -90,7 +90,7 @@ const StaffApplicationList = ({
   showOverRideRequestApprovalDialog,
   showOverRideRequestDialog,
   showOverRideRequestDeclineDialog,
-
+  getUpdateStaffStatuDialog
 }) => {
   const PDFRef = createRef();
   const prevCompletionLettersRef = useRef([]);
@@ -1198,6 +1198,11 @@ const StaffApplicationList = ({
 
   const onClickNotesDialog = (data) => {
     getNotesDialog(true);
+    sessionStorage.setItem("applicationId", data?.id);
+  };
+
+   const onClickUpdateStaffStatuDialog = (data) => {
+    getUpdateStaffStatuDialog(true);
     sessionStorage.setItem("applicationId", data?.id);
   };
 
@@ -6773,6 +6778,11 @@ useEffect(() => {
       requiredValue: "boolean",
       onClick: onClickNotesDialog,
     },
+    // {
+    //   data: "Update Staff Status",
+    //   requiredValue: "boolean",
+    //   onClick: onClickUpdateStaffStatuDialog,
+    // },
     // {
     //   data: "Go to Task List",
     //   requiredValue: "boolean",

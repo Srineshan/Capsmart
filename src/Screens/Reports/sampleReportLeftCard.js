@@ -741,7 +741,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                 </Tooltip>
                 {(reportType === "staffReappointmentsNotes" || reportType === "staffReappointments" || reportType === "locumRenewalOrExtensionApplicationsSummary" || reportType === "privilegedStaffSummary" ||
                     reportType === "submittedApplicationsReviewSummary" || reportType === "staffReappointmentTracker" || reportType === "ohipBillingNumbersByCareProvider" || reportType === "careProviderCareerMilestoneSummary" ||
-                    reportType === "declinedOrNotRenewedStaffSummary" || reportType === "reappointmentApplicationNotStarted" || reportType === "currentNotesSummary" || reportType === "staffReappointmentStatusSummary" || reportType === "staffbyTypes" || reportType === "locumStaffRenewalStatusTracker") ? (
+                    reportType === "declinedOrNotRenewedStaffSummary" || reportType === "reappointmentApplicationNotStarted" || reportType === "currentNotesSummary" || reportType === "staffReappointmentStatusSummary" || reportType === "staffbyTypes" || reportType === "locumStaffRenewalStatusTracker" || reportType === "careProvidersSummary") ? (
                     <>
                         {/* {reportType === "staffReappointmentsNotes" && (
                             <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
@@ -1148,19 +1148,22 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                         )}
                         {(reportType === "submittedApplicationsReviewSummary" || reportType === "currentNotesSummary") && (
                             <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                                <InputLabel id="demo-simple-select-standard-label3">Application Type</InputLabel>
+                                <InputLabel id="demo-simple-select-standard-label3"  className={style.headingtextStyle}>Application Type</InputLabel>
+                                {/* <InputLabel id="demo-multiple-name-label4" className={style.headingtextStyle}>Application Type</InputLabel> */}
                                 <Select
                                     labelId="demo-simple-select-standard-label3"
                                     id="demo-simple-select-standard3"
+                                    // labelId="demo-multiple-name-label4"
+                                    // id="demo-multiple-name4"
                                     value={selectedApplicationType}
                                     onChange={(e) => { setSelectedApplicationType(e.target.value) }}
                                     MenuProps={MenuProps}
                                     disabled={isLoading}
                                     className={style.textAlignLeft}
                                 >
-                                    <MenuItem value={''} disabled={isLoading}>All</MenuItem>
+                                    <MenuItem value={defaultOption} disabled={isLoading}>All</MenuItem>
                                     <MenuItem value={'NEW'} disabled={isLoading}>New Applicants</MenuItem>
-                                    <MenuItem value={'REAPPOINTMENT'} disabled={isLoading}>Staff Reapointments</MenuItem>
+                                    <MenuItem value={'REAPPOINTMENT'} disabled={isLoading}>Staff Reappointments</MenuItem>
                                     <MenuItem value={'LOCUM_RENEWAL'} disabled={isLoading}>Locum Applications</MenuItem>
                                 </Select>
                             </FormControl>
