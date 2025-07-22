@@ -1149,7 +1149,9 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
     getShowCmeFileConfirmation={setShowCmeConfirmationDialog}
     getCmeFileConfirmation={(confirmed) => {
       if (confirmed) {
-          handleCMETranscriptDelete();
+         if (basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.file?.fileName) {
+             handleCMETranscriptDelete();
+        }
           setYesOrNoCMETranscript('');
       }
     }}
