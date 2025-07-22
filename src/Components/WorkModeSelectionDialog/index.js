@@ -27,10 +27,15 @@ const WorkModeDialog = ({ getIsOpen }) => {
   const [userRole, setUserRole] = useState([]);
   const [userMDRole, setUserMDRole] = useState([]);
   const [selectedWorkSpace, setSelectedWorkSpace] = useState('');
+  const [selectedEntity, setSelectedEntity] = useState('');
+  const [showEntitySelection, setShowEntitySelection] = useState(false);
   const [workModeType, setWorkModeType] = useState(() =>
     sessionStorage.getItem("workModeType") || ''
   );
+  const isMasterEntity = sessionStorage.getItem('masterEntity') ? sessionStorage.getItem('masterEntity') === "true" ? true : false : ''
   const [hoveredRole, setHoveredRole] = useState(null);
+  const [userData, setUserData] = useState();
+  const isHapicareUser = isMasterEntity;
 
   useEffect(() => {
     sessionStorage.setItem("fromSummary", false);
@@ -47,7 +52,11 @@ const WorkModeDialog = ({ getIsOpen }) => {
           window.location.href = `${initialRoute}`;
           localStorage?.removeItem('initialRoute')
         } else if (userRole?.length === 1) {
-          window.location.pathname = "/applications";
+          if (isHapicareUser) {
+            window.location.pathname = "/applicant";
+          } else {
+            window.location.pathname = "/applications";
+          }
         }
       } else if (selectedWorkSpace === 'MD_MANAGER') {
         if (userMDRole?.length === 1 && localStorage?.getItem('initialRoute') !== undefined && localStorage?.getItem('initialRoute') !== 'undefined' && localStorage?.getItem('initialRoute') !== null) {
@@ -55,7 +64,11 @@ const WorkModeDialog = ({ getIsOpen }) => {
           window.location.href = `${initialRoute}`;
           localStorage?.removeItem('initialRoute')
         } else if (userMDRole?.length === 1) {
-          window.location.pathname = "/mdManager";
+          if (isHapicareUser) {
+            window.location.pathname = "/mdManager/manageAttestation";
+          } else {
+            window.location.pathname = "/mdManager";
+          }
         }
       }
     } else {
@@ -65,9 +78,14 @@ const WorkModeDialog = ({ getIsOpen }) => {
 
   const setUserDetails = async () => {
     const { data: userData } = await GET(`user-management-service/user/${users?.id}`);
+    setUserData(userData)
     sessionStorage.setItem("user", JSON.stringify(userData));
-    setUserRole(userData?.roles?.map((data) => data?.roleName) || []);
-    setUserMDRole(userData?.mdRoles?.map((data) => data?.roleName) || [])
+    if (userData?.organizations?.length > 1 && selectedEntity === '') {
+      setShowEntitySelection(true)
+    } else {
+      setUserRole(!isHapicareUser ? userData?.roles?.map((data) => data?.roleName) || [] : userData?.organizations?.[0]?.roles?.map((data) => data?.roleName) || []);
+      setUserMDRole(!isHapicareUser ? userData?.mdRoles?.map((data) => data?.roleName) || [] : userData?.organizations?.[0]?.mdRoles?.map((data) => data?.roleName) || [])
+    }
     console.log("userRoletimes", userRole)
   };
 
@@ -102,6 +120,15 @@ const WorkModeDialog = ({ getIsOpen }) => {
     window.location.pathname = "/entitySitePortal"
   };
 
+  const handleSelectedEntity = (value) => {
+    cookie.remove('entityId', { path: '/' })
+    cookie.set('entityId', value, { path: '/' });
+    setSelectedEntity(value);
+    setShowEntitySelection(false);
+    setUserRole(userData?.organizations?.filter(data => data?.tenant?.tenantId === value)?.[0]?.roles?.map((data) => data?.roleName) || []);
+    setUserMDRole(userData?.organizations?.filter(data => data?.tenant?.tenantId === value)?.[0]?.mdRoles?.map((data) => data?.roleName) || [])
+  }
+
   return (
     <>
       {/* <Dialog
@@ -112,7 +139,27 @@ const WorkModeDialog = ({ getIsOpen }) => {
         canEscapeKeyClose={false}
       > */}
       <div className={`${style.backGroundStyle}`}>
-        {((userRole?.length >= 1 && userMDRole?.length >= 1) && selectedWorkSpace === '') ? (
+        {showEntitySelection ? (
+          <div className={`${style.fullHeight} ${style.verticalAlignCenter} ${style.justifyCenter}`}>
+            <div>
+              <div className={style.workSpaceCard}>
+                <div className={style.workSpaceTitle}>Entity Selection</div>
+                <div className={style.marginTop}>
+                  <CommonSelectField
+                    value={selectedEntity}
+                    onChange={(e) => handleSelectedEntity(e.target.value)}
+                    className={style.fullWidth1}
+                    valueList={userData?.organizations?.map(data => data?.tenant?.tenantId)}
+                    labelList={userData?.organizations?.map(data => data?.entityName?.entityName)}
+                    disabledList={userData?.organizations?.map(data => false)}
+                    required={true}
+                    label={"Select Entity"}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : ((userRole?.length >= 1 && userMDRole?.length >= 1) && selectedWorkSpace === '') ? (
           <div className={`${style.fullHeight} ${style.verticalAlignCenter} ${style.justifyCenter}`}>
             <div>
               <div className={style.workSpaceCard}>

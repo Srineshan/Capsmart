@@ -145,7 +145,7 @@ const ManageMDAttest = () => {
         }
         await POST(`medical-directive-service/medicalDirectives/${medicalDirectivesId}/attest`, temp)
             .then(response => {
-                navigate(`/tenant/${entityId}/medicalDirectives`);
+                navigate(`/mdManager/manageAttestation`);
                 getAttestationLog();
                 console.log(response, response?.response?.data)
             })
@@ -211,6 +211,7 @@ const ManageMDAttest = () => {
                                                     showDatais={true}
                                                     removePadding={true}
                                                     alternateSignature={users?.userName}
+                                                    alternateDrawSignature={userData?.esignature}
                                                 />
                                             </div>
                                             <div className={style.verticalAlignCenter}>
@@ -242,6 +243,7 @@ const ManageMDAttest = () => {
                                                 showDatais={true}
                                                 removePadding={true}
                                                 alternateSignature={users?.userName}
+                                                alternateDrawSignature={userData?.esignature}
                                             />
                                         </div>
                                         <div className={style.verticalAlignCenter}>

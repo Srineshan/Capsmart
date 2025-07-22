@@ -84,10 +84,13 @@ const MDLibrary = () => {
     }, []);
 
     useEffect(() => {
-        getLibraryMeta();
         getDepartmentList();
         getEntityId();
     }, []);
+
+    useEffect(() => {
+        getLibraryMeta();
+    }, [selectedDepartmentSpecialities]);
 
     useEffect(() => {
         const controller = new AbortController();
@@ -225,7 +228,7 @@ const MDLibrary = () => {
     }
 
     const getLibraryMeta = async () => {
-        let url = `medical-directive-service/medicalDirectives/library/meta`
+        let url = `medical-directive-service/medicalDirectives/library/meta?departmentSpecialties=${[selectedDepartmentSpecialities !== "" ? selectedDepartmentSpecialities : departmentId]}`
         const response = await axios(`${baseUrl()}/${url}`, {
             method: "GET",
             headers: {
@@ -422,17 +425,17 @@ const MDLibrary = () => {
                             <div className={style.allDeptText}>All Departments</div>
                             {departmentList?.map((data, index) => (
                                 <div>
-                                    <div className={`${style.deptFilterCard} ${(data?.id === (selectedDepartmentSpecialities !== '' ? selectedDepartmentSpecialities : departmentId)) ? style.deptFilterActiveCard : ''} ${style.marginTop10} ${style.displayInRow} ${style.cursorPointer}`} key={index} onClick={() => setSelectedDepartmentSpecialities(data?.id)}>
+                                    <div className={`${style.deptFilterCard} ${(data?.id === (selectedDepartmentSpecialities !== '' ? selectedDepartmentSpecialities?.split('#')?.[0] : departmentId)) ? style.deptFilterActiveCard : ''} ${style.marginTop10} ${style.displayInRow} ${style.cursorPointer}`} key={index} onClick={() => setSelectedDepartmentSpecialities(data?.id)}>
                                         <div className={style.verticalAlignCenter}>
                                             {data?.serviceAreas?.length !== 0 && (
-                                                <img src={(data?.id === (selectedDepartmentSpecialities !== '' ? selectedDepartmentSpecialities : departmentId)) ? OpenedFolder : ClosedFolder} alt="" className={style.folderStyle} />
+                                                <img src={(data?.id === (selectedDepartmentSpecialities !== '' ? selectedDepartmentSpecialities?.split('#')?.[0] : departmentId)) ? OpenedFolder : ClosedFolder} alt="" className={style.folderStyle} />
                                             )}
                                         </div>
                                         <div>{data?.departmentName?.name}</div>
                                     </div>
-                                    {(data?.id === (selectedDepartmentSpecialities !== '' ? selectedDepartmentSpecialities : departmentId)) &&
+                                    {(data?.id === (selectedDepartmentSpecialities !== '' ? selectedDepartmentSpecialities?.split('#')?.[0] : departmentId)) &&
                                         data?.serviceAreas?.map((innerData, innerIndex) => (
-                                            <div className={`${style.serviceAreaFilterCard} ${style.marginLeft20} ${(data?.id === (selectedDepartmentSpecialities !== '' ? selectedDepartmentSpecialities : departmentId)) ? style.deptFilterActiveCard : ''} ${style.marginTop10} ${style.displayInRow} ${style.cursorPointer}`} key={innerIndex} onClick={() => setSelectedDepartmentSpecialities(data?.id)}>
+                                            <div className={`${style.serviceAreaFilterCard} ${style.marginLeft20} ${(`${data?.id}#${innerData?.id}` === selectedDepartmentSpecialities) ? style.deptFilterActiveCard : ''} ${style.marginTop10} ${style.displayInRow} ${style.cursorPointer}`} key={innerIndex} onClick={() => setSelectedDepartmentSpecialities(`${data?.id}#${innerData?.id}`)}>
                                                 <div>{innerData?.name}</div>
                                             </div>
                                         ))}
@@ -622,7 +625,7 @@ const MDLibrary = () => {
                             </div>
                         )}
                         <div className={`${style.mdCard} ${style.marginTop}`}>
-                            <div className={style.deptTableHeading}>{`Medical Directives For ${departmentList?.filter(data => data?.id === (selectedDepartmentSpecialities !== "" ? selectedDepartmentSpecialities : departmentId))?.[0]?.departmentName?.name} (${dashboardData?.length})`}</div>
+                            <div className={style.deptTableHeading}>{`Medical Directives For ${departmentList?.filter(data => data?.id === (selectedDepartmentSpecialities !== "" ? selectedDepartmentSpecialities?.split('#')?.[0] : departmentId))?.[0]?.departmentName?.name} ${selectedDepartmentSpecialities?.split('#')?.length > 1 ? `- ${departmentList?.filter(data => data?.id === (selectedDepartmentSpecialities !== "" ? selectedDepartmentSpecialities?.split('#')?.[0] : departmentId))?.[0]?.serviceAreas?.filter(innerData => innerData?.id === selectedDepartmentSpecialities?.split('#')?.[1])?.[0]?.name}` : ''} (${dashboardData?.length})`}</div>
                             <div ref={componentRef} className={style.marginTop20}>
                                 <div className={`${style.reduceMarginTop10} registeredUsers`} ref={PDFRef}>
                                     <TableTwo

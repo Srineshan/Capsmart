@@ -4,7 +4,7 @@ import { corsUrl, getValueByPath } from "../../utils/formatting";
 import { GET } from "../../Screens/dataSaver";
 import { useParams } from "react-router-dom";
 
-const ESignature = ({ userName, currentDate, encData, showData, showDatais = true, isInitial, removePadding, basicForm, alternateSignature }) => {
+const ESignature = ({ userName, currentDate, encData, showData, showDatais = true, isInitial, removePadding, basicForm, alternateSignature, alternateDrawSignature }) => {
   const [formIndex, setFormIndex] = useState();
   const [applicationId, setApplicationId] = useState(
     sessionStorage.getItem("applicationId")
@@ -72,6 +72,12 @@ const ESignature = ({ userName, currentDate, encData, showData, showDatais = tru
             ) : (eSignImg && !alternateSignature) ? (
               <img
                 src={`${corsUrl}/${eSignImg?.fileURL}`}
+                alt="Signature"
+                className={style.eSignImg}
+              />
+            ) : (alternateDrawSignature?.file) ? (
+              <img
+                src={`${corsUrl}/${alternateDrawSignature?.file?.fileURL}`}
                 alt="Signature"
                 className={style.eSignImg}
               />

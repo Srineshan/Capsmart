@@ -97,6 +97,16 @@ const ManageAttestation = () => {
     }, [selectedOptionValue]);
 
     useEffect(() => {
+        if (selectedOption === "pending_md" && attestationList?.length > 0 && userData) {
+            if (!userData?.esignature) {
+                setIsShowESignDialog(true)
+            } else {
+                setIsShowESignConfirmationDialog(true)
+            }
+        }
+    }, [attestationList, userData]);
+
+    useEffect(() => {
         if (!medicalDirectivesAttestation)
             setIsSigned(false)
     }, [medicalDirectivesAttestation])

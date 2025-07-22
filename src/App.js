@@ -320,7 +320,8 @@ const MDRequestAttest = React.lazy(() =>
 const MDAttest = React.lazy(() => import("./Screens/MDRequestAttest/MedicalDirectivesAttest"));
 const MDAttestStatus = React.lazy(() => import("./Screens/MDManagerScreens/MDManager/MedicalDirectivesAttestStatus"));
 const ManageMDAttest = React.lazy(() => import("./Screens/MDManagerScreens/MDAttestations/ManageAttestations/MedicalDirectivesAttest"));
-
+let isHapicareUser;
+let organizations;
 const App = ({ props }) => {
   const [accessToken, setAccessToken] = useState(Auth());
   const { isAuthenticated, isSessionLoading } = useSession();
@@ -784,13 +785,15 @@ const App = ({ props }) => {
         method: "GET",
         headers: {
           "Authorization": `Bearer ${authorization}`,
-          "X-subdomain": 'master',
+          "X-subdomain": 'cmh-hospital',
         },
       };
     console.log(requestHeader, 'requestHeader')
     await axios(`${baseUrl()}/entity-service/entityID`, requestHeader)
       .then((response) => {
         if (response?.data?.id) {
+          isHapicareUser = response?.data?.masterEntity;
+          sessionStorage.setItem('masterEntity', response?.data?.masterEntity)
           cookie.set("entityId", response?.data?.id, {
             path: "/",
             // domain: window.location.hostname?.split('.')?.length >= 3 ? window.location.hostname?.slice(-2)?.join('.') : window.location.hostname,
@@ -824,7 +827,7 @@ const App = ({ props }) => {
         "Content-Type": "application/json",
         "X-tenantID": id,
         "Authorization": `Bearer ${authorization}`,
-        "X-subdomain": 'master',
+        "X-subdomain": 'cmh-hospital',
       },
     }
     fetch(`${baseUrl()}/user-management-service/auth/login`, requestOptions)
@@ -836,6 +839,8 @@ const App = ({ props }) => {
           // secure: true,
           // sameSite: 'none',
         });
+        organizations = data?.organizations || [];
+        sessionStorage.setItem('organizations', JSON.stringify(data?.organizations))
       });
     console.log('entered')
     if (cookie.get("authorization") && cookie.get("authorization") !== 'undefined') {
@@ -905,19 +910,28 @@ const App = ({ props }) => {
   // }
 
   const LoginRoute = () => {
+    console.log('login route', Auth())
     // const navigate = useNavigate();
     const fetchData = () => {
       console.log('login route', Auth())
       const initialRoute = localStorage.getItem("initialRoute");
       if (Auth()) {
-        console.log('login route')
-        const rawRoles = jwt(Auth())?.roles;
-        const rawMdRoles = jwt(Auth())?.mdRoles;
-        let roles = rawRoles ? rawRoles.split(",") : [];
-        let mdRoles = rawMdRoles ? rawMdRoles.split(",") : [];
-        console.log("LoginRole", roles, mdRoles)
+        console.log('login route', isHapicareUser, organizations)
+        if (isHapicareUser && organizations?.length > 1) {
+          setShowDialog(true);
+        } else if (isHapicareUser) {
+          // if (cookie.get("authorization") !== undefined && cookie.get("authorization") !== 'undefined' && !isSessionTokenExpired(cookie.get("authorization"))) {
+          cookie.remove('entityId', { path: '/' })
+          cookie.set('entityId', organizations?.[0]?.tenant?.tenantId, { path: '/' });
+          // }
+        }
+        console.log('login route', isHapicareUser, organizations)
+        const roles = !isHapicareUser ? jwt(Auth())?.roles?.split(",")?.filter(s => s.trim() !== '') : organizations?.[0]?.roles?.map(data => data?.roleName);
+        const mdRoles = !isHapicareUser ? jwt(Auth())?.mdRoles?.split(",")?.filter(s => s.trim() !== '') : organizations?.[0]?.mdRoles?.map(data => data?.roleName);
+        console.log("LoginRole", roles, mdRoles, isHapicareUser, organizations)
         if (roles?.length > 1 || (roles?.length >= 1 && mdRoles?.length >= 1)) {
           console.log("LoginRole1111", roles)
+          console.log('login route', isHapicareUser, organizations)
           // return(
           //   <WorkModeDialog getIsOpen={true} />
           // ) 
@@ -927,9 +941,7 @@ const App = ({ props }) => {
           } else {
             setShowDialog(true);
           }
-        }
-
-        if ((roles?.length === 1 || mdRoles?.length === 1) && localStorage?.getItem('initialRoute') !== undefined && localStorage?.getItem('initialRoute') !== 'undefined' && localStorage?.getItem('initialRoute') !== null) {
+        } else if ((roles?.length === 1 || mdRoles?.length === 1) && localStorage?.getItem('initialRoute') !== undefined && localStorage?.getItem('initialRoute') !== 'undefined' && localStorage?.getItem('initialRoute') !== null) {
           sessionStorage.setItem("workModeType", mdRoles?.length === 1 ? mdRoles[0] : roles[0]);
           window.location.href = `${initialRoute}`;
           localStorage?.removeItem('initialRoute')
@@ -1011,12 +1023,11 @@ const App = ({ props }) => {
       }
     }
     if (!Auth()) {
-      console.log('login route', Auth())
+      console.log('login route', isHapicareUser, organizations, sessionStorage.getItem('organizations') ? JSON.parse(sessionStorage.getItem('organizations')) : [])
       setTimeout(() => {
         fetchData();
       }, 2000);
     } else {
-      console.log('login route', Auth())
       fetchData();
     }
   };

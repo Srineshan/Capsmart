@@ -33,8 +33,8 @@ const Applicant = () => {
             if (applicationForm?.length > 0) {
                 let privilegeCategory = applicationForm?.[applicationForm?.length - 1]?.basicDetailReferences?.credentialingAndPrivilegingCategory?.type;
                 console.log('Inside UseEffect', applicationForm);
-                cookies.remove('entityId', { path: '/' })
-                cookies.set('entityId', applicationForm?.[applicationForm?.length - 1]?.tenant?.id, { path: '/' });
+                // cookies.remove('entityId', { path: '/' })
+                // cookies.set('entityId', applicationForm?.[applicationForm?.length - 1]?.tenant?.id, { path: '/' });
                 if ((localStorage?.getItem('initialRoute') !== undefined && localStorage?.getItem('initialRoute') !== 'undefined' && localStorage?.getItem('initialRoute') !== null)) {
                     console.log(localStorage?.getItem('initialRoute'), 'initialRiute')
                     navigate(localStorage?.getItem('initialRoute'));
