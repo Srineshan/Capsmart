@@ -779,7 +779,7 @@ const App = ({ props }) => {
         method: "GET",
         headers: {
           "Authorization": `Bearer ${authorization}`,
-          "X-subdomain": 'cmh-hospital',
+          "X-subdomain": 'master',
         },
       };
     console.log(requestHeader, 'requestHeader')
@@ -819,7 +819,7 @@ const App = ({ props }) => {
         "Content-Type": "application/json",
         "X-tenantID": id,
         "Authorization": `Bearer ${authorization}`,
-        "X-subdomain": 'cmh-hospital',
+        "X-subdomain": 'master',
       },
     }
     fetch(`${baseUrl()}/user-management-service/auth/login`, requestOptions)
@@ -908,8 +908,8 @@ const App = ({ props }) => {
         console.log('login route')
         let roles = jwt(Auth())?.roles?.split(",");
         console.log("LoginRole", roles)
-         if (initialRoute === "/applications") {
-          console.log("initialRoute",initialRoute)
+        if (initialRoute === "/applications") {
+          console.log("initialRoute", initialRoute)
           sessionStorage.setItem("applicationCreationType", "REAPPOINTMENT");
         }
         if (roles?.length > 1) {
@@ -929,7 +929,7 @@ const App = ({ props }) => {
           sessionStorage.setItem("workModeType", roles[0]);
           // sessionStorage.setItem("applicationCreationType", "REAPPOINTMENT");
           window.location.href = `${initialRoute}`;
-          console.log("initialRoute",initialRoute)
+          console.log("initialRoute", initialRoute)
           localStorage?.removeItem('initialRoute')
         }
         else if (roles?.length === 1) {
