@@ -1839,7 +1839,6 @@ const handleActivateApplication = async (data) => {
                   </div>
                 )}
                 </div>
-                {subSpeciality && subSpeciality !== "" &&
                   <div className={`${style.formContainer} ${style.marginTop}`}>
                     <div className={` ${style.cursorPointer}`}>
                     
@@ -1896,7 +1895,7 @@ const handleActivateApplication = async (data) => {
                                     ))}
                                   </div>
                                 )}
-                  </div>}
+                  </div>
                   <h2 className={`${style.heading1} ${style.marginTop}`}>Tenure</h2>
               <div className={style.gridContainer}>
                   <div className={style.inputGroup}>

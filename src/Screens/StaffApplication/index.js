@@ -29,6 +29,7 @@ import DepartmentTrackerDialog from '../../Components/DepartmentTrackerDialog'
 import PDFGenerateBox from '../../Components/PdfGenerate'
 import { fileLoadingURL, FormatPhoneNumber, FormatPostalCode } from "../../utils/formatting";
 import MDTrackerDialog from '../../Components/MDTrackerDialog';
+import UpdateStaffStatusDialog from "../../Components/UpdateStaffStatusDialog"
 
 const StaffApplication = () => {
     const [selectedTab, setSelectedTab] = useState('level-1');
@@ -45,6 +46,7 @@ const StaffApplication = () => {
     const [paymentDisplayBox, setPaymentDisplayBox] = useState(false);
     const [emailDialogBox, setEmailDialogBox] = useState(false);
     const [showNotesDialog, setShowNotesDialog] = useState(false);
+    const [showUpdateStaffStatusDialog, setShowUpdateStaffStatusDialog] = useState(false);
     const [showLocumExtensiveDialog, setShowLocumExtensiveDialog] = useState(false);
     const [showClarificationRequestFromApplicantDialog, setShowClarificationRequestFromApplicantDialog] = useState(false);
     const [showDocumentClarificationDialog, setShowDocumentClarificationDialog] = useState(false);
@@ -90,6 +92,10 @@ const StaffApplication = () => {
 
     const getNotesDialog = (value) => {
         setShowNotesDialog(value);
+    };
+
+    const getUpdateStaffStatuDialog = (value) => {
+        setShowUpdateStaffStatusDialog(value);
     };
 
     const getLocumExtensiveDialog = (value,tableDataValue) => {
@@ -221,6 +227,7 @@ const StaffApplication = () => {
                         showTimerDialog={showTimerDialog}
                         showNotesDialog={showNotesDialog}
                         getNotesDialog={getNotesDialog}
+                        getUpdateStaffStatuDialog={getUpdateStaffStatuDialog}
                         getLocumExtensiveDialog ={getLocumExtensiveDialog}
                         getClarificationRequestFromApplicantDialog={getClarificationRequestFromApplicantDialog}
                         getDocumentClarificationDialog={getDocumentClarificationDialog}
@@ -275,6 +282,9 @@ const StaffApplication = () => {
             )}
             {showNotesDialog && (
                 <NotesDialog isLoading={isLoading} getIsOpen={getNotesDialog} getloading={getloading} getActiveApplicationView={getActiveApplicationView} />
+            )}
+            {showUpdateStaffStatusDialog && (
+                <UpdateStaffStatusDialog isLoading={isLoading} getIsOpen={getUpdateStaffStatuDialog} getloading={getloading} getActiveApplicationView={getActiveApplicationView} />
             )}
             {showLocumExtensiveDialog && (
                 <LocumExtensionDialog isLoading={isLoading} getIsOpen={getLocumExtensiveDialog} tableDataValue ={tableDataLocum} getloading={getloading} getActiveApplicationView={getActiveApplicationView} />

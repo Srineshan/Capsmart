@@ -755,7 +755,11 @@ if (data === `forms[${formIndex}].data.contactAddress2.isMailingAddressSameAsHom
         setAllWarningFields(allMissingKeys);
         allMissingFields = allMissingKeys;
         hasMandatoryMissingFields = allMissingKeys?.find(field => field?.label?.mandatory === true);
-        handleSubmitApplicationReq();
+        // handleSubmitApplicationReq();
+          if (data === "skipped" || data === "save") {
+            handleSubmitApplicationReq();
+        }
+
 
         if(data === "skipped" || data === "save"){
             handleContactAddressSubmit();
