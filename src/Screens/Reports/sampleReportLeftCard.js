@@ -106,7 +106,8 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         currentRemitToAddressForActiveContracts: 'CONTRACT',
         nonCompliant: 'CONTRACT',
         staffbyTypes: 'CONTRACT',
-        paymentProcessingStatusTracker: 'TIMESHEET'
+        paymentProcessingStatusTracker: 'TIMESHEET',
+        locumStaffbyTypes: 'CONTRACT',
     }
     const defaultOption = ''
 
@@ -741,7 +742,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                 </Tooltip>
                 {(reportType === "staffReappointmentsNotes" || reportType === "staffReappointments" || reportType === "locumRenewalOrExtensionApplicationsSummary" || reportType === "privilegedStaffSummary" ||
                     reportType === "submittedApplicationsReviewSummary" || reportType === "staffReappointmentTracker" || reportType === "ohipBillingNumbersByCareProvider" || reportType === "careProviderCareerMilestoneSummary" ||
-                    reportType === "declinedOrNotRenewedStaffSummary" || reportType === "reappointmentApplicationNotStarted" || reportType === "currentNotesSummary" || reportType === "staffReappointmentStatusSummary" || reportType === "staffbyTypes" || reportType === "locumStaffRenewalStatusTracker") ? (
+                    reportType === "declinedOrNotRenewedStaffSummary" || reportType === "reappointmentApplicationNotStarted" || reportType === "currentNotesSummary" || reportType === "staffReappointmentStatusSummary" || reportType === "staffbyTypes" || reportType === "locumStaffbyTypes" || reportType === "locumStaffRenewalStatusTracker" || reportType === "privilegedStaffSummary") ? (
                     <>
                         {/* {reportType === "staffReappointmentsNotes" && (
                             <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
@@ -801,7 +802,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 ))}
                             </Select>
                         </FormControl> */}
-                        {reportType !== "staffReappointmentTracker" && reportType !== "ohipBillingNumbersByCareProvider" && (
+                        {reportType !== "staffReappointmentTracker" && reportType !== "ohipBillingNumbersByCareProvider" && reportType !== "privilegedStaffSummary" && reportType !== "locumStaffbyTypes" && reportType !== "staffbyTypes" &&  (
                             <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                                 <InputLabel id="demo-multiple-name-label1" className={style.headingtextStyle}>Reporting Time Period</InputLabel>
                                 <Select
@@ -1126,7 +1127,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                             })}
                         </div>
                         )}
-                        {(reportType === "submittedApplicationsReviewSummary" || reportType === "currentNotesSummary") && (
+                        {( reportType === "currentNotesSummary") && (
                             <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                                 <InputLabel id="demo-simple-select-standard-label3">Application Type</InputLabel>
                                 <Select

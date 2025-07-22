@@ -862,7 +862,7 @@ const ActiveStaffList = ({
                   <AddCircleOutlineIcon sx={{ fontSize: 25, color: '#06617A' }} />
                 </div>
               </Tooltip>
-              <Tooltip title="Print" arrow>
+              {/* <Tooltip title="Print" arrow>
                 <div
                   className={`${isPrintClicked && style.addStyle} ${style.alignCenter
                     } ${style.cursorPointer} ${style.marginRight}`}
@@ -874,7 +874,7 @@ const ActiveStaffList = ({
                     }}
                   />
                 </div>
-              </Tooltip>
+              </Tooltip> */}
             </div>
           </div>
 

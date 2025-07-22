@@ -437,11 +437,16 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
     }
   };
 
-  const handleNavigate = () => {
-    navigate("/reportTypeOverview/staffbyTypes", {
-      state: { tableData },
-    });
-  };
+ const handleNavigate = () => {
+  const path =
+    applicationCreationType === "LOCUM"
+      ? "/reportTypeOverview/locumStaffbyTypes"
+      : "/reportTypeOverview/staffbyTypes";
+
+  navigate(path, {
+    state: { tableData },
+  });
+};
 
   let checkbox = [];
   let applicantName = [];
@@ -791,7 +796,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
 
   const isDataAvailable = tableData?.length > 0;
 
-const isAllSent = tableData.length > 0 && tableData.every(item => item.reappointmentStatus === "SENT");
+const isAllSent = tableData.length > 0 && tableData.every(item => item.reappointmentStatus === "SENT" || item.reappointmentStatus === "RE_SENT");
 
   // Rest of the render method remains the same
   return (

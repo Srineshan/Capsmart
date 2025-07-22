@@ -315,6 +315,9 @@ const ReportTypeOverview = () => {
             case 'staffbyTypes':
                 getContractTrackValues();
                 break;
+            case 'locumStaffbyTypes':
+                getContractTrackValues();
+                break;
             default:
                 // Optional: handle unknown reportType
                 break;
@@ -403,7 +406,8 @@ const ReportTypeOverview = () => {
         currentNotesSummary: 'Current Notes Summary',
         locumRenewalOrExtensionApplicationsSummary: 'Locum Renewal / Extension Applications Summary',
         careProviderCareerMilestoneSummary: 'Care Providers Career Milestone Summary',
-        declinedOrNotRenewedStaffSummary: 'Declined Or Not Renewed Staff Summary'
+        declinedOrNotRenewedStaffSummary: 'Declined Or Not Renewed Staff Summary',
+        locumStaffbyTypes: ' Locum Staff Renewal / Extension Application Status'
     }
 
     const handlePrint = useReactToPrint({
@@ -885,9 +889,9 @@ const ReportTypeOverview = () => {
             queryParams.append('departmentSpecialties', dataToUseInReport?.selectedDepartments);
         }
 
-        if (dataToUseInReport?.selectedApplicationType) {
-            queryParams.append('applicationcreationType', dataToUseInReport?.selectedApplicationType);
-        }
+        // if (dataToUseInReport?.selectedApplicationType) {
+        //     queryParams.append('applicationcreationType', dataToUseInReport?.selectedApplicationType);
+        // }
 
         if (dataToUseInReport?.from) {
             queryParams.append('startDate', dataToUseInReport?.from);
@@ -897,7 +901,7 @@ const ReportTypeOverview = () => {
             queryParams.append('endDate', dataToUseInReport?.to);
         }
         setIsLoading(true)
-        const { data: data } = await GET(`application-management-service/report/submittedApplications?${queryParams.toString()}&applicationCurrentLevel=${workModeType}`, { signal });
+        const { data: data } = await GET(`application-management-service/report/submittedApplications?${queryParams.toString()}&positionType=PERMANENT&applicationCurrentLevel=${workModeType}`, { signal });
         setSubmittedApplicationValues(data);
         // } else {
         //     setIsLoading(true)
@@ -2539,7 +2543,7 @@ const ReportTypeOverview = () => {
                                                     <div className={`${style.entityNameBolderStyle} ${style.textAlignCenter} ${style.marginTop5} `}>
                                                         {isMyReport ? myReportContent?.title : reportTitleList[reportType]}
                                                     </div>
-                                                    {(dataToUseInReport?.reportingTimePeriod !== "" && reportType !== "staffReappointmentTracker") && (
+                                                    {(dataToUseInReport?.reportingTimePeriod !== "" && reportType !== "staffReappointmentTracker" && reportType !== "privilegedStaffSummary" && reportType !== "locumStaffbyTypes" && reportType !== "staffbyTypes") && (
                                                         <div className={`${style.reportRunByTextStyle} ${style.textAlignCenter} ${style.marginTop5} `}>Reporting Period used for this report : {dataToUseInReport?.reportingTimePeriod} ({dataToUseInReport?.fromToDisplay} to {dataToUseInReport?.toToDisplay}) </div>
                                                     )}
                                                     {/* {(reportType === "paymentProcessingStatusTracker") && (
@@ -2561,7 +2565,7 @@ const ReportTypeOverview = () => {
                                                     <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop5} `}>Reporting Parameters Applied</div>
                                                     {(reportType === "staffReappointmentsNotes" || reportType === "staffReappointments" || reportType === "locumRenewalOrExtensionApplicationsSummary" || reportType === "privilegedStaffSummary" ||
                                                         reportType === "submittedApplicationsReviewSummary" || reportType === "staffReappointmentTracker" || reportType === "ohipBillingNumbersByCareProvider" || reportType === "careProviderCareerMilestoneSummary" ||
-                                                        reportType === "declinedOrNotRenewedStaffSummary" || reportType === "reappointmentApplicationNotStarted" || reportType === "currentNotesSummary" || reportType === "staffReappointmentStatusSummary" || reportType === "staffbyTypes" || reportType === "locumStaffRenewalStatusTracker") ? (
+                                                        reportType === "declinedOrNotRenewedStaffSummary" || reportType === "reappointmentApplicationNotStarted" || reportType === "currentNotesSummary" || reportType === "staffReappointmentStatusSummary" || reportType === "staffbyTypes" || reportType === "locumStaffRenewalStatusTracker" || reportType === "locumStaffbyTypes" || reportType === "privilegedStaffSummary") ? (
                                                         <div className={`${style.grid4} ${style.marginTop20} `}>
                                                             {/* {reportType === "staffReappointmentsNotes" && (
                                                         <div>
@@ -2598,12 +2602,14 @@ const ReportTypeOverview = () => {
                                                             <div className={`${style.reportRunByParamStyle} ${style.marginTop5} `}>POSITION </div>
                                                             <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedPosition || 'All Positions'}</div>
                                                         </div> */}
-                                                            {reportType === "submittedApplicationsReviewSummary" && (
+
+                                                                
+                                                            {/* {reportType === "submittedApplicationsReviewSummary" && (
                                                                 <div>
                                                                     <div className={`${style.reportRunByParamStyle} ${style.marginTop5} `}>APPLICATION TYPE</div>
                                                                     <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{availableApplicationTypes[dataToUseInReport?.selectedApplicationType] || 'All Application Type'}</div>
                                                                 </div>
-                                                            )}
+                                                            )} */}
                                                             {reportType === "declinedOrNotRenewedStaffSummary" && (
                                                                 <div>
                                                                     <div className={`${style.reportRunByParamStyle} ${style.marginTop5} `}>Locum Application Status</div>
@@ -3626,7 +3632,15 @@ const ReportTypeOverview = () => {
                                                                                                 ) : (
                                                                                                     <ReportNoDataBox heading={'You do not have any One Time Contracts that will terminate on expiration'}
                                                                                                         subHeading={''} />
-                                                                                                )) : reportType === "paymentProcessingStatusTracker" ? (
+                                                                                                )) : (reportType === "locumStaffbyTypes") ? (
+                                                                                                (tableData?.length !== 0) ? (
+                                                                                                    <ReportsStaffTable
+                                                                                                        tableData={tableData}
+                                                                                                    />
+                                                                                                ) : (
+                                                                                                    <ReportNoDataBox heading={'You do not have any One Time Contracts that will terminate on expiration'}
+                                                                                                        subHeading={''} />
+                                                                                                )): reportType === "paymentProcessingStatusTracker" ? (
                                                                                                     <>
                                                                                                         <div className={`${style.paymentTabGrid} ${style.marginTop20}`}>
                                                                                                             <div className={`${style.paymentTabStyle} ${selectedPaymentTab === 'Payment Processed' ? style.selectedPaymentTabStyle : ''} ${style.verticalAlignCenter} ${style.alignCenterJustify}`} onClick={() => setSelectedPaymentTab('Payment Processed')}>Payment Processed</div>

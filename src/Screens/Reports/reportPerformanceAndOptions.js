@@ -72,6 +72,7 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
         staffReappointmentTracker: 'Staff Reappointment Status Tracker',
         locumStaffRenewalStatusTracker: 'Locum Staff Renewal Status Tracker',
         staffbyTypes: 'Staff Reappointments Application Status',
+        locumStaffbyTypes: ' Locum Renewal / Extension Application Status',
         scheduledActivity: "Scheduled Activity/ Services - Forcasted To Actual",
         scheduledActivityByContract: "Scheduled Activity/ Services - Forcasted To Actual By Contract",
         complianceStatus: "Proof Of Documentation Status By Contractor",
