@@ -355,12 +355,7 @@ const MDManager = () => {
 
   const handleGroupSelect = (id) => {
     console.log(id)
-    if (Array.isArray(id)) {
-      const newIds = id.filter(item => !selectedGroups.includes(item));
-      if (newIds.length > 0) {
-        setSelectedGroups(prev => [...prev, ...newIds]);
-      }
-    }
+    setSelectedGroups(id)
   }
 
   console.log('ref', refMetadata);

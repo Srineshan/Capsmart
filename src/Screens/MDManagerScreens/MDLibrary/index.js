@@ -22,8 +22,10 @@ import TableTwo from '../../../Components/TableDesignTwo';
 import { Tooltip } from '@mui/material';
 import { format } from 'date-fns';
 import CommonPdfViewer from '../../../Components/CommonPdfViewer';
+import { GET } from '../../dataSaver';
 
 const MDLibrary = () => {
+    const viewerDivId = 'adobe-pdf-viewer';
     const PDFRef = createRef();
     const containerRef = useRef(null);
     const { entityId, departmentId } = useParams()
@@ -68,6 +70,34 @@ const MDLibrary = () => {
     };
 
     useEffect(() => {
+        if (window.AdobeDC && selectedMD?.file?.fileURL) {
+            const adobeDCView = new window.AdobeDC.View({
+                clientId: 'c0b6404e97544d1a901b564de87cf425', // Replace with your key
+                divId: viewerDivId,
+            });
+
+            adobeDCView.previewFile(
+                {
+                    content: {
+                        location: {
+                            url: selectedMD?.file?.fileURL,
+                        },
+                    },
+                    metaData: {
+                        fileName: 'example.pdf',
+                        id: 'file-1234-abc',
+                    },
+                },
+                {
+                    embedMode: 'SIZED_CONTAINER',
+                    showAnnotationTools: true,
+                    enableAnnotationAPIs: true
+                }
+            );
+        }
+    }, [selectedMD?.file?.fileURL]);
+
+    useEffect(() => {
         checkScroll();
         const el = containerRef.current;
         if (el) {
@@ -86,6 +116,8 @@ const MDLibrary = () => {
     useEffect(() => {
         getDepartmentList();
         getEntityId();
+        getStaffList();
+        getGroupList();
     }, []);
 
     useEffect(() => {
@@ -99,7 +131,7 @@ const MDLibrary = () => {
         getDashboard(signal);
 
         return () => controller.abort();
-    }, [limit, page, searchTermForTable, creationType, departmentId, selectedDepartmentSpecialities]);
+    }, [limit, page, searchTermForTable, creationType, departmentId, mdId, mdTitle, selectedGroups, selectedAuthor, from, to]);
 
     const handlePrint = useReactToPrint({
         content: reactToPrintContent,
@@ -140,9 +172,43 @@ const MDLibrary = () => {
     }) || [];
 
     const handleGroupSelect = (id) => {
-        if (!selectedGroups?.includes(id)) {
-            setSelectedGroups(prev => [...prev, id]);
-        }
+        console.log(id)
+        // if (Array.isArray(id)) {
+        //     setSelectedGroups(prevSelected => {
+        //         let updated = [...prevSelected];
+
+        //         id.forEach(item => {
+        //             if (updated.includes(item)) {
+        //                 // If already selected, remove it
+        //                 updated = updated.filter(i => i !== item);
+        //                 console.log("Removed:", item);
+        //             } else {
+        //                 // If not selected, add it
+        //                 updated.push(item);
+        //                 console.log("Added:", item);
+        //             }
+        //         });
+
+        //         return updated;
+        //     });
+        // }
+        setSelectedGroups(id)
+    }
+
+    const getGroupList = async () => {
+        const response = await GET(
+            `medical-directive-service/attestationGroup`
+        );
+        console.log(response.data);
+        setGroupList(response?.data)
+    }
+
+    const getStaffList = async () => {
+        const response = await GET(
+            `application-management-service/staff?status=ACTIVE&sortByField=STAFF_NAME&isPaginationRequired=${false}&limit=${9999}`
+        );
+        console.log(response.data);
+        setStaffList(response?.data?.staffs)
     }
 
     const handleShowMd = (data) => {
@@ -206,6 +272,13 @@ const MDLibrary = () => {
         let data = {
             departmentSpecialties: [selectedDepartmentSpecialities !== "" ? selectedDepartmentSpecialities : departmentId],
             searchText: searchTermForTable,
+            mdID: mdId,
+            title: mdTitle,
+            groupIds: selectedGroups?.length !== 0 ? selectedGroups : [],
+            authorIds: selectedAuthor !== "" ? [selectedAuthor] : [],
+            fromDate: from,
+            toDate: to,
+            // "noOfDays": 0,
         }
         if (creationType !== "") {
             data.creationType = creationType
@@ -283,6 +356,16 @@ const MDLibrary = () => {
     const handleLimitChange = (newLimit) => {
         setLimit(newLimit);
     };
+
+    const handleAdvancedSearch = () => {
+        setShowAdvancedSearch(!showAdvancedSearch)
+        setMdId('');
+        setMdTitle('');
+        setSelectedGroups([]);
+        setSelectedStaffs([]);
+        setFrom(null);
+        setTo(null);
+    }
 
 
     const tableHeaderValues = [
@@ -410,8 +493,11 @@ const MDLibrary = () => {
                         </div>
                     )}
                     <div className={`${style.medicalDirectivesCard} ${selectedMD?.description ? style.marginTop : ''}`}>
-                        <CommonPdfViewer pdfurl={selectedMD?.file?.fileURL} />
-
+                        {/* <CommonPdfViewer pdfurl={selectedMD?.file?.fileURL} /> */}
+                        <div
+                            id="adobe-pdf-viewer"
+                            style={{ height: '100vh', width: '100%' }}
+                        ></div>
                     </div>
                 </div>
             ) : (
@@ -469,11 +555,11 @@ const MDLibrary = () => {
                                     // ),
                                 }}
                             />
-                            <div className={style.button} onClick={() => setShowAdvancedSearch(!showAdvancedSearch)}>{showAdvancedSearch ? 'Close' : 'Advanced Search'}</div>
+                            <div className={style.button} onClick={() => handleAdvancedSearch()}>{showAdvancedSearch ? 'Close' : 'Advanced Search'}</div>
                         </div>
                         {showAdvancedSearch && (
                             <div className={`${style.mdCard} ${style.advancedSearchGrid}`}>
-                                <div className={style.marginTop10}>
+                                {/* <div className={style.marginTop10}>
                                     <div className={style.labelStyle}>Medical Directive ID</div>
                                     <CommonInputField
                                         value={mdId}
@@ -523,7 +609,7 @@ const MDLibrary = () => {
                                         required={true}
                                         label={'Department / Division'}
                                     />
-                                </div>
+                                </div> */}
                                 <div className={style.marginTop10}>
                                     <div className={style.labelStyle}>Attestation Groups</div>
                                     <CommonMultiSelectField

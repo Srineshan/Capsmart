@@ -31,6 +31,7 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue }) => {
     const [previewUrl, setPreviewUrl] = useState(null);
     const [fileType, setFileType] = useState('');
     const [isDataLoading, setIdDataLoading] = useState(false);
+    const [selectedDeptValue, setSelectedDeptValue] = useState("");
     useEffect(() => {
         getDepartmentList();
         getStaffList()
@@ -149,6 +150,8 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue }) => {
         return [departmentEntry, ...serviceAreaEntries]; // Include department first, then service areas
     }) || [];
 
+    console.log(transformedOptions, 'transformedOptions', selectedDepartment)
+
     const handleDepartmentSelect = (id) => {
         console.log(id)
         if (Array.isArray(id)) {
@@ -175,7 +178,7 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue }) => {
 
         setSelectedDepartment(departmentId || "");
         setSelectedServiceArea(serviceAreaId || "");
-
+        setSelectedDeptValue(selectedValue);
         console.log("selectedDept", selectedValue)
     }
 
@@ -401,7 +404,7 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue }) => {
                         </div>
                         {/* <div>
                             <CommonSelectField
-                                value={selectedDepartment}
+                                value={selectedDeptValue}
                                 onChange={handleChange}
                                 className={style.fullWidth}
                                 // firstOptionLabel={'All'}
