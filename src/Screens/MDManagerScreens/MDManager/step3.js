@@ -15,6 +15,7 @@ import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrow
 import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
 import { ErrorToaster2, SuccessToaster2 } from '../../../utils/toaster';
 import CommonInputField from '../../../Components/CommonFields/CommonInputField';
+import CommonMultiSelectField from '../../../Components/CommonFields/CommonMultiSelectField';
 
 const MDManagerStep3 = ({ setStep2, setStep3, mdValue }) => {
     const containerRef = useRef(null);
@@ -32,11 +33,22 @@ const MDManagerStep3 = ({ setStep2, setStep3, mdValue }) => {
     const [showAttestationGroup, setShowAttestationGroup] = useState(false);
     const [selectedStaffs, setSelectedStaffs] = useState([]);
     const [selectedGroups, setSelectedGroups] = useState([]);
+    const [workFlow1IsMandatory, setWorkFlow1IsMandatory] = useState(false);
+    const [workFlow2IsMandatory, setWorkFlow2IsMandatory] = useState(false);
+    const [selectedRolesWorkflow1, setSelectedRolesWorkflow1] = useState([]);
+    const [selectedRolesWorkflow, setSelectedRolesWorkflow] = useState([]);
+    const [selectedStaffsWorkflow, setSelectedStaffsWorkflow] = useState([]);
+    const [selectedGroupsWorkflow, setSelectedGroupsWorkflow] = useState([]);
     const [selectedStaffForMove, setSelectedStaffForMove] = useState([]);
+    const [workflowStructure, setWorkflowStructure] = useState();
+    const [showWorkflowSelection, setShowWorkflowSelection] = useState(false);
+    const [roles, setRoles] = useState([]);
     console.log(mdValue, 'mdValue')
     useEffect(() => {
         getStaffList()
         getGroupList()
+        getPublicationWorkflow();
+        getRoles();
     }, [])
 
     useEffect(() => {
@@ -81,6 +93,19 @@ const MDManagerStep3 = ({ setStep2, setStep3, mdValue }) => {
         setGroupById(response?.data)
         setShowAttestationGroup(true)
     }
+
+    const getPublicationWorkflow = async () => {
+        const response = await GET(
+            `medical-directive-service/publicationWorkFlow`
+        );
+        setWorkflowStructure(response.data?.[0])
+        console.log(response.data?.[0], 'workflow');
+    }
+
+    const getRoles = async () => {
+        const { data: roles } = await GET('user-management-service/roles?roleType=APP_SYSTEM&roleType=SYSTEM');
+        setRoles(roles?.filter(data => data?.roleName !== 'Activity Logger')?.map(data => data));
+    };
 
     const filteredStaffArray = selectedStaffs?.map((id) => {
         const matchedStaff = staffList?.find((staff) => staff.id === id);
@@ -200,7 +225,8 @@ const MDManagerStep3 = ({ setStep2, setStep3, mdValue }) => {
                 ErrorToaster2('Failed to publish Medical Directive');
             }
         }
-        setStep3(false)
+        // setStep3(false)
+        setShowWorkflowSelection(true)
     }
 
     const handleAddGroup = async () => {
@@ -234,6 +260,63 @@ const MDManagerStep3 = ({ setStep2, setStep3, mdValue }) => {
         }
     }
 
+    const handleSaveWorkflow = async (type) => {
+        let data = workflowStructure;
+        const transformedGroups = selectedGroupsWorkflow?.map((groupId) => {
+            const group = groupList.find((g) => g.id === groupId);
+
+            return {
+                group: {
+                    id: group?.id,
+                    name: group?.name,
+                },
+                approvalRequirementType: "ANY_MEMBER",
+            };
+        });
+
+        const transformedRoles = selectedRolesWorkflow1?.map((roleId) => {
+            const role = roles.find((r) => r.id === roleId);
+
+            return {
+                role: {
+                    id: role?.id,
+                    roleName: role?.roleName,
+                    roleDescription: role?.roleDescription
+                },
+            };
+        });
+        data.approvalFlowMap.workflow[1].flowDetails[0].approvalRequirement = workFlow1IsMandatory ? 'MANDATORY' : 'OPTIONAL';
+        if (workflowStructure?.approvalFlowMap?.workflow[1]?.flowDetails?.[0]?.approvalBy === 'ROLE') {
+            data.approvalFlowMap.workflow[1].flowDetails[0].roles = transformedRoles
+        }
+        data.approvalFlowMap.workflow[2].flowDetails[0].approvalRequirement = workFlow2IsMandatory ? 'MANDATORY' : 'OPTIONAL';
+        if (workflowStructure?.approvalFlowMap?.workflow[2]?.flowDetails?.[0]?.approvalBy === 'GROUP') {
+            data.approvalFlowMap.workflow[2].flowDetails[0].groups = transformedGroups
+        }
+        console.log(workflowStructure?.approvalFlowMap?.workflow[2]?.flowDetails?.[0]?.approvalBy === 'GROUP', data)
+        await POST(`medical-directive-service/medicalDirectives/${mdValue?.id}/workflow`, data)
+            .then(response => {
+                SuccessToaster2('Workflow Added Successfully');
+            })
+            .catch(error => {
+                ErrorToaster2('Something Failed. Please Try later!');
+            })
+        if (type === 'Save_And_Start') {
+            await PUT(`medical-directive-service/medicalDirectives/${mdValue?.id}/startWorkflow`)
+                .then(response => {
+                    SuccessToaster2('Sign Off Started Successfully');
+                })
+                .catch(error => {
+                    ErrorToaster2('Something Failed. Please Try later!');
+                })
+        }
+        handleWorkflowClose();
+    }
+
+    const handleWorkflowClose = () => {
+        setShowWorkflowSelection(false);
+        setStep3(false);
+    }
     console.log(staffList.filter(staff => selectedStaffs?.includes(staff.id)), 'filterCheck', selectedStaffs, selectedStaffForMove)
     return (
         <div className={style.stepsBackground}>
@@ -461,6 +544,140 @@ const MDManagerStep3 = ({ setStep2, setStep3, mdValue }) => {
                         <div className={`${style.spaceBetween} ${style.marginTop20}`}>
                             <button className={`${style.outlinedButton} `} onClick={() => handleGroupDialogClose()} >CANCEL</button>
                             <button className={`${style.buttonStyle} `} onClick={() => handleAddGroup()} >{groupById ? 'UPDATE' : 'ADD'}</button>
+                        </div>
+                    </div>
+                </div>
+            </Dialog >
+            <Dialog isOpen={showWorkflowSelection} onClose={() => setShowWorkflowSelection(false)} className={`${style.addMDDialogBackground} ${style.attestationDialog}`}>
+                <div className={Classes.DIALOG_BODY}>
+                    <div className={style.attestationDialogHeaderCard}>
+                        <div className={`${style.attestationDialogTitle} ${style.padding20}`}>Workflow Selection</div>
+                    </div>
+                    <div className={`${style.marginTop20} ${style.twoCol}`}>
+                        <div className={style.labelStyle}>BOD Approval required?</div>
+                        <CommonSwitch label={workFlow1IsMandatory ? 'YES' : 'NO'} checked={workFlow1IsMandatory} onChange={(e) => setWorkFlow1IsMandatory(e.target.checked)} labelName={''} />
+                    </div>
+                    {workFlow1IsMandatory && workflowStructure?.approvalFlowMap?.workflow[1]?.flowDetails?.map(data =>
+                        // data?.approvalRequirement === "MANDATORY" && (
+                        <div>
+                            {data?.approvalBy === 'ROLE' ? (
+                                <div>
+                                    <div className={style.labelStyle}>Roles</div>
+                                    <CommonMultiSelectField
+                                        value={selectedRolesWorkflow1}
+                                        onChange={(e) => setSelectedRolesWorkflow1(e.target.value)}
+                                        className={style.fullWidth}
+                                        // firstOptionLabel={'All'}
+                                        // firstOptionValue={''}
+                                        valueList={roles?.map(option => option?.id)}
+                                        labelList={roles?.map(option => `${option?.roleName}`)}
+                                        disabledList={roles?.map(() => false)}
+                                        required={false}
+                                        label={''}
+                                    />
+                                </div>
+                            ) : data?.approvalBy === 'INDIVIDUAL' ? (
+                                <div>
+                                    <div className={style.labelStyle}>Staffs</div>
+                                    <CommonSelectField
+                                        value={selectedStaffsWorkflow}
+                                        onChange={(e) => setSelectedStaffsWorkflow(e.target.value)}
+                                        className={style.fullWidth}
+                                        // firstOptionLabel={'All'}
+                                        // firstOptionValue={''}
+                                        valueList={staffList?.map(option => option?.id)}
+                                        labelList={staffList?.map(option => `${option?.applicant?.name?.firstName} ${option?.applicant?.name?.lastName}`)}
+                                        disabledList={staffList?.map(() => false)}
+                                        required={false}
+                                        label={'Staffs'}
+                                    />
+                                </div>
+                            ) : data?.approvalBy === 'GROUP' ? (
+                                <div>
+                                    <div className={style.labelStyle}>Attestation Groups</div>
+                                    <CommonMultiSelectField
+                                        value={selectedGroupsWorkflow}
+                                        onChange={(e) => setSelectedGroupsWorkflow(e.target.value)}
+                                        className={style.fullWidth}
+                                        // firstOptionLabel={'All'}
+                                        // firstOptionValue={''}
+                                        valueList={groupList?.map(option => option?.id)}
+                                        labelList={groupList?.map(option => `${option?.name}`)}
+                                        disabledList={groupList?.map(() => false)}
+                                        required={false}
+                                        label={'Attestation Groups'}
+                                    />
+                                </div>
+                            ) : ''}
+                        </div>
+                        // )
+                    )}
+                    <div className={`${style.marginTop20} ${style.twoCol}`}>
+                        <div className={style.labelStyle}>Staff Acknowledgement required?</div>
+                        <CommonSwitch label={workFlow2IsMandatory ? 'YES' : 'NO'} checked={workFlow2IsMandatory} onChange={(e) => setWorkFlow2IsMandatory(e.target.checked)} labelName={''} />
+                    </div>
+                    {workFlow2IsMandatory && workflowStructure?.approvalFlowMap?.workflow[2]?.flowDetails?.map(data =>
+                        // data?.approvalRequirement === "MANDATORY" && (
+                        <div>
+                            {data?.approvalBy === 'ROLE' ? (
+                                <div>
+                                    <div className={style.labelStyle}>Roles</div>
+                                    <CommonSelectField
+                                        value={selectedRolesWorkflow}
+                                        onChange={(e) => setSelectedRolesWorkflow(e.target.value)}
+                                        className={style.fullWidth}
+                                        // firstOptionLabel={'All'}
+                                        // firstOptionValue={''}
+                                        valueList={roles?.map(option => option?.id)}
+                                        labelList={roles?.map(option => `${option?.roleName}`)}
+                                        disabledList={roles?.map(() => false)}
+                                        required={false}
+                                        label={'Roles'}
+                                    />
+                                </div>
+                            ) : data?.approvalBy === 'INDIVIDUAL' ? (
+                                <div>
+                                    <div className={style.labelStyle}>Staffs</div>
+                                    <CommonSelectField
+                                        value={selectedStaffsWorkflow}
+                                        onChange={(e) => setSelectedStaffsWorkflow(e.target.value)}
+                                        className={style.fullWidth}
+                                        // firstOptionLabel={'All'}
+                                        // firstOptionValue={''}
+                                        valueList={staffList?.map(option => option?.id)}
+                                        labelList={staffList?.map(option => `${option?.applicant?.name?.firstName} ${option?.applicant?.name?.lastName}`)}
+                                        disabledList={staffList?.map(() => false)}
+                                        required={false}
+                                        label={'Staffs'}
+                                    />
+                                </div>
+                            ) : data?.approvalBy === 'GROUP' ? (
+                                <div>
+                                    <div className={style.labelStyle}>Attestation Groups</div>
+                                    <CommonMultiSelectField
+                                        value={selectedGroupsWorkflow}
+                                        onChange={(e) => setSelectedGroupsWorkflow(e.target.value)}
+                                        className={style.fullWidth}
+                                        // firstOptionLabel={'All'}
+                                        // firstOptionValue={''}
+                                        valueList={groupList?.map(option => option?.id)}
+                                        labelList={groupList?.map(option => `${option?.name}`)}
+                                        disabledList={groupList?.map(() => false)}
+                                        required={false}
+                                        label={'Attestation Groups'}
+                                    />
+                                </div>
+                            ) : ''}
+                        </div>
+                        // )
+                    )}
+                    <div>
+                        <div className={`${style.spaceBetween} ${style.marginTop20}`}>
+                            <button className={`${style.outlinedButton} `} onClick={() => handleWorkflowClose()} >CANCEL</button>
+                            <div className={style.displayInRow}>
+                                <button className={`${style.buttonStyle} `} onClick={() => handleSaveWorkflow('Save_And_Start')} >{'Start Sign Off'}</button>
+                                <button className={`${style.buttonStyle} ${style.marginLeft10}`} onClick={() => handleSaveWorkflow('Save')} >{'Save'}</button>
+                            </div>
                         </div>
                     </div>
                 </div>

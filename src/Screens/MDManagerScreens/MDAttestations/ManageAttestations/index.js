@@ -141,7 +141,7 @@ const ManageAttestation = () => {
         getAttestationList(signal);
 
         return () => controller.abort();
-    }, [selectedOption, advancedSearch]);
+    }, [selectedOption]);
 
     // useEffect(() => {
     //     if (entityId !== "" && entityId !== undefined) {

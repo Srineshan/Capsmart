@@ -62,7 +62,7 @@ const MDManager = () => {
   const [to, setTo] = useState(null);
   const [calendarStart, setCalendarStart] = useState(false);
   const [selectedMdId, setSelectedMdId] = useState('');
-
+  const [revisionList, setRevisionList] = useState([]);
   useEffect(() => {
     console.log(selectedOption, 'option')
     if (selectedOptionValue !== undefined && selectedOptionValue !== null) {
@@ -77,6 +77,7 @@ const MDManager = () => {
     getDepartmentList();
     getStaffList();
     getGroupList();
+    getRevisionList();
   }, []);
 
   // useEffect(() => {
@@ -91,12 +92,12 @@ const MDManager = () => {
     }
   }, [selectedMdId])
 
-  useEffect(() => {
-    if (!step1 || !step2 || !step3) {
-      setMdValue();
-      setSelectedMdId('');
-    }
-  }, [step1, step2, step3])
+  // useEffect(() => {
+  //   if (!step1 || !step2 || !step3) {
+  //     setMdValue();
+  //     setSelectedMdId('');
+  //   }
+  // }, [step1, step2, step3])
 
   const togglePin = () => { };
 
@@ -198,6 +199,14 @@ const MDManager = () => {
     );
     console.log(response.data);
     setStaffList(response?.data?.staffs)
+  }
+
+  const getRevisionList = async () => {
+    const response = await GET(
+      `medical-directive-service/medicalDirectives/revisions`
+    );
+    console.log(response.data);
+    setRevisionList(response?.data)
   }
 
   const getEntity = async () => {

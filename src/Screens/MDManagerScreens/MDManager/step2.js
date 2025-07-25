@@ -49,6 +49,7 @@ const MDManagerStep2 = ({ setStep1, setStep2, setStep3, mdValue, getMD }) => {
             })
 
     }
+    console.log(mdValue)
     return (
         <div className={style.stepsBackground}>
             <div className={`${style.stepHeader} ${style.spaceBetween} ${style.verticalAlignCenter}`}>
