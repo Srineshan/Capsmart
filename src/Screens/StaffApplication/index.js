@@ -1,4 +1,5 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom'; // if using React Router
 import Navbar from '../../Components/Navbar';
 import StaffApplicationList from './staffApplicationList';
 import NewActiveApplication from '../../Components/ViewVerifyScreen';
@@ -68,6 +69,18 @@ const StaffApplication = () => {
     const [ccDateSetMode, setCcDateSetMode] = useState('');
     const [approveMeetDateSet, setApproveMeetDateSet] = useState();
     const [showPdfGenrateBox, setShowPdfGenerateBox] = useState(false);
+    // const location = useLocation(); // get the current path
+    // const workModeType = sessionStorage.getItem('workModeType')
+
+//      useEffect(() => {
+//     if (location.pathname === '/applications') {
+//       const type = sessionStorage.getItem('applicationCreationType');
+//       if (type === 'LOCUM' && workModeType === "Department Head") {
+//         sessionStorage.setItem('applicationCreationType', 'REAPPOINTMENT');
+//       }
+//     }
+//   }, [location.pathname]);
+    
 
     const getSelectedTab = (value) => {
         setSelectedTab(value);

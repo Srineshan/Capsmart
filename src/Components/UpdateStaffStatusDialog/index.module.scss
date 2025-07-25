@@ -168,6 +168,11 @@
   margin-left: 20px;
 }
 
+.marginTopLess {
+  margin-top: -15px;
+  box-sizing: border-box !important;
+}
+
 .rejectionSubHeadingTextStyle {
   text-align: left;
   font: normal normal bold 16px proxima-nova;
@@ -357,4 +362,13 @@
   gap: 0;
   align-items: center;
   justify-content: center;
+}
+
+.labelTextStyle{
+  text-align: left;
+  font: normal normal medium 20px/24px proxima-nova;
+  letter-spacing: 0px;
+  color: #52575D;
+  text-transform: capitalize;
+  opacity: 0.8;
 }

@@ -30,6 +30,7 @@ import { ErrorToaster } from "../../utils/toaster";
 import Tooltip from "@mui/material/Tooltip";
 import { formatFirstNameLastName } from "../../utils/formatting";
 import CommonSearchField from "../../Components/CommonFields/CommonSearchField";
+import LoadingScreen from "../../Components/LoadingScreen";
 
 const ActiveStaffList = ({
   isLoading,
@@ -66,6 +67,7 @@ const ActiveStaffList = ({
   const [sortValue, setSortValue] = useState("DESCENDING");
   const [searchCount, setSearchCount] = useState(0);
   const [limit, setLimit] = useState(9999);
+  const [isLoadingImage, setIsLoadingImage] = useState(false);
   const canadaData = sessionStorage.getItem('canadaData') !== 'undefined' ? JSON.parse(sessionStorage.getItem('canadaData')) : {};
   const dateFormat = canadaData?.dateFormat || 'MMM dd, yyyy';
   const permanentHeaderValues = ["", "Staff Name", "Staff ID", "Staff Type", "Docs", "Notes", "Last Updated", "Action"];
@@ -191,6 +193,7 @@ const ActiveStaffList = ({
 
   const getActiveUserData = async () => {
     try {
+      setIsLoadingImage(true)
       const response = await GET(
         // `application-management-service/application/workflowUser?tab=${selectedTab}`
         //  `application-management-service/application/workflowUser?tab=${selectedTab}&sortBy=${sortValue}&sortByField=${sortField}&applicationCreationType=REAPPOINTMENT`
@@ -200,6 +203,7 @@ const ActiveStaffList = ({
       setTableData(response?.data?.staffs);
       setTotalCount(response?.data?.numberOfElements);
       setSearchCount(response?.data?.numberOfElements || 0);
+      setIsLoadingImage(false)
       return response?.data || [];
     } catch (error) {
       console.error("Error fetching applications:", error);
@@ -818,6 +822,11 @@ const ActiveStaffList = ({
 
   return (
     <div className={style.margin20}>
+       {isLoadingImage && (
+              <div className={style.loadingOverlay}>
+                <LoadingScreen />
+              </div>
+            )}
       <div className={isExpanded ? style.bigCardGrid : style.smallCardGrid}>
         <div>
           <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>

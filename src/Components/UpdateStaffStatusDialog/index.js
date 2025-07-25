@@ -5,7 +5,8 @@ import CrossPink from "../../images/crossPink.png";
 import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
 import style from "./index.module.scss";
-import { format } from 'date-fns';
+import { format, sub, add } from 'date-fns';
+import TextField from "@mui/material/TextField";
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { fileLoadingURL, FormatPhoneNumber, FormatPostalCode } from "../../utils/formatting";
@@ -14,12 +15,12 @@ import Dropzone from "react-dropzone";
 import DescriptionIcon from '@mui/icons-material/Description';
 import { ErrorToaster2, SuccessToaster2 } from "../../utils/toaster";
 import CommonInputField from "../CommonFields/CommonInputField";
-import CommonSwitch from "../CommonFields/CommonSwitch";
 import axios from "axios";
 import { Tooltip } from "@mui/material";
 import DeleteIcon from './../../images/deleteHcRow.png';
 import DeleteConfirmationDialog from './../../Components/DeleteConfirmation';
 import CommonCheckBox from "../CommonFields/CommonCheckBox";
+import CommonDateField from "../CommonFields/CommonDateField";
 // import { WProofreader } from '@webspellchecker/wproofreader-ckeditor5';
 
 const NotesDialog = ({ getIsOpen, getActiveApplicationView, selectedTab }) => {
@@ -28,15 +29,10 @@ const NotesDialog = ({ getIsOpen, getActiveApplicationView, selectedTab }) => {
   const users = jwt(userDetails);
   const [userRole, setUserRole] = useState('');
   const [formDetails, setFormDetails] = useState([]);
-  const [userNotes, setUserNotes] = useState('');
+  const [inactiveStaffReason, setInactiveStaffReason] = useState('');
   const [logDetails, setLogDetails] = useState([]);
   const [isApproveEnabled, setIsApproveEnabled] = useState(false);
   const id = sessionStorage.getItem("applicationId");
-  const [dateTime] = useState(new Date().toISOString());
-  const publicKey = "-----BEGIN PUBLIC KEY-----MIGeMA0GCSqGSIb3DQEBAQUAA4GMADCBiAKBgHA5SDu30/8uQAqqkQE0NuY4ePBptMGufG6AWnC/88YVLXi4thh7M8VU6kElVJkfXL5DwlfVnwPb08+PK1EcaOWWtp2gdQitkohjZLB9zVE+0OtRrzSc33wItf7Iwisi5dHPggHvfOp5fr+QYWFMa/kKYl3SgNo8fryeLbKKalmdAgMBAAE=-----END PUBLIC KEY-----";
-  const [encryptedText, setEncryptedText] = useState('');
-  const [isCheckedSign, setIsCheckedSign] = useState(false);
-  const [name, setName] = useState('')
   const [entity, setEntity] = useState([]);
   const [applicationType, setApplicationType] = useState(() =>
     sessionStorage.getItem('applicationCreationType') || 'NEW'
@@ -48,9 +44,11 @@ const NotesDialog = ({ getIsOpen, getActiveApplicationView, selectedTab }) => {
   const [uploadFileData, setUploadFileData] = useState([]);
   const [documentDesc, setDocumentDesc] = useState("");
   const [documentTitle, setDocumentTitle] = useState("");
-    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [fileToDeleteId, setFileToDeleteId] = useState(null);
   const [notesVisible, setNotesVisible] = useState(true);
+  const [calendarStart, setCalendarStart] = useState(false);
+  const [staffInactiveDate, setStaffInactiveDate] = useState(null);
   const canadaData = sessionStorage.getItem('canadaData') !== 'undefined' ? JSON.parse(sessionStorage.getItem('canadaData')) : {};
   const dateFormat = canadaData?.dateFormat || 'MMM dd, yyyy';
   const dropzoneStyle = {
@@ -68,6 +66,12 @@ const NotesDialog = ({ getIsOpen, getActiveApplicationView, selectedTab }) => {
  const handleCheckboxChange = (option) => () => {
     setIsChecked(option);
   };
+    const handleDateChange = (date , type) => {
+      const formattedDate = format(new Date(date), "yyyy-MM-dd'T'00:00")
+      
+    setStaffInactiveDate (formattedDate);
+      setCalendarStart(false)
+    };
 
   useEffect(() => {
     sessionStorage.setItem("fromSummary", false);
@@ -79,7 +83,7 @@ const NotesDialog = ({ getIsOpen, getActiveApplicationView, selectedTab }) => {
   useEffect(() => {
     checkApproveEnabled();
     console.log("uploadFileData", uploadFileData)
-  }, [userNotes, documentTitle, uploadFileData]);
+  }, [inactiveStaffReason, documentTitle, uploadFileData,staffInactiveDate]);
 
   // useEffect(() => {
   //   getActiveApplicationView();
@@ -227,7 +231,7 @@ const NotesDialog = ({ getIsOpen, getActiveApplicationView, selectedTab }) => {
   };
 
   const checkApproveEnabled = () => {
-    const hasValidComments = userNotes.trim() !== '';
+    const hasValidComments = inactiveStaffReason.trim() !== '';
 
     // Check if there are any uploaded files
     if (uploadFileData.length > 0) {
@@ -236,10 +240,9 @@ const NotesDialog = ({ getIsOpen, getActiveApplicationView, selectedTab }) => {
         documentTitle[index] && documentTitle[index].trim() !== ''
       );
 
-      setIsApproveEnabled(hasValidComments && allFilesHaveTitles);
+      setIsApproveEnabled(staffInactiveDate && hasValidComments && allFilesHaveTitles);
     } else {
-      // If no files are uploaded, only check for valid comments
-      setIsApproveEnabled(hasValidComments);
+      setIsApproveEnabled(staffInactiveDate && hasValidComments);
     }
   };
 
@@ -257,7 +260,7 @@ const NotesDialog = ({ getIsOpen, getActiveApplicationView, selectedTab }) => {
     }));
 
     let temp = {
-      notes: userNotes,
+      notes: inactiveStaffReason,
       files: files,
       private: notesVisible ? false : true,
     };
@@ -271,27 +274,6 @@ const NotesDialog = ({ getIsOpen, getActiveApplicationView, selectedTab }) => {
       .catch((error) => {
         console.log(error);
       });
-  };
-
-  const handleTextChange = async (editor) => {
-    const data = editor.getData();
-    setUserNotes(data);
-
-    // Call LanguageTool API
-    try {
-      const response = await axios.post(
-        "https://api.languagetool.org/v2/check",
-        new URLSearchParams({
-          text: data.replace(/<[^>]+>/g, ""), // Remove HTML tags
-          language: "en-US",
-        }),
-        { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
-      );
-
-      setErrors(response.data.matches); // Extract errors from API response
-    } catch (error) {
-      console.error("Error with LanguageTool API:", error);
-    }
   };
   const lastModifiedDate = formDetails?.lastModifiedDate;
   const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), dateFormat) : "-";
@@ -408,16 +390,56 @@ const NotesDialog = ({ getIsOpen, getActiveApplicationView, selectedTab }) => {
                       onChange={handleCheckboxChange('Inactive')}
                     />
             </div>
+            <div className={style.twoColumnGrid}>
+                <div>
+                    <div className={style.labelTextStyle}>Inactive Status Effective Date</div>
+                    <div className={style.marginTopLess}>
+                    <CommonDateField
+                    onChange={(date) => handleDateChange(date)}
+                    open={calendarStart}
+                    onOpen={() => setCalendarStart(true)}
+                    onClose={() => setCalendarStart(false)}
+                    minDate={sub(new Date(), { years: 3 })}
+                    maxDate={add(new Date(), { years: 3 })}
+                    value={staffInactiveDate}
+                    // label={"Inactive Status Effective Date"}
+                        InputProps={{
+                        style: {
+                            fontSize: 14,
+                            height: 30,
+                            margin: 0,
+                        },
+                        }}
+                    renderInput={(params) => (
+                        
+                                        <TextField
+                        {...params}
+                        inputProps={{
+                            ...params.inputProps,
+                            placeholder: 'DD/MM/YYYY',
+                            readOnly: true
+                        }}
+                        variant="outlined"
+                        margin="normal"
+                        fullWidth
+                        />
+                    )}
+                    />
+                    </div>
+                </div>
+                <div></div>
+
+            </div>
             <div className={`${style.marginTop5} ${style.commentsNotesHeadingFontStyle}`}>
                Reason To Change Staff Status (Mandatory)*
             </div>
             <div className={`${style.marginTop10}`}>
               <CKEditor
                 editor={ClassicEditor}
-                data={userNotes}
+                data={inactiveStaffReason}
                 onChange={(event, editor) => {
                   const data = editor.getData();
-                  setUserNotes(data);
+                  setInactiveStaffReason(data);
                 }}
                 // onChange={(event, editor) => handleTextChange(editor)}
                 config={{
@@ -547,7 +569,7 @@ const NotesDialog = ({ getIsOpen, getActiveApplicationView, selectedTab }) => {
             </div>
             <div
               className={`${style.reviewButtonStyle} ${isApproveEnabled ? style.cursorPointer : undefined} ${style.marginLeft}`}
-              onClick={getApplicationNotes}
+            //   onClick={getApplicationNotes}
               style={{
                 pointerEvents: isApproveEnabled ? 'auto' : 'none',
                 opacity: isApproveEnabled ? 1 : 0.5
