@@ -61,6 +61,16 @@
   }
 }
 
+.gridContainer3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+}
+
 .inputGroup {
   display: flex;
   flex-direction: column;
@@ -289,6 +299,13 @@
   align-items: center;
 }
 
+.gridContainer4 {
+  display: grid;
+  grid-template-columns: 30% 30% 30%;
+  gap : 5%;
+  align-items: center;
+}
+
 .inputGroup6 {
   display: grid;
   grid-template-columns: 1fr;
@@ -480,7 +497,7 @@
 
 .oneColumnGrid {
   display: grid;
-  grid-template-columns: 95% 4%;
+  grid-template-columns: 50% 4%;
   grid-gap: 1%;
 }
 

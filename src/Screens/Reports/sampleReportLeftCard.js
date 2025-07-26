@@ -65,6 +65,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
     const [selectedPosition, setSelectedPosition] = useState('');
     const [selectedApplicationType, setSelectedApplicationType] = useState('');
     const [selectedReappointmentStatus, setSelectedReappointmentStatus] = useState('');
+    const [selectedApplicationSentStatus, setSelectedApplicationSentStatus] = useState('');
     const [user, setUsers] = useState([]);
     const [from, setFrom] = useState(startOfMonth(new Date()));
     const [to, setTo] = useState(endOfMonth(new Date()));
@@ -97,6 +98,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         timesheetProcessingSummary: 'TIMESHEET',
         listingOfTimesheetsNotPaid: 'TIMESHEET',
         staffReappointmentTracker: 'TIMESHEET',
+        locumStaffRenewalStatusTracker: 'TIMESHEET',
         paymentsProcessingSummary: 'TIMESHEET',
         staffReappointmentsNotes: 'CONTRACT',
         staffReappointments: 'CONTRACT',
@@ -144,7 +146,8 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         selectedPrivilegeCategoryToSend: selectedPrivilegeCategoryToSend,
         selectedPosition: selectedPosition,
         selectedApplicationType: selectedApplicationType,
-        selectedReappointmentStatus: selectedReappointmentStatus
+        selectedReappointmentStatus: selectedReappointmentStatus,
+        selectedApplicationSentStatus: selectedApplicationSentStatus,
     };
 
     useEffect(() => {
@@ -358,7 +361,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         getDataToUseInReport(dataToUseInReport);
     }, [renewalreportingTimePeriod, selectedSites, selectedDepartments, selectedPrivilegeCategory, selectedStaffType,
         podType, contractStatus, reportingTimePeriod, selectedApplicationType, selectedReappointmentStatus,
-        selectedPosition, from, to, initialValueSet, selectedTimesheetInterval]);
+        selectedPosition, from, to, initialValueSet, selectedTimesheetInterval,selectedApplicationSentStatus]);
 
     useEffect(() => {
         let tempDept = [];
@@ -802,7 +805,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 ))}
                             </Select>
                         </FormControl> */}
-                        {reportType !== "staffReappointmentTracker" && reportType !== "ohipBillingNumbersByCareProvider" && reportType !== "privilegedStaffSummary" && reportType !== "locumStaffbyTypes" && reportType !== "staffbyTypes" &&  (
+                        {reportType !== "staffReappointmentTracker" && reportType !== "ohipBillingNumbersByCareProvider" && reportType !== "privilegedStaffSummary" && reportType !== "locumStaffbyTypes" && reportType !== "staffbyTypes" && reportType !== "locumStaffRenewalStatusTracker" && reportType !== 'staffReappointmentStatusSummary' && (
                             <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                                 <InputLabel id="demo-multiple-name-label1" className={style.headingtextStyle}>Reporting Time Period</InputLabel>
                                 <Select
@@ -1146,6 +1149,26 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                             );
                             })}
                         </div>
+                        )}
+
+                             {( reportType === "staffByTypes" || reportType === "locumStaffbyTypes") && (
+                            <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                                <InputLabel id="demo-simple-select-standard-label3">Application Sent Status</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-standard-label3"
+                                    id="demo-simple-select-standard3"
+                                    value={selectedApplicationSentStatus}
+                                    onChange={(e) => { setSelectedApplicationSentStatus(e.target.value) }}
+                                    MenuProps={MenuProps}
+                                    disabled={isLoading}
+                                    className={style.textAlignLeft}
+                                >
+                                    <MenuItem value={''} disabled={isLoading}>All</MenuItem>
+                                    <MenuItem value={'SENT'} disabled={isLoading}>Sent</MenuItem>
+                                    <MenuItem value={'RE_SENT'} disabled={isLoading}>Reminder Sent</MenuItem>
+                                    <MenuItem value={'NOT_SENT'} disabled={isLoading}>Not Sent</MenuItem>
+                                </Select>
+                            </FormControl>
                         )}
                         {( reportType === "currentNotesSummary") && (
                             <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
