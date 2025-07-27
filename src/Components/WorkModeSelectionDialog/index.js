@@ -48,6 +48,7 @@ const WorkModeDialog = ({ getIsOpen }) => {
     if (initialRoute && initialRoute !== undefined && initialRoute !== 'undefined' && initialRoute !== null) {
       console.log("pathnameee",initialRoute)
       window.location.href = `${initialRoute}`;
+      console.log("initialRoute",initialRoute)
       localStorage?.removeItem('initialRoute')
     } else {
       window.location.pathname = "/applications";

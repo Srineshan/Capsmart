@@ -115,6 +115,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab,requestedType }) => {
   const [covererName, setCovererName] = useState("");
   const [covererId, setCovererId] = useState("");
   const [emailSendDialog, setEmailSendDialog] = useState(false);
+  const [ReloadAlert, setReloadAlert] = useState(false);
   const prevDepartment = formDetails?.basicDetailReferences?.department?.id;
   const prevSpeciality = formDetails?.basicDetailReferences?.specialty?.id;
   const canadaData = sessionStorage.getItem('canadaData') !== 'undefined' ? JSON.parse(sessionStorage.getItem('canadaData')) : {};
@@ -140,6 +141,65 @@ console.log("requestedType",requestedType)
     getApplicationEntity();
     getActiveUserData();
   }, [applicationType, id]);
+
+  console.log('Reloading...',ReloadAlert);
+
+    useEffect(() => {
+        if (ReloadAlert) {
+            console.log('Reloading123...');
+        }
+    }, [ReloadAlert]);
+
+useEffect(() => {
+    const handleBeforeUnload = (event) => {
+        // Show confirmation for reload/close
+        const confirmed = window.confirm(
+            'CAUTION!\nExiting your browser will disrupt the extension application you are working on. You will lose your data and will have to redo this application. Are you sure you want to Exit?'
+        );
+        
+        if (confirmed) {
+            // User clicked "OK" (reload/exit)
+            setReloadAlert(true);
+            // Allow the unload to proceed
+            return undefined;
+        } else {
+            // User clicked "Cancel"
+            setReloadAlert(false);
+            // Prevent unload
+            event.preventDefault();
+            return event.returnValue = '';
+        }
+    };
+
+    const handleBackNavigation = (event) => {
+        // Show confirmation manually (for Back button)
+        const confirmed = window.confirm(
+            'CAUTION!\nExiting your browser will disrupt the extension application you are working on. You will lose your data and will have to redo this application. Are you sure you want to Exit?'
+        );
+        
+        if (confirmed) {
+            // User clicked "OK" (reload/exit)
+            setReloadAlert(true);
+        } else {
+            // User clicked "Cancel"
+            setReloadAlert(false);
+            window.history.pushState(null, null, window.location.pathname);
+        }
+    };
+
+    // Add listeners only when dialogs are active
+    if (showSelectedPrivilegeLocum) {
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        window.addEventListener('popstate', handleBackNavigation);
+        window.history.pushState(null, null, window.location.pathname);
+    }
+
+    return () => {
+        window.removeEventListener('beforeunload', handleBeforeUnload);
+        window.removeEventListener('popstate', handleBackNavigation);
+    };
+}, [showSelectedPrivilegeLocum]);
+
 
   useEffect(() => {
     const index = formDetails?.forms?.findIndex(data => data?.schemaCategory === "PrivilegeSelection");
@@ -323,7 +383,7 @@ console.log("requestedType",requestedType)
 
   const getActiveUserData = async () => {
     try {
-      const url = `application-management-service/staff?status=ACTIVE&type=LOCUM&isExpired=${selectedTab === "ACTIVELOCUM" ? "false" : "true"}&noOfDays=30&isPaginationRequired=${limit === 9999 ? false : true}&limit=${limit}`;
+      const url = `application-management-service/staff?tab=${selectedTab === "ACTIVELOCUM" ? "ACTIVE_LOCUM" : "EXPIRED_LOCUM"}&isPaginationRequired=${limit === 9999 ? false : true}&limit=${limit}`;
       const response = await GET(url);
       const staffs = response?.data?.staffs || [];
 

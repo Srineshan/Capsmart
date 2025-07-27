@@ -162,7 +162,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         }
     }, [])
 
-    console.log("selectedStaffTypeToSend",selectedDepartments,selectedStaffType,selectedDepartmentsToSend, selectedStaffTypeToSend)
+    console.log("selectedStaffTypeToSend", selectedDepartments, selectedStaffType, selectedDepartmentsToSend, selectedStaffTypeToSend)
 
     useEffect(() => {
         const controller = new AbortController(); // Create an AbortController instance
@@ -745,7 +745,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                 </Tooltip>
                 {(reportType === "staffReappointmentsNotes" || reportType === "staffReappointments" || reportType === "locumRenewalOrExtensionApplicationsSummary" || reportType === "privilegedStaffSummary" ||
                     reportType === "submittedApplicationsReviewSummary" || reportType === "staffReappointmentTracker" || reportType === "ohipBillingNumbersByCareProvider" || reportType === "careProviderCareerMilestoneSummary" ||
-                    reportType === "declinedOrNotRenewedStaffSummary" || reportType === "reappointmentApplicationNotStarted" || reportType === "currentNotesSummary" || reportType === "staffReappointmentStatusSummary" || reportType === "staffbyTypes" || reportType === "locumStaffbyTypes" || reportType === "locumStaffRenewalStatusTracker" || reportType === "privilegedStaffSummary") ? (
+                    reportType === "declinedOrNotRenewedStaffSummary" || reportType === "reappointmentApplicationNotStarted" || reportType === "currentNotesSummary" || reportType === "staffReappointmentStatusSummary" || reportType === "staffbyTypes" || reportType === "locumStaffbyTypes" || reportType === "locumStaffRenewalStatusTracker" || reportType === "privilegedStaffSummary" || reportType === "careProvidersSummary") ? (
                     <>
                         {/* {reportType === "staffReappointmentsNotes" && (
                             <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
@@ -910,24 +910,24 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 ))}
                             </Select>
                         </FormControl>
-                       {selectedDepartments?.filter(Boolean).length > 0 && (
-                    <div className={`${style.grid2Gap} ${style.marginLeft5}`}>
-                        {selectedDepartments.map((id) => {
-                        const dept = departments?.find(dep => dep?.id === id);
-                        return (
-                            <div key={id} className={`${style.spaceBetween} ${style.marginRight5} ${style.filterBackground}`}>
-                            <div className={`${style.filtertextStyle}`}>{dept?.departmentName?.name}</div>
-                            <Tooltip title="Remove Filter" arrow>
-                                <CancelOutlinedIcon
-                                sx={{
-                                    fontSize: 15,
-                                    color: "#06617A",
-                                    marginLeft: "5px",
-                                }}
-                                className={style.cursorPointer}
-                                onClick={() => {
-                                const updatedDepartments = selectedDepartments.filter(depId => depId !== id);
-                                setSelectedDepartments(updatedDepartments);
+                        {selectedDepartments?.filter(Boolean).length > 0 && (
+                            <div className={`${style.grid2Gap} ${style.marginLeft5}`}>
+                                {selectedDepartments.map((id) => {
+                                    const dept = departments?.find(dep => dep?.id === id);
+                                    return (
+                                        <div key={id} className={`${style.spaceBetween} ${style.marginRight5} ${style.filterBackground}`}>
+                                            <div className={`${style.filtertextStyle}`}>{dept?.departmentName?.name}</div>
+                                            <Tooltip title="Remove Filter" arrow>
+                                                <CancelOutlinedIcon
+                                                    sx={{
+                                                        fontSize: 15,
+                                                        color: "#06617A",
+                                                        marginLeft: "5px",
+                                                    }}
+                                                    className={style.cursorPointer}
+                                                    onClick={() => {
+                                                        const updatedDepartments = selectedDepartments.filter(depId => depId !== id);
+                                                        setSelectedDepartments(updatedDepartments);
 
                                                         const updatedDepartmentsToSend = departments
                                                             ?.filter(data => updatedDepartments.includes(data?.id))
@@ -1035,36 +1035,36 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                             </Select>
                         </FormControl>
                         {selectedStaffType?.filter(Boolean).length > 0 && (
-                        <div className={`${style.grid2Gap} ${style.marginLeft5}`}>
-                            {selectedStaffType.map((id) => {
-                            const dept = staffType?.find(dep => dep?.id === id);
-                            return (
-                                <div key={id} className={`${style.spaceBetween} ${style.marginRight5} ${style.filterBackground}`}>
-                                <div className={`${style.filtertextStyle}`}>{dept?.applicantType}</div>
-                                <Tooltip title="Remove Filter" arrow>
-                                    <CancelOutlinedIcon
-                                    sx={{
-                                        fontSize: 15,
-                                        color: "#06617A",
-                                        marginLeft: "5px",
-                                    }}
-                                    className={style.cursorPointer}
-                                    onClick={() => {
-                                    const updatedDepartments = selectedStaffType.filter(depId => depId !== id);
-                                    setSelectedStaffType(updatedDepartments);
+                            <div className={`${style.grid2Gap} ${style.marginLeft5}`}>
+                                {selectedStaffType.map((id) => {
+                                    const dept = staffType?.find(dep => dep?.id === id);
+                                    return (
+                                        <div key={id} className={`${style.spaceBetween} ${style.marginRight5} ${style.filterBackground}`}>
+                                            <div className={`${style.filtertextStyle}`}>{dept?.applicantType}</div>
+                                            <Tooltip title="Remove Filter" arrow>
+                                                <CancelOutlinedIcon
+                                                    sx={{
+                                                        fontSize: 15,
+                                                        color: "#06617A",
+                                                        marginLeft: "5px",
+                                                    }}
+                                                    className={style.cursorPointer}
+                                                    onClick={() => {
+                                                        const updatedDepartments = selectedStaffType.filter(depId => depId !== id);
+                                                        setSelectedStaffType(updatedDepartments);
 
-                                    const updatedDepartmentsToSend = staffType
-                                        ?.filter(data => updatedDepartments.includes(data?.id))
-                                        ?.map(data => data);
+                                                        const updatedDepartmentsToSend = staffType
+                                                            ?.filter(data => updatedDepartments.includes(data?.id))
+                                                            ?.map(data => data);
 
-                                    setSelectedStaffTypeToSend(updatedDepartmentsToSend);
-                                }}
-                                    />
-                                </Tooltip>
-                                </div>
-                            );
-                            })}
-                        </div>
+                                                        setSelectedStaffTypeToSend(updatedDepartmentsToSend);
+                                                    }}
+                                                />
+                                            </Tooltip>
+                                        </div>
+                                    );
+                                })}
+                            </div>
                         )}
                         <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                             <InputLabel id="demo-multiple-name-label2" className={style.headingtextStyle}>Privilege Category</InputLabel>
@@ -1099,56 +1099,56 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                             </Select>
                         </FormControl>
                         {selectedPrivilegeCategory?.filter(Boolean).length > 0 && (
-                        <div className={`${style.grid2Gap} ${style.marginLeft5}`}>
-                            {selectedPrivilegeCategory.map((id) => {
-                            const dept = privilegeCategory?.find(dep => dep?.id === id);
-                            return (
-                                <div key={id} className={`${style.spaceBetween} ${style.marginRight5} ${style.filterBackground}`}>
-                                <div className={`${style.filtertextStyle}`}>{dept?.category}</div>
-                                <Tooltip title="Remove Filter" arrow>
-                                    <CancelOutlinedIcon
-                                    sx={{
-                                        fontSize: 15,
-                                        color: "#06617A",
-                                        marginLeft: "5px",
-                                    }}
-                                    className={style.cursorPointer}
-                                //     onClick={() => {
-                                //     const updatedPrivilegeCategory = selectedPrivilegeCategory.filter(depId => depId !== id);
-                                //     setSelectedPrivilegeCategory(updatedPrivilegeCategory);
+                            <div className={`${style.grid2Gap} ${style.marginLeft5}`}>
+                                {selectedPrivilegeCategory.map((id) => {
+                                    const dept = privilegeCategory?.find(dep => dep?.id === id);
+                                    return (
+                                        <div key={id} className={`${style.spaceBetween} ${style.marginRight5} ${style.filterBackground}`}>
+                                            <div className={`${style.filtertextStyle}`}>{dept?.category}</div>
+                                            <Tooltip title="Remove Filter" arrow>
+                                                <CancelOutlinedIcon
+                                                    sx={{
+                                                        fontSize: 15,
+                                                        color: "#06617A",
+                                                        marginLeft: "5px",
+                                                    }}
+                                                    className={style.cursorPointer}
+                                                    //     onClick={() => {
+                                                    //     const updatedPrivilegeCategory = selectedPrivilegeCategory.filter(depId => depId !== id);
+                                                    //     setSelectedPrivilegeCategory(updatedPrivilegeCategory);
 
-                                //     const updatedPrivilegeCategoryToSend = privilegeCategory
-                                //         ?.filter(data => updatedPrivilegeCategory.includes(data?.id))
-                                //         ?.map(data => data);
+                                                    //     const updatedPrivilegeCategoryToSend = privilegeCategory
+                                                    //         ?.filter(data => updatedPrivilegeCategory.includes(data?.id))
+                                                    //         ?.map(data => data);
 
-                                //     setSelectedPrivilegeCategoryToSend(updatedPrivilegeCategoryToSend);
-                                // }}
-                                onClick={() => {
-                                    const privilege = privilegeCategory.find(privilege => privilege?.id === id);
-                                    const categoryName = privilege?.category;
+                                                    //     setSelectedPrivilegeCategoryToSend(updatedPrivilegeCategoryToSend);
+                                                    // }}
+                                                    onClick={() => {
+                                                        const privilege = privilegeCategory.find(privilege => privilege?.id === id);
+                                                        const categoryName = privilege?.category;
 
-                                    if (!categoryName) return;
+                                                        if (!categoryName) return;
 
-                                    const matchingIds = privilegeCategory
-                                        .filter(item => item.category === categoryName)
-                                        .map(item => item.id);
+                                                        const matchingIds = privilegeCategory
+                                                            .filter(item => item.category === categoryName)
+                                                            .map(item => item.id);
 
-                                    const updatedSelected = selectedPrivilegeCategory.filter(
-                                        (id) => !matchingIds.includes(id)
+                                                        const updatedSelected = selectedPrivilegeCategory.filter(
+                                                            (id) => !matchingIds.includes(id)
+                                                        );
+                                                        setSelectedPrivilegeCategory(updatedSelected);
+
+                                                        const updatedData = privilegeCategory.filter((item) =>
+                                                            updatedSelected.includes(item.id)
+                                                        );
+                                                        setSelectedPrivilegeCategoryToSend(updatedData);
+                                                    }}
+                                                />
+                                            </Tooltip>
+                                        </div>
                                     );
-                                    setSelectedPrivilegeCategory(updatedSelected);
-
-                                    const updatedData = privilegeCategory.filter((item) =>
-                                        updatedSelected.includes(item.id)
-                                    );
-                                    setSelectedPrivilegeCategoryToSend(updatedData);
-                                }}
-                                    />
-                                </Tooltip>
-                                </div>
-                            );
-                            })}
-                        </div>
+                                })}
+                            </div>
                         )}
 
                              {( reportType === "staffByTypes" || reportType === "locumStaffbyTypes") && (
@@ -1172,19 +1172,22 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                         )}
                         {( reportType === "currentNotesSummary") && (
                             <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                                <InputLabel id="demo-simple-select-standard-label3">Application Type</InputLabel>
+                                <InputLabel id="demo-simple-select-standard-label3" className={style.headingtextStyle}>Application Type</InputLabel>
+                                {/* <InputLabel id="demo-multiple-name-label4" className={style.headingtextStyle}>Application Type</InputLabel> */}
                                 <Select
                                     labelId="demo-simple-select-standard-label3"
                                     id="demo-simple-select-standard3"
+                                    // labelId="demo-multiple-name-label4"
+                                    // id="demo-multiple-name4"
                                     value={selectedApplicationType}
                                     onChange={(e) => { setSelectedApplicationType(e.target.value) }}
                                     MenuProps={MenuProps}
                                     disabled={isLoading}
                                     className={style.textAlignLeft}
                                 >
-                                    <MenuItem value={''} disabled={isLoading}>All</MenuItem>
+                                    <MenuItem value={defaultOption} disabled={isLoading}>All</MenuItem>
                                     <MenuItem value={'NEW'} disabled={isLoading}>New Applicants</MenuItem>
-                                    <MenuItem value={'REAPPOINTMENT'} disabled={isLoading}>Staff Reapointments</MenuItem>
+                                    <MenuItem value={'REAPPOINTMENT'} disabled={isLoading}>Staff Reappointments</MenuItem>
                                     <MenuItem value={'LOCUM_RENEWAL'} disabled={isLoading}>Locum Applications</MenuItem>
                                 </Select>
                             </FormControl>
