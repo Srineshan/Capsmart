@@ -1235,9 +1235,9 @@ const ReportTypeOverview = () => {
             : "";
 
         // For string type (not array)
-        const applicationStatusParam = dataToUseInReport?.selectedApplicationSentStatus
-            ? `&applicationStatus=${dataToUseInReport.selectedApplicationSentStatus}`
-            : "";
+        const applicationStatusParam = dataToUseInReport?.selectedApplicationSentStatus === "All" 
+            ? "&applicationStatus=CREATED"
+            : `&reappointmentStatus=${dataToUseInReport.selectedApplicationSentStatus}`
 
         const response = await GET(
             `application-management-service/staff?status=ACTIVE&positionType=PERMANENT&sendForReappointment=false&limit=9999&offset=0&isPaginationRequired=false&sortBy=DESCENDING&sortByField=REAPPOINTMENT_STATUS${applicantParam}${privilegeParam}${departmentParam}${applicationStatusParam}`
@@ -1273,9 +1273,9 @@ const ReportTypeOverview = () => {
             : "";
 
         // applicationSentStatus is a string, not array
-        const applicationStatusParam = dataToUseInReport?.selectedApplicationSentStatus
-            ? `&applicationStatus=${dataToUseInReport.selectedApplicationSentStatus}`
-            : "&applicationStatus=CREATED";
+          const applicationStatusParam = dataToUseInReport?.selectedApplicationSentStatus === "All" 
+            ? "&applicationStatus=CREATED"
+            : `&reappointmentStatus=${dataToUseInReport.selectedApplicationSentStatus}`
 
         const response = await GET(
             `application-management-service/staff?status=ACTIVE&positionType=LOCUM&sendForReappointment=false&limit=9999&offset=0&isPaginationRequired=false&sortBy=DESCENDING&sortByField=REAPPOINTMENT_STATUS${applicantParam}${privilegeParam}${departmentParam}${applicationStatusParam}`

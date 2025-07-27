@@ -65,7 +65,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
     const [selectedPosition, setSelectedPosition] = useState('');
     const [selectedApplicationType, setSelectedApplicationType] = useState('');
     const [selectedReappointmentStatus, setSelectedReappointmentStatus] = useState('');
-    const [selectedApplicationSentStatus, setSelectedApplicationSentStatus] = useState('');
+    const [selectedApplicationSentStatus, setSelectedApplicationSentStatus] = useState('All');
     const [user, setUsers] = useState([]);
     const [from, setFrom] = useState(startOfMonth(new Date()));
     const [to, setTo] = useState(endOfMonth(new Date()));
@@ -112,6 +112,8 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         locumStaffbyTypes: 'CONTRACT',
     }
     const defaultOption = ''
+
+
 
     let cookie = new Cookie();
     let userDetails = cookie.get('user');
@@ -161,6 +163,8 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
             getTimesheetIntervals()
         }
     }, [])
+
+    console.log('Selected Application Status:', selectedApplicationSentStatus);
 
     console.log("selectedStaffTypeToSend", selectedDepartments, selectedStaffType, selectedDepartmentsToSend, selectedStaffTypeToSend)
 
@@ -1151,7 +1155,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                             </div>
                         )}
 
-                             {( reportType === "staffByTypes" || reportType === "locumStaffbyTypes") && (
+                            {(reportType === "staffbyTypes" || reportType === "locumStaffbyTypes") && (
                             <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                                 <InputLabel id="demo-simple-select-standard-label3">Application Sent Status</InputLabel>
                                 <Select
@@ -1162,8 +1166,15 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                     MenuProps={MenuProps}
                                     disabled={isLoading}
                                     className={style.textAlignLeft}
+                                   renderValue={(selected) => {
+  if (selected === 'ALL') return 'All';     // Show "All" for empty
+  if (selected === 'SENT') return 'Sent';
+  if (selected === 'RE_SENT') return 'Reminder Sent';
+  if (selected === 'NOT_SENT') return 'Not Sent';
+  return selected;
+}} 
                                 >
-                                    <MenuItem value={''} disabled={isLoading}>All</MenuItem>
+                                    <MenuItem value={'ALL'} disabled={isLoading}>All</MenuItem>
                                     <MenuItem value={'SENT'} disabled={isLoading}>Sent</MenuItem>
                                     <MenuItem value={'RE_SENT'} disabled={isLoading}>Reminder Sent</MenuItem>
                                     <MenuItem value={'NOT_SENT'} disabled={isLoading}>Not Sent</MenuItem>
