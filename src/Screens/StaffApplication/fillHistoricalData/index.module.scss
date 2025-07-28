@@ -61,6 +61,16 @@
   }
 }
 
+.gridContainer3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+}
+
 .inputGroup {
   display: flex;
   flex-direction: column;
@@ -289,6 +299,13 @@
   align-items: center;
 }
 
+.gridContainer4 {
+  display: grid;
+  grid-template-columns: 30% 30% 30%;
+  gap : 5%;
+  align-items: center;
+}
+
 .inputGroup6 {
   display: grid;
   grid-template-columns: 1fr;
@@ -393,8 +410,12 @@
 
 .applicantGrid {
   display: grid;
-  grid-template-columns: 30% 30% 30% 3%;
+  grid-template-columns: 18% 18% 18% 18% 18% 4%;
   grid-gap: 1%;
+}
+
+.marginLeftRight20 {
+  margin: 0 20px !important;
 }
 
 .padding20 {
@@ -450,6 +471,10 @@
   margin-bottom: 20px;
 }
 
+.marginBottom10 {
+  margin-bottom: 10px;
+}
+
 .lableStyle {
   text-align: left;
   font: normal normal 500 15px/17px proxima-nova;
@@ -472,7 +497,7 @@
 
 .oneColumnGrid {
   display: grid;
-  grid-template-columns: 95% 4%;
+  grid-template-columns: 50% 4%;
   grid-gap: 1%;
 }
 

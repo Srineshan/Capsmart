@@ -952,7 +952,7 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                                         }
                                                     }}
                                                 >
-                                                    <div className={`${style.buttonGreyTextStyle} ${style.alignCenter} ${style.cursorPointer}`}>
+                                                    <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
                                                         SAVE & CONTINUE
                                                     </div>
                                                 </div>
@@ -1036,7 +1036,7 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                                         }
                                                     }}
                                                 >
-                                                    <div className={`${style.buttonGreyTextStyle} ${style.alignCenter} ${style.cursorPointer}`}>
+                                                    <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
                                                         SAVE & CONTINUE
                                                     </div>
                                                 </div>

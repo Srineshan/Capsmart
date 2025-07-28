@@ -35,11 +35,14 @@ import { ErrorToaster } from "../../utils/toaster";
 import Tooltip from "@mui/material/Tooltip";
 import { formatFirstNameLastName } from "../../utils/formatting";
 import CommonSearchField from "../../Components/CommonFields/CommonSearchField";
+import CommonSelectField from "../../Components/CommonFields/CommonSelectField";
 import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
 import LoadingScreen from "../../Components/LoadingScreen";
 import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined';
+import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined';
 import PeopleOutlinedIcon from '@mui/icons-material/PeopleOutlined';
+import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 
 const LocumStaffList = ({
   isLoading,
@@ -72,6 +75,8 @@ const LocumStaffList = ({
   const [showCardDetails, setShowCardDetails] = useState(false);
   const [showCardAppointment, setShowCardAppointment] = useState(false);
   const [showCardCompletion, setShowCardCompletion] = useState(false);
+  const [applicantTypeFilter, setApplicantTypeFilter] = useState([]);
+  const [selectedApplicantType, setSelectedApplicantType] = useState('');
 
   const [applicationRejected, setApplicationRejected] = useState({
     totalRejections: 0,
@@ -94,10 +99,14 @@ const LocumStaffList = ({
   const workModeType = sessionStorage.getItem("workModeType")
   const [userDepartmentList, setUserDepartmentList] = useState('');
   const [searchCount, setSearchCount] = useState(0);
+  const [departmentList, setDepartmentList] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState("");
+  const [selectedDepartmentFilter, setSelectedDepartmentFilter] = useState("");
+  const [selectedServiceArea, setSelectedServiceArea] = useState("");
   const [selectedSpeciality, setSelectedSpeciality] = useState("");
   const [limit, setLimit] = useState(9999);
   const [isLoadingImage, setIsLoadingImage] = useState(false);
+  const [showFilter, setShowFilter] = useState(false);
   const canadaData = sessionStorage.getItem('canadaData') !== 'undefined' ? JSON.parse(sessionStorage.getItem('canadaData')) : {};
   const dateFormat = canadaData?.dateFormat || 'MMM dd, yyyy';
   // let userDepartmentList;
@@ -124,6 +133,8 @@ const LocumStaffList = ({
   const [totalExpireCount, setTotalExpireCount] = useState(0);
   const [totalTempPrivilegeCount, setTotalTempPrivilegeCount] = useState(0);
   const [totalRequestCount, setTotalRequestCount] = useState(0);
+  const selectedDepartmentName = departmentList?.find(data => data?.id === selectedDepartmentFilter)?.departmentName?.name;
+  const selectedApplicantTypeName = applicantTypeFilter?.find(data => data?.id === selectedApplicantType)?.applicantType;
 
   const getApplicationRejectionDialog = (value) => {
     setShowApplicationRejectionDialog(value);
@@ -135,12 +146,15 @@ const LocumStaffList = ({
     userSpecialty = userDetailsFetchOption?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.serviceAreas?.[0]?.id;
     console.log("userSpecialty", userDepartmentList, userSpecialty)
     console.log("userDetailsFetchOption", userDetailsFetchOption);
+    getDepartmentList();
+    getApplicantType();
 
   }, [])
 
   useEffect(() => {
     sessionStorage.setItem('applicationCreationType', 'LOCUM')
     getRequestUserDataCount();
+    getTitleCountsStaff();
   }, [])
 
   useEffect(() => {
@@ -216,11 +230,31 @@ const LocumStaffList = ({
     getActiveUserData(signal);
 
     return () => controller.abort();
-  }, [selectedTab, sortField, sortValue, page, totalCount, showLocumExtensiveDialog, searchTermForTable, limit, showLocumExtensiveRequestDialog, showLocumRequestDialog, selectedDepartment]);
+  }, [selectedTab, sortField, sortValue, page, totalCount, showLocumExtensiveDialog, searchTermForTable, limit, showLocumExtensiveRequestDialog, showLocumRequestDialog, selectedDepartment,selectedDepartmentFilter,selectedServiceArea,selectedApplicantType]);
 
   const getReFetchMetaData = (value) => {
     setReFetchMetaData(value);
   };
+  
+   const getDepartmentList = async () => {
+      const { data: department } = await GET(
+        `entity-service/department`
+      );
+      setDepartmentList(department);
+    }
+
+     const getApplicantType = async () => {
+        const { data: applicant } = await GET(
+          `entity-service/applicantType`
+        );
+        setApplicantTypeFilter(applicant);
+        // if (applicant?.filter(data => data?.applicantType === "Physician")?.length !== 0) {
+        //   setSelectedApplicantType(applicant?.filter(data => data?.applicantType === "Physician")?.[0]?.id);
+        // } else {
+        //   setSelectedApplicantType(applicant?.[0]?.id);
+        // }
+      }
+  
 
   console.log("searchTermForTable", searchTermForTable)
 
@@ -284,24 +318,81 @@ const LocumStaffList = ({
     getActiveUserDataExpireCount();
     getTempPrivilegeUserDataCount();
     getRequestUserDataCount();
+    // getTitleCountsStaff();
     // getActiveUserDataSearch();
     console.log("setSelectedDepartment", selectedDepartment)
-  }, [selectedDepartment, searchTermForTable, showLocumRequestDialog]);
+  }, [selectedDepartment, searchTermForTable, showLocumRequestDialog,selectedDepartmentFilter,selectedServiceArea,selectedApplicantType]);
+
+   const transformedOptions = departmentList?.flatMap((department) => {
+      const departmentEntry = {
+        value: department?.id,
+        label: department?.departmentName?.name, // Department name without indentation
+        type: 'department'
+      };
+  
+      const serviceAreaEntries = department.serviceAreas?.map((serviceArea) => ({
+        value: `${department.id}|${serviceArea.id}`,
+        label: (
+          <span className={style.marginLeft20}>
+            {serviceArea?.name}
+          </span>
+        ),
+        type: 'serviceArea'
+      })) || [];
+  
+      return [departmentEntry, ...serviceAreaEntries];
+    }) || [];
+
+   const handleChange = (e) => {
+    const selectedValue = e.target.value;
+    const [departmentId, serviceAreaId] = selectedValue.split("|");
+
+    setSelectedDepartmentFilter(departmentId || "");
+    setSelectedServiceArea(serviceAreaId || "");
+
+    console.log("selectedDept", selectedValue)
+  }
 
   // useEffect(() => {
   //   getActiveUserDataActiveCount();
   //   getActiveUserDataExpireCount();
   // }, [selectedDepartment]);
 
+   const getTitleCountsStaff = async () => {
+  const requestBody = [
+    selectedDepartmentFilter,selectedServiceArea ]
+
+  await POST('application-management-service/staff/meta', JSON.stringify(requestBody))
+    .then(response => {
+      setTotalCount(response?.data?.ACTIVE_LOCUM);
+      setTotalExpireCount(response?.data?.EXPIRED_LOCUM);
+      setTotalTempPrivilegeCount(response?.data?.PROVISIONAL_LOCUM);
+      console.log("Response Data:", response?.data);
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+};
+
   const getActiveUserDataActiveCount = async () => {
     try {
       const userDepartmentListData =
         userDetailsFetchOption?.sites?.sites[0]?.departmentList?.departments?.[0]?.id;
+        const tab = selectedTab === "ACTIVELOCUM" ? "ACTIVE_LOCUM" : selectedTab === "TEMPORARYPRIVILEGEDLOCUM" ? "PROVISIONAL_LOCUM" : "EXPIRED_LOCUM"
+        const departmentParam =
+        selectedDepartmentFilter || selectedServiceArea
+          ? `&departmentSpecialties=${selectedDepartmentFilter}%23${selectedServiceArea}`
+          : "";
+        const applicantType = selectedApplicantType ? `&applicantTypeId=${selectedApplicantType}`: "";
 
-      let apiUrl = `application-management-service/staff?status=ACTIVE&type=LOCUM&noOfDays=30&isExpired=false&searchText=${searchTermForTable}`;
+      let apiUrl = `application-management-service/staff?searchText=${searchTermForTable}&tab=ACTIVE_LOCUM${applicantType}`;
 
       if (userDepartmentListData && workModeType === "Department Head") {
         apiUrl += `&departmentSpecialties=${userDepartmentListData}`;
+      }
+
+      if(workModeType !== "Department Head" && departmentParam !== "") {
+         apiUrl += `${departmentParam}`;
       }
 
       const response = await GET(apiUrl);
@@ -343,11 +434,21 @@ const LocumStaffList = ({
     try {
       const userDepartmentListData =
         userDetailsFetchOption?.sites?.sites[0]?.departmentList?.departments?.[0]?.id;
+        const tab = selectedTab === "ACTIVELOCUM" ? "ACTIVE_LOCUM" : selectedTab === "TEMPORARYPRIVILEGEDLOCUM" ? "PROVISIONAL_LOCUM" : "EXPIRED_LOCUM"
+        const departmentParam =
+        selectedDepartmentFilter || selectedServiceArea
+          ? `&departmentSpecialties=${selectedDepartmentFilter}%23${selectedServiceArea}`
+          : "";
+          const applicantType = selectedApplicantType ? `&applicantTypeId=${selectedApplicantType}`: "";
 
-      let apiUrl = `application-management-service/staff?status=ACTIVE&type=LOCUM&noOfDays=30&isExpired=true&searchText=${searchTermForTable}`;
+      let apiUrl = `application-management-service/staff?searchText=${searchTermForTable}${applicantType}&tab=EXPIRED_LOCUM`;
 
       if (userDepartmentListData && workModeType === "Department Head") {
         apiUrl += `&departmentSpecialties=${userDepartmentListData}`;
+      }
+
+        if(workModeType !== "Department Head" && departmentParam !== "") {
+         apiUrl += `${departmentParam}`;
       }
 
       const response = await GET(apiUrl);
@@ -365,11 +466,21 @@ const LocumStaffList = ({
     try {
       const userDepartmentListData =
         userDetailsFetchOption?.sites?.sites[0]?.departmentList?.departments?.[0]?.id;
+        const tab = selectedTab === "ACTIVELOCUM" ? "ACTIVE_LOCUM" : selectedTab === "TEMPORARYPRIVILEGEDLOCUM" ? "PROVISIONAL_LOCUM" : "EXPIRED_LOCUM"
+        const departmentParam =
+        selectedDepartmentFilter || selectedServiceArea
+          ? `&departmentSpecialties=${selectedDepartmentFilter}%23${selectedServiceArea}`
+          : "";
+        const applicantType = selectedApplicantType ? `&applicantTypeId=${selectedApplicantType}`: "";
 
-      let apiUrl = `application-management-service/staff?status=ACTIVE&type=LOCUM&noOfDays=30&isExpired=false&searchText=${searchTermForTable}&isProvisional=true`;
+      let apiUrl = `application-management-service/staff?searchText=${searchTermForTable}${applicantType}&tab=PROVISIONAL_LOCUM`;
 
       if (userDepartmentListData && workModeType === "Department Head") {
         apiUrl += `&departmentSpecialties=${userDepartmentListData}`;
+      }
+
+        if(workModeType !== "Department Head" && departmentParam !== "") {
+         apiUrl += `${departmentParam}`;
       }
 
       const response = await GET(apiUrl);
@@ -387,8 +498,9 @@ const LocumStaffList = ({
     try {
       const userDepartmentListData =
         userDetailsFetchOption?.sites?.sites[0]?.departmentList?.departments?.[0]?.id;
+        const tab = selectedTab === "ACTIVELOCUM" ? "ACTIVE_LOCUM" : selectedTab === "TEMPORARYPRIVILEGEDLOCUM" ? "PROVISIONAL_LOCUM" : "EXPIRED_LOCUM"
 
-      let apiUrl = `application-management-service/staff?status=ACTIVE&type=LOCUM&noOfDays=30&isExpired=${selectedTab === "ACTIVELOCUM" ? false : true}&searchText=${searchTerm}`;
+      let apiUrl = `application-management-service/staff?searchText=${searchTerm}&tab=${tab}`;
 
       if (selectedDepartment && workModeType === "Department Head") {
         apiUrl += `&departmentSpecialties=${selectedDepartment}`;
@@ -425,11 +537,17 @@ const LocumStaffList = ({
         }
       } else {
         const isExpired = (selectedTab === "ACTIVELOCUM" || selectedTab === "TEMPORARYPRIVILEGEDLOCUM") ? false : true;
+        const tab = selectedTab === "ACTIVELOCUM" ? "ACTIVE_LOCUM" : selectedTab === "TEMPORARYPRIVILEGEDLOCUM" ? "PROVISIONAL_LOCUM" : "EXPIRED_LOCUM"
         const isProvisional = selectedTab === "TEMPORARYPRIVILEGEDLOCUM" ? true : false;
         const isPaginationRequired = limit === 9999 ? false : true;
+        const departmentParam =
+        selectedDepartmentFilter || selectedServiceArea
+          ? `&departmentSpecialties=${selectedDepartmentFilter}%23${selectedServiceArea}`
+          : "";
+        const applicantType = selectedApplicantType ? `&applicantTypeId=${selectedApplicantType}`: "";
         const userDepartmentListData =
           userDetailsFetchOption?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.id;
-        apiUrl = `application-management-service/staff?status=ACTIVE&type=LOCUM&noOfDays=30&isExpired=${isExpired}&searchText=${searchTermForTable}&isPaginationRequired=${isPaginationRequired}&limit=${limit}&offset=${page - 1}&sortBy=${sortValue}&sortByField=${sortField}&isProvisional=${isProvisional}`;
+        apiUrl = `application-management-service/staff?searchText=${searchTermForTable}&isPaginationRequired=${isPaginationRequired}&limit=${limit}&offset=${page - 1}&sortBy=${sortValue}&sortByField=${sortField}&tab=${tab}${departmentParam}${applicantType}`;
 
         if (selectedDepartment && workModeType === "Department Head") {
           apiUrl += `&departmentSpecialties=${selectedDepartment}`;
@@ -1882,13 +2000,13 @@ const LocumStaffList = ({
       data: "Extend?",
       requiredValue: "boolean",
       onClick: onClickExtensiverequestRequiredLocumDialog,
-      conditionToShow: `data?.extensionRequestStatus !== "NOT_REQUESTED" && data?.reAppointmentInitiated === false && ((new Date(data?.tenure?.to) - new Date()) / (1000 * 60 * 60 * 24)) <= 30`,
+      conditionToShow: `data?.extensionRequestStatus === "NA" && data?.reAppointmentInitiated === false && ((new Date(data?.tenure?.to) - new Date()) / (1000 * 60 * 60 * 24)) <= 30`,
     },
      {
       data: "Extension Not Required?",
       requiredValue: "boolean",
       onClick: onClickExtensiverequestNotRequiredLocumDialog,
-      conditionToShow: `data?.extensionRequestStatus !== "NOT_REQUESTED" && data?.reAppointmentInitiated === false && ((new Date(data?.tenure?.to) - new Date()) / (1000 * 60 * 60 * 24)) <= 30`,
+      conditionToShow: `data?.extensionRequestStatus === "NA" && data?.reAppointmentInitiated === false && ((new Date(data?.tenure?.to) - new Date()) / (1000 * 60 * 60 * 24)) <= 30`,
     },
      {
       data: "Review?",
@@ -1923,13 +2041,13 @@ const LocumStaffList = ({
       data: "Renew?",
       requiredValue: "boolean",
       onClick: onClickExtensiverequestRequiredLocumDialog,
-      conditionToShow: `data?.extensionRequestStatus !== "NOT_REQUESTED" && data?.reAppointmentInitiated === false`,
+      conditionToShow: `data?.extensionRequestStatus === "NA" && data?.reAppointmentInitiated === false`,
     },
     {
       data: "Renewal Not Required?",
       requiredValue: "boolean",
       onClick: onClickExtensiverequestNotRequiredLocumDialog,
-      conditionToShow: `data?.extensionRequestStatus !== "NOT_REQUESTED" && data?.reAppointmentInitiated === false`,
+      conditionToShow: `data?.extensionRequestStatus === "NA" && data?.reAppointmentInitiated === false`,
     },
      {
       data: "Review?",
@@ -2171,8 +2289,9 @@ const LocumStaffList = ({
             {`PRIVILEGED STAFF > LOCUM STAFF`}
           </div>
           <div
-            className={`${style.spaceBetween} ${style.marginTop20} ${style.marginLeft30} `}
+            className={`${style.spaceBetween} ${style.marginTop20} ${style.marginLeft30} ${style.alignItemsCenter} `}
           >
+            <div>
             <LocumStaffTiles
               getSelectedTab={getSelectedTab}
               selectedTab={selectedTab}
@@ -2183,7 +2302,101 @@ const LocumStaffList = ({
               locumTempPrivilegeCount={totalTempPrivilegeCount}
               totalRequestCount={totalRequestCount}
             />
+            </div>
+             {selectedApplicantType && (
+                <div className={`${style.filterBackground} ${style.displayInRow} ${style.marginLeft5}`}>
+                  <div className={`${style.filtertextStyle} ${style.marginRight5}`}>Filter by {selectedApplicantTypeName}</div>
+                  <Tooltip title="Remove" arrow>
+                    <CancelOutlinedIcon
+                      sx={{
+                        fontSize: 15,
+                        color: "#06617A",
+                      }}
+                      className={style.cursorPointer}
+                      onClick={() => setSelectedApplicantType("")}
+                    />
+                  </Tooltip>
+                </div>
+              )}
+            {selectedDepartmentFilter && (
+              <div className={`${style.filterBackground} ${style.displayInRow} ${style.marginLeft5}`}>
+                <div className={`${style.filtertextStyle} ${style.marginRight5}`}>Filter by {selectedDepartmentName}</div>
+                <Tooltip title="Remove Filter" arrow>
+                  <CancelOutlinedIcon
+                    sx={{
+                      fontSize: 15,
+                      color: "#06617A",
+                    }}
+                    className={style.cursorPointer}
+                    onClick={() => { setSelectedDepartmentFilter(''); setSelectedServiceArea('') }}
+                  />
+                </Tooltip>
+              </div>
+            )}
+            {/* {
+             workModeType === "Staff Manager" ? ( */}
+              <div
+                className={`${style.alignCenter} ${style.cursorPointer
+                  } ${style.marginRight20}`}
+                style={{
+                  opacity: 1,
+                }}
+                onClick={() => setShowFilter(!showFilter)}
+              >
+                <Tooltip title="Filter" arrow>
+                  <FilterAltOutlinedIcon
+                    sx={{
+                      fontSize: 25,
+                      color: "#06617A",
+                    }}
+
+                  />
+                </Tooltip>
+              </div>
+          {/* //   ) : ""
+          // } */}
           </div>
+          {
+            showFilter && (
+              <div className={style.filterContainer}>
+                {workModeType !== "Department Head" && (
+                   <div>
+                  <CommonSelectField
+                    // value={
+                    //   selectedServiceArea 
+                    //     ? `${selectedDepartment}|${selectedServiceArea}` 
+                    //     : selectedDepartment
+                    // }  
+                    value={selectedDepartmentFilter}
+                    onChange={handleChange}
+                    className={style.fullWidth}
+                    firstOptionLabel={'All'}
+                    firstOptionValue={""}
+                    valueList={transformedOptions.map(option => option?.value)}
+                    labelList={transformedOptions.map(option => option?.label)}
+                    disabledList={transformedOptions.map(() => false)}
+                    label={'Dept / Division & Specialty'}
+                    required={false}
+                  />
+                </div>
+                )}
+                <div>
+                  <CommonSelectField
+                    value={selectedApplicantType}
+                    onChange={(e) => setSelectedApplicantType(e.target.value)}
+                    className={style.fullWidth}
+                    firstOptionLabel={'All'}
+                    firstOptionValue={''}
+                    valueList={applicantTypeFilter?.map(data => data?.id)}
+                    labelList={applicantTypeFilter?.map(data => data?.applicantType)}
+                    disabledList={applicantType?.map(data => false)}
+                    label={'Staff Type'}
+                    required={false}
+                  />
+                </div>
+              </div>
+            )
+          }
           {/* <PeopleOutlinedIcon
           sx={{
             fontSize: 25,

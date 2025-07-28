@@ -477,6 +477,7 @@ import style from './index.module.scss';
 import { GET } from './../../Screens/dataSaver';
 import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
+import { useLocation } from 'react-router-dom';
 
 const StaffApplicationTopTiles = (searchTermForTable,totalCount,showBulkApproveDialog,showBulkMoveDialog,recordUpdate) => {
   const cookie = new Cookie();
@@ -710,6 +711,23 @@ const StaffApplicationTopTiles = (searchTermForTable,totalCount,showBulkApproveD
 
     return levelSum + clarifications;
   };
+
+    const location = useLocation(); // get the current path
+  
+
+   useEffect(() => {
+     const storedApplicationType = sessionStorage.getItem('applicationCreationType');
+     console.log("storedApplicationType",storedApplicationType)
+      if (location.pathname === '/applications' && storedApplicationType === "LOCUM" && workModeType === "Department Head") {
+          setSelectedTab("StaffReappointments");
+      }
+      if (location.pathname === '/applications' && storedApplicationType === "NEW" && workModeType === "Department Head") {
+          setSelectedTab("NewApplicants");
+      }
+    }, [location.pathname]);
+
+    console.log('selectedTab12344',selectedTab)
+      
 
   const getSelectedTab = (tab) => {
     let newType;

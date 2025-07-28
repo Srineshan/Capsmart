@@ -72,6 +72,7 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
         staffReappointmentTracker: 'Staff Reappointment Status Tracker',
         locumStaffRenewalStatusTracker: 'Locum Staff Renewal Status Tracker',
         staffbyTypes: 'Staff Reappointments Application Status',
+        locumStaffbyTypes: ' Locum Renewal / Extension Application Status',
         scheduledActivity: "Scheduled Activity/ Services - Forcasted To Actual",
         scheduledActivityByContract: "Scheduled Activity/ Services - Forcasted To Actual By Contract",
         complianceStatus: "Proof Of Documentation Status By Contractor",
@@ -144,6 +145,7 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
         'timesheetProcessingSummary': 'TIMESHEET_PROCESSING_SUMMARY',
         'listingOfTimesheetsNotPaid': 'LISTING_OF_TIMESHEETS_NOTPAID',
         'staffReappointmentTracker': 'SUBMITTED_TIMESHEETS_PAYMENT_STATUS',
+        'locumStaffRenewalStatusTracker': 'LOCUM_RENEWAL_STATUS_tRACKER',
         'contractDocumentsOnFile': 'CONTRACT_DOCUMENT_ON_FILE',
         'contractsWithABusinessEntity': 'CONTRACT_WITH_BUSINESS_ENTITY',
         'multiProviderContractsList': 'MULTI_PROVIDER_CONTRACT',
@@ -294,7 +296,8 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                 "positionType": dataToUseInReport?.selectedPosition !== "" ? [dataToUseInReport?.selectedPosition] : [],
                 "applicationCreationType": dataToUseInReport?.selectedApplicationType !== "" ? [dataToUseInReport?.selectedApplicationType] : [],
                 "applicationCurrentLevel": sessionStorage.getItem('workModeType'),
-                "staffReappointmentStatus": dataToUseInReport?.selectedReappointmentStatus ? [dataToUseInReport?.selectedReappointmentStatus] : []
+                "staffReappointmentStatus": dataToUseInReport?.selectedReappointmentStatus ? [dataToUseInReport?.selectedReappointmentStatus] : [],
+                "applicationSentStatus": dataToUseInReport?.selectedApplicationSentStatus ? [dataToUseInReport?.selectedApplicationSentStatus] : [],
             },
             filterDisplayNames: [
                 { name: 'Reporting Period used for this report', values: [`${dataToUseInReport?.fromToDisplay} - ${dataToUseInReport?.toToDisplay}`] },
@@ -304,6 +307,7 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                 { name: 'Position', values: dataToUseInReport?.selectedPosition !== "" ? [dataToUseInReport?.selectedPosition] : [] },
                 { name: 'Application Type', values: [availableApplicationTypes[dataToUseInReport?.selectedApplicationType] || 'All Application Type'] },
                 { name: 'Reappointment Status', values: [dataToUseInReport?.selectedReappointmentStatus || 'All Applications'] },
+                { name: 'Application Sent Status', values: [dataToUseInReport?.selectedApplicationSentStatus || 'All'] }
             ],
         }
         const formData = new FormData();
@@ -344,6 +348,7 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                 { name: 'Position', values: dataToUseInReport?.selectedPosition !== "" ? [dataToUseInReport?.selectedPosition] : [] },
                 { name: 'Application Type', values: [availableApplicationTypes[dataToUseInReport?.selectedApplicationType] || 'All Application Type'] },
                 { name: 'Reappointment Status', values: [dataToUseInReport?.selectedReappointmentStatus || 'All Applications'] },
+                { name: 'Application Sent Status', values: [dataToUseInReport?.selectedApplicationSentStatus || 'All'] }
             ],
         }
         const formData = new FormData();

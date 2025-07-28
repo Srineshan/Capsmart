@@ -944,6 +944,7 @@ const App = ({ props }) => {
         } else if ((roles?.length === 1 || mdRoles?.length === 1) && localStorage?.getItem('initialRoute') !== undefined && localStorage?.getItem('initialRoute') !== 'undefined' && localStorage?.getItem('initialRoute') !== null) {
           sessionStorage.setItem("workModeType", mdRoles?.length === 1 ? mdRoles[0] : roles[0]);
           window.location.href = `${initialRoute}`;
+          console.log("initialRoute", initialRoute)
           localStorage?.removeItem('initialRoute')
         }
         else if (roles?.length === 1 || mdRoles?.length === 1) {

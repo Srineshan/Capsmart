@@ -213,7 +213,7 @@ const HistoricalData = () => {
   const [restrictiontext, setRestrictionText] = useState("");
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [selectedFileId, setSelectedFileId] = useState(null);
-  const tableHeader = ['Name', 'Applicant Type', 'Privilege', ''];
+  const tableHeader = ['Staff Name','Email', 'Staff Type','Department','Privilege', 'Action'];
 
   const canadianPostalCodeRegex = /^[A-Za-z]\d[A-Za-z][ -]?\d[A-Za-z]\d$/;
 
@@ -313,6 +313,9 @@ return Object.keys(newErrors).length === 0;
       setDob("");
     }
   };
+
+
+
 
 
   const handleAgreementChange = (e) => {
@@ -495,7 +498,7 @@ const handleDateOfEndChange = (newDate) => {
         console.log("Responseupload:", uploadFileData);
         return response?.data;
       } catch (error) {
-        ErrorToaster2('File Upload Failed');
+        SuccessToaster2('File Upload Failed');
         console.error("Error:", error);
         setIsLoading(false);
         return null;
@@ -504,24 +507,18 @@ const handleDateOfEndChange = (newDate) => {
 
     const handleDeleteFile = async (fileIdToDelete) => {
   try {
-    const requestBody = [fileIdToDelete]; 
-
-    const { data: response } = await DELETE(
-      'document-management-service/document',
-      {
-        data: requestBody,
-      }
-    );
-
+    const requestBody = [fileIdToDelete];
+    console.log("Delete File:",fileIdToDelete);
+    const { data: response } = await DELETE('document-management-service/document', requestBody);
     SuccessToaster2("File deleted successfully");
 
     // Remove the deleted file from uploadFileData
     setUploadFileData(prevData =>
-      prevData.filter(file => file.id !== fileIdToDelete)
+      prevData.filter(file => file?.id !== fileIdToDelete)
     );
     setShowDeleteConfirmation(false); // close confirmation dialog
   } catch (error) {
-    ErrorToaster2("File deletion failed");
+    SuccessToaster2("File deletion failed");
     console.error("Delete error:", error);
     setShowDeleteConfirmation(false); // close even on error
   }
@@ -541,7 +538,7 @@ const getShowDeleteConfirmation = (value) => {
 const getDeleteConfirmation = (value) => {
   if (value && selectedFileId) {
     handleDeleteFile(selectedFileId);
-    setSelectedFileId(null); // reset after deletion
+    setSelectedFileId(null);
   }
 };
 
@@ -1045,26 +1042,65 @@ const getDeleteConfirmation = (value) => {
 
   const getTableDataValues = () => {
     let name = [];
+    let email = [];
     let applicantType = [];
+    let department = [];
     let privilege = [];
-    let editIcon = [];
+    let action = []
+
 
     applicationOldData.map(data => {
-      name.push(data?.demographics.name.firstName);
-      applicantType.push(data?.applicantType.category);
-      privilege.push(data?.privilegeCategory.status.category);
-      editIcon.push(<EditIcon className={style.editColor} onClick={() => handleEditClick(data)} />)
+      name.push(data?.demographics?.name?.firstName);
+      email.push(data?.demographics?.email);
+      applicantType.push(data?.applicantType?.category || "-");
+      department.push(data?.privilegeCategory?.program?.name);
+      privilege.push(data?.privilegeCategory?.status?.category);
+      action.push(true);
+
+
     })
     return [
       { type: "text", value: name },
+      {type: "text", value: email },
       { type: "text", value: applicantType },
+      { type: "text", value: department },
       { type: "text", value: privilege },
-      {
-        type: "icon",
-        icon: editIcon,
-        isShowHoverText: false,
-      }]
+      { type: "action", value: action }]
   }
+
+  const HistoricalActionData = [
+      {
+      data: "Modify",
+      requiredValue: "boolean",
+      onClick: (application) => handleEditClick(application),
+      conditionToShow: `data?.staff === null || data?.staff === undefined || data?.staff === ""`,
+    },
+      {
+      data: "Activate",
+      requiredValue: "boolean",
+      onClick: (data) => handleActivateApplication(data),
+      conditionToShow: `data?.staff === null || data?.staff === undefined || data?.staff === ""`
+    }
+   ]
+
+  
+const handleActivateApplication = async (data) => {
+  const importedDataId = data?.id;
+  if (!importedDataId) {
+    ErrorToaster2("Invalid application data.");
+    return;
+  }
+
+  try {
+    const { data } = await GET(`application-management-service/application/oldData/${importedDataId}/activate`);
+    console.log("Activation response:", data);
+    SuccessToaster2("Application activated successfully");
+    getApplicationOldData();
+  } catch (error) {
+    ErrorToaster2(error);
+  }
+};
+
 
   useEffect(() => {
     if (selectedApplication && isEdit) {
@@ -1452,13 +1488,13 @@ const getDeleteConfirmation = (value) => {
         });
     }
   };
-  return (
+  return (  
     <>
       {!showForm ? (
         <>
           <Navbar />
           <div className={style.applicantList} >
-            <div className={`${style.floatRight} ${style.marginTop20} ${style.marginBottom20}`}>
+            <div className={`${style.floatRight} ${style.marginTop10} ${style.marginBottom10}`}>
               <button
                 className={style.buttonStyle}
                 onClick={() => handleAddClick()}
@@ -1466,18 +1502,19 @@ const getDeleteConfirmation = (value) => {
                 ADD NEW
               </button>
             </div>
+            <div className={`${style.marginLeftRight20}`}>
             <TableTwo
               tableHeaderValues={tableHeader}
               tableDataValues={getTableDataValues()}
               tableData={applicationOldData}
               gridStyle={style.applicantGrid}
-              // actions={!isPOD ? actions : []}
+              actions={HistoricalActionData}
               scrollStyle={style.contractScrollStyle}
               tableSortValues={[]}
               heading={'There are no records to display'}
-              onClickFunction={() => { }}
               hidePagination={true}
             />
+            </div>
           </div>
         </>) : (
           <>
@@ -1784,7 +1821,6 @@ const getDeleteConfirmation = (value) => {
                   </div>
                 )}
                 </div>
-                {subSpeciality && subSpeciality !== "" &&
                   <div className={`${style.formContainer} ${style.marginTop}`}>
                     <div className={` ${style.cursorPointer}`}>
                     
@@ -1841,9 +1877,9 @@ const getDeleteConfirmation = (value) => {
                                     ))}
                                   </div>
                                 )}
-                  </div>}
+                  </div>
                   <h2 className={`${style.heading1} ${style.marginTop}`}>Tenure</h2>
-              <div className={style.gridContainer}>
+              <div className={style.gridContainer4}>
                   <div className={style.inputGroup}>
                     <CommonDateField
                       label="Start Date"
@@ -1869,7 +1905,8 @@ const getDeleteConfirmation = (value) => {
                       required
                       className={`${style.fullwidth} ${errors["dateOfStart"] ? style.errorField : ""}`}
                     />
-                </div>
+                </div> 
+                
                 <div className={style.inputGroup}>
                   <CommonDateField
                       label="End Date"
@@ -1897,12 +1934,14 @@ const getDeleteConfirmation = (value) => {
                       className={`${style.fullwidth} ${errors["dateOfEnd"] ? style.errorField : ""}`}
                     />
                 </div>
+                 <div></div>
                 </div>
             </div>
 
             <div className={`${style.formContainer} ${style.marginTop20} ${style.margin10}`}>
               <h2 className={style.heading}>Professional Information</h2>
-              <div className={style.gridContainer1}>
+                <div className={style.gridContainer1}>
+                  <div className={style.gridContainer4}>
                 <div className={style.inputGroup}>
                   <CommonTextField
                     label="OHIP Billing"
@@ -1910,7 +1949,10 @@ const getDeleteConfirmation = (value) => {
                     onChange={(e) => setBillingNo(e.target.value)}
                     placeholder="Enter OHIP No"
                     className={style.fullwidth} />
-                </div>
+                    </div>
+                    <div></div>
+                    <div></div>
+                    </div>
                 <div className={style.inputRow}>
                   <div className={style.inputField}>
                     <CommonTextField

@@ -1,4 +1,5 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom'; // if using React Router
 import Navbar from '../../Components/Navbar';
 import StaffApplicationList from './staffApplicationList';
 import NewActiveApplication from '../../Components/ViewVerifyScreen';
@@ -29,6 +30,7 @@ import DepartmentTrackerDialog from '../../Components/DepartmentTrackerDialog'
 import PDFGenerateBox from '../../Components/PdfGenerate'
 import { fileLoadingURL, FormatPhoneNumber, FormatPostalCode } from "../../utils/formatting";
 import MDTrackerDialog from '../../Components/MDTrackerDialog';
+import UpdateStaffStatusDialog from "../../Components/UpdateStaffStatusDialog"
 
 const StaffApplication = () => {
     const [selectedTab, setSelectedTab] = useState('level-1');
@@ -45,6 +47,7 @@ const StaffApplication = () => {
     const [paymentDisplayBox, setPaymentDisplayBox] = useState(false);
     const [emailDialogBox, setEmailDialogBox] = useState(false);
     const [showNotesDialog, setShowNotesDialog] = useState(false);
+    const [showUpdateStaffStatusDialog, setShowUpdateStaffStatusDialog] = useState(false);
     const [showLocumExtensiveDialog, setShowLocumExtensiveDialog] = useState(false);
     const [showClarificationRequestFromApplicantDialog, setShowClarificationRequestFromApplicantDialog] = useState(false);
     const [showDocumentClarificationDialog, setShowDocumentClarificationDialog] = useState(false);
@@ -66,6 +69,18 @@ const StaffApplication = () => {
     const [ccDateSetMode, setCcDateSetMode] = useState('');
     const [approveMeetDateSet, setApproveMeetDateSet] = useState();
     const [showPdfGenrateBox, setShowPdfGenerateBox] = useState(false);
+    // const location = useLocation(); // get the current path
+    // const workModeType = sessionStorage.getItem('workModeType')
+
+//      useEffect(() => {
+//     if (location.pathname === '/applications') {
+//       const type = sessionStorage.getItem('applicationCreationType');
+//       if (type === 'LOCUM' && workModeType === "Department Head") {
+//         sessionStorage.setItem('applicationCreationType', 'REAPPOINTMENT');
+//       }
+//     }
+//   }, [location.pathname]);
+    
 
     const getSelectedTab = (value) => {
         setSelectedTab(value);
@@ -90,6 +105,10 @@ const StaffApplication = () => {
 
     const getNotesDialog = (value) => {
         setShowNotesDialog(value);
+    };
+
+    const getUpdateStaffStatuDialog = (value) => {
+        setShowUpdateStaffStatusDialog(value);
     };
 
     const getLocumExtensiveDialog = (value,tableDataValue) => {
@@ -221,6 +240,7 @@ const StaffApplication = () => {
                         showTimerDialog={showTimerDialog}
                         showNotesDialog={showNotesDialog}
                         getNotesDialog={getNotesDialog}
+                        getUpdateStaffStatuDialog={getUpdateStaffStatuDialog}
                         getLocumExtensiveDialog ={getLocumExtensiveDialog}
                         getClarificationRequestFromApplicantDialog={getClarificationRequestFromApplicantDialog}
                         getDocumentClarificationDialog={getDocumentClarificationDialog}
@@ -275,6 +295,9 @@ const StaffApplication = () => {
             )}
             {showNotesDialog && (
                 <NotesDialog isLoading={isLoading} getIsOpen={getNotesDialog} getloading={getloading} getActiveApplicationView={getActiveApplicationView} />
+            )}
+            {showUpdateStaffStatusDialog && (
+                <UpdateStaffStatusDialog isLoading={isLoading} getIsOpen={getUpdateStaffStatuDialog} getloading={getloading} getActiveApplicationView={getActiveApplicationView} />
             )}
             {showLocumExtensiveDialog && (
                 <LocumExtensionDialog isLoading={isLoading} getIsOpen={getLocumExtensiveDialog} tableDataValue ={tableDataLocum} getloading={getloading} getActiveApplicationView={getActiveApplicationView} />

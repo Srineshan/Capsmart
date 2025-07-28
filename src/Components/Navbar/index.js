@@ -11,6 +11,7 @@ import NotificationCount from "./../../images/notificationCount.png";
 import File from "./../../images/file.png";
 import { Link } from "react-router-dom";
 import LogoutIcon1 from "./../../images/logoutIcon.png";
+import { format } from "date-fns";
 import Cookies from "universal-cookie";
 import Popover from "@mui/material/Popover";
 import { isSuperAdminAccess } from "../../Screens/dataSaver";
@@ -33,6 +34,7 @@ import CCimgHover from "../../images/CredentialingCommitteeHover.svg";
 import HODimgHover from "../../images/HeadofDepartmentHover.svg";
 import SAimgHover from "../../images/SystemAdminHover.svg";
 import DoctorAnime from '../../images/doctorAnime.png';
+import { formatFirstNameLastName } from "./../../utils/formatting";
 // import { Logout } from "../../utils/auth";
 
 const useStyles = makeStyles((theme) => ({
@@ -63,8 +65,11 @@ const Navbar = () => {
   const openTracker = Boolean(anchorElTracker);
   const popoverAnchorTracker = useRef(null);
   const [anchorElHelp, setAnchorElHelp] = useState(null);
+  const [anchorElProfile, setAnchorElProfile] = useState(null);
   const openHelp = Boolean(anchorElHelp);
+  const openProfile = Boolean(anchorElProfile);
   const popoverAnchorHelp = useRef(null);
+  const popoverAnchorHelpProfile = useRef(null);
   const [anchorElTools, setAnchorElTools] = useState(null);
   const [anchorElGuide, setAnchorElGuide] = useState(null);
   const [openPrivileged, setOpenPrivileged] = useState(null);
@@ -93,6 +98,7 @@ const Navbar = () => {
   const [isSystemAdministrationAvailable, setIsSystemAdministrationAvailable] =
     useState(false);
   const [isSupportAvailable, setIsSupportAvailable] = useState(false);
+  const [isPopoverHovered, setIsPopoverHovered] = useState(false);
   const [showStaffApplicationMenu, setShowStaffApplicationMenu] = useState(false);
   const [showAllStaffMenu, setShowAllStaffMenu] = useState(false);
   // let selectedWorkingMode = sessionStorage.getItem("SelectedWorkingMode");
@@ -100,6 +106,8 @@ const Navbar = () => {
   const [currentUserDetails, setCurrentUserDetails] = useState();
   const [user, setUser] = useState();
   const [userId, setUserId] = useState();
+  const canadaData = sessionStorage.getItem('canadaData') !== 'undefined' ? JSON.parse(sessionStorage.getItem('canadaData')) : {};
+  const dateFormat = canadaData?.dateFormat || 'MMM dd, yyyy';
 
   const roleIcons = {
     "Staff Manager": SMimgHover,
@@ -225,6 +233,25 @@ const Navbar = () => {
     setAnchorEl(null);
   };
 
+  const handleMouseEnter = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMouseLeave = () => {
+    if (!isPopoverHovered) {
+      setAnchorEl(null);
+    }
+  };
+
+  const handlePopoverEnter = () => {
+    setIsPopoverHovered(true);
+  };
+
+  const handlePopoverLeave = () => {
+    setIsPopoverHovered(false);
+    setAnchorEl(null);
+  };
+
   const handleClickTracker = (event) => {
     setAnchorElTracker(event.currentTarget);
   };
@@ -279,6 +306,14 @@ const Navbar = () => {
 
   const handleCloseHelp = () => {
     setAnchorElHelp(null);
+  };
+
+  const handleClickProfile = (event) => {
+    setAnchorElProfile(event.currentTarget);
+  };
+
+  const handleCloseProfile = () => {
+    setAnchorElProfile(null);
   };
 
   const idHelp = open ? "mouse-over-popover" : undefined;
@@ -623,8 +658,10 @@ const Navbar = () => {
                     style.activeMenuColor
                     }`}
                   ref={popoverAnchor}
-                  onMouseEnter={(e) => handleClick(e)}
-                  onMouseLeave={() => handleClose()}
+                  // onMouseEnter={(e) => handleClick(e)}
+                  // onMouseLeave={() => handleClose()}
+                  onMouseEnter={handleMouseEnter}
+                  onMouseLeave={handleMouseLeave}
                   aria-owns={open ? "mouse-over-popover" : undefined}
                   aria-haspopup="true"
                 >
@@ -633,7 +670,7 @@ const Navbar = () => {
                     id={"mouse-over-popover"}
                     open={open}
                     anchorEl={popoverAnchor.current}
-                    onClose={handleClose}
+                    onClose={() => handleMouseLeave()}
                     anchorOrigin={{
                       vertical: "bottom",
                       horizontal: "left",
@@ -642,123 +679,124 @@ const Navbar = () => {
                       paper: classes.popoverContent,
                     }}
                     PaperProps={{
-                      onMouseEnter: handleClick,
-                      onMouseLeave: handleClose,
+                      onMouseEnter: handlePopoverEnter,
+                      onMouseLeave: handlePopoverLeave,
                     }}
                   >
                     <div
                       className={style.optionsCardStyle}
-                      onClick={() => handleClose()}
+                      onClick={() => handleMouseLeave()}
                     >
-                      <Link
-                        to={""}
-                        className={style.noFontStyle}
-                      >
-                        <div className={`${style.dropdownContainer}`}>
-                          <div className={style.menuWidth}>
-                            <div className={style.spaceBetween}>
-                              <div className={`${style.dropdownItem}`}>Privileged Staff</div>
-                              <div className={style.marginTopAuto}>
-                                {showAllStaffMenu ? (
-                                  <RemoveIcon
-                                    sx={{ fontSize: 20, color: "#F5F9FD", cursor: "pointer", marginRight: '10px' }}
-                                    onClick={() =>
-                                      setShowAllStaffMenu(false)
-                                    } />
-                                ) : (
-                                  <AddIcon
-                                    sx={{ fontSize: 20, color: "#F5F9FD", cursor: "pointer", marginRight: '10px' }}
-                                    onClick={() =>
-                                      setShowAllStaffMenu(true)
-                                    } />
-                                )}
-                              </div>
+                      {/* <Link
+                    to={""}
+                    className={style.noFontStyle}
+                  > */}
+                      <div className={`${style.dropdownContainer}`}>
+                        <div className={style.menuWidth}>
+                          <div className={style.spaceBetween}>
+                            <div className={`${style.dropdownItem}`}>Privileged Staff</div>
+                            <div className={style.marginTopAuto}>
+                              {showAllStaffMenu ? (
+                                <RemoveIcon
+                                  sx={{ fontSize: 20, color: "#F5F9FD", cursor: "pointer", marginRight: '10px' }}
+                                  onClick={() =>
+                                    setShowAllStaffMenu(false)
+                                  } />
+                              ) : (
+                                <AddIcon
+                                  sx={{ fontSize: 20, color: "#F5F9FD", cursor: "pointer", marginRight: '10px' }}
+                                  onClick={() =>
+                                    setShowAllStaffMenu(true)
+                                  } />
+                              )}
                             </div>
                           </div>
-                          {showAllStaffMenu && (
-                            <>
-                              <Link
-                                to={"/reports/allStaffMembers"}
-                                className={style.noFontStyle}
-                              >
-                                <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`}>All Staff Members</div>
-                              </Link>
-                              <Link
-                                to={"/reports/permanentStaff"}
-                                className={style.noFontStyle}
-                              >
-                                <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`}>Permanent Staff</div>
-                              </Link>
-                              <Link
-                                to={"/reports/locumStaff"}
-                                className={style.noFontStyle}
-                              >
-                                <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`}>Locum Staff</div>
-                              </Link>
-                            </>
-                          )}
-                          <div className={style.menuDivider}></div>
-                          <div>
-                            <div className={style.spaceBetween}>
-                              <div className={`${style.dropdownItem}`}>Staff Applications</div>
-                              <div className={style.marginTopAuto}>
-                                {showStaffApplicationMenu ? (
-                                  <RemoveIcon
-                                    sx={{ fontSize: 20, color: "#F5F9FD", cursor: "pointer", marginRight: '10px' }}
-                                    onClick={() =>
-                                      setShowStaffApplicationMenu(false)
-                                    } />
-                                ) : (
-                                  <AddIcon
-                                    sx={{ fontSize: 20, color: "#F5F9FD", cursor: "pointer", marginRight: '10px' }}
-                                    onClick={() =>
-                                      setShowStaffApplicationMenu(true)
-                                    } />
-                                )}
-                              </div>
+                        </div>
+                        {showAllStaffMenu && (
+                          <>
+                            <Link
+                              to={"/reports/allStaffMembers"}
+                              className={style.noFontStyle}
+                            >
+                              <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`}>All Staff Members</div>
+                            </Link>
+                            <Link
+                              to={"/reports/permanentStaff"}
+                              className={style.noFontStyle}
+                            >
+                              <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`}>Permanent Staff</div>
+                            </Link>
+                            <Link
+                              to={"/reports/locumStaff"}
+                              className={style.noFontStyle}
+                            >
+                              <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`}>Locum Staff</div>
+                            </Link>
+                          </>
+                        )}
+                        <div className={style.menuDivider}></div>
+                        <div>
+                          <div className={style.spaceBetween}>
+                            <div className={`${style.dropdownItem}`}>Staff Applications</div>
+                            <div className={style.marginTopAuto}>
+                              {showStaffApplicationMenu ? (
+                                <RemoveIcon
+                                  sx={{ fontSize: 20, color: "#F5F9FD", cursor: "pointer", marginRight: '10px' }}
+                                  onClick={() =>
+                                    setShowStaffApplicationMenu(false)
+                                  } />
+                              ) : (
+                                <AddIcon
+                                  sx={{ fontSize: 20, color: "#F5F9FD", cursor: "pointer", marginRight: '10px' }}
+                                  onClick={() =>
+                                    setShowStaffApplicationMenu(true)
+                                  } />
+                              )}
                             </div>
                           </div>
-                          {showStaffApplicationMenu && (
-                            <>
-                              <Link
-                                to={"/reports/allApplications"}
-                                className={style.noFontStyle}
-                              >
-                                <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`}>All Applications</div>
-                              </Link>
-                              <Link
-                                to={"/reports/newApplicants"}
-                                className={style.noFontStyle}
-                              >
-                                <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`}>New Applicants</div>
-                              </Link>
-                              <Link
-                                to={"/reports/staffReappointments"}
-                                className={style.noFontStyle}
-                              >
-                                <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`}>Reappointments</div>
-                              </Link>
-                              <Link
-                                to={"/reports/locumExtensionOrRenewal"}
-                                className={style.noFontStyle}
-                              >
-                                <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`}>Locum Extension / Renewals</div>
-                              </Link>
-                            </>
-                          )}
-                          {/* <div className={`${style.dropdownItem}`}>System Administration</div>
+                        </div>
+                        {showStaffApplicationMenu && (
+                          <>
+                            <Link
+                              to={"/reports/allApplications"}
+                              className={style.noFontStyle}
+                            >
+                              <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`}>All Applications</div>
+                            </Link>
+                            <Link
+                              to={"/reports/newApplicants"}
+                              className={style.noFontStyle}
+                            >
+                              <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`}>New Applicants</div>
+                            </Link>
+                            <Link
+                              to={"/reports/staffReappointments"}
+                              className={style.noFontStyle}
+                            >
+                              <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`}>Reappointments</div>
+                            </Link>
+                            <Link
+                              to={"/reports/locumExtensionOrRenewal"}
+                              className={style.noFontStyle}
+                            >
+                              <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`}>Locum Extension / Renewals</div>
+                            </Link>
+                          </>
+                        )}
+                        {/* <div className={`${style.dropdownItem}`}>System Administration</div>
                       <Link
                         to={"/reports/savedReportsArchive"}
                         className={style.noFontStyle}
                       >
                         <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`}>Saved Reports Archive</div>
                       </Link> */}
-                        </div>
-                      </Link>
+                      </div>
+                      {/* </Link> */}
                     </div>
                   </Popover>
                 </div>
               </div>
+
               {/* )} */}
 
               {isEntityLevelAdmin && (
@@ -1074,11 +1112,70 @@ const Navbar = () => {
         </div>
 
         <div className={`${style.displayInRow} ${style.centerAlignCenter}`}>
-          <Tooltip title={"Go to Your Profile Page"} arrow>
-            <Link to={'/profile'} >
-              <img src={currentUserDetails?.profilePic?.file?.fileURL ? currentUserDetails?.profilePic?.file?.fileURL : DoctorAnime} className={style.userLogo} />
-            </Link>
-          </Tooltip>
+          {/* <Tooltip title={"Go to Your Profile Page"} arrow>
+            <Link to={'/profile'} > */}
+          <div
+            className={`${style.menuStyleProfile}`}
+            ref={popoverAnchorHelpProfile}
+            onMouseEnter={(e) => handleClickProfile(e)}
+            onMouseLeave={() => handleCloseProfile()}
+            aria-owns={"mouse-over-popover"}
+            aria-haspopup="true"
+          >
+            <img src={currentUserDetails?.profilePic?.file?.fileURL ? currentUserDetails?.profilePic?.file?.fileURL : DoctorAnime} className={style.userLogo} />
+            <Popover
+              id={"mouse-over-popover"}
+              open={openProfile}
+              anchorEl={popoverAnchorHelpProfile.current}
+              onClose={handleCloseProfile}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "left",
+              }}
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "center",
+              }}
+              classes={{
+                paper: classes.popoverContent,
+              }}
+              PaperProps={{
+                onMouseEnter: handleClickProfile,
+                onMouseLeave: handleCloseProfile,
+              }}
+            >
+              <div className={style.profileCardStyle}>
+                <strong className={`${style.flexJustifyCenter} ${style.nameTextStyle}`}>
+                  {currentUserDetails?.name?.firstName !== undefined &&
+                    currentUserDetails?.name?.lastName !== undefined
+                    ? formatFirstNameLastName(
+                      currentUserDetails?.name?.firstName,
+                      currentUserDetails?.name?.lastName,
+                    )
+                    : "{First Name} {Last Name}"}
+                </strong>
+                <div className={`${style.workModeTextStyle} ${style.marginTop10}`}>{workModeType}</div>
+                <div className={`${style.lastLoginStyle} ${style.marginTop10}`}>
+                  Last Login:{' '}
+                  {currentUserDetails?.lastLogin
+                    ? format(new Date(currentUserDetails?.lastLogin), `${dateFormat}, HH:mm a`)
+                    : '-'}
+                </div>
+                {currentUserDetails?.roles?.length > 1 && (
+                  <Tooltip title={"Click to Switch Workspace"} arrow>
+                    <div
+                      className={`${style.buttonBackgroundStyle} ${style.marginTop10} ${style.cursorPointer}`}
+                      onClick={handleWorkModeSelection}
+                    >
+                      Switch Workspaces
+                    </div>
+                  </Tooltip>
+                )}
+              </div>
+            </Popover>
+          </div>
+          {/* </Link>
+          </Tooltip> */}
           {/* {!window.location.pathname.includes('reportTypeOverview') && (
                     <>
                         <img src={File} alt="print" className={style.icons} />

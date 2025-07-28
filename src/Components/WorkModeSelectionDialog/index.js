@@ -96,12 +96,14 @@ const WorkModeDialog = ({ getIsOpen }) => {
     if (initialRoute && initialRoute !== undefined && initialRoute !== 'undefined' && initialRoute !== null) {
       console.log("pathnameee", initialRoute)
       window.location.href = `${initialRoute}`;
+      console.log("initialRoute",initialRoute)
       localStorage?.removeItem('initialRoute')
     } else {
       if (selectedWorkSpace === "MD_MANAGER") {
         window.location.pathname = "/mdManager";
       } else {
         window.location.pathname = "/applications";
+        sessionStorage.setItem("applicationCreationType", "REAPPOINTMENT");
       }
     }
     localStorage?.removeItem('initialRoute');

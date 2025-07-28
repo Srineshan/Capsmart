@@ -415,7 +415,7 @@ const CreateStaffMemberApplication = () => {
         <div className={style.screenPadding}>
           <div className={style.displayInRowRev}>
             {/* <div className={style.breadcrumbStyle}>{`STAFF APPOINTMENT APPLICATION >> NEW APPLICATION`}</div> */}
-            <div className={style.cardTitle}>{`* - Required`}</div>
+            <div className={style.cardTitle}>{`* Indicates a required field.`}</div>
           </div>
           {!isNextpage ? (
             <>
