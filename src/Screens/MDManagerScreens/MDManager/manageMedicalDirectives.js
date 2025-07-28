@@ -74,6 +74,8 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
     const [selectedMedicalDirectiveList, setSelectedMedicalDirectiveList] = useState();
     const [attestationSummaryTotal, setAttestationSummaryTotal] = useState(0);
     const [retireNotes, setRetireNotes] = useState('');
+    const [revisionList, setRevisionList] = useState([]);
+
     let isMultiSiteEntity = sessionStorage.getItem('isMultiSiteEntity') === 'true' ? true : false;
     const canadaData = sessionStorage.getItem('canadaData') !== 'undefined' ? JSON.parse(sessionStorage.getItem('canadaData')) : {};
     const dateFormat = canadaData?.dateFormat || 'MMM dd, yyyy';
@@ -135,6 +137,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
         // getUser();
         // getMDList();
         getDashboardMetadata();
+        getRevisionList();
     }, [selectedOption]);
 
     useEffect(() => {
@@ -286,15 +289,8 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
             })
     }
 
-    const handleReactivate = async (data) => {
-        await PUT(`user/${data?.id}/REACTIVATE`)
-            .then(response => {
-                SuccessToaster('User Reactivated Successfully');
-                getUser();
-            })
-            .catch(error => {
-                ErrorToaster('Unexpected Error Occured');
-            })
+    const handleUpdateApprovalStatus = async (data) => {
+
     }
 
     const handleUnBlock = async (data) => {
@@ -434,6 +430,14 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
         return departmentCountList;
     }
 
+    const getRevisionList = async () => {
+        const response = await GET(
+            `medical-directive-service/medicalDirectives/revisions`
+        );
+        console.log(response.data);
+        setRevisionList(response?.data)
+    }
+
     const getUserAffiliation = (data) => {
         if (data?.roles?.map(data => data?.roleName)?.includes('Entity Sys User') ||
             data?.roles?.map(data => data?.roleName)?.includes('Entity Sys Admin')) {
@@ -488,30 +492,53 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
         revisionAssignedTo = [];
         lastUpdated = [];
         action = [];
-
-        dashboardData?.map((data, index) => {
-            dot.push(data?.activated ? 'green' : 'grey');
-            dotTooltipValues.push(data?.activated ? 'Activated' : 'Deactivated');
-            no.push(index + 1);
-            title.push(data?.title);
-            desc.push(data?.title)
-            mdId.push(data?.mdID);
-            department.push(data?.departments?.length <= 4 ? data?.departments?.map(data => data?.name)?.join(', ') : data?.departments?.length);
-            departmentHoverText.push(data?.departments?.length > 4 ? <div>{data?.departments?.map(data => (<div>{data?.name}</div>))}</div> : '')
-            firstPublished.push(data?.initialPublishedDate ? format(new Date(data?.initialPublishedDate), 'MMM dd, yyyy') : '-');
-            lastRevision.push(data?.lastRevisionDate ? format(new Date(data?.lastRevisionDate), 'MMM dd, yyyy') : '-');
-            lastUpdated.push(data?.lastModifiedDate ? format(new Date(data?.lastModifiedDate), 'MMM dd, yyyy') : '-');
-            author.push(data?.author ? `${data?.author?.name?.firstName} ${data?.author?.name?.lastName}` : '-');
-            dueDate.push('-');
-            attestationCategory.push('-');
-            totalCount.push('-');
-            attestedAll.push('-');
-            notAttested.push('-');
-            partiallyAttested.push('-');
-            revisionAssignedTo.push('-');
-            action.push(true);
-        })
-
+        if (selectedOption === "Medical Directives Revisions") {
+            revisionList?.map((data, index) => {
+                dot.push(data?.activated ? 'green' : 'grey');
+                dotTooltipValues.push(data?.activated ? 'Activated' : 'Deactivated');
+                no.push(index + 1);
+                title.push(data?.title);
+                desc.push(data?.title)
+                mdId.push(data?.mdID);
+                department.push(data?.departments?.length <= 4 ? data?.departments?.map(data => data?.name)?.join(', ') : data?.departments?.length);
+                departmentHoverText.push(data?.departments?.length > 4 ? <div>{data?.departments?.map(data => (<div>{data?.name}</div>))}</div> : '')
+                firstPublished.push(data?.initialPublishedDate ? format(new Date(data?.initialPublishedDate), 'MMM dd, yyyy') : '-');
+                lastRevision.push(data?.lastRevisionDate ? format(new Date(data?.lastRevisionDate), 'MMM dd, yyyy') : '-');
+                lastUpdated.push(data?.lastModifiedDate ? format(new Date(data?.lastModifiedDate), 'MMM dd, yyyy') : '-');
+                author.push(data?.author ? `${data?.author?.name?.firstName} ${data?.author?.name?.lastName}` : '-');
+                dueDate.push('-');
+                attestationCategory.push('-');
+                totalCount.push('-');
+                attestedAll.push('-');
+                notAttested.push('-');
+                partiallyAttested.push('-');
+                revisionAssignedTo.push('-');
+                action.push(true);
+            })
+        } else {
+            dashboardData?.map((data, index) => {
+                dot.push(data?.activated ? 'green' : 'grey');
+                dotTooltipValues.push(data?.activated ? 'Activated' : 'Deactivated');
+                no.push(index + 1);
+                title.push(data?.title);
+                desc.push(data?.title)
+                mdId.push(data?.mdID);
+                department.push(data?.departments?.length <= 4 ? data?.departments?.map(data => data?.name)?.join(', ') : data?.departments?.length);
+                departmentHoverText.push(data?.departments?.length > 4 ? <div>{data?.departments?.map(data => (<div>{data?.name}</div>))}</div> : '')
+                firstPublished.push(data?.initialPublishedDate ? format(new Date(data?.initialPublishedDate), 'MMM dd, yyyy') : '-');
+                lastRevision.push(data?.lastRevisionDate ? format(new Date(data?.lastRevisionDate), 'MMM dd, yyyy') : '-');
+                lastUpdated.push(data?.lastModifiedDate ? format(new Date(data?.lastModifiedDate), 'MMM dd, yyyy') : '-');
+                author.push(data?.author ? `${data?.author?.name?.firstName} ${data?.author?.name?.lastName}` : '-');
+                dueDate.push('-');
+                attestationCategory.push('-');
+                totalCount.push('-');
+                attestedAll.push('-');
+                notAttested.push('-');
+                partiallyAttested.push('-');
+                revisionAssignedTo.push('-');
+                action.push(true);
+            })
+        }
         return selectedOption === 'Current Medical Directives' ? [
             { "type": "text", "value": no },
             { "type": "text", "value": title, tooltipValueText: desc },
@@ -611,14 +638,14 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
     { 'data': 'Unblock user', 'onClick': handleUnBlock }
     ]
 
-    const deactivatedActionsData = [{ 'data': 'Reactivate', 'onClick': handleReactivate }]
+    const revisionsActionsData = [{ 'data': 'Update', 'onClick': handleUpdateApprovalStatus }]
 
     const inviteActionsData = [{ 'data': 'Delete', 'onClick': handleDelete },
     { 'data': 'Reminder', 'onClick': togglePin }
     ]
 
     const actionsData = selectedOption === 'Current Medical Directives' ? registeredActionsData : selectedOption === 'Draft Medical Directives' ? draftActionsData :
-        selectedOption === 'Medical Directives Revisions' ? deactivatedActionsData : selectedOption === "Retire Medical Directives" ? retiredActions : inviteActionsData;
+        selectedOption === 'Medical Directives Revisions' ? revisionsActionsData : selectedOption === "Retire Medical Directives" ? retiredActions : inviteActionsData;
 
     const handleDownloadClicked = () => {
         toPDF(".registeredUsers", `RegisteredUsersList_${format(new Date(), 'MM_dd_yy')}`);
@@ -654,7 +681,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
         <div>
             <div className={`${style.grid4} ${style.marginTop10}`}>
                 <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Current Medical Directives" bigNumber={currentMdCount} smallNum1={newMdCount} smallNum2={upcomingMdCount} smallText1="New Directives" smallText2="Upcoming For Review" currentTile="Current Medical Directives" topText='' smallNum1Color={style.greenSmallNumber} smallNum2Color={style.yellowSmallNumber} smallNum1SelectedColor={style.greenSmallNumberSelected} smallNum2SelectedColor={style.yellowSmallNumberSelected} />
-                <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Medical Directives Revisions" bigNumber={revisionMdCount} smallNum1="" smallNum2="" currentTile="Medical Directives Revisions" topText='' />
+                <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Medical Directives Revisions" bigNumber={revisionList?.length} smallNum1="" smallNum2="" currentTile="Medical Directives Revisions" topText='' />
                 <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Attestations Outstanding" bigNumber={0} smallNum1={0} smallNum2={0} smallText1="Not Started" smallText2="Past Due" currentTile="Attestations Outstanding" topText='' smallNum1Color={style.redSmallNumber} smallNum1SelectedColor={style.redSmallNumberSelected} smallNum2Color={style.redSmallNumber} smallNum2SelectedColor={style.redSmallNumberSelected} />
                 <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Draft Medical Directives" bigNumber={draftMdCount} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="Draft Medical Directives" topText='' smallNum1Color={style.greenSmallNumber} smallNum2Color={style.redSmallNumber} smallNum1SelectedColor={style.greenSmallNumberSelected} smallNum2SelectedColor={style.redSmallNumberSelected} />
             </div>
@@ -663,7 +690,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
             >
                 <div className={`${style.tabs}`}>
                     <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Current" tileCount={currentMdCount} currentTile="Current Medical Directives" />
-                    <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Revisions" tileCount={revisionMdCount} currentTile="Medical Directives Revisions" />
+                    <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Revisions" tileCount={revisionList?.length} currentTile="Medical Directives Revisions" />
                     <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Attestations Outstanding" tileCount={0} currentTile="Attestations Outstanding" />
                     <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Draft Medical Directives" tileCount={draftMdCount} currentTile="Draft Medical Directives" />
                     <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Retired Medical Directives" tileCount={inactiveMdCount} currentTile="Retire Medical Directives" />
@@ -730,7 +757,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
                         <TableTwo
                             tableHeaderValues={tableHeaderValues}
                             tableDataValues={getValues()}
-                            tableData={dashboardData}
+                            tableData={selectedOption === "Medical Directives Revisions" ? revisionList : dashboardData}
                             gridStyle={selectedOption === 'Attestations Outstanding' ? style.outstandingGrid : selectedOption === 'Current Medical Directives' ? style.mdListGrid : selectedOption === 'Draft Medical Directives' ? style.draftGrid : selectedOption === 'Retire Medical Directives' ? style.mdListGrid : style.revisionGrid}
                             actions={actionsData}
                             // scrollStyle={style.contractScrollStyle}
