@@ -314,9 +314,9 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
 
   const handleNavigateStatus = () => {
     if (applicationType === "LOCUM") {
-      navigate("/reportTypeOverview/locumStaffRenewalStatusTracker", { state: { tableData } });
+      navigate("/reportTypeOverview/locumStaffRenewalStatusTracker");
     } else {
-      navigate("/reportTypeOverview/staffReappointmentTracker", { state: { tableData } });
+      navigate("/reportTypeOverview/staffReappointmentTracker");
     }
   };
 

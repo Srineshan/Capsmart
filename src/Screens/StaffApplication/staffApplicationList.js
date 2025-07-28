@@ -5,6 +5,7 @@ import React, {
   useCallback,
   useRef,
 } from "react";
+import { useLocation } from 'react-router-dom'; // if using React Router
 import PrintOutlinedIcon from "@mui/icons-material/PrintOutlined";
 import TextSnippetOutlinedIcon from "@mui/icons-material/TextSnippetOutlined";
 import NoteAltOutlinedIcon from "@mui/icons-material/NoteAltOutlined";
@@ -170,6 +171,20 @@ const StaffApplicationList = ({
     )?.name || "";
 
   console.log("userDetails1234", userDetails)
+  const location = useLocation();
+
+   useEffect(() => {
+    if (location.pathname === '/applications') {
+        console.log("storedApplicationType",applicationType)
+      // const type = sessionStorage.getItem('applicationCreationType');
+      if (applicationType === 'LOCUM' && workModeType === "Department Head") {
+        sessionStorage.setItem('applicationCreationType', 'REAPPOINTMENT');
+        console.log("storedApplicationType",applicationType)
+      }
+    }
+  }, [location.pathname]);
+
+  console.log("storedApplicationType",applicationType)
 
   // const handleSelectAllClick = () => {
   //   if (checkedIds?.length === tableData?.length) {
@@ -1167,6 +1182,9 @@ const StaffApplicationList = ({
     // // getCCDateDialog(true,checkedIds);
     setShowBulkApproveDialog(value)
   };
+
+
+  console.log("SelectedTabStaff", selectedTab)
 
   useEffect(() => {
     if ((!showBulkApproveDialog && selectedTab === "level-5" && applicationType === "REAPPOINTMENT") || (!showBulkApproveDialog && selectedTab === "level-4" && applicationType === "LOCUM")) {

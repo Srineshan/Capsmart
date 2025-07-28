@@ -65,6 +65,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
     const [selectedPosition, setSelectedPosition] = useState('');
     const [selectedApplicationType, setSelectedApplicationType] = useState('');
     const [selectedReappointmentStatus, setSelectedReappointmentStatus] = useState('');
+    const [selectedApplicationSentStatus, setSelectedApplicationSentStatus] = useState('All');
     const [user, setUsers] = useState([]);
     const [from, setFrom] = useState(startOfMonth(new Date()));
     const [to, setTo] = useState(endOfMonth(new Date()));
@@ -97,6 +98,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         timesheetProcessingSummary: 'TIMESHEET',
         listingOfTimesheetsNotPaid: 'TIMESHEET',
         staffReappointmentTracker: 'TIMESHEET',
+        locumStaffRenewalStatusTracker: 'TIMESHEET',
         paymentsProcessingSummary: 'TIMESHEET',
         staffReappointmentsNotes: 'CONTRACT',
         staffReappointments: 'CONTRACT',
@@ -110,6 +112,8 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         locumStaffbyTypes: 'CONTRACT',
     }
     const defaultOption = ''
+
+
 
     let cookie = new Cookie();
     let userDetails = cookie.get('user');
@@ -144,7 +148,8 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         selectedPrivilegeCategoryToSend: selectedPrivilegeCategoryToSend,
         selectedPosition: selectedPosition,
         selectedApplicationType: selectedApplicationType,
-        selectedReappointmentStatus: selectedReappointmentStatus
+        selectedReappointmentStatus: selectedReappointmentStatus,
+        selectedApplicationSentStatus: selectedApplicationSentStatus,
     };
 
     useEffect(() => {
@@ -158,6 +163,8 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
             getTimesheetIntervals()
         }
     }, [])
+
+    console.log('Selected Application Status:', selectedApplicationSentStatus);
 
     console.log("selectedStaffTypeToSend", selectedDepartments, selectedStaffType, selectedDepartmentsToSend, selectedStaffTypeToSend)
 
@@ -358,7 +365,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         getDataToUseInReport(dataToUseInReport);
     }, [renewalreportingTimePeriod, selectedSites, selectedDepartments, selectedPrivilegeCategory, selectedStaffType,
         podType, contractStatus, reportingTimePeriod, selectedApplicationType, selectedReappointmentStatus,
-        selectedPosition, from, to, initialValueSet, selectedTimesheetInterval]);
+        selectedPosition, from, to, initialValueSet, selectedTimesheetInterval,selectedApplicationSentStatus]);
 
     useEffect(() => {
         let tempDept = [];
@@ -802,7 +809,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 ))}
                             </Select>
                         </FormControl> */}
-                        {reportType !== "staffReappointmentTracker" && reportType !== "ohipBillingNumbersByCareProvider" && reportType !== "privilegedStaffSummary" && reportType !== "locumStaffbyTypes" && reportType !== "staffbyTypes" && (
+                        {reportType !== "staffReappointmentTracker" && reportType !== "ohipBillingNumbersByCareProvider" && reportType !== "privilegedStaffSummary" && reportType !== "locumStaffbyTypes" && reportType !== "staffbyTypes" && reportType !== "locumStaffRenewalStatusTracker" && reportType !== 'staffReappointmentStatusSummary' && (
                             <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                                 <InputLabel id="demo-multiple-name-label1" className={style.headingtextStyle}>Reporting Time Period</InputLabel>
                                 <Select
@@ -1147,7 +1154,34 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 })}
                             </div>
                         )}
-                        {(reportType === "currentNotesSummary") && (
+
+                            {(reportType === "staffbyTypes" || reportType === "locumStaffbyTypes") && (
+                            <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                                <InputLabel id="demo-simple-select-standard-label3">Application Sent Status</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-standard-label3"
+                                    id="demo-simple-select-standard3"
+                                    value={selectedApplicationSentStatus}
+                                    onChange={(e) => { setSelectedApplicationSentStatus(e.target.value) }}
+                                    MenuProps={MenuProps}
+                                    disabled={isLoading}
+                                    className={style.textAlignLeft}
+                                   renderValue={(selected) => {
+  if (selected === 'ALL') return 'All';     // Show "All" for empty
+  if (selected === 'SENT') return 'Sent';
+  if (selected === 'RE_SENT') return 'Reminder Sent';
+  if (selected === 'NOT_SENT') return 'Not Sent';
+  return selected;
+}} 
+                                >
+                                    <MenuItem value={'ALL'} disabled={isLoading}>All</MenuItem>
+                                    <MenuItem value={'SENT'} disabled={isLoading}>Sent</MenuItem>
+                                    <MenuItem value={'RE_SENT'} disabled={isLoading}>Reminder Sent</MenuItem>
+                                    <MenuItem value={'NOT_SENT'} disabled={isLoading}>Not Sent</MenuItem>
+                                </Select>
+                            </FormControl>
+                        )}
+                        {( reportType === "currentNotesSummary") && (
                             <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                                 <InputLabel id="demo-simple-select-standard-label3" className={style.headingtextStyle}>Application Type</InputLabel>
                                 {/* <InputLabel id="demo-multiple-name-label4" className={style.headingtextStyle}>Application Type</InputLabel> */}

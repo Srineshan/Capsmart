@@ -315,25 +315,7 @@ return Object.keys(newErrors).length === 0;
   };
 
 
-  const scrollToTopAndToast = (message, isSuccess = true) => {
-  const checkScrollAndToast = () => {
-    const scrollTop = window.scrollY || document.documentElement.scrollTop;
-    if (scrollTop === 0) {
-      if (isSuccess) {
-        SuccessToaster2(message);
-      } else {
-        ErrorToaster2(message);
-      }
-      window.removeEventListener("scroll", checkScrollAndToast);
-    }
-  };
 
-  window.scrollTo({ top: 0, behavior: "smooth" });
-
-  setTimeout(() => {
-    window.addEventListener("scroll", checkScrollAndToast);
-  }, 100);
-};
 
 
   const handleAgreementChange = (e) => {
@@ -459,9 +441,9 @@ const handleDateOfEndChange = (newDate) => {
     
       newFilesArray.forEach(file => {
         if (existingFileNames.includes(file.name)) {
-          scrollToTopAndToast(`File "${file.name}" already exists`,false);
+          ErrorToaster2(`File "${file.name}" already exists`);
         } else if (seenInCurrentSelection.has(file.name)) {
-          scrollToTopAndToast(`Duplicate file "${file.name}" selected in this upload`,false);
+          ErrorToaster2(`Duplicate file "${file.name}" selected in this upload`);
         } else {
           seenInCurrentSelection.add(file.name);
           filteredNewFiles.push(file);
@@ -506,7 +488,7 @@ const handleDateOfEndChange = (newDate) => {
         formData,
       );
         console.log("API Response:", response);
-        scrollToTopAndToast('File Uploaded Successfully',true);
+        SuccessToaster2('File Uploaded Successfully');
         console.log("Response data:", response?.data);
         setUploadFileData(prevData => {
           // Merge previous data with new data
@@ -516,7 +498,7 @@ const handleDateOfEndChange = (newDate) => {
         console.log("Responseupload:", uploadFileData);
         return response?.data;
       } catch (error) {
-        scrollToTopAndToast('File Upload Failed',false);
+        SuccessToaster2('File Upload Failed');
         console.error("Error:", error);
         setIsLoading(false);
         return null;
@@ -528,7 +510,7 @@ const handleDateOfEndChange = (newDate) => {
     const requestBody = [fileIdToDelete];
     console.log("Delete File:",fileIdToDelete);
     const { data: response } = await DELETE('document-management-service/document', requestBody);
-    scrollToTopAndToast("File deleted successfully",true);
+    SuccessToaster2("File deleted successfully");
 
     // Remove the deleted file from uploadFileData
     setUploadFileData(prevData =>
@@ -536,7 +518,7 @@ const handleDateOfEndChange = (newDate) => {
     );
     setShowDeleteConfirmation(false); // close confirmation dialog
   } catch (error) {
-    scrollToTopAndToast("File deletion failed",false);
+    SuccessToaster2("File deletion failed");
     console.error("Delete error:", error);
     setShowDeleteConfirmation(false); // close even on error
   }
@@ -782,7 +764,7 @@ const getDeleteConfirmation = (value) => {
     );
 
     if (isDuplicate) {
-      scrollToTopAndToast("This Hospital and Privilege Category pair already exists.",false);
+      ErrorToaster2("This Hospital and Privilege Category pair already exists.");
       console.log("Duplicate Hospital and Privilege Category pair:", selectedHospital?.name, selectedPrivilegeCategory?.id); 
       setHospitalName("");
       setHospitalPrivilege("");
@@ -1897,7 +1879,7 @@ const handleActivateApplication = async (data) => {
                                 )}
                   </div>
                   <h2 className={`${style.heading1} ${style.marginTop}`}>Tenure</h2>
-              <div className={style.gridContainer}>
+              <div className={style.gridContainer4}>
                   <div className={style.inputGroup}>
                     <CommonDateField
                       label="Start Date"
@@ -1923,7 +1905,8 @@ const handleActivateApplication = async (data) => {
                       required
                       className={`${style.fullwidth} ${errors["dateOfStart"] ? style.errorField : ""}`}
                     />
-                </div>
+                </div> 
+                
                 <div className={style.inputGroup}>
                   <CommonDateField
                       label="End Date"
@@ -1951,12 +1934,14 @@ const handleActivateApplication = async (data) => {
                       className={`${style.fullwidth} ${errors["dateOfEnd"] ? style.errorField : ""}`}
                     />
                 </div>
+                 <div></div>
                 </div>
             </div>
 
             <div className={`${style.formContainer} ${style.marginTop20} ${style.margin10}`}>
               <h2 className={style.heading}>Professional Information</h2>
-              <div className={style.gridContainer1}>
+                <div className={style.gridContainer1}>
+                  <div className={style.gridContainer4}>
                 <div className={style.inputGroup}>
                   <CommonTextField
                     label="OHIP Billing"
@@ -1964,7 +1949,10 @@ const handleActivateApplication = async (data) => {
                     onChange={(e) => setBillingNo(e.target.value)}
                     placeholder="Enter OHIP No"
                     className={style.fullwidth} />
-                </div>
+                    </div>
+                    <div></div>
+                    <div></div>
+                    </div>
                 <div className={style.inputRow}>
                   <div className={style.inputField}>
                     <CommonTextField
