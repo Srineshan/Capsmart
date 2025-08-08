@@ -251,11 +251,12 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
 
   const getApplicantSummary = async () => {
     setIsLoadingImage(true);
-    const departmentParam = selectedDepartment || selectedServiceArea ? `&departmentSpecialties=${selectedDepartment}%23${selectedServiceArea}` : "";
+    const departmentParam = selectedDepartment || selectedServiceArea ? `&siteDepartmentSpecialties=${selectedDepartment}%23${selectedServiceArea}` : "";
     const { data: applicantSummary } = await GET(
-      `application-management-service/staff/medicalDirectiveAttestationSummary?sortBy=${sortValue}&sortByField=${sortField}&limit=${limit}&searchText=${searchTermForTable}&isPaginationRequired=${limit === 9999 ? false : true}&offset=${page - 1}${departmentParam}${selectedApplicantType ? `&applicantTypeId=${selectedApplicantType}` : ''}`
+      // `application-management-service/staff/attestationSummaryByUser?sortBy=${sortValue}&sortByField=${sortField}&limit=${limit}&searchText=${searchTermForTable}&isPaginationRequired=${limit === 9999 ? false : true}&offset=${page - 1}${departmentParam}${selectedApplicantType ? `&applicantTypeId=${selectedApplicantType}` : ''}`
+      `medical-directive-service/medicalDirectives/attestationSummaryByUser?sortBy=${sortValue}&sortByField=${sortField}&limit=${limit}&searchText=${searchTermForTable}&isPaginationRequired=${limit === 9999 ? false : true}&offset=${page - 1}${departmentParam}`
     );
-    setApplicantSummary(applicantSummary?.applicants);
+    setApplicantSummary(applicantSummary?.users);
     setTotalCount(applicantSummary?.numberOfElements);
     setSearchCount(applicantSummary?.numberOfElements);
     setIsLoadingImage(false);
@@ -264,11 +265,11 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
   const getApplicantSummaryForSearch = async (signal) => {
     setIsLoadingImage(true);
     const { data: applicantSummary } = await GET(
-      `application-management-service/staff/medicalDirectiveAttestationSummary?sortBy=${sortValue}&sortByField=${sortField}&limit=${limit}&searchText=${searchTerm}&isPaginationRequired=${limit === 9999 ? false : true}&offset=${page - 1}`, { signal }
+      `medical-directive-service/medicalDirectives/attestationSummaryByUser?sortBy=${sortValue}&sortByField=${sortField}&limit=${limit}&searchText=${searchTerm}&isPaginationRequired=${limit === 9999 ? false : true}&offset=${page - 1}`, { signal }
     );
-    setSearchData(applicantSummary?.applicants?.map(item => ({
-      id: item.id,
-      name: `${formatFirstNameLastName(item?.applicant?.name?.firstName, item?.applicant?.name?.lastName)}` || " ",
+    setSearchData(applicantSummary?.users?.map(item => ({
+      id: item?.user?.id,
+      name: `${formatFirstNameLastName(item?.user?.name?.firstName, item?.user?.name?.lastName)}` || " ",
       desc: `${item?.basicDetailReferences?.department?.name} | ${item?.basicDetailReferences?.applicantType?.serviceProviderType}`
     })));
     // setApplicantSummary(applicantSummary?.applicants);
@@ -538,7 +539,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
       dot.push(data?.medicalDirectiveAttestation?.notAttestedCount === 0 ? 'green' : (data?.medicalDirectiveAttestation?.notAttestedCount > 0 && data?.medicalDirectiveAttestation?.attestedCount !== 0) ? 'yellow' : "red");
       dotTooltipValues.push(data?.medicalDirectiveAttestation?.notAttestedCount === 0 ? 'All Attested' : (data?.medicalDirectiveAttestation?.notAttestedCount > 0 && data?.medicalDirectiveAttestation?.attestedCount !== 0) ? 'Not All Attested' : 'Attestation Pending')
       No.push(index + 1 + ".")
-      applicantName.push(`${formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName)}`);
+      applicantName.push(`${formatFirstNameLastName(data?.user?.name?.firstName, data?.user?.name?.lastName)}`);
       applicantNameHoverText.push('Click to view the attestation log for this Applicant by each Medical Directive')
       applicantId.push(data?.displayId ?? '-');
       type.push(data?.basicDetailReferences?.applicantType?.serviceProviderType)
