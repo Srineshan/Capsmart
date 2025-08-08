@@ -453,25 +453,23 @@ const Navbar = () => {
               className={style.sanmateoLogo}
             />
           </div>
-          {!window.location.pathname?.includes('mdManager') ? (
-            <>
-              <div className={style.container}>
-                <div className={style.roleSection}>
-                  <img src={roleImage} alt="" className={style.roleIcon} />
-                  <div className={style.roleLabel}>{workModeType}</div>
+          <div className={style.container}>
+            <div className={style.roleSection}>
+              <img src={roleImage} alt="" className={style.roleIcon} />
+              <div className={style.roleLabel}>{workModeType}</div>
+            </div>
+            {currentUserDetails?.roles?.length > 1 && (
+              <Tooltip title={"Click to Switch Workspace"} arrow>
+                <div
+                  className={style.workSpaceSwitchTextStyle}
+                  onClick={handleWorkModeSelection}
+                >
+                  Switch <br /> Workspaces
                 </div>
-                {currentUserDetails?.roles?.length > 1 && (
-                  <Tooltip title={"Click to Switch Workspace"} arrow>
-                    <div
-                      className={style.workSpaceSwitchTextStyle}
-                      onClick={handleWorkModeSelection}
-                    >
-                      Switch <br /> Workspaces
-                    </div>
-                  </Tooltip>
-                )}
-              </div>
-              {/* <div
+              </Tooltip>
+            )}
+          </div>
+          {/* <div
             className={`${style.menuStyle} ${window.location.pathname.includes(homeLink) && !window.location.pathname.includes('contractsWithABusinessEntity') &&
               style.activeMenuColor
               }`}
@@ -480,16 +478,16 @@ const Navbar = () => {
             <p>HOME - {(selectedWorkingMode !== null && selectedWorkingMode !== '' && selectedWorkingMode !== undefined) ? selectedWorkingMode : currentUserRoles?.[0]?.toUpperCase()}</p>
           </div> */}
 
-              {
-                //   isContractManager && (
-                //     <Link to={'/contracts'} className={style.noFontStyle}>
-                //         <div className={`${style.menuStyle} ${window.location.pathname === "/contracts" && style.activeMenuColor}`}>
-                //             <p>CONTRACT MANAGER</p>
-                //         </div>
-                //     </Link>
-                // )
-              }
-              {/* {
+          {
+            //   isContractManager && (
+            //     <Link to={'/contracts'} className={style.noFontStyle}>
+            //         <div className={`${style.menuStyle} ${window.location.pathname === "/contracts" && style.activeMenuColor}`}>
+            //             <p>CONTRACT MANAGER</p>
+            //         </div>
+            //     </Link>
+            // )
+          }
+          {/* {
             isContractManager && (
               <Link to={'/staffs'} className={style.noFontStyle}>
                 <div className={`${style.menuStyle} ${window.location.pathname.includes("/staffs") && style.activeMenuColor}`}>
@@ -498,6 +496,8 @@ const Navbar = () => {
               </Link>
             )
           } */}
+          {!window.location.pathname?.includes('mdManager') ? (
+            <>
               {workModeType !== "Entity Sys Admin" && (
                 <Link to={"/applications"} onClick={() => sessionStorage.setItem('applicationCreationType', 'REAPPOINTMENT')} className={style.noFontStyle}>
                   <div
@@ -898,15 +898,27 @@ const Navbar = () => {
             </>
           ) : (
             <>
-              <Link to={"/mdManager"} className={style.noFontStyle}>
-                <div
-                  className={`${style.menuStyle} ${(window.location.pathname.includes("/mdManager") && window.location.pathname === "/mdManager") &&
-                    style.activeMenuColor
-                    }`}
-                >
-                  <p>MEDICAL DIRECTIVES</p>
-                </div>
-              </Link>
+              {workModeType === "MD Recordkeeper" ? (
+                <Link to={"/mdManager"} className={style.noFontStyle}>
+                  <div
+                    className={`${style.menuStyle} ${(window.location.pathname.includes("/mdManager") && window.location.pathname === "/mdManager") &&
+                      style.activeMenuColor
+                      }`}
+                  >
+                    <p>MEDICAL DIRECTIVES</p>
+                  </div>
+                </Link>
+              ) : (
+                <Link to={"/mdManager"} className={style.noFontStyle}>
+                  <div
+                    className={`${style.menuStyle} ${(window.location.pathname.includes("/mdManager") && window.location.pathname === "/mdManager") &&
+                      style.activeMenuColor
+                      }`}
+                  >
+                    <p>MEDICAL DIRECTIVES LIBRARY</p>
+                  </div>
+                </Link>
+              )}
               <div
                 ref={popoverAnchorStaff}
                 onMouseEnter={(e) => handleClickStaff(e)}
@@ -963,6 +975,28 @@ const Navbar = () => {
                   </div>
                 </Popover>
               </div>
+              {workModeType === "Acknowledger" && (
+                <Link to={"/mdManager/manageAcknowledgement"} className={style.noFontStyle}>
+                  <div
+                    className={`${style.menuStyle} ${(window.location.pathname.includes("/manageAcknowledgement")) &&
+                      style.activeMenuColor
+                      }`}
+                  >
+                    <p>ACKNOWLEDGEMENT</p>
+                  </div>
+                </Link>
+              )}
+              {workModeType === "Reviewer / Approver" && (
+                <Link to={"/mdManager/manageSignOff"} className={style.noFontStyle}>
+                  <div
+                    className={`${style.menuStyle} ${(window.location.pathname.includes("/manageSignOff")) &&
+                      style.activeMenuColor
+                      }`}
+                  >
+                    <p>SIGN OFF</p>
+                  </div>
+                </Link>
+              )}
               <div>
                 <div
                   className={`${style.menuStyle} ${(window.location.pathname.includes("/reports") ||
@@ -1107,6 +1141,15 @@ const Navbar = () => {
                   </Popover>
                 </div>
               </div>
+              <Link to={"/mdManager/retired"} className={style.noFontStyle}>
+                <div
+                  className={`${style.menuStyle} ${(window.location.pathname.includes("/retired")) &&
+                    style.activeMenuColor
+                    }`}
+                >
+                  <p>RETIRED</p>
+                </div>
+              </Link>
             </>
           )}
         </div>

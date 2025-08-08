@@ -38,8 +38,11 @@ const ReportTypeOverview = React.lazy(() =>
   import("./Screens/Reports/reportTypeOverview")
 );
 const Home = React.lazy(() => import("./Screens/CustomerSystemAdmin"));
+const RetireMDManager = React.lazy(() => import("./Screens/MDManagerScreens/MDManager/retireMedicalDirectives"));
 const MDManager = React.lazy(() => import("./Screens/MDManagerScreens/MDManager"));
 const ManageAttestation = React.lazy(() => import("./Screens/MDManagerScreens/MDAttestations/ManageAttestations"));
+const ManageAcknowledgement = React.lazy(() => import("./Screens/MDManagerScreens/MDAttestations/ManageAcknowledgements"));
+const ManageSignOff = React.lazy(() => import("./Screens/MDManagerScreens/MDAttestations/ManageSignOff"));
 const ManageAttestationGroups = React.lazy(() => import("./Screens/MDManagerScreens/MDAttestations/ManageAttestationGroups"));
 const MDLibrary = React.lazy(() => import("./Screens/MDManagerScreens/MDLibrary"));
 const MDManagerStep1 = React.lazy(() => import("./Screens/MDManagerScreens/MDManager/step1"));
@@ -320,6 +323,9 @@ const MDRequestAttest = React.lazy(() =>
 const MDAttest = React.lazy(() => import("./Screens/MDRequestAttest/MedicalDirectivesAttest"));
 const MDAttestStatus = React.lazy(() => import("./Screens/MDManagerScreens/MDManager/MedicalDirectivesAttestStatus"));
 const ManageMDAttest = React.lazy(() => import("./Screens/MDManagerScreens/MDAttestations/ManageAttestations/MedicalDirectivesAttest"));
+const ManageMDAcknowledgement = React.lazy(() => import("./Screens/MDManagerScreens/MDAttestations/ManageAcknowledgements/MedicalDirectivesAcknowledge"));
+const ManageMDSignOff = React.lazy(() => import("./Screens/MDManagerScreens/MDAttestations/ManageSignOff/MedicalDirectivesSignOff"));
+const MedicalDirectivesMECApproval = React.lazy(() => import("./Screens/MDManagerScreens/MDManager/MedicalDirectivesMECApproval"));
 let isHapicareUser;
 let organizations;
 const App = ({ props }) => {
@@ -785,7 +791,7 @@ const App = ({ props }) => {
         method: "GET",
         headers: {
           "Authorization": `Bearer ${authorization}`,
-          "X-subdomain": 'cmh-hospital',
+          "X-subdomain": 'master',
         },
       };
     console.log(requestHeader, 'requestHeader')
@@ -827,7 +833,7 @@ const App = ({ props }) => {
         "Content-Type": "application/json",
         "X-tenantID": id,
         "Authorization": `Bearer ${authorization}`,
-        "X-subdomain": 'cmh-hospital',
+        "X-subdomain": 'master',
       },
     }
     fetch(`${baseUrl()}/user-management-service/auth/login`, requestOptions)
@@ -1346,8 +1352,11 @@ const App = ({ props }) => {
                   element={<ProtectedRoute><SettingList /></ProtectedRoute>}
                 />
                 <Route path="/entitySitePortal" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+                <Route path="/mdManager/retired" element={<ProtectedRoute><RetireMDManager /></ProtectedRoute>} />
                 <Route path="/mdManager" element={<ProtectedRoute><MDManager /></ProtectedRoute>} />
                 <Route path="/mdManager/manageAttestation" element={<ProtectedRoute><ManageAttestation /></ProtectedRoute>} />
+                <Route path="/mdManager/manageAcknowledgement" element={<ProtectedRoute><ManageAcknowledgement /></ProtectedRoute>} />
+                <Route path="/mdManager/manageSignOff" element={<ProtectedRoute><ManageSignOff /></ProtectedRoute>} />
                 <Route path="/mdManager/manageAttestationGroups" element={<ProtectedRoute><ManageAttestationGroups /></ProtectedRoute>} />
                 <Route path="/mdManager/libraries/:entityId/:departmentId" element={<MDLibrary />} />
                 <Route path="/mdManager/step1" element={<ProtectedRoute><MDManagerStep1 /></ProtectedRoute>} />
@@ -1392,6 +1401,18 @@ const App = ({ props }) => {
                 <Route
                   path="/mdManager/manageAttestation/:entityId/:medicalDirectivesId"
                   element={<ProtectedRoute><ManageMDAttest /></ProtectedRoute>}
+                />
+                <Route
+                  path="/mdManager/manageAcknowledgement/:entityId/:medicalDirectivesId"
+                  element={<ProtectedRoute><ManageMDAcknowledgement /></ProtectedRoute>}
+                />
+                <Route
+                  path="/mdManager/manageSignOff/:entityId/:medicalDirectivesId"
+                  element={<ProtectedRoute><ManageMDSignOff /></ProtectedRoute>}
+                />
+                <Route
+                  path="/mdManager/manageMECApproval/:entityId/:medicalDirectivesId"
+                  element={<ProtectedRoute><MedicalDirectivesMECApproval /></ProtectedRoute>}
                 />
                 <Route
                   path="/mdManager/mdAttestStatus/:entityId/:medicalDirectivesId"

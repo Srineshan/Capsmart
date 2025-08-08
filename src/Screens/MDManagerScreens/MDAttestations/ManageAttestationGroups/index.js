@@ -73,6 +73,7 @@ const ManageAttestationGroups = () => {
     const [staffList, setStaffList] = useState([]);
     const [groupList, setGroupList] = useState([]);
     const [groupTitle, setGroupTitle] = useState('');
+    const [groupType, setGroupType] = useState('');
     const [groupDesc, setGroupDesc] = useState('');
     const [groupById, setGroupById] = useState();
     const [mdTitle, setMdTitle] = useState('');
@@ -107,9 +108,12 @@ const ManageAttestationGroups = () => {
         userTileValues();
         getEntity();
         getDepartmentList();
-        getStaffList();
         getGroupList();
     }, []);
+
+    useEffect(() => {
+        getStaffList()
+    }, [groupType])
 
     useEffect(() => {
         if (entityId !== "" && entityId !== undefined) {
@@ -202,6 +206,7 @@ const ManageAttestationGroups = () => {
         getGroupList();
         setSelectedStaffs([]);
         setGroupTitle('');
+        setGroupType('');
         setGroupDesc('');
         setShowAttestationGroup(false);
     }
@@ -215,11 +220,12 @@ const ManageAttestationGroups = () => {
 
     const getGroupListById = async (id) => {
         const response = await GET(
-            `medical-directive-service/attestationGroup/${id}`
+            `medical-directive-service/medicalDirectiveGroup/${id}`
         );
         console.log(response.data);
         setGroupTitle(response?.data?.name)
         setGroupDesc(response?.data?.description)
+        setGroupType(response?.data?.type)
         setSelectedStaffs(response?.data?.members?.map(data => data?.id))
         setGroupById(response?.data)
         setShowAttestationGroup(true)
@@ -227,7 +233,7 @@ const ManageAttestationGroups = () => {
 
     const getGroupList = async () => {
         const response = await GET(
-            `medical-directive-service/attestationGroup`
+            `medical-directive-service/medicalDirectiveGroup`
         );
         console.log(response.data, 'group');
         setGroupList(response?.data)
@@ -238,7 +244,7 @@ const ManageAttestationGroups = () => {
         //     `application-management-service/staff?status=ACTIVE&sortByField=STAFF_NAME&isPaginationRequired=${false}&limit=${9999}`
         // );
         const response = await GET(
-            `user-management-service/user/allStaffs?status=ACTIVE`
+            `user-management-service/user/allStaffs?status=ACTIVE&roles=${groupType === "ACKNOWLEDGEMENT" ? ["Acknowledger"] : groupType === "SIGN_OFF" ? ["Reviewer / Approver"] : groupType === "ATTESTATION" ? ["Attester"] : []}`
         );
         console.log(response.data);
         setStaffList(response?.data)
@@ -259,7 +265,7 @@ const ManageAttestationGroups = () => {
 
     const handleDelete = async (id) => {
         try {
-            const response = await DELETE(`medical-directive-service/attestationGroup/${id}`);
+            const response = await DELETE(`medical-directive-service/medicalDirectiveGroup/${id}`);
             if (response?.response?.status === 400) {
                 ErrorToaster2(response?.response?.data);
             } else {
@@ -474,12 +480,13 @@ const ManageAttestationGroups = () => {
         let data = {
             "name": groupTitle,
             "description": groupDesc,
-            "members": filteredStaffArray
+            "members": filteredStaffArray,
+            "type": groupType
         }
 
         console.log(data)
         if (!groupById) {
-            await POST(`medical-directive-service/attestationGroup`, data)
+            await POST(`medical-directive-service/medicalDirectiveGroup`, data)
                 .then(response => {
                     SuccessToaster2('Group Added Successfully');
                     console.log(response?.data)
@@ -489,7 +496,7 @@ const ManageAttestationGroups = () => {
                     ErrorToaster2('Something Failed. Please Try later!');
                 })
         } else {
-            await PUT(`medical-directive-service/attestationGroup/${groupById?.id}`, data)
+            await PUT(`medical-directive-service/medicalDirectiveGroup/${groupById?.id}`, data)
                 .then(response => {
                     SuccessToaster2('Group Updated Successfully');
                     console.log(response?.data)
@@ -727,6 +734,21 @@ const ManageAttestationGroups = () => {
                                     onChange={(e) => setGroupTitle(e.target.value)}
                                     type="text"
                                 // placeholder="Enter Keywords / Tags"
+                                />
+                            </div>
+                            <div className={style.marginTop10}>
+                                <div className={style.labelStyle}>Group Type*</div>
+                                <CommonSelectField
+                                    value={groupType}
+                                    onChange={(e) => setGroupType(e.target.value)}
+                                    className={style.fullWidth1}
+                                    //   firstOptionLabel={'Select Category'}
+                                    //   firstOptionValue={''}
+                                    valueList={["ACKNOWLEDGEMENT", "ATTESTATION", "SIGN_OFF"]}
+                                    labelList={["Acknowledgement", "Attestation", "Sign Off"]}
+                                    disabledList={false}
+                                    required={false}
+                                // label={""}
                                 />
                             </div>
                             <div>

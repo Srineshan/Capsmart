@@ -13,7 +13,7 @@ import { ErrorToaster2, SuccessToaster2 } from '../../../utils/toaster';
 import CommonMultiSelectField from '../../../Components/CommonFields/CommonMultiSelectField';
 import { area } from 'd3';
 
-const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue }) => {
+const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue, setSelectedMdId }) => {
     const [calendarStart, setCalendarStart] = useState(false);
     const [SelectedDate, setSelectedDate] = useState(null);
     const [keywordList, setKeywordList] = useState([]);
@@ -304,6 +304,11 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue }) => {
             }
         }
     }
+
+    const handleClose = () => {
+        setMdValue();
+        setSelectedMdId('');
+    }
     return (
         <div className={style.stepsBackground}>
             <div className={`${style.stepHeader} ${style.spaceBetween} ${style.verticalAlignCenter}`}>
@@ -313,7 +318,7 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue }) => {
                 </div>
                 <div className={style.displayInRow}>
                     <div className={`${style.spaceBetween}`}>
-                        <button className={`${style.outlinedButtonMd} ${style.marginRight} `} onClick={() => { setStep1(false) }} >SAVE IN PROGRESS</button>
+                        <button className={`${style.outlinedButtonMd} ${style.marginRight} `} onClick={() => { setStep1(false); handleClose() }} >SAVE IN PROGRESS</button>
                         <button className={`${style.buttonStyleMd} ${style.marginRight} `} onClick={() => {
                             handleContinue();
                         }} >CONTINUE</button>

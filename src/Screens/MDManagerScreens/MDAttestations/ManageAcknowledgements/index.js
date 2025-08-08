@@ -29,10 +29,13 @@ import ESignConfirmationUserDialog from "../../../../Components/ESignConfirmatio
 import ESignDialogUser from "../../../../Components/ESignDialogUser";
 import ApplicationFieldCard from "../../../../Components/ApplicationFieldCard";
 
-const ManageAttestation = () => {
+const ManageAcknowledgement = () => {
     const navigate = useNavigate();
     const PDFRef = createRef();
     const componentRef = useRef(null);
+    const [sortField, setSortField] = useState('TITLE');
+    const [sortValue, setSortValue] = useState('ASCENDING');
+    let loggedInUser = sessionStorage.getItem('user') ? JSON.parse(sessionStorage.getItem('user')) : {};
     const reactToPrintContent = useCallback(() => {
         return componentRef.current;
     }, [componentRef.current]);
@@ -51,7 +54,7 @@ const ManageAttestation = () => {
     const [feedBackTileData, setFeedBackTileData] = useState([]);
     const [userMetadata, setUserMetadata] = useState([]);
     const [viewAlerts, setViewAlerts] = useState(true);
-    const [selectedOption, setSelectedOption] = useState("pending_md");
+    const [selectedOption, setSelectedOption] = useState("pending");
     const [isExpanded, setIsExpanded] = useState(true);
     let selectedOptionValue = sessionStorage.getItem("selectedOption");
     const [entityId, setEntityId] = useState("");
@@ -110,11 +113,15 @@ const ManageAttestation = () => {
     }, [selectedOptionValue]);
 
     useEffect(() => {
-        if (selectedOption === "pending_md" && attestationList?.length > 0 && userData) {
+        loggedInUser = sessionStorage.getItem('user') ? JSON.parse(sessionStorage.getItem('user')) : {}
+    }, [sessionStorage.getItem('user')])
+
+    useEffect(() => {
+        if (selectedOption === "pending" && attestationList?.length > 0 && userData) {
             if (!userData?.esignature) {
                 setIsShowESignDialog(true)
             } else {
-                if (sessionStorage.getItem('attestationESignConfirmed') !== 'done')
+                if (sessionStorage.getItem('acknowledgementESignConfirmed') !== 'done')
                     setIsShowESignConfirmationDialog(true)
             }
         }
@@ -136,13 +143,21 @@ const ManageAttestation = () => {
     }, []);
 
     useEffect(() => {
+        if (loggedInUser?.id) {
+            getAttestationMetaList();
+        }
+    }, []);
+
+    useEffect(() => {
         const controller = new AbortController();
         const signal = controller.signal;
-
-        getAttestationList(signal);
+        console.log(loggedInUser)
+        if (loggedInUser?.id) {
+            getAttestationList(signal);
+        }
 
         return () => controller.abort();
-    }, [selectedOption]);
+    }, [selectedOption, sortField, sortValue]);
 
     // useEffect(() => {
     //     if (entityId !== "" && entityId !== undefined) {
@@ -185,6 +200,18 @@ const ManageAttestation = () => {
         return [departmentEntry, ...serviceAreaEntries]; // Include department first, then service areas
     }) || [];
 
+    const getHandleSort = (value, sortBy) => {
+        if (sortBy === 'ASCENDING') {
+            setSortField(value)
+            setSortValue('DESCENDING')
+        } else if (sortBy === 'DESCENDING') {
+            setSortField('DEFAULT')
+            setSortValue('ASCENDING')
+        } else if (sortBy === 'NONE') {
+            setSortField(value)
+            setSortValue('ASCENDING')
+        }
+    }
 
     const getSelectedOption = (value) => {
         setSelectedOption(value);
@@ -217,7 +244,7 @@ const ManageAttestation = () => {
     }
 
     const confirmESign = async () => {
-        sessionStorage.setItem('attestationESignConfirmed', 'done')
+        sessionStorage.setItem('acknowledgementESignConfirmed', 'done')
         setIsShowESignConfirmationDialog(false)
     }
 
@@ -271,19 +298,24 @@ const ManageAttestation = () => {
     }
 
     const getAttestationMetaList = async () => {
-        const response = await GET(
-            `medical-directive-service/attestation/byUser/meta`
-        );
+        const response = await GET(`medical-directive-service/medicalDirectives/signOff/meta?assignedUserIds=${loggedInUser?.id}&role=${sessionStorage.getItem('workModeType')}&noOfDays=${30}`);
         console.log(response.data);
         setAttestationMeta(response?.data)
     }
 
     const getAttestationList = async (signal) => {
-        const response = await POST(
-            `medical-directive-service/attestation/byUser?offset=${page - 1}&limit=${limit}&isPaginationRequired=${isPaginationRequired}&userId=${users?.id}&tab=${selectedOption}`, advancedSearch, { signal }
-        );
+        // const response = await POST(
+        //     `medical-directive-service/attestation/byUser?offset=${page - 1}&limit=${limit}&isPaginationRequired=${isPaginationRequired}&userId=${users?.id}&tab=${selectedOption}`, advancedSearch, { signal }
+        // );
+        let url = '';
+        if (selectedOption === 'completed') {
+            url = `medical-directive-service/medicalDirectives/signOff?tab=level-1&role=${sessionStorage.getItem('workModeType')}&assignedUserIds=${loggedInUser?.id}&status=${selectedOption}&noOfDays=${30}&sortBy=${sortValue}&sortByField=${sortField}`
+        } else {
+            url = `medical-directive-service/medicalDirectives/signOff?tab=level-1&role=${sessionStorage.getItem('workModeType')}&assignedUserIds=${loggedInUser?.id}&status=${selectedOption}&sortBy=${sortValue}&sortByField=${sortField}`
+        }
+        const response = await GET(url, { signal });
         console.log(response.data);
-        setAttestationList(response?.data?.medicalDirectives)
+        setAttestationList(response?.data?.medicalDirectivesWithWorkflow)
     }
 
     const getEntity = async () => {
@@ -379,8 +411,25 @@ const ManageAttestation = () => {
         "Last Attestation Date",
     ];
 
-    const tableHeaderValues = selectedOption === "pending_md" ? reviewAndAttestHeaderValues : attestedHeaderValues
+    const reviewAndAttestSortValues = [
+        false,
+        false,
+        true,
+        true,
+        false,
+        true,
+        true,
+        false
+    ];
+    const attestedSortValues = [
+        true,
+        true,
+        false,
+        false,
+    ];
 
+    const tableHeaderValues = selectedOption === "pending" ? reviewAndAttestHeaderValues : attestedHeaderValues
+    const tableSortValues = selectedOption === "pending" ? reviewAndAttestSortValues : attestedSortValues
     let pin = [];
     let alert = [];
     let alertType = [];
@@ -424,7 +473,7 @@ const ManageAttestation = () => {
             signImg.push(<img src={BlueSign} alt="" className={`${style.blueSignImgStyle} ${style.cursorPointer}`} onClick={() => handleEdit(data)} />);
         });
 
-        return selectedOption === "pending_md" ? [
+        return selectedOption === "pending" ? [
             { type: "checkbox", value: checkbox },
             { type: "dot", value: title },
             { type: "text", value: title },
@@ -504,7 +553,7 @@ const ManageAttestation = () => {
     }
 
     const handleEdit = (data) => {
-        navigate(`/mdManager/manageAttestation/${entityId}/${data?.medicalDirective?.id}`)
+        navigate(`/mdManager/manageAcknowledgement/${entityId}/${data?.medicalDirective?.id}`)
     }
 
     const handleSubmitAttestBulk = async () => {
@@ -714,15 +763,15 @@ const ManageAttestation = () => {
                     </div>
                     <div>
                         <div className={`${style.grid2} ${style.marginTop10}`}>
-                            <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="REVIEW & ATTEST" bigNumber={attestationMeta?.pending_md?.totalCount} smallNum1={attestationMeta?.pending_md?.notPastDueCount} smallNum2={attestationMeta?.pending_md?.pastDueCount} smallText1="Not Done" smallText2="Past Due" currentTile="pending_md" topText='' smallNum1Color={style.redSmallNumber} smallNum2Color={style.redSmallNumber} smallNum1SelectedColor={style.redSmallNumberSelected} smallNum2SelectedColor={style.redSmallNumberSelected} />
-                            <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="ATTESTED" bigNumber={attestationMeta?.attested_md?.totalCount} smallNum1="" smallNum2="" currentTile="attested_md" topText='IN THE PAST 12 MONTHS' />
+                            <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="To Acknowledge" bigNumber={attestationMeta?.['level-1']?.pending} smallNum1={attestationMeta?.pending_md?.notPastDueCount} smallNum2={attestationMeta?.pending_md?.pastDueCount} smallText1="Not Done" smallText2="Past Due" currentTile="pending" topText='' smallNum1Color={style.redSmallNumber} smallNum2Color={style.redSmallNumber} smallNum1SelectedColor={style.redSmallNumberSelected} smallNum2SelectedColor={style.redSmallNumberSelected} />
+                            <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Reviewed" bigNumber={attestationMeta?.['level-1']?.completed} smallNum1="" smallNum2="" currentTile="completed" topText='' />
                         </div>
                         <div
                             className={`${style.spaceBetween} ${style.marginLeft30} ${style.marginTop20} `}
                         >
                             <div className={`${style.tabs}`}>
-                                <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Review & Attest" tileCount={attestationMeta?.pending_md?.totalCount} currentTile="pending_md" />
-                                <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Attested" tileCount={attestationMeta?.attested_md?.totalCount} currentTile="attested_md" />
+                                <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Review & Attest" tileCount={attestationMeta?.['level-1']?.pending} currentTile="pending" />
+                                <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Attested" tileCount={attestationMeta?.['level-1']?.completed} currentTile="completed" />
                             </div>
                             <div>
                                 <button
@@ -743,10 +792,12 @@ const ManageAttestation = () => {
                                         tableHeaderValues={tableHeaderValues}
                                         tableDataValues={getAttestationValues()}
                                         tableData={attestationList}
-                                        gridStyle={selectedOption === 'pending_md' ? style.reviewAndAttestGrid : style.attestedGrid}
+                                        gridStyle={selectedOption === 'pending' ? style.reviewAndAttestGrid : style.attestedGrid}
                                         // actions={actionsData}
                                         // scrollStyle={style.contractScrollStyle}
-                                        tableSortValues={[]}
+                                        tableSortValues={tableSortValues}
+                                        getHandleSort={getHandleSort}
+                                        sortValue={{ sortBy: sortValue, sortByField: sortField }}
                                         heading={"There are no Record for you to manage"}
                                         onClickFunction={() => { }}
                                         hidePagination={false}
@@ -829,4 +880,4 @@ const ManageAttestation = () => {
     );
 };
 
-export default ManageAttestation;
+export default ManageAcknowledgement;

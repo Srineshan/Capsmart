@@ -23,6 +23,7 @@ import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { format } from "date-fns";
 import CommonMultiSelectField from "../../../Components/CommonFields/CommonMultiSelectField";
+import MDManagerStep4 from "./step4";
 
 const MDManager = () => {
   const navigate = useNavigate();
@@ -40,6 +41,7 @@ const MDManager = () => {
   const [step1, setStep1] = useState(false);
   const [step2, setStep2] = useState(false);
   const [step3, setStep3] = useState(false);
+  const [step4, setStep4] = useState(false);
   const [departmentList, setDepartmentList] = useState([]);
   const [selectedCombinations, setSelectedCombinations] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState([]);
@@ -177,7 +179,7 @@ const MDManager = () => {
 
   const getGroupList = async () => {
     const response = await GET(
-      `medical-directive-service/attestationGroup`
+      `medical-directive-service/medicalDirectiveGroup`
     );
     console.log(response.data);
     setGroupList(response?.data)
@@ -361,11 +363,13 @@ const MDManager = () => {
   console.log('ref', refMetadata);
 
   return step1 ? (
-    <MDManagerStep1 setStep1={setStep1} setStep2={setStep2} mdFile={mdFile} getMD={getMD} mdValue={mdValue} />
+    <MDManagerStep1 setStep1={setStep1} setStep2={setStep2} mdFile={mdFile} getMD={getMD} mdValue={mdValue} setMdValue={setMdValue} setSelectedMdId={setSelectedMdId} />
   ) : step2 ? (
-    <MDManagerStep2 setStep1={setStep1} setStep3={setStep3} setStep2={setStep2} mdValue={mdValue} getMD={getMD} />
+    <MDManagerStep2 setStep1={setStep1} setStep3={setStep3} setStep2={setStep2} mdValue={mdValue} getMD={getMD} setMdValue={setMdValue} setSelectedMdId={setSelectedMdId} />
   ) : step3 ? (
-    <MDManagerStep3 setStep2={setStep2} setStep3={setStep3} mdValue={mdValue} />
+    <MDManagerStep3 setStep2={setStep2} setStep3={setStep3} setStep4={setStep4} mdValue={mdValue} setMdValue={setMdValue} setSelectedMdId={setSelectedMdId} />
+  ) : step4 ? (
+    <MDManagerStep4 setStep3={setStep3} setStep4={setStep4} mdValue={mdValue} setMdValue={setMdValue} setSelectedMdId={setSelectedMdId} />
   ) : (
     <Fragment>
       <Navbar />

@@ -156,6 +156,41 @@
     gap: 1%;
 }
 
+.mdlCard {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    border: 0.2px solid #9AAFB5;
+    border-radius: 10px;
+    height: 130px;
+    padding: 0px 30px;
+}
+
+.loginCard {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    border: 0.2px solid #9AAFB5;
+    border-radius: 10px;
+    height: 80px;
+    padding: 0px 30px;
+}
+
+.mdlCardTitle {
+    text-align: left;
+    font: normal normal bold 22px/35px proxima-nova;
+    color: $primarycolor;
+}
+
+.mdlLogo {
+    width: 60px;
+    height: auto;
+    object-fit: contain;
+}
+
+.loginIconStyle {
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    background-color: $primarycolor;
+}
+
 .mdlButton {
     background: transparent radial-gradient(closest-side at 50% 50%, #5087D9 0%, #14358F 100%) no-repeat padding-box;
     border-radius: 20px;

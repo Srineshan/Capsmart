@@ -1,6 +1,5 @@
 @import "../../../../index.scss";
 
-// Existing classes retained as is
 .screenBackground {
     background: #EDEDF3 0% 0% no-repeat padding-box;
 }
@@ -58,7 +57,12 @@
     width: 100% !important;
 }
 
-.twoCol,
+.twoCol {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 20px;
+}
+
 .grid2 {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -136,7 +140,7 @@
 
 .reviewAndAttestGrid {
     display: grid;
-    grid-template-columns: 35% 10% 44% 3% 3%;
+    grid-template-columns: 3% 3% 40% 8% 8% 14% 14% 3%;
     gap: 1%;
 }
 
@@ -147,7 +151,7 @@
 }
 
 .bigCardStyle {
-    height: calc(100vh - 130px);
+    height: calc(100vh - 230px);
     overflow: scroll;
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 10px 20px #C4C8D066;
@@ -180,6 +184,7 @@
     border-radius: 10px;
     font-weight: bold;
     cursor: pointer;
+    // margin-bottom: -10px;
 }
 
 .dialogTitle {
@@ -257,101 +262,13 @@
     justify-content: center;
 }
 
-// === New classes from Dialog ===
-
-.addMDDialogBackground {
-    background: #ffffff 0% 0% no-repeat padding-box;
-    padding: 20px 20px 0px 20px;
-    border-radius: 20px !important;
-    border: 5px solid rgba(255, 255, 255, 0.4);
-}
-
-.attestationDialog {
-    height: 95vh !important;
-    width: 85% !important;
-    overflow: scroll;
-}
-
-.attestationDialogHeaderCard {
-    background: rgba(6, 97, 122, 0.1);
-    border-radius: 4px;
-}
-
-.attestationDialogTitle {
-    text-align: left;
-    font: normal normal bold 16px/26px proxima-nova;
-    color: $primarycolor;
-}
-
-.attestationGroupGrid {
-    display: grid;
-    grid-template-columns: 43% 10% 43%;
-    gap: 2%;
-}
-
-.attestationGroupRightCard {
-    background: $secondarycolor 0% 0% no-repeat padding-box;
-    border: 0.2px solid #9AAFB5;
-    border-radius: 8px;
-    padding: 20px;
-    height: 300px;
-    overflow: scroll;
-}
-
-.groupGrid {
-    display: grid;
-    grid-template-columns: 60% 38%;
-    gap: 1%;
-}
-
-.staffName {
-    text-align: left;
-    font: normal normal normal 16px/32px proxima-nova;
-    color: $textgrey;
-}
-
-.selectedStaff {
-    font-weight: bolder;
-}
-
-.displayInCol {
-    display: flex;
-    flex-direction: column;
-}
-
-.moveCard {
-    background: $secondarycolor 0% 0% no-repeat padding-box;
-    border: 0.2px solid #9AAFB5;
-    border-radius: 8px;
-    height: 50px;
-    width: 100px;
-}
-
-.disabledView {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.outlinedButton {
-    background: #FFFFFF 0% 0% no-repeat padding-box;
-    box-shadow: 0px 3px 6px #00000029;
-    border: 0.5px solid #9AAFB5;
-    border-radius: 8px;
-    height: 40px;
-    width: 140px;
-    font-weight: bold;
-    color: $primarycolor;
-    cursor: pointer;
-}
-
-.docTypeEditImgStyle {
-    height: 20px;
+.blueSignImgStyle {
+    height: 30px;
     width: auto;
     object-fit: contain;
-    color: $primarycolor
 }
 
-.docTypeImgStyle {
+.whiteSignImgStyle {
     height: 20px;
     width: auto;
     object-fit: contain;

@@ -9,6 +9,8 @@ import { ErrorToaster, ErrorToaster2, SuccessToaster, SuccessToaster2 } from './
 import LevelTwoHeader from '../../../Components/LevelTwoHeader';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { toPDF } from '../../../Components/ConvertToPdf';
+import PeopleOutlinedIcon from '@mui/icons-material/PeopleOutlined';
+import CryptoJS from 'crypto-js';
 import PrintOutlinedIcon from '@mui/icons-material/PrintOutlined';
 import DownloadIcon from '@mui/icons-material/Download';
 import { useReactToPrint } from "react-to-print";
@@ -23,17 +25,27 @@ import TileApplication from '../../../Components/TileApplication';
 import TableTwo from '../../../Components/TableDesignTwo';
 import { useNavigate } from 'react-router-dom';
 import { formatFirstNameLastName } from '../../../utils/formatting';
+import CommonPdfViewer from '../../../Components/CommonPdfViewer';
+import CommonRadio from '../../../Components/CommonFields/CommonRadio';
+import jwt from 'jwt-decode';
+import Cookie from 'universal-cookie';
+import { TextField, Tooltip } from '@mui/material';
+import CommonDateField from '../../../Components/CommonFields/CommonDateField';
+import CommonCheckBox from '../../../Components/CommonFields/CommonCheckBox';
 
 const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advancedSearch, setSelectedMdId }) => {
     const PDFRef = createRef();
     const navigate = useNavigate()
+    const [calendarStart, setCalendarStart] = useState(false);
     const componentRef = useRef(null);
     const [mdList, setMdList] = useState([]);
-
+    const [selectedMACDate, setSelectedMACDate] = useState(null);
+    const loggedInUser = sessionStorage.getItem('user') ? JSON.parse(sessionStorage.getItem('user')) : {};
     const reactToPrintContent = useCallback(() => {
         return componentRef.current;
     }, [componentRef.current]);
     const fileInputRef = useRef(null);
+    const [checkedIds, setCheckedIds] = useState([]);
     const [viewRegistered, setViewRegistered] = useState(true);
     const [selectedOption, setSelectedOption] = useState('Current Medical Directives');
     const [registeredUsers, setRegisteredUsers] = useState([]);
@@ -55,30 +67,132 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
     const [searchTerm, setSearchTerm] = useState('');
     const [searchData, setSearchData] = useState([]);
     const [searchCount, setSearchCount] = useState(0);
+    const [approvalStatus, setApprovalStatus] = useState('');
     const [searchTermForTable, setSearchTermForTable] = useState('');
     const [showAddNewMedicalDirectives, setShowAddNewMedicalDirectives] = useState(false);
     const [showAttestationSummary, setShowAttestationSummary] = useState(false);
     const [showRetireDialog, setShowRetireDialog] = useState(false);
     const [showAddUserDialog, setShowAddUserDialog] = useState(false);
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+    const [showUpdateApprovalStatus, setShowUpdateApprovalStatus] = useState(false);
     const [newMdCount, setNewMdCount] = useState(0);
     const [upcomingMdCount, setUpcomingMdCount] = useState(0);
     const [currentMdCount, setCurrentMdCount] = useState(0);
     const [revisionMdCount, setRevisionMdCount] = useState(0);
     const [outstandingMdCount, setOutstandingMdCount] = useState(0);
+    const [signOffMdCount, setSignOffMdCount] = useState(0);
     const [draftMdCount, setDraftMdCount] = useState(0);
     const [inactiveMdCount, setInactiveMdCount] = useState(0);
     const [sortField, setSortField] = useState("DEFAULT");
     const [sortValue, setSortValue] = useState("DESCENDING");
     const [selectedMedicalDirective, setSelectedMedicalDirective] = useState();
+    const [selectedMedicalDirectiveForApproval, setSelectedMedicalDirectiveForApproval] = useState();
+    const [approvalNotes, setApprovalNotes] = useState('');
+    const [workflowStructure, setWorkflowStructure] = useState();
     const [selectedMedicalDirectiveList, setSelectedMedicalDirectiveList] = useState();
     const [attestationSummaryTotal, setAttestationSummaryTotal] = useState(0);
     const [retireNotes, setRetireNotes] = useState('');
     const [revisionList, setRevisionList] = useState([]);
-
+    const [selectedSignOffOption, setSelectedSignOffOption] = useState('level-1');
+    const [signOffMeta, setSignOffMeta] = useState();
     let isMultiSiteEntity = sessionStorage.getItem('isMultiSiteEntity') === 'true' ? true : false;
     const canadaData = sessionStorage.getItem('canadaData') !== 'undefined' ? JSON.parse(sessionStorage.getItem('canadaData')) : {};
     const dateFormat = canadaData?.dateFormat || 'MMM dd, yyyy';
+    const [dateTime, setDateTime] = useState(new Date().toISOString());
+    const [userData, setUserData] = useState();
+    let cookie = new Cookie();
+    let userDetails = cookie.get('user');
+    const users = jwt(userDetails);
+    const publicKey = "-----BEGIN PUBLIC KEY-----MIGeMA0GCSqGSIb3DQEBAQUAA4GMADCBiAKBgHA5SDu30/8uQAqqkQE0NuY4ePBptMGufG6AWnC/88YVLXi4thh7M8VU6kElVJkfXL5DwlfVnwPb08+PK1EcaOWWtp2gdQitkohjZLB9zVE+0OtRrzSc33wItf7Iwisi5dHPggHvfOp5fr+QYWFMa/kKYl3SgNo8fryeLbKKalmdAgMBAAE=-----END PUBLIC KEY-----";
+    const [encryptedText, setEncryptedText] = useState(CryptoJS.AES.encrypt(users?.userName + dateTime, publicKey).toString());
+    const valuesToUse = viewRegistered ? (selectedOption === 'Current Medical Directives' ? registeredUsers : selectedOption === 'Draft Medical Directives' ? contractedServiceProviderUsers : selectedOption === 'Medical Directives Sign Off' ? deactivatedUsers : invitedUsers) : blockedUsers;
+    console.log(loggedInUser)
+    useEffect(() => {
+        getPublicationWorkflow();
+    }, [])
+
+    useEffect(() => {
+        // getUser();
+        // getMDList();
+        getDashboardMetadata();
+        getSignOffMeta();
+    }, [selectedOption]);
+
+    useEffect(() => {
+        getRevisionList();
+    }, [selectedSignOffOption])
+
+    useEffect(() => {
+        const controller = new AbortController();
+        const signal = controller.signal;
+
+        getDashboard(signal);
+
+        return () => controller.abort();
+    }, [selectedOption, showAddUserDialog, limit, page, advancedSearch]);
+
+    // useEffect(() => {
+    //     userTileValues();
+    // }, [from, to, showAddUserDialog]);
+
+    useEffect(() => {
+        if (showAttestationSummary && selectedMedicalDirective?.id) {
+            getMedicalDirectiveSummaryLevel2(selectedMedicalDirective?.id)
+        }
+    }, [sortField, sortValue, page, selectedMedicalDirective, limit, searchTermForTable]);
+
+    useEffect(() => {
+        setUserDetails();
+    }, [users?.id])
+
+    const setUserDetails = async () => {
+        const { data: userData } = await GET(`user-management-service/user/${users?.id}`);
+        setUserData(userData)
+    }
+
+    const tryParseDate = (dateString) => {
+        const formats = ['MMM d, yyyy', 'dd/MM/yyyy'];
+
+        for (const format of formats) {
+            const parsedDate = parse(dateString, format, new Date());
+            if (isValid(parsedDate)) {
+                return { parsedDate, formatUsed: format };
+            }
+        }
+
+        return { parsedDate: null, formatUsed: null }; // Invalid date
+    };
+
+    const handleSelectAllClick = () => {
+        if (checkedIds?.length === revisionList?.length) {
+            setCheckedIds([]);
+        } else {
+            const allIds = revisionList?.map(data => data?.medicalDirective?.id);
+            setCheckedIds(allIds);
+        }
+    };
+
+    // const getMDList = async () => {
+    //     const { data: mdList } = await GET(`medical-directive-service/medicalDirectives`);
+    //     setMdList(mdList)
+    // }
+
+    const getPublicationWorkflow = async () => {
+        const response = await GET(
+            `medical-directive-service/publicationWorkFlow`
+        );
+        setWorkflowStructure(response.data?.[0])
+        console.log(response.data?.[0], 'workflow');
+    }
+
+    const getMedicalDirectiveSummaryLevel2 = async (id) => {
+        const { data: medicalDirectiveSummaryLevel2 } = await GET(
+            `medical-directive-service/medicalDirectives/${id}/summary?sortBy=${sortValue}&sortByField=${sortField}&limit=${limit}&searchText=${searchTermForTable}&isPaginationRequired=${limit === 9999 ? false : true}&offset=${page - 1}`
+        );
+        setSelectedMedicalDirectiveList(medicalDirectiveSummaryLevel2);
+        // setAttestationSummaryTotal()
+    }
+
     const innerHeaderValues = [
         "No.",
         "Applicant Type",
@@ -108,6 +222,22 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
         "Last Updated",
         "",
     ];
+    const MECSignOffTableHeaderValues = [
+        <CommonCheckBox
+            size="medium"
+            checked={checkedIds?.length === revisionList?.length}
+            onChange={handleSelectAllClick}
+        />,
+        "No.",
+        "Title",
+        "MD ID",
+        "Department / Division",
+        "Revision Assigned To",
+        "Due Date",
+        "Last Updated",
+        "",
+    ];
+
     const outstandingTableHeaderValues = [
         "Attestation Categories",
         "Total Count",
@@ -122,68 +252,15 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
         "MD ID",
         "Department / Division",
         "Author",
+        "Type",
+        "Version",
         "Due Date",
-        "Last Updated",
         "",
     ];
 
     const tableHeaderValues = (selectedOption === 'Current Medical Directives' || selectedOption === 'Retire Medical Directives') ? currentTableHeaderValues : selectedOption === "Draft Medical Directives"
-        ? draftTableHeaderValues : selectedOption === "Medical Directives Revisions" ? revisionTableHeaderValues
+        ? draftTableHeaderValues : selectedOption === "Medical Directives Sign Off" ? selectedSignOffOption === "level-3" ? MECSignOffTableHeaderValues : revisionTableHeaderValues
             : outstandingTableHeaderValues;
-
-    const valuesToUse = viewRegistered ? (selectedOption === 'Current Medical Directives' ? registeredUsers : selectedOption === 'Draft Medical Directives' ? contractedServiceProviderUsers : selectedOption === 'Medical Directives Revisions' ? deactivatedUsers : invitedUsers) : blockedUsers;
-
-    useEffect(() => {
-        // getUser();
-        // getMDList();
-        getDashboardMetadata();
-        getRevisionList();
-    }, [selectedOption]);
-
-    useEffect(() => {
-        const controller = new AbortController();
-        const signal = controller.signal;
-
-        getDashboard(signal);
-
-        return () => controller.abort();
-    }, [selectedOption, showAddUserDialog, limit, page, advancedSearch]);
-
-    // useEffect(() => {
-    //     userTileValues();
-    // }, [from, to, showAddUserDialog]);
-
-    useEffect(() => {
-        if (showAttestationSummary && selectedMedicalDirective?.id) {
-            getMedicalDirectiveSummaryLevel2(selectedMedicalDirective?.id)
-        }
-    }, [sortField, sortValue, page, selectedMedicalDirective, limit, searchTermForTable]);
-
-    const tryParseDate = (dateString) => {
-        const formats = ['MMM d, yyyy', 'dd/MM/yyyy'];
-
-        for (const format of formats) {
-            const parsedDate = parse(dateString, format, new Date());
-            if (isValid(parsedDate)) {
-                return { parsedDate, formatUsed: format };
-            }
-        }
-
-        return { parsedDate: null, formatUsed: null }; // Invalid date
-    };
-
-    // const getMDList = async () => {
-    //     const { data: mdList } = await GET(`medical-directive-service/medicalDirectives`);
-    //     setMdList(mdList)
-    // }
-
-    const getMedicalDirectiveSummaryLevel2 = async (id) => {
-        const { data: medicalDirectiveSummaryLevel2 } = await GET(
-            `medical-directive-service/medicalDirectives/${id}/summary?sortBy=${sortValue}&sortByField=${sortField}&limit=${limit}&searchText=${searchTermForTable}&isPaginationRequired=${limit === 9999 ? false : true}&offset=${page - 1}`
-        );
-        setSelectedMedicalDirectiveList(medicalDirectiveSummaryLevel2);
-        // setAttestationSummaryTotal()
-    }
 
     const getUser = async () => {
         if (selectedOption === 'Current Medical Directives') {
@@ -196,7 +273,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
             setContractedServiceProviderUsers(user?.filter(data => data?.blocked === false)?.map(data => data));
             setBlockedUsers(user?.filter(data => data?.blocked === true)?.map(data => data));
         }
-        if (selectedOption === 'Medical Directives Revisions') {
+        if (selectedOption === 'Medical Directives Sign Off') {
             const { data: user } = await GET(`user-management-service/user?activated=false`);
             setDeactivatedUsers(user?.filter(data => data?.blocked === false)?.map(data => data));
             setBlockedUsers(user?.filter(data => data?.blocked === true)?.map(data => data));
@@ -209,18 +286,19 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
     };
 
     const getDashboard = async (signal) => {
-        const { data: dashboardData } = await POST(`medical-directive-service/medicalDirectives/dashboard?offset=${page - 1}&limit=${limit}&isPaginationRequired=${isPaginationRequired}&tab=${selectedOption === "Current Medical Directives" ? "active_md" : selectedOption === "Medical Directives Revisions" ? "md_revisions" : selectedOption === "Draft Medical Directives" ? "draft_md" : selectedOption === "Retire Medical Directives" ? "inactive_md" : ""}`, advancedSearch, { signal });
+        const { data: dashboardData } = await POST(`medical-directive-service/medicalDirectives/dashboard?offset=${page - 1}&limit=${limit}&isPaginationRequired=${isPaginationRequired}&role=${sessionStorage.getItem('workModeType')}&tab=${selectedOption === "Current Medical Directives" ? "active_md" : selectedOption === "Medical Directives Sign Off" ? "md_revisions" : selectedOption === "Draft Medical Directives" ? "draft_md" : selectedOption === "Retire Medical Directives" ? "inactive_md" : ""}`, advancedSearch, { signal });
         setDashboardData(dashboardData?.medicalDirectives);
         setTotalTableCount(dashboardData?.numberOfElements);
     }
 
     const getDashboardMetadata = async () => {
-        const { data: dashboardMetadata } = await GET(`medical-directive-service/medicalDirectives/dashboard/meta`);
+        const { data: dashboardMetadata } = await GET(`medical-directive-service/medicalDirectives/dashboard/meta?role=${sessionStorage.getItem('workModeType')}`);
         setDashboardMetaData(dashboardMetadata);
         setInactiveMdCount(dashboardMetadata?.inactive_md?.numberOfElements)
         setNewMdCount(dashboardMetadata?.active_md?.newDirectivesCount);
         setUpcomingMdCount(dashboardMetadata?.active_md?.upcomingForReviewCount);
         setCurrentMdCount(dashboardMetadata?.active_md?.numberOfElements)
+        setSignOffMdCount(dashboardMetadata?.sign_off?.numberOfElements)
         setRevisionMdCount(dashboardMetadata?.md_revisions?.numberOfElements)
         setOutstandingMdCount(dashboardMetadata?.active_md?.numberOfElements)
         setDraftMdCount(dashboardMetadata?.draft_md?.numberOfElements)
@@ -245,6 +323,10 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
 
     const getSelectedOptionLevelTwo = (value) => {
         setSelectedOption(value)
+    }
+
+    const getSelectedOptionForSignOff = (value) => {
+        setSelectedSignOffOption(value)
     }
 
     const onCloseLevel2 = () => {
@@ -289,8 +371,65 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
             })
     }
 
-    const handleUpdateApprovalStatus = async (data) => {
+    const handleUpdateApprovalStatus = (data) => {
+        // console.log(data)
+        // setSelectedMedicalDirectiveForApproval(data)
+        // setShowUpdateApprovalStatus(true)
+        navigate(`/mdManager/manageMECApproval/${TenantID}/${data?.medicalDirective?.id}`)
+    }
 
+    const handleApprovalStatus = async (isReviewRequired) => {
+        let data = {
+            "role": sessionStorage.getItem('workModeType'),
+            "notes": {
+                "notes": approvalNotes
+            },
+            "approvedDate": format(new Date(selectedMACDate), 'yyyy-MM-dd')
+        }
+        await PUT(`medical-directive-service/medicalDirectives/${selectedMedicalDirectiveForApproval?.medicalDirective?.id}/workflowAction/${isReviewRequired ? 'REJECTED' : 'APPROVED'}`, data)
+            .then(response => {
+                SuccessToaster2('Approval Updated Successfully');
+                getRevisionList();
+                getSignOffMeta()
+            })
+            .catch(error => {
+                ErrorToaster2('Unexpected Error Occured');
+            })
+        setShowUpdateApprovalStatus(false);
+    }
+
+    const handleApprovalStatusBulk = async () => {
+        const formData = new FormData();
+
+        let data = {
+            role: sessionStorage.getItem('workModeType'),
+            notes: {
+                notes: ''
+            },
+            files: [],
+            medicalDirectiveIds: checkedIds,
+            esign: {
+                esign: encryptedText,
+                name: users?.userName,
+                signedDate: format(new Date(), canadaData?.dateFormat || 'dd/MM/yyyy'),
+                file: userData?.esignature?.file,
+            },
+            approvedDate: format(new Date(selectedMACDate), 'yyyy-MM-dd'),
+        }
+        const blob = new Blob([JSON.stringify(data)], {
+            type: "application/json"
+        });
+        formData.append('workFlowActionDetailsDTO', blob);
+        await PUT(`medical-directive-service/medicalDirectives/bulk/workflowAction/${'APPROVED'}`, formData)
+            .then(response => {
+                SuccessToaster2('Approval Updated Successfully');
+                getRevisionList();
+                getSignOffMeta()
+            })
+            .catch(error => {
+                ErrorToaster2('Unexpected Error Occured');
+            })
+        setShowUpdateApprovalStatus(false)
     }
 
     const handleUnBlock = async (data) => {
@@ -359,6 +498,10 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
 
     const handleView = (data) => {
         navigate(`/mdManager/mdAttestStatus/${TenantID}/${data?.id}`)
+    }
+
+    const handleViewMEC = (data) => {
+        navigate(`/mdManager/manageMECApproval/${TenantID}/${data?.medicalDirective?.id}`)
     }
 
     const handleViewAttestationSummary = (data) => {
@@ -431,11 +574,29 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
     }
 
     const getRevisionList = async () => {
+        let url = sessionStorage.getItem('workModeType') === "MD Recordkeeper" ?
+            `medical-directive-service/medicalDirectives/signOff?tab=${selectedSignOffOption}&role=${sessionStorage.getItem('workModeType')}` :
+            `medical-directive-service/medicalDirectives/signOff?tab=${selectedSignOffOption}&role=${sessionStorage.getItem('workModeType')}&assignedUserIds=${loggedInUser?.id}`
+        const response = await GET(url);
+        console.log(response.data?.medicalDirectivesWithWorkflow);
+        setRevisionList(response?.data?.medicalDirectivesWithWorkflow)
+    }
+
+    const handleCheckboxClick = (id, innerData) => {
+        setCheckedIds(prevCheckedIds => {
+            // Toggle the ID in the array
+            return prevCheckedIds?.map(data => data?.id)?.includes(innerData?.medicalDirective?.id)
+                ? prevCheckedIds.filter(checkedId => checkedId?.id !== innerData?.medicalDirective?.id)
+                : [...prevCheckedIds, innerData?.medicalDirective?.id];
+        });
+        getValues()
+    };
+
+    const getSignOffMeta = async () => {
         const response = await GET(
-            `medical-directive-service/medicalDirectives/revisions`
+            `medical-directive-service/medicalDirectives/signOff/meta`
         );
-        console.log(response.data);
-        setRevisionList(response?.data)
+        setSignOffMeta(response?.data)
     }
 
     const getUserAffiliation = (data) => {
@@ -469,6 +630,9 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
     let notAttested = [];
     let partiallyAttested = [];
     let revisionAssignedTo = [];
+    let version = [];
+    let type = [];
+    let checkbox = [];
     let action = [];
 
     const getValues = () => {
@@ -491,21 +655,32 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
         partiallyAttested = [];
         revisionAssignedTo = [];
         lastUpdated = [];
+        version = [];
+        type = [];
+        checkbox = [];
         action = [];
-        if (selectedOption === "Medical Directives Revisions") {
+        if (selectedOption === "Medical Directives Sign Off") {
             revisionList?.map((data, index) => {
-                dot.push(data?.activated ? 'green' : 'grey');
-                dotTooltipValues.push(data?.activated ? 'Activated' : 'Deactivated');
+                checkbox.push(
+                    <CommonCheckBox
+                        size="medium"
+                        checked={checkedIds?.includes(data?.medicalDirective?.id)}
+                        onChange={() => handleCheckboxClick(data?.medicalDirective?.id)}
+                        key={`${data?.medicalDirective?.id}${index}`}
+                    />
+                );
+                // dot.push(data?.activated ? 'green' : 'grey');
+                // dotTooltipValues.push(data?.activated ? 'Activated' : 'Deactivated');
                 no.push(index + 1);
-                title.push(data?.title);
-                desc.push(data?.title)
-                mdId.push(data?.mdID);
-                department.push(data?.departments?.length <= 4 ? data?.departments?.map(data => data?.name)?.join(', ') : data?.departments?.length);
-                departmentHoverText.push(data?.departments?.length > 4 ? <div>{data?.departments?.map(data => (<div>{data?.name}</div>))}</div> : '')
-                firstPublished.push(data?.initialPublishedDate ? format(new Date(data?.initialPublishedDate), 'MMM dd, yyyy') : '-');
-                lastRevision.push(data?.lastRevisionDate ? format(new Date(data?.lastRevisionDate), 'MMM dd, yyyy') : '-');
-                lastUpdated.push(data?.lastModifiedDate ? format(new Date(data?.lastModifiedDate), 'MMM dd, yyyy') : '-');
-                author.push(data?.author ? `${data?.author?.name?.firstName} ${data?.author?.name?.lastName}` : '-');
+                title.push(data?.medicalDirective?.title);
+                desc.push(data?.medicalDirective?.title)
+                mdId.push(data?.medicalDirective?.mdID);
+                department.push(data?.medicalDirective?.departments?.length <= 4 ? data?.medicalDirective?.departments?.map(data => data?.name)?.join(', ') : data?.medicalDirective?.departments?.length);
+                departmentHoverText.push(data?.medicalDirective?.departments?.length > 4 ? <div>{data?.medicalDirective?.departments?.map(data => (<div>{data?.name}</div>))}</div> : '')
+                firstPublished.push(data?.medicalDirective?.initialPublishedDate ? format(new Date(data?.medicalDirective?.initialPublishedDate), 'MMM dd, yyyy') : '-');
+                lastRevision.push(data?.medicalDirective?.lastRevisionDate ? format(new Date(data?.medicalDirective?.lastRevisionDate), 'MMM dd, yyyy') : '-');
+                lastUpdated.push(data?.medicalDirective?.lastModifiedDate ? format(new Date(data?.medicalDirective?.lastModifiedDate), 'MMM dd, yyyy') : '-');
+                author.push(data?.medicalDirective?.authors?.length !== 0 ? data?.medicalDirective?.authors?.map(data => `${data?.name?.firstName} ${data?.name?.lastName}`) : '-');
                 dueDate.push('-');
                 attestationCategory.push('-');
                 totalCount.push('-');
@@ -517,8 +692,8 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
             })
         } else {
             dashboardData?.map((data, index) => {
-                dot.push(data?.activated ? 'green' : 'grey');
-                dotTooltipValues.push(data?.activated ? 'Activated' : 'Deactivated');
+                dot.push(data?.workflowStatus === 'COMPLETED' ? 'green' : data?.workflowStatus === 'IN_PROGRESS' ? 'yellow' : 'grey');
+                dotTooltipValues.push(data?.workflowStatus === 'COMPLETED' ? 'Workflow Completed' : data?.workflowStatus === 'IN_PROGRESS' ? 'Workflow In-Progress' : 'Not Yet Started');
                 no.push(index + 1);
                 title.push(data?.title);
                 desc.push(data?.title)
@@ -536,6 +711,8 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
                 notAttested.push('-');
                 partiallyAttested.push('-');
                 revisionAssignedTo.push('-');
+                type.push(data?.creationType === "NEW" ? 'New' : 'Revised');
+                version.push(data?.version);
                 action.push(true);
             })
         }
@@ -547,7 +724,12 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
             { "type": "text", "value": firstPublished },
             { "type": "text", "value": lastRevision },
             { "type": "action", "value": action },
-        ] : selectedOption === 'Medical Directives Revisions' ? [
+        ] : selectedOption === 'Medical Directives Sign Off' ? [
+            ...(
+                selectedSignOffOption === "level-3"
+                    ? [{ type: "checkbox", value: checkbox },]
+                    : []
+            ),
             { "type": "text", "value": no },
             { "type": "text", "value": title },
             { "type": "text", "value": mdId },
@@ -555,14 +737,19 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
             { "type": "text", "value": revisionAssignedTo },
             { "type": "text", "value": dueDate },
             { "type": "text", "value": lastRevision },
-            { "type": "action", "value": action },
+            ...(
+                selectedSignOffOption === "level-3"
+                    ? [{ "type": "action", "value": action },]
+                    : []
+            )
         ] : selectedOption === 'Draft Medical Directives' ? [
             { "type": "dot", "value": dot, 'tooltipValue': dotTooltipValues },
             { "type": "text", "value": title },
             { "type": "text", "value": mdId },
             { "type": "text", "value": department, tooltipValueText: departmentHoverText },
             { "type": "text", "value": author },
-            { "type": "text", "value": dueDate },
+            { "type": "text", "value": type },
+            { "type": "text", "value": version },
             { "type": "text", "value": lastUpdated },
             { "type": "action", "value": action },
         ] : selectedOption === 'Retire Medical Directives' ? [
@@ -579,6 +766,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
             { "type": "text", "value": attestedAll },
             { "type": "text", "value": notAttested },
             { "type": "text", "value": partiallyAttested },
+            { "type": "expand", "value": action },
             { "type": "action", "value": action },
         ]
     }
@@ -645,7 +833,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
     ]
 
     const actionsData = selectedOption === 'Current Medical Directives' ? registeredActionsData : selectedOption === 'Draft Medical Directives' ? draftActionsData :
-        selectedOption === 'Medical Directives Revisions' ? revisionsActionsData : selectedOption === "Retire Medical Directives" ? retiredActions : inviteActionsData;
+        selectedOption === 'Medical Directives Sign Off' ? revisionsActionsData : selectedOption === "Retire Medical Directives" ? retiredActions : inviteActionsData;
 
     const handleDownloadClicked = () => {
         toPDF(".registeredUsers", `RegisteredUsersList_${format(new Date(), 'MM_dd_yy')}`);
@@ -676,26 +864,46 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
         fileInputRef.current.click();
     }
 
-    console.log(inactiveMdCount, 'inactiveMdCount')
+    console.log(inactiveMdCount, 'inactiveMdCount', revisionList?.filter(item => checkedIds.includes(item?.medicalDirective?.id)))
     return (
         <div>
             <div className={`${style.grid4} ${style.marginTop10}`}>
                 <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Current Medical Directives" bigNumber={currentMdCount} smallNum1={newMdCount} smallNum2={upcomingMdCount} smallText1="New Directives" smallText2="Upcoming For Review" currentTile="Current Medical Directives" topText='' smallNum1Color={style.greenSmallNumber} smallNum2Color={style.yellowSmallNumber} smallNum1SelectedColor={style.greenSmallNumberSelected} smallNum2SelectedColor={style.yellowSmallNumberSelected} />
-                <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Medical Directives Revisions" bigNumber={revisionList?.length} smallNum1="" smallNum2="" currentTile="Medical Directives Revisions" topText='' />
                 <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Attestations Outstanding" bigNumber={0} smallNum1={0} smallNum2={0} smallText1="Not Started" smallText2="Past Due" currentTile="Attestations Outstanding" topText='' smallNum1Color={style.redSmallNumber} smallNum1SelectedColor={style.redSmallNumberSelected} smallNum2Color={style.redSmallNumber} smallNum2SelectedColor={style.redSmallNumberSelected} />
-                <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Draft Medical Directives" bigNumber={draftMdCount} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="Draft Medical Directives" topText='' smallNum1Color={style.greenSmallNumber} smallNum2Color={style.redSmallNumber} smallNum1SelectedColor={style.greenSmallNumberSelected} smallNum2SelectedColor={style.redSmallNumberSelected} />
+                <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Medical Directives Sign Off" bigNumber={signOffMdCount} smallNum1="" smallNum2="" currentTile="Medical Directives Sign Off" topText='' />
+                <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Drafts / Revisions" bigNumber={draftMdCount} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="Draft Medical Directives" topText='' smallNum1Color={style.greenSmallNumber} smallNum2Color={style.redSmallNumber} smallNum1SelectedColor={style.greenSmallNumberSelected} smallNum2SelectedColor={style.redSmallNumberSelected} />
             </div>
             <div
                 className={`${style.spaceBetween} ${style.marginLeft30} ${style.marginTop20} `}
             >
-                <div className={`${style.tabs}`}>
-                    <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Current" tileCount={currentMdCount} currentTile="Current Medical Directives" />
-                    <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Revisions" tileCount={revisionList?.length} currentTile="Medical Directives Revisions" />
-                    <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Attestations Outstanding" tileCount={0} currentTile="Attestations Outstanding" />
-                    <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Draft Medical Directives" tileCount={draftMdCount} currentTile="Draft Medical Directives" />
-                    <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Retired Medical Directives" tileCount={inactiveMdCount} currentTile="Retire Medical Directives" />
-                </div>
-                <div>
+                {selectedOption === 'Medical Directives Sign Off' ? (
+                    <div className={`${style.tabs}`}>
+                        {workflowStructure?.approvalFlowMap?.workflow['1'] && (
+                            <TileApplication selectedTab={selectedSignOffOption} getSelectedTab={getSelectedOptionForSignOff} tileLabel="Acknowledgement" tileCount={signOffMeta?.['level-1']?.pending} currentTile="level-1" />
+                        )}
+                        {workflowStructure?.approvalFlowMap?.workflow['2'] && (
+                            <TileApplication selectedTab={selectedSignOffOption} getSelectedTab={getSelectedOptionForSignOff} tileLabel="Leadership Sign Off" tileCount={signOffMeta?.['level-2']?.pending} currentTile="level-2" />
+                        )}
+                        {workflowStructure?.approvalFlowMap?.workflow['3'] && (
+                            <TileApplication selectedTab={selectedSignOffOption} getSelectedTab={getSelectedOptionForSignOff} tileLabel="MEC Approval" tileCount={signOffMeta?.['level-3']?.pending} currentTile="level-3" />
+                        )}
+                    </div>
+                ) : (
+                    <div></div>
+                )}
+                <div className={style.displayInRow}>
+                    {(selectedSignOffOption === "level-3" && selectedOption === 'Medical Directives Sign Off') && (
+                        <div className={`${style.marginRight} ${style.verticalAlignCenter}  ${checkedIds?.length === 0 ? '' : style.cursorPointer} ${checkedIds?.length !== 0 ? '' : style.disabledView}`} onClick={checkedIds?.length !== 0 ? () => setShowUpdateApprovalStatus(true) : () => { }}>
+                            <Tooltip title={checkedIds?.length !== 0 ? "Update MEC Approval" : ""} arrow>
+                                <PeopleOutlinedIcon
+                                    sx={{
+                                        fontSize: 25,
+                                        color: "#06617A",
+                                    }}
+                                />
+                            </Tooltip>
+                        </div>
+                    )}
                     <button
                         className={`${style.borderNone} ${style.backgroundBlue} ${style.borderRadius5}`}
                         onClick={() => setShowAddNewMedicalDirectives(true)} // Open dialog on button click
@@ -720,7 +928,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
                                 <button className={viewRegistered && style.activeButton} onClick={() => setViewRegistered(true)}>Registered ( {contractedServiceProviderUsers?.length} )</button>
                                 <button className={!viewRegistered ? style.activeButton : style.red} onClick={() => setViewRegistered(false)}>Blocked ( {blockedUsers?.length} )</button>
                             </div>
-                        ) : selectedOption === 'Medical Directives Revisions' ? (
+                        ) : selectedOption === 'Medical Directives Sign Off' ? (
                             <div className={style.buttonGroupUsers}>
                                 <button className={style.activeButton} >Deactivated Users ( {deactivatedUsers?.length} )</button>
                             </div>
@@ -757,9 +965,9 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
                         <TableTwo
                             tableHeaderValues={tableHeaderValues}
                             tableDataValues={getValues()}
-                            tableData={selectedOption === "Medical Directives Revisions" ? revisionList : dashboardData}
-                            gridStyle={selectedOption === 'Attestations Outstanding' ? style.outstandingGrid : selectedOption === 'Current Medical Directives' ? style.mdListGrid : selectedOption === 'Draft Medical Directives' ? style.draftGrid : selectedOption === 'Retire Medical Directives' ? style.mdListGrid : style.revisionGrid}
-                            actions={actionsData}
+                            tableData={selectedOption === "Medical Directives Sign Off" ? revisionList : dashboardData}
+                            gridStyle={selectedOption === 'Attestations Outstanding' ? style.outstandingGrid : selectedOption === 'Current Medical Directives' ? style.mdListGrid : selectedOption === 'Draft Medical Directives' ? style.draftGrid : selectedOption === 'Retire Medical Directives' ? style.mdListGrid : selectedSignOffOption === 'level-3' ? style.level3Grid : style.revisionGrid}
+                            actions={selectedOption === "Medical Directives Sign Off" ? selectedSignOffOption === "level-3" ? actionsData : [] : actionsData}
                             // scrollStyle={style.contractScrollStyle}
                             tableSortValues={[]}
                             heading={"There are no Record for you to manage"}
@@ -772,6 +980,8 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
                             searchCount={searchCount}
                             setSearchTermForTable={setSearchTermForTable}
                             onLimitChange={handleLimitChange}
+                            checkedIds={checkedIds}
+                            handleCheckboxClick={handleCheckboxClick}
                         />
                     </div>
                 </div>
@@ -876,6 +1086,51 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
                             <div></div>
                             <button className={`${style.buttonStyle} ${retireNotes === '' ? style.disabledView : ''}`} onClick={retireNotes === '' ? () => { } : () => handleRetiredMD()} >Save</button>
                         </div>
+                    </div>
+                </div>
+            </Dialog >
+            <Dialog isOpen={showUpdateApprovalStatus} onClose={() => setShowUpdateApprovalStatus(false)} className={`${style.addMDDialogBackground} ${style.updateApprovalStatusDialog}`}>
+                <div className={Classes.DIALOG_BODY}>
+                    <div className={style.dialogTitle}>{`Update Approval Status`}</div>
+                    {revisionList?.filter(item => checkedIds.includes(item?.medicalDirective?.id))?.map(data => (
+                        <div className={`${style.medicalDirectivesCard} ${style.marginTop10}`}>
+                            <div className={style.title}>{`${data?.medicalDirective?.title}`} <span className={style.mdIDStyle}>{data?.medicalDirective?.mdID}</span></div>
+                        </div>
+                    ))}
+                    <div className={style.marginTop20}>
+                        <div>
+                            <div className={style.dialogTitle}>{`MEC Approval Date`}</div>
+                            <CommonDateField
+                                className={style.dateWidth}
+                                onChange={(date) => setSelectedMACDate(format(new Date(date), "yyyy-MM-dd'T'00:00"))}
+                                open={calendarStart}
+                                onOpen={() => setCalendarStart(true)}
+                                onClose={() => setCalendarStart(false)}
+                                value={selectedMACDate}
+                                renderInput={(params) => (
+                                    <TextField
+                                        {...params}
+                                        inputProps={{
+                                            ...params.inputProps,
+                                            placeholder: 'Enter MAC Approval Date To Continue',
+                                            readOnly: true
+                                        }}
+                                        variant="outlined"
+                                        margin="normal"
+                                        fullWidth
+                                    />
+                                )}
+                            />
+                            <Tooltip title={!selectedMACDate ? "Select Approval Date to Continue" : "Click to Continue"} arrow>
+                                <div className={`${style.continue} ${style.marginTop10} ${!selectedMACDate ? style.disabledView : ''}`} onClick={!selectedMACDate ? () => { } : () => { handleApprovalStatusBulk() }}>APPROVE</div>
+                            </Tooltip>
+                        </div>
+                        {/* <div>
+                                <div className={`${style.spaceBetween} ${style.marginTop20}`}>
+                                    <div></div>
+                                    <button className={`${style.buttonStyle} ${approvalStatus === '' ? style.disabledView : approvalNotes === '' ? style.disabledView : ''}`} onClick={approvalStatus === '' ? () => { } : approvalNotes === '' ? () => { } : () => handleApprovalStatus()} >Save</button>
+                                </div>
+                            </div> */}
                     </div>
                 </div>
             </Dialog >

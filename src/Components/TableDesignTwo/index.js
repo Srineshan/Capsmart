@@ -10,6 +10,8 @@ import AscendingSort from './../../images/ascendingSort.png';
 import DescendingSort from './../../images/descendingSort.png';
 import CheckboxChecked from './../../images/checkboxClicked.png';
 // import Checkbox from './../../images/checkboxUnclicked.png';
+import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
+import RemoveCircleOutlineOutlinedIcon from '@mui/icons-material/RemoveCircleOutlineOutlined';
 import Sort from './../../images/sort.png';
 import NoDataBox from '../ReusableSmallComponents/noDataBox';
 import PODIcon from '../../images/PODIcon.png'
@@ -54,6 +56,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
     const [anchorElCountWithHover, setAnchorElCountWithHover] = useState(null);
     const openCountWithHover = Boolean(anchorElCountWithHover);
     const [anchorElTextWithHover, setAnchorElTextWithHover] = useState(null);
+    const [expandedIndex, setExpandedIndex] = useState(null);
     const [userRole, setUserRole] = useState('');
     let cookie = new Cookie();
     let userDetails = cookie.get('user');
@@ -123,7 +126,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         REVIEWED_DATE: ['Reviewed On'],
         COMPLETION_PERCENTAGE: ['Completed %'],
         MDID: ['MD ID'],
-        TITLE: ['MD Title'],
+        TITLE: ['MD Title', 'Title'],
         NOT_ATTESTED_COUNT: ['Not Attested'],
         ATTESTED_COUNT: ['Attested'],
         ATTESTATION_STATUS: ['Attestation Status'],
@@ -157,6 +160,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         'Completed %': 'COMPLETION_PERCENTAGE',
         'MD ID': 'MDID',
         'MD Title': 'TITLE',
+        'Title': 'TITLE',
         'Not Attested': 'NOT_ATTESTED_COUNT',
         'Attested': 'ATTESTED_COUNT',
         'Attestation Status': 'ATTESTATION_STATUS',
@@ -1286,6 +1290,19 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                     <div className={`${style.tableDataFontStyle} ${style.cursorArrow} ${style.verticalAlignCenter}`} >
                                                         -
                                                     </div>
+                                            ) : tableData?.type === "expand" ? (
+                                                <div
+                                                    className={`${style.tableDataFontStyle} ${style.cursorPointer} ${style.alignCenter}`}
+                                                    onClick={() => { }}
+                                                >
+                                                    <Tooltip title={'Click to Expand'} arrow>
+                                                        {expandedIndex === index ? (
+                                                            <RemoveCircleOutlineOutlinedIcon className={style.cursorPointer} onClick={(e) => setExpandedIndex(null)} />
+                                                        ) : (
+                                                            <AddCircleOutlineOutlinedIcon className={style.cursorPointer} onClick={(e) => setExpandedIndex(index)} />
+                                                        )}
+                                                    </Tooltip>
+                                                </div>
                                             ) : tableData?.type === "action" ? (
                                                 <div
                                                     className={`${style.tableDataFontStyle} ${style.cursorPointer} ${style.alignCenter}`}
@@ -1404,6 +1421,12 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                     ) : null)
                                 ))}
                             </div >
+                            {index === expandedIndex && (
+
+                                <div className={`${style.tableData} ${style.marginTop5} ${gridStyle}`} key={index}>
+
+                                </div>
+                            )}
                         </>
                     )) : (
                         // <div>

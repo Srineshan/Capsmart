@@ -4,7 +4,7 @@ import { PUT } from '../../dataSaver';
 import CommonPdfViewer from '../../../Components/CommonPdfViewer';
 import { ErrorToaster2, SuccessToaster2 } from '../../../utils/toaster';
 
-const MDManagerStep2 = ({ setStep1, setStep2, setStep3, mdValue, getMD }) => {
+const MDManagerStep2 = ({ setStep1, setStep2, setStep3, mdValue, getMD, setMdValue, setSelectedMdId }) => {
     const fileInputRef = useRef(null);
     const handleReplaceCopy = () => {
         fileInputRef.current.click();
@@ -49,6 +49,10 @@ const MDManagerStep2 = ({ setStep1, setStep2, setStep3, mdValue, getMD }) => {
             })
 
     }
+    const handleClose = () => {
+        setMdValue();
+        setSelectedMdId('');
+    }
     console.log(mdValue)
     return (
         <div className={style.stepsBackground}>
@@ -67,7 +71,7 @@ const MDManagerStep2 = ({ setStep1, setStep2, setStep3, mdValue, getMD }) => {
                     <div className={`${style.spaceBetween}`}>
                         <button className={`${style.buttonStyleMd} ${style.marginRight} `} onClick={() => { setStep1(true); setStep2(false) }} >BACK</button>
                         <button className={`${style.outlinedButtonMd} ${style.marginRight} `} onClick={() => handleReplaceCopy()} >REPLACE DOCUMENT</button>
-                        <button className={`${style.outlinedButtonMd} ${style.marginRight} `} onClick={() => { setStep2(false) }} >SAVE IN PROGRESS</button>
+                        <button className={`${style.outlinedButtonMd} ${style.marginRight} `} onClick={() => { setStep2(false); handleClose() }} >SAVE IN PROGRESS</button>
                         <button className={`${style.buttonStyleMd} ${style.marginRight} `} onClick={() => { setStep2(false); setStep3(true) }} >CONTINUE</button>
                     </div>
                 </div>

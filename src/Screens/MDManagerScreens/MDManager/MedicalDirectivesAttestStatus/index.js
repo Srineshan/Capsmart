@@ -178,7 +178,11 @@ const MDAttestStatus = () => {
     }
 
     const handleClose = () => {
-        navigate(`/mdManager`);
+        if (medicalDirectives?.status !== "INACTIVE") {
+            navigate(`/mdManager`);
+        } else {
+            navigate(`/mdManager/retired`);
+        }
     }
     return (
         <div className={style.screenBackground}>

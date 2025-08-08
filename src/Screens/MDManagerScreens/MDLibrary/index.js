@@ -2,9 +2,10 @@ import React, { useEffect, createRef, useCallback, useRef, useState } from 'reac
 import CambridgeHospital from './../../../images/cambridgeHospital.png'
 import ClosedFolder from './../../../images/closedFolder.png'
 import OpenedFolder from './../../../images/openedFolder.png'
+import MDManager from './../../../images/MDManager.png'
 import style from './index.module.scss';
 import { baseUrl } from '../../../utils/auth';
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
 import SearchIcon from "@mui/icons-material/Search";
@@ -17,6 +18,7 @@ import CommonDateField from "../../../Components/CommonFields/CommonDateField";
 import IconButton from "@mui/material/IconButton";
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined';
 import axios from 'axios';
 import TableTwo from '../../../Components/TableDesignTwo';
 import { Tooltip } from '@mui/material';
@@ -26,6 +28,7 @@ import { GET } from '../../dataSaver';
 
 const MDLibrary = () => {
     const viewerDivId = 'adobe-pdf-viewer';
+    const navigate = useNavigate();
     const PDFRef = createRef();
     const containerRef = useRef(null);
     const { entityId, departmentId } = useParams()
@@ -69,33 +72,33 @@ const MDLibrary = () => {
         setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth);
     };
 
-    useEffect(() => {
-        if (window.AdobeDC && selectedMD?.file?.fileURL) {
-            const adobeDCView = new window.AdobeDC.View({
-                clientId: 'c0b6404e97544d1a901b564de87cf425', // Replace with your key
-                divId: viewerDivId,
-            });
+    // useEffect(() => {
+    //     if (window.AdobeDC && selectedMD?.file?.fileURL) {
+    //         const adobeDCView = new window.AdobeDC.View({
+    //             clientId: 'c0b6404e97544d1a901b564de87cf425',
+    //             divId: viewerDivId,
+    //         });
 
-            adobeDCView.previewFile(
-                {
-                    content: {
-                        location: {
-                            url: selectedMD?.file?.fileURL,
-                        },
-                    },
-                    metaData: {
-                        fileName: 'example.pdf',
-                        id: 'file-1234-abc',
-                    },
-                },
-                {
-                    embedMode: 'SIZED_CONTAINER',
-                    showAnnotationTools: true,
-                    enableAnnotationAPIs: true
-                }
-            );
-        }
-    }, [selectedMD?.file?.fileURL]);
+    //         adobeDCView.previewFile(
+    //             {
+    //                 content: {
+    //                     location: {
+    //                         url: selectedMD?.file?.fileURL,
+    //                     },
+    //                 },
+    //                 metaData: {
+    //                     fileName: 'example.pdf',
+    //                     id: 'file-1234-abc',
+    //                 },
+    //             },
+    //             {
+    //                 embedMode: 'SIZED_CONTAINER',
+    //                 showAnnotationTools: true,
+    //                 enableAnnotationAPIs: true
+    //             }
+    //         );
+    //     }
+    // }, [selectedMD?.file?.fileURL]);
 
     useEffect(() => {
         checkScroll();
@@ -131,7 +134,7 @@ const MDLibrary = () => {
         getDashboard(signal);
 
         return () => controller.abort();
-    }, [limit, page, searchTermForTable, creationType, departmentId, mdId, mdTitle, selectedGroups, selectedAuthor, from, to]);
+    }, [limit, page, searchTermForTable, creationType, departmentId, mdId, mdTitle, selectedGroups, selectedAuthor, from, to, selectedDepartmentSpecialities]);
 
     const handlePrint = useReactToPrint({
         content: reactToPrintContent,
@@ -197,7 +200,7 @@ const MDLibrary = () => {
 
     const getGroupList = async () => {
         const response = await GET(
-            `medical-directive-service/attestationGroup`
+            `medical-directive-service/medicalDirectiveGroup`
         );
         console.log(response.data);
         setGroupList(response?.data)
@@ -265,7 +268,7 @@ const MDLibrary = () => {
     };
 
     const getDashboard = async (signal) => {
-        let url = `medical-directive-service/medicalDirectives/dashboard?offset=${page - 1}&limit=${limit}&isPaginationRequired=${isPaginationRequired}`
+        let url = `medical-directive-service/medicalDirectives/dashboard?offset=${page - 1}&limit=${limit}&isPaginationRequired=${isPaginationRequired}&role=${sessionStorage.getItem('workModeType')}`
         // const { data: dashboardData } = await POST(`medical-directive-service/medicalDirectives/dashboard?offset=${page - 1}&limit=${limit}&isPaginationRequired=${isPaginationRequired}&tab=${selectedOption === "Current Medical Directives" ? "active_md" : selectedOption === "Medical Directives Revisions" ? "md_revisions" : selectedOption === "Draft Medical Directives" ? "draft_md" : ""}`, advancedSearch, { signal });
         // setDashboardData(dashboardData?.medicalDirectives);
         // setTotalTableCount(dashboardData?.numberOfElements);
@@ -341,10 +344,11 @@ const MDLibrary = () => {
     }
 
     const scroll = (direction) => {
+        console.log('clicked', containerRef.current)
         if (containerRef.current) {
             containerRef.current.scrollBy({
                 left: direction === 'left' ? -scrollAmount : scrollAmount,
-                behavior: 'smooth',
+                behavior: 'auto',
             });
         }
     };
@@ -403,7 +407,7 @@ const MDLibrary = () => {
                 <div className={style.screenBackground}>
                     <div className={style.mdlGrid}>
                         <div>
-                            <div className={style.departmentName}>{`Department / Division or Specialty `}</div>
+                            <div className={style.departmentName}> {`${departmentList?.filter(data => data?.id === (selectedDepartmentSpecialities !== "" ? selectedDepartmentSpecialities?.split('#')?.[0] : departmentId))?.[0]?.departmentName?.name} ${selectedDepartmentSpecialities?.split('#')?.length > 1 ? `/ ${departmentList?.filter(data => data?.id === (selectedDepartmentSpecialities !== "" ? selectedDepartmentSpecialities?.split('#')?.[0] : departmentId))?.[0]?.serviceAreas?.filter(innerData => innerData?.id === selectedDepartmentSpecialities?.split('#')?.[1])?.[0]?.name}` : ''}`}</div>
                             <div className={style.description}>You can readily access Medical Directives to review by clicking on any of the data widgets OR by searching the data base for the department. You also have access to the full Medical Directives Library through the access on the bottom right.</div>
                             <div className={`${style.deptCardGrid} ${style.marginTop}`}>
                                 <div className={`${style.verticalAlignCenter} ${style.cursorPointer}`} onClick={() => scroll('left')}>
@@ -411,23 +415,23 @@ const MDLibrary = () => {
                                 </div>
                                 <div className={`${style.displayInRow} ${style.deptCardList}`} ref={containerRef}>
                                     <div className={style.deptCard}>
-                                        <div className={style.cardTitle}>{`{Emergency Department Registered Nurses}`}</div>
+                                        <div className={style.cardTitle}>{`Emergency Department Registered Nurses`}</div>
                                         <div className={`${style.cardCount} ${style.marginTop}`}>18</div>
                                     </div>
                                     <div className={`${style.deptCard} ${style.marginLeft10}`}>
-                                        <div className={style.cardTitle}>{`{Emergency Department Registered Nurses}`}</div>
+                                        <div className={style.cardTitle}>{`Emergency Department Registered Nurses`}</div>
                                         <div className={`${style.cardCount} ${style.marginTop}`}>18</div>
                                     </div>
                                     <div className={`${style.deptCard} ${style.marginLeft10}`}>
-                                        <div className={style.cardTitle}>{`{Emergency Department Registered Nurses}`}</div>
+                                        <div className={style.cardTitle}>{`Emergency Department Registered Nurses`}</div>
                                         <div className={`${style.cardCount} ${style.marginTop}`}>18</div>
                                     </div>
                                     <div className={`${style.deptCard} ${style.marginLeft10}`}>
-                                        <div className={style.cardTitle}>{`{Emergency Department Registered Nurses}`}</div>
+                                        <div className={style.cardTitle}>{`Emergency Department Registered Nurses`}</div>
                                         <div className={`${style.cardCount} ${style.marginTop}`}>18</div>
                                     </div>
                                     <div className={`${style.deptCard} ${style.marginLeft10}`}>
-                                        <div className={style.cardTitle}>{`{Emergency Department Registered Nurses}`}</div>
+                                        <div className={style.cardTitle}>{`Emergency Department Registered Nurses`}</div>
                                         <div className={`${style.cardCount} ${style.marginTop}`}>18</div>
                                     </div>
                                 </div>
@@ -480,8 +484,23 @@ const MDLibrary = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className={`${style.mdlButton} ${style.verticalAlignCenter} ${style.cursorPointer}`} onClick={() => setShowList(true)}>
-                            Medical Directives Library
+                        <div>
+                            <div className={`${style.mdlCard} ${style.verticalAlignCenter} ${style.cursorPointer}`} onClick={() => setShowList(true)}>
+                                <div>
+                                    <img src={MDManager} alt="MDL" className={style.mdlLogo} />
+                                </div>
+                                <div className={style.mdlCardTitle}>
+                                    Medical Directives Library
+                                </div>
+                            </div>
+                            <div className={`${style.loginCard} ${style.verticalAlignCenter} ${style.cursorPointer} ${style.marginTop}`} onClick={() => navigate(`/loginPage`)}>
+                                <div className={`${style.loginIconStyle} ${style.verticalAlignCenter} ${style.justifyCenter}`}>
+                                    <PersonOutlineOutlinedIcon sx={{ fontSize: '30px', color: '#FFFFFF' }} />
+                                </div>
+                                <div className={`${style.mdlCardTitle} ${style.marginLeft10}`}>
+                                    Login
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -493,11 +512,11 @@ const MDLibrary = () => {
                         </div>
                     )}
                     <div className={`${style.medicalDirectivesCard} ${selectedMD?.description ? style.marginTop : ''}`}>
-                        {/* <CommonPdfViewer pdfurl={selectedMD?.file?.fileURL} /> */}
-                        <div
+                        <CommonPdfViewer pdfurl={selectedMD?.file?.fileURL} />
+                        {/* <div
                             id="adobe-pdf-viewer"
                             style={{ height: '100vh', width: '100%' }}
-                        ></div>
+                        ></div> */}
                     </div>
                 </div>
             ) : (

@@ -20,6 +20,11 @@
   padding: 20px 40px 0px 40px;
 }
 
+.dividerMargin {
+  margin: 0 40px;
+
+}
+
 .marginDialog {
   margin-top: -10px !important;
   // margin-bottom: -30px !important;
@@ -53,15 +58,62 @@
   background: #FFFFFF 0% 0% no-repeat padding-box;
   box-shadow: 0px 5px 20px #52575D4D;
   border-radius: 20px;
-  width: 40vw;
-  padding: 30px;
+  width: 80vw;
+  min-height: 90vh;
+  max-height: 90vh;
+  overflow: scroll;
+}
+
+.applicationSelectionCard {
+  background: #FFFFFF 0% 0% no-repeat padding-box;
+  border: 1px solid #E8E9E9;
+  border-radius: 8px;
+  padding: 15px 40px;
+  width: 100%;
+}
+
+.applicationSelectionCard:hover {
+  background-color: $primarycolor;
+}
+
+.selectedApplicationCard {
+  background-color: rgba(9, 149, 188, 0.1);
+}
+
+.applicationImage {
+  width: 60px !important;
+  object-fit: contain;
+}
+
+.applicationName {
+  text-align: center;
+  font: normal normal bold 24px/31px proxima-nova;
+  color: #171A1A;
+}
+
+.applicationNamePrimary {
+  text-align: center;
+  font: normal normal bold 24px/31px proxima-nova;
+  color: #1195BC;
 }
 
 .workSpaceTitle {
   text-align: left;
   font: normal normal bold 20px/28px proxima-nova;
-  letter-spacing: 0px;
   color: $primarycolor;
+}
+
+.workSpaceDesc {
+  text-align: left;
+  font: italic normal normal 16px/30px proxima-nova;
+  color: #171A1A;
+  padding: 0px 40px 0px 40px;
+}
+
+.threeCol {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 20px;
 }
 
 .spaceBetween {
@@ -70,18 +122,16 @@
 }
 
 .heading {
-  text-align: center;
-  font: normal normal normal 32px/40px proxima-nova;
+  text-align: left;
+  font: normal normal bold 22px/38px proxima-nova;
   letter-spacing: 0px;
-  color: #EDEDF3;
+  color: #044354;
   text-transform: capitalize;
-  opacity: 1;
 }
 
 .displayInRow {
   display: flex;
   flex-direction: row;
-  justify-content: space-around;
 }
 
 .displayInCol {
@@ -103,6 +153,10 @@
 
 .marginLeft {
   margin-left: 20px;
+}
+
+.marginRight {
+  margin-right: 20px;
 }
 
 .marginTop10 {
@@ -204,6 +258,10 @@
   margin-left: 2px;
 }
 
+.marginLeft10 {
+  margin-left: 10px;
+}
+
 .marginLeft20 {
   margin-left: 20px;
 }
@@ -220,6 +278,12 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-gap: 10px;
+}
+
+.applicationGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 80px;
 }
 
 .placeCenter {
@@ -371,21 +435,15 @@
 }
 
 .roleTitle {
-  text-align: center;
-  font: normal normal normal 20px/40px proxima-nova;
-  letter-spacing: 0px;
-  line-height: 30px;
+  text-align: left;
+  font: normal normal normal 16px/25px proxima-nova;
   color: #9AAFB5;
-  opacity: 1;
 }
 
 .roleTitleHover {
-  text-align: center;
-  font: normal normal normal 20px/40px proxima-nova;
-  letter-spacing: 0px;
-  line-height: 30px;
+  text-align: left;
+  font: normal normal normal 16px/25px proxima-nova;
   color: #F5F8F8;
-  opacity: 1;
 }
 
 .backgroundRoleColor {

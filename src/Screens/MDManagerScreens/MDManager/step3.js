@@ -17,11 +17,13 @@ import { ErrorToaster2, SuccessToaster2 } from '../../../utils/toaster';
 import CommonInputField from '../../../Components/CommonFields/CommonInputField';
 import CommonMultiSelectField from '../../../Components/CommonFields/CommonMultiSelectField';
 
-const MDManagerStep3 = ({ setStep2, setStep3, mdValue }) => {
+const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, setSelectedMdId }) => {
     const containerRef = useRef(null);
+    const containerRef2 = useRef(null);
     const [targetStaff, setTargetStaff] = useState('ALL_STAFFS');
     const [attestationReviewFrequency, setAttestationReviewFrequency] = useState('');
     const [groupTitle, setGroupTitle] = useState('');
+    const [groupType, setGroupType] = useState('');
     const [groupDesc, setGroupDesc] = useState('');
     const [staffList, setStaffList] = useState([]);
     const [groupList, setGroupList] = useState([]);
@@ -30,9 +32,11 @@ const MDManagerStep3 = ({ setStep2, setStep3, mdValue }) => {
     const [autoTriggerForNewAppointment, setAutoTriggerForNewAppointment] = useState(true);
     const [autoTriggerForReappointment, setAutoTriggerForReappointment] = useState(true);
     const [showAttestationGroupList, setShowAttestationGroupList] = useState(false);
+    const [showAcknowledgementGroupList, setShowAcknowledgementGroupList] = useState(false);
     const [showAttestationGroup, setShowAttestationGroup] = useState(false);
     const [selectedStaffs, setSelectedStaffs] = useState([]);
     const [selectedGroups, setSelectedGroups] = useState([]);
+    const [selectedAcknowledgementGroups, setSelectedAcknowledgementGroups] = useState([]);
     const [workFlow1IsMandatory, setWorkFlow1IsMandatory] = useState(false);
     const [workFlow2IsMandatory, setWorkFlow2IsMandatory] = useState(false);
     const [selectedRolesWorkflow1, setSelectedRolesWorkflow1] = useState([]);
@@ -41,15 +45,19 @@ const MDManagerStep3 = ({ setStep2, setStep3, mdValue }) => {
     const [selectedGroupsWorkflow, setSelectedGroupsWorkflow] = useState([]);
     const [selectedStaffForMove, setSelectedStaffForMove] = useState([]);
     const [workflowStructure, setWorkflowStructure] = useState();
+    const [createdWorkflowStructure, setCreatedWorkflowStructure] = useState();
     const [showWorkflowSelection, setShowWorkflowSelection] = useState(false);
     const [roles, setRoles] = useState([]);
     console.log(mdValue, 'mdValue')
     useEffect(() => {
-        getStaffList()
         getGroupList()
         getPublicationWorkflow();
         getRoles();
     }, [])
+
+    useEffect(() => {
+        getStaffList()
+    }, [groupType])
 
     useEffect(() => {
         console.log(mdValue, 'mdValue', mdValue?.departments?.flatMap(data => data?.serviceAreas?.map(innerData => innerData?.id) || []) || [])
@@ -60,15 +68,27 @@ const MDManagerStep3 = ({ setStep2, setStep3, mdValue }) => {
             setSelectedGroups(mdValue?.groups?.map(data => data?.id))
             setAutoTriggerForNewAppointment(mdValue?.triggerForNewAppointment)
             setAutoTriggerForReappointment(mdValue?.triggerForReAppointment)
+            getWorkflow();
         }
     }, [mdValue])
+
+    const getWorkflow = async () => {
+        const response = await GET(
+            `medical-directive-service/medicalDirectives/${mdValue?.id}/workflow`
+        );
+        if (response?.data) {
+            setCreatedWorkflowStructure(response?.data)
+            setWorkFlow1IsMandatory(response?.data?.approvalFlowMap?.workflow['1']?.flowDetails?.[0]?.approvalRequirement === 'MANDATORY' ? true : false)
+            setSelectedAcknowledgementGroups(response?.data?.approvalFlowMap?.workflow['1']?.flowDetails?.[0]?.groups?.map(data => data?.group?.id) || [])
+        }
+    }
 
     const getStaffList = async () => {
         // const response = await GET(
         //     `application-management-service/staff?status=ACTIVE&sortByField=STAFF_NAME&isPaginationRequired=${false}&limit=${9999}`
         // );
         const response = await GET(
-            `user-management-service/user/allStaffs?status=ACTIVE`
+            `user-management-service/user/allStaffs?status=ACTIVE&roles=${groupType === "ACKNOWLEDGEMENT" ? ["Acknowledger"] : groupType === "SIGN_OFF" ? ["Reviewer / Approver"] : groupType === "ATTESTATION" ? ["Attester"] : []}`
         );
         console.log(response.data);
         setStaffList(response?.data)
@@ -76,7 +96,7 @@ const MDManagerStep3 = ({ setStep2, setStep3, mdValue }) => {
 
     const getGroupList = async () => {
         const response = await GET(
-            `medical-directive-service/attestationGroup`
+            `medical-directive-service/medicalDirectiveGroup`
         );
         console.log(response.data);
         setGroupList(response?.data)
@@ -84,11 +104,12 @@ const MDManagerStep3 = ({ setStep2, setStep3, mdValue }) => {
 
     const getGroupListById = async (id) => {
         const response = await GET(
-            `medical-directive-service/attestationGroup/${id}`
+            `medical-directive-service/medicalDirectiveGroup/${id}`
         );
         console.log(response.data);
         setGroupTitle(response?.data?.name)
         setGroupDesc(response?.data?.description)
+        setGroupType(response?.data?.type)
         setSelectedStaffs(response?.data?.members?.map(data => data?.id))
         setGroupById(response?.data)
         setShowAttestationGroup(true)
@@ -124,13 +145,14 @@ const MDManagerStep3 = ({ setStep2, setStep3, mdValue }) => {
         };
     });
 
-    const handleBlur = (e) => {
+    const handleBlur = (e, ref) => {
         setTimeout(() => {
             if (
-                containerRef.current &&
-                !containerRef.current.contains(document.activeElement)
+                ref.current &&
+                !ref.current.contains(document.activeElement)
             ) {
                 setShowAttestationGroupList(false);
+                setShowAcknowledgementGroupList(false);
             }
         }, 0);
     };
@@ -159,6 +181,12 @@ const MDManagerStep3 = ({ setStep2, setStep3, mdValue }) => {
     const handleGroupSelect = (id) => {
         if (!selectedGroups?.includes(id)) {
             setSelectedGroups(prev => [...prev, id]);
+        }
+    }
+
+    const handleGroupSelectAcknowledgement = (id) => {
+        if (!selectedAcknowledgementGroups?.includes(id)) {
+            setSelectedAcknowledgementGroups(prev => [...prev, id]);
         }
     }
 
@@ -225,20 +253,59 @@ const MDManagerStep3 = ({ setStep2, setStep3, mdValue }) => {
                 ErrorToaster2('Failed to publish Medical Directive');
             }
         }
-        // setStep3(false)
-        setShowWorkflowSelection(true)
+        let acknowledgementData = mdValue?.workflowStatus === "NA" ? workflowStructure : createdWorkflowStructure;
+        const transformedGroups = selectedAcknowledgementGroups?.map((groupId) => {
+            const group = groupList.find((g) => g.id === groupId);
+
+            return {
+                group: {
+                    id: group?.id,
+                    name: group?.name,
+                },
+                approvalRequirementType: "ANY_MEMBER",
+            };
+        });
+        if (workFlow1IsMandatory) {
+            acknowledgementData.approvalFlowMap.workflow[1].flowDetails[0].approvalRequirement = 'MANDATORY';
+            if (workflowStructure?.approvalFlowMap?.workflow[1]?.flowDetails?.[0]?.approvalBy === 'GROUP') {
+                acknowledgementData.approvalFlowMap.workflow[1].flowDetails[0].groups = transformedGroups
+            }
+        } else {
+            acknowledgementData.approvalFlowMap.workflow[1].required = false;
+        }
+        if (mdValue?.workflowStatus === "NA") {
+            await POST(`medical-directive-service/medicalDirectives/${mdValue?.id}/workflow`, acknowledgementData)
+                .then(response => {
+                    SuccessToaster2('Workflow Added Successfully');
+                })
+                .catch(error => {
+                    ErrorToaster2('Something Failed. Please Try later!');
+                })
+        } else {
+            await PUT(`medical-directive-service/medicalDirectives/${mdValue?.id}/workflow`, acknowledgementData)
+                .then(response => {
+                    SuccessToaster2('Workflow Added Successfully');
+                })
+                .catch(error => {
+                    ErrorToaster2('Something Failed. Please Try later!');
+                })
+        }
+        setStep3(false)
+        setStep4(true)
+        // setShowWorkflowSelection(true)
     }
 
     const handleAddGroup = async () => {
         let data = {
             "name": groupTitle,
             "description": groupDesc,
-            "members": filteredStaffArray
+            "members": filteredStaffArray,
+            "type": groupType
         }
 
         console.log(data)
         if (!groupById) {
-            await POST(`medical-directive-service/attestationGroup`, data)
+            await POST(`medical-directive-service/medicalDirectiveGroup`, data)
                 .then(response => {
                     SuccessToaster2('Group Added Successfully');
                     console.log(response?.data)
@@ -248,7 +315,7 @@ const MDManagerStep3 = ({ setStep2, setStep3, mdValue }) => {
                     ErrorToaster2('Something Failed. Please Try later!');
                 })
         } else {
-            await PUT(`medical-directive-service/attestationGroup/${groupById?.id}`, data)
+            await PUT(`medical-directive-service/medicalDirectiveGroup/${groupById?.id}`, data)
                 .then(response => {
                     SuccessToaster2('Group Updated Successfully');
                     console.log(response?.data)
@@ -262,7 +329,7 @@ const MDManagerStep3 = ({ setStep2, setStep3, mdValue }) => {
 
     const handleSaveWorkflow = async (type) => {
         let data = workflowStructure;
-        const transformedGroups = selectedGroupsWorkflow?.map((groupId) => {
+        const transformedGroups = selectedAcknowledgementGroups?.map((groupId) => {
             const group = groupList.find((g) => g.id === groupId);
 
             return {
@@ -289,9 +356,15 @@ const MDManagerStep3 = ({ setStep2, setStep3, mdValue }) => {
         if (workflowStructure?.approvalFlowMap?.workflow[1]?.flowDetails?.[0]?.approvalBy === 'ROLE') {
             data.approvalFlowMap.workflow[1].flowDetails[0].roles = transformedRoles
         }
-        data.approvalFlowMap.workflow[2].flowDetails[0].approvalRequirement = workFlow2IsMandatory ? 'MANDATORY' : 'OPTIONAL';
-        if (workflowStructure?.approvalFlowMap?.workflow[2]?.flowDetails?.[0]?.approvalBy === 'GROUP') {
-            data.approvalFlowMap.workflow[2].flowDetails[0].groups = transformedGroups
+        if (workFlow2IsMandatory) {
+            data.approvalFlowMap.workflow[2].flowDetails[0].approvalRequirement = 'MANDATORY';
+            if (workflowStructure?.approvalFlowMap?.workflow[2]?.flowDetails?.[0]?.approvalBy === 'GROUP') {
+                data.approvalFlowMap.workflow[2].flowDetails[0].groups = transformedGroups
+            }
+        } else {
+            if (data?.approvalFlowMap?.workflow?.[2]) {
+                delete data.approvalFlowMap.workflow["2"]
+            }
         }
         console.log(workflowStructure?.approvalFlowMap?.workflow[2]?.flowDetails?.[0]?.approvalBy === 'GROUP', data)
         await POST(`medical-directive-service/medicalDirectives/${mdValue?.id}/workflow`, data)
@@ -316,8 +389,22 @@ const MDManagerStep3 = ({ setStep2, setStep3, mdValue }) => {
     const handleWorkflowClose = () => {
         setShowWorkflowSelection(false);
         setStep3(false);
+        handleClose();
     }
-    console.log(staffList.filter(staff => selectedStaffs?.includes(staff.id)), 'filterCheck', selectedStaffs, selectedStaffForMove)
+
+    const handleCreateGroup = () => {
+        setGroupTitle('');
+        setGroupType('');
+        setGroupDesc('');
+        setSelectedStaffs([]);
+        setShowAttestationGroup(true)
+    }
+
+    const handleClose = () => {
+        setMdValue();
+        setSelectedMdId('');
+    }
+    console.log(staffList?.filter(staff => selectedStaffs?.includes(staff.id)), 'filterCheck', selectedStaffs, selectedStaffForMove)
     return (
         <div className={style.stepsBackground}>
             <div className={`${style.stepHeader} ${style.spaceBetween} ${style.verticalAlignCenter}`}>
@@ -328,16 +415,70 @@ const MDManagerStep3 = ({ setStep2, setStep3, mdValue }) => {
                 <div className={style.displayInRow}>
                     <div className={`${style.spaceBetween}`}>
                         <button className={`${style.buttonStyleMd} ${style.marginRight} `} onClick={() => { setStep2(true); setStep3(false) }} >BACK</button>
-                        {mdValue?.creationType === "RENEW" && (
+                        {/* {mdValue?.creationType === "RENEW" && (
                             <button className={`${style.buttonStyle} ${style.marginRight} `} onClick={() => handleContinue(true)} >{'PUBLISH'}</button>
-                        )}
-                        <button className={`${style.outlinedButtonMd} ${style.marginRight} `} onClick={() => { setStep3(false) }} >SAVE IN PROGRESS</button>
+                        )} */}
+                        <button className={`${style.outlinedButtonMd} ${style.marginRight} `} onClick={() => { setStep3(false); handleClose() }} >SAVE IN PROGRESS</button>
                         <button className={`${style.buttonStyleMd} ${style.marginRight} `} onClick={() => { handleContinue() }} >CONTINUE</button>
                     </div>
                 </div>
             </div>
-            <div className={style.stepContentCard}>
+            <div className={`${style.stepContentCard}`}>
                 <div className={`${style.stepsTitleBar} ${style.verticalAlignCenter}`}>
+                    <div className={style.stepsTitleText}>Staff Review for Acknowledgement Prior to Publication</div>
+                </div>
+                <div className={`${style.padding40} ${style.marginTop20}`}>
+                    <div className={`${style.marginTop20} ${style.twoCol}`}>
+                        <div className={style.labelStyle}>Staff Acknowledgement Required?</div>
+                        <CommonSwitch label={workFlow1IsMandatory ? 'YES' : 'NO'} checked={workFlow1IsMandatory} onChange={(e) => setWorkFlow1IsMandatory(e.target.checked)} labelName={''} />
+                    </div>
+                    {workFlow1IsMandatory && (
+                        <div className={style.padding20}>
+                            <div className={style.labelStyle}>Select Acknowledgement Groups</div>
+                            <div className={style.attestationGrid}>
+                                <div ref={containerRef} onFocus={() => setShowAttestationGroupList(true)} onBlur={(e) => handleBlur(e, containerRef)}
+                                    tabIndex={0}>
+                                    <CommonInputField
+                                        className={style.fullWidth}
+                                        // value={keyword}
+                                        // onChange={(e) => setKeyword(e.target.value)}
+                                        type="text"
+                                    // placeholder="Enter Keywords / Tags"
+                                    />
+                                    {showAttestationGroupList && (
+                                        <div className={`${style.attestationGroupCard} ${style.padding20}`} tabIndex={0}>
+                                            {groupList?.filter(data => data?.type === "ACKNOWLEDGEMENT")?.map((data, index) => (
+                                                <div className={`${style.groupDisplayGrid} ${style.verticalAlignCenter}`}>
+                                                    <div className={`${style.labelStyle} ${style.cursorPointer}`} onClick={() => handleGroupSelectAcknowledgement(data?.id)}>{data?.name}</div>
+                                                    <div className={`${style.attestationDescStyle} ${style.verticalAlignCenter}`}
+                                                        dangerouslySetInnerHTML={{ __html: data?.description }} />
+                                                    <div className={`${style.attestationViewButton} ${style.cursorPointer}`} onClick={() => getGroupListById(data?.id)}>View Group Members</div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                                <div className={` ${style.addNewButton} ${style.textColorWhite} ${style.createGroupButton} ${style.marginLeft20} ${style.cursorPointer}`} onClick={() => handleCreateGroup()}>
+                                    <AddIcon />
+                                    <span> Create New Group</span>
+                                </div>
+                            </div>
+                            <div>
+                                <div className={`${style.chipsContainer} ${style.marginTop10}`}>
+                                    {selectedAcknowledgementGroups?.map(data => {
+                                        return (
+                                            <div className={`${style.chips} ${style.displayInRow}`}>
+                                                <div>{groupList?.filter(groupData => groupData?.id === data)?.[0]?.name}</div> <div className={`${style.verticalAlignCenter} ${style.marginLeft10} ${style.cursorPointer}`}
+                                                    onClick={() => setSelectedGroups(selectedGroups?.filter(innerData => innerData !== data))}
+                                                ><CancelIcon sx={{ color: '#06617A', fontSize: 20 }} /></div></div>
+                                        )
+                                    })}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+                <div className={`${style.stepsTitleBar} ${style.verticalAlignCenter} ${style.marginTop20}`}>
                     <div className={style.stepsTitleText}>Attestation Rules to apply</div>
                 </div>
                 <div className={`${style.padding40} ${style.marginTop20}`}>
@@ -366,7 +507,7 @@ const MDManagerStep3 = ({ setStep2, setStep3, mdValue }) => {
                             /> */}
                             <div className={style.labelStyle}>Select Attestation Groups for Medical Directive reviews</div>
                             <div className={style.attestationGrid}>
-                                <div ref={containerRef} onFocus={() => setShowAttestationGroupList(true)} onBlur={handleBlur}
+                                <div ref={containerRef2} onFocus={() => setShowAcknowledgementGroupList(true)} onBlur={(e) => handleBlur(e, containerRef2)}
                                     tabIndex={0}>
                                     <CommonInputField
                                         className={style.fullWidth}
@@ -375,7 +516,7 @@ const MDManagerStep3 = ({ setStep2, setStep3, mdValue }) => {
                                         type="text"
                                     // placeholder="Enter Keywords / Tags"
                                     />
-                                    {showAttestationGroupList && (
+                                    {showAcknowledgementGroupList && (
                                         <div className={`${style.attestationGroupCard} ${style.padding20}`} tabIndex={0}>
                                             {groupList?.map((data, index) => (
                                                 <div className={`${style.groupDisplayGrid} ${style.verticalAlignCenter}`}>
@@ -388,7 +529,7 @@ const MDManagerStep3 = ({ setStep2, setStep3, mdValue }) => {
                                         </div>
                                     )}
                                 </div>
-                                <div className={` ${style.addNewButton} ${style.textColorWhite} ${style.createGroupButton} ${style.marginLeft20} ${style.cursorPointer}`} onClick={() => setShowAttestationGroup(true)}>
+                                <div className={` ${style.addNewButton} ${style.textColorWhite} ${style.createGroupButton} ${style.marginLeft20} ${style.cursorPointer}`} onClick={() => handleCreateGroup()}>
                                     <AddIcon />
                                     <span> Create New Group</span>
                                 </div>
@@ -407,12 +548,12 @@ const MDManagerStep3 = ({ setStep2, setStep3, mdValue }) => {
                             </div>
                         </div>
                     )}
-                    <div className={`${style.marginTop20} ${style.twoCol}`}>
+                    {/* <div className={`${style.marginTop20} ${style.twoCol}`}>
                         <div className={style.labelStyle}>Auto trigger reviews and attestations on revision / update of Medical Directive</div>
                         <CommonSwitch label={autoTriggerOnUpdate ? 'YES' : 'NO'} checked={autoTriggerOnUpdate} onChange={(e) => setAutoTriggerOnUpdate(e.target.checked)} labelName={''} />
-                    </div>
+                    </div> */}
                     <div className={`${style.marginTop20} ${style.twoCol}`}>
-                        <div className={style.labelStyle}>Auto trigger review and attestations for approved new staff applicant</div>
+                        <div className={style.labelStyle}>Auto trigger review and attestations for new staff applicant</div>
                         <CommonSwitch label={autoTriggerForNewAppointment ? 'YES' : 'NO'} checked={autoTriggerForNewAppointment} onChange={(e) => setAutoTriggerForNewAppointment(e.target.checked)} labelName={''} />
                     </div>
                     <div className={`${style.marginTop20} ${style.twoCol}`}>
@@ -448,6 +589,21 @@ const MDManagerStep3 = ({ setStep2, setStep3, mdValue }) => {
                             onChange={(e) => setGroupTitle(e.target.value)}
                             type="text"
                         // placeholder="Enter Keywords / Tags"
+                        />
+                    </div>
+                    <div className={style.marginTop10}>
+                        <div className={style.labelStyle}>Group Type*</div>
+                        <CommonSelectField
+                            value={groupType}
+                            onChange={(e) => setGroupType(e.target.value)}
+                            className={style.fullWidth1}
+                            //   firstOptionLabel={'Select Category'}
+                            //   firstOptionValue={''}
+                            valueList={["ACKNOWLEDGEMENT", "ATTESTATION", "SIGN_OFF"]}
+                            labelList={["Acknowledgement", "Attestation", "Sign Off"]}
+                            disabledList={false}
+                            required={false}
+                        // label={""}
                         />
                     </div>
                     <div>
