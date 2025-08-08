@@ -22,12 +22,13 @@ const CommonInputField = ({
   error,
   label,
   required,
+  onKeyDown
 }) => {
   const contractStatus = sessionStorage.getItem("Selected Contract Status");
   // console.log(error)
   return (
     <div>
-      {/* <div className={`${style.lableStyle}`}>{label}{required && '*'}</div> */}
+      <div className={`${style.lableStyle} ${label ? style.marginBottom : ""}`}>{label}{required && '*'}</div>
       <InputGroup
         value={value}
         onChange={onChange}
@@ -43,7 +44,7 @@ const CommonInputField = ({
         key={key}
         defaultValue={defaultValue}
         onKeyDown={
-          type === "number" || type === "tel" ? preventNegativeValues : () => {}
+          type === "number" || type === "tel" ? preventNegativeValues : onKeyDown ? onKeyDown : () => { }
         }
         onBlur={onBlur}
         intent={error ? Intent.DANGER : Intent.NONE}

@@ -39,11 +39,12 @@ export const PUT = (url, data) => {
     });
 };
 
-export const POST = (url, data) => {
+export const POST = (url, data, options = {}) => {
     return axios(`${baseUrl()}/${url}`, {
         method: "POST",
         headers: getHeaders(),
         data,
+        ...options,
     });
 };
 

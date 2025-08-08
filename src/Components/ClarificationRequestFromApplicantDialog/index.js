@@ -289,7 +289,16 @@ const ClarificationDialog = ({ getIsOpen, data, type, getDocumentClarificationDi
                   data={userNotes}
                   onChange={(event, editor) => {
                     const data = editor.getData();
-                    setUserNotes(data);
+                    // setUserNotes(data);
+                      const plainText = data.replace(/<[^>]*>/g, '').trim();
+                      const wordCount = plainText.length;
+                      console.log("wordCount",plainText,wordCount)
+                      if (wordCount > 300) {
+                      alert("You have entered the maximum allowed 300 words.");
+                      editor.setData(userNotes);
+                    } else {
+                      setUserNotes(data);
+                    }
                   }}
                   config={{
                     placeholder: "Enter a Clarification You Needed",

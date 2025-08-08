@@ -502,33 +502,36 @@ const ApplicantPortalRFC = () => {
             description: item?.file?.description ?? uploadFileData?.[index]?.description,
         }));
 
-        const cleanedUserNotes = convert(userNotes || '', {
-              wordwrap: false,   // Don't wrap lines artificially
-              selectors: [
-                {
-                  selector: 'a',
-                  options: { ignoreHref: true }
-                },
-                {
-                  selector: 'strong',
-                  format: 'inline' // Output just text (no **)
-                },
-                {
-                  selector: 'br',
-                  format: 'lineBreak'
-                },
-                {
-                  selector: 'p',
-                  format: 'block' // Add double line breaks between paragraphs
-                }
-              ],
-              formatters: {
-                // Customize bold behavior: keep text, but don’t wrap in markdown
-                inline: (elem, walk, builder) => {
-                  walk(elem.children, builder);
-                }
-              }
-            });
+            const cleanedUserNotes = convert(userNotes || '', {
+  wordwrap: false,
+  selectors: [
+    {
+      selector: 'a',
+      options: { ignoreHref: true }
+    },
+    {
+      selector: 'strong',
+      format: 'inline'
+    },
+    {
+      selector: 'br',
+      format: 'lineBreak'
+    },
+    {
+      selector: 'p',
+      format: 'paragraph' // 👈 custom format for <p>
+    }
+  ],
+  formatters: {
+    inline: (elem, walk, builder) => {
+      walk(elem.children, builder);
+    },
+    paragraph: (elem, walk, builder) => {
+      walk(elem.children, builder);
+      builder.addInline(' '); // 👈 add a single space instead of \n\n
+    }
+  }
+});
 
         let temp = {
             clarificationResponseBy: "APPLICANT",

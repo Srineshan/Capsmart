@@ -348,6 +348,10 @@
   padding: 10px 20px;
 }
 
+.reviewButtonStyle:hover {
+  background: $primarycolorHover 0% 0% no-repeat padding-box;
+}
+
 .reviewButtonContainer {
   display: flex;
   justify-content: space-between;

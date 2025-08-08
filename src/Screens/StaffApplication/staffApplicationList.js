@@ -5,6 +5,7 @@ import React, {
   useCallback,
   useRef,
 } from "react";
+import { useLocation } from 'react-router-dom'; // if using React Router
 import PrintOutlinedIcon from "@mui/icons-material/PrintOutlined";
 import TextSnippetOutlinedIcon from "@mui/icons-material/TextSnippetOutlined";
 import NoteAltOutlinedIcon from "@mui/icons-material/NoteAltOutlined";
@@ -90,7 +91,7 @@ const StaffApplicationList = ({
   showOverRideRequestApprovalDialog,
   showOverRideRequestDialog,
   showOverRideRequestDeclineDialog,
-
+  getUpdateStaffStatuDialog
 }) => {
   const PDFRef = createRef();
   const prevCompletionLettersRef = useRef([]);
@@ -140,6 +141,8 @@ const StaffApplicationList = ({
   const [applicationIsLocum, setApplicationIsLocum] = useState(() =>
     sessionStorage.getItem('isLocum') || false
   );
+  const canadaData = sessionStorage.getItem('canadaData') !== 'undefined' ? JSON.parse(sessionStorage.getItem('canadaData')) : {};
+  const dateFormat = canadaData?.dateFormat || 'MMM dd, yyyy';
   const [workModeType, setWorkModeType] = useState(() =>
     sessionStorage.getItem("workModeType") || ''
   );
@@ -168,6 +171,20 @@ const StaffApplicationList = ({
     )?.name || "";
 
   console.log("userDetails1234", userDetails)
+  const location = useLocation();
+
+   useEffect(() => {
+    if (location.pathname === '/applications') {
+        console.log("storedApplicationType",applicationType)
+      // const type = sessionStorage.getItem('applicationCreationType');
+      if (applicationType === 'LOCUM' && workModeType === "Department Head") {
+        sessionStorage.setItem('applicationCreationType', 'REAPPOINTMENT');
+        console.log("storedApplicationType",applicationType)
+      }
+    }
+  }, [location.pathname]);
+
+  console.log("storedApplicationType",applicationType)
 
   // const handleSelectAllClick = () => {
   //   if (checkedIds?.length === tableData?.length) {
@@ -1166,6 +1183,9 @@ const StaffApplicationList = ({
     setShowBulkApproveDialog(value)
   };
 
+
+  console.log("SelectedTabStaff", selectedTab)
+
   useEffect(() => {
     if ((!showBulkApproveDialog && selectedTab === "level-5" && applicationType === "REAPPOINTMENT") || (!showBulkApproveDialog && selectedTab === "level-4" && applicationType === "LOCUM")) {
       const timer = setTimeout(() => {
@@ -1196,6 +1216,11 @@ const StaffApplicationList = ({
 
   const onClickNotesDialog = (data) => {
     getNotesDialog(true);
+    sessionStorage.setItem("applicationId", data?.id);
+  };
+
+   const onClickUpdateStaffStatuDialog = (data) => {
+    getUpdateStaffStatuDialog(true);
     sessionStorage.setItem("applicationId", data?.id);
   };
 
@@ -2393,7 +2418,7 @@ useEffect(() => {
 
       taskListStatus.push(data?.tasks?.completedCount + "/" + data?.tasks?.totalCount);
       lastUpdated.push(
-        format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
+        format(new Date(data?.lastModifiedDate), dateFormat)
       );
       lastUpdatedBy.push(["-"]);
       // const lastUpdatedDate = new Date(data?.lastModifiedDate);
@@ -2640,10 +2665,11 @@ useEffect(() => {
       // }
 
       // taskListStatus.push(data?.tasks?.completedCount + "/" + data?.tasks?.totalCount);
-
+    //  const dateFormat = canadaData?.dateFormat || 'MMM dd, yyyy';
+     console.log("dateFormatcanada", dateFormat);
       data?.logs?.forEach((log) => {
         if (log?.workflowStatus === "SUBMITTED") {
-          submitted.push(format(new Date(log?.lastModifiedDate), "MM/dd/yyyy"));
+          submitted.push(format(new Date(log?.lastModifiedDate), dateFormat));
         }
       });
       // lastUpdated.push(
@@ -2930,7 +2956,7 @@ useEffect(() => {
 
       data?.logs?.forEach((log) => {
         if (log?.workflowStatus === "SUBMITTED") {
-          submitted.push(format(new Date(log?.lastModifiedDate), "MM/dd/yyyy"));
+          submitted.push(format(new Date(log?.lastModifiedDate), dateFormat));
         }
       });
 
@@ -3364,11 +3390,11 @@ useEffect(() => {
       }
       if (data?.logs[data?.logs?.length - 2]?.role === "Credentialing Committee") {
         ccdate.push(
-          format(new Date(data?.logs[data.logs?.length - 2].createdDate), "MMM dd, yyyy")
+          format(new Date(data?.logs[data.logs?.length - 2].createdDate), dateFormat)
         )
       } else { ccdate.push("-") }
       lastUpdatedOn.push(
-        format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
+        format(new Date(data?.lastModifiedDate), dateFormat)
       );
       // lastUpdatedBy.push([data?.updatedBy || "-"]);
       action.push(true);
@@ -3629,11 +3655,11 @@ useEffect(() => {
       // } else { ccdate.push("-") }
       data?.logs?.forEach((log) => {
         if (log.workflowStatus === "SUBMITTED") {
-          submitted.push(format(new Date(log.lastModifiedDate), "MMM dd, yyyy"));
+          submitted.push(format(new Date(log.lastModifiedDate), dateFormat));
         }
       });
       lastUpdatedOn.push(
-        format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
+        format(new Date(data?.lastModifiedDate), dateFormat)
       );
       lastUpdatedBy.push(["Last Updated By", data?.updatedBy?.name?.firstName]);
       action.push(true);
@@ -3949,11 +3975,11 @@ useEffect(() => {
       // } else { ccdate.push("-") }
       data?.logs?.forEach((log) => {
         if (log.workflowStatus === "SUBMITTED") {
-          submitted.push(format(new Date(log.lastModifiedDate), "MMM dd, yyyy"));
+          submitted.push(format(new Date(log.lastModifiedDate), dateFormat));
         }
       });
       lastUpdatedOn.push(
-        format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
+        format(new Date(data?.lastModifiedDate), dateFormat)
       );
       lastUpdatedBy.push(["Last Updated By", data?.updatedBy?.name?.firstName]);
        if (expiredDays > 0) {
@@ -4113,7 +4139,7 @@ useEffect(() => {
       if (credCommittee) {
         ccdate.push(
           credCommittee?.meetingDate
-            ? format(new Date(`${credCommittee?.meetingDate}T00:00`), "dd/MM/yyyy")
+            ? format(new Date(`${credCommittee?.meetingDate}T00:00`), dateFormat)
             : "-"
         );
       }
@@ -4258,7 +4284,7 @@ useEffect(() => {
       // }
       if (credCommittee) {
         const reviewDate = credCommittee?.reviewedDate
-          ? format(new Date(`${credCommittee?.reviewedDate}T00:00`), "dd/MM/yyyy")
+          ? format(new Date(`${credCommittee?.reviewedDate}T00:00`), dateFormat)
           : '-';
 
         submitted.push(reviewDate);
@@ -4266,7 +4292,7 @@ useEffect(() => {
         submitted.push('-');
       }
       lastUpdatedOn.push(
-        format(new Date(data?.lastModifiedDate), "MM/dd/yyyy")
+        format(new Date(data?.lastModifiedDate), dateFormat)
       );
       lastUpdatedBy.push(["Last Updated By", data?.updatedBy?.name?.firstName]);
       action.push(true);
@@ -4427,7 +4453,7 @@ useEffect(() => {
       if (credCommittee) {
         ccdate.push(
           credCommittee?.meetingDate
-            ? format(new Date(`${credCommittee?.meetingDate}T00:00`), "dd/MM/yyyy")
+            ? format(new Date(`${credCommittee?.meetingDate}T00:00`), dateFormat)
             : "-"
         );
       }
@@ -4476,7 +4502,7 @@ useEffect(() => {
         ccMemberReviewedMember = approverDetails?.filter(approver => approver?.approvalType != null)?.map((approver) => {
           const name = `${approver?.approverDetail?.name?.firstName || ""} ${approver?.approverDetail?.name?.lastName || ""}`.trim();
           const reviewDate = approver?.reviewedDate
-            ? format(new Date(`${approver.reviewedDate}T00:00`), "dd/MM/yyyy")
+            ? format(new Date(`${approver.reviewedDate}T00:00`), dateFormat)
             : "-";
 
           if (approver?.approvalType != null) doneReview += 1;
@@ -4602,7 +4628,7 @@ useEffect(() => {
       // }
       if (credCommittee) {
         const reviewDate = credCommittee?.reviewedDate
-          ? format(new Date(`${credCommittee?.reviewedDate}T00:00`), "dd/MM/yyyy")
+          ? format(new Date(`${credCommittee?.reviewedDate}T00:00`), dateFormat)
           : '-';
 
         submitted.push(reviewDate);
@@ -4685,7 +4711,7 @@ useEffect(() => {
       // );
       if (data?.logs[data?.logs?.length - 1]?.role === "Credentialing Committee") {
         ccapproval.push(
-          format(new Date(data?.logs[data?.logs?.length - 1]?.createdDate), "MMM dd, yyyy")
+          format(new Date(data?.logs[data?.logs?.length - 1]?.createdDate), dateFormat)
         )
       } else { ccapproval.push("-") }
       // cosapproval.push(
@@ -4693,12 +4719,12 @@ useEffect(() => {
       // );
       if (data?.logs[data?.logs?.length - 2]?.role === "Chief Of Staff") {
         cosapproval.push(
-          format(new Date(data?.logs[data?.logs?.length - 2]?.createdDate), "MMM dd, yyyy")
+          format(new Date(data?.logs[data?.logs?.length - 2]?.createdDate), dateFormat)
         )
       } else { cosapproval.push("-") }
       taskListStatus.push(data?.tasks.completedCount + "/" + data?.tasks.totalCount);
       lastUpdated.push(
-        format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
+        format(new Date(data?.lastModifiedDate), dateFormat)
       );
       lastUpdatedBy.push(["-"]);
       // const lastUpdatedDate = new Date(data?.lastModifiedDate);
@@ -4883,7 +4909,7 @@ useEffect(() => {
       if (workflow) {
         macdate.push(
           workflow?.meetingDate
-            ? format(new Date(`${workflow?.meetingDate}T00:00`), "dd/MM/yyyy")
+            ? format(new Date(`${workflow?.meetingDate}T00:00`), dateFormat)
             : "-"
         );
       }
@@ -5153,7 +5179,7 @@ useEffect(() => {
       if (workflow) {
         macdate.push(
           workflow?.meetingDate
-            ? format(new Date(`${workflow?.meetingDate}T00:00`), "dd/MM/yyyy")
+            ? format(new Date(`${workflow?.meetingDate}T00:00`), dateFormat)
             : "-"
         );
       }
@@ -5280,12 +5306,12 @@ useEffect(() => {
       // );
       if (data?.logs[data?.logs?.length - 1]?.role === "Advisory Committee") {
         macapproval.push(
-          format(new Date(data?.logs[data?.logs?.length - 1].createdDate), "MMM dd, yyyy")
+          format(new Date(data?.logs[data?.logs?.length - 1].createdDate), dateFormat)
         )
       } else { macapproval.push("-") }
       taskListStatus.push(data?.tasks.completedCount + "/" + data?.tasks.totalCount);
       lastUpdated.push(
-        format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
+        format(new Date(data?.lastModifiedDate), dateFormat)
       );
       action.push(true);
 
@@ -5476,7 +5502,7 @@ useEffect(() => {
       if (workflow) {
         boddate.push(
           workflow?.meetingDate
-            ? format(new Date(`${workflow?.meetingDate}T00:00`), "dd/MM/yyyy")
+            ? format(new Date(`${workflow?.meetingDate}T00:00`), dateFormat)
             : "-"
         );
       }
@@ -5784,7 +5810,7 @@ useEffect(() => {
       if (workflow) {
         boddate.push(
           workflow?.meetingDate
-            ? format(new Date(`${workflow?.meetingDate}T00:00`), "dd/MM/yyyy")
+            ? format(new Date(`${workflow?.meetingDate}T00:00`), dateFormat)
             : "-"
         );
       }
@@ -6018,7 +6044,7 @@ useEffect(() => {
 
       taskListStatus.push(data?.tasks?.completedCount + "/" + data?.tasks?.totalCount);
       lastUpdated.push(
-        format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
+        format(new Date(data?.lastModifiedDate), dateFormat)
       );
       lastUpdatedBy.push(["-"]);
       // const lastUpdatedDate = new Date(data?.lastModifiedDate);
@@ -6272,7 +6298,7 @@ useEffect(() => {
       // });
       lastUpdated.push(
         data?.clarificationUpdatedDate
-          ? format(new Date(data?.clarificationUpdatedDate), "MMM dd, yyyy")
+          ? format(new Date(data?.clarificationUpdatedDate), dateFormat)
           : "-"
       );
       // lastUpdatedBy.push(["Last Updated By", data?.updatedBy?.name?.firstName]);
@@ -6397,7 +6423,7 @@ useEffect(() => {
       ]);
       taskListStatus.push(data?.taskListStatus || "2/10");
       lastUpdated.push(
-        format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
+        format(new Date(data?.lastModifiedDate), dateFormat)
       );
       lastUpdatedBy.push([data?.updatedBy?.name?.firstName || '-']);
       // const lastUpdatedDate = new Date(data?.lastModifiedDate);
@@ -6466,7 +6492,7 @@ useEffect(() => {
       // createdOn.push(data?.onGoingApplication?.expiryDate || "-")
       createdOn.push(
         data?.onGoingApplication?.expiryDate
-          ? format(new Date(data?.onGoingApplication?.expiryDate), "MMM dd, yyyy")
+          ? format(new Date(data?.onGoingApplication?.expiryDate), dateFormat)
           : "-"
       );
       lastUpdatedOn.push(
@@ -6614,12 +6640,12 @@ useEffect(() => {
         <div key={uniqueKey}>
           {data?.requestedBy?.name?.firstName || "-"}
           <br />
-          {format(new Date(data?.createdDate), 'MMM dd, yyyy')}
+          {format(new Date(data?.createdDate), dateFormat)}
         </div>
       );
       lastUpdated.push(
         data?.lastModifiedDate
-          ? format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
+          ? format(new Date(data?.lastModifiedDate), dateFormat)
           : "-"
       );
       action.push(true);
@@ -6675,7 +6701,7 @@ useEffect(() => {
       // createdOn.push(data?.onGoingApplication?.expiryDate || "-")
       createdOn.push(
         data?.onGoingApplication?.expiryDate
-          ? format(new Date(data?.onGoingApplication?.expiryDate), "MMM dd, yyyy")
+          ? format(new Date(data?.onGoingApplication?.expiryDate), dateFormat)
           : "-"
       );
       lastUpdatedOn.push(
@@ -6714,7 +6740,7 @@ useEffect(() => {
       applicantType.push(data?.providerType?.serviceProviderType);
       approvedNotes.push(data?.approvedNotes);
       lastUpdatedOn.push(
-        format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
+        format(new Date(data?.lastModifiedDate), dateFormat)
       );
       action.push(true);
     });
@@ -6770,6 +6796,11 @@ useEffect(() => {
       requiredValue: "boolean",
       onClick: onClickNotesDialog,
     },
+    // {
+    //   data: "Update Staff Status",
+    //   requiredValue: "boolean",
+    //   onClick: onClickUpdateStaffStatuDialog,
+    // },
     // {
     //   data: "Go to Task List",
     //   requiredValue: "boolean",
@@ -7836,7 +7867,7 @@ useEffect(() => {
                                   </div>
                                   <div className={`${style.smallTextStyle} ${style.justifyCenter}`}>
                                     {status?.createdDate
-                                      ? format(new Date(status?.createdDate), "MM/dd/yyyy")
+                                      ? format(new Date(status?.createdDate), dateFormat)
                                       : "-"}
                                   </div>
                                 </div>

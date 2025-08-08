@@ -33,7 +33,7 @@ import ESignature from "../../Components/ESignature";
 import CancelIcon from '@mui/icons-material/Cancel';
 import AdditionalPrivilegesDialog from "../../Screens/ReappointmentApplicationForm/PrivilegeSelection/AdditionalPrivilegesDialog";
 
-const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
+const LocumExtensiveDialog = ({ getIsOpen, selectedTab,requestedType }) => {
   let cookie = new Cookie();
   let userDetails = cookie.get("user");
   const { setValue, value } = useComboboxControls({ initialValue: "" });
@@ -115,13 +115,16 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
   const [covererName, setCovererName] = useState("");
   const [covererId, setCovererId] = useState("");
   const [emailSendDialog, setEmailSendDialog] = useState(false);
+  const [ReloadAlert, setReloadAlert] = useState(false);
   const prevDepartment = formDetails?.basicDetailReferences?.department?.id;
   const prevSpeciality = formDetails?.basicDetailReferences?.specialty?.id;
+  const canadaData = sessionStorage.getItem('canadaData') !== 'undefined' ? JSON.parse(sessionStorage.getItem('canadaData')) : {};
+  const dateFormat = canadaData?.dateFormat || 'MMM dd, yyyy';
   const [currentDate, setCurrentDate] = useState(
-    format(new Date(), "dd-MM-yyyy")
+    format(new Date(), dateFormat)
   );
   const [limit, setLimit] = useState(9999);
-  const [extensionRequiredValue, setExtensionRequiredValue] = useState("REQUESTED");
+  const [extensionRequiredValue, setExtensionRequiredValue] = useState(requestedType);
   const [notRequiredComments, setNotRequiredComments] = useState('');
   const [isLoadingPage, setIsLoadingPage] = useState(false);
   const publicKey =
@@ -129,7 +132,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
   const workModeType = sessionStorage.getItem("workModeType");
   let staffLocumId;
   let name = `${formDetails?.basicDetails?.applicant?.name?.firstName} ${formDetails?.basicDetails?.applicant?.name?.lastName} `;
-
+console.log("requestedType",requestedType)
 
   console.log("tableDataValue", selectApplicant, covererNameList, covererId, selectedTab)
   useEffect(() => {
@@ -138,6 +141,65 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
     getApplicationEntity();
     getActiveUserData();
   }, [applicationType, id]);
+
+  console.log('Reloading...',ReloadAlert);
+
+    useEffect(() => {
+        if (ReloadAlert) {
+            console.log('Reloading123...');
+        }
+    }, [ReloadAlert]);
+
+useEffect(() => {
+    const handleBeforeUnload = (event) => {
+        // Show confirmation for reload/close
+        const confirmed = window.confirm(
+            'CAUTION!\nExiting your browser will disrupt the extension application you are working on. You will lose your data and will have to redo this application. Are you sure you want to Exit?'
+        );
+        
+        if (confirmed) {
+            // User clicked "OK" (reload/exit)
+            setReloadAlert(true);
+            // Allow the unload to proceed
+            return undefined;
+        } else {
+            // User clicked "Cancel"
+            setReloadAlert(false);
+            // Prevent unload
+            event.preventDefault();
+            return event.returnValue = '';
+        }
+    };
+
+    const handleBackNavigation = (event) => {
+        // Show confirmation manually (for Back button)
+        const confirmed = window.confirm(
+            'CAUTION!\nExiting your browser will disrupt the extension application you are working on. You will lose your data and will have to redo this application. Are you sure you want to Exit?'
+        );
+        
+        if (confirmed) {
+            // User clicked "OK" (reload/exit)
+            setReloadAlert(true);
+        } else {
+            // User clicked "Cancel"
+            setReloadAlert(false);
+            window.history.pushState(null, null, window.location.pathname);
+        }
+    };
+
+    // Add listeners only when dialogs are active
+    if (showSelectedPrivilegeLocum) {
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        window.addEventListener('popstate', handleBackNavigation);
+        window.history.pushState(null, null, window.location.pathname);
+    }
+
+    return () => {
+        window.removeEventListener('beforeunload', handleBeforeUnload);
+        window.removeEventListener('popstate', handleBackNavigation);
+    };
+}, [showSelectedPrivilegeLocum]);
+
 
   useEffect(() => {
     const index = formDetails?.forms?.findIndex(data => data?.schemaCategory === "PrivilegeSelection");
@@ -321,7 +383,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
 
   const getActiveUserData = async () => {
     try {
-      const url = `application-management-service/staff?status=ACTIVE&type=LOCUM&isExpired=${selectedTab === "ACTIVELOCUM" ? "false" : "true"}&noOfDays=30&isPaginationRequired=${limit === 9999 ? false : true}&limit=${limit}`;
+      const url = `application-management-service/staff?tab=${selectedTab === "ACTIVELOCUM" ? "ACTIVE_LOCUM" : "EXPIRED_LOCUM"}&isPaginationRequired=${limit === 9999 ? false : true}&limit=${limit}`;
       const response = await GET(url);
       const staffs = response?.data?.staffs || [];
 
@@ -2697,8 +2759,8 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
   const ExpireDate = selectDataLocum?.tenure?.to
     ? new Date(selectDataLocum?.tenure?.to).toISOString().split('T')[0] + 'T00:00'
     : null;
-
-  console.log("Date to Expire :", ExpireDate, "expire Date add one day :", format(addDays(new Date(ExpireDate), 1), "MMM dd, yyyy"))
+  
+    console.log("Date to Expire :", ExpireDate ,"expire Date add one day :", format(addDays(new Date(ExpireDate), 1), dateFormat))  
 
   // Validate date before using
   const isExpireDateValid = ExpireDate && isValid(ExpireDate);
@@ -2751,8 +2813,8 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
   const monthOptions = getNext12MonthsFromCreatedDate(referenceDate);
 
   const lastModifiedDate = formDetails?.lastModifiedDate;
-  const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), "MMM dd, yyyy") : "-";
-  const formattedExpiringDate = ExpireDate ? format(new Date(ExpireDate), "MMM dd, yyyy") : "-";
+  const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), dateFormat) : "-";
+  const formattedExpiringDate = ExpireDate ? format(new Date(ExpireDate), dateFormat) : "-";
   const daysRemaining = ExpireDate ? Math.abs(differenceInDays(new Date(ExpireDate), new Date())) : null;
   //  const monthsList = getNext12MonthsFromCreatedDate(format(new Date(selectDataLocum?.tenure?.to), "MMM dd, yyyy"));
   // const selectedMonthLabel = selectedMonth === "Custom"
@@ -3004,9 +3066,9 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
                               <span className={`${style.rejectionTextStyle}`}>
                                 {selectedTab === "ACTIVELOCUM"
                                   ? (ExpireDate
-                                    ? format(addDays(new Date(ExpireDate), 1), "MMM dd, yyyy")
+                                    ? format(addDays(new Date(ExpireDate), 1), dateFormat)
                                     : "N/A")
-                                  : format(new Date(), "MMM dd, yyyy")}
+                                  : format(new Date(), dateFormat)}
                               </span>
                             )}
                           </div>
@@ -3015,7 +3077,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
                             End Date <br />
                             <span className={`${style.dateTextStyle}`}>
                               {selectedMonth && selectedMonth !== "Custom"
-                                ? format(new Date(selectedMonth), "MMM dd, yyyy")
+                                ? format(new Date(selectedMonth), dateFormat)
                                 : selectedMonth === "Custom"
                                   ? ''
                                   : selectedTab === "EXPIREDLOCUM"
@@ -4619,7 +4681,15 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab }) => {
       >
         {/* <div className={style.spaceBetween}> */}
         <div className={style.heading1}>
-          Locum {selectedTab === "ACTIVELOCUM" ? "Extension" : "Renewal"} Request has been sent
+          Locum {selectedTab === "ACTIVELOCUM" ? "Extension" : "Renewal"} Application has been sent to
+           {selectDataLocum?.applicant?.name?.lastName?.charAt(0).toUpperCase() +
+            selectDataLocum?.applicant?.name?.lastName?.slice(1).toLowerCase()}
+          {", "}
+          {selectDataLocum?.applicant?.name?.firstName
+            ? selectDataLocum?.applicant?.name?.firstName.charAt(0).toUpperCase() +
+            selectDataLocum?.applicant?.name?.firstName.slice(1).toLowerCase()
+            : ""} 
+          {/* Locum {selectedTab === "ACTIVELOCUM" ? "Extension" : "Renewal"} Request has been sent */}
         </div>
         {/* <div className={style.displayInRow}>
               <img

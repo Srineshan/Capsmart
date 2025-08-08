@@ -38,7 +38,14 @@ const ReportTypeOverview = React.lazy(() =>
   import("./Screens/Reports/reportTypeOverview")
 );
 const Home = React.lazy(() => import("./Screens/CustomerSystemAdmin"));
-
+const RetireMDManager = React.lazy(() => import("./Screens/MDManagerScreens/MDManager/retireMedicalDirectives"));
+const MDManager = React.lazy(() => import("./Screens/MDManagerScreens/MDManager"));
+const ManageAttestation = React.lazy(() => import("./Screens/MDManagerScreens/MDAttestations/ManageAttestations"));
+const ManageAcknowledgement = React.lazy(() => import("./Screens/MDManagerScreens/MDAttestations/ManageAcknowledgements"));
+const ManageSignOff = React.lazy(() => import("./Screens/MDManagerScreens/MDAttestations/ManageSignOff"));
+const ManageAttestationGroups = React.lazy(() => import("./Screens/MDManagerScreens/MDAttestations/ManageAttestationGroups"));
+const MDLibrary = React.lazy(() => import("./Screens/MDManagerScreens/MDLibrary"));
+const MDManagerStep1 = React.lazy(() => import("./Screens/MDManagerScreens/MDManager/step1"));
 const HistoricalData = React.lazy(() => import("./Screens/StaffApplication/fillHistoricalData"));
 const ApplicationSubmitted = React.lazy(() => import("./Components/ApplicationSubmitted"));
 const FunctionalTitleForCustomer = React.lazy(() =>
@@ -314,8 +321,13 @@ const MDRequestAttest = React.lazy(() =>
   import("./Screens/MDRequestAttest")
 );
 const MDAttest = React.lazy(() => import("./Screens/MDRequestAttest/MedicalDirectivesAttest"));
-
-
+const MDAttestStatus = React.lazy(() => import("./Screens/MDManagerScreens/MDManager/MedicalDirectivesAttestStatus"));
+const ManageMDAttest = React.lazy(() => import("./Screens/MDManagerScreens/MDAttestations/ManageAttestations/MedicalDirectivesAttest"));
+const ManageMDAcknowledgement = React.lazy(() => import("./Screens/MDManagerScreens/MDAttestations/ManageAcknowledgements/MedicalDirectivesAcknowledge"));
+const ManageMDSignOff = React.lazy(() => import("./Screens/MDManagerScreens/MDAttestations/ManageSignOff/MedicalDirectivesSignOff"));
+const MedicalDirectivesMECApproval = React.lazy(() => import("./Screens/MDManagerScreens/MDManager/MedicalDirectivesMECApproval"));
+let isHapicareUser;
+let organizations;
 const App = ({ props }) => {
   const [accessToken, setAccessToken] = useState(Auth());
   const { isAuthenticated, isSessionLoading } = useSession();
@@ -786,6 +798,8 @@ const App = ({ props }) => {
     await axios(`${baseUrl()}/entity-service/entityID`, requestHeader)
       .then((response) => {
         if (response?.data?.id) {
+          isHapicareUser = response?.data?.masterEntity;
+          sessionStorage.setItem('masterEntity', response?.data?.masterEntity)
           cookie.set("entityId", response?.data?.id, {
             path: "/",
             // domain: window.location.hostname?.split('.')?.length >= 3 ? window.location.hostname?.slice(-2)?.join('.') : window.location.hostname,
@@ -831,6 +845,8 @@ const App = ({ props }) => {
           // secure: true,
           // sameSite: 'none',
         });
+        organizations = data?.organizations || [];
+        sessionStorage.setItem('organizations', JSON.stringify(data?.organizations))
       });
     console.log('entered')
     if (cookie.get("authorization") && cookie.get("authorization") !== 'undefined') {
@@ -900,109 +916,125 @@ const App = ({ props }) => {
   // }
 
   const LoginRoute = () => {
+    console.log('login route', Auth())
     // const navigate = useNavigate();
     const fetchData = () => {
       console.log('login route', Auth())
       const initialRoute = localStorage.getItem("initialRoute");
       if (Auth()) {
-        console.log('login route')
-        let roles = jwt(Auth())?.roles?.split(",");
-        console.log("LoginRole", roles)
-        if (roles?.length > 1) {
+        console.log('login route', isHapicareUser, organizations)
+        if (isHapicareUser && organizations?.length > 1) {
+          setShowDialog(true);
+        } else if (isHapicareUser) {
+          // if (cookie.get("authorization") !== undefined && cookie.get("authorization") !== 'undefined' && !isSessionTokenExpired(cookie.get("authorization"))) {
+          cookie.remove('entityId', { path: '/' })
+          cookie.set('entityId', organizations?.[0]?.tenant?.tenantId, { path: '/' });
+          // }
+        }
+        console.log('login route', isHapicareUser, organizations)
+        const roles = !isHapicareUser ? jwt(Auth())?.roles?.split(",")?.filter(s => s.trim() !== '') : organizations?.[0]?.roles?.map(data => data?.roleName);
+        const mdRoles = !isHapicareUser ? jwt(Auth())?.mdRoles?.split(",")?.filter(s => s.trim() !== '') : organizations?.[0]?.mdRoles?.map(data => data?.roleName);
+        console.log("LoginRole", roles, mdRoles, isHapicareUser, organizations)
+        if (roles?.length > 1 || (roles?.length >= 1 && mdRoles?.length >= 1)) {
           console.log("LoginRole1111", roles)
+          console.log('login route', isHapicareUser, organizations)
           // return(
           //   <WorkModeDialog getIsOpen={true} />
           // ) 
-          if (localStorage?.getItem('initialRoute') !== undefined && localStorage?.getItem('initialRoute') !== 'undefined' && localStorage?.getItem('initialRoute') !== null && localStorage?.getItem('initialRoute')?.includes('/applicationById/REAPPOINTMENT') && localStorage?.getItem('initialRoute')?.includes('/applicationById/LOCUM')) {
+          if (roles?.length > 1 && (localStorage?.getItem('initialRoute') !== undefined && localStorage?.getItem('initialRoute') !== 'undefined' && localStorage?.getItem('initialRoute') !== null && localStorage?.getItem('initialRoute')?.includes('/applicationById/REAPPOINTMENT') && localStorage?.getItem('initialRoute')?.includes('/applicationById/LOCUM'))) {
             sessionStorage.setItem("workModeType", roles[0]);
             window.location.pathname = localStorage?.getItem('initialRoute');
           } else {
             setShowDialog(true);
           }
-        }
-
-        if (roles?.length === 1 && localStorage?.getItem('initialRoute') !== undefined && localStorage?.getItem('initialRoute') !== 'undefined' && localStorage?.getItem('initialRoute') !== null) {
-          sessionStorage.setItem("workModeType", roles[0]);
+        } else if ((roles?.length === 1 || mdRoles?.length === 1) && localStorage?.getItem('initialRoute') !== undefined && localStorage?.getItem('initialRoute') !== 'undefined' && localStorage?.getItem('initialRoute') !== null) {
+          sessionStorage.setItem("workModeType", mdRoles?.length === 1 ? mdRoles[0] : roles[0]);
           window.location.href = `${initialRoute}`;
+          console.log("initialRoute", initialRoute)
           localStorage?.removeItem('initialRoute')
         }
-        else if (roles?.length === 1) {
-          sessionStorage.setItem("workModeType", roles[0]);
-          let isAppUser =
-            roles?.includes("Approver") ||
-            roles?.includes("Reviewer") ||
-            roles?.includes("Activity Logger");
-          let isContractManager = roles?.includes("Contract Manager");
-          let isEntityLevelAdmin =
-            roles?.includes("Super Sys Admin") ||
-            roles?.includes("Entity Sys Admin") ||
-            roles?.includes("Entity Sys User") ||
-            roles?.includes("Distributor Admin");
-          let isStaffManager = roles?.includes("Staff Manager");
-          let isAttester = roles?.includes("Attester");
-          let isDepartmentHead = roles?.includes("Department Head");
-          let isCredentialingCommittee = roles?.includes("Credentialing Committee");
-          let isChiefOfStaff = roles?.includes("Chief Of Staff");
-          let isApplicant = roles?.includes("Applicant");
-          console.log('login route', roles)
-          if (isAppUser) {
-            window.location.href = "/";
-            // navigate("/");
-            return <Login />;
-          } else if (isContractManager) {
-            window.location.pathname = "/contracts";
-            // navigate("/contracts");
-            // window.location.reload();
-            return <ActiveContracts />;
+        else if (roles?.length === 1 || mdRoles?.length === 1) {
+          if (mdRoles?.length === 1) {
+            console.log("LoginRole", roles, mdRoles[0])
+            sessionStorage.setItem("workModeType", mdRoles[0]);
+            window.location.pathname = "/mdManager";
+          } else {
+            sessionStorage.setItem("workModeType", roles[0]);
+            let isAppUser =
+              roles?.includes("Approver") ||
+              roles?.includes("Reviewer") ||
+              roles?.includes("Activity Logger");
+            let isContractManager = roles?.includes("Contract Manager");
+            let isEntityLevelAdmin =
+              roles?.includes("Super Sys Admin") ||
+              roles?.includes("Entity Sys Admin") ||
+              roles?.includes("Entity Sys User") ||
+              roles?.includes("Distributor Admin");
+            let isStaffManager = roles?.includes("Staff Manager");
+            let isAttester = roles?.includes("Attester");
+            let isDepartmentHead = roles?.includes("Department Head");
+            let isCredentialingCommittee = roles?.includes("Credentialing Committee");
+            let isChiefOfStaff = roles?.includes("Chief Of Staff");
+            let isApplicant = roles?.includes("Applicant");
+            console.log('login route', roles)
+            if (isAppUser) {
+              window.location.href = "/";
+              // navigate("/");
+              return <Login />;
+            } else if (isContractManager) {
+              window.location.pathname = "/contracts";
+              // navigate("/contracts");
+              // window.location.reload();
+              return <ActiveContracts />;
+            }
+            else if (isEntityLevelAdmin) {
+              window.location.pathname = "/entitySitePortal";
+              // navigate("/entitySitePortal");
+              // window.location.reload();
+              return <Home />;
+            }
+            else if (isStaffManager) {
+              console.log('login route', roles, isStaffManager)
+              window.location.pathname = "/applications";
+              // navigate("/applications");
+            } else if (isDepartmentHead) {
+              console.log('login route', roles, isDepartmentHead)
+              window.location.pathname = "/applications";
+              // navigate("/applications");
+            } else if (isCredentialingCommittee) {
+              console.log('login route', roles, isCredentialingCommittee)
+              window.location.pathname = "/applications";
+              // navigate("/applications");
+            } else if (isChiefOfStaff) {
+              console.log('login route', roles, isChiefOfStaff)
+              window.location.pathname = "/applications";
+              // navigate("/applications");
+            } else if (isAttester) {
+              console.log('login route', roles, isAttester)
+              window.location.pathname = "/tenant/64246d491b70b07241d37aa1/medicalDirectives";
+              // navigate("/applications");
+            } else if (isApplicant) {
+              window.location.pathname = "/applicant";
+              // navigate("/applicant");
+            }
+            // else {
+            //   window.location.pathname = "/entitySitePortal";
+            //   // navigate("/entitySitePortal");
+            //   // window.location.reload();
+            //   return <Home />;
+            // }
           }
-          else if (isEntityLevelAdmin) {
-            window.location.pathname = "/entitySitePortal";
-            // navigate("/entitySitePortal");
-            // window.location.reload();
-            return <Home />;
-          }
-          else if (isStaffManager) {
-            console.log('login route', roles, isStaffManager)
-            window.location.pathname = "/applications";
-            // navigate("/applications");
-          } else if (isDepartmentHead) {
-            console.log('login route', roles, isDepartmentHead)
-            window.location.pathname = "/applications";
-            // navigate("/applications");
-          } else if (isCredentialingCommittee) {
-            console.log('login route', roles, isCredentialingCommittee)
-            window.location.pathname = "/applications";
-            // navigate("/applications");
-          } else if (isChiefOfStaff) {
-            console.log('login route', roles, isChiefOfStaff)
-            window.location.pathname = "/applications";
-            // navigate("/applications");
-          } else if (isAttester) {
-            console.log('login route', roles, isAttester)
-            window.location.pathname = "/tenant/64246d491b70b07241d37aa1/medicalDirectives";
-            // navigate("/applications");
-          } else if (isApplicant) {
-            window.location.pathname = "/applicant";
-            // navigate("/applicant");
-          }
-          // else {
-          //   window.location.pathname = "/entitySitePortal";
-          //   // navigate("/entitySitePortal");
-          //   // window.location.reload();
-          //   return <Home />;
-          // }
         }
       } else {
         window.location.pathname = "/loginPage";
       }
     }
     if (!Auth()) {
-      console.log('login route', Auth())
+      console.log('login route', isHapicareUser, organizations, sessionStorage.getItem('organizations') ? JSON.parse(sessionStorage.getItem('organizations')) : [])
       setTimeout(() => {
         fetchData();
       }, 2000);
     } else {
-      console.log('login route', Auth())
       fetchData();
     }
   };
@@ -1320,6 +1352,14 @@ const App = ({ props }) => {
                   element={<ProtectedRoute><SettingList /></ProtectedRoute>}
                 />
                 <Route path="/entitySitePortal" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+                <Route path="/mdManager/retired" element={<ProtectedRoute><RetireMDManager /></ProtectedRoute>} />
+                <Route path="/mdManager" element={<ProtectedRoute><MDManager /></ProtectedRoute>} />
+                <Route path="/mdManager/manageAttestation" element={<ProtectedRoute><ManageAttestation /></ProtectedRoute>} />
+                <Route path="/mdManager/manageAcknowledgement" element={<ProtectedRoute><ManageAcknowledgement /></ProtectedRoute>} />
+                <Route path="/mdManager/manageSignOff" element={<ProtectedRoute><ManageSignOff /></ProtectedRoute>} />
+                <Route path="/mdManager/manageAttestationGroups" element={<ProtectedRoute><ManageAttestationGroups /></ProtectedRoute>} />
+                <Route path="/mdManager/libraries/:entityId/:departmentId" element={<MDLibrary />} />
+                <Route path="/mdManager/step1" element={<ProtectedRoute><MDManagerStep1 /></ProtectedRoute>} />
                 <Route path="/thankyou" element={<ProtectedRoute><Thankyou /></ProtectedRoute>} />
                 <Route path="/reportType" element={<ProtectedRoute><ReportType /></ProtectedRoute>} />
                 <Route
@@ -1357,6 +1397,26 @@ const App = ({ props }) => {
                 <Route
                   path="/medicalDirectiveAttest/:entityId/:medicalDirectivesId"
                   element={<ProtectedRoute><MDAttest /></ProtectedRoute>}
+                />
+                <Route
+                  path="/mdManager/manageAttestation/:entityId/:medicalDirectivesId"
+                  element={<ProtectedRoute><ManageMDAttest /></ProtectedRoute>}
+                />
+                <Route
+                  path="/mdManager/manageAcknowledgement/:entityId/:medicalDirectivesId"
+                  element={<ProtectedRoute><ManageMDAcknowledgement /></ProtectedRoute>}
+                />
+                <Route
+                  path="/mdManager/manageSignOff/:entityId/:medicalDirectivesId"
+                  element={<ProtectedRoute><ManageMDSignOff /></ProtectedRoute>}
+                />
+                <Route
+                  path="/mdManager/manageMECApproval/:entityId/:medicalDirectivesId"
+                  element={<ProtectedRoute><MedicalDirectivesMECApproval /></ProtectedRoute>}
+                />
+                <Route
+                  path="/mdManager/mdAttestStatus/:entityId/:medicalDirectivesId"
+                  element={<ProtectedRoute><MDAttestStatus /></ProtectedRoute>}
                 />
                 <Route
                   path="/locumApplicationForm/:applicationId/:section/:step"

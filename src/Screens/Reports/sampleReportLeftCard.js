@@ -13,6 +13,8 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, subMonths, addMonths, subYears, subDays, startOfQuarter, endOfQuarter, startOfYear, endOfYear, add, sub } from 'date-fns';
 import SaveReport from './saveReport';
 import { useParams } from 'react-router-dom';
+import { Tooltip } from "@mui/material";
+import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
 
 import style from './index.module.scss';
@@ -63,12 +65,18 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
     const [selectedPosition, setSelectedPosition] = useState('');
     const [selectedApplicationType, setSelectedApplicationType] = useState('');
     const [selectedReappointmentStatus, setSelectedReappointmentStatus] = useState('');
+    const [selectedApplicationSentStatus, setSelectedApplicationSentStatus] = useState('All');
     const [user, setUsers] = useState([]);
     const [from, setFrom] = useState(startOfMonth(new Date()));
     const [to, setTo] = useState(endOfMonth(new Date()));
     const [selectedCombinations, setSelectedCombinations] = useState([]);
     const [selectedDepartment, setSelectedDepartment] = useState([]);
     const [selectedServiceArea, setSelectedServiceArea] = useState([]);
+    // const selectedDepartmentName = departments?.find(data => data?.id === selectedDepartments)?.departmentName?.name;
+    const selectedDepartmentNames = departments
+        ?.filter(dep => selectedDepartments.includes(dep.id))
+        ?.map(dep => dep.departmentName?.name);
+    console.log("selectedDepartmentName", selectedDepartmentsToSend)
 
     const generateMonthYearOptions = () => {
         const startDate = subYears(new Date(), 1); // Start from one year ago
@@ -90,6 +98,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         timesheetProcessingSummary: 'TIMESHEET',
         listingOfTimesheetsNotPaid: 'TIMESHEET',
         staffReappointmentTracker: 'TIMESHEET',
+        locumStaffRenewalStatusTracker: 'TIMESHEET',
         paymentsProcessingSummary: 'TIMESHEET',
         staffReappointmentsNotes: 'CONTRACT',
         staffReappointments: 'CONTRACT',
@@ -99,9 +108,12 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         currentRemitToAddressForActiveContracts: 'CONTRACT',
         nonCompliant: 'CONTRACT',
         staffbyTypes: 'CONTRACT',
-        paymentProcessingStatusTracker: 'TIMESHEET'
+        paymentProcessingStatusTracker: 'TIMESHEET',
+        locumStaffbyTypes: 'CONTRACT',
     }
     const defaultOption = ''
+
+
 
     let cookie = new Cookie();
     let userDetails = cookie.get('user');
@@ -136,7 +148,8 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         selectedPrivilegeCategoryToSend: selectedPrivilegeCategoryToSend,
         selectedPosition: selectedPosition,
         selectedApplicationType: selectedApplicationType,
-        selectedReappointmentStatus: selectedReappointmentStatus
+        selectedReappointmentStatus: selectedReappointmentStatus,
+        selectedApplicationSentStatus: selectedApplicationSentStatus,
     };
 
     useEffect(() => {
@@ -150,6 +163,10 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
             getTimesheetIntervals()
         }
     }, [])
+
+    console.log('Selected Application Status:', selectedApplicationSentStatus);
+
+    console.log("selectedStaffTypeToSend", selectedDepartments, selectedStaffType, selectedDepartmentsToSend, selectedStaffTypeToSend)
 
     useEffect(() => {
         const controller = new AbortController(); // Create an AbortController instance
@@ -348,7 +365,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         getDataToUseInReport(dataToUseInReport);
     }, [renewalreportingTimePeriod, selectedSites, selectedDepartments, selectedPrivilegeCategory, selectedStaffType,
         podType, contractStatus, reportingTimePeriod, selectedApplicationType, selectedReappointmentStatus,
-        selectedPosition, from, to, initialValueSet, selectedTimesheetInterval]);
+        selectedPosition, from, to, initialValueSet, selectedTimesheetInterval,selectedApplicationSentStatus]);
 
     useEffect(() => {
         let tempDept = [];
@@ -725,12 +742,14 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
     return (
         <div>
             <div className={`${style.leftCard} ${style.leftCardDisplay} ${style.marginTop20} ${style.bigCalendarLeftCardWidth}`}>
-                <div className={`${style.reporttypeLeftBackGround}`}>
-                    <div className={`${style.reportLeftTextStyle} ${style.cursorPointer}`} onClick={() => setShowSaveReport(true)}>{!isMyReport ? 'Save Parameter Selection As My Report' : "Update Parameter Selection"}</div>
-                </div>
+                <Tooltip title="Save This Parameter Selection As My Report" arrow>
+                    <div className={`${style.reporttypeLeftBackGround}`}>
+                        <div className={`${style.reportLeftTextStyle} ${style.cursorPointer}`} onClick={() => setShowSaveReport(true)}>{!isMyReport ? 'Save Parameter Selection' : "Update Parameter Selection"}</div>
+                    </div>
+                </Tooltip>
                 {(reportType === "staffReappointmentsNotes" || reportType === "staffReappointments" || reportType === "locumRenewalOrExtensionApplicationsSummary" || reportType === "privilegedStaffSummary" ||
                     reportType === "submittedApplicationsReviewSummary" || reportType === "staffReappointmentTracker" || reportType === "ohipBillingNumbersByCareProvider" || reportType === "careProviderCareerMilestoneSummary" ||
-                    reportType === "declinedOrNotRenewedStaffSummary" || reportType === "reappointmentApplicationNotStarted" || reportType === "currentNotesSummary" || reportType === "staffReappointmentStatusSummary") ? (
+                    reportType === "declinedOrNotRenewedStaffSummary" || reportType === "reappointmentApplicationNotStarted" || reportType === "currentNotesSummary" || reportType === "staffReappointmentStatusSummary" || reportType === "staffbyTypes" || reportType === "locumStaffbyTypes" || reportType === "locumStaffRenewalStatusTracker" || reportType === "privilegedStaffSummary" || reportType === "careProvidersSummary") ? (
                     <>
                         {/* {reportType === "staffReappointmentsNotes" && (
                             <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
@@ -790,27 +809,30 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 ))}
                             </Select>
                         </FormControl> */}
-                        <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                            <InputLabel id="demo-multiple-name-label1">Reporting Time Period</InputLabel>
-                            <Select
-                                labelId="demo-multiple-name-label1"
-                                id="demo-multiple-name1"
-                                MenuProps={MenuProps}
-                                value={reportingTimePeriod}
-                                onChange={(e) => { setReportingTimePeriod(e.target.value) }}
-                                disabled={isLoading}
-                            >
-                                <MenuItem value={'Current Week'} disabled={isLoading}>Current Week</MenuItem>
-                                <MenuItem value={'Last Week'} disabled={isLoading}>Last Week</MenuItem>
-                                <MenuItem value={'Current Month'} disabled={isLoading}>Current Month</MenuItem>
-                                <MenuItem value={'Last Month'} disabled={isLoading}>Last Month</MenuItem>
-                                <MenuItem value={'Current Qtr'} disabled={isLoading}>Current Quarter</MenuItem>
-                                <MenuItem value={'Last Qtr'} disabled={isLoading}>Last Quarter</MenuItem>
-                                <MenuItem value={'Current Year'} disabled={isLoading}>Current Year</MenuItem>
-                                <MenuItem value={'Last Year'} disabled={isLoading}>Last Year</MenuItem>
-                                <MenuItem value={'Custom'} disabled={isLoading}>Custom</MenuItem>
-                            </Select>
-                        </FormControl>
+                        {reportType !== "staffReappointmentTracker" && reportType !== "ohipBillingNumbersByCareProvider" && reportType !== "privilegedStaffSummary" && reportType !== "locumStaffbyTypes" && reportType !== "staffbyTypes" && reportType !== "locumStaffRenewalStatusTracker" && reportType !== 'staffReappointmentStatusSummary' && (
+                            <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                                <InputLabel id="demo-multiple-name-label1" className={style.headingtextStyle}>Reporting Time Period</InputLabel>
+                                <Select
+                                    labelId="demo-multiple-name-label1"
+                                    id="demo-multiple-name1"
+                                    MenuProps={MenuProps}
+                                    value={reportingTimePeriod}
+                                    onChange={(e) => { setReportingTimePeriod(e.target.value) }}
+                                    disabled={isLoading}
+                                    className={`${style.textAlignLeft} ${style.Font}`}
+                                >
+                                    <MenuItem value={'Current Week'} disabled={isLoading}>Current Week</MenuItem>
+                                    <MenuItem value={'Last Week'} disabled={isLoading}>Last Week</MenuItem>
+                                    <MenuItem value={'Current Month'} disabled={isLoading}>Current Month</MenuItem>
+                                    <MenuItem value={'Last Month'} disabled={isLoading}>Last Month</MenuItem>
+                                    <MenuItem value={'Current Qtr'} disabled={isLoading}>Current Quarter</MenuItem>
+                                    <MenuItem value={'Last Qtr'} disabled={isLoading}>Last Quarter</MenuItem>
+                                    <MenuItem value={'Current Year'} disabled={isLoading}>Current Year</MenuItem>
+                                    <MenuItem value={'Last Year'} disabled={isLoading}>Last Year</MenuItem>
+                                    <MenuItem value={'Custom'} disabled={isLoading}>Custom</MenuItem>
+                                </Select>
+                            </FormControl>
+                        )}
                         {reportingTimePeriod === "Custom" && (
                             <>
                                 <div className={style.marginTop10}>
@@ -865,6 +887,18 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 onChange={handleChangeDepartments}
                                 MenuProps={MenuProps}
                                 disabled={isLoading}
+                                className={style.textAlignLeft}
+                                renderValue={(selected) => {
+                                    if (selected?.length === 1) {
+                                        const dept = departments?.find(dep => dep?.id === selected[0]);
+                                        console.log("")
+                                        return dept?.departmentName?.name || 'All';
+                                    } else if (selected.length > 1) {
+                                        return `${selected.length} Selected`;
+                                    } else {
+                                        return '';
+                                    }
+                                }}
                             >
                                 {departments?.length >= 2 && (
                                     <MenuItem value={defaultOption} disabled={isLoading}>All</MenuItem>
@@ -880,6 +914,38 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 ))}
                             </Select>
                         </FormControl>
+                        {selectedDepartments?.filter(Boolean).length > 0 && (
+                            <div className={`${style.grid2Gap} ${style.marginLeft5}`}>
+                                {selectedDepartments.map((id) => {
+                                    const dept = departments?.find(dep => dep?.id === id);
+                                    return (
+                                        <div key={id} className={`${style.spaceBetween} ${style.marginRight5} ${style.filterBackground}`}>
+                                            <div className={`${style.filtertextStyle}`}>{dept?.departmentName?.name}</div>
+                                            <Tooltip title="Remove Filter" arrow>
+                                                <CancelOutlinedIcon
+                                                    sx={{
+                                                        fontSize: 15,
+                                                        color: "#06617A",
+                                                        marginLeft: "5px",
+                                                    }}
+                                                    className={style.cursorPointer}
+                                                    onClick={() => {
+                                                        const updatedDepartments = selectedDepartments.filter(depId => depId !== id);
+                                                        setSelectedDepartments(updatedDepartments);
+
+                                                        const updatedDepartmentsToSend = departments
+                                                            ?.filter(data => updatedDepartments.includes(data?.id))
+                                                            ?.map(data => data);
+
+                                                        setSelectedDepartmentsToSend(updatedDepartmentsToSend);
+                                                    }}
+                                                />
+                                            </Tooltip>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        )}
                         {/* <div>
                             <InputLabel id="demo-multiple-name-label2" className={style.headingtextStyle}>Departments</InputLabel>
                             <CommonMultiSelectField
@@ -950,6 +1016,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 onChange={handleChangeStaffType}
                                 MenuProps={MenuProps}
                                 disabled={isLoading}
+                                className={style.textAlignLeft}
                             >
                                 {staffType?.length >= 2 && (
                                     <MenuItem value={defaultOption} disabled={isLoading}>All</MenuItem>
@@ -971,6 +1038,38 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 ))}
                             </Select>
                         </FormControl>
+                        {selectedStaffType?.filter(Boolean).length > 0 && (
+                            <div className={`${style.grid2Gap} ${style.marginLeft5}`}>
+                                {selectedStaffType.map((id) => {
+                                    const dept = staffType?.find(dep => dep?.id === id);
+                                    return (
+                                        <div key={id} className={`${style.spaceBetween} ${style.marginRight5} ${style.filterBackground}`}>
+                                            <div className={`${style.filtertextStyle}`}>{dept?.applicantType}</div>
+                                            <Tooltip title="Remove Filter" arrow>
+                                                <CancelOutlinedIcon
+                                                    sx={{
+                                                        fontSize: 15,
+                                                        color: "#06617A",
+                                                        marginLeft: "5px",
+                                                    }}
+                                                    className={style.cursorPointer}
+                                                    onClick={() => {
+                                                        const updatedDepartments = selectedStaffType.filter(depId => depId !== id);
+                                                        setSelectedStaffType(updatedDepartments);
+
+                                                        const updatedDepartmentsToSend = staffType
+                                                            ?.filter(data => updatedDepartments.includes(data?.id))
+                                                            ?.map(data => data);
+
+                                                        setSelectedStaffTypeToSend(updatedDepartmentsToSend);
+                                                    }}
+                                                />
+                                            </Tooltip>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        )}
                         <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                             <InputLabel id="demo-multiple-name-label2" className={style.headingtextStyle}>Privilege Category</InputLabel>
                             <Select
@@ -981,6 +1080,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 onChange={handleChangePrivilegeCategory}
                                 MenuProps={MenuProps}
                                 disabled={isLoading}
+                                className={style.textAlignLeft}
                             >
                                 {privilegeCategory?.length >= 2 && (
                                     <MenuItem value={defaultOption} disabled={isLoading}>All Categories</MenuItem>
@@ -1002,20 +1102,103 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 ))}
                             </Select>
                         </FormControl>
-                        {(reportType === "submittedApplicationsReviewSummary" || reportType === "currentNotesSummary") && (
+                        {selectedPrivilegeCategory?.filter(Boolean).length > 0 && (
+                            <div className={`${style.grid2Gap} ${style.marginLeft5}`}>
+                                {selectedPrivilegeCategory.map((id) => {
+                                    const dept = privilegeCategory?.find(dep => dep?.id === id);
+                                    return (
+                                        <div key={id} className={`${style.spaceBetween} ${style.marginRight5} ${style.filterBackground}`}>
+                                            <div className={`${style.filtertextStyle}`}>{dept?.category}</div>
+                                            <Tooltip title="Remove Filter" arrow>
+                                                <CancelOutlinedIcon
+                                                    sx={{
+                                                        fontSize: 15,
+                                                        color: "#06617A",
+                                                        marginLeft: "5px",
+                                                    }}
+                                                    className={style.cursorPointer}
+                                                    //     onClick={() => {
+                                                    //     const updatedPrivilegeCategory = selectedPrivilegeCategory.filter(depId => depId !== id);
+                                                    //     setSelectedPrivilegeCategory(updatedPrivilegeCategory);
+
+                                                    //     const updatedPrivilegeCategoryToSend = privilegeCategory
+                                                    //         ?.filter(data => updatedPrivilegeCategory.includes(data?.id))
+                                                    //         ?.map(data => data);
+
+                                                    //     setSelectedPrivilegeCategoryToSend(updatedPrivilegeCategoryToSend);
+                                                    // }}
+                                                    onClick={() => {
+                                                        const privilege = privilegeCategory.find(privilege => privilege?.id === id);
+                                                        const categoryName = privilege?.category;
+
+                                                        if (!categoryName) return;
+
+                                                        const matchingIds = privilegeCategory
+                                                            .filter(item => item.category === categoryName)
+                                                            .map(item => item.id);
+
+                                                        const updatedSelected = selectedPrivilegeCategory.filter(
+                                                            (id) => !matchingIds.includes(id)
+                                                        );
+                                                        setSelectedPrivilegeCategory(updatedSelected);
+
+                                                        const updatedData = privilegeCategory.filter((item) =>
+                                                            updatedSelected.includes(item.id)
+                                                        );
+                                                        setSelectedPrivilegeCategoryToSend(updatedData);
+                                                    }}
+                                                />
+                                            </Tooltip>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        )}
+
+                            {(reportType === "staffbyTypes" || reportType === "locumStaffbyTypes") && (
                             <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                                <InputLabel id="demo-simple-select-standard-label3">Application Type</InputLabel>
+                                <InputLabel id="demo-simple-select-standard-label3">Application Sent Status</InputLabel>
                                 <Select
                                     labelId="demo-simple-select-standard-label3"
                                     id="demo-simple-select-standard3"
+                                    value={selectedApplicationSentStatus}
+                                    onChange={(e) => { setSelectedApplicationSentStatus(e.target.value) }}
+                                    MenuProps={MenuProps}
+                                    disabled={isLoading}
+                                    className={style.textAlignLeft}
+                                   renderValue={(selected) => {
+  if (selected === 'ALL') return 'All';     // Show "All" for empty
+  if (selected === 'SENT') return 'Sent';
+  if (selected === 'RE_SENT') return 'Reminder Sent';
+  if (selected === 'NOT_SENT') return 'Not Sent';
+  return selected;
+}} 
+                                >
+                                    <MenuItem value={'ALL'} disabled={isLoading}>All</MenuItem>
+                                    <MenuItem value={'SENT'} disabled={isLoading}>Sent</MenuItem>
+                                    <MenuItem value={'RE_SENT'} disabled={isLoading}>Reminder Sent</MenuItem>
+                                    <MenuItem value={'NOT_SENT'} disabled={isLoading}>Not Sent</MenuItem>
+                                </Select>
+                            </FormControl>
+                        )}
+                        {( reportType === "currentNotesSummary") && (
+                            <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                                <InputLabel id="demo-simple-select-standard-label3" className={style.headingtextStyle}>Application Type</InputLabel>
+                                {/* <InputLabel id="demo-multiple-name-label4" className={style.headingtextStyle}>Application Type</InputLabel> */}
+                                <Select
+                                    labelId="demo-simple-select-standard-label3"
+                                    id="demo-simple-select-standard3"
+                                    // labelId="demo-multiple-name-label4"
+                                    // id="demo-multiple-name4"
                                     value={selectedApplicationType}
                                     onChange={(e) => { setSelectedApplicationType(e.target.value) }}
                                     MenuProps={MenuProps}
                                     disabled={isLoading}
+                                    className={style.textAlignLeft}
                                 >
-                                    <MenuItem value={''} disabled={isLoading}>All</MenuItem>
+                                    <MenuItem value={defaultOption} disabled={isLoading}>All</MenuItem>
                                     <MenuItem value={'NEW'} disabled={isLoading}>New Applicants</MenuItem>
-                                    <MenuItem value={'REAPPOINTMENT'} disabled={isLoading}>Staff Reapointments</MenuItem>
+                                    <MenuItem value={'REAPPOINTMENT'} disabled={isLoading}>Staff Reappointments</MenuItem>
                                     <MenuItem value={'LOCUM_RENEWAL'} disabled={isLoading}>Locum Applications</MenuItem>
                                 </Select>
                             </FormControl>
@@ -1030,6 +1213,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                     onChange={(e) => { setSelectedReappointmentStatus(e.target.value) }}
                                     MenuProps={MenuProps}
                                     disabled={isLoading}
+                                    className={style.textAlignLeft}
                                 >
                                     <MenuItem value={''} disabled={isLoading}>All</MenuItem>
                                     <MenuItem value={'NOT_RENEWED'} disabled={isLoading}>Not Renewed</MenuItem>
@@ -1088,6 +1272,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                     onChange={handleChangeContractedServiceProviders}
                                     MenuProps={MenuProps}
                                     disabled={isMyReport || isLoading}
+                                    className={style.textAlignLeft}
                                 >
                                     {contractedServiceProviders?.length >= 2 && (
                                         <MenuItem value={defaultOption} disabled={isMyReport || isLoading}>All Contracted Service Providers</MenuItem>
@@ -1115,6 +1300,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                         onChange={handleChangeContractedServiceProviders}
                                         MenuProps={MenuProps}
                                         disabled={isMyReport || isLoading}
+                                        className={style.textAlignLeft}
                                     >
                                         {contractedServiceProviders?.length >= 2 && (
                                             <MenuItem value={defaultOption} disabled={isMyReport || isLoading}>All Contracted Service Providers</MenuItem>
@@ -1141,6 +1327,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                             onChange={handleChangeTimesheetInterval}
                                             MenuProps={{ MenuProps }}
                                             disabled={isMyReport || isLoading}
+                                            className={style.textAlignLeft}
                                         >
                                             {timesheetIntervals?.map((data) => (
                                                 <MenuItem
@@ -1163,6 +1350,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                             onChange={(e) => setSelectedTimesheetInterval([e.target.value])}
                                             MenuProps={{ MenuProps }}
                                             disabled={isMyReport || isLoading}
+                                            className={style.textAlignLeft}
                                         >
                                             {timesheetIntervals?.map((data) => (
                                                 <MenuItem
@@ -1189,6 +1377,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                         onChange={(e) => { setContractStatus(e.target.value) }}
                                         MenuProps={MenuProps}
                                         disabled={isMyReport || isLoading}
+                                        className={style.textAlignLeft}
                                     >
                                         <MenuItem value={'ACTIVE'} disabled={isMyReport || isLoading}>Active</MenuItem>
                                         <MenuItem value={'DRAFT'} disabled={isMyReport || isLoading}>Draft</MenuItem>
@@ -1229,6 +1418,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                     label="Proof of Documentation"
                                     MenuProps={MenuProps}
                                     disabled={isMyReport || isLoading}
+                                    className={style.textAlignLeft}
                                 >
                                     {podTypes?.map((data, index) => (
                                         <MenuItem value={data} key={index} disabled={isMyReport || isLoading}>{data}</MenuItem>
@@ -1248,6 +1438,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 value={reportingTimePeriod}
                                 onChange={(e) => { setReportingTimePeriod(e.target.value) }}
                                 disabled={isMyReport || isLoading}
+                                className={style.textAlignLeft}
                             >
                                 <MenuItem value={'Current Week'} disabled={isMyReport || isLoading}>Current Week</MenuItem>
                                 <MenuItem value={'Last Week'} disabled={isMyReport || isLoading}>Last Week</MenuItem>
@@ -1336,6 +1527,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 onChange={handleChangeSites}
                                 MenuProps={MenuProps}
                                 disabled={isMyReport || isLoading}
+                                className={style.textAlignLeft}
                             >
                                 {sites?.length >= 2 && (
                                     <MenuItem value={defaultOption} disabled={isMyReport || isLoading}>All Sites</MenuItem>
@@ -1363,6 +1555,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 onChange={handleChangeDepartments}
                                 MenuProps={MenuProps}
                                 disabled={isMyReport || isLoading}
+                                className={style.textAlignLeft}
                             >
                                 {departments?.length >= 2 && (
                                     <MenuItem value={defaultOption} disabled={isMyReport || isLoading}>All Departments</MenuItem>
@@ -1395,6 +1588,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 onChange={handleChangeContracts}
                                 // MenuProps={MenuProps}
                                 disabled={isMyReport || isLoading}
+                                className={style.textAlignLeft}
                             >
                                 {contracts?.length >= 2 && (
                                     <MenuItem value={defaultOption} disabled={isMyReport || isLoading}>All Contracts</MenuItem>
@@ -1421,6 +1615,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                     onChange={handleChangeContractedServiceProviders}
                                     MenuProps={MenuProps}
                                     disabled={isMyReport || isLoading}
+                                    className={style.textAlignLeft}
                                 >
                                     <MenuItem
                                         value={currentUserDetails?.id} disabled={isMyReport || isLoading}
@@ -1440,6 +1635,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                     onChange={handleChangeContractedServiceProviders}
                                     MenuProps={MenuProps}
                                     disabled={isMyReport || isLoading}
+                                    className={style.textAlignLeft}
                                 >
                                     {contractedServiceProviders?.length >= 2 && (
                                         <MenuItem value={defaultOption} disabled={isMyReport || isLoading}>All Contracted Service Providers</MenuItem>
@@ -1489,6 +1685,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 onChange={handleChangeContracts}
                                 MenuProps={MenuProps}
                                 disabled={isMyReport || isLoading}
+                                className={style.textAlignLeft}
                             >
                                 {contracts?.length >= 2 && (
                                     <MenuItem value={defaultOption} disabled={isMyReport || isLoading}>All Contracts</MenuItem>

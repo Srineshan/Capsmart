@@ -33,6 +33,7 @@ import Close from './../../../images/close.png';
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
+import CmeFileConfirmation from '../../../Components/CmeFileConfirmationDiaog';
 
 const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFormat, name }) => {
     const [formSchema, setFormSchema] = useState();
@@ -77,6 +78,8 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
     const [showInfo, setShowInfo] = useState(false);
     const [notes, setNotes] = useState('');
     const [checkingCondition, setCheckingCondition] = useState([]);
+    const [showCmeConfirmationDialog, setShowCmeConfirmationDialog] = useState(false);
+
     useEffect(() => {
         if (basicForm && !formSchema) {
             getFormSchema()
@@ -138,6 +141,11 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
         const creditOrHours = tempData?.cmeTranscripts?.creditOrHours;
         const isSigned = basicForm?.forms?.[formIndex]?.esign;
         const applicantType = basicForm?.basicDetails?.applicant?.applicantType;
+
+        if (tempData.yesOrNoCMETranscript === 'No' && notes) {
+            setCheckingCondition(['Completed']);
+            return;
+        }
 
         if (applicantType === "Midwife") {
             if (!tempData.yesOrNoCMETranscript || fileData == null) {
@@ -552,7 +560,23 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                                         <Tooltip title={"Click to View & Modify"} arrow>
                                         <div
                                             className={`${style.reappointmentButtonEdit}`}
-                                            onClick={() => setYesOrNoCMETranscript('')}
+                                            onClick={() => {
+  const matchedForm = basicForm?.forms?.find(
+    form =>
+      form?.schemaCategory === 'UploadYourDoc' &&
+      form?.data?.table?.some(doc => doc?.documentType === 'CME Credit Summary')
+  );
+
+  if (
+    basicForm?.forms?.[formIndex]?.data?.yesOrNoCMETranscript === 'Yes' &&
+    matchedForm
+  ) {
+    setShowCmeConfirmationDialog(true);
+  } else {
+    setYesOrNoCMETranscript('');
+  }
+}}
+
                                         >
                                             VIEW TO MODIFY
                                         </div>
@@ -1120,6 +1144,20 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                     file={selectedFile}
                 />
             )}
+            {showCmeConfirmationDialog && (
+  <CmeFileConfirmation
+    getShowCmeFileConfirmation={setShowCmeConfirmationDialog}
+    getCmeFileConfirmation={(confirmed) => {
+      if (confirmed) {
+         if (basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.file?.fileName) {
+             handleCMETranscriptDelete();
+        }
+          setYesOrNoCMETranscript('');
+      }
+    }}
+    confirmationText="You already have a CME Credit Summary document uploaded. Are you sure you want to change your CME Credit Summary Document?"
+  />
+)}
         </div>
     )
 }

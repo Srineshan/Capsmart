@@ -23,11 +23,6 @@
     margin-top: -5px;
 }
 
-.selectedContractBackground {
-    background-color: $secondarycolor;
-    border: 1px solid #d1cefd;
-}
-
 .headingForContracts {
     font: normal normal bolder $navbartext proxima-nova !important;
     letter-spacing: 0px;
@@ -39,6 +34,14 @@
     @include breakpoint(md) {
         font: normal normal bold 14px/12px proxima-nova;
     }
+}
+
+.selectedContractBackground {
+    background-color: $secondarycolor;
+    border: 2px solid $primarycolor;
+    box-shadow: 0px 6px 12px #171A1A1A;
+    border-radius: 8px;
+    color: $primarycolor !important;
 }
 
 .spaceBetween {

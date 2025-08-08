@@ -382,6 +382,7 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         TIMESHEET_PROCESSING_SUMMARY: 'timesheetProcessingSummary',
         LISTING_OF_TIMESHEETS_NOTPAID: 'listingOfTimesheetsNotPaid',
         SUBMITTED_TIMESHEETS_PAYMENT_STATUS: 'staffReappointmentTracker',
+        LOCUM_RENEWAL_STATUS_tRACKER: 'locumStaffRenewalStatusTracker',
         CURRENT_REMIT_TO_ADDRESS: 'currentRemitToAddressForActiveContracts',
         CONTRACT_DOCUMENT_ON_FILE: 'contractDocumentsOnFile',
         CONTRACT_WITH_BUSINESS_ENTITY: 'contractsWithABusinessEntity',
@@ -472,6 +473,7 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         'timesheetProcessingSummary': 'TIMESHEET_PROCESSING_SUMMARY',
         'listingOfTimesheetsNotPaid': 'LISTING_OF_TIMESHEETS_NOTPAID',
         'staffReappointmentTracker': 'SUBMITTED_TIMESHEETS_PAYMENT_STATUS',
+        'locumStaffRenewalStatusTracker': 'LOCUM_RENEWAL_STATUS_tRACKER',
         'contractDocumentsOnFile': 'CONTRACT_DOCUMENT_ON_FILE',
         'contractsWithABusinessEntity': 'CONTRACT_WITH_BUSINESS_ENTITY',
         'multiProviderContractsList': 'MULTI_PROVIDER_CONTRACT',
@@ -899,7 +901,7 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
                                         actions={actions}
                                         scrollStyle={style.contractScrollStyle}
                                         tableSortValues={tableSortValues}
-                                        heading={"There are no Record for you to manage"}
+                                        heading={"There are no Reports for you to manage"}
                                         onClickFunction={() => { }}
                                         getHandleSort={getHandleSort}
                                         sortValue={{ sortBy: sortValue, sortByField: sortField }}

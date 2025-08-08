@@ -5,6 +5,10 @@
     display: flex;
 }
 
+.marginTop10{
+    margin-top: 10px;
+}
+
 .navbarStyle {
     top: 0px;
     left: 0px;
@@ -48,6 +52,16 @@
     color: #646D82;
     cursor: pointer;
 }
+
+.menuStyleProfile {
+    // padding: 0 15px;
+    font: normal normal 500 13px/18px proxima-nova;
+    letter-spacing: 1.5px;
+    padding-bottom: 0px;
+    color: #646D82;
+    cursor: pointer;
+}
+
 
 .logoutStyle {
     // margin: 25px 0 0 30px;
@@ -356,4 +370,71 @@
     width: 100%;
     background-color: #F5F9FD;
     opacity: 0.8;
+}
+
+.profileCardStyle {
+  padding: 12px 16px;
+  min-width: 200px;
+  background: white;
+  border-radius: 4px;
+  font-family: Arial, sans-serif;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.flexJustifyCenter {
+  display: flex;
+  justify-content: center;
+}
+
+.workSpaceSwitchTextStyle1 {
+  color: #0066cc;
+  font-size: 12px;
+  text-align: center;
+  cursor: pointer;
+  text-decoration: underline;
+  margin-top: 8px;
+}
+
+.workSpaceSwitchTextStyle1:hover {
+  text-decoration: none;
+}
+
+.nameTextStyle{
+    text-align: left;
+    font: normal normal 600 16px/18px proxima-nova;
+    letter-spacing: 0px;
+    color: #52575D;
+    opacity: 1;
+}
+
+.workModeTextStyle{
+    text-align: center;
+    font: normal normal medium 16px/16px proxima-nova;
+    letter-spacing: 0px;
+    color: #9AAFB5;
+    opacity: 1;
+}
+
+.lastLoginStyle{
+    text-align: center;
+    font: italic normal normal 12px/20px Roboto;
+    letter-spacing: 0px;
+    color: #B3B8BD;
+    opacity: 1;
+}
+
+.buttonBackgroundStyle{
+    background: #F5F8F8 0% 0% no-repeat padding-box;
+    border-radius: 8px;
+    opacity: 1;
+    text-align: center;
+    text-decoration: underline;
+    font: normal normal bold 12px/17px proxima-nova;
+    letter-spacing: 0px;
+    color: #06617A;
+    padding: 5px;
+}
+
+.buttonBackgroundStyle:hover{
+background: #c9cccc 0% 0% no-repeat padding-box;
 }

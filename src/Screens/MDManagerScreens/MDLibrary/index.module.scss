@@ -1,0 +1,380 @@
+@import "../../../index.scss";
+
+.navbarStyle {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    height: 60px;
+    padding: 0 80px;
+}
+
+.spaceBetween {
+    display: flex;
+    justify-content: space-between;
+}
+
+.justifyCenter {
+    display: flex;
+    justify-content: center;
+}
+
+.marginLeft10 {
+    margin-left: 10px;
+}
+
+.marginLeft20 {
+    margin-left: 20px;
+}
+
+.marginTop {
+    margin-top: 20px;
+}
+
+.marginTop10 {
+    margin-top: 10px;
+}
+
+.logo {
+    position: relative;
+    top: 10px;
+    left: 22px;
+    width: auto;
+    height: 40px;
+    object-fit: contain;
+    margin-right: 40px;
+}
+
+.screenBackground {
+    padding: 20px 80px;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
+    height: calc(100vh - 60px);
+    overflow: scroll;
+}
+
+.screenPadding {
+    padding: 20px 80px;
+    height: calc(100vh - 80px);
+    overflow: scroll;
+}
+
+.innerScreenBackground {
+    padding: 20px 20px;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
+    height: calc(100vh - 60px);
+    overflow: scroll;
+}
+
+.departmentName {
+    text-align: left;
+    font: normal normal bold 20px/38px proxima-nova;
+    color: $textgrey;
+}
+
+.description {
+    text-align: left;
+    font: normal normal normal 14px/18px proxima-nova;
+    color: $textgrey;
+}
+
+.mdlGrid {
+    display: grid;
+    grid-template-columns: 70% 25%;
+    gap: 5%;
+}
+
+.displayInRow {
+    display: flex;
+    flex-direction: row;
+}
+
+.verticalAlignCenter {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.deptCardList {
+    width: 100%;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    white-space: nowrap;
+}
+
+.deptCard {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 0px 16px #17133814;
+    border: 0.20000000298023224px solid #9AAFB5;
+    border-radius: 10px;
+    padding: 20px;
+    min-width: 350px;
+}
+
+.mdCard {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 0px 24px #17133838;
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.mdInnerCard {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.mdCardTitle {
+    text-align: left;
+    font: normal normal bold 14px/24px proxima-nova;
+    color: $textgrey;
+}
+
+.cardTitle {
+    text-align: left;
+    font: normal normal bold 16px/24px proxima-nova;
+    color: $textgrey;
+}
+
+.mdTypeCardGrid {
+    display: grid;
+    grid-template-columns: 32% 32% 32%;
+    gap: 1.5%;
+}
+
+.mdTypeCard {
+    background: $secondarycolor 0% 0% no-repeat padding-box;
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.cardCount {
+    text-align: left;
+    font: normal normal bold 34px/41px proxima-nova;
+    color: $primarycolor;
+}
+
+.deptCardGrid {
+    display: grid;
+    grid-template-columns: 3% 91% 3%;
+    gap: 1%;
+}
+
+.mdlCard {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    border: 0.2px solid #9AAFB5;
+    border-radius: 10px;
+    height: 130px;
+    padding: 0px 30px;
+}
+
+.loginCard {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    border: 0.2px solid #9AAFB5;
+    border-radius: 10px;
+    height: 80px;
+    padding: 0px 30px;
+}
+
+.mdlCardTitle {
+    text-align: left;
+    font: normal normal bold 22px/35px proxima-nova;
+    color: $primarycolor;
+}
+
+.mdlLogo {
+    width: 60px;
+    height: auto;
+    object-fit: contain;
+}
+
+.loginIconStyle {
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    background-color: $primarycolor;
+}
+
+.mdlButton {
+    background: transparent radial-gradient(closest-side at 50% 50%, #5087D9 0%, #14358F 100%) no-repeat padding-box;
+    border-radius: 20px;
+    text-align: center;
+    font: normal normal bold 35px/45px proxima-nova;
+    color: #F0F2F7;
+    height: 125px;
+    padding: 20px;
+}
+
+.button {
+    background: $primarycolor 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 6px #1713380F;
+    border-radius: 8px;
+    text-align: center;
+    font: normal normal bold 15px/20px proxima-nova;
+    color: #F0F2F7;
+    padding: 5px 10px;
+}
+
+.cursorPointer {
+    cursor: pointer;
+}
+
+.searchGrid {
+    display: grid;
+    grid-template-columns: 80% 18%;
+    gap: 2%;
+}
+
+.advancedSearchGrid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+}
+
+.advancedSearchGrid> :nth-child(1) {
+    grid-column: span 2;
+}
+
+.advancedSearchGrid> :nth-child(2) {
+    grid-column: span 2;
+}
+
+.advancedSearchGrid> :nth-child(3) {
+    grid-column: span 2;
+}
+
+.advancedSearchGrid> :nth-child(4) {
+    grid-column: span 2;
+}
+
+.advancedSearchGrid> :nth-child(5) {
+    grid-column: span 2;
+}
+
+.advancedSearchGrid> :nth-child(6) {
+    grid-column: span 2;
+}
+
+.bigCardGrid {
+    display: grid;
+    grid-template-columns: 23% 76%;
+    grid-gap: 1%;
+}
+
+.twoCol {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.typeCard {
+    background: #14358F0F 0% 0% no-repeat padding-box;
+    border: 0.4000000059604645px solid #F5F7FB;
+    border-radius: 10px;
+    padding: 10px 20px;
+}
+
+.typeText {
+    text-align: center;
+    font: normal normal bold 16px/20px proxima-nova;
+    color: $textgrey;
+    opacity: 0.6;
+}
+
+.activeTypeCard {
+    font: normal normal bold 18px/20px proxima-nova;
+    font-weight: bold;
+    color: $primarycolor;
+    border: 1px solid $primarycolor;
+}
+
+.allDeptText {
+    text-align: left;
+    font: normal normal medium 16px/24px proxima-nova;
+    color: $textgrey;
+}
+
+.deptFilterCard {
+    background: $secondarycolor 0% 0% no-repeat padding-box;
+    border-radius: 6px;
+    text-align: left;
+    font: normal normal medium 16px/24px proxima-nova;
+    color: $textgrey;
+    display: grid;
+    grid-template-columns: 30px 1fr;
+    padding: 5px;
+}
+
+.serviceAreaFilterCard {
+    background: $secondarycolor 0% 0% no-repeat padding-box;
+    border-radius: 6px;
+    text-align: left;
+    font: normal normal medium 16px/24px proxima-nova;
+    color: $textgrey;
+    padding: 5px;
+}
+
+.deptFilterActiveCard {
+    color: $primarycolor;
+    font-size: bold;
+    font: normal normal medium 18px/24px proxima-nova;
+    border: 1px solid $primarycolor;
+}
+
+.deptTableHeading {
+    text-align: left;
+    font: normal normal bold 18px/24px proxima-nova;
+    letter-spacing: 0px;
+    color: $primarycolor;
+}
+
+.mdGrid {
+    display: grid;
+    grid-template-columns: 61% 10% 10% 15%;
+    grid-gap: 1%;
+}
+
+.labelStyle {
+    text-align: left;
+    font: normal normal normal 14px/32px proxima-nova;
+    color: $textgrey;
+}
+
+.fullWidth {
+    width: 100%;
+}
+
+.folderStyle {
+    height: 20px;
+    width: 20px;
+    object-fit: contain;
+}
+
+.titleText {
+    text-align: center;
+    font: normal normal bold 20px/28px proxima-nova;
+    letter-spacing: 0px;
+    color: $primarycolor;
+    text-transform: capitalize;
+    word-wrap: break-word;
+}
+
+.medicalDirectivesCard {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 5px 20px #52575D4D;
+    border-radius: 8px;
+    border: 0.4000000059604645px solid #e5e6e6;
+    padding: 20px 20px 20px 20px;
+    overflow: scroll;
+}
+
+.title {
+    text-align: left;
+    font: normal normal normal 18px/22px proxima-nova;
+    letter-spacing: 0px;
+    color: #2C2C2C;
+}
+
+.mdIDStyle {
+    text-align: left;
+    font: normal normal normal 16px/23px proxima-nova;
+    letter-spacing: 0px;
+    color: #2C2C2C;
+    opacity: 0.6;
+}

@@ -52,6 +52,8 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
   const [applicationCreationType, setApplicationCreationType] = useState(sessionStorage.getItem('applicationCreationType'))
   const selectedDepartmentName = departmentList?.find(data => data?.id === selectedDepartment)?.departmentName?.name;
   const selectedApplicantName = applicantType?.find(data => data?.id === selectedApplicantType)?.applicantType;
+  const canadaData = sessionStorage.getItem('canadaData') !== 'undefined' ? JSON.parse(sessionStorage.getItem('canadaData')) : {};
+  const dateFormat = canadaData?.dateFormat || 'MMM dd, yyyy';
   let availableApplicationStatus = {
     "CREATED": "Not Submitted",
     "SUBMITTED": "Submitted",
@@ -435,11 +437,16 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
     }
   };
 
-  const handleNavigate = () => {
-    navigate("/reportTypeOverview/staffbyTypes", {
-      state: { tableData },
-    });
-  };
+ const handleNavigate = () => {
+  const path =
+    applicationCreationType === "LOCUM"
+      ? "/reportTypeOverview/locumStaffbyTypes"
+      : "/reportTypeOverview/staffbyTypes";
+
+  navigate(path, {
+    state: { tableData },
+  });
+};
 
   let checkbox = [];
   let applicantName = [];
@@ -558,7 +565,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
       const reminderDates =
         reminderCount > 0
           ? data?.onGoingApplication?.reminderLog?.submissionReminders?.map(reminder => (
-            <div key={reminder?.date}>{format(new Date(reminder?.date), 'MMM dd yyyy')}</div>
+            <div key={reminder?.date}>{format(new Date(reminder?.date), dateFormat)}</div>
           ))
           : null;
 
@@ -572,7 +579,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
 
       remindTooltipCount.push(remindTooltipValue);
       DateSend.push(
-        format(new Date(data?.reAppointmentSentDate), "MMM dd, yyyy")
+        format(new Date(data?.reAppointmentSentDate), dateFormat)
       );
     });
 
@@ -706,7 +713,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
       const reminderDates =
         reminderCount > 0
           ? data?.onGoingApplication?.reminderLog?.submissionReminders?.map(reminder => (
-            <div key={reminder?.date}>{format(new Date(reminder?.date), 'MMM dd yyyy')}</div>
+            <div key={reminder?.date}>{format(new Date(reminder?.date), dateFormat)}</div>
           ))
           : null;
 
@@ -721,11 +728,11 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
       remindTooltipCount.push(remindTooltipValue);
      expiryDate.push(
         data?.onGoingApplication?.expiryDate
-          ? format(new Date(data?.onGoingApplication?.expiryDate), "MMM dd, yyyy")
+          ? format(new Date(data?.onGoingApplication?.expiryDate), dateFormat)
           : "-"
       );
       DateSend.push(
-        format(new Date(data?.reAppointmentSentDate), "MMM dd, yyyy")
+        format(new Date(data?.reAppointmentSentDate), dateFormat)
       );
       overRideIcon.push(
       <Tooltip
@@ -788,6 +795,8 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
   let gridStyle = applicationCreationType === "REAPPOINTMENT" ? style.permanentStaffGrid : style.locumStaffGrid
 
   const isDataAvailable = tableData?.length > 0;
+
+const isAllSent = tableData.length > 0 && tableData.every(item => item.reappointmentStatus === "SENT" || item.reappointmentStatus === "RE_SENT");
 
   // Rest of the render method remains the same
   return (
@@ -1141,7 +1150,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
                     style={{ opacity: isDataAvailable && checkedIds?.length > 0 ? 1 : 0.5 }}
 
                   >
-                    {(selectedReappointmentStatus === "SENT" || selectedReappointmentStatus === "RE_SENT" || applicationCreationType === "LOCUM") ? `RESEND ${applicationCreationType === "LOCUM" ? '' : 'REAPPOINTMENT'} APPLICATION` : 'SEND REAPPOINTMENT APPLICATION'}
+                    {(selectedReappointmentStatus === "SENT" || selectedReappointmentStatus === "RE_SENT" || applicationCreationType === "LOCUM" || isAllSent) ? `RESEND ${applicationCreationType === "LOCUM" ? '' : 'REAPPOINTMENT'} APPLICATION` : 'SEND REAPPOINTMENT APPLICATION'}
                   </div>
                 </Tooltip>
               )}

@@ -83,7 +83,7 @@ const ApplicationFieldCard = ({
   setIsView,
   isEdited,
   yesOrNoDemographic,
-  setYesOrNoDemographic,
+  setYesOrNoDemographic
 }) => {
   const [calendarStart, setCalendarStart] = useState(false);
   const { section, step } = useParams();
@@ -3228,10 +3228,11 @@ const labelWithAsterisk = insertAsteriskBeforeClosingP(fieldData.label);
     }
   };
 
-  const handleReappointmentUpdate = (type, skip) => {
+  const handleReappointmentUpdate = () => {
     delete basicForm[baseKey];
     delete basicForm.undefined;
     getIsSubmitClicked(true);
+    setIsEdited(false);
     // setIsChanged(false);
   };
 

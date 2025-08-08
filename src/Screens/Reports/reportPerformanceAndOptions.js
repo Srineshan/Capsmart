@@ -24,9 +24,10 @@ import ReportsFullScreen from './../../images/reportsFullScreen.png';
 import ReportsShare from './../../images/reportsShare.png';
 import DoctorAnime from './../../images/doctorAnime.png';
 import Info from './../../images/info.png';
+import CrossPink from "./../../images/crossPink.png";
 import SaveReport from './saveReport';
 import { format } from 'date-fns';
-
+import { Tooltip } from "@mui/material";
 import style from './index.module.scss';
 import { GET, POST } from '../dataSaver';
 import CommonSearchField from '../../Components/CommonFields/CommonSearchField';
@@ -71,6 +72,7 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
         staffReappointmentTracker: 'Staff Reappointment Status Tracker',
         locumStaffRenewalStatusTracker: 'Locum Staff Renewal Status Tracker',
         staffbyTypes: 'Staff Reappointments Application Status',
+        locumStaffbyTypes: ' Locum Renewal / Extension Application Status',
         scheduledActivity: "Scheduled Activity/ Services - Forcasted To Actual",
         scheduledActivityByContract: "Scheduled Activity/ Services - Forcasted To Actual By Contract",
         complianceStatus: "Proof Of Documentation Status By Contractor",
@@ -143,6 +145,7 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
         'timesheetProcessingSummary': 'TIMESHEET_PROCESSING_SUMMARY',
         'listingOfTimesheetsNotPaid': 'LISTING_OF_TIMESHEETS_NOTPAID',
         'staffReappointmentTracker': 'SUBMITTED_TIMESHEETS_PAYMENT_STATUS',
+        'locumStaffRenewalStatusTracker': 'LOCUM_RENEWAL_STATUS_tRACKER',
         'contractDocumentsOnFile': 'CONTRACT_DOCUMENT_ON_FILE',
         'contractsWithABusinessEntity': 'CONTRACT_WITH_BUSINESS_ENTITY',
         'multiProviderContractsList': 'MULTI_PROVIDER_CONTRACT',
@@ -293,7 +296,8 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                 "positionType": dataToUseInReport?.selectedPosition !== "" ? [dataToUseInReport?.selectedPosition] : [],
                 "applicationCreationType": dataToUseInReport?.selectedApplicationType !== "" ? [dataToUseInReport?.selectedApplicationType] : [],
                 "applicationCurrentLevel": sessionStorage.getItem('workModeType'),
-                "staffReappointmentStatus": dataToUseInReport?.selectedReappointmentStatus ? [dataToUseInReport?.selectedReappointmentStatus] : []
+                "staffReappointmentStatus": dataToUseInReport?.selectedReappointmentStatus ? [dataToUseInReport?.selectedReappointmentStatus] : [],
+                "applicationSentStatus": dataToUseInReport?.selectedApplicationSentStatus ? [dataToUseInReport?.selectedApplicationSentStatus] : [],
             },
             filterDisplayNames: [
                 { name: 'Reporting Period used for this report', values: [`${dataToUseInReport?.fromToDisplay} - ${dataToUseInReport?.toToDisplay}`] },
@@ -303,6 +307,7 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                 { name: 'Position', values: dataToUseInReport?.selectedPosition !== "" ? [dataToUseInReport?.selectedPosition] : [] },
                 { name: 'Application Type', values: [availableApplicationTypes[dataToUseInReport?.selectedApplicationType] || 'All Application Type'] },
                 { name: 'Reappointment Status', values: [dataToUseInReport?.selectedReappointmentStatus || 'All Applications'] },
+                { name: 'Application Sent Status', values: [dataToUseInReport?.selectedApplicationSentStatus || 'All'] }
             ],
         }
         const formData = new FormData();
@@ -343,6 +348,7 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                 { name: 'Position', values: dataToUseInReport?.selectedPosition !== "" ? [dataToUseInReport?.selectedPosition] : [] },
                 { name: 'Application Type', values: [availableApplicationTypes[dataToUseInReport?.selectedApplicationType] || 'All Application Type'] },
                 { name: 'Reappointment Status', values: [dataToUseInReport?.selectedReappointmentStatus || 'All Applications'] },
+                { name: 'Application Sent Status', values: [dataToUseInReport?.selectedApplicationSentStatus || 'All'] }
             ],
         }
         const formData = new FormData();
@@ -545,7 +551,15 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                 <div className={`${Classes.DIALOG_BODY} ${style.deleteEcecutedContractDialogBackground}`}>
                     <div className={style.spaceBetween}>
                         <p className={`${style.extensionStyle} ${style.marginTop} ${style.bold}`}>Save This Report Output</p>
-                        <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => setShowSaveReportOutput(false)} />
+                        <Tooltip title="Click to Close" arrow>
+                        {/* <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => setShowSaveReportOutput(false)} /> */}
+                             <img
+                                src={CrossPink}
+                                alt="cross"
+                                className={`${style.crossStyleSave} ${style.cursorPointer} ${style.marginLeft}`}
+                                onClick={() => setShowSaveReportOutput(false)}
+                                />
+                        </Tooltip>
                     </div>
                     <div className={style.extensionBorder}></div>
                     <div className={`${style.padding10}`}>
@@ -562,18 +576,32 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                             </div>
                             <div>
                                 <div className={`${style.justifyCenter} ${style.marginTop20}`}>
+                                     <Tooltip title="Click to Save" arrow>
                                     <button className={`${style.saveButtonStyle} ${style.marginLeft20} ${style.cursorPointer} `} onClick={() => { handleDownload(); }}>Save</button>
+                                    </Tooltip>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </Dialog>
-            <Dialog isOpen={showReportSavedDialog} onClose={() => setShowReportSavedDialog(false)} className={`${style.reportSavedDialog} ${style.dialogPaddingBottom}`}>
-                <div className={`${Classes.DIALOG_BODY} ${style.deleteEcecutedContractDialogBackground}`}>
-                    <div className={style.justifyCenter}>
+            <Dialog isOpen={showReportSavedDialog} onClose={() => setShowReportSavedDialog(false)} className={`${style.dialogPaddingBottom}`}>
+                <div className={`${Classes.DIALOG_BODY} ${style.deleteEcecutedContractDialogBackgroundSave}`}>
+                    <div className={style.justifyEnd}>
+                     <Tooltip title="Click to Close" arrow>
+                        <img
+                        src={CrossPink}
+                        alt="cross"
+                        className={`${style.crossStyleSave} ${style.cursorPointer} ${style.marginLeft}`}
+                        onClick={() => {
+                            setShowReportSavedDialog(false);
+                        }}
+                        />
+                        </Tooltip>
+                        </div>
+                    {/* <div className={style.justifyCenter}>
                         <div className={style.reportIconStyle}></div>
-                    </div>
+                    </div> */}
                     <div className={style.reportSavedStyle}>Report Saved</div>
                 </div>
             </Dialog>

@@ -72,6 +72,8 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
   const [selectedMedicalDirective, setSelectedMedicalDirective] = useState();
   const [selectedMedicalDirectiveList, setSelectedMedicalDirectiveList] = useState();
   const [selectedApplicant, setSelectedApplicant] = useState();
+  const canadaData = sessionStorage.getItem('canadaData') !== 'undefined' ? JSON.parse(sessionStorage.getItem('canadaData')) : {};
+  const dateFormat = canadaData?.dateFormat || 'MMM dd, yyyy';
   const reactToPrintContent = useCallback(() => {
     return tableRef.current;
   }, []);
@@ -580,7 +582,17 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
       mdNameHoverText.push('Click to view the attestation Log for this Medical Directive by each Applicant')
       mdId.push(data?.medicalDirectives?.mdID);
       departmentSpecific.push(data?.medicalDirectives?.departmentSpecific ? `${data?.medicalDirectives?.departments?.map(data => data?.serviceAreaSpecific ? `${data?.serviceAreas?.map(specialty => `${data?.name} -  ${specialty?.name}`)?.join(', ')}` : data?.name)?.length > 3 ? `${data?.medicalDirectives?.departments?.map(data => data?.serviceAreaSpecific ? `${data?.serviceAreas?.map(specialty => `${data?.name} -  ${specialty?.name}`)?.join(', ')}` : data?.name)?.length} Departments` : data?.medicalDirectives?.departments?.map(data => data?.serviceAreaSpecific ? `${data?.serviceAreas?.map(specialty => `${data?.name} -  ${specialty?.name}`)?.join(', ')}` : data?.name)?.join(', ')}` : 'General')
-      departmentSpecificHover.push(data?.medicalDirectives?.departmentSpecific ? [`${data?.medicalDirectives?.departments?.map(data => data?.serviceAreaSpecific ? `${data?.serviceAreas?.map(specialty => `${data?.name} -  ${specialty?.name}`)}` : data?.name)}`] : ['General']);
+      if (data?.medicalDirectives?.departmentSpecific) {
+        const departments = data?.medicalDirectives?.departments?.flatMap(dept => {
+          if (dept?.serviceAreaSpecific) {
+            return dept?.serviceAreas?.map(specialty => `${dept?.name} - ${specialty?.name}`);
+          }
+          return [dept?.name];
+        });
+        departmentSpecificHover.push(departments);
+      } else {
+        departmentSpecificHover.push(['General']);
+      }
       attestedBy.push(data?.attestedCount > 0 ? data?.attestedCount : '-');
       notAttested.push(data?.notAttestedCount > 0 ? data?.notAttestedCount : '-')
       // action.push((data?.attestedCount !== 0 || data?.notAttestedCount !== 0) ? true : false);
@@ -722,7 +734,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
       applicantName.push(`${formatFirstNameLastName(data?.application?.applicant?.name?.firstName, data?.application?.applicant?.name?.lastName)}`);
       dept.push(`${data?.application?.basicDetailReferences?.department?.name} ${data?.application?.basicDetailReferences?.specialty?.name ? `- ${data?.application?.basicDetailReferences?.specialty?.name}` : ''}`)
       type.push(data?.application?.basicDetailReferences?.applicantType?.serviceProviderType)
-      attestationDate.push(data?.attestationLog?.esign?.signedDate ? result.parsedDate ? format(result.parsedDate, 'MMM dd, yyyy') : '-' : '-');
+      attestationDate.push(data?.attestationLog?.esign?.signedDate ? result.parsedDate ? format(result.parsedDate, dateFormat) : '-' : '-');
       actionItem.push(
         <div className={style.viewOrRtt} onClick={data?.attestationLog ? () => handleInnerSelectData(data) : () => { }}>{data?.attestationLog ? 'View' : 'Request'}</div>
       );
@@ -826,7 +838,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                     {/* Staff Reappointment Status {" "}({" "}{totalCount|| 0 }{" "}) */}
                     Medical Directive Attestation Log For Reappointment Staff With Applications Submitted ({currentTab === 'ByApplicants' ? applicantSummary?.length : currentTab === "ByMedicalDirective" ? medicalDirectiveSummary?.length : medicalDirectiveSummaryByDept?.length})
                   </div>
-                  <div className={style.currentStatusText}>{`Current status as of ${format(new Date(), 'MMM dd, yyyy')}`}</div>
+                  <div className={style.currentStatusText}>{`Current status as of ${format(new Date(), dateFormat)}`}</div>
                 </div>
                 <div className={`${style.displayInRow} ${style.noPrint}`}>
                   {selectedDepartment && (
@@ -1009,7 +1021,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                     {/* Staff Reappointment Status {" "}({" "}{totalCount|| 0 }{" "}) */}
                     {currentTab === "ByApplicants" ? `Medical Directive Attestation Log For ${selectedApplicant?.applicant?.name?.firstName} ${selectedApplicant?.applicant?.name?.lastName} (${selectedApplicant?.basicDetailReferences?.applicantType?.serviceProviderType}), ${selectedApplicant?.basicDetailReferences?.department?.name} ${selectedApplicant?.basicDetailReferences?.specialty?.name ? ` - ${selectedApplicant?.basicDetailReferences?.specialty?.name}` : ''}` : currentTab === 'ByMedicalDirective' ? `Attestation Log For ${selectedMedicalDirective?.mdID} - ${selectedMedicalDirective?.title}` : `Medical Directive Attestation Log For ${selectedDepartmentName}`}
                   </div>
-                  <div className={style.currentStatusText}>{`Current status as of ${format(new Date(), 'MMM dd, yyyy')}`}</div>
+                  <div className={style.currentStatusText}>{`Current status as of ${format(new Date(), dateFormat)}`}</div>
                   <div className={`${style.backButton} ${style.marginTop10} ${style.justifyCenter} ${style.cursorPointer}`} onClick={() => handleBackButton()}>
                     <div className={style.displayInRow}>
                       <ChevronLeftIcon sx={{ color: '#ffffff', fontSize: '20px' }} />
