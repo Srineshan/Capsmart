@@ -88,17 +88,17 @@
     width: 100%;
     // margin-left: 2%;
     margin-top: 3px;
-    border: 0.4000000059604645px solid $secondarycolor;
+    border: 0.4000000059604645px solid #9AAFB5;
     border-radius: 2px;
     padding: 10px 20px;
 }
 
 .alternativeBackground {
-    background: $secondarycolor 0% 0% no-repeat padding-box;
+    background: #FFFFFF 0% 0% no-repeat padding-box !important;
 }
 
 .alternativeBackgroundColor {
-    background-color: $secondarycolor !important;
+    background-color: #FFFFFF !important;
 }
 
 .displayInRow {
@@ -390,7 +390,7 @@
     height: 100%;
 }
 
-.flex{
+.flex {
     display: flex;
 }
 
@@ -564,9 +564,9 @@
     cursor: not-allowed !important;
 }
 
-@media print{
+@media print {
 
-  .tableData {
-    page-break-inside: avoid;
-  }
+    .tableData {
+        page-break-inside: avoid;
+    }
 }

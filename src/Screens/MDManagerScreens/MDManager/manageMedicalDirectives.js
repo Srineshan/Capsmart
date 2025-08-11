@@ -80,11 +80,13 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
     const [currentMdCount, setCurrentMdCount] = useState(0);
     const [revisionMdCount, setRevisionMdCount] = useState(0);
     const [outstandingMdCount, setOutstandingMdCount] = useState(0);
+    const [outstandingNotStartedCount, setOutstandinNotStartedCount] = useState(0);
     const [signOffMdCount, setSignOffMdCount] = useState(0);
     const [draftMdCount, setDraftMdCount] = useState(0);
     const [inactiveMdCount, setInactiveMdCount] = useState(0);
     const [sortField, setSortField] = useState("DEFAULT");
     const [sortValue, setSortValue] = useState("DESCENDING");
+    const [outstandingList, setOutstandingList] = useState();
     const [selectedMedicalDirective, setSelectedMedicalDirective] = useState();
     const [selectedMedicalDirectiveForApproval, setSelectedMedicalDirectiveForApproval] = useState();
     const [approvalNotes, setApprovalNotes] = useState('');
@@ -106,6 +108,196 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
     const publicKey = "-----BEGIN PUBLIC KEY-----MIGeMA0GCSqGSIb3DQEBAQUAA4GMADCBiAKBgHA5SDu30/8uQAqqkQE0NuY4ePBptMGufG6AWnC/88YVLXi4thh7M8VU6kElVJkfXL5DwlfVnwPb08+PK1EcaOWWtp2gdQitkohjZLB9zVE+0OtRrzSc33wItf7Iwisi5dHPggHvfOp5fr+QYWFMa/kKYl3SgNo8fryeLbKKalmdAgMBAAE=-----END PUBLIC KEY-----";
     const [encryptedText, setEncryptedText] = useState(CryptoJS.AES.encrypt(users?.userName + dateTime, publicKey).toString());
     const valuesToUse = viewRegistered ? (selectedOption === 'Current Medical Directives' ? registeredUsers : selectedOption === 'Draft Medical Directives' ? contractedServiceProviderUsers : selectedOption === 'Medical Directives Sign Off' ? deactivatedUsers : invitedUsers) : blockedUsers;
+    const attestationOutstandingList = {
+        "groups": [
+            {
+                "groupType": "NEW",
+                "stats": {
+                    "totalCount": 3,
+                    "attestedCount": 1,
+                    "notAttestedCount": 1,
+                    "partiallyAttestedCount": 1
+                },
+                "departments": [
+                    {
+                        "departmentId": "66dc4b370e34d3372e43f014",
+                        "departmentName": "Internal Medicine",
+                        "stats": {
+                            "totalCount": 1,
+                            "attestedCount": 0,
+                            "notAttestedCount": 0,
+                            "partiallyAttestedCount": 1
+                        },
+                        "specialties": [
+                            {
+                                "serviceAreaId": "66dc4b370e34d3372e43f012",
+                                "serviceAreaName": "Oncology",
+                                "stats": {
+                                    "totalCount": 1,
+                                    "attestedCount": 0,
+                                    "notAttestedCount": 0,
+                                    "partiallyAttestedCount": 1
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "departmentId": "66dc4b370e34d3372e43f009",
+                        "departmentName": "Hospital Medicine",
+                        "stats": {
+                            "totalCount": 2,
+                            "attestedCount": 1,
+                            "notAttestedCount": 1,
+                            "partiallyAttestedCount": 0
+                        },
+                        "specialties": []
+                    }
+                ]
+            },
+            {
+                "groupType": "REAPPOINTMENT",
+                "stats": {
+                    "totalCount": 2,
+                    "attestedCount": 0,
+                    "notAttestedCount": 2,
+                    "partiallyAttestedCount": 0
+                },
+                "departments": [
+                    {
+                        "departmentId": "66dc4b370e34d3372e43f014",
+                        "departmentName": "Internal Medicine",
+                        "stats": {
+                            "totalCount": 2,
+                            "attestedCount": 0,
+                            "notAttestedCount": 2,
+                            "partiallyAttestedCount": 0
+                        },
+                        "specialties": [
+                            {
+                                "serviceAreaId": "66dc4b370e34d3372e43f00a",
+                                "serviceAreaName": "Cardiology",
+                                "stats": {
+                                    "totalCount": 1,
+                                    "attestedCount": 0,
+                                    "notAttestedCount": 1,
+                                    "partiallyAttestedCount": 0
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "departmentId": "66dc4b370e34d3372e43f01f",
+                        "departmentName": "Surgery",
+                        "stats": {
+                            "totalCount": 1,
+                            "attestedCount": 0,
+                            "notAttestedCount": 1,
+                            "partiallyAttestedCount": 0
+                        },
+                        "specialties": [
+                            {
+                                "serviceAreaId": "66dc4b370e34d3372e43f01b",
+                                "serviceAreaName": "Dental & Oral Surgery",
+                                "stats": {
+                                    "totalCount": 1,
+                                    "attestedCount": 0,
+                                    "notAttestedCount": 1,
+                                    "partiallyAttestedCount": 0
+                                }
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "groupType": "LOCUM",
+                "stats": {
+                    "totalCount": 6,
+                    "attestedCount": 1,
+                    "notAttestedCount": 3,
+                    "partiallyAttestedCount": 2
+                },
+                "departments": [
+                    {
+                        "departmentId": "66dc4b370e34d3372e43f014",
+                        "departmentName": "Internal Medicine",
+                        "stats": {
+                            "totalCount": 2,
+                            "attestedCount": 0,
+                            "notAttestedCount": 1,
+                            "partiallyAttestedCount": 1
+                        },
+                        "specialties": [
+                            {
+                                "serviceAreaId": "66dc4b370e34d3372e43f00a",
+                                "serviceAreaName": "Cardiology",
+                                "stats": {
+                                    "totalCount": 1,
+                                    "attestedCount": 0,
+                                    "notAttestedCount": 1,
+                                    "partiallyAttestedCount": 0
+                                }
+                            },
+                            {
+                                "serviceAreaId": "66dc4b370e34d3372e43f012",
+                                "serviceAreaName": "Oncology",
+                                "stats": {
+                                    "totalCount": 1,
+                                    "attestedCount": 0,
+                                    "notAttestedCount": 0,
+                                    "partiallyAttestedCount": 1
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "departmentId": "66dc4b370e34d3372e43f004",
+                        "departmentName": "Anesthesia",
+                        "stats": {
+                            "totalCount": 1,
+                            "attestedCount": 0,
+                            "notAttestedCount": 0,
+                            "partiallyAttestedCount": 1
+                        },
+                        "specialties": []
+                    },
+                    {
+                        "departmentId": "66dc4b370e34d3372e43f01f",
+                        "departmentName": "Surgery",
+                        "stats": {
+                            "totalCount": 1,
+                            "attestedCount": 0,
+                            "notAttestedCount": 1,
+                            "partiallyAttestedCount": 0
+                        },
+                        "specialties": [
+                            {
+                                "serviceAreaId": "66dc4b370e34d3372e43f01b",
+                                "serviceAreaName": "Dental & Oral Surgery",
+                                "stats": {
+                                    "totalCount": 1,
+                                    "attestedCount": 0,
+                                    "notAttestedCount": 1,
+                                    "partiallyAttestedCount": 0
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "departmentId": "66dc4b370e34d3372e43f009",
+                        "departmentName": "Hospital Medicine",
+                        "stats": {
+                            "totalCount": 2,
+                            "attestedCount": 1,
+                            "notAttestedCount": 1,
+                            "partiallyAttestedCount": 0
+                        },
+                        "specialties": []
+                    }
+                ]
+            }
+        ]
+    }
     console.log(loggedInUser)
     useEffect(() => {
         getPublicationWorkflow();
@@ -116,6 +308,8 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
         // getMDList();
         getDashboardMetadata();
         getSignOffMeta();
+        if (selectedOption === "Attestations Outstanding")
+            getAttestationOutstanding()
     }, [selectedOption]);
 
     useEffect(() => {
@@ -300,8 +494,14 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
         setCurrentMdCount(dashboardMetadata?.active_md?.numberOfElements)
         setSignOffMdCount(dashboardMetadata?.sign_off?.numberOfElements)
         setRevisionMdCount(dashboardMetadata?.md_revisions?.numberOfElements)
-        setOutstandingMdCount(dashboardMetadata?.active_md?.numberOfElements)
+        setOutstandinNotStartedCount(dashboardMetadata?.attestation_outstanding?.notAttestedCount)
+        setOutstandingMdCount(dashboardMetadata?.attestation_outstanding?.numberOfElements)
         setDraftMdCount(dashboardMetadata?.draft_md?.numberOfElements)
+    }
+
+    const getAttestationOutstanding = async () => {
+        const { data: attestationOutstanding } = await GET(`medical-directive-service/medicalDirectives/attestationOutstanding`);
+        setOutstandingList(attestationOutstanding)
     }
 
     const userTileValues = async () => {
@@ -594,7 +794,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
 
     const getSignOffMeta = async () => {
         const response = await GET(
-            `medical-directive-service/medicalDirectives/signOff/meta`
+            `medical-directive-service/medicalDirectives/signOff/meta?role=${sessionStorage.getItem('workModeType')}`
         );
         setSignOffMeta(response?.data)
     }
@@ -634,6 +834,12 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
     let type = [];
     let checkbox = [];
     let action = [];
+    let expandedList = [];
+    let deptNames = [];
+    let deptTotalCount = [];
+    let deptAttestedAll = [];
+    let deptNotAttested = [];
+    let deptPartiallyAttested = [];
 
     const getValues = () => {
         dot = [];
@@ -688,6 +894,39 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
                 notAttested.push('-');
                 partiallyAttested.push('-');
                 revisionAssignedTo.push('-');
+                action.push(true);
+            })
+        } else if (selectedOption === "Attestations Outstanding") {
+            outstandingList?.forEach((group) => {
+                deptNames = [];
+                deptTotalCount = [];
+                deptAttestedAll = [];
+                deptNotAttested = [];
+                deptPartiallyAttested = [];
+
+                group?.departments?.forEach((dept) => {
+                    deptNames.push(dept?.name);
+                    deptTotalCount.push(dept?.stats?.totalCount);
+                    deptAttestedAll.push(dept?.stats?.attestedCount);
+                    deptNotAttested.push(dept?.stats?.notAttestedCount);
+                    deptPartiallyAttested.push(dept?.stats?.partiallyAttestedCount);
+                });
+
+                expandedList.push([
+                    { type: "text", value: deptNames },
+                    { type: "text", value: deptTotalCount },
+                    { type: "text", value: deptAttestedAll },
+                    { type: "text", value: deptNotAttested },
+                    { type: "text", value: deptPartiallyAttested },
+                ]);
+            });
+            console.log(expandedList, 'expandedList')
+            outstandingList?.map((data, index) => {
+                attestationCategory.push(data?.creationType)
+                totalCount.push(data?.stats?.totalCount)
+                attestedAll.push(data?.stats?.attestedCount)
+                notAttested.push(data?.stats?.notAttestedCount)
+                partiallyAttested.push(data?.stats?.partiallyAttestedCount)
                 action.push(true);
             })
         } else {
@@ -869,7 +1108,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
         <div>
             <div className={`${style.grid4} ${style.marginTop10}`}>
                 <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Current Medical Directives" bigNumber={currentMdCount} smallNum1={newMdCount} smallNum2={upcomingMdCount} smallText1="New Directives" smallText2="Upcoming For Review" currentTile="Current Medical Directives" topText='' smallNum1Color={style.greenSmallNumber} smallNum2Color={style.yellowSmallNumber} smallNum1SelectedColor={style.greenSmallNumberSelected} smallNum2SelectedColor={style.yellowSmallNumberSelected} />
-                <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Attestations Outstanding" bigNumber={0} smallNum1={0} smallNum2={0} smallText1="Not Started" smallText2="Past Due" currentTile="Attestations Outstanding" topText='' smallNum1Color={style.redSmallNumber} smallNum1SelectedColor={style.redSmallNumberSelected} smallNum2Color={style.redSmallNumber} smallNum2SelectedColor={style.redSmallNumberSelected} />
+                <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Attestations Outstanding" bigNumber={outstandingMdCount} smallNum1={outstandingNotStartedCount} smallNum2={0} smallText1="Not Started" smallText2="Past Due" currentTile="Attestations Outstanding" topText='' smallNum1Color={style.redSmallNumber} smallNum1SelectedColor={style.redSmallNumberSelected} smallNum2Color={style.redSmallNumber} smallNum2SelectedColor={style.redSmallNumberSelected} />
                 <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Medical Directives Sign Off" bigNumber={signOffMdCount} smallNum1="" smallNum2="" currentTile="Medical Directives Sign Off" topText='' />
                 <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Drafts / Revisions" bigNumber={draftMdCount} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="Draft Medical Directives" topText='' smallNum1Color={style.greenSmallNumber} smallNum2Color={style.redSmallNumber} smallNum1SelectedColor={style.greenSmallNumberSelected} smallNum2SelectedColor={style.redSmallNumberSelected} />
             </div>
@@ -965,7 +1204,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
                         <TableTwo
                             tableHeaderValues={tableHeaderValues}
                             tableDataValues={getValues()}
-                            tableData={selectedOption === "Medical Directives Sign Off" ? revisionList : dashboardData}
+                            tableData={selectedOption === "Medical Directives Sign Off" ? revisionList : selectedOption === "Attestations Outstanding" ? outstandingList : dashboardData}
                             gridStyle={selectedOption === 'Attestations Outstanding' ? style.outstandingGrid : selectedOption === 'Current Medical Directives' ? style.mdListGrid : selectedOption === 'Draft Medical Directives' ? style.draftGrid : selectedOption === 'Retire Medical Directives' ? style.mdListGrid : selectedSignOffOption === 'level-3' ? style.level3Grid : style.revisionGrid}
                             actions={selectedOption === "Medical Directives Sign Off" ? selectedSignOffOption === "level-3" ? actionsData : [] : actionsData}
                             // scrollStyle={style.contractScrollStyle}
@@ -982,6 +1221,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
                             onLimitChange={handleLimitChange}
                             checkedIds={checkedIds}
                             handleCheckboxClick={handleCheckboxClick}
+                            expandedList={expandedList}
                         />
                     </div>
                 </div>

@@ -55,6 +55,7 @@ const WorkModeDialog = ({ getIsOpen }) => {
           window.location.href = `${initialRoute}`;
           localStorage?.removeItem('initialRoute')
         } else if (userRole?.length === 1) {
+          sessionStorage.setItem("workModeType", userRole?.[0]);
           if (isHapicareUser) {
             window.location.pathname = "/applicant";
           } else {
@@ -67,6 +68,7 @@ const WorkModeDialog = ({ getIsOpen }) => {
           window.location.href = `${initialRoute}`;
           localStorage?.removeItem('initialRoute')
         } else if (userMDRole?.length === 1) {
+          sessionStorage.setItem("workModeType", userMDRole?.[0]);
           if (isHapicareUser) {
             window.location.pathname = "/mdManager/manageAttestation";
           } else {
