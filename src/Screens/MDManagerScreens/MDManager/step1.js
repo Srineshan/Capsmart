@@ -32,6 +32,7 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
     const [fileType, setFileType] = useState('');
     const [isDataLoading, setIdDataLoading] = useState(false);
     const [selectedDeptValue, setSelectedDeptValue] = useState("");
+    const selectedSite = sessionStorage.getItem('selectedSite') || ''
     useEffect(() => {
         getDepartmentList();
         getStaffList()
@@ -204,18 +205,25 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
             title: mdTitle,
             description: mdDescription,
             mdID: mdId,
-            departments: selectedDepartment?.map(deptData => (
+            sites: [
                 {
-                    id: deptData,
-                    name: departmentList?.filter(data => data?.id === deptData)?.[0]?.departmentName?.name,
-                    serviceAreas: filteredServiceAreas?.filter(data => data?.department?.id === deptData)?.filter(area =>
-                        selectedServiceArea?.includes(area?.id)
-                    ),
-                    excludedServiceAreas: [],
-                    serviceAreasExcluded: false,
-                    serviceAreaSpecific: selectedServiceArea?.length !== 0 ? true : false
+                    id: selectedSite,
+                    name: '',
+                    departmentSpecific: selectedDepartment?.length !== 0 ? true : false,
+                    departments: selectedDepartment?.map(deptData => (
+                        {
+                            id: deptData,
+                            name: departmentList?.filter(data => data?.id === deptData)?.[0]?.departmentName?.name,
+                            serviceAreas: filteredServiceAreas?.filter(data => data?.department?.id === deptData)?.filter(area =>
+                                selectedServiceArea?.includes(area?.id)
+                            ),
+                            excludedServiceAreas: [],
+                            serviceAreasExcluded: false,
+                            serviceAreaSpecific: selectedServiceArea?.length !== 0 ? true : false
+                        }
+                    ))
                 }
-            )),
+            ],
             // implementers: [],
             reviewFrequency: {
                 value: reviewFrequency === "EVERY_1_YEAR" ? 1 : reviewFrequency === "EVERY_2_YEARS" ? 2 : reviewFrequency === "EVERY_3_YEARS" ? 3 : 0,

@@ -40,6 +40,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
   const [applicationType, setApplicationType] = useState(() =>
     sessionStorage.getItem('applicationCreationType') || 'NEW'
   );
+  const selectedSite = sessionStorage.getItem('selectedSite') || ''
   const [tableData, setTableData] = useState([]);
   const [sortField, setSortField] = useState("DEFAULT");
   const [sortValue, setSortValue] = useState("DESCENDING");
@@ -186,7 +187,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
 
   const getMedicalDirectiveSummary = async () => {
     setIsLoadingImage(true);
-    const departmentParam = selectedDepartment || selectedServiceArea ? `&departmentSpecialties=${selectedDepartment}%23${selectedServiceArea ? selectedServiceArea : ''}` : "";
+    const departmentParam = selectedDepartment || selectedServiceArea ? `&siteDepartmentSpecialties=${selectedSite}%23${selectedDepartment}%23${selectedServiceArea ? selectedServiceArea : ''}` : "";
     const { data: medicalDirectiveSummary } = await GET(
       `medical-directive-service/medicalDirectives/summary?sortBy=${sortValue}&sortByField=${sortField}&limit=${limit}&searchText=${searchTermForTable}&isPaginationRequired=${limit === 9999 ? false : true}&offset=${page - 1}&isNewAppointment=${applicationType === 'NEW' ? true : false}&isReAppointment=${applicationType === 'NEW' ? false : true}${departmentParam}`
     );
@@ -201,19 +202,19 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
 
   const getMedicalDirectiveSummaryByDept = async () => {
     setIsLoadingImage(true);
-    const departmentParam = selectedDepartment || selectedServiceArea ? `&departmentSpecialties=${selectedDepartment}%23${selectedServiceArea}` : "";
+    const departmentParam = `&siteDepartmentSpecialty=${selectedSite}%23${selectedDepartment}%23${selectedServiceArea}`;
     const { data: medicalDirectiveSummary } = await GET(
-      `medical-directive-service/medicalDirectives/attestationSummaryByDepartment`
-      // `medical-directive-service/medicalDirectives/attestationSummaryByDepartment?sortBy=${sortValue}&sortByField=${sortField}&limit=${limit}&searchText=${searchTermForTable}&isPaginationRequired=${limit === 9999 ? false : true}&offset=${page - 1}&isNewAppointment=${applicationType === 'NEW' ? true : false}&isReAppointment=${applicationType === 'NEW' ? false : true}${departmentParam}`
+      // `medical-directive-service/medicalDirectives/attestationSummaryBySiteAndDepartment`
+      `medical-directive-service/medicalDirectives/attestationSummaryBySiteAndDepartment?sortBy=${sortValue}&sortByField=${sortField}&limit=${limit}&isPaginationRequired=${limit === 9999 ? false : true}&offset=${page - 1}${departmentParam}`
     );
-    setMedicalDirectiveSummaryByDept(medicalDirectiveSummary?.attestationCountByDepartment);
+    setMedicalDirectiveSummaryByDept(medicalDirectiveSummary?.attestationCountBySite?.[0]?.attestationCountByDepartment);
     setTotalCount(medicalDirectiveSummary?.numberOfElements);
     setIsLoadingImage(false);
   }
 
   const getMedicalDirectiveSummaryLevel2 = async (id) => {
     setIsLoadingImage(true);
-    const departmentParam = selectedDepartment || selectedServiceArea ? `&departmentSpecialties=${selectedDepartment}%23${selectedServiceArea}` : "";
+    const departmentParam = selectedDepartment || selectedServiceArea ? `&siteDepartmentSpecialties=${selectedSite}%23${selectedDepartment}%23${selectedServiceArea}` : "";
     const { data: medicalDirectiveSummaryLevel2 } = await GET(
       `medical-directive-service/medicalDirectives/${id}/summary?sortBy=${sortValue}&sortByField=${sortField}&limit=${limit}&searchText=${searchTermForTable}&isPaginationRequired=${limit === 9999 ? false : true}&offset=${page - 1}&isNewAppointment=${applicationType === 'NEW' ? true : false}&isReAppointment=${applicationType === 'NEW' ? false : true}${departmentParam}`
     );
@@ -251,7 +252,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
 
   const getApplicantSummary = async () => {
     setIsLoadingImage(true);
-    const departmentParam = selectedDepartment || selectedServiceArea ? `&siteDepartmentSpecialties=${selectedDepartment}%23${selectedServiceArea}` : "";
+    const departmentParam = selectedDepartment || selectedServiceArea ? `&siteDepartmentSpecialties=${selectedSite}%23${selectedDepartment}%23${selectedServiceArea}` : "";
     const { data: applicantSummary } = await GET(
       // `application-management-service/staff/attestationSummaryByUser?sortBy=${sortValue}&sortByField=${sortField}&limit=${limit}&searchText=${searchTermForTable}&isPaginationRequired=${limit === 9999 ? false : true}&offset=${page - 1}${departmentParam}${selectedApplicantType ? `&applicantTypeId=${selectedApplicantType}` : ''}`
       `medical-directive-service/medicalDirectives/attestationSummaryByUser?sortBy=${sortValue}&sortByField=${sortField}&limit=${limit}&searchText=${searchTermForTable}&isPaginationRequired=${limit === 9999 ? false : true}&offset=${page - 1}${departmentParam}`
@@ -542,8 +543,8 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
       applicantName.push(`${formatFirstNameLastName(data?.user?.name?.firstName, data?.user?.name?.lastName)}`);
       applicantNameHoverText.push('Click to view the attestation log for this Applicant by each Medical Directive')
       applicantId.push(data?.displayId ?? '-');
-      type.push(data?.basicDetailReferences?.applicantType?.serviceProviderType)
-      departmentSpecific.push(`${data?.basicDetailReferences?.department?.name} ${data?.basicDetailReferences?.specialty?.name ? `/ ${data?.basicDetailReferences?.specialty?.name}` : ''}`);
+      type.push(data?.user?.title?.title ?? '-')
+      departmentSpecific.push(`${data?.user?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.departmentName?.name ?? '-'} ${data?.user?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.serviceAreas?.name ? `/ ${data?.user?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.serviceAreas?.name}` : ''}`);
       attestedBy.push(data?.medicalDirectiveAttestation?.attestedCount > 0 ? data?.medicalDirectiveAttestation?.attestedCount : '0');
       notAttested.push(data?.medicalDirectiveAttestation?.notAttestedCount > 0 ? data?.medicalDirectiveAttestation?.notAttestedCount : '0')
       // action.push(true);

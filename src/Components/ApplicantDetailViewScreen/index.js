@@ -594,7 +594,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
 
   const getPreApplicationMedicalDirectives = async () => {
     try {
-      const { data: applicationsMedicalDirectivesDetails } = await GET(`application-management-service/staff/${applicationId}/medicalDirectivesAttestationSummary`);
+      const { data: applicationsMedicalDirectivesDetails } = await GET(`medical-directive-service/medicalDirectives/byUser?userId=${users?.id}`);
       setApplicationsMedicalDirectives(applicationsMedicalDirectivesDetails);
       setAttestedMDCount(applicationsMedicalDirectivesDetails?.completed?.length || 0)
       setPastDueMDCount(applicationsMedicalDirectivesDetails?.pastDue?.length || 0)

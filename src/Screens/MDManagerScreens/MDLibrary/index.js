@@ -53,6 +53,7 @@ const MDLibrary = () => {
     const [groupList, setGroupList] = useState([]);
     const [mdTitle, setMdTitle] = useState('');
     const [selectedDepartmentSpecialities, setSelectedDepartmentSpecialities] = useState('');
+    const selectedSite = sessionStorage.getItem('selectedSite') || ''
     const [selectedGroups, setSelectedGroups] = useState([]);
     const [selectedCombinations, setSelectedCombinations] = useState([]);
     const [selectedAuthor, setSelectedAuthor] = useState('');
@@ -304,7 +305,7 @@ const MDLibrary = () => {
     }
 
     const getLibraryMeta = async () => {
-        let url = `medical-directive-service/medicalDirectives/library/meta?departmentSpecialties=${[selectedDepartmentSpecialities !== "" ? selectedDepartmentSpecialities : departmentId]}`
+        let url = `medical-directive-service/medicalDirectives/library/meta?siteDepartmentSpecialties=${[selectedDepartmentSpecialities !== "" ? `${selectedSite}%23${selectedDepartmentSpecialities}` : `${selectedSite}%23${departmentId}`]}`
         const response = await axios(`${baseUrl()}/${url}`, {
             method: "GET",
             headers: {

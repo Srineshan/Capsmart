@@ -82,7 +82,7 @@ const MDManagerStep4 = ({ setStep3, setStep4, mdValue, setMdValue, setSelectedMd
         // const response = await GET(
         //     `application-management-service/staff?status=ACTIVE&sortByField=STAFF_NAME&isPaginationRequired=${false}&limit=${9999}`
         // );
-        const response = await GET(
+        const response = await POST(
             `user-management-service/user/allStaffs?status=ACTIVE&roles=${groupType === "ACKNOWLEDGEMENT" ? ["Acknowledger"] : groupType === "SIGN_OFF" ? ["Reviewer / Approver"] : groupType === "ATTESTATION" ? ["Attester"] : []}`
         );
         console.log(response.data);
