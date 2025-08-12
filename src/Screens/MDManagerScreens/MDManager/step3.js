@@ -134,6 +134,7 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
             id: id,
             name: matchedStaff?.name,
             email: matchedStaff?.email,
+            sites: matchedStaff?.sites
         };
     });
 

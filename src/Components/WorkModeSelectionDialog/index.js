@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { GET } from "../../Screens/dataSaver";
+import { GET, TenantID } from "../../Screens/dataSaver";
 import { Dialog, Classes } from "@blueprintjs/core";
 import UserLogo2 from "../../images/userLogo2.png";
 import HODimg from "../../images/HeadofDepartment.svg";
@@ -32,18 +32,25 @@ const WorkModeDialog = ({ getIsOpen }) => {
   const [selectedWorkSpace, setSelectedWorkSpace] = useState('');
   const [selectedEntity, setSelectedEntity] = useState('');
   const [showEntitySelection, setShowEntitySelection] = useState(false);
+  const [selectedSite, setSelectedSite] = useState('')
   const [workModeType, setWorkModeType] = useState(() =>
     sessionStorage.getItem("workModeType") || ''
   );
   const isMasterEntity = sessionStorage.getItem('masterEntity') ? sessionStorage.getItem('masterEntity') === "true" ? true : false : ''
   const [hoveredRole, setHoveredRole] = useState(null);
   const [userData, setUserData] = useState();
+  const [entitySiteList, setEntitySiteList] = useState([]);
   const isHapicareUser = isMasterEntity;
 
   useEffect(() => {
     sessionStorage.setItem("fromSummary", false);
     setUserDetails();
   }, []);
+
+  useEffect(() => {
+    if (userData)
+      getEntitySites()
+  }, [userData, isHapicareUser])
 
   useEffect(() => {
     if ((userRole?.length >= 1 && userMDRole?.length >= 1) && selectedWorkSpace !== '') {
@@ -55,6 +62,7 @@ const WorkModeDialog = ({ getIsOpen }) => {
           window.location.href = `${initialRoute}`;
           localStorage?.removeItem('initialRoute')
         } else if (userRole?.length === 1) {
+          sessionStorage.setItem("workModeType", userRole?.[0]);
           if (isHapicareUser) {
             window.location.pathname = "/applicant";
           } else {
@@ -67,10 +75,17 @@ const WorkModeDialog = ({ getIsOpen }) => {
           window.location.href = `${initialRoute}`;
           localStorage?.removeItem('initialRoute')
         } else if (userMDRole?.length === 1) {
+          sessionStorage.setItem("workModeType", userMDRole?.[0]);
           if (isHapicareUser) {
             window.location.pathname = "/mdManager/manageAttestation";
           } else {
-            window.location.pathname = "/mdManager";
+            if (userMDRole?.[0] === "Acknowledger") {
+              window.location.pathname = "/mdManager/manageAcknowledgement";
+            } else if (userMDRole?.[0] === "Reviewer / Approver") {
+              window.location.pathname = "/mdManager/manageSignOff";
+            } else {
+              window.location.pathname = "/mdManager";
+            }
           }
         }
       }
@@ -103,7 +118,13 @@ const WorkModeDialog = ({ getIsOpen }) => {
       localStorage?.removeItem('initialRoute')
     } else {
       if (selectedWorkSpace === "MD_MANAGER") {
-        window.location.pathname = "/mdManager";
+        if (role === "Acknowledger") {
+          window.location.pathname = "/mdManager/manageAcknowledgement";
+        } else if (role === "Reviewer / Approver") {
+          window.location.pathname = "/mdManager/manageSignOff";
+        } else {
+          window.location.pathname = "/mdManager";
+        }
       } else {
         window.location.pathname = "/applications";
         sessionStorage.setItem("applicationCreationType", "REAPPOINTMENT");
@@ -132,6 +153,26 @@ const WorkModeDialog = ({ getIsOpen }) => {
     setShowEntitySelection(false);
     setUserRole(userData?.organizations?.filter(data => data?.tenant?.tenantId === value)?.[0]?.roles?.map((data) => data?.roleName) || []);
     setUserMDRole(userData?.organizations?.filter(data => data?.tenant?.tenantId === value)?.[0]?.mdRoles?.map((data) => data?.roleName) || [])
+  }
+
+  const getEntitySites = async () => {
+    const { data: entitySites } = await GET(
+      `entity-service/entity/ListOfIds?entityIds=${isHapicareUser ? userData?.organizations?.filter(data => data?.tenant?.tenantId) : TenantID}`
+    );
+    setEntitySiteList(entitySites);
+    if ((entitySites?.length === 1 && entitySites?.[0]?.sites?.length === 1)) {
+      sessionStorage.setItem('selectedSite', entitySites?.[0]?.sites?.[0]?.id)
+    }
+  }
+
+  const handleSelectedSite = (id) => {
+    setSelectedSite(id);
+    sessionStorage.setItem('selectedSite', id)
+  }
+
+  const handleMDLSelect = () => {
+    sessionStorage.setItem("workModeType", userMDRole?.[0]);
+    window.location.pathname = `/mdManager/libraries/${TenantID}/${entitySiteList?.[0]?.sites?.[0]?.departmentList?.departments?.[0]?.id}`;
   }
 
   return (
@@ -166,10 +207,25 @@ const WorkModeDialog = ({ getIsOpen }) => {
               </div>
             </div>
           )}
+          {((entitySiteList?.length >= 1 && entitySiteList?.[0]?.sites?.length >= 1)) && (
+            <div>
+              <div className={`${style.heading}  ${style.padding} ${selectedSite !== '' ? style.disabledView : ''}`}>{selectedSite === '' ? 'Select Site' : 'Selected Site'}</div>
+              <div className={`${style.workSpaceDesc}  ${selectedSite !== '' ? style.disabledView : ''}`}>Your User Account Is Associated With Multiple Sites:</div>
+              <CommonDivider className={style.dividerMargin} />
+              <div className={`${style.threeCol} ${style.padding}`}>
+                {entitySiteList?.[0]?.sites?.map(site => (
+                  <div className={`${style.applicationSelectionCard} ${selectedSite === site?.id ? style.selectedApplicationCard : ''} ${style.justifyCenter} ${style.verticalAlignCenter} ${style.cursorPointer} ${style.marginRight}`} onClick={() => handleSelectedSite(site?.id)}>
+                    <img src={entitySiteList?.[0]?.logo?.file?.fileURL} alt="" className={style.applicationImage} />
+                    <div className={style.marginLeft10}><div className={style.siteNamePrimary}>{site?.siteName?.siteName}</div></div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
           {((userRole?.length >= 1 && userMDRole?.length >= 1)) && (
             <div>
-              <div className={`${style.heading}  ${style.padding}`}>Select Application</div>
-              <div className={`${style.workSpaceDesc} `}>Select the Application you want to work in:</div>
+              <div className={`${style.heading}  ${style.padding} ${selectedWorkSpace !== '' ? style.disabledView : ''}`}>{selectedWorkSpace === '' ? 'Select Application' : 'Selected Application'}</div>
+              <div className={`${style.workSpaceDesc}  ${selectedWorkSpace !== '' ? style.disabledView : ''}`}>Select the Application you want to work in:</div>
               <CommonDivider className={style.dividerMargin} />
               <div className={`${style.threeCol} ${style.padding}`}>
                 {["CAP_MANAGER", "MD_MANAGER"]?.map(data => (
@@ -339,6 +395,14 @@ const WorkModeDialog = ({ getIsOpen }) => {
                   </div>
                 )}
               </div>
+              {selectedWorkSpace === "MD_MANAGER" && (
+                <div className={style.padding}>
+                  <div className={`${style.applicationSelectionCard} ${style.justifyCenter} ${style.verticalAlignCenter} ${style.cursorPointer} ${style.marginRight}`} onClick={() => handleMDLSelect()}>
+                    <img src={MDManager} alt="" className={style.applicationImage} />
+                    <div className={style.marginLeft10}>{<div className={style.applicationNamePrimary}>Medical Directives Library</div>}</div>
+                  </div>
+                </div>
+              )}
               <div>
                 <p className={`${style.poweredBy}`}>© {new Date().getFullYear()} HapiCare,Inc. - All Rights Reserved</p>
               </div>

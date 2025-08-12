@@ -315,7 +315,7 @@ const MedicalDirectivesMECApproval = () => {
                                     {...params}
                                     inputProps={{
                                         ...params.inputProps,
-                                        placeholder: 'Enter MAC Approval Date To Continue',
+                                        placeholder: 'Enter MEC Approval Date To Continue',
                                         readOnly: true
                                     }}
                                     variant="outlined"

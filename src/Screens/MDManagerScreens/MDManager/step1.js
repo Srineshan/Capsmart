@@ -8,7 +8,7 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import style from './index.module.scss';
 import CommonSelectField from '../../../Components/CommonFields/CommonSelectField';
 import { format } from 'date-fns';
-import { GET, POST, PUT } from '../../dataSaver';
+import { GET, POST, PUT, TenantID } from '../../dataSaver';
 import { ErrorToaster2, SuccessToaster2 } from '../../../utils/toaster';
 import CommonMultiSelectField from '../../../Components/CommonFields/CommonMultiSelectField';
 import { area } from 'd3';
@@ -25,6 +25,7 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
     const [selectedDepartment, setSelectedDepartment] = useState([]);
     const [selectedServiceArea, setSelectedServiceArea] = useState([]);
     const [departmentList, setDepartmentList] = useState([]);
+    const [entitySiteList, setEntitySiteList] = useState([]);
     const [staffList, setStaffList] = useState([]);
     const [selectedStaff, setSelectedStaff] = useState('');
     const [reviewFrequency, setReviewFrequency] = useState('');
@@ -36,6 +37,7 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
     useEffect(() => {
         getDepartmentList();
         getStaffList()
+        getEntitySites()
     }, [])
 
     useEffect(() => {
@@ -50,7 +52,7 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
         console.log(mdValue, 'mdValue', mdValue?.departments?.flatMap(data => data?.serviceAreas?.map(innerData => innerData?.id) || []) || [])
         if (mdValue) {
             setIdDataLoading(true)
-            setSelectedDepartment(mdValue?.departments?.map(data => data?.id))
+            setSelectedDepartment(mdValue?.sites?.[0]?.departments?.map(data => data?.id))
             setFileType(mdValue?.file ? getFileTypeFromUrl(mdValue?.file?.fileURL) : '')
             setPreviewUrl(mdValue?.file ? mdValue?.file?.fileURL : '')
             setMdTitle(mdValue?.title)
@@ -74,8 +76,8 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
 
     const filteredServiceAreas = useMemo(() => {
         const areas = departmentList
-            .filter(dept => selectedDepartment.includes(dept.id))
-            .flatMap(dept => dept?.serviceAreas || []);
+            ?.filter(dept => selectedDepartment?.includes(dept.id))
+            ?.flatMap(dept => dept?.serviceAreas || []);
         console.log(areas, departmentList, selectedDepartment)
         // Optional: remove duplicates
         return [...new Set(areas)];
@@ -190,6 +192,13 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
         setDepartmentList(department);
     }
 
+    const getEntitySites = async () => {
+        const { data: entitySites } = await GET(
+            `entity-service/entity/ListOfIds?entityIds=${TenantID}`
+        );
+        setEntitySiteList(entitySites?.[0]);
+    }
+
     const getStaffList = async () => {
         const response = await GET(
             `application-management-service/staff?status=ACTIVE&sortByField=STAFF_NAME&isPaginationRequired=${false}&limit=${9999}`
@@ -208,7 +217,7 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
             sites: [
                 {
                     id: selectedSite,
-                    name: '',
+                    name: entitySiteList?.sites?.filter(site => site?.id === selectedSite)?.[0]?.siteName?.siteName,
                     departmentSpecific: selectedDepartment?.length !== 0 ? true : false,
                     departments: selectedDepartment?.map(deptData => (
                         {

@@ -252,7 +252,7 @@ const ManageMDAcknowledgement = () => {
                         </div>
                     </div>
                     <div>
-                        <div className={`${style.medicalDirectivesCard} ${style.displayInCol}`}>
+                        <div className={`${style.medicalDirectivesRightCard} ${style.displayInCol}`}>
                             <div className={style.approvalHeading}>Acknowledgement: In Progress</div>
                             <div className={style.marginTop}>
                                 <FormControl>

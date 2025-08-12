@@ -152,6 +152,7 @@ const MDLibrary = () => {
             id: id,
             name: matchedStaff?.applicant?.name,
             email: matchedStaff?.applicant?.email,
+            sites: matchedStaff?.sites
         };
     });
 
