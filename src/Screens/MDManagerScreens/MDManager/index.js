@@ -64,6 +64,7 @@ const MDManager = () => {
   const [to, setTo] = useState(null);
   const [calendarStart, setCalendarStart] = useState(false);
   const [selectedMdId, setSelectedMdId] = useState('');
+  const selectedSite = sessionStorage.getItem('selectedSite') || ''
   useEffect(() => {
     console.log(selectedOption, 'option')
     if (selectedOptionValue !== undefined && selectedOptionValue !== null) {
@@ -122,7 +123,7 @@ const MDManager = () => {
   }) || [];
 
   const advancedSearch = {
-    departmentSpecialties: selectedCombinations?.map(item => item.replaceAll("|", "#")),
+    siteDepartmentSpecialties: selectedCombinations?.map(item => `${selectedSite}#${item.replaceAll("|", "#")}`),
     mdID: mdId,
     title: mdTitle,
     groupIds: selectedGroups?.length !== 0 ? selectedGroups : [],
@@ -421,9 +422,9 @@ const MDManager = () => {
                         widthValue='250px'
                         // firstOptionLabel={'All'}
                         // firstOptionValue={''}
-                        valueList={transformedOptions.map(option => option?.value)}
-                        labelList={transformedOptions.map(option => option?.label)}
-                        disabledList={transformedOptions.map(() => false)}
+                        valueList={transformedOptions?.map(option => option?.value)}
+                        labelList={transformedOptions?.map(option => option?.label)}
+                        disabledList={transformedOptions?.map(() => false)}
                         renderValue={(selected) =>
                           selected
                             ?.map(val => {

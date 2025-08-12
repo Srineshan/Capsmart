@@ -275,7 +275,7 @@ const MDLibrary = () => {
         // setDashboardData(dashboardData?.medicalDirectives);
         // setTotalTableCount(dashboardData?.numberOfElements);
         let data = {
-            departmentSpecialties: [selectedDepartmentSpecialities !== "" ? selectedDepartmentSpecialities : departmentId],
+            siteDepartmentSpecialties: [selectedDepartmentSpecialities !== "" ? `${selectedSite}#${selectedDepartmentSpecialities}` : `${selectedSite}#${departmentId}`],
             searchText: searchTermForTable,
             mdID: mdId,
             title: mdTitle,

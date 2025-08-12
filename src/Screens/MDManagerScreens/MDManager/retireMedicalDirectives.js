@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Fragment, useRef, useCallback, createRef } from "react";
+import React, { useState, useEffect, Fragment, useRef, useCallback, createRef, useMemo } from "react";
 import { GET, POST, TenantID } from "./../../dataSaver";
 import SideBar from "../../../Components/Sidebar";
 import Navbar from "../../../Components/Navbar";
@@ -66,6 +66,7 @@ const RetireMedicalDirective = () => {
     const [selectedDepartmentSpecialities, setSelectedDepartmentSpecialities] = useState([]);
     const [selectedGroups, setSelectedGroups] = useState([]);
     const [selectedAuthor, setSelectedAuthor] = useState('');
+    const selectedSite = sessionStorage.getItem('selectedSite') || ''
     const [from, setFrom] = useState(null);
     const [to, setTo] = useState(null);
     const [calendarStart, setCalendarStart] = useState(false);
@@ -74,6 +75,19 @@ const RetireMedicalDirective = () => {
     const isPaginationRequired = limit === 9999 ? false : true;
     const [page, setPage] = useState(1);
     const [totalTableCount, setTotalTableCount] = useState(0);
+
+    const advancedSearch = useMemo(() => ({
+        siteDepartmentSpecialties: selectedCombinations?.map(item => `${selectedSite}#${item.replaceAll("|", "#")}`),
+        mdID: mdId,
+        title: mdTitle,
+        groupIds: selectedGroups?.length !== 0 ? selectedGroups : [],
+        authorIds: selectedAuthor !== "" ? [selectedAuthor] : [],
+        fromDate: from,
+        toDate: to,
+        // "noOfDays": 0,
+        searchText: searchTerm
+    }), [selectedCombinations, mdId, mdTitle, selectedGroups, selectedAuthor, from, to, searchTerm])
+
     useEffect(() => {
         console.log(selectedOption, 'option')
         if (selectedOptionValue !== undefined && selectedOptionValue !== null) {
@@ -88,8 +102,16 @@ const RetireMedicalDirective = () => {
         getDepartmentList();
         getStaffList();
         getGroupList();
-        getDashboard();
     }, []);
+
+    useEffect(() => {
+        const controller = new AbortController();
+        const signal = controller.signal;
+
+        getDashboard(signal);
+
+        return () => controller.abort();
+    }, [limit, page, advancedSearch]);
 
     // useEffect(() => {
     //   if (entityId !== "" && entityId !== undefined) {
@@ -131,18 +153,6 @@ const RetireMedicalDirective = () => {
 
         return [departmentEntry, ...serviceAreaEntries]; // Include department first, then service areas
     }) || [];
-
-    const advancedSearch = {
-        departmentSpecialties: selectedCombinations?.map(item => item.replaceAll("|", "#")),
-        mdID: mdId,
-        title: mdTitle,
-        groupIds: selectedGroups?.length !== 0 ? selectedGroups : [],
-        authorIds: selectedAuthor !== "" ? [selectedAuthor] : [],
-        fromDate: from,
-        toDate: to,
-        // "noOfDays": 0,
-        searchText: searchTerm
-    }
 
     const getSelectedOption = (value) => {
         setSelectedOption(value);

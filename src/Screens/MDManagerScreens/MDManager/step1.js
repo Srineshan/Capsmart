@@ -255,7 +255,7 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
             groups: [],
             triggerForNewAppointment: false,
             triggerForReAppointment: false,
-            departmentSpecific: selectedDepartment !== '' ? true : false,
+            siteSpecific: selectedSite !== '' ? true : false,
         }
 
         if (mdValue?.id) {
