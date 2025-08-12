@@ -202,10 +202,10 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
 
   const getMedicalDirectiveSummaryByDept = async () => {
     setIsLoadingImage(true);
-    const departmentParam = `&siteDepartmentSpecialty=${selectedSite}%23${selectedDepartment}%23${selectedServiceArea}`;
+    // const departmentParam = `&siteDepartmentSpecialty=${selectedSite}%23${selectedDepartment}%23${selectedServiceArea}`;
     const { data: medicalDirectiveSummary } = await GET(
       // `medical-directive-service/medicalDirectives/attestationSummaryBySiteAndDepartment`
-      `medical-directive-service/medicalDirectives/attestationSummaryBySiteAndDepartment?sortBy=${sortValue}&sortByField=${sortField}&limit=${limit}&isPaginationRequired=${limit === 9999 ? false : true}&offset=${page - 1}${departmentParam}`
+      `medical-directive-service/medicalDirectives/attestationSummaryBySiteAndDepartment?sortBy=${sortValue}&sortByField=${sortField}&limit=${limit}&isPaginationRequired=${limit === 9999 ? false : true}&offset=${page - 1}&sites=${selectedSite}`
     );
     setMedicalDirectiveSummaryByDept(medicalDirectiveSummary?.attestationCountBySite?.[0]?.attestationCountByDepartment);
     setTotalCount(medicalDirectiveSummary?.numberOfElements);
