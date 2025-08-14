@@ -34,7 +34,7 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tableData, hidePagination, gridStyle, actions, getSelectedPage, totalCount, page, scrollStyle, tableSortValues, heading, subHeading, subHeading2, onClickText, onClickFunction, buttonComponent, getHandleSort, sortValue, checkedIds, filteredIds, isUploadYourDocTable, hasVerificationAttempted, searchTermForTable, searchCount, setSearchTermForTable, onLimitChange, searchField }) => {
+const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tableData, hidePagination, gridStyle, actions, getSelectedPage, totalCount, page, scrollStyle, tableSortValues, heading, subHeading, subHeading2, onClickText, onClickFunction, buttonComponent, getHandleSort, sortValue, checkedIds, filteredIds, isUploadYourDocTable, hasVerificationAttempted, searchTermForTable, searchCount, setSearchTermForTable, onLimitChange, searchField, expandedList }) => {
     const [showOptions, setShowOptions] = useState(false);
     const [selectedMenuIndex, setSelectedMenuIndex] = useState(-1);
     const [selectedMenuColIndex, setSelectedMenuColIndex] = useState(-1);
@@ -1423,12 +1423,31 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                     ) : null)
                                 ))}
                             </div >
-                            {index === expandedIndex && (
+                            {(index === expandedIndex && expandedList?.[expandedIndex]?.length !== 0) &&
+                                expandedList?.[expandedIndex]?.[0]?.value?.map((expandedData, innerIndex) => (
+                                    <div className={`${style.tableData}  ${expandedIndex % 2 === 0 ? style.alternativeBackground : ''} ${style.marginTop5} ${gridStyle}`} key={innerIndex}>
+                                        {expandedList?.[expandedIndex].map((expandedData, statIndex) =>
+                                            expandedData?.type === "text" ? (
+                                                <Tooltip title={expandedData?.tooltipValueText?.[innerIndex]} arrow>
+                                                    <div
+                                                        className={`
+                                                                ${style.tableDataFontStyle}
+                                                                ${style.verticalAlignCenter}
+                                                                ${style.cursorArrow}
+                                                                ${expandedData?.onClickFunction ? `${style.cursorPointer} ${style.textHoverColor}` : ''}
+                                                                ${statIndex === 0 ? style.marginLeft30 : ''}
+                                                            `}
+                                                        onClick={expandedData?.onClickFunction ? () => { expandedData?.onClickFunction(expandedData, innerIndex); } : undefined}
+                                                        dangerouslySetInnerHTML={{
+                                                            __html: getHighlightedHTML(String(expandedData?.value?.[innerIndex] || ''), searchTermForTable)
+                                                        }}
+                                                    />
+                                                </Tooltip>
+                                            ) : '')}
+                                    </div>
+                                ))
+                            }
 
-                                <div className={`${style.tableData} ${style.marginTop5} ${gridStyle}`} key={index}>
-
-                                </div>
-                            )}
                         </>
                     )) : (
                         // <div>

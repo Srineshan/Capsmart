@@ -250,19 +250,19 @@ const WorkModeDialog = ({ getIsOpen }) => {
                 <div className={`${style.workSpaceDesc} `}>Your User Role Allows You To Access Multiple Workspaces, Select the workspace you want to work in:</div>
               </div>
               <div className={`${style.threeCol} ${style.padding2}`}>
-                {userRoleToDisplay?.includes("MD Recordkeeper") && (
+                {userRoleToDisplay?.includes("MD Librarian") && (
                   <div
                     className={`${style.applicationSelectionCard} ${style.verticalAlignCenter} ${style.cursorPointer} ${style.marginRight}`}
-                    onClick={() => handleWorkModeSelection("MD Recordkeeper")}
-                    onMouseEnter={() => setHoveredRole("MD Recordkeeper")}
+                    onClick={() => handleWorkModeSelection("MD Librarian")}
+                    onMouseEnter={() => setHoveredRole("MD Librarian")}
                     onMouseLeave={() => setHoveredRole(null)}
                   >
                     <img
-                      src={hoveredRole === "MD Recordkeeper" ? SMimgHover : SMimg}
-                      alt="MD Recordkeeper"
+                      src={hoveredRole === "MD Librarian" ? SMimgHover : SMimg}
+                      alt="MD Librarian"
                       className={` ${style.cursorPointer} ${style.applicationImage} ${style.marginRight}`}
                     />
-                    <p className={`${hoveredRole === "MD Recordkeeper" ? style.roleTitleHover : style.roleTitle} ${style.marginTop10}`}>MD Recordkeeper</p>
+                    <p className={`${hoveredRole === "MD Librarian" ? style.roleTitleHover : style.roleTitle} ${style.marginTop10}`}>MD Librarian</p>
                   </div>
                 )}
                 {userRoleToDisplay?.includes("Acknowledger") && (
@@ -295,19 +295,19 @@ const WorkModeDialog = ({ getIsOpen }) => {
                     <p className={`${hoveredRole === "Reviewer / Approver" ? style.roleTitleHover : style.roleTitle} ${style.marginTop10}`}>Reviewer / Approver</p>
                   </div>
                 )}
-                {userRoleToDisplay?.includes("Author") && (
+                {userRoleToDisplay?.includes("Author / Owner") && (
                   <div
                     className={`${style.applicationSelectionCard} ${style.verticalAlignCenter} ${style.cursorPointer} ${style.marginRight}`}
-                    onClick={() => handleWorkModeSelection("Author")}
-                    onMouseEnter={() => setHoveredRole("Author")}
+                    onClick={() => handleWorkModeSelection("Author / Owner")}
+                    onMouseEnter={() => setHoveredRole("Author / Owner")}
                     onMouseLeave={() => setHoveredRole(null)}
                   >
                     <img
-                      src={hoveredRole === "Author" ? SAimgHover : SAimg}
-                      alt="Author"
+                      src={hoveredRole === "Author / Owner" ? SAimgHover : SAimg}
+                      alt="Author / Owner"
                       className={` ${style.applicationImage} ${style.cursorPointer} ${style.marginRight}`}
                     />
-                    <p className={`${hoveredRole === "Author" ? style.roleTitleHover : style.roleTitle} ${style.marginTop10}`}>Author</p>
+                    <p className={`${hoveredRole === "Author / Owner" ? style.roleTitleHover : style.roleTitle} ${style.marginTop10}`}>Author / Owner</p>
                   </div>
                 )}
                 {userRoleToDisplay?.includes("Staff Manager") && (

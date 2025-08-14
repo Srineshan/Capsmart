@@ -102,6 +102,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
     let cookie = new Cookie();
     let userDetails = cookie.get('user');
     const users = jwt(userDetails);
+    const [outstandingList, setOutstandingList] = useState();
     const publicKey = "-----BEGIN PUBLIC KEY-----MIGeMA0GCSqGSIb3DQEBAQUAA4GMADCBiAKBgHA5SDu30/8uQAqqkQE0NuY4ePBptMGufG6AWnC/88YVLXi4thh7M8VU6kElVJkfXL5DwlfVnwPb08+PK1EcaOWWtp2gdQitkohjZLB9zVE+0OtRrzSc33wItf7Iwisi5dHPggHvfOp5fr+QYWFMa/kKYl3SgNo8fryeLbKKalmdAgMBAAE=-----END PUBLIC KEY-----";
     const [encryptedText, setEncryptedText] = useState(CryptoJS.AES.encrypt(users?.userName + dateTime, publicKey).toString());
     const valuesToUse = viewRegistered ? (selectedOption === 'Current Medical Directives' ? registeredUsers : selectedOption === 'Draft Medical Directives' ? contractedServiceProviderUsers : selectedOption === 'Medical Directives Sign Off' ? deactivatedUsers : invitedUsers) : blockedUsers;
@@ -115,6 +116,8 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
         // getMDList();
         getDashboardMetadata();
         getSignOffMeta();
+        if (selectedOption === "Attestations Outstanding")
+            getAttestationOutstanding()
     }, [selectedOption]);
 
     useEffect(() => {
@@ -217,7 +220,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
         "MD ID",
         "Department / Division",
         "Assigned To",
-        "Due Date",
+        selectedSignOffOption === 'level-1' ? "Acknowledged" : "Signed off",
         "Last Updated",
         "",
     ];
@@ -231,7 +234,6 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
         "Title",
         "MD ID",
         "Department / Division",
-        "Due Date",
         "Last Updated",
         "Action",
     ];
@@ -301,6 +303,11 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
         setRevisionMdCount(dashboardMetadata?.md_revisions?.numberOfElements)
         setOutstandingMdCount(dashboardMetadata?.active_md?.numberOfElements)
         setDraftMdCount(dashboardMetadata?.draft_md?.numberOfElements)
+    }
+
+    const getAttestationOutstanding = async () => {
+        const { data: attestationOutstanding } = await GET(`medical-directive-service/medicalDirectives/attestationOutstanding`);
+        setOutstandingList(attestationOutstanding)
     }
 
     const userTileValues = async () => {
@@ -573,7 +580,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
     }
 
     const getRevisionList = async () => {
-        let url = sessionStorage.getItem('workModeType') === "MD Recordkeeper" ?
+        let url = sessionStorage.getItem('workModeType') === "MD Librarian" ?
             `medical-directive-service/medicalDirectives/signOff?tab=${selectedSignOffOption}&role=${sessionStorage.getItem('workModeType')}` :
             `medical-directive-service/medicalDirectives/signOff?tab=${selectedSignOffOption}&role=${sessionStorage.getItem('workModeType')}&assignedUserIds=${loggedInUser?.id}`
         const response = await GET(url);
@@ -633,6 +640,13 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
     let type = [];
     let checkbox = [];
     let action = [];
+    let expandedList = [];
+    let deptNames = [];
+    let deptTotalCount = [];
+    let deptAttestedAll = [];
+    let deptNotAttested = [];
+    let deptPartiallyAttested = [];
+    let acknowledgedOrSignedOff = [];
 
     const getValues = () => {
         dot = [];
@@ -653,6 +667,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
         notAttested = [];
         partiallyAttested = [];
         revisionAssignedTo = [];
+        acknowledgedOrSignedOff = []
         lastUpdated = [];
         version = [];
         type = [];
@@ -686,7 +701,50 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
                 attestedAll.push('-');
                 notAttested.push('-');
                 partiallyAttested.push('-');
-                revisionAssignedTo.push(data?.groups?.map(group => group?.name)?.join(', '));
+                const totalCompletedCount = data?.groups?.reduce(
+                    (sum, group) => sum + (group?.completedCount || 0),
+                    0
+                );
+
+                const totalPendingCount = data?.groups?.reduce(
+                    (sum, group) => sum + (group?.pendingCount || 0),
+                    0
+                );
+                acknowledgedOrSignedOff.push(`${totalCompletedCount}/${totalPendingCount}`)
+                revisionAssignedTo.push(data?.groups?.map(group => group?.group?.name)?.join(', '));
+                action.push(true);
+            })
+        } else if (selectedOption === "Attestations Outstanding") {
+            outstandingList?.forEach((group) => {
+                deptNames = [];
+                deptTotalCount = [];
+                deptAttestedAll = [];
+                deptNotAttested = [];
+                deptPartiallyAttested = [];
+
+                group?.departments?.forEach((dept) => {
+                    deptNames.push(dept?.name);
+                    deptTotalCount.push(dept?.stats?.totalCount);
+                    deptAttestedAll.push(dept?.stats?.attestedCount);
+                    deptNotAttested.push(dept?.stats?.notAttestedCount);
+                    deptPartiallyAttested.push(dept?.stats?.partiallyAttestedCount);
+                });
+
+                expandedList.push([
+                    { type: "text", value: deptNames },
+                    { type: "text", value: deptTotalCount },
+                    { type: "text", value: deptAttestedAll },
+                    { type: "text", value: deptNotAttested },
+                    { type: "text", value: deptPartiallyAttested },
+                ]);
+            });
+            console.log(expandedList, 'expandedList')
+            outstandingList?.map((data, index) => {
+                attestationCategory.push(data?.appointmentType)
+                totalCount.push(data?.stats?.totalCount)
+                attestedAll.push(data?.stats?.attestedCount)
+                notAttested.push(data?.stats?.notAttestedCount)
+                partiallyAttested.push(data?.stats?.partiallyAttestedCount)
                 action.push(true);
             })
         } else {
@@ -738,7 +796,11 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
                     ? [{ "type": "text", "value": revisionAssignedTo },]
                     : []
             ),
-            { "type": "text", "value": dueDate },
+            ...(
+                selectedSignOffOption !== "level-3"
+                    ? [{ "type": "text", "value": acknowledgedOrSignedOff },]
+                    : []
+            ),
             { "type": "text", "value": lastRevision },
             ...(
                 selectedSignOffOption === "level-3"
@@ -973,7 +1035,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
                         <TableTwo
                             tableHeaderValues={tableHeaderValues}
                             tableDataValues={getValues()}
-                            tableData={selectedOption === "Medical Directives Sign Off" ? revisionList : dashboardData}
+                            tableData={selectedOption === "Medical Directives Sign Off" ? revisionList : selectedOption === "Attestations Outstanding" ? outstandingList : dashboardData}
                             gridStyle={selectedOption === 'Attestations Outstanding' ? style.outstandingGrid : selectedOption === 'Current Medical Directives' ? style.mdListGrid : selectedOption === 'Draft Medical Directives' ? style.draftGrid : selectedOption === 'Retire Medical Directives' ? style.mdListGrid : selectedSignOffOption === 'level-3' ? style.level3Grid : style.revisionGrid}
                             actions={selectedOption === "Medical Directives Sign Off" ? selectedSignOffOption === "level-3" ? actionsData : [] : actionsData}
                             scrollStyle={style.scrollStyle}
@@ -990,6 +1052,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
                             onLimitChange={handleLimitChange}
                             checkedIds={checkedIds}
                             handleCheckboxClick={handleCheckboxClick}
+                            expandedList={expandedList}
                         />
                     </div>
                 </div>

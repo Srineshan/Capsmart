@@ -872,7 +872,7 @@ const Navbar = () => {
             </>
           ) : (
             <>
-              {workModeType === "MD Recordkeeper" ? (
+              {workModeType === "MD Librarian" ? (
                 <Link to={"/mdManager"} className={style.noFontStyle}>
                   <div
                     className={`${style.menuStyle} ${(window.location.pathname.includes("/mdManager") && window.location.pathname === "/mdManager") &&
