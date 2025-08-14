@@ -132,7 +132,8 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         ATTESTATION_STATUS: ['Attestation Status'],
         ATTESTATION_DATE: ['Attestation Date'],
         TENURE_END_DATE: ['Days to Expiration', 'Expiry Date', 'Last End Date', 'Days Since Expired'],
-        TENURE_START_DATE: ['Start Date']
+        TENURE_START_DATE: ['Start Date'],
+        USER_NAME: ['Name'],
     }
 
     const availableSortValueEnum = {
@@ -169,7 +170,8 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         'Expiry Date': 'TENURE_END_DATE',
         'Start Date': 'TENURE_START_DATE',
         'Last End Date': 'TENURE_END_DATE',
-        'Days Since Expired': 'TENURE_END_DATE'
+        'Days Since Expired': 'TENURE_END_DATE',
+        'Name': 'USER_NAME'
     }
 
 

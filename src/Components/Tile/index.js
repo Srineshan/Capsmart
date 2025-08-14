@@ -181,15 +181,17 @@ const Tile = ({
                   <span className={(smallTextSelected === smallText1 && selectedContract === currentTile) ? style.smallTextSelected : ''} onClick={() => handleSmallTextSelected(smallText1)}>{smallText1}</span>
                 </Tooltip>
                 <span
-                  className={`${smallNum1 !== "-"
-                    ? selectedContract === currentTile
-                      ? smallNum1SelectedColor
-                      : smallNum1Color
-                    : style.defaultSmallNumber
-                    } ${style.countDesign}`}
+                  className={`
+                    ${(smallNum1 !== "-" && smallNum1 !== 0 && smallNum1 !== "" && smallNum1)
+                      ? selectedContract === currentTile
+                        ? smallNum1SelectedColor
+                        : smallNum1Color
+                      : style.defaultSmallNumber
+                    } 
+                    ${style.countDesign}`}
                   onClick={() => handleSmallTextSelected(smallText1)}
                 >
-                  {smallNum1}
+                  {smallNum1 ?? '-'}
                 </span>
               </span>
             )}
@@ -214,7 +216,7 @@ const Tile = ({
                   <span className={(smallTextSelected === smallText2 && selectedContract === currentTile) ? style.smallTextSelected : ''} onClick={() => handleSmallTextSelected(smallText2)}>{smallText2}</span>
                 </Tooltip>
                 <span
-                  className={`${smallNum2 !== "-"
+                  className={`${(smallNum2 !== "-" && smallNum2 !== 0 && smallNum2 !== "" && smallNum2)
                     ? selectedContract === currentTile
                       ? smallNum2SelectedColor
                       : smallNum2Color
@@ -222,7 +224,7 @@ const Tile = ({
                     } ${style.countDesign}`}
                   onClick={() => handleSmallTextSelected(smallText2)}
                 >
-                  {smallNum2}
+                  {smallNum2 ?? '-'}
                 </span>
               </span>
             )}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Fragment, useCallback, useRef, createRef } from "react";
+import React, { useState, useEffect, Fragment, useCallback, useRef, createRef, useMemo } from "react";
 import { Classes, Dialog } from '@blueprintjs/core';
 import { GET, POST } from "./../../../dataSaver";
 import SideBar from "../../../../Components/Sidebar";
@@ -91,8 +91,10 @@ const ManageAttestation = () => {
     const [medicalDirectivesAttestation, setMedicalDirectivesAttestation] = useState(false);
     const [totalTableCount, setTotalTableCount] = useState(0);
     const [showReviewAndAttestDialog, setShowReviewAndAttestDialog] = useState(false);
-    const advancedSearch = {
-        departmentSpecialties: selectedCombinations?.map(item => item.replaceAll("|", "#")),
+    const selectedSite = sessionStorage.getItem('selectedSite') || ''
+
+    const advancedSearch = useMemo(() => ({
+        siteDepartmentSpecialties: selectedCombinations?.map(item => `${selectedSite}#${item.replaceAll("|", "#")}`),
         mdID: mdId,
         title: mdTitle,
         groupIds: selectedGroups?.length !== 0 ? selectedGroups : [],
@@ -101,7 +103,8 @@ const ManageAttestation = () => {
         toDate: to,
         // "noOfDays": 0,
         searchText: searchTerm
-    }
+    }), [selectedCombinations, mdId, mdTitle, selectedGroups, selectedAuthor, from, to, searchTerm])
+
     useEffect(() => {
         console.log(selectedOption, 'option')
         if (selectedOptionValue !== undefined && selectedOptionValue !== null) {
@@ -142,7 +145,7 @@ const ManageAttestation = () => {
         getAttestationList(signal);
 
         return () => controller.abort();
-    }, [selectedOption]);
+    }, [selectedOption, advancedSearch]);
 
     // useEffect(() => {
     //     if (entityId !== "" && entityId !== undefined) {

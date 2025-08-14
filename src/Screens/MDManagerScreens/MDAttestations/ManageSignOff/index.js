@@ -145,14 +145,14 @@ const ManageSignOff = () => {
         if (loggedInUser?.id) {
             getAttestationMetaList();
         }
-    }, [loggedInUser]);
+    }, [loggedInUser?.id]);
 
     useEffect(() => {
         const controller = new AbortController();
         const signal = controller.signal;
         getAttestationList(signal);
         return () => controller.abort();
-    }, [selectedOption, sortField, sortValue]);
+    }, [selectedOption, sortField, sortValue, loggedInUser?.id]);
 
     // useEffect(() => {
     //     if (entityId !== "" && entityId !== undefined) {
@@ -386,16 +386,16 @@ const ManageSignOff = () => {
 
 
     const reviewAndAttestHeaderValues = [
-        <CommonCheckBox
-            size="medium"
-            checked={checkedIds?.length === attestationList?.length}
-            onChange={handleSelectAllClick}
-        />,
+        // <CommonCheckBox
+        //     size="medium"
+        //     checked={checkedIds?.length === attestationList?.length}
+        //     onChange={handleSelectAllClick}
+        // />,
         "",
         "Title",
         "MD ID",
         "Type",
-        "Attestation Due Date",
+        "Sign Off Due Date",
         "Last Updated",
         ""
     ];
@@ -403,11 +403,11 @@ const ManageSignOff = () => {
         "Title",
         "MD ID",
         "Type",
-        "Last Attestation Date",
+        "Signed Off Date",
     ];
 
     const reviewAndAttestSortValues = [
-        false,
+        // false,
         false,
         true,
         true,
@@ -463,13 +463,13 @@ const ManageSignOff = () => {
             id.push(data?.medicalDirective?.mdID);
             type.push(data?.medicalDirective?.revisionStatus === "NA" ? 'New' : "Revised");
             dueDate.push(data?.dueDate);
-            attestedDate.push(data?.attestationLog?.createdDate ? format(new Date(data?.attestationLog?.createdDate), 'MMM dd, yyyy') : '-');
+            attestedDate.push(data?.logs?.[0]?.createdDate ? format(new Date(data?.logs?.[0]?.createdDate), 'MMM dd, yyyy') : '-');
             lastUpdated.push(data?.medicalDirective?.lastModifiedDate ? format(new Date(data?.medicalDirective?.lastModifiedDate), 'MMM dd, yyyy') : '-');
-            signImg.push(<img src={BlueSign} alt="" className={`${style.blueSignImgStyle} ${style.cursorPointer}`} onClick={() => handleEdit(data)} />);
+            signImg.push(<Tooltip title="Click to Review & Sign Off" arrow><img src={BlueSign} alt="" className={`${style.blueSignImgStyle} ${style.cursorPointer}`} onClick={() => handleEdit(data)} /></Tooltip>);
         });
 
         return selectedOption === "pending" ? [
-            { type: "checkbox", value: checkbox },
+            // { type: "checkbox", value: checkbox },
             { type: "dot", value: title },
             { type: "text", value: title },
             { type: "text", value: id },
@@ -759,16 +759,16 @@ const ManageSignOff = () => {
                     <div>
                         <div className={`${style.grid2} ${style.marginTop10}`}>
                             <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Review & Sign Off" bigNumber={attestationMeta?.['level-2']?.pending} smallNum1={attestationMeta?.pending_md?.notPastDueCount} smallNum2={attestationMeta?.pending_md?.pastDueCount} smallText1="Not Done" smallText2="Past Due" currentTile="pending" topText='' smallNum1Color={style.redSmallNumber} smallNum2Color={style.redSmallNumber} smallNum1SelectedColor={style.redSmallNumberSelected} smallNum2SelectedColor={style.redSmallNumberSelected} />
-                            <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Signed Off On" bigNumber={attestationMeta?.['level-2']?.completed} smallNum1="" smallNum2="" currentTile="completed" topText='' />
+                            <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Reviewed & Signed Off" bigNumber={attestationMeta?.['level-2']?.completed} smallNum1="" smallNum2="" currentTile="completed" topText='' />
                         </div>
                         <div
                             className={`${style.spaceBetween} ${style.marginLeft30} ${style.marginTop20} `}
                         >
                             <div className={`${style.tabs}`}>
                                 <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Review & Sign Off" tileCount={attestationMeta?.['level-2']?.pending} currentTile="pending" />
-                                <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Signed Off On" tileCount={attestationMeta?.['level-2']?.completed} currentTile="completed" />
+                                <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Reviewed & Signed Off" tileCount={attestationMeta?.['level-2']?.completed} currentTile="completed" />
                             </div>
-                            <div>
+                            {/* <div>
                                 <button
                                     className={`${style.borderNone} ${style.backgroundBlue} ${style.borderRadius5} ${style.cursorPointer} ${checkedIds?.length === 0 ? style.disabled : ''}`}
                                     onClick={checkedIds?.length === 0 ? () => { } : () => setShowReviewAndAttestDialog(true)} // Open dialog on button click
@@ -778,7 +778,7 @@ const ManageSignOff = () => {
                                         <span>Review & Attest</span>
                                     </div>
                                 </button>
-                            </div>
+                            </div> */}
                         </div>
                         <div className={`${style.bigCardStyle}`}>
                             <div ref={componentRef} className={style.marginTop20}>
@@ -789,7 +789,7 @@ const ManageSignOff = () => {
                                         tableData={attestationList}
                                         gridStyle={selectedOption === 'pending' ? style.reviewAndAttestGrid : style.attestedGrid}
                                         // actions={actionsData}
-                                        // scrollStyle={style.contractScrollStyle}
+                                        scrollStyle={style.scrollStyle}
                                         tableSortValues={tableSortValues}
                                         getHandleSort={getHandleSort}
                                         sortValue={{ sortBy: sortValue, sortByField: sortField }}

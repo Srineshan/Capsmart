@@ -228,7 +228,9 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
                             ),
                             excludedServiceAreas: [],
                             serviceAreasExcluded: false,
-                            serviceAreaSpecific: selectedServiceArea?.length !== 0 ? true : false
+                            serviceAreaSpecific: filteredServiceAreas?.filter(data => data?.department?.id === deptData)?.filter(area =>
+                                selectedServiceArea?.includes(area?.id)
+                            )?.length !== 0 ? true : false
                         }
                     ))
                 }

@@ -146,7 +146,7 @@ const ManageAcknowledgement = () => {
         if (loggedInUser?.id) {
             getAttestationMetaList();
         }
-    }, []);
+    }, [loggedInUser?.id]);
 
     useEffect(() => {
         const controller = new AbortController();
@@ -157,7 +157,7 @@ const ManageAcknowledgement = () => {
         }
 
         return () => controller.abort();
-    }, [selectedOption, sortField, sortValue]);
+    }, [selectedOption, sortField, sortValue, loggedInUser?.id]);
 
     // useEffect(() => {
     //     if (entityId !== "" && entityId !== undefined) {
@@ -391,16 +391,16 @@ const ManageAcknowledgement = () => {
 
 
     const reviewAndAttestHeaderValues = [
-        <CommonCheckBox
-            size="medium"
-            checked={checkedIds?.length === attestationList?.length}
-            onChange={handleSelectAllClick}
-        />,
+        // <CommonCheckBox
+        //     size="medium"
+        //     checked={checkedIds?.length === attestationList?.length}
+        //     onChange={handleSelectAllClick}
+        // />,
         "",
         "Title",
         "MD ID",
         "Type",
-        "Attestation Due Date",
+        "Due Date",
         "Last Updated",
         ""
     ];
@@ -408,11 +408,11 @@ const ManageAcknowledgement = () => {
         "Title",
         "MD ID",
         "Type",
-        "Last Attestation Date",
+        "Acknowledged Date",
     ];
 
     const reviewAndAttestSortValues = [
-        false,
+        // false,
         false,
         true,
         true,
@@ -468,13 +468,13 @@ const ManageAcknowledgement = () => {
             id.push(data?.medicalDirective?.mdID);
             type.push(data?.medicalDirective?.revisionStatus === "NA" ? 'New' : "Revised");
             dueDate.push(data?.dueDate);
-            attestedDate.push(data?.attestationLog?.createdDate ? format(new Date(data?.attestationLog?.createdDate), 'MMM dd, yyyy') : '-');
+            attestedDate.push(data?.logs?.[0]?.createdDate ? format(new Date(data?.logs?.[0]?.createdDate), 'MMM dd, yyyy') : '-');
             lastUpdated.push(data?.medicalDirective?.lastModifiedDate ? format(new Date(data?.medicalDirective?.lastModifiedDate), 'MMM dd, yyyy') : '-');
-            signImg.push(<img src={BlueSign} alt="" className={`${style.blueSignImgStyle} ${style.cursorPointer}`} onClick={() => handleEdit(data)} />);
+            signImg.push(<Tooltip title="Click to Review & Attest" arrow><img src={BlueSign} alt="" className={`${style.blueSignImgStyle} ${style.cursorPointer}`} onClick={() => handleEdit(data)} /></Tooltip>);
         });
 
         return selectedOption === "pending" ? [
-            { type: "checkbox", value: checkbox },
+            // { type: "checkbox", value: checkbox },
             { type: "dot", value: title },
             { type: "text", value: title },
             { type: "text", value: id },
@@ -773,7 +773,7 @@ const ManageAcknowledgement = () => {
                                 <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Review & Attest" tileCount={attestationMeta?.['level-1']?.pending} currentTile="pending" />
                                 <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Attested" tileCount={attestationMeta?.['level-1']?.completed} currentTile="completed" />
                             </div>
-                            <div>
+                            {/* <div>
                                 <button
                                     className={`${style.borderNone} ${style.backgroundBlue} ${style.borderRadius5} ${style.cursorPointer} ${checkedIds?.length === 0 ? style.disabled : ''}`}
                                     onClick={checkedIds?.length === 0 ? () => { } : () => setShowReviewAndAttestDialog(true)} // Open dialog on button click
@@ -783,7 +783,7 @@ const ManageAcknowledgement = () => {
                                         <span>Review & Attest</span>
                                     </div>
                                 </button>
-                            </div>
+                            </div> */}
                         </div>
                         <div className={`${style.bigCardStyle}`}>
                             <div ref={componentRef} className={style.marginTop20}>
@@ -794,7 +794,7 @@ const ManageAcknowledgement = () => {
                                         tableData={attestationList}
                                         gridStyle={selectedOption === 'pending' ? style.reviewAndAttestGrid : style.attestedGrid}
                                         // actions={actionsData}
-                                        // scrollStyle={style.contractScrollStyle}
+                                        scrollStyle={style.scrollStyle}
                                         tableSortValues={tableSortValues}
                                         getHandleSort={getHandleSort}
                                         sortValue={{ sortBy: sortValue, sortByField: sortField }}

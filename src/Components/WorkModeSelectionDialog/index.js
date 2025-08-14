@@ -25,6 +25,7 @@ import CommonDivider from "../CommonFields/CommonDivider";
 const WorkModeDialog = ({ getIsOpen }) => {
   let cookie = new Cookie();
   let userDetails = cookie.get("user");
+  let entityId = cookie.get("entityId");
   const users = jwt(userDetails);
   const [userRoleToDisplay, setUserRoleToDisplay] = useState([]);
   const [userRole, setUserRole] = useState([]);
@@ -48,9 +49,10 @@ const WorkModeDialog = ({ getIsOpen }) => {
   }, []);
 
   useEffect(() => {
-    if (userData)
+    if (userData && isHapicareUser !== undefined)
       getEntitySites()
-  }, [userData, isHapicareUser])
+    console.log(userData, isHapicareUser, entityId, 'check')
+  }, [userData, isHapicareUser, entityId])
 
   useEffect(() => {
     if ((userRole?.length >= 1 && userMDRole?.length >= 1) && selectedWorkSpace !== '') {
@@ -98,12 +100,12 @@ const WorkModeDialog = ({ getIsOpen }) => {
     const { data: userData } = await GET(`user-management-service/user/${users?.id}`);
     setUserData(userData)
     sessionStorage.setItem("user", JSON.stringify(userData));
-    if (userData?.organizations?.length > 1 && selectedEntity === '') {
-      setShowEntitySelection(true)
-    } else {
-      setUserRole(!isHapicareUser ? userData?.roles?.map((data) => data?.roleName) || [] : userData?.organizations?.[0]?.roles?.map((data) => data?.roleName) || []);
-      setUserMDRole(!isHapicareUser ? userData?.mdRoles?.map((data) => data?.roleName) || [] : userData?.organizations?.[0]?.mdRoles?.map((data) => data?.roleName) || [])
-    }
+    // if (userData?.organizations?.length > 1 && selectedEntity === '') {
+    //   setShowEntitySelection(true)
+    // } else {
+    setUserRole(!isHapicareUser ? userData?.roles?.map((data) => data?.roleName) || [] : userData?.organizations?.[0]?.roles?.map((data) => data?.roleName) || []);
+    setUserMDRole(!isHapicareUser ? userData?.mdRoles?.map((data) => data?.roleName) || [] : userData?.organizations?.[0]?.mdRoles?.map((data) => data?.roleName) || [])
+    // }
     console.log("userRoletimes", userRole)
   };
 
@@ -157,7 +159,7 @@ const WorkModeDialog = ({ getIsOpen }) => {
 
   const getEntitySites = async () => {
     const { data: entitySites } = await GET(
-      `entity-service/entity/ListOfIds?entityIds=${isHapicareUser ? userData?.organizations?.filter(data => data?.tenant?.tenantId) : TenantID}`
+      `entity-service/entity/ListOfIds?entityIds=${isHapicareUser ? userData?.organizations?.map(data => data?.tenant?.tenantId) : entityId}`
     );
     setEntitySiteList(entitySites);
     if ((entitySites?.length === 1 && entitySites?.[0]?.sites?.length === 1)) {
@@ -172,7 +174,7 @@ const WorkModeDialog = ({ getIsOpen }) => {
 
   const handleMDLSelect = () => {
     sessionStorage.setItem("workModeType", userMDRole?.[0]);
-    window.location.pathname = `/mdManager/libraries/${TenantID}/${entitySiteList?.[0]?.sites?.[0]?.departmentList?.departments?.[0]?.id}`;
+    window.location.pathname = `/mdManager/libraries/${entityId}/${entitySiteList?.[0]?.sites?.[0]?.departmentList?.departments?.[0]?.id}`;
   }
 
   return (
@@ -186,7 +188,7 @@ const WorkModeDialog = ({ getIsOpen }) => {
       > */}
       <div className={`${style.backGroundStyle} ${style.fullHeight} ${style.verticalAlignCenter} ${style.justifyCenter}`}>
         <div className={`${style.workSpaceCard}`}>
-          {showEntitySelection && (
+          {/* {showEntitySelection && (
             <div className={`${style.fullHeight} ${style.verticalAlignCenter} ${style.justifyCenter}`}>
               <div>
                 <div className={style.workSpaceCard}>
@@ -206,19 +208,23 @@ const WorkModeDialog = ({ getIsOpen }) => {
                 </div>
               </div>
             </div>
-          )}
-          {((entitySiteList?.length >= 1 && entitySiteList?.[0]?.sites?.length >= 1)) && (
+          )} */}
+          <div>
+            <div className={`${style.heading}  ${style.padding}`}>Your user account Login: {userData?.email?.officialEmail}</div>
+            <CommonDivider className={style.dividerMargin} />
+          </div>
+          {((entitySiteList?.length >= 1 || entitySiteList?.[0]?.sites?.length > 1)) && (
             <div>
               <div className={`${style.heading}  ${style.padding} ${selectedSite !== '' ? style.disabledView : ''}`}>{selectedSite === '' ? 'Select Site' : 'Selected Site'}</div>
               <div className={`${style.workSpaceDesc}  ${selectedSite !== '' ? style.disabledView : ''}`}>Your User Account Is Associated With Multiple Sites:</div>
               <CommonDivider className={style.dividerMargin} />
               <div className={`${style.threeCol} ${style.padding}`}>
-                {entitySiteList?.[0]?.sites?.map(site => (
-                  <div className={`${style.applicationSelectionCard} ${selectedSite === site?.id ? style.selectedApplicationCard : ''} ${style.justifyCenter} ${style.verticalAlignCenter} ${style.cursorPointer} ${style.marginRight}`} onClick={() => handleSelectedSite(site?.id)}>
-                    <img src={entitySiteList?.[0]?.logo?.file?.fileURL} alt="" className={style.applicationImage} />
+                {entitySiteList?.map(entity => entity?.sites?.map(site => (
+                  <div className={`${style.applicationSelectionCard} ${selectedSite === site?.id ? style.selectedApplicationCard : ''} ${style.justifyCenter} ${style.verticalAlignCenter} ${style.cursorPointer} ${style.marginRight}`} onClick={!isHapicareUser ? () => { handleSelectedSite(site?.id) } : () => { handleSelectedSite(site?.id); handleSelectedEntity(entity?.id) }}>
+                    <img src={entity?.logo?.file?.fileURL} alt="" className={style.applicationImage} />
                     <div className={style.marginLeft10}><div className={style.siteNamePrimary}>{site?.siteName?.siteName}</div></div>
                   </div>
-                ))}
+                )))}
               </div>
             </div>
           )}
@@ -240,7 +246,7 @@ const WorkModeDialog = ({ getIsOpen }) => {
           {selectedWorkSpace !== "" && (
             <div>
               <div>
-                <div className={`${style.heading}  ${style.padding}`}>Select Workspace</div>
+                <div className={`${style.heading}  ${style.padding}`}>Select {selectedWorkSpace === "CAP_MANAGER" ? 'CAP Manager' : 'MD Manager'} Workspace</div>
                 <div className={`${style.workSpaceDesc} `}>Your User Role Allows You To Access Multiple Workspaces, Select the workspace you want to work in:</div>
               </div>
               <div className={`${style.threeCol} ${style.padding2}`}>
@@ -395,14 +401,14 @@ const WorkModeDialog = ({ getIsOpen }) => {
                   </div>
                 )}
               </div>
-              {selectedWorkSpace === "MD_MANAGER" && (
+              {/* {selectedWorkSpace === "MD_MANAGER" && (
                 <div className={style.padding}>
                   <div className={`${style.applicationSelectionCard} ${style.justifyCenter} ${style.verticalAlignCenter} ${style.cursorPointer} ${style.marginRight}`} onClick={() => handleMDLSelect()}>
                     <img src={MDManager} alt="" className={style.applicationImage} />
                     <div className={style.marginLeft10}>{<div className={style.applicationNamePrimary}>Medical Directives Library</div>}</div>
                   </div>
                 </div>
-              )}
+              )} */}
               <div>
                 <p className={`${style.poweredBy}`}>© {new Date().getFullYear()} HapiCare,Inc. - All Rights Reserved</p>
               </div>

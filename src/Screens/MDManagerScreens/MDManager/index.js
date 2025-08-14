@@ -16,9 +16,10 @@ import CommonInputField from '../../../Components/CommonFields/CommonInputField'
 import MDManagerStep1 from "./step1";
 import MDManagerStep2 from "./step2";
 import MDManagerStep3 from "./step3";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import CommonSearchField from "../../../Components/CommonFields/CommonSearchField";
 import CommonDateField from "../../../Components/CommonFields/CommonDateField";
-import { TextField } from "@material-ui/core";
+import { TextField, Tooltip } from "@material-ui/core";
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { format } from "date-fns";
@@ -64,6 +65,7 @@ const MDManager = () => {
   const [to, setTo] = useState(null);
   const [calendarStart, setCalendarStart] = useState(false);
   const [selectedMdId, setSelectedMdId] = useState('');
+  const [showAddNewMedicalDirectives, setShowAddNewMedicalDirectives] = useState(false);
   const selectedSite = sessionStorage.getItem('selectedSite') || ''
   useEffect(() => {
     console.log(selectedOption, 'option')
@@ -381,6 +383,26 @@ const MDManager = () => {
         <div>
           <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
             <div>
+              <Tooltip title={"Create New MD"} arrow>
+                <div
+                  className={`${style.addStyle} ${style.displayInRow} ${style.applicationButton} ${style.marginTop10} ${style.alignCenter} ${style.cursorPointer}`}
+                >
+                  <div className={`${style.displayInRow} ${style.alignCenter}`}>
+                    <AddCircleOutlineIcon
+                      sx={{ fontSize: 20, color: "white" }}
+                      onClick={() => { setShowAddNewMedicalDirectives(true) }}
+                    />
+
+                    <div
+                      className={`${style.alignCenter} ${style.marginLeft10}`}
+                      onClick={() => { setShowAddNewMedicalDirectives(true) }}
+                    >
+                      {'Add New MD'}
+                    </div>
+
+                  </div>
+                </div>
+              </Tooltip>
               <div className={style.searchFieldCard}>
                 <CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} isOnClickAvailable={false} onClickFunc={() => { }} placeholder={"Search"} />
                 <div className={`${style.spaceBetween} ${style.marginTop10} ${style.cursorPointer}`} onClick={() => setShowAdvancedSearch(!showAdvancedSearch)}>
@@ -552,7 +574,7 @@ const MDManager = () => {
         </div>
         <div>
           {selectedOption === "MANAGE MEDICAL DIRECTIVES" ? (
-            <ManageMedicalDirectives getSelectedOption={getSelectedOption} setStep1={setStep1} setMdFile={setMdFile} advancedSearch={advancedSearch} setSelectedMdId={setSelectedMdId} />
+            <ManageMedicalDirectives getSelectedOption={getSelectedOption} setStep1={setStep1} setMdFile={setMdFile} advancedSearch={advancedSearch} setSelectedMdId={setSelectedMdId} showAddNewMedicalDirectives={showAddNewMedicalDirectives} setShowAddNewMedicalDirectives={setShowAddNewMedicalDirectives} />
           ) : selectedOption === "OPEN FEEDBACK TICKETS" ? (
             <FeedbackTicket getSelectedOption={getSelectedOption} />
           ) : selectedOption === "DATA UPLOADS" ? (

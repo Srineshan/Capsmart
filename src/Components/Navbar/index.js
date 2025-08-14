@@ -453,7 +453,7 @@ const Navbar = () => {
               className={style.sanmateoLogo}
             />
           </div>
-          <div className={style.container}>
+          {/* <div className={style.container}>
             <div className={style.roleSection}>
               <img src={roleImage} alt="" className={style.roleIcon} />
               <div className={style.roleLabel}>{workModeType}</div>
@@ -468,34 +468,8 @@ const Navbar = () => {
                 </div>
               </Tooltip>
             )}
-          </div>
-          {/* <div
-            className={`${style.menuStyle} ${window.location.pathname.includes(homeLink) && !window.location.pathname.includes('contractsWithABusinessEntity') &&
-              style.activeMenuColor
-              }`}
-            onClick={homeRoute}
-          >
-            <p>HOME - {(selectedWorkingMode !== null && selectedWorkingMode !== '' && selectedWorkingMode !== undefined) ? selectedWorkingMode : currentUserRoles?.[0]?.toUpperCase()}</p>
           </div> */}
 
-          {
-            //   isContractManager && (
-            //     <Link to={'/contracts'} className={style.noFontStyle}>
-            //         <div className={`${style.menuStyle} ${window.location.pathname === "/contracts" && style.activeMenuColor}`}>
-            //             <p>CONTRACT MANAGER</p>
-            //         </div>
-            //     </Link>
-            // )
-          }
-          {/* {
-            isContractManager && (
-              <Link to={'/staffs'} className={style.noFontStyle}>
-                <div className={`${style.menuStyle} ${window.location.pathname.includes("/staffs") && style.activeMenuColor}`}>
-                  <p>MANAGER WORKSPACE</p>
-                </div>
-              </Link>
-            )
-          } */}
           {!window.location.pathname?.includes('mdManager') ? (
             <>
               {workModeType !== "Entity Sys Admin" && (

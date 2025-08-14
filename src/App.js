@@ -798,6 +798,7 @@ const App = ({ props }) => {
     await axios(`${baseUrl()}/entity-service/entityID`, requestHeader)
       .then((response) => {
         if (response?.data?.id) {
+          console.log(response?.data, 'login route')
           isHapicareUser = response?.data?.masterEntity;
           sessionStorage.setItem('masterEntity', response?.data?.masterEntity)
           cookie.set("entityId", response?.data?.id, {
@@ -921,7 +922,9 @@ const App = ({ props }) => {
     const fetchData = () => {
       console.log('login route', Auth())
       const initialRoute = localStorage.getItem("initialRoute");
-      if (Auth()) {
+      isHapicareUser = isHapicareUser !== undefined ? isHapicareUser : sessionStorage.getItem('masterEntity') === 'true' ? true : sessionStorage.getItem('masterEntity') === 'false' ? false : undefined;
+      organizations = organizations ? organizations : sessionStorage.getItem('organizations') ? JSON.parse(sessionStorage.getItem('organizations')) : []
+      if (Auth() && isHapicareUser !== undefined) {
         console.log('login route', isHapicareUser, organizations)
         if (isHapicareUser && organizations?.length > 1) {
           setShowDialog(true);
@@ -1029,7 +1032,7 @@ const App = ({ props }) => {
         window.location.pathname = "/loginPage";
       }
     }
-    if (!Auth()) {
+    if (!Auth() || isHapicareUser === undefined) {
       console.log('login route', isHapicareUser, organizations, sessionStorage.getItem('organizations') ? JSON.parse(sessionStorage.getItem('organizations')) : [])
       setTimeout(() => {
         fetchData();

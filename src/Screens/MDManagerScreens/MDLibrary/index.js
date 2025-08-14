@@ -306,7 +306,7 @@ const MDLibrary = () => {
     }
 
     const getLibraryMeta = async () => {
-        let url = `medical-directive-service/medicalDirectives/library/meta?siteDepartmentSpecialties=${[selectedDepartmentSpecialities !== "" ? `${selectedSite}%23${selectedDepartmentSpecialities}` : `${selectedSite}%23${departmentId}`]}`
+        let url = `medical-directive-service/medicalDirectives/library/meta?siteDepartmentSpecialties=${[selectedDepartmentSpecialities !== "" ? `${selectedSite}%23${selectedDepartmentSpecialities?.replace(/#/g, "%23")}` : `${selectedSite}%23${departmentId}`]}`
         const response = await axios(`${baseUrl()}/${url}`, {
             method: "GET",
             headers: {
@@ -315,7 +315,7 @@ const MDLibrary = () => {
             },
         });
         setMdLibraryMeta(response?.data)
-        console.log(response?.data, 'withoutHeaders')
+        console.log(response?.data, 'withoutHeaders', selectedDepartmentSpecialities)
     }
 
     let title = [];

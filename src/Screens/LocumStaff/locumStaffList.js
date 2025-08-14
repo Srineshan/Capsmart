@@ -1208,17 +1208,17 @@ const LocumStaffList = ({
           //   [`Renewal Application Sent By Dept Head on ${format(new Date(data?.reAppointmentSentDate), 'MMM dd, yyyy')}`]
           // );
           // sentOutStatus = `Renewal Application Sent By Dept Head on ${format(new Date(data?.reAppointmentSentDate), dateFormat)}`
-          const createdDateReappoint = `${format(
+          const createdDateReappoint = data?.reAppointmentSentDate ? `${format(
             new Date(data?.reAppointmentSentDate),
             dateFormat
-          )}`
-          const extendDateReappoint = `${format(
+          )}` : ''
+          const extendDateReappoint = data?.onGoingApplication?.cyclePeriod?.to ? `${format(
             new Date(data?.onGoingApplication?.cyclePeriod?.to),
             dateFormat
-          )}`
+          )}` : ''
           sentOutStatus = (
             <div>
-              Locum period extended to {format(new Date(extendDateReappoint), dateFormat)}
+              Locum period extended to {extendDateReappoint !== '' ? format(new Date(extendDateReappoint), dateFormat) : ''}
               <br />
               Extension application sent to Locum Staff On {createdDateReappoint}
             </div>
@@ -1526,17 +1526,17 @@ const LocumStaffList = ({
           //   [`Extension Application Sent By Dept Head on ${format(new Date(data?.reAppointmentSentDate), 'MMM dd, yyyy')}`]
           // );
           // sentOutStatus = `Extension Application Sent By Dept Head on ${format(new Date(data?.reAppointmentSentDate), dateFormat)}`
-          const createdDateReappoint = `${format(
+          const createdDateReappoint = data?.reAppointmentSentDate ? `${format(
             new Date(data?.reAppointmentSentDate),
             dateFormat
-          )}`
-          const extendDateReappoint = `${format(
+          )}` : ''
+          const extendDateReappoint = data?.onGoingApplication?.cyclePeriod?.to ? `${format(
             new Date(data?.onGoingApplication?.cyclePeriod?.to),
             dateFormat
-          )}`
+          )}` : ''
           sentOutStatus = (
             <div>
-              Locum period extended to {format(new Date(extendDateReappoint), dateFormat)}
+              Locum period extended to {extendDateReappoint !== '' ? format(new Date(extendDateReappoint), dateFormat) : ''}
               <br />
               Extension application sent to Locum Staff On {createdDateReappoint}
             </div>
