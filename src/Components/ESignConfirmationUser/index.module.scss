@@ -1,0 +1,223 @@
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap');
+@import "../../index.scss";
+
+.heading {
+    text-align: left;
+    font: normal normal bold 20px/28px proxima-nova;
+    color: $primarycolor;
+    text-transform: capitalize;
+}
+
+.marginTop {
+    margin-top: 20px;
+}
+
+.marginLeft {
+    margin-left: 20px;
+}
+
+.marginTop10 {
+    margin-top: 10px;
+}
+
+.spaceBetween {
+    display: flex;
+    justify-content: space-between;
+}
+
+.eSignDialog {
+    height: 75%;
+    width: 35% !important;
+}
+
+.eSignDialogBackground {
+    background: #ffffff 0% 0% no-repeat padding-box;
+    padding: 20px 20px 0px 20px;
+    border-radius: 20px !important;
+}
+
+.eSignImg {
+    width: 80%;
+    height: 80%;
+    object-fit: contain;
+}
+
+.description {
+    text-align: left;
+    font: normal normal normal $tabledatatext2 proxima-nova;
+    letter-spacing: 0px;
+    color: #2C2C2C;
+}
+
+.continue {
+    background: $primarycolor 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 6px #00000029;
+    border-radius: 8px;
+    text-align: center;
+    font: normal normal bold 17px/30px proxima-nova;
+    letter-spacing: 0px;
+    color: #FFFFFF;
+    text-transform: uppercase;
+    padding: 5px;
+    cursor: pointer;
+    width: 240px;
+    transition: background-color 0.3s ease;
+}
+
+.continue:hover {
+    background: #044D61 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #00000052;
+    border-radius: 8px;
+    opacity: 1;
+}
+
+.saveInProgress {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 6px #00000029;
+    border: 0.5px solid $primarycolor;
+    border-radius: 8px;
+    text-align: center;
+    font: normal normal bold 17px/30px proxima-nova;
+    letter-spacing: 0px;
+    color: $primarycolor;
+    text-transform: uppercase;
+    padding: 5px;
+    cursor: pointer;
+    width: 240px;
+    transition: background-color 0.3s ease;
+}
+
+.saveInProgress:hover {
+    background: #F1F6F7 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #00000052;
+    border: 0.5px solid #9AAFB5;
+    border-radius: 8px;
+    opacity: 1;
+}
+
+.displayInRow {
+    display: flex;
+    flex-direction: row;
+}
+
+.justifyCenter {
+    display: flex;
+    justify-content: center;
+}
+
+
+.crossStyle {
+    height: 18px;
+    width: 18px;
+}
+
+.pencilImgStyle {
+    width: 33px;
+    height: 33px;
+    object-fit: contain;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.cursorPointer {
+    cursor: pointer;
+}
+
+.dateAndTimeTextStyle {
+    text-align: left;
+    font: normal normal normal $tabledatatext2 proxima-nova;
+    letter-spacing: 0px;
+    color: #94979A;
+    text-transform: capitalize;
+}
+
+.drawOrTypeTextStyle {
+    text-align: center;
+    font: normal normal 600 20px/27px proxima-nova;
+    letter-spacing: 0px;
+    color: #94979A;
+    text-transform: uppercase;
+    cursor: pointer;
+    width: 70px;
+}
+
+.drawOrTypeUnderline {
+    background: $primarycolor 0% 0% no-repeat padding-box;
+    border-radius: 6px;
+    height: 4px;
+    width: 70px;
+}
+
+.signBottomBorder {
+    background: #94979A 0% 0% no-repeat padding-box;
+    border-radius: 6px;
+    height: 2px;
+    width: 100px;
+}
+
+.eSignBox {
+    height: 150px;
+    width: 100%;
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    border: 1px solid$primarycolor;
+    border-radius: 4px;
+}
+
+.verticalAlignCenter {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.signatureCanvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.italicStyle {
+    text-align: left;
+    font: italic normal 300 29px/38px Roboto Mono;
+    letter-spacing: 11.6px;
+    color: #2C2C2C;
+    opacity: 0.6;
+}
+
+.typeTextStyle {
+    text-align: left;
+    font: normal normal normal 44px/68px calgary-script-ot;
+    letter-spacing: 0px;
+    color: #2C2C2C;
+}
+
+.editableTextHeight {
+    height: 100px;
+}
+
+.typeFieldStyle {
+    display: flex;
+    flex-direction: row-reverse;
+    flex: 1;
+    min-width: 180px;
+    text-transform: capitalize;
+}
+
+.eSignConfirmationCard {
+    background: #14358F05 0% 0% no-repeat padding-box;
+    border-radius: 11px;
+    padding: 20px;
+}
+
+.confimationHeading {
+    color: $primarycolor;
+    text-align: left;
+    font: normal normal bold 18px/39px proxima-nova;
+    letter-spacing: 0px;
+}
+
+.twoCol {
+    display: grid;
+    grid-template-columns: 40% 60%;
+    gap: 20px;
+}

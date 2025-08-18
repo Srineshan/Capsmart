@@ -21,7 +21,7 @@ const PdfViewer = ({ pdfurl, setIsScrolledToBottom }) => {
                 // const proxyUrl = "https://api.allorigins.win/raw?url=";
                 // const pdfUrlWithProxy = `${proxyUrl}${encodeURIComponent(pdfurl)}`;
 
-                const loadingTask = pdfjsLib.getDocument(`${corsUrl}${pdfurl}`);
+                const loadingTask = pdfjsLib.getDocument(`${pdfurl}`);
 
                 console.log("Loading PDF from:", pdfurl);
                 const pdf = await loadingTask.promise;

@@ -5,7 +5,7 @@ import { FormControl } from '@mui/material';
 
 import style from './index.module.scss';
 
-const CommonMultiSelectField = ({ value, onChange, className, firstOptionLabel, firstOptionValue, valueList, labelList, disabledList, disabledSelect, defaultValue, widthValue, variant }) => {
+const CommonMultiSelectField = ({ value, onChange, className, firstOptionLabel, firstOptionValue, valueList, labelList, disabledList, disabledSelect, defaultValue, widthValue, variant, renderValue }) => {
     const contractStatus = sessionStorage.getItem('Selected Contract Status');
 
     return (
@@ -20,9 +20,10 @@ const CommonMultiSelectField = ({ value, onChange, className, firstOptionLabel, 
                 onChange={onChange}
                 SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
                 className={className}
+                renderValue={renderValue}
                 disabled={contractStatus === "ACTIVE" ? true : disabledSelect || false}
             >
-                {firstOptionLabel !== '' && (
+                {firstOptionLabel !== '' && firstOptionLabel && (
                     <MenuItem value={firstOptionValue}>{firstOptionLabel}</MenuItem>
                 )}
                 {valueList?.map((data, index) => (

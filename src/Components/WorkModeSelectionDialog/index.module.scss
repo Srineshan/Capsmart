@@ -13,11 +13,16 @@
 }
 
 .padding {
-  padding: 40px 40px 0px 40px;
+  padding: 20px 40px 0px 40px;
 }
 
 .padding2 {
   padding: 20px 40px 0px 40px;
+}
+
+.dividerMargin {
+  margin: 0 40px;
+
 }
 
 .marginDialog {
@@ -34,24 +39,112 @@
   // height: 100vh;
 }
 
+.fullHeight {
+  height: 100vh !important;
+}
+
+.justifyCenter {
+  display: flex;
+  justify-content: center;
+}
+
+.verticalAlignCenter {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.workSpaceCard {
+  background: #FFFFFF 0% 0% no-repeat padding-box;
+  box-shadow: 0px 5px 20px #52575D4D;
+  border-radius: 20px;
+  width: 80vw;
+  min-height: 90vh;
+  max-height: 90vh;
+  overflow: scroll;
+}
+
+.applicationSelectionCard {
+  background: #FFFFFF 0% 0% no-repeat padding-box;
+  border: 1px solid #E8E9E9;
+  border-radius: 8px;
+  padding: 10px 40px;
+  width: 100%;
+}
+
+.applicationSelectionCard:hover {
+  background-color: $primarycolor;
+  color: #FFFFFF !important;
+}
+
+.selectedApplicationCard {
+  background-color: rgba(9, 149, 188, 0.1);
+}
+
+.applicationImage {
+  width: 60px !important;
+  object-fit: contain;
+}
+
+.applicationName {
+  text-align: center;
+  font: normal normal bold 24px/31px proxima-nova;
+  color: #171A1A;
+}
+
+.applicationNamePrimary {
+  text-align: center;
+  font: normal normal bold 24px/31px proxima-nova;
+  color: #1195BC;
+}
+
+.applicationNamePrimary:hover {
+  color: #FFFFFF;
+}
+
+.siteNamePrimary {
+  text-align: center;
+  font: normal normal bold 14px/25px proxima-nova;
+  color: #1195BC;
+}
+
+.siteNamePrimary:hover {
+  color: #FFFFFF;
+}
+
+.workSpaceTitle {
+  text-align: left;
+  font: normal normal bold 20px/28px proxima-nova;
+  color: $primarycolor;
+}
+
+.workSpaceDesc {
+  text-align: left;
+  font: italic normal normal 16px/20px proxima-nova;
+  color: #171A1A;
+  padding: 0px 40px 0px 40px;
+}
+
+.threeCol {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 20px;
+}
+
 .spaceBetween {
   display: flex;
   justify-content: space-between;
 }
 
 .heading {
-  text-align: center;
-  font: normal normal normal 32px/40px proxima-nova;
-  letter-spacing: 0px;
-  color: #EDEDF3;
-  text-transform: capitalize;
-  opacity: 1;
+  text-align: left;
+  font: normal normal bold 22px/38px proxima-nova;
+  color: #044354;
 }
 
 .displayInRow {
   display: flex;
   flex-direction: row;
-  justify-content: space-around;
 }
 
 .displayInCol {
@@ -73,6 +166,10 @@
 
 .marginLeft {
   margin-left: 20px;
+}
+
+.marginRight {
+  margin-right: 20px;
 }
 
 .marginTop10 {
@@ -174,6 +271,10 @@
   margin-left: 2px;
 }
 
+.marginLeft10 {
+  margin-left: 10px;
+}
+
 .marginLeft20 {
   margin-left: 20px;
 }
@@ -192,7 +293,13 @@
   grid-gap: 10px;
 }
 
-.placeCenter{
+.applicationGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 80px;
+}
+
+.placeCenter {
   place-items: center;
 }
 
@@ -341,21 +448,15 @@
 }
 
 .roleTitle {
-  text-align: center;
-  font: normal normal normal 20px/40px proxima-nova;
-  letter-spacing: 0px;
-  line-height: 30px;
+  text-align: left;
+  font: normal normal normal 16px/25px proxima-nova;
   color: #9AAFB5;
-  opacity: 1;
 }
 
 .roleTitleHover {
-  text-align: center;
-  font: normal normal normal 20px/40px proxima-nova;
-  letter-spacing: 0px;
-  line-height: 30px;
+  text-align: left;
+  font: normal normal normal 16px/25px proxima-nova;
   color: #F5F8F8;
-  opacity: 1;
 }
 
 .backgroundRoleColor {
@@ -367,4 +468,9 @@
   width: 60%;
   height: 100%;
   align-content: center
+}
+
+.disabledView {
+  opacity: 0.5;
+  cursor: not-allowed;
 }

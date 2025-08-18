@@ -60,7 +60,7 @@ import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
 import CommonDateField from "../../Components/CommonFields/CommonDateField";
 import CommonSelectField from "../CommonFields/CommonSelectField";
-import { format , differenceInDays, parseISO } from 'date-fns';
+import { format, differenceInDays, parseISO } from 'date-fns';
 import TableTwo from "../../Components/TableDesignTwo";
 import CreateOutlinedIcon from '@mui/icons-material/CreateOutlined';
 import LoadingScreen from "../LoadingScreen";
@@ -117,10 +117,10 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
   const MDHeaderValues = ["", "Title", "", "MD ID", "Attestation Due Date", "Last Updated"];
   const MDColSortValues = [false, false, false, false, false, , false];
   const toggleMDFilter = (filterType) => {
-  setSelectedMDFilter((prevFilter) => prevFilter === filterType ? null : filterType);
+    setSelectedMDFilter((prevFilter) => prevFilter === filterType ? null : filterType);
   };
   const toggleDocsFilter = (filterType) => {
-  setSelectedDocsFilter((prevFilter) => prevFilter === filterType ? null : filterType);
+    setSelectedDocsFilter((prevFilter) => prevFilter === filterType ? null : filterType);
   };
   const [isOpenToggle, setIsOpenToggle] = useState(false);
   const toggleDropdown = () => setIsOpenToggle((prev) => !prev);
@@ -134,13 +134,13 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
   };
 
   const onclickViewAndVerifyFunction = (id) => () => {
-  getActiveApplicationView(true);
-  sessionStorage.setItem("applicationId", id);
+    getActiveApplicationView(true);
+    sessionStorage.setItem("applicationId", id);
   };
 
   const onclickViewAndVerifyDataFunction = (data) => {
-  getActiveApplicationView(true);
-  sessionStorage.setItem("applicationId", data?.id);
+    getActiveApplicationView(true);
+    sessionStorage.setItem("applicationId", data?.id);
   };
 
   const documentActionsData = [
@@ -195,15 +195,15 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
   };
 
   useEffect(() => {
-    if(showEditInfoDialog === false){
-    setSelectedEditField("")
+    if (showEditInfoDialog === false) {
+      setSelectedEditField("")
     }
     getPreApplication()
   }, [showEditInfoDialog])
-  
 
-    useEffect(() => {
-    if (renewedDocumentRequired?.documentsExpiringSoon?.length > 0 || expireDocumentCount > 0 ) {
+
+  useEffect(() => {
+    if (renewedDocumentRequired?.documentsExpiringSoon?.length > 0 || expireDocumentCount > 0) {
       setExpandStates(prev => ({
         ...prev,
         section1: true,
@@ -217,24 +217,24 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
         ...prev,
         section2: hasReviewInProgressStatus,
       }));
-      
-    setHasReviewInProgress(hasReviewInProgressStatus);
+
+      setHasReviewInProgress(hasReviewInProgressStatus);
     }
 
-     if ((reviewMDCount > 1) || (pastDueMDCount > 1)) {
+    if ((reviewMDCount > 1) || (pastDueMDCount > 1)) {
       setExpandStates(prev => ({
         ...prev,
         section3: true,
       }));
     }
-  }, [currentDocumentCount,applicationsDetails,reviewMDCount,pastDueMDCount]);
+  }, [currentDocumentCount, applicationsDetails, reviewMDCount, pastDueMDCount]);
 
   const getNotesDetailsDialogOpen = (value, details = null) => {
-  setShowNotesDetailsDialog(value);
-  if (value && details) {
-    setNotesDetails(details);
-  }
-};
+    setShowNotesDetailsDialog(value);
+    if (value && details) {
+      setNotesDetails(details);
+    }
+  };
 
   // const getActiveApplicationView = () => {
   //   setShowViewAndVerifyScreen(true)
@@ -277,45 +277,45 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
     status = [];
     allDocumentDetails = [];
     if (selectedDocsFilter === "allDocuments") {
-        allDocumentDetails = documentDetails?.allDocuments || [];
-      } else if (selectedDocsFilter === "documentsExpiringSoon") {
-        allDocumentDetails = documentDetails?.documentsExpiringSoon?.documentsExpiringSoon || [];
-      } else if (selectedDocsFilter === "expiredDocuments") {
-        allDocumentDetails = documentDetails?.expiredDocuments || [];
-      } else {
-        allDocumentDetails = documentDetails?.allDocuments || [];
-      }
+      allDocumentDetails = documentDetails?.allDocuments || [];
+    } else if (selectedDocsFilter === "documentsExpiringSoon") {
+      allDocumentDetails = documentDetails?.documentsExpiringSoon?.documentsExpiringSoon || [];
+    } else if (selectedDocsFilter === "expiredDocuments") {
+      allDocumentDetails = documentDetails?.expiredDocuments || [];
+    } else {
+      allDocumentDetails = documentDetails?.allDocuments || [];
+    }
 
-      console.log("allDocumentDetails",allDocumentDetails)
+    console.log("allDocumentDetails", allDocumentDetails)
     allDocumentDetails?.map((data, index) => {
       const expiryDateFormat = data?.expiryDate
         ? new Date(data?.expiryDate).toISOString().split('T')[0] + 'T00:00'
         : null;
       status.push(
-      data?.hasExpiry === false ? (
-        <WarningOutlinedIcon style={{ fontSize: 20, color: "#737575" }} />
-      ) : data?.hasExpiry === true ? (
-        (() => {
-          if (!data?.expiryDate) return null;
-          const expiryDateLevel = parseISO(data?.expiryDate);
-          const currentDate = new Date();
-          const daysDiff = differenceInDays(expiryDateLevel,currentDate);
-          
-          if (daysDiff < 0) {
-            return <WarningOutlinedIcon style={{ fontSize: 20, color: "#ED2939" }} />;
-          } else if (daysDiff <= 90) {
-            return <WarningOutlinedIcon style={{ fontSize: 20, color: "#FFD700" }} />;
-          } else {
-            return <WarningOutlinedIcon style={{ fontSize: 20, color: "#737575" }} />;
-          }
-        })()
-      ) : null
-    );
+        data?.hasExpiry === false ? (
+          <WarningOutlinedIcon style={{ fontSize: 20, color: "#737575" }} />
+        ) : data?.hasExpiry === true ? (
+          (() => {
+            if (!data?.expiryDate) return null;
+            const expiryDateLevel = parseISO(data?.expiryDate);
+            const currentDate = new Date();
+            const daysDiff = differenceInDays(expiryDateLevel, currentDate);
+
+            if (daysDiff < 0) {
+              return <WarningOutlinedIcon style={{ fontSize: 20, color: "#ED2939" }} />;
+            } else if (daysDiff <= 90) {
+              return <WarningOutlinedIcon style={{ fontSize: 20, color: "#FFD700" }} />;
+            } else {
+              return <WarningOutlinedIcon style={{ fontSize: 20, color: "#737575" }} />;
+            }
+          })()
+        ) : null
+      );
       documentType.push(`${data?.documentType}` || "Dentist");
       documentName.push(data?.shortName || "dd")
       requirementType.push(data?.required)
       expireDate.push(
-       expiryDateFormat ? format(new Date(expiryDateFormat), dateFormat) : "-"
+        expiryDateFormat ? format(new Date(expiryDateFormat), dateFormat) : "-"
       );
       lastUpdateDate.push(
         // format(new Date(data?.LastUpdated), "MMM dd, yyyy") || '-'
@@ -325,7 +325,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
     });
 
     return [
-      { type: "text", value: status },
+      { type: "text", value: '' },
       { type: "text", value: documentType },
       { type: "text", value: documentName },
       { type: "text", value: requirementType },
@@ -357,10 +357,10 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
       const endDateFormat = data?.cyclePeriod?.to
         ? new Date(data?.cyclePeriod?.to).toISOString().split('T')[0] + 'T00:00'
         : null;
-         const approvalDateFormat = data?.approvedDate
+      const approvalDateFormat = data?.approvedDate
         ? new Date(data?.approvedDate).toISOString().split('T')[0] + 'T00:00'
         : null;
-        const privilegeData = [
+      const privilegeData = [
         ...(data?.privileges?.obligatedPrivileges || []),
         ...(data?.privileges?.additionalPrivileges || [])
       ];
@@ -370,9 +370,9 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
           onClick={onclickViewAndVerifyFunction(data?.id)}
           style={{ cursor: "pointer", color: "#2C2C2C" }}
         >
-           {startDateFormat && endDateFormat
+          {startDateFormat && endDateFormat
             ? `${format(new Date(startDateFormat), dateFormat)} - ${format(new Date(endDateFormat), dateFormat)}`
-          : data?.appointmentCycle || "-"}
+            : data?.appointmentCycle || "-"}
         </span>
       );
       textTooltipValues.push("Click to View Applicant Details")
@@ -386,57 +386,57 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
       approvedPrivileges.push(privilegeData?.length);
       const PrivilegesHoverTitle = privilegeData?.length > 0
         ? privilegeData.map((priv, index) => {
-            return (
-              <div key={index} style={{ width: '100%' }}>
-                <span>{priv?.privilegeSetTitle}</span>
-              </div>
-            );
-          })
-        : ['-'];    
-          
-      PrivilegesHoverText.push(PrivilegesHoverTitle)  
-      notes.push(
-      data?.notesDetails?.length > 0 ? (
-        <Tooltip title="Click to View Notes" arrow>
-          <span
-            key={index}
-            onClick={() => getNotesDetailsDialogOpen(true, data?.notesDetails)}
-            style={{ cursor: "pointer", color: "#2C2C2C" }}
-          >
-            {data?.notesDetails?.length}
-          </span>
-        </Tooltip>
-      ) : (
-        <span key={index} style={{ color: "#2C2C2C" }}>-</span>
-      )
-    );
+          return (
+            <div key={index} style={{ width: '100%' }}>
+              <span>{priv?.privilegeSetTitle}</span>
+            </div>
+          );
+        })
+        : ['-'];
 
-    notesIcon.push(
-      data?.notesDetails?.length > 0 ? (
-        <Tooltip title="Click to View Notes" arrow>
-          <NoteAltOutlinedIcon
-            style={{ fontSize: 20, color: "#2C2C2C", cursor: "pointer" }}
-            onClick={() => getNotesDetailsDialogOpen(true, data?.notesDetails)}
-          />
-        </Tooltip>
-      ) : null
-    );
+      PrivilegesHoverText.push(PrivilegesHoverTitle)
+      notes.push(
+        data?.notesDetails?.length > 0 ? (
+          <Tooltip title="Click to View Notes" arrow>
+            <span
+              key={index}
+              onClick={() => getNotesDetailsDialogOpen(true, data?.notesDetails)}
+              style={{ cursor: "pointer", color: "#2C2C2C" }}
+            >
+              {data?.notesDetails?.length}
+            </span>
+          </Tooltip>
+        ) : (
+          <span key={index} style={{ color: "#2C2C2C" }}>-</span>
+        )
+      );
+
+      notesIcon.push(
+        data?.notesDetails?.length > 0 ? (
+          <Tooltip title="Click to View Notes" arrow>
+            <NoteAltOutlinedIcon
+              style={{ fontSize: 20, color: "#2C2C2C", cursor: "pointer" }}
+              onClick={() => getNotesDetailsDialogOpen(true, data?.notesDetails)}
+            />
+          </Tooltip>
+        ) : null
+      );
       // docs.push(data?.documents?.documentDetails?.length)
       docs.push(
-      data?.documents?.documentDetails?.length > 0 ? (
-        <Tooltip title="Click to View Docs" arrow>
-          <span
-            key={index}
-            onClick={() => handleViewClickDocs(data?.documents?.documentDetails)}
-            style={{ cursor: "pointer", color: "#2C2C2C" }}
-          >
-            {data?.documents?.documentDetails?.length}
-          </span>
-        </Tooltip>
-      ) : (
-        <span key={index} style={{ color: "#2C2C2C" }}>-</span>
-      )
-    );
+        data?.documents?.documentDetails?.length > 0 ? (
+          <Tooltip title="Click to View Docs" arrow>
+            <span
+              key={index}
+              onClick={() => handleViewClickDocs(data?.documents?.documentDetails)}
+              style={{ cursor: "pointer", color: "#2C2C2C" }}
+            >
+              {data?.documents?.documentDetails?.length}
+            </span>
+          </Tooltip>
+        ) : (
+          <span key={index} style={{ color: "#2C2C2C" }}>-</span>
+        )
+      );
       approvalDate.push(
         approvalDateFormat ? format(new Date(approvalDateFormat), dateFormat) : "-"
       );
@@ -447,10 +447,12 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
       { type: "text", value: appointmentCycle, tooltipValueText: textTooltipValues },
       { type: "dot", value: dot, tooltipValue: dotTooltipValues },
       { type: "text", value: privilegeCategory },
-      { type: "countWithHover",
+      {
+        type: "countWithHover",
         value: approvedPrivileges,
-        hoverText: PrivilegesHoverText, 
-        isShowHoverText: true, },
+        hoverText: PrivilegesHoverText,
+        isShowHoverText: true,
+      },
       { type: "iconWithCount", value: notes, icon: notesIcon, },
       { type: "text", value: docs },
       { type: "text", value: approvalDate },
@@ -466,19 +468,19 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
     attestationDate = [];
     lastUpdateDate = [];
     action = [];
-     if (selectedMDFilter === "completed") {
-        allMedicalDirectives = applicationsMedicalDirectives?.completed || [];
-      } else if (selectedMDFilter === "pending") {
-        allMedicalDirectives = applicationsMedicalDirectives?.pending || [];
-      } else if (selectedMDFilter === "pastDue") {
-        allMedicalDirectives = applicationsMedicalDirectives?.pastDue || [];
-      } else {
-        allMedicalDirectives = [
-          ...(applicationsMedicalDirectives?.completed || []),
-          ...(applicationsMedicalDirectives?.pending || []),
-          ...(applicationsMedicalDirectives?.pastDue || [])
-        ];
-      }
+    if (selectedMDFilter === "completed") {
+      allMedicalDirectives = applicationsMedicalDirectives?.completed || [];
+    } else if (selectedMDFilter === "pending") {
+      allMedicalDirectives = applicationsMedicalDirectives?.pending || [];
+    } else if (selectedMDFilter === "pastDue") {
+      allMedicalDirectives = applicationsMedicalDirectives?.pastDue || [];
+    } else {
+      allMedicalDirectives = [
+        ...(applicationsMedicalDirectives?.completed || []),
+        ...(applicationsMedicalDirectives?.pending || []),
+        ...(applicationsMedicalDirectives?.pastDue || [])
+      ];
+    }
     // allMedicalDirectives = [
     //     ...(applicationsMedicalDirectives?.completed || []),
     //     ...(applicationsMedicalDirectives?.pending || []),
@@ -489,13 +491,13 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
     //     ...(applicationsMedicalDirectives || [])
     //   ];
 
-      console.log("applicationsMedicalDirectives",allMedicalDirectives)
+    console.log("applicationsMedicalDirectives", allMedicalDirectives)
     allMedicalDirectives?.forEach((data, index) => {
       const directive = data?.medicalDirective;
       const attestationDueDateFormat = data?.attestationDueDate
         ? new Date(data?.attestationDueDate).toISOString().split('T')[0] + 'T00:00'
         : null;
-      const lastModifiedDate = directive?.lastModifiedDate 
+      const lastModifiedDate = directive?.lastModifiedDate
         ? new Date(directive.lastModifiedDate)
         : null;
       const color = data?.status === "IN_PROGRESS" ? "yellow"
@@ -580,8 +582,8 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
       console.error('Error fetching application Documents:', error);
     }
   };
-  
-    const getPreApplicationDetails = async () => {
+
+  const getPreApplicationDetails = async () => {
     try {
       const { data: applicationDetails } = await GET(`application-management-service/staff/${applicationId}/applications`);
       setApplicationsDetails(applicationDetails);
@@ -590,9 +592,9 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
     }
   };
 
-    const getPreApplicationMedicalDirectives = async () => {
+  const getPreApplicationMedicalDirectives = async () => {
     try {
-      const { data: applicationsMedicalDirectivesDetails } = await GET(`application-management-service/staff/${applicationId}/medicalDirectivesAttestationSummary`);
+      const { data: applicationsMedicalDirectivesDetails } = await GET(`medical-directive-service/medicalDirectives/byUser?userId=${users?.id}`);
       setApplicationsMedicalDirectives(applicationsMedicalDirectivesDetails);
       setAttestedMDCount(applicationsMedicalDirectivesDetails?.completed?.length || 0)
       setPastDueMDCount(applicationsMedicalDirectivesDetails?.pastDue?.length || 0)
@@ -713,9 +715,9 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
                             )
                             : "{First Name} {Last Name}"}{" "}
                         </span>
-                          <span className={`${style.serviceAreaType} ${style.marginLeft10}`}>{applicationType === "LOCUM" ? "Locum" : ""}{" "}
-                            {form?.basicDetailReferences?.applicantType
-                              ?.serviceProviderType || ""}</span>
+                        <span className={`${style.serviceAreaType} ${style.marginLeft10}`}>{applicationType === "LOCUM" ? "Locum" : ""}{" "}
+                          {form?.basicDetailReferences?.applicantType
+                            ?.serviceProviderType || ""}</span>
                       </div>
                       <div
                         className={`${style.cardTextNormalStyle} ${style.marginTop10}`}
@@ -740,11 +742,11 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
                           {form?.applicant?.licenseNumber
                             ? `CPSO number : ${form.applicant.licenseNumber}`
                             : ""}
-                            <span className={`${form?.applicant?.ohipNumber ? style.marginLeft10 : ""}`}>
+                          <span className={`${form?.applicant?.ohipNumber ? style.marginLeft10 : ""}`}>
                             {form?.applicant?.ohipNumber
-                            ? `OHIP number : ${form.applicant?.ohipNumber}`
-                            : ""}
-                            </span>
+                              ? `OHIP number : ${form.applicant?.ohipNumber}`
+                              : ""}
+                          </span>
                         </span>
                       </div>
                       <div
@@ -768,7 +770,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
                       </div>
                     </div>
                     <div>
-                     
+
                       {/* <div className={`${style.marginTop10} ${style.editInfo}`}>
                         <span className={style.cursorPointer} onClick={() => getEditInfoDetailsDialogOpen(true)}>
                         <Tooltip title="Click to Edit Info" arrow>
@@ -804,20 +806,20 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
                           />
                       </div> */}
                       {/* <Tooltip title="Click Here to See Option" arrow> */}
-                       <div className={`${style.whiteButton} ${style.cursorPointer}`} onClick={() => toggleDropdown()}>
+                      <div className={`${style.whiteButton} ${style.cursorPointer}`} onClick={() => toggleDropdown()}>
                         <div className={`${style.spaceEvenly}`}>
                           <div className={`${style.buttonTextStyle} ${style.alignCenter}`}>
                             {selectedEditField ? labelList[valueList.indexOf(selectedEditField)] : "Modify Staff Data"}
                           </div>
                           {isOpenToggle ? <KeyboardArrowUpOutlinedIcon sx={{
-                                fontSize: 20,
-                                color: "#ffffff",
-                                cursor: "pointer",
-                              }}/> : <KeyboardArrowDownOutlinedIcon sx={{
-                                fontSize: 20,
-                                color: "#ffffff",
-                                cursor: "pointer",
-                              }} />}
+                            fontSize: 20,
+                            color: "#ffffff",
+                            cursor: "pointer",
+                          }} /> : <KeyboardArrowDownOutlinedIcon sx={{
+                            fontSize: 20,
+                            color: "#ffffff",
+                            cursor: "pointer",
+                          }} />}
                         </div>
                       </div>
                       {/* </Tooltip> */}
@@ -868,9 +870,9 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
                         className={`${style.marginTop10}`}
                       >
                         {formattedLastApprovedDate !== "-" && (
-                        <span className={style.rightAlignTextStyle}>
-                          Last Approved By BOD on {formattedLastApprovedDate}
-                        </span>
+                          <span className={style.rightAlignTextStyle}>
+                            Last Approved By BOD on {formattedLastApprovedDate}
+                          </span>
                         )}
                         {/* <span
                           className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}
@@ -882,255 +884,255 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
                   </div>
                 </div>
               </div>
-            <div>
-              <div className={`${style.marginTop20}`}>
-                <div className={`${style.cardLeftStyle} ${style.padding30}`}>
-                  <div className={`${style.spaceBetween} ${style.alignItemCenter}`}>
-                    <div className={`${style.documentTextStyle}`}>
-                      Document Vault
-                      <span className={`${style.marginLeft10} ${style.documentSubHeadingStyle}`}>
-                        Only includes documents that have been verified by the MSO.
-                        {(currentDocumentCount > 1 && expireDocumentCount < 1 && renewedDocumentRequired?.documentsExpiringSoon?.length < 1) && (
-                          <strong className={style.greenTextStyle}> (All documents are up to date.)</strong>
-                        )}
-                      </span>
-                    </div>
-                    <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
-                      <div
-                        className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
-                        onClick={() => toggleExpand("section1")}
-                      >
-                        {expandStates.section1 ? (
-                          <Tooltip title={"Click to Minimize"} arrow>
-                            <RemoveIcon
-                              sx={{
-                                fontSize: 20,
-                                color: "#94979A",
-                                cursor: "pointer",
-                              }}
-                            />
-                          </Tooltip>
-                        ) : (
-                          <Tooltip title={"Click to Expand"} arrow>
-                            <AddIcon
-                              sx={{
-                                fontSize: 20,
-                                color: "#94979A",
-                                cursor: "pointer",
-                              }}
-                            />
-                          </Tooltip>
-                        )}
+              <div>
+                <div className={`${style.marginTop20}`}>
+                  <div className={`${style.cardLeftStyle} ${style.padding30}`}>
+                    <div className={`${style.spaceBetween} ${style.alignItemCenter}`}>
+                      <div className={`${style.documentTextStyle}`}>
+                        Document Vault
+                        <span className={`${style.marginLeft10} ${style.documentSubHeadingStyle}`}>
+                          Only includes documents that have been verified by the MSO.
+                          {(currentDocumentCount > 1 && expireDocumentCount < 1 && renewedDocumentRequired?.documentsExpiringSoon?.length < 1) && (
+                            <strong className={style.greenTextStyle}> (All documents are up to date.)</strong>
+                          )}
+                        </span>
                       </div>
-                    </div>
-                  </div>
-                  {expandStates.section1 && (
-                  <div>
-                  <CommonDivider />
-                  <div className={`${style.grip3} ${style.marginTop20}`}>
-                    <div className={` ${selectedDocsFilter === "allDocuments" ? style.selectedBackgroundCard : ""} ${style.documentCurrentBackGround} ${style.spaceBetweenCol} ${style.cursorPointer}`} onClick={() => toggleDocsFilter("allDocuments")}>
-                      <div className={`${style.innerTextDocumentStyle}`}>Current Documents </div>
-                      <div className={`${currentDocumentCount > 0 ? style.countStyleGreen : style.countStyleGrey}`}> {currentDocumentCount} </div>
-                    </div>
-                    <div className={` ${selectedDocsFilter === "documentsExpiringSoon" ? style.selectedBackgroundCard : ""} ${style.documentCurrentBackGround} ${style.spaceBetweenCol} ${style.cursorPointer}`} onClick={() => toggleDocsFilter("documentsExpiringSoon")}>
-                      <div className={`${style.innerTextDocumentStyle}`}>To Be Renewed  </div>
-                      <div className={`${style.spaceBetween} ${style.alignSelfEnd}`}>
-                        <div className={`${style.countStyleRed}`}>{renewedDocumentRequired?.documentsExpiringSoon?.length}</div>
-                        <div>
-                          <div className={`${style.requiredTextStyle}`}>Required <span className={`${style.marginLeft10} ${style.countStyleYellow}`}>{renewedDocumentRequired?.requiredDocumentsCount}</span></div>
-                          <div className={`${style.requiredTextStyle}`}>Recommended <span className={`${style.marginLeft10}  ${style.countStyleRed}`}>{renewedDocumentRequired?.recommendedDocumentsCount}</span></div>
+                      <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
+                        <div
+                          className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
+                          onClick={() => toggleExpand("section1")}
+                        >
+                          {expandStates.section1 ? (
+                            <Tooltip title={"Click to Minimize"} arrow>
+                              <RemoveIcon
+                                sx={{
+                                  fontSize: 20,
+                                  color: "#94979A",
+                                  cursor: "pointer",
+                                }}
+                              />
+                            </Tooltip>
+                          ) : (
+                            <Tooltip title={"Click to Expand"} arrow>
+                              <AddIcon
+                                sx={{
+                                  fontSize: 20,
+                                  color: "#94979A",
+                                  cursor: "pointer",
+                                }}
+                              />
+                            </Tooltip>
+                          )}
                         </div>
                       </div>
                     </div>
-                    <div className={` ${selectedDocsFilter === "expiredDocuments" ? style.selectedBackgroundCard : ""} ${style.documentCurrentBackGround} ${style.spaceBetweenCol} ${style.cursorPointer}`} onClick={() => toggleDocsFilter("expiredDocuments")}>
-                      <div className={`${style.innerTextDocumentStyle}`}>Expired </div>
-                      <div className={`${style.countStyleRed}`}>{expireDocumentCount}</div>
-                    </div>
-                  </div>
-                  <div className={`${style.bigCardStyle}`}>
-                    {isLoading ? (
-                      <div
-                        className={`${style.verticalAlignCenter} ${style.justifyCenter}`}
-                      >
-                        <CircularProgress sx={{ color: "#06617A" }} />
-                      </div>
-                    ) : (
+                    {expandStates.section1 && (
                       <div>
-                        <div
-                          className={`${style.reduceMarginTop10} ${style.margin20} staffApplicationList`}
-                        >
-                          <TableTwo
-                            tableHeaderValues={tableHeaderValues}
-                            tableDataValues={tableDataValues}
-                            tableData={allDocumentDetails}
-                            gridStyle={gridStyle}
-                            actions={actions}
-                            scrollStyle={style.contractScrollStyle}
-                            tableSortValues={tableSortValues}
-                            heading={"There are no Record for you to manage"}
-                            onClickFunction={() => { }}
-                          />
+                        <CommonDivider />
+                        <div className={`${style.grip3} ${style.marginTop20}`}>
+                          <div className={` ${selectedDocsFilter === "allDocuments" ? style.selectedBackgroundCard : ""} ${style.documentCurrentBackGround} ${style.spaceBetweenCol} ${style.cursorPointer}`} onClick={() => toggleDocsFilter("allDocuments")}>
+                            <div className={`${style.innerTextDocumentStyle}`}>Current Documents </div>
+                            <div className={`${currentDocumentCount > 0 ? style.countStyleGreen : style.countStyleGrey}`}> {currentDocumentCount} </div>
+                          </div>
+                          <div className={` ${selectedDocsFilter === "documentsExpiringSoon" ? style.selectedBackgroundCard : ""} ${style.documentCurrentBackGround} ${style.spaceBetweenCol} ${style.cursorPointer}`} onClick={() => toggleDocsFilter("documentsExpiringSoon")}>
+                            <div className={`${style.innerTextDocumentStyle}`}>To Be Renewed  </div>
+                            <div className={`${style.spaceBetween} ${style.alignSelfEnd}`}>
+                              <div className={`${style.countStyleRed}`}>{renewedDocumentRequired?.documentsExpiringSoon?.length}</div>
+                              <div>
+                                <div className={`${style.requiredTextStyle}`}>Required <span className={`${style.marginLeft10} ${style.countStyleYellow}`}>{renewedDocumentRequired?.requiredDocumentsCount}</span></div>
+                                <div className={`${style.requiredTextStyle}`}>Recommended <span className={`${style.marginLeft10}  ${style.countStyleRed}`}>{renewedDocumentRequired?.recommendedDocumentsCount}</span></div>
+                              </div>
+                            </div>
+                          </div>
+                          <div className={` ${selectedDocsFilter === "expiredDocuments" ? style.selectedBackgroundCard : ""} ${style.documentCurrentBackGround} ${style.spaceBetweenCol} ${style.cursorPointer}`} onClick={() => toggleDocsFilter("expiredDocuments")}>
+                            <div className={`${style.innerTextDocumentStyle}`}>Expired </div>
+                            <div className={`${style.countStyleRed}`}>{expireDocumentCount}</div>
+                          </div>
+                        </div>
+                        <div className={`${style.bigCardStyle}`}>
+                          {isLoading ? (
+                            <div
+                              className={`${style.verticalAlignCenter} ${style.justifyCenter}`}
+                            >
+                              <CircularProgress sx={{ color: "#06617A" }} />
+                            </div>
+                          ) : (
+                            <div>
+                              <div
+                                className={`${style.reduceMarginTop10} ${style.margin20} staffApplicationList`}
+                              >
+                                <TableTwo
+                                  tableHeaderValues={tableHeaderValues}
+                                  tableDataValues={tableDataValues}
+                                  tableData={allDocumentDetails}
+                                  gridStyle={gridStyle}
+                                  actions={actions}
+                                  scrollStyle={style.contractScrollStyle}
+                                  tableSortValues={tableSortValues}
+                                  heading={"There are no Record for you to manage"}
+                                  onClickFunction={() => { }}
+                                />
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </div>
                     )}
                   </div>
-                  </div>
-                  )}
                 </div>
-              </div>
-              <div className={`${style.marginTop20}`}>
-                <div className={`${style.cardLeftStyle} ${style.padding30}`}>
-                  <div className={`${style.spaceBetween} ${style.alignItemCenter}`}>
-                    <div className={`${style.documentTextStyle}`}>
-                      <img src={CAPManagerSmallLogo} alt="img" className={style.LogoIcon} /> <span>Appointment History {!hasReviewInProgress && (<strong className={style.greenTextStyle}> - No Current Application</strong> )}</span>
-                    </div>
-                    <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
-                      <div
-                        className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
-                        onClick={() => toggleExpand("section2")}
-                      >
-                        {expandStates.section2 ? (
-                          <Tooltip title={"Click to Minimize"} arrow>
-                            <RemoveIcon
-                              sx={{
-                                fontSize: 20,
-                                color: "#94979A",
-                                cursor: "pointer",
-                              }}
-                            />
-                          </Tooltip>
-                        ) : (
-                          <Tooltip title={"Click to Expand"} arrow>
-                            <AddIcon
-                              sx={{
-                                fontSize: 20,
-                                color: "#94979A",
-                                cursor: "pointer",
-                              }}
-                            />
-                          </Tooltip>
-                        )}
+                <div className={`${style.marginTop20}`}>
+                  <div className={`${style.cardLeftStyle} ${style.padding30}`}>
+                    <div className={`${style.spaceBetween} ${style.alignItemCenter}`}>
+                      <div className={`${style.documentTextStyle}`}>
+                        <img src={CAPManagerSmallLogo} alt="img" className={style.LogoIcon} /> <span>Appointment History {!hasReviewInProgress && (<strong className={style.greenTextStyle}> - No Current Application</strong>)}</span>
                       </div>
-                    </div>
-                  </div>
-                  {expandStates.section2 && (
-                  <div>
-                  <CommonDivider />
-                  <div className={`${style.bigCardStyle}`}>
-                    {isLoading ? (
-                      <div
-                        className={`${style.verticalAlignCenter} ${style.justifyCenter}`}
-                      >
-                        <CircularProgress sx={{ color: "#06617A" }} />
-                      </div>
-                    ) : (
-                      <div>
+                      <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
                         <div
-                          className={`${style.reduceMarginTop10} ${style.margin20} staffApplicationList`}
+                          className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
+                          onClick={() => toggleExpand("section2")}
                         >
-                          <TableTwo
-                            tableHeaderValues={tableAppointmentHeaderValues}
-                            tableDataValues={tableAppointmentDataValues}
-                            tableData={applicationsDetails}
-                            gridStyle={gridStyleAppointment}
-                            actions={actionsAppointment}
-                            scrollStyle={style.contractScrollStyle}
-                            tableSortValues={tableSortValues}
-                            heading={"There are no Record for you to manage"}
-                            onClickFunction={() => { }}
-                          />
+                          {expandStates.section2 ? (
+                            <Tooltip title={"Click to Minimize"} arrow>
+                              <RemoveIcon
+                                sx={{
+                                  fontSize: 20,
+                                  color: "#94979A",
+                                  cursor: "pointer",
+                                }}
+                              />
+                            </Tooltip>
+                          ) : (
+                            <Tooltip title={"Click to Expand"} arrow>
+                              <AddIcon
+                                sx={{
+                                  fontSize: 20,
+                                  color: "#94979A",
+                                  cursor: "pointer",
+                                }}
+                              />
+                            </Tooltip>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    {expandStates.section2 && (
+                      <div>
+                        <CommonDivider />
+                        <div className={`${style.bigCardStyle}`}>
+                          {isLoading ? (
+                            <div
+                              className={`${style.verticalAlignCenter} ${style.justifyCenter}`}
+                            >
+                              <CircularProgress sx={{ color: "#06617A" }} />
+                            </div>
+                          ) : (
+                            <div>
+                              <div
+                                className={`${style.reduceMarginTop10} ${style.margin20} staffApplicationList`}
+                              >
+                                <TableTwo
+                                  tableHeaderValues={tableAppointmentHeaderValues}
+                                  tableDataValues={tableAppointmentDataValues}
+                                  tableData={applicationsDetails}
+                                  gridStyle={gridStyleAppointment}
+                                  actions={actionsAppointment}
+                                  scrollStyle={style.contractScrollStyle}
+                                  tableSortValues={tableSortValues}
+                                  heading={"There are no Record for you to manage"}
+                                  onClickFunction={() => { }}
+                                />
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </div>
                     )}
                   </div>
-                  </div>
-                  )}
                 </div>
-              </div>
-              <div className={`${style.marginTop20}`}>
-                <div className={`${style.cardLeftStyle} ${style.padding30}`}>
-                  <div className={`${style.spaceBetween} ${style.alignItemCenter}`}>
-                    <div className={`${style.documentTextStyle}`}>
-                      <img src={MDManager} alt="img" className={style.LogoIcon} /> <span>Medical Directives {(attestedMDCount > 1 && reviewMDCount < 1 && pastDueMDCount < 1) && (<strong className={style.greenTextStyle}> - All Medical Directives are Attested </strong> )}</span>
-                    </div>
-                    <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
-                      <div
-                        className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
-                        onClick={() => toggleExpand("section3")}
-                      >
-                        {expandStates.section3 ? (
-                          <Tooltip title={"Click to Minimize"} arrow>
-                            <RemoveIcon
-                              sx={{
-                                fontSize: 20,
-                                color: "#94979A",
-                                cursor: "pointer",
-                              }}
-                            />
-                          </Tooltip>
-                        ) : (
-                          <Tooltip title={"Click to Expand"} arrow>
-                            <AddIcon
-                              sx={{
-                                fontSize: 20,
-                                color: "#94979A",
-                                cursor: "pointer",
-                              }}
-                            />
-                          </Tooltip>
-                        )}
+                <div className={`${style.marginTop20}`}>
+                  <div className={`${style.cardLeftStyle} ${style.padding30}`}>
+                    <div className={`${style.spaceBetween} ${style.alignItemCenter}`}>
+                      <div className={`${style.documentTextStyle}`}>
+                        <img src={MDManager} alt="img" className={style.LogoIcon} /> <span>Medical Directives {(attestedMDCount > 1 && reviewMDCount < 1 && pastDueMDCount < 1) && (<strong className={style.greenTextStyle}> - All Medical Directives are Attested </strong>)}</span>
                       </div>
-                    </div>
-                  </div>
-                  {expandStates.section3 && (
-                  <div>
-                  <CommonDivider />
-                  <div className={`${style.grip3} ${style.marginTop20}`}>
-                    <div className={` ${selectedMDFilter === "completed" ? style.selectedBackgroundCard : ""} ${style.documentCurrentBackGround} ${style.spaceBetweenCol} ${style.cursorPointer}`} onClick={() => toggleMDFilter("completed")}> 
-                      <div className={`${style.innerTextDocumentStyle}`}>Attested </div>
-                       <div className={`${attestedMDCount > 0 ? style.countStyleGreen : style.countStyleGrey}`}> {attestedMDCount} </div>
-                    </div>
-                    <div className={` ${selectedMDFilter === "pending" ? style.selectedBackgroundCard : ""} ${style.documentCurrentBackGround} ${style.spaceBetweenCol} ${style.cursorPointer}`} onClick={() => toggleMDFilter("pending")}>
-                      <div className={`${style.innerTextDocumentStyle}`}>To Review & Attest </div>
-                      <div className={`${style.countStyleYellow}`}>{reviewMDCount}</div>
-                    </div>
-                    <div className={` ${selectedMDFilter === "pastDue" ? style.selectedBackgroundCard : ""} ${style.documentCurrentBackGround} ${style.spaceBetweenCol} ${style.cursorPointer}`} onClick={() => toggleMDFilter("pastDue")}>
-                      <div className={`${style.innerTextDocumentStyle}`}>Attestations Past Due </div>
-                      <div className={`${style.countStyleRed}`}>{pastDueMDCount}</div>
-                    </div>
-                  </div>
-                  <div className={`${style.bigCardStyle}`}>
-                    {isLoading ? (
-                      <div
-                        className={`${style.verticalAlignCenter} ${style.justifyCenter}`}
-                      >
-                        <CircularProgress sx={{ color: "#06617A" }} />
-                      </div>
-                    ) : (
-                      <div>
+                      <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
                         <div
-                          className={`${style.reduceMarginTop10} ${style.margin20} staffApplicationList`}
+                          className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
+                          onClick={() => toggleExpand("section3")}
                         >
-                          <TableTwo
-                            tableHeaderValues={tableMDHeaderValues}
-                            tableDataValues={tableMDDataValues}
-                            tableData={allMedicalDirectives}
-                            gridStyle={gridStyleMD}
-                            // actions={actionsMD}
-                            scrollStyle={style.contractScrollStyle}
-                            tableSortValues={tableMDSortValues}
-                            heading={"There are no Record for you to manage"}
-                            onClickFunction={() => { }}
-                          />
+                          {expandStates.section3 ? (
+                            <Tooltip title={"Click to Minimize"} arrow>
+                              <RemoveIcon
+                                sx={{
+                                  fontSize: 20,
+                                  color: "#94979A",
+                                  cursor: "pointer",
+                                }}
+                              />
+                            </Tooltip>
+                          ) : (
+                            <Tooltip title={"Click to Expand"} arrow>
+                              <AddIcon
+                                sx={{
+                                  fontSize: 20,
+                                  color: "#94979A",
+                                  cursor: "pointer",
+                                }}
+                              />
+                            </Tooltip>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    {expandStates.section3 && (
+                      <div>
+                        <CommonDivider />
+                        <div className={`${style.grip3} ${style.marginTop20}`}>
+                          <div className={` ${selectedMDFilter === "completed" ? style.selectedBackgroundCard : ""} ${style.documentCurrentBackGround} ${style.spaceBetweenCol} ${style.cursorPointer}`} onClick={() => toggleMDFilter("completed")}>
+                            <div className={`${style.innerTextDocumentStyle}`}>Attested </div>
+                            <div className={`${attestedMDCount > 0 ? style.countStyleGreen : style.countStyleGrey}`}> {attestedMDCount} </div>
+                          </div>
+                          <div className={` ${selectedMDFilter === "pending" ? style.selectedBackgroundCard : ""} ${style.documentCurrentBackGround} ${style.spaceBetweenCol} ${style.cursorPointer}`} onClick={() => toggleMDFilter("pending")}>
+                            <div className={`${style.innerTextDocumentStyle}`}>To Review & Attest </div>
+                            <div className={`${style.countStyleYellow}`}>{reviewMDCount}</div>
+                          </div>
+                          <div className={` ${selectedMDFilter === "pastDue" ? style.selectedBackgroundCard : ""} ${style.documentCurrentBackGround} ${style.spaceBetweenCol} ${style.cursorPointer}`} onClick={() => toggleMDFilter("pastDue")}>
+                            <div className={`${style.innerTextDocumentStyle}`}>Attestations Past Due </div>
+                            <div className={`${style.countStyleRed}`}>{pastDueMDCount}</div>
+                          </div>
+                        </div>
+                        <div className={`${style.bigCardStyle}`}>
+                          {isLoading ? (
+                            <div
+                              className={`${style.verticalAlignCenter} ${style.justifyCenter}`}
+                            >
+                              <CircularProgress sx={{ color: "#06617A" }} />
+                            </div>
+                          ) : (
+                            <div>
+                              <div
+                                className={`${style.reduceMarginTop10} ${style.margin20} staffApplicationList`}
+                              >
+                                <TableTwo
+                                  tableHeaderValues={tableMDHeaderValues}
+                                  tableDataValues={tableMDDataValues}
+                                  tableData={allMedicalDirectives}
+                                  gridStyle={gridStyleMD}
+                                  // actions={actionsMD}
+                                  scrollStyle={style.contractScrollStyle}
+                                  tableSortValues={tableMDSortValues}
+                                  heading={"There are no Record for you to manage"}
+                                  onClickFunction={() => { }}
+                                />
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </div>
                     )}
                   </div>
-                  </div>
-                  )}
                 </div>
               </div>
-            </div>
             </div>
             <div>
               <div className={`${style.cardLeftStyle}`}>
@@ -1201,7 +1203,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
             getIsOpen={getEditInfoDetailsDialogOpen}
             applicationId={applicationId}
             selectedEditField={selectedEditField}
-            // notesDetails={notesDetails}
+          // notesDetails={notesDetails}
           // onClose={() => { setShowCCDateDialog(false); setCheckedIds([]); }}
           />
         )

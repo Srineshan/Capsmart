@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState , useCallback} from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 
 import style from './index.module.scss';
 import ApplicationHeader from '../../Components/ApplicationHeaders';
@@ -62,10 +62,10 @@ const MedicalDirectivesAttestDisplay = () => {
         getMedicalDirectives()
     }, [medicalDirectivesId])
 
-    useEffect(() => {
-        getApplication()
-        getLog()
-    }, [applicationId])
+    // useEffect(() => {
+    //     getApplication()
+    //     getLog()
+    // }, [applicationId])
 
     useEffect(() => {
         getAttestationLog()
@@ -152,7 +152,7 @@ const MedicalDirectivesAttestDisplay = () => {
     const getAttestationLog = async () => {
         if (medicalDirectivesId !== undefined && applicationId !== undefined) {
             const { data: medicalDirectivesAttestationLog } = await GET(
-                `medical-directive-service/attestationLog?applicationId=${applicationId}&medicalDirectiveId=${medicalDirectivesId}`
+                `medical-directive-service/attestationLog?userId=${applicationId}&medicalDirectiveId=${medicalDirectivesId}`
             );
             setMedicalDirectivesAttestationLog(medicalDirectivesAttestationLog)
             console.log(medicalDirectivesAttestationLog, 'medicalDirectivesAttestationLog')
@@ -205,21 +205,21 @@ const MedicalDirectivesAttestDisplay = () => {
 
     const reactToPrintContent = useCallback(() => {
         return componentRef.current;
-      }, [componentRef.current]);
-    
-      const handlePrintClick = useReactToPrint({
+    }, [componentRef.current]);
+
+    const handlePrintClick = useReactToPrint({
         content: reactToPrintContent,
         documentTitle: "Medical Directives",
         removeAfterPrint: true,
-         pageStyle: `
+        pageStyle: `
             @page {
             margin: 30px;
             }`
-      });
+    });
     return (
         <div className={style.screenBackground}>
             <div className={style.welcomeText}>
-                <ApplicationHeader title={`${medicalDirectives?.title}`} close={true} closeClick={handleClose} print={true} printPage={handlePrintClick}/>
+                <ApplicationHeader title={`${medicalDirectives?.title}`} close={true} closeClick={handleClose} print={true} printPage={handlePrintClick} />
             </div>
             <div className={style.headerData}>
                 <span style={{ marginLeft: '20px' }}>Ordering Of Laboratory Investigations - IPAC</span>
@@ -245,41 +245,28 @@ const MedicalDirectivesAttestDisplay = () => {
                                     />
 
                                 </div>
-                                {/* <div className={`${style.twoColumnGrid1} ${style.textAlignLeft}`}> */}
                                 <div>
                                     <div className={style.marginTop10}>
                                         <div className={`${style.cardTextBoldStyle} ${style.leftAlign}`}>
                                             {
-                                                basicForm?.basicDetails?.applicant?.name?.firstName !== undefined &&
-                                                    basicForm?.basicDetails?.applicant?.name?.lastName !== undefined
+                                                userData?.name?.firstName !== undefined &&
+                                                    userData?.name?.lastName !== undefined
                                                     ? formatFirstNameLastName(
-                                                        basicForm?.basicDetails?.applicant?.name?.firstName,
-                                                        basicForm?.basicDetails?.applicant?.name?.lastName
+                                                        userData?.name?.firstName,
+                                                        userData?.name?.lastName
                                                     )
                                                     : "{First Name} {Last Name}"
-                                            },{" "}
-                                            {basicForm?.basicDetailReferences?.applicantType?.serviceProviderType || ""}
+                                            }
                                         </div>
-                                        {/* <span className={`${style.cardTextNormalStyle}`}>
-                                            {basicForm?.basicDetailReferences?.applicantType?.serviceProviderType || ""}
-                                        </span> */}
                                     </div>
                                     <div className={`${style.cardTextNormalStyle} ${style.marginTop10}`}>
-                                        {basicForm?.basicDetailReferences?.department?.name ? `${basicForm?.basicDetailReferences.department.name}` : ""}
-                                        {basicForm?.basicDetailReferences?.specialty?.name
-                                            ? ` ${basicForm?.basicDetailReferences?.department?.name ? "- " : ""}${basicForm?.basicDetailReferences.specialty.name}`
-                                            : ""}
-                                    </div>
-                                    <div className={`${style.emailTextBoldStyle} ${style.marginTop10} ${style.displayInRow}`}>
-                                        <img src={PhoneIcon} alt="" className={style.iconStyle} />
-                                        <div className={style.marginLeft10}>
-                                            {basicForm?.basicDetails?.applicant?.cellPhone ? `+1 ${basicForm?.basicDetails?.applicant?.cellPhone}` : ""}
-                                        </div>
+                                        {userData?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.departmentName?.name ? `${userData?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.departmentName?.name}` : ""}
+                                        {userData?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.serviceAreaSpecific ? ` - ${userData?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.serviceAreas?.[0]?.name}` : ''}
                                     </div>
 
                                 </div>
                                 <div>
-                                    <div className={`${style.marginTop10} ${style.twoColumnGridInner2}`}>
+                                    {/* <div className={`${style.marginTop10} ${style.twoColumnGridInner2}`}>
                                         <span className={style.rightAlignTextStyle}>
                                             Reappointment Date:
                                         </span>
@@ -295,15 +282,20 @@ const MedicalDirectivesAttestDisplay = () => {
                                         <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>
                                             {formattedSubmissionDate} <span className={style.rightAlignTextStyle1}>({daysDifference} Days)</span>
                                         </span>
+                                    </div> */}
+                                    <div className={`${style.emailTextBoldStyle} ${style.marginTop10} ${style.displayInRow}`}>
+                                        <img src={PhoneIcon} alt="" className={style.iconStyle} />
+                                        <div className={style.marginLeft10}>
+                                            {userData?.communication?.mobileNumber ? `+1 ${userData?.communication?.mobileNumber}` : ""}
+                                        </div>
                                     </div>
                                     <div className={`${style.emailTextBoldStyle} ${style.marginTop10} ${style.displayInRow}`}>
                                         <img src={MailIcon} alt="" className={style.iconStyle} />
                                         <div className={style.marginLeft10}>
-                                            <span className={style.cursorPointer} onClick={() => sendEmail(basicForm?.basicDetails?.applicant?.email?.officialEmail || "")}>{basicForm?.basicDetails?.applicant?.email?.officialEmail || ""}</span>
+                                            <span className={style.cursorPointer} onClick={() => sendEmail(userData?.email?.officialEmail || "")}>{userData?.email?.officialEmail || ""}</span>
                                         </div>
                                     </div>
                                 </div>
-                                {/* </div> */}
                             </div>
                         </div>
                         <div className={`${style.medicalDirectivesCard} ${style.marginTop}`}>
