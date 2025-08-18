@@ -133,22 +133,24 @@ const Tile = ({
               <span
                 className={`${style.verticalAlignCenter}  ${style.alignRight} `}
               >
-                {(smallTextSelected === smallText3 && selectedContract === currentTile) && (<ClearIcon sx={{ fontSize: 13, color: '#06617A', marginRight: '10px' }} onClick={() => setSmallTextSelected('')} />)}
-                <Tooltip title={`Click here to apply ${smallText3} filter`} arrow
-                  slotProps={{
-                    popper: {
-                      modifiers: [
-                        {
-                          name: 'offset',
-                          options: {
-                            offset: [0, -2],
+                <div className={style.verticalAlignCenter}>
+                  {(smallTextSelected === smallText3 && selectedContract === currentTile) && (<ClearIcon sx={{ fontSize: 13, color: '#06617A', marginRight: '10px' }} onClick={() => setSmallTextSelected('')} />)}
+                  {/* <Tooltip title={`Click here to apply ${smallText3} filter`} arrow
+                    slotProps={{
+                      popper: {
+                        modifiers: [
+                          {
+                            name: 'offset',
+                            options: {
+                              offset: [0, -2],
+                            },
                           },
-                        },
-                      ],
-                    },
-                  }}>
+                        ],
+                      },
+                    }}> */}
                   <span className={(smallTextSelected === smallText3 && selectedContract === currentTile) ? style.smallTextSelected : ''} onClick={() => handleSmallTextSelected(smallText3)}>{smallText3}</span>
-                </Tooltip>
+                  {/* </Tooltip> */}
+                </div>
                 <span
                   className={`${smallNum3 !== "-"
                     ? selectedContract === currentTile
@@ -164,22 +166,24 @@ const Tile = ({
             )}
             {smallNum1 !== "" && (
               <span className={`${style.verticalAlignCenter} ${style.marginTop5} ${style.alignRight}`} >
-                {(smallTextSelected === smallText1 && selectedContract === currentTile) && (<ClearIcon sx={{ fontSize: 13, color: '#06617A', marginRight: '10px' }} onClick={() => setSmallTextSelected('')} />)}
-                <Tooltip title={`Click here to apply ${smallText1} filter`} arrow
-                  slotProps={{
-                    popper: {
-                      modifiers: [
-                        {
-                          name: 'offset',
-                          options: {
-                            offset: [0, -2],
+                <div className={style.verticalAlignCenter}>
+                  {(smallTextSelected === smallText1 && selectedContract === currentTile) && (<ClearIcon sx={{ fontSize: 13, color: '#06617A', marginRight: '10px' }} onClick={() => setSmallTextSelected('')} />)}
+                  {/* <Tooltip title={`Click here to apply ${smallText1} filter`} arrow
+                    slotProps={{
+                      popper: {
+                        modifiers: [
+                          {
+                            name: 'offset',
+                            options: {
+                              offset: [0, -2],
+                            },
                           },
-                        },
-                      ],
-                    },
-                  }}>
+                        ],
+                      },
+                    }}> */}
                   <span className={(smallTextSelected === smallText1 && selectedContract === currentTile) ? style.smallTextSelected : ''} onClick={() => handleSmallTextSelected(smallText1)}>{smallText1}</span>
-                </Tooltip>
+                  {/* </Tooltip> */}
+                </div>
                 <span
                   className={`
                     ${(smallNum1 !== "-" && smallNum1 !== 0 && smallNum1 !== "" && smallNum1)
@@ -199,22 +203,24 @@ const Tile = ({
               <span
                 className={`${style.verticalAlignCenter} ${style.marginTop5} ${style.alignRight}`}
               >
-                {(smallTextSelected === smallText2 && selectedContract === currentTile) && (<ClearIcon sx={{ fontSize: 13, color: '#06617A', marginRight: '10px' }} onClick={() => setSmallTextSelected('')} />)}
-                <Tooltip title={`Click here to apply ${smallText2} filter`} arrow
-                  slotProps={{
-                    popper: {
-                      modifiers: [
-                        {
-                          name: 'offset',
-                          options: {
-                            offset: [0, -2],
+                <div className={style.verticalAlignCenter}>
+                  {(smallTextSelected === smallText2 && selectedContract === currentTile) && (<ClearIcon sx={{ fontSize: 13, color: '#06617A', marginRight: '10px' }} onClick={() => setSmallTextSelected('')} />)}
+                  {/* <Tooltip title={`Click here to apply ${smallText2} filter`} arrow
+                    slotProps={{
+                      popper: {
+                        modifiers: [
+                          {
+                            name: 'offset',
+                            options: {
+                              offset: [0, -2],
+                            },
                           },
-                        },
-                      ],
-                    },
-                  }}>
+                        ],
+                      },
+                    }}> */}
                   <span className={(smallTextSelected === smallText2 && selectedContract === currentTile) ? style.smallTextSelected : ''} onClick={() => handleSmallTextSelected(smallText2)}>{smallText2}</span>
-                </Tooltip>
+                  {/* </Tooltip> */}
+                </div>
                 <span
                   className={`${(smallNum2 !== "-" && smallNum2 !== 0 && smallNum2 !== "" && smallNum2)
                     ? selectedContract === currentTile

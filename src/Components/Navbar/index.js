@@ -879,7 +879,7 @@ const Navbar = () => {
                       style.activeMenuColor
                       }`}
                   >
-                    <p>MEDICAL DIRECTIVES</p>
+                    <p>MEDICAL DIRECTIVES (MD)</p>
                   </div>
                 </Link>
               ) : (

@@ -691,6 +691,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                                 ${style.verticalAlignCenter}
                                                                 ${style.cursorArrow}
                                                                 ${tableData?.onClickFunction ? `${style.cursorPointer} ${style.textHoverColor}` : ''}
+                                                                ${tableData?.isAlignCenter ? style.justifyCenter : ''}
                                                             `}
                                                         onClick={tableData?.onClickFunction ? () => { tableData?.onClickFunction(data, index); } : undefined}
                                                         dangerouslySetInnerHTML={{
@@ -1436,6 +1437,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                                 ${style.cursorArrow}
                                                                 ${expandedData?.onClickFunction ? `${style.cursorPointer} ${style.textHoverColor}` : ''}
                                                                 ${statIndex === 0 ? style.marginLeft30 : ''}
+                                                                ${expandedData?.isAlignCenter ? style.justifyCenter : ''}
                                                             `}
                                                         onClick={expandedData?.onClickFunction ? () => { expandedData?.onClickFunction(expandedData, innerIndex); } : undefined}
                                                         dangerouslySetInnerHTML={{

@@ -216,8 +216,7 @@ const WorkModeDialog = ({ getIsOpen }) => {
           {((entitySiteList?.length >= 1 || entitySiteList?.[0]?.sites?.length > 1)) && (
             <div>
               <div className={`${style.heading}  ${style.padding} ${selectedSite !== '' ? style.disabledView : ''}`}>{selectedSite === '' ? 'Select Site' : 'Selected Site'}</div>
-              <div className={`${style.workSpaceDesc}  ${selectedSite !== '' ? style.disabledView : ''}`}>Your User Account Is Associated With Multiple Sites:</div>
-              <CommonDivider className={style.dividerMargin} />
+              <div className={`${style.workSpaceDesc}  ${selectedSite !== '' ? style.disabledView : ''}`}>Your user account is associated with multiple sites:</div>
               <div className={`${style.threeCol} ${style.padding}`}>
                 {entitySiteList?.map(entity => entity?.sites?.map(site => (
                   <div className={`${style.applicationSelectionCard} ${selectedSite === site?.id ? style.selectedApplicationCard : ''} ${style.justifyCenter} ${style.verticalAlignCenter} ${style.cursorPointer} ${style.marginRight}`} onClick={!isHapicareUser ? () => { handleSelectedSite(site?.id) } : () => { handleSelectedSite(site?.id); handleSelectedEntity(entity?.id) }}>
@@ -226,13 +225,13 @@ const WorkModeDialog = ({ getIsOpen }) => {
                   </div>
                 )))}
               </div>
+              <CommonDivider className={style.dividerMargin} />
             </div>
           )}
           {((userRole?.length >= 1 && userMDRole?.length >= 1)) && (
             <div>
               <div className={`${style.heading}  ${style.padding} ${selectedWorkSpace !== '' ? style.disabledView : ''}`}>{selectedWorkSpace === '' ? 'Select Application' : 'Selected Application'}</div>
-              <div className={`${style.workSpaceDesc}  ${selectedWorkSpace !== '' ? style.disabledView : ''}`}>Select the Application you want to work in:</div>
-              <CommonDivider className={style.dividerMargin} />
+              <div className={`${style.workSpaceDesc}  ${selectedWorkSpace !== '' ? style.disabledView : ''}`}>Select the application you want to work in:</div>
               <div className={`${style.threeCol} ${style.padding}`}>
                 {["CAP_MANAGER", "MD_MANAGER"]?.map(data => (
                   <div className={`${style.applicationSelectionCard} ${selectedWorkSpace === data ? style.selectedApplicationCard : ''} ${style.justifyCenter} ${style.verticalAlignCenter} ${style.cursorPointer} ${style.marginRight}`} onClick={() => setSelectedWorkSpace(data)}>
@@ -241,13 +240,14 @@ const WorkModeDialog = ({ getIsOpen }) => {
                   </div>
                 ))}
               </div>
+              <CommonDivider className={style.dividerMargin} />
             </div>
           )}
           {selectedWorkSpace !== "" && (
             <div>
               <div>
                 <div className={`${style.heading}  ${style.padding}`}>Select {selectedWorkSpace === "CAP_MANAGER" ? 'CAP Manager' : 'MD Manager'} Workspace</div>
-                <div className={`${style.workSpaceDesc} `}>Your User Role Allows You To Access Multiple Workspaces, Select the workspace you want to work in:</div>
+                <div className={`${style.workSpaceDesc} `}>Your user role allows you to access multiple workspaces, select the workspace you want to work in:</div>
               </div>
               <div className={`${style.threeCol} ${style.padding2}`}>
                 {userRoleToDisplay?.includes("MD Librarian") && (

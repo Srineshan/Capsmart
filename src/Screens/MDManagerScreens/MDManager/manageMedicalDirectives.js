@@ -79,6 +79,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
     const [currentMdCount, setCurrentMdCount] = useState(0);
     const [revisionMdCount, setRevisionMdCount] = useState(0);
     const [outstandingMdCount, setOutstandingMdCount] = useState(0);
+    const [outstandingNotStartedCount, setOutstandinNotStartedCount] = useState(0);
     const [signOffMdCount, setSignOffMdCount] = useState(0);
     const [draftMdCount, setDraftMdCount] = useState(0);
     const [inactiveMdCount, setInactiveMdCount] = useState(0);
@@ -239,11 +240,11 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
     ];
 
     const outstandingTableHeaderValues = [
-        "Attestation Categories",
+        "Attestation Group",
         "Total Count",
         "Attestated all",
-        "Not Attestated",
-        "Partially Attested",
+        "Not Attestated To Any",
+        "Some Attested",
         '',
         "Action",
     ];
@@ -255,7 +256,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
         "Author",
         "Type",
         "Version",
-        "Due Date",
+        "Last Updated",
         "Action",
     ];
 
@@ -301,6 +302,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
         setCurrentMdCount(dashboardMetadata?.active_md?.numberOfElements)
         setSignOffMdCount(dashboardMetadata?.sign_off?.numberOfElements)
         setRevisionMdCount(dashboardMetadata?.md_revisions?.numberOfElements)
+        setOutstandinNotStartedCount(dashboardMetadata?.attestation_outstanding?.notAttestedCount)
         setOutstandingMdCount(dashboardMetadata?.active_md?.numberOfElements)
         setDraftMdCount(dashboardMetadata?.draft_md?.numberOfElements)
     }
@@ -723,28 +725,28 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
                 deptPartiallyAttested = [];
 
                 group?.departments?.forEach((dept) => {
-                    deptNames.push(dept?.name);
-                    deptTotalCount.push(dept?.stats?.totalCount);
-                    deptAttestedAll.push(dept?.stats?.attestedCount);
-                    deptNotAttested.push(dept?.stats?.notAttestedCount);
-                    deptPartiallyAttested.push(dept?.stats?.partiallyAttestedCount);
+                    deptNames.push(dept?.name || '-');
+                    deptTotalCount.push(dept?.stats?.totalCount || '-');
+                    deptAttestedAll.push(dept?.stats?.attestedCount || '-');
+                    deptNotAttested.push(dept?.stats?.notAttestedCount || '-');
+                    deptPartiallyAttested.push(dept?.stats?.partiallyAttestedCount || '-');
                 });
 
                 expandedList.push([
                     { type: "text", value: deptNames },
-                    { type: "text", value: deptTotalCount },
-                    { type: "text", value: deptAttestedAll },
-                    { type: "text", value: deptNotAttested },
-                    { type: "text", value: deptPartiallyAttested },
+                    { type: "text", value: deptTotalCount, isAlignCenter: true },
+                    { type: "text", value: deptAttestedAll, isAlignCenter: true },
+                    { type: "text", value: deptNotAttested, isAlignCenter: true },
+                    { type: "text", value: deptPartiallyAttested, isAlignCenter: true },
                 ]);
             });
             console.log(expandedList, 'expandedList')
             outstandingList?.map((data, index) => {
-                attestationCategory.push(data?.appointmentType)
-                totalCount.push(data?.stats?.totalCount)
-                attestedAll.push(data?.stats?.attestedCount)
-                notAttested.push(data?.stats?.notAttestedCount)
-                partiallyAttested.push(data?.stats?.partiallyAttestedCount)
+                attestationCategory.push(data?.appointmentType || '-')
+                totalCount.push(data?.stats?.totalCount || '-')
+                attestedAll.push(data?.stats?.attestedCount || '-')
+                notAttested.push(data?.stats?.notAttestedCount || '-')
+                partiallyAttested.push(data?.stats?.partiallyAttestedCount || '-')
                 action.push(true);
             })
         } else {
@@ -798,7 +800,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
             ),
             ...(
                 selectedSignOffOption !== "level-3"
-                    ? [{ "type": "text", "value": acknowledgedOrSignedOff },]
+                    ? [{ "type": "text", "value": acknowledgedOrSignedOff, isAlignCenter: true },]
                     : []
             ),
             { "type": "text", "value": lastRevision },
@@ -814,7 +816,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
             { "type": "text", "value": department, tooltipValueText: departmentHoverText },
             { "type": "text", "value": author },
             { "type": "text", "value": type },
-            { "type": "text", "value": version },
+            { "type": "text", "value": version, isAlignCenter: true },
             { "type": "text", "value": lastUpdated },
             { "type": "action", "value": action },
         ] : selectedOption === 'Retire Medical Directives' ? [
@@ -827,10 +829,10 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
             { "type": "action", "value": action },
         ] : [
             { "type": "text", "value": attestationCategory },
-            { "type": "text", "value": totalCount },
-            { "type": "text", "value": attestedAll },
-            { "type": "text", "value": notAttested },
-            { "type": "text", "value": partiallyAttested },
+            { "type": "text", "value": totalCount, isAlignCenter: true },
+            { "type": "text", "value": attestedAll, isAlignCenter: true },
+            { "type": "text", "value": notAttested, isAlignCenter: true },
+            { "type": "text", "value": partiallyAttested, isAlignCenter: true },
             { "type": "expand", "value": action },
             { "type": "action", "value": action },
         ]
@@ -880,7 +882,10 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
 
     const draftActionsData = [
         { 'data': 'Update MD', 'onClick': handleModify },
-        { 'data': 'Publish', 'onClick': handlePublish },
+        {
+            'data': 'Publish', 'onClick': handlePublish,
+            conditionToShow: `data?.workflowStatus === 'COMPLETED'`
+        },
     ]
 
     const retiredActions = [
@@ -893,8 +898,8 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
 
     const revisionsActionsData = [{ 'data': 'Update', 'onClick': handleUpdateApprovalStatus }]
 
-    const inviteActionsData = [{ 'data': 'Delete', 'onClick': handleDelete },
-    { 'data': 'Reminder', 'onClick': togglePin }
+    const inviteActionsData = [
+        { 'data': 'Reminder', 'onClick': togglePin }
     ]
 
     const actionsData = selectedOption === 'Current Medical Directives' ? registeredActionsData : selectedOption === 'Draft Medical Directives' ? draftActionsData :
@@ -934,7 +939,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
         <div>
             <div className={`${style.grid4} ${style.marginTop10}`}>
                 <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Current Medical Directives" bigNumber={currentMdCount} smallNum1={newMdCount} smallNum2={upcomingMdCount} smallText1="New Directives" smallText2="Upcoming For Review" currentTile="Current Medical Directives" topText='' smallNum1Color={style.greenSmallNumber} smallNum2Color={style.yellowSmallNumber} smallNum1SelectedColor={style.greenSmallNumberSelected} smallNum2SelectedColor={style.yellowSmallNumberSelected} />
-                <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Attestations Outstanding" bigNumber={0} smallNum1={0} smallNum2={0} smallText1="Not Started" smallText2="Past Due" currentTile="Attestations Outstanding" topText='' smallNum1Color={style.redSmallNumber} smallNum1SelectedColor={style.redSmallNumberSelected} smallNum2Color={style.redSmallNumber} smallNum2SelectedColor={style.redSmallNumberSelected} />
+                <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Attestations Outstanding" bigNumber={0} smallNum1={outstandingNotStartedCount} smallNum2={0} smallText1="Not Started" smallText2="Past Due" currentTile="Attestations Outstanding" topText='' smallNum1Color={style.redSmallNumber} smallNum1SelectedColor={style.redSmallNumberSelected} smallNum2Color={style.redSmallNumber} smallNum2SelectedColor={style.redSmallNumberSelected} />
                 <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Drafts / Revisions" bigNumber={draftMdCount} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="Draft Medical Directives" topText='' smallNum1Color={style.greenSmallNumber} smallNum2Color={style.redSmallNumber} smallNum1SelectedColor={style.greenSmallNumberSelected} smallNum2SelectedColor={style.redSmallNumberSelected} />
                 <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="MD Review & Approvals" bigNumber={signOffMdCount} smallNum1="" smallNum2="" currentTile="Medical Directives Sign Off" topText='' />
             </div>
@@ -1028,9 +1033,9 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
                             hidePagination={true}
                         /> */}
                         {(selectedOption === "Medical Directives Sign Off" && selectedSignOffOption === "level-1") ? (
-                            <div className={style.tableDesc}>Not All Medical Directives Require Pre Publication Acknowledgement. There are currently {signOffMeta?.['level-1']?.pending} requiring Acknowledgement. </div>
+                            <div className={style.tableDesc}>{signOffMeta?.['level-1']?.pending} Medical Directives Require Pre-Publication Acknowledgement. Note: Not all Medical Directives Require Pre-Publication. </div>
                         ) : (selectedOption === "Medical Directives Sign Off" && selectedSignOffOption === "level-2") ? (
-                            <div className={style.tableDesc}>There are currently {signOffMeta?.['level-2']?.pending} requiring Sign Off. </div>
+                            <div className={style.tableDesc}>{signOffMeta?.['level-2']?.pending} Medical Directives Require Leadership Sign Off. </div>
                         ) : ''}
                         <TableTwo
                             tableHeaderValues={tableHeaderValues}
