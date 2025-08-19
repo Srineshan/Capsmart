@@ -1033,7 +1033,6 @@ const App = ({ props }) => {
       }
     }
     if (!Auth() || isHapicareUser === undefined) {
-      console.log('login route', isHapicareUser, organizations, sessionStorage.getItem('organizations') ? JSON.parse(sessionStorage.getItem('organizations')) : [])
       setTimeout(() => {
         fetchData();
       }, 2000);
