@@ -134,6 +134,10 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         TENURE_END_DATE: ['Days to Expiration', 'Expiry Date', 'Last End Date', 'Days Since Expired'],
         TENURE_START_DATE: ['Start Date'],
         USER_NAME: ['Name'],
+        STAFF_COUNT: ['Total Count'],
+        ATTESTED_COUNT: ['Attestated all'],
+        NOT_ATTESTED_COUNT: ['Not Attestated To Any'],
+        PARTIALLY_ATTESTED_COUNT: ['Some Attested'],
     }
 
     const availableSortValueEnum = {
@@ -171,7 +175,11 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         'Start Date': 'TENURE_START_DATE',
         'Last End Date': 'TENURE_END_DATE',
         'Days Since Expired': 'TENURE_END_DATE',
-        'Name': 'USER_NAME'
+        'Name': 'USER_NAME',
+        'Total Count': 'STAFF_COUNT',
+        'Attestated all': 'ATTESTED_COUNT',
+        'Not Attestated To Any': 'NOT_ATTESTED_COUNT',
+        'Some Attested': 'PARTIALLY_ATTESTED_COUNT',
     }
 
 

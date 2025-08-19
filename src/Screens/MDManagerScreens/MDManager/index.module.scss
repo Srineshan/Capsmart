@@ -163,7 +163,7 @@
 
 .level3Grid {
     display: grid;
-    grid-template-columns: 3% 3% 35% 10% 25% 10% 7%;
+    grid-template-columns: 3% 3% 19% 8% 19% 12% 10% 10% 7%;
     grid-gap: 1%;
 }
 
@@ -608,10 +608,10 @@
 
 .stepsTitleText {
     text-align: left;
-    font: normal normal medium 16px/30px proxima-nova;
+    font: normal normal bold 16px/30px proxima-nova;
     letter-spacing: 1.1px;
     color: $textgrey;
-    opacity: 0.6;
+    // opacity: 0.6;
 }
 
 .pdfThumbnailDisplay {
@@ -935,4 +935,8 @@
     text-align: left;
     font: italic normal normal 16px/20px proxima-nova;
     color: #171A1A;
+}
+
+.noteText {
+    color: #FB4643;
 }

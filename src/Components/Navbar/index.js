@@ -893,7 +893,16 @@ const Navbar = () => {
                   </div>
                 </Link>
               )}
-              <div
+              <Link to={"/mdManager/manageAttestation"} className={style.noFontStyle}>
+                <div
+                  className={`${style.menuStyle} ${(window.location.pathname.includes("/manageAttestation") && !window.location.pathname.includes("/manageAttestationGroups")) &&
+                    style.activeMenuColor
+                    }`}
+                >
+                  <p>ATTESTATIONS</p>
+                </div>
+              </Link>
+              {/* <div
                 ref={popoverAnchorStaff}
                 onMouseEnter={(e) => handleClickStaff(e)}
                 onMouseLeave={() => handleCloseStaff()}
@@ -928,7 +937,6 @@ const Navbar = () => {
                   }}
                 >
                   <div className={style.helpCardStyle}>
-                    {/* {workModeType === "Department Head" || workModeType === "Credentialing Committee" ? ( */}
                     <Link
                       className={style.noFontStyle1}
                       to={"/mdManager/manageAttestationGroups"}
@@ -938,8 +946,6 @@ const Navbar = () => {
                       >
                         Manage Attestation Groups</div>
                     </Link>
-
-                    {/* ) : ""} */}
                     <Link
                       className={style.noFontStyle1}
                       to={"/mdManager/manageAttestation"}
@@ -948,7 +954,7 @@ const Navbar = () => {
                     </Link>
                   </div>
                 </Popover>
-              </div>
+              </div> */}
               {workModeType === "Acknowledger" && (
                 <Link to={"/mdManager/manageAcknowledgement"} className={style.noFontStyle}>
                   <div
@@ -1204,8 +1210,69 @@ const Navbar = () => {
           <img src={NotificationsIcon} alt="print" className={style.icons} />
           <img src={RedBackground} alt="print" className={style.notificationIcon} />
           <img src={NotificationCount} alt="print" className={style.notificationCount} /> */}
-          <div className={`${style.centerAlign} ${style.iconSize}`}><SettingsOutlinedIcon fontSize="small" /></div>
           {/* <div className={`${style.centerAlign} ${style.iconSize}`}><HelpOutlineOutlinedIcon fontSize="large" /></div> */}
+          <div
+            ref={popoverAnchorStaff}
+            onMouseEnter={(e) => handleClickStaff(e)}
+            onMouseLeave={() => handleCloseStaff()}
+            aria-owns={openStaff ? "mouse-over-popover" : undefined}
+            aria-haspopup="true"
+          >
+            <div className={`${style.centerAlign} ${style.iconSize}`}><SettingsOutlinedIcon fontSize="small" /></div>
+            <Popover
+              id={"mouse-over-popover"}
+              open={openStaff}
+              anchorEl={popoverAnchorStaff.current}
+              onClose={handleCloseGuide}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "center",
+              }}
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "center",
+              }}
+              classes={{
+                paper: classes.popoverContent,
+              }}
+              PaperProps={{
+                style: { width: "200px" },
+                onMouseEnter: handleClickStaff,
+                onMouseLeave: handleCloseStaff,
+              }}
+            >
+              <div className={style.helpCardStyle}>
+                <Link
+                  className={style.noFontStyle1}
+                  to={"/mdManager/manageAttestationGroups"}
+                >
+                  <div className={`${style.options1} ${style.cursorPointer} ${window.location.pathname.includes("/activeStaff")
+                    }`} onClick={() => sessionStorage.setItem('groupType', 'ATTESTATION')}
+                  >
+                    Manage Attestation Groups</div>
+                </Link>
+                <Link
+                  className={style.noFontStyle1}
+                  to={"/mdManager/manageAttestationGroups"}
+                >
+                  <div className={`${style.options1} ${style.cursorPointer} ${window.location.pathname.includes("/activeStaff")
+                    }`} onClick={() => sessionStorage.setItem('groupType', 'ACKNOWLEDGEMENT')}
+                  >
+                    Manage Acknowledgement Groups</div>
+                </Link>
+                <Link
+                  className={style.noFontStyle1}
+                  to={"/mdManager/manageAttestationGroups"}
+                >
+                  <div className={`${style.options1} ${style.cursorPointer} ${window.location.pathname.includes("/activeStaff")
+                    }`} onClick={() => sessionStorage.setItem('groupType', 'SIGN_OFF')}
+                  >
+                    Manage Sign Off Groups</div>
+                </Link>
+
+              </div>
+            </Popover>
+          </div>
           <div
             ref={popoverAnchorGuide}
             onMouseEnter={(e) => handleClickGuide(e)}

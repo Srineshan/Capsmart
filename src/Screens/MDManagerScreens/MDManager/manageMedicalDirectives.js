@@ -107,6 +107,10 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
     const publicKey = "-----BEGIN PUBLIC KEY-----MIGeMA0GCSqGSIb3DQEBAQUAA4GMADCBiAKBgHA5SDu30/8uQAqqkQE0NuY4ePBptMGufG6AWnC/88YVLXi4thh7M8VU6kElVJkfXL5DwlfVnwPb08+PK1EcaOWWtp2gdQitkohjZLB9zVE+0OtRrzSc33wItf7Iwisi5dHPggHvfOp5fr+QYWFMa/kKYl3SgNo8fryeLbKKalmdAgMBAAE=-----END PUBLIC KEY-----";
     const [encryptedText, setEncryptedText] = useState(CryptoJS.AES.encrypt(users?.userName + dateTime, publicKey).toString());
     const valuesToUse = viewRegistered ? (selectedOption === 'Current Medical Directives' ? registeredUsers : selectedOption === 'Draft Medical Directives' ? contractedServiceProviderUsers : selectedOption === 'Medical Directives Sign Off' ? deactivatedUsers : invitedUsers) : blockedUsers;
+    const availableGroups = {
+        'NEW': 'New Staff Applicants',
+        'REAPPOINTMENT': 'Staff Reappointments'
+    }
     console.log(loggedInUser)
     useEffect(() => {
         getPublicationWorkflow();
@@ -117,9 +121,12 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
         // getMDList();
         getDashboardMetadata();
         getSignOffMeta();
+    }, [selectedOption]);
+
+    useEffect(() => {
         if (selectedOption === "Attestations Outstanding")
             getAttestationOutstanding()
-    }, [selectedOption]);
+    }, [selectedOption, sortField, sortValue]);
 
     useEffect(() => {
         getRevisionList();
@@ -222,8 +229,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
         "Department / Division",
         "Assigned To",
         selectedSignOffOption === 'level-1' ? "Acknowledged" : "Signed off",
-        "Last Updated",
-        "",
+        "Action",
     ];
     const MECSignOffTableHeaderValues = [
         <CommonCheckBox
@@ -235,10 +241,12 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
         "Title",
         "MD ID",
         "Department / Division",
+        "Acknowledged",
+        "Signed Off",
         "Last Updated",
         "Action",
     ];
-
+    const outstandingSortValues = [false, true, true, true, true, false]
     const outstandingTableHeaderValues = [
         "Attestation Group",
         "Total Count",
@@ -303,12 +311,12 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
         setSignOffMdCount(dashboardMetadata?.sign_off?.numberOfElements)
         setRevisionMdCount(dashboardMetadata?.md_revisions?.numberOfElements)
         setOutstandinNotStartedCount(dashboardMetadata?.attestation_outstanding?.notAttestedCount)
-        setOutstandingMdCount(dashboardMetadata?.active_md?.numberOfElements)
+        setOutstandingMdCount(dashboardMetadata?.attestation_outstanding?.totalAttestationCount)
         setDraftMdCount(dashboardMetadata?.draft_md?.numberOfElements)
     }
 
     const getAttestationOutstanding = async () => {
-        const { data: attestationOutstanding } = await GET(`medical-directive-service/medicalDirectives/attestationOutstanding`);
+        const { data: attestationOutstanding } = await GET(`medical-directive-service/medicalDirectives/attestationOutstanding?sortBy=${sortValue}&sortByField=${sortField}`);
         setOutstandingList(attestationOutstanding)
     }
 
@@ -384,6 +392,15 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
         // setSelectedMedicalDirectiveForApproval(data)
         // setShowUpdateApprovalStatus(true)
         navigate(`/mdManager/manageMECApproval/${TenantID}/${data?.medicalDirective?.id}`)
+    }
+
+    const handleMemberUpdate = (data) => {
+        if (selectedSignOffOption === "level-1") {
+            sessionStorage.setItem('groupType', 'ACKNOWLEDGEMENT')
+        } else {
+            sessionStorage.setItem('groupType', 'SIGN_OFF')
+        }
+        navigate(`/mdManager/manageAttestationGroups`)
     }
 
     const handleApprovalStatus = async (isReviewRequired) => {
@@ -649,6 +666,9 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
     let deptNotAttested = [];
     let deptPartiallyAttested = [];
     let acknowledgedOrSignedOff = [];
+    let acknowledgedCount = [];
+    let lastUpdatedLog = [];
+    let signedOffCount = [];
 
     const getValues = () => {
         dot = [];
@@ -674,6 +694,9 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
         version = [];
         type = [];
         checkbox = [];
+        acknowledgedCount = [];
+        signedOffCount = [];
+        lastUpdatedLog = [];
         action = [];
         if (selectedOption === "Medical Directives Sign Off") {
             revisionList?.map((data, index) => {
@@ -714,6 +737,9 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
                 );
                 acknowledgedOrSignedOff.push(`${totalCompletedCount}/${totalPendingCount}`)
                 revisionAssignedTo.push(data?.groups?.map(group => group?.group?.name)?.join(', '));
+                acknowledgedCount.push(data?.workflow?.workflowStatusByLevels?.[0]?.reviewedUsers?.length || '-');
+                signedOffCount.push(data?.workflow?.workflowStatusByLevels?.[1]?.reviewedUsers?.length || '-');
+                lastUpdatedLog.push(data?.workflow?.workflowStatusByLevels?.[1]?.workflowActionDate ? format(new Date(data?.workflow?.workflowStatusByLevels?.[1]?.workflowActionDate), 'MMM dd, yyyy') : '-')
                 action.push(true);
             })
         } else if (selectedOption === "Attestations Outstanding") {
@@ -742,7 +768,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
             });
             console.log(expandedList, 'expandedList')
             outstandingList?.map((data, index) => {
-                attestationCategory.push(data?.appointmentType || '-')
+                attestationCategory.push((availableGroups[data?.appointmentType] ?? data?.appointmentType ? data?.appointmentType.charAt(0).toUpperCase() + data?.appointmentType.slice(1).toLowerCase() : undefined) || '-')
                 totalCount.push(data?.stats?.totalCount || '-')
                 attestedAll.push(data?.stats?.attestedCount || '-')
                 notAttested.push(data?.stats?.notAttestedCount || '-')
@@ -803,12 +829,22 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
                     ? [{ "type": "text", "value": acknowledgedOrSignedOff, isAlignCenter: true },]
                     : []
             ),
-            { "type": "text", "value": lastRevision },
             ...(
                 selectedSignOffOption === "level-3"
-                    ? [{ "type": "action", "value": action },]
+                    ? [{ "type": "text", "value": acknowledgedCount, isAlignCenter: true },]
                     : []
-            )
+            ),
+            ...(
+                selectedSignOffOption === "level-3"
+                    ? [{ "type": "text", "value": signedOffCount, isAlignCenter: true },]
+                    : []
+            ),
+            ...(
+                selectedSignOffOption === "level-3"
+                    ? [{ "type": "text", "value": lastUpdatedLog },]
+                    : []
+            ),
+            { "type": "action", "value": action },
         ] : selectedOption === 'Draft Medical Directives' ? [
             { "type": "dot", "value": dot, 'tooltipValue': dotTooltipValues },
             { "type": "text", "value": title },
@@ -898,12 +934,14 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
 
     const revisionsActionsData = [{ 'data': 'Update', 'onClick': handleUpdateApprovalStatus }]
 
+    const workflowModifyGroup = [{ 'data': 'Modify Members', 'onClick': handleMemberUpdate }]
+
     const inviteActionsData = [
         { 'data': 'Reminder', 'onClick': togglePin }
     ]
 
     const actionsData = selectedOption === 'Current Medical Directives' ? registeredActionsData : selectedOption === 'Draft Medical Directives' ? draftActionsData :
-        selectedOption === 'Medical Directives Sign Off' ? revisionsActionsData : selectedOption === "Retire Medical Directives" ? retiredActions : inviteActionsData;
+        selectedOption === 'Medical Directives Sign Off' ? selectedSignOffOption === "level-3" ? revisionsActionsData : workflowModifyGroup : selectedOption === "Retire Medical Directives" ? retiredActions : inviteActionsData;
 
     const handleDownloadClicked = () => {
         toPDF(".registeredUsers", `RegisteredUsersList_${format(new Date(), 'MM_dd_yy')}`);
@@ -939,7 +977,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
         <div>
             <div className={`${style.grid4} ${style.marginTop10}`}>
                 <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Current Medical Directives" bigNumber={currentMdCount} smallNum1={newMdCount} smallNum2={upcomingMdCount} smallText1="New Directives" smallText2="Upcoming For Review" currentTile="Current Medical Directives" topText='' smallNum1Color={style.greenSmallNumber} smallNum2Color={style.yellowSmallNumber} smallNum1SelectedColor={style.greenSmallNumberSelected} smallNum2SelectedColor={style.yellowSmallNumberSelected} />
-                <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Attestations Outstanding" bigNumber={0} smallNum1={outstandingNotStartedCount} smallNum2={0} smallText1="Not Started" smallText2="Past Due" currentTile="Attestations Outstanding" topText='' smallNum1Color={style.redSmallNumber} smallNum1SelectedColor={style.redSmallNumberSelected} smallNum2Color={style.redSmallNumber} smallNum2SelectedColor={style.redSmallNumberSelected} />
+                <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Attestations Outstanding" bigNumber={outstandingMdCount} smallNum1={outstandingNotStartedCount} smallNum2={0} smallText1="Not Started" smallText2="Past Due" currentTile="Attestations Outstanding" topText='' smallNum1Color={style.redSmallNumber} smallNum1SelectedColor={style.redSmallNumberSelected} smallNum2Color={style.redSmallNumber} smallNum2SelectedColor={style.redSmallNumberSelected} />
                 <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Drafts / Revisions" bigNumber={draftMdCount} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="Draft Medical Directives" topText='' smallNum1Color={style.greenSmallNumber} smallNum2Color={style.redSmallNumber} smallNum1SelectedColor={style.greenSmallNumberSelected} smallNum2SelectedColor={style.redSmallNumberSelected} />
                 <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="MD Review & Approvals" bigNumber={signOffMdCount} smallNum1="" smallNum2="" currentTile="Medical Directives Sign Off" topText='' />
             </div>
@@ -1033,19 +1071,21 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
                             hidePagination={true}
                         /> */}
                         {(selectedOption === "Medical Directives Sign Off" && selectedSignOffOption === "level-1") ? (
-                            <div className={style.tableDesc}>{signOffMeta?.['level-1']?.pending} Medical Directives Require Pre-Publication Acknowledgement. Note: Not all Medical Directives Require Pre-Publication. </div>
+                            <div className={`${style.tableDesc} ${style.noteText}`}>{signOffMeta?.['level-1']?.pending} Medical Directives Require Pre-Publication Acknowledgement. Note: Not all Medical Directives Require Pre-Publication Acknowledgement. </div>
                         ) : (selectedOption === "Medical Directives Sign Off" && selectedSignOffOption === "level-2") ? (
-                            <div className={style.tableDesc}>{signOffMeta?.['level-2']?.pending} Medical Directives Require Leadership Sign Off. </div>
+                            <div className={`${style.tableDesc} ${style.noteText}`}>{signOffMeta?.['level-2']?.pending} Medical Directives Require Leadership Sign Off. </div>
                         ) : ''}
                         <TableTwo
                             tableHeaderValues={tableHeaderValues}
                             tableDataValues={getValues()}
                             tableData={selectedOption === "Medical Directives Sign Off" ? revisionList : selectedOption === "Attestations Outstanding" ? outstandingList : dashboardData}
                             gridStyle={selectedOption === 'Attestations Outstanding' ? style.outstandingGrid : selectedOption === 'Current Medical Directives' ? style.mdListGrid : selectedOption === 'Draft Medical Directives' ? style.draftGrid : selectedOption === 'Retire Medical Directives' ? style.mdListGrid : selectedSignOffOption === 'level-3' ? style.level3Grid : style.revisionGrid}
-                            actions={selectedOption === "Medical Directives Sign Off" ? selectedSignOffOption === "level-3" ? actionsData : [] : actionsData}
+                            actions={actionsData}
                             scrollStyle={style.scrollStyle}
-                            tableSortValues={[]}
-                            heading={"There are no Record for you to manage"}
+                            tableSortValues={selectedOption === 'Attestations Outstanding' ? outstandingSortValues : []}
+                            heading={"There are no Records to display"}
+                            getHandleSort={getHandleSort}
+                            sortValue={{ sortBy: sortValue, sortByField: sortField }}
                             onClickFunction={() => { }}
                             hidePagination={false}
                             getSelectedPage={getSelectedPage}

@@ -31,6 +31,7 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
     const [autoTriggerOnUpdate, setAutoTriggerOnUpdate] = useState(true);
     const [autoTriggerForNewAppointment, setAutoTriggerForNewAppointment] = useState(true);
     const [autoTriggerForReappointment, setAutoTriggerForReappointment] = useState(true);
+    const [autoTriggerForLocum, setAutoTriggerForLocum] = useState(true);
     const [showAttestationGroupList, setShowAttestationGroupList] = useState(false);
     const [showAcknowledgementGroupList, setShowAcknowledgementGroupList] = useState(false);
     const [showAttestationGroup, setShowAttestationGroup] = useState(false);
@@ -43,6 +44,7 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
     const [selectedRolesWorkflow, setSelectedRolesWorkflow] = useState([]);
     const [selectedStaffsWorkflow, setSelectedStaffsWorkflow] = useState([]);
     const [selectedGroupsWorkflow, setSelectedGroupsWorkflow] = useState([]);
+    const [selectedExcludeMembers, setSelectedExcludeMembers] = useState([]);
     const [selectedStaffForMove, setSelectedStaffForMove] = useState([]);
     const [workflowStructure, setWorkflowStructure] = useState();
     const [createdWorkflowStructure, setCreatedWorkflowStructure] = useState();
@@ -222,6 +224,7 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
         data.groups = filteredGroupArray;
         data.triggerForNewAppointment = autoTriggerForNewAppointment;
         data.triggerForReAppointment = autoTriggerForReappointment;
+        data.triggerForLocum = autoTriggerForLocum;
 
         formData.append(
             "metaDataDTO",
@@ -506,7 +509,7 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                                 required={true}
                                 label={"Authorized Implementers / Responsible Disciplines"}
                             /> */}
-                            <div className={style.labelStyle}>Select Attestation Groups for Medical Directive reviews</div>
+                            <div className={style.labelStyle}>Select Staff to Attest to this Medical Directive</div>
                             <div className={style.attestationGrid}>
                                 <div ref={containerRef2} onFocus={() => setShowAcknowledgementGroupList(true)} onBlur={(e) => handleBlur(e, containerRef2)}
                                     tabIndex={0}>
@@ -549,18 +552,6 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                             </div>
                         </div>
                     )}
-                    {/* <div className={`${style.marginTop20} ${style.twoCol}`}>
-                        <div className={style.labelStyle}>Auto trigger reviews and attestations on revision / update of Medical Directive</div>
-                        <CommonSwitch label={autoTriggerOnUpdate ? 'YES' : 'NO'} checked={autoTriggerOnUpdate} onChange={(e) => setAutoTriggerOnUpdate(e.target.checked)} labelName={''} />
-                    </div> */}
-                    <div className={`${style.marginTop20} ${style.twoCol}`}>
-                        <div className={style.labelStyle}>Auto trigger review and attestations for new staff applicant</div>
-                        <CommonSwitch label={autoTriggerForNewAppointment ? 'YES' : 'NO'} checked={autoTriggerForNewAppointment} onChange={(e) => setAutoTriggerForNewAppointment(e.target.checked)} labelName={''} />
-                    </div>
-                    <div className={`${style.marginTop20} ${style.twoCol}`}>
-                        <div className={style.labelStyle}>Auto trigger review and attestations for staff reappointment</div>
-                        <CommonSwitch label={autoTriggerForReappointment ? 'YES' : 'NO'} checked={autoTriggerForReappointment} onChange={(e) => setAutoTriggerForReappointment(e.target.checked)} labelName={''} />
-                    </div>
                     <div className={`${style.marginTop20} ${style.twoCol}`}>
                         <CommonSelectField
                             value={attestationReviewFrequency}
@@ -574,6 +565,36 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                             required={false}
                             label={"Frequency of Review for Attestation (if none within the period selected)"}
                         />
+                    </div>
+                    {/* <div>
+                        <CommonMultiSelectField
+                            value={selectedExcludeMembers}
+                            onChange={(e) => setSelectedExcludeMembers(e.target.value)}
+                            className={style.fullWidth}
+                            // firstOptionLabel={'All'}
+                            // firstOptionValue={''}
+                            valueList={groupList?.map(option => option?.id)}
+                            labelList={groupList?.map(option => `${option?.name}`)}
+                            disabledList={groupList?.map(() => false)}
+                            required={false}
+                            label={'Attestation Groups'}
+                        />
+                    </div> */}
+                    <div className={`${style.marginTop20} ${style.twoCol}`}>
+                        <div className={style.labelStyle}>Auto trigger review and attestations for <strong>New Staff Applicant</strong></div>
+                        <CommonSwitch label={autoTriggerForNewAppointment ? 'YES' : 'NO'} checked={autoTriggerForNewAppointment} onChange={(e) => setAutoTriggerForNewAppointment(e.target.checked)} labelName={''} />
+                    </div>
+                    <div className={`${style.marginTop20} ${style.twoCol}`}>
+                        <div className={style.labelStyle}>Auto trigger review and attestations for <strong>Staff Reappointment</strong></div>
+                        <CommonSwitch label={autoTriggerForReappointment ? 'YES' : 'NO'} checked={autoTriggerForReappointment} onChange={(e) => setAutoTriggerForReappointment(e.target.checked)} labelName={''} />
+                    </div>
+                    <div className={`${style.marginTop20} ${style.twoCol}`}>
+                        <div className={style.labelStyle}>Auto trigger review and attestations for <strong>Locum Renewal / Extensions</strong></div>
+                        <CommonSwitch label={autoTriggerForLocum ? 'YES' : 'NO'} checked={autoTriggerForLocum} onChange={(e) => setAutoTriggerForLocum(e.target.checked)} labelName={''} />
+                    </div>
+                    <div className={`${style.marginTop20} ${style.twoCol}`}>
+                        <div className={style.labelStyle}>Auto trigger reviews and attestations on <strong>Revision / Update</strong> of Medical Directive</div>
+                        <CommonSwitch label={autoTriggerOnUpdate ? 'YES' : 'NO'} checked={autoTriggerOnUpdate} onChange={(e) => setAutoTriggerOnUpdate(e.target.checked)} labelName={''} />
                     </div>
                 </div>
             </div>

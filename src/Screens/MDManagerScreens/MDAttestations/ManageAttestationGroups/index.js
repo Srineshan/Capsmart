@@ -91,12 +91,17 @@ const ManageAttestationGroups = () => {
     const [showAttestationGroup, setShowAttestationGroup] = useState(false);
     const [selectedStaffs, setSelectedStaffs] = useState([]);
     const [selectedStaffForMove, setSelectedStaffForMove] = useState([]);
+    const [selectedGroupType, setSelectedGroupType] = useState([]);
     useEffect(() => {
         console.log(selectedOption, 'option')
         if (selectedOptionValue !== undefined && selectedOptionValue !== null) {
             setSelectedOption(selectedOptionValue);
         }
     }, [selectedOptionValue]);
+
+    useEffect(() => {
+        setSelectedGroupType((sessionStorage.getItem('groupType') && sessionStorage.getItem('groupType') !== 'undefined') ? [sessionStorage.getItem('groupType')] : [])
+    }, [sessionStorage.getItem('groupType')])
 
     useEffect(() => {
         if (!medicalDirectivesAttestation)
@@ -108,8 +113,16 @@ const ManageAttestationGroups = () => {
         userTileValues();
         getEntity();
         getDepartmentList();
-        getGroupList();
     }, []);
+
+    useEffect(() => {
+        const controller = new AbortController();
+        const signal = controller.signal;
+
+        getGroupList(signal);
+
+        return () => controller.abort();
+    }, [selectedGroupType]);
 
     useEffect(() => {
         getStaffList()
@@ -232,9 +245,9 @@ const ManageAttestationGroups = () => {
         setShowAttestationGroup(true)
     }
 
-    const getGroupList = async () => {
+    const getGroupList = async (signal) => {
         const response = await GET(
-            `medical-directive-service/medicalDirectiveGroup`
+            `medical-directive-service/medicalDirectiveGroup?type=${selectedGroupType}`, { signal }
         );
         console.log(response.data, 'group');
         setGroupList(response?.data)
@@ -577,17 +590,17 @@ const ManageAttestationGroups = () => {
                                         />
                                     </div>
                                     <div className={style.marginTop10}>
-                                        <div className={style.labelStyle}>Attestation Groups</div>
+                                        <div className={style.labelStyle}>Group Type</div>
                                         <CommonMultiSelectField
-                                            value={selectedGroups}
-                                            onChange={(e) => handleGroupSelect(e.target.value)}
+                                            value={selectedGroupType}
+                                            onChange={(e) => setSelectedGroupType(e.target.value)}
                                             className={style.fullWidth}
                                             widthValue='250px'
                                             // firstOptionLabel={'All'}
                                             // firstOptionValue={''}
-                                            valueList={groupList?.map(option => option?.id)}
-                                            labelList={groupList?.map(option => `${option?.name}`)}
-                                            disabledList={groupList?.map(() => false)}
+                                            valueList={["ACKNOWLEDGEMENT", "ATTESTATION", "SIGN_OFF"]?.map(option => option)}
+                                            labelList={["Acknowledgement", "Attestation", "Sign Off"]?.map(option => option)}
+                                            disabledList={["Acknowledgement", "Attestation", "Sign Off"]?.map(() => false)}
                                             required={false}
                                             label={'Attestation Groups'}
                                         />
@@ -682,7 +695,7 @@ const ManageAttestationGroups = () => {
                             className={`${style.spaceBetween} ${style.marginLeft30} ${style.marginTop10} `}
                         >
                             <div className={`${style.tabs}`}>
-                                <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Attestation Group" tileCount={groupList?.length} currentTile="REVIEW & ATTEST" />
+                                <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Groups" tileCount={groupList?.length} currentTile="REVIEW & ATTEST" />
                             </div>
                             <div>
                                 <button

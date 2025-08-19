@@ -80,8 +80,10 @@ const MDManagerStep2 = ({ setStep1, setStep2, setStep3, mdValue, getMD, setMdVal
                 <div className={`${style.stepsTitleBar} ${style.verticalAlignCenter}`}>
                     <div className={style.stepsTitleText}>Medical Directive Meta Data</div>
                 </div>
-                <div>
-                    <CommonPdfViewer pdfurl={mdValue?.file?.fileURL} />
+                <div className={style.marginTop20}>
+                    <iframe src={`${mdValue?.file?.fileURL}#toolbar=1&view=fitH`}
+                        style={{ height: "calc(100vh - 200px)", width: "100%", border: "none" }}></iframe>
+                    {/* <CommonPdfViewer pdfurl={mdValue?.file?.fileURL} /> */}
                 </div>
             </div>
         </div>
