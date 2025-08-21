@@ -1,5 +1,5 @@
 import React, { useState, useEffect, forwardRef, useCallback, useRef } from "react";
-import { GET, PUT, TenantID } from "../../Screens/dataSaver";
+import { GET, POST, PUT, TenantID } from "../../Screens/dataSaver";
 import { Dialog, Classes } from "@blueprintjs/core";
 import CrossPink from "../../images/crossPink.png";
 import Cookie from 'universal-cookie';
@@ -20,6 +20,7 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import PrintOutlinedIcon from "@mui/icons-material/PrintOutlined";
 import { useReactToPrint } from "react-to-print";
 import { Tooltip } from "@mui/material";
+import { ErrorToaster2, SuccessToaster2 } from "../../utils/toaster";
 
 const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
   const tableRef = useRef(null);
@@ -367,6 +368,20 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
     navigate(`/medicalDirective/${selectedApplicant?.user?.id}/${data?.medicalDirective?.id}`)
   }
 
+  const handleSendReminder = async (data) => {
+    let payloadData = {
+      userIds: [data?.user?.id],
+    }
+    console.log(data)
+    try {
+      const { data: reminder } = await POST(`medical-directive-service/attestation/sendAttestationEmail`, payloadData);
+      SuccessToaster2('Attestation Outstanding Reminder Sent Successfully');
+    } catch (error) {
+      console.error(error);
+      ErrorToaster2('Failed to send Attestation Outstanding Reminder');
+    }
+  }
+
   const innerActionsData = [
     {
       data: "View",
@@ -377,7 +392,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
     {
       data: "Request",
       requiredValue: "boolean",
-      onClick: () => { },
+      onClick: handleSendReminder,
       conditionToShow: `!data?.attestationLog`
     }
   ];
@@ -750,9 +765,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
       lastAttested.push(data?.status === "COMPLETED" ? data?.attestationLog?.createdDate ? format(new Date(data?.attestationLog?.createdDate), 'MMM dd, yyyy') : '-' : '-');
       // action.push(data?.status === "COMPLETED" ? true : false);
       actionItem.push(
-        data?.status === "COMPLETED" ?
-          <div className={style.viewOrRtt} onClick={data?.status === "COMPLETED" ? () => handleInnerSelectDataByApplicant(data) : () => { }}>{data?.status === "COMPLETED" ? 'View' : 'Request'}</div>
-          : ''
+        <div className={style.viewOrRtt} onClick={data?.status === "COMPLETED" ? () => handleInnerSelectDataByApplicant(data) : () => handleSendReminder(selectedApplicant)}>{data?.status === "COMPLETED" ? 'View' : 'Request'}</div>
       );
     });
 
@@ -814,7 +827,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
       type.push('-')
       attestationDate.push(data?.attestationLog?.esign?.signedDate ? result.parsedDate ? format(result.parsedDate, dateFormat) : '-' : '-');
       actionItem.push(
-        <div className={style.viewOrRtt} onClick={data?.attestationLog ? () => handleInnerSelectData(data) : () => { }}>{data?.attestationLog ? 'View' : 'Request'}</div>
+        <div className={style.viewOrRtt} onClick={data?.attestationLog ? () => handleInnerSelectData(data) : () => handleSendReminder(data)}>{data?.attestationLog ? 'View' : 'Request'}</div>
       );
       // action.push(true);
     });

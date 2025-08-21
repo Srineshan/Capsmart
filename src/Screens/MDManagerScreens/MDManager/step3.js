@@ -16,6 +16,7 @@ import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArro
 import { ErrorToaster2, SuccessToaster2 } from '../../../utils/toaster';
 import CommonInputField from '../../../Components/CommonFields/CommonInputField';
 import CommonMultiSelectField from '../../../Components/CommonFields/CommonMultiSelectField';
+import CommonDivider from '../../../Components/CommonFields/CommonDivider';
 
 const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, setSelectedMdId }) => {
     const containerRef = useRef(null);
@@ -26,18 +27,20 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
     const [groupType, setGroupType] = useState('');
     const [groupDesc, setGroupDesc] = useState('');
     const [staffList, setStaffList] = useState([]);
+    const [staffListForExclude, setStaffListForExclude] = useState([]);
     const [groupList, setGroupList] = useState([]);
     const [groupById, setGroupById] = useState();
     const [autoTriggerOnUpdate, setAutoTriggerOnUpdate] = useState(true);
-    const [autoTriggerForNewAppointment, setAutoTriggerForNewAppointment] = useState(true);
-    const [autoTriggerForReappointment, setAutoTriggerForReappointment] = useState(true);
-    const [autoTriggerForLocum, setAutoTriggerForLocum] = useState(true);
+    const [autoTriggerForNewAppointment, setAutoTriggerForNewAppointment] = useState(false);
+    const [autoTriggerForReappointment, setAutoTriggerForReappointment] = useState(false);
+    const [autoTriggerForLocum, setAutoTriggerForLocum] = useState(false);
     const [showAttestationGroupList, setShowAttestationGroupList] = useState(false);
     const [showAcknowledgementGroupList, setShowAcknowledgementGroupList] = useState(false);
     const [showAttestationGroup, setShowAttestationGroup] = useState(false);
     const [selectedStaffs, setSelectedStaffs] = useState([]);
     const [selectedGroups, setSelectedGroups] = useState([]);
     const [selectedAcknowledgementGroups, setSelectedAcknowledgementGroups] = useState([]);
+    const [workflowEdited, setWorkflowEdited] = useState(false);
     const [workFlow1IsMandatory, setWorkFlow1IsMandatory] = useState(false);
     const [workFlow2IsMandatory, setWorkFlow2IsMandatory] = useState(false);
     const [selectedRolesWorkflow1, setSelectedRolesWorkflow1] = useState([]);
@@ -50,6 +53,7 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
     const [createdWorkflowStructure, setCreatedWorkflowStructure] = useState();
     const [showWorkflowSelection, setShowWorkflowSelection] = useState(false);
     const [roles, setRoles] = useState([]);
+    const [isGroupEdited, setIsGroupEdited] = useState(false);
     console.log(mdValue, 'mdValue')
     useEffect(() => {
         getGroupList()
@@ -62,14 +66,20 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
     }, [groupType])
 
     useEffect(() => {
+        getStaffListForExclude()
+    }, [targetStaff])
+
+    useEffect(() => {
         console.log(mdValue, 'mdValue', mdValue?.departments?.flatMap(data => data?.serviceAreas?.map(innerData => innerData?.id) || []) || [])
         if (mdValue) {
             setAttestationReviewFrequency(mdValue?.attestationPeriod?.value === 1 ? 'EVERY_1_YEAR' : mdValue?.attestationPeriod?.value === 2 ? 'EVERY_2_YEARS' : mdValue?.attestationPeriod?.value === 3 ? 'EVERY_3_YEARS' : '');
             setAutoTriggerOnUpdate(mdValue?.autoTriggerOnUpdate)
             setTargetStaff(mdValue?.updateFor);
+            setSelectedExcludeMembers(mdValue?.excludedUsers?.map(data => data?.id) || [])
             setSelectedGroups(mdValue?.groups?.map(data => data?.id))
             setAutoTriggerForNewAppointment(mdValue?.triggerForNewAppointment)
             setAutoTriggerForReappointment(mdValue?.triggerForReAppointment)
+            setAutoTriggerForLocum(mdValue?.triggerForLocum)
             getWorkflow();
         }
     }, [mdValue])
@@ -94,6 +104,40 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
         );
         console.log(response.data);
         setStaffList(response?.data)
+    }
+
+    const getStaffListForExclude = async () => {
+        const deptPayload = mdValue?.sites?.map(site => ({
+            siteId: site.id,
+            departmentAndServiceAreaId: site.departments.map(dept => ({
+                id: dept.id,
+                serviceAreaIds: [],
+                serviceAreaSpecific: false
+            })),
+            departmentSpecific: site.departmentSpecific
+        }));
+
+        const divPayload = mdValue?.sites?.map(site => ({
+            siteId: site.id,
+            departmentAndServiceAreaId: site.departments.map(dept => ({
+                id: dept.id,
+                serviceAreaIds: dept.serviceAreas.map(sa => sa.id),
+                serviceAreaSpecific: dept.serviceAreaSpecific
+            })),
+            departmentSpecific: site.departmentSpecific
+        }));
+
+        let url = `user-management-service/user/allStaffs?status=ACTIVE`
+        let response;
+        if (targetStaff === 'ALL_STAFFS') {
+            response = await POST(url);
+        } else if (targetStaff === 'SELECTED_DEPARTMENTS') {
+            response = await POST(url, deptPayload);
+        } else if (targetStaff === 'SELECTED_DIVISIONS') {
+            response = await POST(url, divPayload);
+        }
+        console.log(response?.data);
+        setStaffListForExclude(response?.data)
     }
 
     const getGroupList = async () => {
@@ -164,21 +208,25 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
         if (!selectedStaffs?.includes(selectedStaffForMove)) {
             setSelectedStaffs(prev => [...prev, selectedStaffForMove]);
         }
+        setIsGroupEdited(true)
     }
 
     const handleRemove = () => {
         console.log('filterCheck')
         setSelectedStaffs(selectedStaffs?.filter(data => data !== selectedStaffForMove))
+        setIsGroupEdited(true)
     }
 
     const handleMoveBulk = () => {
         console.log('filterCheck')
         setSelectedStaffs(staffList?.map(data => data?.id))
+        setIsGroupEdited(true)
     }
 
     const handleRemoveBulk = () => {
         console.log('filterCheck')
         setSelectedStaffs([])
+        setIsGroupEdited(true)
     }
 
     const handleGroupSelect = (id) => {
@@ -188,6 +236,7 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
     }
 
     const handleGroupSelectAcknowledgement = (id) => {
+        setWorkflowEdited(true)
         if (!selectedAcknowledgementGroups?.includes(id)) {
             setSelectedAcknowledgementGroups(prev => [...prev, id]);
         }
@@ -197,6 +246,7 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
         setGroupById();
         getGroupList();
         setShowAttestationGroup(false);
+        setIsGroupEdited(false);
     }
 
     const handlePublish = async (data) => {
@@ -210,7 +260,27 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
     }
 
 
-    const handleContinue = async (isPublish) => {
+    const handleContinue = async (isSaveInProgress) => {
+        if (!isSaveInProgress) {
+            let errors = [];
+
+            if (workFlow1IsMandatory && selectedAcknowledgementGroups?.length === 0) errors.push("Acknowledgement Group selection is required.");
+            if (targetStaff === 'SELECTED_GROUPS' && selectedGroups?.length === 0) errors.push("Attestation Group Selection is required.");
+            if (!attestationReviewFrequency) errors.push("Frequency of Review for Attestation (if none within the period selected) is required");
+            if (errors.length) {
+                errors.forEach(err => ErrorToaster2(err));
+                return;
+            }
+        }
+        let excludedUserList = targetStaff === 'SELECTED_GROUPS' ? Object.values(
+            groupList
+                .filter(obj => selectedGroups?.includes(obj?.id))
+                .flatMap(obj => obj?.members)
+                .reduce((acc, member) => {
+                    acc[member.id] = member;
+                    return acc;
+                }, {})
+        ) : staffListForExclude;
         const formData = new FormData();
         console.log(mdValue)
 
@@ -225,7 +295,16 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
         data.triggerForNewAppointment = autoTriggerForNewAppointment;
         data.triggerForReAppointment = autoTriggerForReappointment;
         data.triggerForLocum = autoTriggerForLocum;
-
+        data.excludedUsers = excludedUserList?.filter(obj => selectedExcludeMembers?.includes(obj.id)).map(user => ({
+            id: user?.id,
+            name: user?.name,
+            email: user?.email,
+            title: user?.title,
+            sites: user?.sites,
+            appointmentType: user?.appointmentType,
+            positionType: user?.positionType,
+            tenant: user?.tenant
+        }))
         formData.append(
             "metaDataDTO",
             new Blob([JSON.stringify(data)], {
@@ -238,25 +317,21 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
 
         await PUT(`medical-directive-service/medicalDirectives/${mdValue?.id}`, formData)
             .then(response => {
-                if (!isPublish) {
-                    SuccessToaster2('MD Updateded Successfully');
-                }
+                SuccessToaster2('MD Updateded Successfully');
                 console.log(response?.data)
             })
             .catch(error => {
-                if (!isPublish) {
-                    ErrorToaster2('MD Upload Failed');
-                }
+                ErrorToaster2('MD Upload Failed');
             })
-        if (isPublish) {
-            try {
-                const { data: publishedMD } = await POST(`medical-directive-service/medicalDirectives/${mdValue?.id}/publish`);
-                SuccessToaster2('Medical Directive published successfully');
-            } catch (error) {
-                console.error(error);
-                ErrorToaster2('Failed to publish Medical Directive');
-            }
-        }
+        // if (isPublish) {
+        //     try {
+        //         const { data: publishedMD } = await POST(`medical-directive-service/medicalDirectives/${mdValue?.id}/publish`);
+        //         SuccessToaster2('Medical Directive published successfully');
+        //     } catch (error) {
+        //         console.error(error);
+        //         ErrorToaster2('Failed to publish Medical Directive');
+        //     }
+        // }
         let acknowledgementData = mdValue?.workflowStatus === "NA" ? workflowStructure : createdWorkflowStructure;
         const transformedGroups = selectedAcknowledgementGroups?.map((groupId) => {
             const group = groupList.find((g) => g.id === groupId);
@@ -277,29 +352,44 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
         } else {
             acknowledgementData.approvalFlowMap.workflow[1].required = false;
         }
-        if (mdValue?.workflowStatus === "NA") {
-            await POST(`medical-directive-service/medicalDirectives/${mdValue?.id}/workflow`, acknowledgementData)
-                .then(response => {
-                    SuccessToaster2('Workflow Added Successfully');
-                })
-                .catch(error => {
-                    ErrorToaster2('Something Failed. Please Try later!');
-                })
-        } else {
-            await PUT(`medical-directive-service/medicalDirectives/${mdValue?.id}/workflow`, acknowledgementData)
-                .then(response => {
-                    SuccessToaster2('Workflow Added Successfully');
-                })
-                .catch(error => {
-                    ErrorToaster2('Something Failed. Please Try later!');
-                })
+        if (workflowEdited) {
+            if (mdValue?.workflowStatus === "NA") {
+                await POST(`medical-directive-service/medicalDirectives/${mdValue?.id}/workflow`, acknowledgementData)
+                    .then(response => {
+                        SuccessToaster2('Workflow Added Successfully');
+                    })
+                    .catch(error => {
+                        ErrorToaster2('Something Failed. Please Try later!');
+                    })
+            } else {
+                await PUT(`medical-directive-service/medicalDirectives/${mdValue?.id}/workflow`, acknowledgementData)
+                    .then(response => {
+                        SuccessToaster2('Workflow Added Successfully');
+                    })
+                    .catch(error => {
+                        ErrorToaster2('Something Failed. Please Try later!');
+                    })
+            }
         }
-        setStep3(false)
-        setStep4(true)
+        if (isSaveInProgress) {
+            handleClose()
+        } else {
+            setStep3(false)
+            setStep4(true)
+        }
         // setShowWorkflowSelection(true)
     }
 
     const handleAddGroup = async () => {
+        let errors = [];
+
+        if (!groupTitle) errors.push("Group Title is required.");
+        if (!groupType) errors.push("Group Type is required.");
+        if (selectedStaffs?.length === 0) errors.push("Group Members is required");
+        if (errors.length) {
+            errors.forEach(err => ErrorToaster2(err));
+            return;
+        }
         let data = {
             "name": groupTitle,
             "description": groupDesc,
@@ -329,6 +419,7 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                     ErrorToaster2('Something Failed. Please Try later!');
                 })
         }
+        setIsGroupEdited(false);
     }
 
     const handleSaveWorkflow = async (type) => {
@@ -392,7 +483,6 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
 
     const handleWorkflowClose = () => {
         setShowWorkflowSelection(false);
-        setStep3(false);
         handleClose();
     }
 
@@ -407,8 +497,31 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
     const handleClose = () => {
         setMdValue();
         setSelectedMdId('');
+        setStep3(false);
     }
-    console.log(staffList?.filter(staff => selectedStaffs?.includes(staff.id)), 'filterCheck', selectedStaffs, selectedStaffForMove)
+
+    let excludeLabelList = targetStaff === 'SELECTED_GROUPS' ? Object.values(
+        groupList
+            .filter(obj => selectedGroups?.includes(obj?.id))
+            .flatMap(obj => obj?.members)
+            .reduce((acc, member) => {
+                acc[member.id] = member;
+                return acc;
+            }, {})
+    ).map(m => `${m?.name?.firstName} ${m?.name?.lastName}`) : staffListForExclude?.map(m => `${m?.name?.firstName} ${m?.name?.lastName}`);
+
+    let excludeIdList = targetStaff === 'SELECTED_GROUPS' ? [...new Set(groupList.filter(obj => selectedGroups?.includes(obj?.id)).flatMap(obj => obj?.members?.map(m => m.id)))] : staffListForExclude?.map(m => m?.id)
+
+    let excludeDisabledList = targetStaff === 'SELECTED_GROUPS' ? [...new Set(groupList.filter(obj => selectedGroups?.includes(obj?.id)).flatMap(obj => obj?.members?.map(m => m.id)))]?.map(() => false) : staffListForExclude?.map(m => false)
+    console.log(staffList?.filter(staff => selectedStaffs?.includes(staff.id)), 'filterCheck', selectedStaffs, selectedStaffForMove, Object.values(
+        groupList
+            .filter(obj => selectedGroups?.includes(obj?.id))
+            .flatMap(obj => obj?.members)
+            .reduce((acc, member) => {
+                acc[member.id] = member;
+                return acc;
+            }, {})
+    ).map(m => `${m?.name?.firstName} ${m?.name?.lastName}`), [...new Set(groupList.filter(obj => selectedGroups?.includes(obj?.id)).flatMap(obj => obj?.members?.map(m => m?.id)))])
     return (
         <div className={style.stepsBackground}>
             <div className={`${style.stepHeader} ${style.spaceBetween} ${style.verticalAlignCenter}`}>
@@ -422,7 +535,7 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                         {/* {mdValue?.creationType === "RENEW" && (
                             <button className={`${style.buttonStyle} ${style.marginRight} `} onClick={() => handleContinue(true)} >{'PUBLISH'}</button>
                         )} */}
-                        <button className={`${style.outlinedButtonMd} ${style.marginRight} `} onClick={() => { setStep3(false); handleClose() }} >SAVE IN PROGRESS</button>
+                        <button className={`${style.outlinedButtonMd} ${style.marginRight} `} onClick={() => { handleContinue(true) }} >SAVE IN PROGRESS</button>
                         <button className={`${style.buttonStyleMd} ${style.marginRight} `} onClick={() => { handleContinue() }} >CONTINUE</button>
                     </div>
                 </div>
@@ -434,11 +547,11 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                 <div className={`${style.padding40} ${style.marginTop20}`}>
                     <div className={`${style.marginTop20} ${style.twoCol}`}>
                         <div className={style.labelStyle}>Staff Acknowledgement Required?</div>
-                        <CommonSwitch label={workFlow1IsMandatory ? 'YES' : 'NO'} checked={workFlow1IsMandatory} onChange={(e) => setWorkFlow1IsMandatory(e.target.checked)} labelName={''} />
+                        <CommonSwitch label={workFlow1IsMandatory ? 'YES' : 'NO'} checked={workFlow1IsMandatory} onChange={(e) => { setWorkFlow1IsMandatory(e.target.checked); setWorkflowEdited(true) }} labelName={''} />
                     </div>
                     {workFlow1IsMandatory && (
                         <div className={style.padding20}>
-                            <div className={style.labelStyle}>Select Acknowledgement Groups</div>
+                            <div className={style.labelStyle}>Select Acknowledgement Groups*</div>
                             <div className={style.attestationGrid}>
                                 <div ref={containerRef} onFocus={() => setShowAttestationGroupList(true)} onBlur={(e) => handleBlur(e, containerRef)}
                                     tabIndex={0}>
@@ -473,7 +586,7 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                                         return (
                                             <div className={`${style.chips} ${style.displayInRow}`}>
                                                 <div>{groupList?.filter(groupData => groupData?.id === data)?.[0]?.name}</div> <div className={`${style.verticalAlignCenter} ${style.marginLeft10} ${style.cursorPointer}`}
-                                                    onClick={() => setSelectedGroups(selectedGroups?.filter(innerData => innerData !== data))}
+                                                    onClick={() => { setSelectedAcknowledgementGroups(selectedAcknowledgementGroups?.filter(innerData => innerData !== data)); setWorkflowEdited(true) }}
                                                 ><CancelIcon sx={{ color: '#06617A', fontSize: 20 }} /></div></div>
                                         )
                                     })}
@@ -491,8 +604,8 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                         <CommonRadio
                             value={targetStaff}
                             onChange={(e) => setTargetStaff(e.target.value)}
-                            radioValue={["ALL_STAFFS", "SELECTED_GROUPS"]}
-                            label={["All Staff Members", "Selected Groups"]}
+                            radioValue={["ALL_STAFFS", "SELECTED_DEPARTMENTS", "SELECTED_DIVISIONS", "SELECTED_GROUPS"]}
+                            label={["All Staff Members", "All Selected Department Staff Members", "All Selected Division / Speciality Staff Members", "Selected Groups"]}
                         />
                     </div>
                     {targetStaff === "SELECTED_GROUPS" && (
@@ -509,7 +622,7 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                                 required={true}
                                 label={"Authorized Implementers / Responsible Disciplines"}
                             /> */}
-                            <div className={style.labelStyle}>Select Staff to Attest to this Medical Directive</div>
+                            <div className={style.labelStyle}>Select Staff to Attest to this Medical Directive*</div>
                             <div className={style.attestationGrid}>
                                 <div ref={containerRef2} onFocus={() => setShowAcknowledgementGroupList(true)} onBlur={(e) => handleBlur(e, containerRef2)}
                                     tabIndex={0}>
@@ -522,7 +635,7 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                                     />
                                     {showAcknowledgementGroupList && (
                                         <div className={`${style.attestationGroupCard} ${style.padding20}`} tabIndex={0}>
-                                            {groupList?.map((data, index) => (
+                                            {groupList?.filter(data => data?.type === "ATTESTATION")?.map((data, index) => (
                                                 <div className={`${style.groupDisplayGrid} ${style.verticalAlignCenter}`}>
                                                     <div className={`${style.labelStyle} ${style.cursorPointer}`} onClick={() => handleGroupSelect(data?.id)}>{data?.name}</div>
                                                     <div className={`${style.attestationDescStyle} ${style.verticalAlignCenter}`}
@@ -553,6 +666,23 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                         </div>
                     )}
                     <div className={`${style.marginTop20} ${style.twoCol}`}>
+                        <div>
+                            <div className={style.labelStyle}>Select Staff to Exclude from Attesting this Medical Directive</div>
+                            <CommonMultiSelectField
+                                value={selectedExcludeMembers}
+                                onChange={(e) => setSelectedExcludeMembers(e.target.value)}
+                                className={style.fullWidth1}
+                                // firstOptionLabel={'All'}
+                                // firstOptionValue={''}
+                                valueList={excludeIdList}
+                                labelList={excludeLabelList}
+                                disabledList={excludeDisabledList}
+                                required={false}
+                                label={'Excluded Staff Members'}
+                            />
+                        </div>
+                    </div>
+                    <div className={`${style.marginTop20} ${style.twoCol}`}>
                         <CommonSelectField
                             value={attestationReviewFrequency}
                             onChange={(e) => setAttestationReviewFrequency(e.target.value)}
@@ -563,23 +693,16 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                             labelList={["Every 1 Year", "Every 2 Years", "Every 3 Years"]}
                             disabledList={false}
                             required={false}
-                            label={"Frequency of Review for Attestation (if none within the period selected)"}
+                            label={"Frequency of Review for Attestation (if none within the period selected)*"}
                         />
                     </div>
-                    {/* <div>
-                        <CommonMultiSelectField
-                            value={selectedExcludeMembers}
-                            onChange={(e) => setSelectedExcludeMembers(e.target.value)}
-                            className={style.fullWidth}
-                            // firstOptionLabel={'All'}
-                            // firstOptionValue={''}
-                            valueList={groupList?.map(option => option?.id)}
-                            labelList={groupList?.map(option => `${option?.name}`)}
-                            disabledList={groupList?.map(() => false)}
-                            required={false}
-                            label={'Attestation Groups'}
-                        />
-                    </div> */}
+                    <div className={style.marginTop10}>
+                        <CommonDivider />
+                    </div>
+                    <div className={`${style.marginTop20} ${style.twoCol}`}>
+                        <div className={style.labelStyle}>Auto trigger reviews and attestations on <strong>Revision / Update</strong> of Medical Directive</div>
+                        <CommonSwitch label={autoTriggerOnUpdate ? 'YES' : 'NO'} checked={autoTriggerOnUpdate} onChange={(e) => setAutoTriggerOnUpdate(e.target.checked)} labelName={''} />
+                    </div>
                     <div className={`${style.marginTop20} ${style.twoCol}`}>
                         <div className={style.labelStyle}>Auto trigger review and attestations for <strong>New Staff Applicant</strong></div>
                         <CommonSwitch label={autoTriggerForNewAppointment ? 'YES' : 'NO'} checked={autoTriggerForNewAppointment} onChange={(e) => setAutoTriggerForNewAppointment(e.target.checked)} labelName={''} />
@@ -591,10 +714,6 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                     <div className={`${style.marginTop20} ${style.twoCol}`}>
                         <div className={style.labelStyle}>Auto trigger review and attestations for <strong>Locum Renewal / Extensions</strong></div>
                         <CommonSwitch label={autoTriggerForLocum ? 'YES' : 'NO'} checked={autoTriggerForLocum} onChange={(e) => setAutoTriggerForLocum(e.target.checked)} labelName={''} />
-                    </div>
-                    <div className={`${style.marginTop20} ${style.twoCol}`}>
-                        <div className={style.labelStyle}>Auto trigger reviews and attestations on <strong>Revision / Update</strong> of Medical Directive</div>
-                        <CommonSwitch label={autoTriggerOnUpdate ? 'YES' : 'NO'} checked={autoTriggerOnUpdate} onChange={(e) => setAutoTriggerOnUpdate(e.target.checked)} labelName={''} />
                     </div>
                 </div>
             </div>
@@ -608,7 +727,7 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                         <CommonInputField
                             className={style.fullWidth}
                             value={groupTitle}
-                            onChange={(e) => setGroupTitle(e.target.value)}
+                            onChange={(e) => { setGroupTitle(e.target.value); setIsGroupEdited(true) }}
                             type="text"
                         // placeholder="Enter Keywords / Tags"
                         />
@@ -617,7 +736,7 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                         <div className={style.labelStyle}>Group Type*</div>
                         <CommonSelectField
                             value={groupType}
-                            onChange={(e) => setGroupType(e.target.value)}
+                            onChange={(e) => { setGroupType(e.target.value); setIsGroupEdited(true) }}
                             className={style.fullWidth1}
                             //   firstOptionLabel={'Select Category'}
                             //   firstOptionValue={''}
@@ -637,6 +756,7 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                                 onChange={(event, editor) => {
                                     const data = editor.getData();
                                     setGroupDesc(data);
+                                    setIsGroupEdited(true)
                                 }}
                                 onReady={(editor) => {
                                     editor.editing.view.change((writer) => {
@@ -703,7 +823,7 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                                 </div>
                             </div>
                             <div>
-                                <div className={style.labelStyle}>Attestation Group Members ({staffList?.filter(staff => selectedStaffs?.includes(staff.id))?.length})</div>
+                                <div className={style.labelStyle}>Group Members ({staffList?.filter(staff => selectedStaffs?.includes(staff.id))?.length})</div>
                                 <div className={style.attestationGroupRightCard}>
                                     {staffList?.filter(staff => selectedStaffs?.includes(staff.id))?.map((data, index) => (
                                         <div className={style.groupGrid} key={index}>
@@ -721,7 +841,7 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                     <div>
                         <div className={`${style.spaceBetween} ${style.marginTop20}`}>
                             <button className={`${style.outlinedButton} `} onClick={() => handleGroupDialogClose()} >CANCEL</button>
-                            <button className={`${style.buttonStyle} `} onClick={() => handleAddGroup()} >{groupById ? 'UPDATE' : 'ADD'}</button>
+                            <button className={`${style.buttonStyle} ${!isGroupEdited ? style.disabledView : ''} `} onClick={!isGroupEdited ? () => { } : () => handleAddGroup()} >{groupById ? 'UPDATE' : 'ADD'}</button>
                         </div>
                     </div>
                 </div>
