@@ -7,7 +7,7 @@ import { TextField } from '@mui/material';
 import CancelIcon from '@mui/icons-material/Cancel';
 import style from './index.module.scss';
 import CommonSelectField from '../../../Components/CommonFields/CommonSelectField';
-import { format } from 'date-fns';
+import { add, format, sub } from 'date-fns';
 import { GET, POST, PUT, TenantID } from '../../dataSaver';
 import { ErrorToaster2, SuccessToaster2 } from '../../../utils/toaster';
 import CommonMultiSelectField from '../../../Components/CommonFields/CommonMultiSelectField';
@@ -207,7 +207,21 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
         setStaffList(response?.data?.staffs)
     }
 
-    const handleContinue = async () => {
+    const handleContinue = async (isSaveInProgress) => {
+
+        let errors = [];
+
+        if (!mdTitle) errors.push("MD Title is required");
+        if (!mdId) errors.push("MD ID is required");
+        if (!isSaveInProgress) {
+            if (!mdDescription) errors.push("MD Description is required");
+            if (!selectedDepartment?.length) errors.push("Department Selection is required");
+            if (!reviewFrequency) errors.push("Review Frequency is required");
+        }
+        if (errors.length) {
+            errors.forEach(err => ErrorToaster2(err));
+            return;
+        }
         const formData = new FormData();
 
         let data = {
@@ -294,15 +308,19 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
         if (mdValue?.id) {
             try {
                 const response = await PUT(`medical-directive-service/medicalDirectives/${mdValue?.id}`, formData)
-                setStep1(false);
-                setStep2(true);
-                SuccessToaster2('MD Uploaded Successfully');
+                if (isSaveInProgress) {
+                    handleClose()
+                } else {
+                    setStep1(false);
+                    setStep2(true);
+                }
+                SuccessToaster2('MD Updated Successfully');
                 console.log(response, 'error')
                 getMD(response?.data);
             }
             catch (error) {
                 console.log(error, 'error')
-                ErrorToaster2('MD Upload Failed');
+                ErrorToaster2('MD Updated Failed');
             }
         } else {
             try {
@@ -310,9 +328,13 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
                 if (response?.response?.status === 409) {
                     ErrorToaster2(response?.response?.data);
                 } else {
-                    SuccessToaster2('MD Uploaded Successfully');
-                    setStep1(false);
-                    setStep2(true);
+                    SuccessToaster2('MD Updated Successfully');
+                    if (isSaveInProgress) {
+                        handleClose()
+                    } else {
+                        setStep1(false);
+                        setStep2(true);
+                    }
                     getMD(response?.data);
                 }
                 console.log(response, 'error')
@@ -327,6 +349,7 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
     const handleClose = () => {
         setMdValue();
         setSelectedMdId('');
+        setStep1(false);
     }
     return (
         <div className={style.stepsBackground}>
@@ -337,7 +360,7 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
                 </div>
                 <div className={style.displayInRow}>
                     <div className={`${style.spaceBetween}`}>
-                        <button className={`${style.outlinedButtonMd} ${style.marginRight} `} onClick={() => { setStep1(false); handleClose() }} >SAVE IN PROGRESS</button>
+                        <button className={`${style.outlinedButtonMd} ${style.marginRight} `} onClick={() => { handleContinue(true) }} >SAVE IN PROGRESS</button>
                         <button className={`${style.buttonStyleMd} ${style.marginRight} `} onClick={() => {
                             handleContinue();
                         }} >CONTINUE</button>
@@ -525,8 +548,8 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
                             open={calendarStart}
                             onOpen={() => setCalendarStart(true)}
                             onClose={() => setCalendarStart(false)}
-                            // minDate={sub(new Date(), { years: 3 })}
-                            // maxDate={add(new Date(), { months: 6 })}
+                            minDate={sub(new Date(), { years: 3 })}
+                            maxDate={add(new Date(), { months: 6 })}
                             value={SelectedDate}
                             onChange={(newValue) =>
                                 setSelectedDate(format(new Date(newValue), "yyyy-MM-dd'T'00:00"))

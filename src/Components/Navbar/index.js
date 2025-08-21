@@ -73,12 +73,15 @@ const Navbar = () => {
   const [anchorElTools, setAnchorElTools] = useState(null);
   const [anchorElGuide, setAnchorElGuide] = useState(null);
   const [openPrivileged, setOpenPrivileged] = useState(null);
+  const [anchorElSettings, setAnchorElSettings] = useState(null);
   const openTools = Boolean(anchorElTools);
   const openGuide = Boolean(anchorElGuide);
   const openStaff = Boolean(openPrivileged);
+  const openSettings = Boolean(anchorElSettings);
   const popoverAnchorStaff = useRef(null);
   const popoverAnchorTools = useRef(null);
   const popoverAnchorGuide = useRef(null);
+  const popoverAnchorSettings = useRef(null);
   const [hospitalLogo, setHospitalLogo] = useState(null);
   const [logo, setLogo] = useState(sessionStorage?.getItem("logo"));
   const [isActivityServiceLogAvailable, setIsActivityServiceLogAvailable] =
@@ -282,6 +285,10 @@ const Navbar = () => {
     setOpenPrivileged(event.currentTarget);
   };
 
+  const handleClickSettings = (event) => {
+    setAnchorElSettings(event.currentTarget);
+  };
+
   const handleCloseTools = () => {
     setAnchorElTools(null);
   };
@@ -292,6 +299,10 @@ const Navbar = () => {
 
   const handleCloseStaff = () => {
     setOpenPrivileged(null);
+  };
+
+  const handleCloseSettings = () => {
+    setAnchorElSettings(null);
   };
 
   const sendEmail = (email) => {
@@ -437,7 +448,7 @@ const Navbar = () => {
     window.location.pathname = "/"
     sessionStorage.setItem('applicationCreationType', 'REAPPOINTMENT');
   };
-  // console.log(selectedWorkingMode);
+  console.log(currentUserDetails, 'currentUserDetails');
 
   return (
     <div className={style.navbarStyle}>
@@ -1184,7 +1195,7 @@ const Navbar = () => {
                     ? format(new Date(currentUserDetails?.lastLogin), `${dateFormat}, HH:mm a`)
                     : '-'}
                 </div>
-                {currentUserDetails?.roles?.length > 1 && (
+                {(currentUserDetails?.roles?.map(data => data?.roleName)?.includes(workModeType) ? currentUserDetails?.roles?.length > 1 : currentUserDetails?.mdRoles?.length > 1) && (
                   <Tooltip title={"Click to Switch Workspace"} arrow>
                     <div
                       className={`${style.buttonBackgroundStyle} ${style.marginTop10} ${style.cursorPointer}`}
@@ -1212,18 +1223,18 @@ const Navbar = () => {
           <img src={NotificationCount} alt="print" className={style.notificationCount} /> */}
           {/* <div className={`${style.centerAlign} ${style.iconSize}`}><HelpOutlineOutlinedIcon fontSize="large" /></div> */}
           <div
-            ref={popoverAnchorStaff}
-            onMouseEnter={(e) => handleClickStaff(e)}
-            onMouseLeave={() => handleCloseStaff()}
+            ref={popoverAnchorSettings}
+            onMouseEnter={(e) => handleClickSettings(e)}
+            onMouseLeave={() => handleCloseSettings()}
             aria-owns={openStaff ? "mouse-over-popover" : undefined}
             aria-haspopup="true"
           >
             <div className={`${style.centerAlign} ${style.iconSize}`}><SettingsOutlinedIcon fontSize="small" /></div>
             <Popover
               id={"mouse-over-popover"}
-              open={openStaff}
-              anchorEl={popoverAnchorStaff.current}
-              onClose={handleCloseGuide}
+              open={openSettings}
+              anchorEl={popoverAnchorSettings.current}
+              onClose={handleCloseSettings}
               anchorOrigin={{
                 vertical: "bottom",
                 horizontal: "center",
@@ -1237,8 +1248,8 @@ const Navbar = () => {
               }}
               PaperProps={{
                 style: { width: "200px" },
-                onMouseEnter: handleClickStaff,
-                onMouseLeave: handleCloseStaff,
+                onMouseEnter: handleClickSettings,
+                onMouseLeave: handleCloseSettings,
               }}
             >
               <div className={style.helpCardStyle}>

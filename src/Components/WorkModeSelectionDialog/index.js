@@ -21,9 +21,12 @@ import style from "./index.module.scss";
 import CrossPink from "../../images/crossPink.png";
 import CommonSelectField from "../CommonFields/CommonSelectField";
 import CommonDivider from "../CommonFields/CommonDivider";
+import { useDescope } from "@descope/react-sdk";
+import { Tooltip } from "@mui/material";
 
 const WorkModeDialog = ({ getIsOpen }) => {
   let cookie = new Cookie();
+  const { logout } = useDescope();
   let userDetails = cookie.get("user");
   let entityId = cookie.get("entityId");
   const users = jwt(userDetails);
@@ -172,6 +175,16 @@ const WorkModeDialog = ({ getIsOpen }) => {
     sessionStorage.setItem('selectedSite', id)
   }
 
+  const handleLogout = () => {
+    cookie.remove("user", { path: "/" });
+    cookie.remove("entityId", { path: "/" });
+    cookie.remove("authorization", { path: "/" });
+    sessionStorage.setItem('applicationCreationType', 'REAPPOINTMENT');
+    sessionStorage.removeItem('selectedTab');
+    logout()
+    window.location.pathname = `/`;
+  }
+
   const handleMDLSelect = () => {
     sessionStorage.setItem("workModeType", userMDRole?.[0]);
     window.location.pathname = `/mdManager/libraries/${entityId}/${entitySiteList?.[0]?.sites?.[0]?.departmentList?.departments?.[0]?.id}`;
@@ -210,10 +223,22 @@ const WorkModeDialog = ({ getIsOpen }) => {
             </div>
           )} */}
           <div>
-            <div className={`${style.heading}  ${style.padding}`}>Your user account Login: {userData?.email?.officialEmail}</div>
+            <div className={style.spaceBetween}>
+              <div className={`${style.heading}  ${style.padding}`}>Your user account Login: {userData?.email?.officialEmail}</div>
+              <Tooltip arrow title={"Logout"}>
+                <img
+                  src={CrossPink}
+                  alt="cross"
+                  className={`${style.crossStyle} ${style.marginRight40} ${style.cursorPointer} ${style.marginTop}`}
+                  onClick={() => {
+                    handleLogout(false);
+                  }}
+                />
+              </Tooltip>
+            </div>
             <CommonDivider className={style.dividerMargin} />
           </div>
-          {((entitySiteList?.length >= 1 || entitySiteList?.[0]?.sites?.length > 1)) && (
+          {((entitySiteList?.length > 1 || entitySiteList?.[0]?.sites?.length > 1)) && (
             <div>
               <div className={`${style.heading}  ${style.padding} ${selectedSite !== '' ? style.disabledView : ''}`}>{selectedSite === '' ? 'Select Site' : 'Selected Site'}</div>
               <div className={`${style.workSpaceDesc}  ${selectedSite !== '' ? style.disabledView : ''}`}>Your user account is associated with multiple sites:</div>
@@ -228,7 +253,7 @@ const WorkModeDialog = ({ getIsOpen }) => {
               <CommonDivider className={style.dividerMargin} />
             </div>
           )}
-          {((userRole?.length >= 1 && userMDRole?.length >= 1)) && (
+          {((entitySiteList?.length > 1 || entitySiteList?.[0]?.sites?.length > 1) ? (userRole?.length >= 1 && userMDRole?.length >= 1 && selectedSite !== '') : (userRole?.length >= 1 && userMDRole?.length >= 1)) && (
             <div>
               <div className={`${style.heading}  ${style.padding} ${selectedWorkSpace !== '' ? style.disabledView : ''}`}>{selectedWorkSpace === '' ? 'Select Application' : 'Selected Application'}</div>
               <div className={`${style.workSpaceDesc}  ${selectedWorkSpace !== '' ? style.disabledView : ''}`}>Select the application you want to work in:</div>

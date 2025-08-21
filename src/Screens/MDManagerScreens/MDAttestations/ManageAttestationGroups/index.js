@@ -92,6 +92,7 @@ const ManageAttestationGroups = () => {
     const [selectedStaffs, setSelectedStaffs] = useState([]);
     const [selectedStaffForMove, setSelectedStaffForMove] = useState([]);
     const [selectedGroupType, setSelectedGroupType] = useState([]);
+    const [isGroupEdited, setIsGroupEdited] = useState(false);
     useEffect(() => {
         console.log(selectedOption, 'option')
         if (selectedOptionValue !== undefined && selectedOptionValue !== null) {
@@ -463,21 +464,25 @@ const ManageAttestationGroups = () => {
         if (!selectedStaffs?.includes(selectedStaffForMove)) {
             setSelectedStaffs(prev => [...prev, selectedStaffForMove]);
         }
+        setIsGroupEdited(true)
     }
 
     const handleRemove = () => {
         console.log('filterCheck')
         setSelectedStaffs(selectedStaffs?.filter(data => data !== selectedStaffForMove))
+        setIsGroupEdited(true)
     }
 
     const handleMoveBulk = () => {
         console.log('filterCheck')
         setSelectedStaffs(staffList?.map(data => data?.id))
+        setIsGroupEdited(true)
     }
 
     const handleRemoveBulk = () => {
         console.log('filterCheck')
         setSelectedStaffs([])
+        setIsGroupEdited(true)
     }
 
     const handleGroupSelect = (id) => {
@@ -491,6 +496,16 @@ const ManageAttestationGroups = () => {
     }
 
     const handleAddGroup = async () => {
+        let errors = [];
+
+        if (!groupTitle) errors.push("Group Title is required.");
+        if (!groupType) errors.push("Group Type is required.");
+        if (selectedStaffs?.length === 0) errors.push("Group Members is required");
+        if (errors.length) {
+            errors.forEach(err => ErrorToaster2(err));
+            return;
+        }
+
         let data = {
             "name": groupTitle,
             "description": groupDesc,
@@ -745,7 +760,7 @@ const ManageAttestationGroups = () => {
                                 <CommonInputField
                                     className={style.fullWidth}
                                     value={groupTitle}
-                                    onChange={(e) => setGroupTitle(e.target.value)}
+                                    onChange={(e) => { setGroupTitle(e.target.value); setIsGroupEdited(true) }}
                                     type="text"
                                 // placeholder="Enter Keywords / Tags"
                                 />
@@ -754,7 +769,7 @@ const ManageAttestationGroups = () => {
                                 <div className={style.labelStyle}>Group Type*</div>
                                 <CommonSelectField
                                     value={groupType}
-                                    onChange={(e) => setGroupType(e.target.value)}
+                                    onChange={(e) => { setGroupType(e.target.value); setIsGroupEdited(true) }}
                                     className={style.fullWidth1}
                                     //   firstOptionLabel={'Select Category'}
                                     //   firstOptionValue={''}
@@ -774,6 +789,7 @@ const ManageAttestationGroups = () => {
                                         onChange={(event, editor) => {
                                             const data = editor.getData();
                                             setGroupDesc(data);
+                                            setIsGroupEdited(true);
                                         }}
                                         onReady={(editor) => {
                                             editor.editing.view.change((writer) => {
@@ -839,7 +855,7 @@ const ManageAttestationGroups = () => {
                                         </div>
                                     </div>
                                     <div>
-                                        <div className={style.labelStyle}>Attestation Group Members ({staffList?.filter(staff => selectedStaffs?.includes(staff.id))?.length})</div>
+                                        <div className={style.labelStyle}>Group Members ({staffList?.filter(staff => selectedStaffs?.includes(staff.id))?.length})</div>
                                         <div className={style.attestationGroupRightCard}>
                                             {staffList?.filter(staff => selectedStaffs?.includes(staff.id))?.map((data, index) => (
                                                 <div className={`${style.groupGrid} `} key={index}>
@@ -859,7 +875,7 @@ const ManageAttestationGroups = () => {
                             <div>
                                 <div className={`${style.spaceBetween} ${style.marginTop20}`}>
                                     <button className={`${style.outlinedButton} `} onClick={() => handleGroupDialogClose()} >CANCEL</button>
-                                    <button className={`${style.buttonStyle} `} onClick={() => handleAddGroup()} >{groupById ? 'UPDATE' : 'ADD'}</button>
+                                    <button className={`${style.buttonStyle}   ${!isGroupEdited ? style.disabledView : ''}`} onClick={!isGroupEdited ? () => { } : () => handleAddGroup()} >{groupById ? 'UPDATE' : 'ADD'}</button>
                                 </div>
                             </div>
                         </div>

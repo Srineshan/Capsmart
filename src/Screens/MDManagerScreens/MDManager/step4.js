@@ -45,6 +45,8 @@ const MDManagerStep4 = ({ setStep3, setStep4, mdValue, setMdValue, setSelectedMd
     const [workflowStructure, setWorkflowStructure] = useState();
     const [showWorkflowSelection, setShowWorkflowSelection] = useState(false);
     const [roles, setRoles] = useState([]);
+    const [workflowEdited, setWorkflowEdited] = useState(false);
+    const [isGroupEdited, setIsGroupEdited] = useState(false);
     console.log(mdValue, 'mdValue')
     useEffect(() => {
         getGroupList()
@@ -156,33 +158,39 @@ const MDManagerStep4 = ({ setStep3, setStep4, mdValue, setMdValue, setSelectedMd
         if (!selectedStaffs?.includes(selectedStaffForMove)) {
             setSelectedStaffs(prev => [...prev, selectedStaffForMove]);
         }
+        setIsGroupEdited(true)
     }
 
     const handleRemove = () => {
         console.log('filterCheck')
         setSelectedStaffs(selectedStaffs?.filter(data => data !== selectedStaffForMove))
+        setIsGroupEdited(true)
     }
 
     const handleMoveBulk = () => {
         console.log('filterCheck')
         setSelectedStaffs(staffList?.map(data => data?.id))
+        setIsGroupEdited(true)
     }
 
     const handleRemoveBulk = () => {
         console.log('filterCheck')
         setSelectedStaffs([])
+        setIsGroupEdited(true)
     }
 
     const handleGroupSelect = (id) => {
         if (!selectedSignOffGroups?.includes(id)) {
             setSelectedSignOffGroups(prev => [...prev, id]);
         }
+        setWorkflowEdited(true)
     }
 
     const handleGroupDialogClose = () => {
         setGroupById();
         getGroupList();
         setShowAttestationGroup(false);
+        setIsGroupEdited(false)
     }
 
     const handlePublish = async (data) => {
@@ -197,6 +205,13 @@ const MDManagerStep4 = ({ setStep3, setStep4, mdValue, setMdValue, setSelectedMd
 
 
     const handleContinue = async () => {
+        let errors = [];
+
+        if (selectedSignOffGroups?.length === 0) errors.push("Sign Off Group selection is required.");
+        if (errors.length) {
+            errors.forEach(err => ErrorToaster2(err));
+            return;
+        }
         let acknowledgementData = workflowStructure;
         const transformedGroups = selectedSignOffGroups?.map((groupId) => {
             const group = groupList.find((g) => g.id === groupId);
@@ -209,31 +224,42 @@ const MDManagerStep4 = ({ setStep3, setStep4, mdValue, setMdValue, setSelectedMd
                 approvalRequirementType: "ANY_MEMBER",
             };
         });
-        if (selectedSignOffGroups?.length !== 0) {
-            acknowledgementData.approvalFlowMap.workflow[2].flowDetails[0].approvalRequirement = 'MANDATORY';
-            if (workflowStructure?.approvalFlowMap?.workflow[2]?.flowDetails?.[0]?.approvalBy === 'GROUP') {
-                acknowledgementData.approvalFlowMap.workflow[2].flowDetails[0].groups = transformedGroups
+        if (workflowEdited) {
+            if (selectedSignOffGroups?.length !== 0) {
+                acknowledgementData.approvalFlowMap.workflow[2].flowDetails[0].approvalRequirement = 'MANDATORY';
+                if (workflowStructure?.approvalFlowMap?.workflow[2]?.flowDetails?.[0]?.approvalBy === 'GROUP') {
+                    acknowledgementData.approvalFlowMap.workflow[2].flowDetails[0].groups = transformedGroups
+                }
+                await PUT(`medical-directive-service/medicalDirectives/${mdValue?.id}/workflow`, acknowledgementData)
+                    .then(response => {
+                        SuccessToaster2('Workflow Added Successfully');
+                    })
+                    .catch(error => {
+                        ErrorToaster2('Something Failed. Please Try later!');
+                    })
             }
-            await PUT(`medical-directive-service/medicalDirectives/${mdValue?.id}/workflow`, acknowledgementData)
+            await PUT(`medical-directive-service/medicalDirectives/${mdValue?.id}/startWorkflow`)
                 .then(response => {
-                    SuccessToaster2('Workflow Added Successfully');
+                    // SuccessToaster2('Sign Off Started Successfully');
                 })
                 .catch(error => {
-                    ErrorToaster2('Something Failed. Please Try later!');
+                    // ErrorToaster2('Something Failed. Please Try later!');
                 })
         }
-        await PUT(`medical-directive-service/medicalDirectives/${mdValue?.id}/startWorkflow`)
-            .then(response => {
-                // SuccessToaster2('Sign Off Started Successfully');
-            })
-            .catch(error => {
-                // ErrorToaster2('Something Failed. Please Try later!');
-            })
         setStep4(false)
         // setShowWorkflowSelection(true)
     }
 
     const handleAddGroup = async () => {
+        let errors = [];
+
+        if (!groupTitle) errors.push("Group Title is required.");
+        if (!groupType) errors.push("Group Type is required.");
+        if (selectedStaffs?.length === 0) errors.push("Group Members is required");
+        if (errors.length) {
+            errors.forEach(err => ErrorToaster2(err));
+            return;
+        }
         let data = {
             "name": groupTitle,
             "description": groupDesc,
@@ -263,6 +289,7 @@ const MDManagerStep4 = ({ setStep3, setStep4, mdValue, setMdValue, setSelectedMd
                     ErrorToaster2('Something Failed. Please Try later!');
                 })
         }
+        setIsGroupEdited(false)
     }
 
     const handleSaveWorkflow = async (type) => {
@@ -356,7 +383,7 @@ const MDManagerStep4 = ({ setStep3, setStep4, mdValue, setMdValue, setSelectedMd
                         {/* {mdValue?.creationType === "RENEW" && (
                             <button className={`${style.buttonStyle} ${style.marginRight} `} onClick={() => handleContinue(true)} >{'PUBLISH'}</button>
                         )} */}
-                        <button className={`${style.outlinedButtonMd} ${style.marginRight} `} onClick={() => { setStep4(false); handleClose() }} >SAVE IN PROGRESS</button>
+                        {/* <button className={`${style.outlinedButtonMd} ${style.marginRight} `} onClick={() => { setStep4(false); handleClose() }} >SAVE IN PROGRESS</button> */}
                         <button className={`${style.buttonStyleMd} ${style.marginRight} `} onClick={() => { handleContinue() }} >CONTINUE</button>
                     </div>
                 </div>
@@ -402,7 +429,7 @@ const MDManagerStep4 = ({ setStep3, setStep4, mdValue, setMdValue, setSelectedMd
                                     return (
                                         <div className={`${style.chips} ${style.displayInRow}`}>
                                             <div>{groupList?.filter(groupData => groupData?.id === data)?.[0]?.name}</div> <div className={`${style.verticalAlignCenter} ${style.marginLeft10} ${style.cursorPointer}`}
-                                                onClick={() => setSelectedGroups(selectedSignOffGroups?.filter(innerData => innerData !== data))}
+                                                onClick={() => { setSelectedSignOffGroups(selectedSignOffGroups?.filter(innerData => innerData !== data)); setWorkflowEdited(true) }}
                                             ><CancelIcon sx={{ color: '#06617A', fontSize: 20 }} /></div></div>
                                     )
                                 })}
@@ -421,7 +448,7 @@ const MDManagerStep4 = ({ setStep3, setStep4, mdValue, setMdValue, setSelectedMd
                         <CommonInputField
                             className={style.fullWidth}
                             value={groupTitle}
-                            onChange={(e) => setGroupTitle(e.target.value)}
+                            onChange={(e) => { setGroupTitle(e.target.value); setIsGroupEdited(true) }}
                             type="text"
                         // placeholder="Enter Keywords / Tags"
                         />
@@ -430,7 +457,7 @@ const MDManagerStep4 = ({ setStep3, setStep4, mdValue, setMdValue, setSelectedMd
                         <div className={style.labelStyle}>Group Type*</div>
                         <CommonSelectField
                             value={groupType}
-                            onChange={(e) => setGroupType(e.target.value)}
+                            onChange={(e) => { setGroupType(e.target.value); setIsGroupEdited(true) }}
                             className={style.fullWidth1}
                             //   firstOptionLabel={'Select Category'}
                             //   firstOptionValue={''}
@@ -450,6 +477,7 @@ const MDManagerStep4 = ({ setStep3, setStep4, mdValue, setMdValue, setSelectedMd
                                 onChange={(event, editor) => {
                                     const data = editor.getData();
                                     setGroupDesc(data);
+                                    setIsGroupEdited(true);
                                 }}
                                 onReady={(editor) => {
                                     editor.editing.view.change((writer) => {
@@ -516,7 +544,7 @@ const MDManagerStep4 = ({ setStep3, setStep4, mdValue, setMdValue, setSelectedMd
                                 </div>
                             </div>
                             <div>
-                                <div className={style.labelStyle}>Attestation Group Members ({staffList?.filter(staff => selectedStaffs?.includes(staff.id))?.length})</div>
+                                <div className={style.labelStyle}>Group Members ({staffList?.filter(staff => selectedStaffs?.includes(staff.id))?.length})</div>
                                 <div className={style.attestationGroupRightCard}>
                                     {staffList?.filter(staff => selectedStaffs?.includes(staff.id))?.map((data, index) => (
                                         <div className={style.groupGrid} key={index}>
@@ -534,7 +562,7 @@ const MDManagerStep4 = ({ setStep3, setStep4, mdValue, setMdValue, setSelectedMd
                     <div>
                         <div className={`${style.spaceBetween} ${style.marginTop20}`}>
                             <button className={`${style.outlinedButton} `} onClick={() => handleGroupDialogClose()} >CANCEL</button>
-                            <button className={`${style.buttonStyle} `} onClick={() => handleAddGroup()} >{groupById ? 'UPDATE' : 'ADD'}</button>
+                            <button className={`${style.buttonStyle}  ${!isGroupEdited ? style.disabledView : ''}`} onClick={!isGroupEdited ? () => { } : () => handleAddGroup()} >{groupById ? 'UPDATE' : 'ADD'}</button>
                         </div>
                     </div>
                 </div>

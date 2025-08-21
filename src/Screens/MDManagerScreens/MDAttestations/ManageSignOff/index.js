@@ -35,7 +35,7 @@ const ManageSignOff = () => {
     const componentRef = useRef(null);
     const [sortField, setSortField] = useState('TITLE');
     const [sortValue, setSortValue] = useState('ASCENDING');
-    let loggedInUser = sessionStorage.getItem('user') ? JSON.parse(sessionStorage.getItem('user')) : {};
+    const [loggedInUser, setLoggedInUser] = useState(null);
     const reactToPrintContent = useCallback(() => {
         return componentRef.current;
     }, [componentRef.current]);
@@ -113,8 +113,15 @@ const ManageSignOff = () => {
     }, [selectedOptionValue]);
 
     useEffect(() => {
-        loggedInUser = sessionStorage.getItem('user') ? JSON.parse(sessionStorage.getItem('user')) : {}
-    }, [sessionStorage.getItem('user')])
+        const timeout = setTimeout(() => {
+            const stored = sessionStorage.getItem("user");
+            if (stored) {
+                setLoggedInUser(JSON.parse(stored));
+            }
+        }, 1000);
+
+        return () => clearTimeout(timeout);
+    }, [])
 
     useEffect(() => {
         if (selectedOption === "pending" && attestationList?.length > 0 && userData) {
@@ -145,14 +152,14 @@ const ManageSignOff = () => {
         if (loggedInUser?.id) {
             getAttestationMetaList();
         }
-    }, [loggedInUser?.id]);
+    }, [loggedInUser]);
 
     useEffect(() => {
         const controller = new AbortController();
         const signal = controller.signal;
         getAttestationList(signal);
         return () => controller.abort();
-    }, [selectedOption, sortField, sortValue, loggedInUser?.id]);
+    }, [selectedOption, sortField, sortValue, loggedInUser]);
 
     // useEffect(() => {
     //     if (entityId !== "" && entityId !== undefined) {

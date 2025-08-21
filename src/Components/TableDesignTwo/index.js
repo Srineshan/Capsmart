@@ -138,6 +138,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         ATTESTED_COUNT: ['Attestated all'],
         NOT_ATTESTED_COUNT: ['Not Attestated To Any'],
         PARTIALLY_ATTESTED_COUNT: ['Some Attested'],
+        GROUP_NAME: ['Attestation Group']
     }
 
     const availableSortValueEnum = {
@@ -180,6 +181,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         'Attestated all': 'ATTESTED_COUNT',
         'Not Attestated To Any': 'NOT_ATTESTED_COUNT',
         'Some Attested': 'PARTIALLY_ATTESTED_COUNT',
+        'Attestation Group': 'GROUP_NAME'
     }
 
 
@@ -1346,7 +1348,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                                 </div>
                                                             )
                                                         : visibleActions?.length === 1 ? (
-                                                            <Tooltip title={'Click to View'} arrow>
+                                                            <Tooltip title={visibleActions[0]?.hoverText ? visibleActions[0]?.hoverText : 'Click to View'} arrow>
                                                                 <span className={`${style.singleActionText}`}
                                                                     onClick={() => {
                                                                         visibleActions[0]?.onClick(data);
