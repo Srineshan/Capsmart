@@ -3,6 +3,7 @@ import style from './index.module.scss';
 import { PUT } from '../../dataSaver';
 import CommonPdfViewer from '../../../Components/CommonPdfViewer';
 import { ErrorToaster2, SuccessToaster2 } from '../../../utils/toaster';
+import { Tooltip } from '@mui/material';
 
 const MDManagerStep2 = ({ setStep1, setStep2, setStep3, mdValue, getMD, setMdValue, setSelectedMdId }) => {
     const fileInputRef = useRef(null);
@@ -69,10 +70,18 @@ const MDManagerStep2 = ({ setStep1, setStep2, setStep3, mdValue, getMD, setMdVal
                 />
                 <div className={style.displayInRow}>
                     <div className={`${style.spaceBetween}`}>
-                        <button className={`${style.buttonStyleMd} ${style.marginRight} `} onClick={() => { setStep1(true); setStep2(false) }} >BACK</button>
-                        <button className={`${style.outlinedButtonMd} ${style.marginRight} `} onClick={() => handleReplaceCopy()} >REPLACE DOCUMENT</button>
-                        <button className={`${style.outlinedButtonMd} ${style.marginRight} `} onClick={() => { setStep2(false); handleClose() }} >SAVE IN PROGRESS</button>
-                        <button className={`${style.buttonStyleMd} ${style.marginRight} `} onClick={() => { setStep2(false); setStep3(true) }} >CONTINUE</button>
+                        <Tooltip arrow title='Click to go Back'>
+                            <button className={`${style.buttonStyleMd} ${style.marginRight} `} onClick={() => { setStep1(true); setStep2(false) }} >BACK</button>
+                        </Tooltip>
+                        <Tooltip arrow title='Click to Replace Document'>
+                            <button className={`${style.outlinedButtonMd} ${style.marginRight} `} onClick={() => handleReplaceCopy()} >REPLACE DOCUMENT</button>
+                        </Tooltip>
+                        <Tooltip arrow title='Click to Save In-Progress'>
+                            <button className={`${style.outlinedButtonMd} ${style.marginRight} `} onClick={() => { setStep2(false); handleClose() }} >SAVE IN PROGRESS</button>
+                        </Tooltip>
+                        <Tooltip arrow title='Click to Continue'>
+                            <button className={`${style.buttonStyleMd} ${style.marginRight} `} onClick={() => { setStep2(false); setStep3(true) }} >CONTINUE</button>
+                        </Tooltip>
                     </div>
                 </div>
             </div>

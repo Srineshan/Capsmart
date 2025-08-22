@@ -140,8 +140,8 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
     useEffect(() => {
         const controller = new AbortController();
         const signal = controller.signal;
-
-        getDashboard(signal);
+        if (selectedOption !== "Attestations Outstanding")
+            getDashboard(signal);
 
         return () => controller.abort();
     }, [selectedOption, showAddUserDialog, limit, page, advancedSearch, sortField, sortValue]);
@@ -328,6 +328,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
         }
         const { data: attestationOutstanding } = await GET(`medical-directive-service/medicalDirectives/attestationOutstanding?sortBy=${sortValue}&sortByField=${sortField}&userIds=${userList?.map(data => data?.id)}`);
         setOutstandingList(attestationOutstanding)
+        setTotalTableCount(attestationOutstanding?.length)
     }
 
     const userTileValues = async () => {

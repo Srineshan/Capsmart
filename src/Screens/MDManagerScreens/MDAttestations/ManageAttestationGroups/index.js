@@ -762,6 +762,7 @@ const ManageAttestationGroups = () => {
                                     value={groupTitle}
                                     onChange={(e) => { setGroupTitle(e.target.value); setIsGroupEdited(true) }}
                                     type="text"
+                                    maxLength={25}
                                 // placeholder="Enter Keywords / Tags"
                                 />
                             </div>
@@ -788,8 +789,19 @@ const ManageAttestationGroups = () => {
                                         data={groupDesc}
                                         onChange={(event, editor) => {
                                             const data = editor.getData();
-                                            setGroupDesc(data);
-                                            setIsGroupEdited(true);
+                                            const plainText = data.replace(/<[^>]*>/g, ""); // strip HTML tags
+                                            const maxLength = 200; // your limit
+
+                                            if (plainText.length <= maxLength) {
+                                                setGroupDesc(data);
+                                                setIsGroupEdited(true);
+                                            } else {
+                                                // if pasted/typed exceeds max, truncate
+                                                const truncated = plainText.substring(0, maxLength);
+                                                editor.setData(truncated);
+                                                setGroupDesc(truncated);
+                                                setIsGroupEdited(true);
+                                            }
                                         }}
                                         onReady={(editor) => {
                                             editor.editing.view.change((writer) => {

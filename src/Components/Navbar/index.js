@@ -1195,7 +1195,7 @@ const Navbar = () => {
                     ? format(new Date(currentUserDetails?.lastLogin), `${dateFormat}, HH:mm a`)
                     : '-'}
                 </div>
-                {(currentUserDetails?.roles?.map(data => data?.roleName)?.includes(workModeType) ? currentUserDetails?.roles?.length > 1 : currentUserDetails?.mdRoles?.length > 1) && (
+                {((currentUserDetails?.roles?.map(data => data?.roleName)?.includes(workModeType) ? currentUserDetails?.roles?.length > 1 : currentUserDetails?.mdRoles?.length > 1) || (currentUserDetails?.mdRoles?.length >= 1 && currentUserDetails?.roles?.length >= 1)) && (
                   <Tooltip title={"Click to Switch Workspace"} arrow>
                     <div
                       className={`${style.buttonBackgroundStyle} ${style.marginTop10} ${style.cursorPointer}`}
