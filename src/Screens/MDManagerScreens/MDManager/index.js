@@ -383,7 +383,7 @@ const MDManager = () => {
         <div>
           <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
             <div>
-              <Tooltip title={"Create New MD"} arrow>
+              <Tooltip title={"Add New MD"} arrow>
                 <div
                   className={`${style.addStyle} ${style.displayInRow} ${style.applicationButton} ${style.marginTop10} ${style.alignCenter} ${style.cursorPointer}`}
                 >

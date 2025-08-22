@@ -17,6 +17,7 @@ import { ErrorToaster2, SuccessToaster2 } from '../../../utils/toaster';
 import CommonInputField from '../../../Components/CommonFields/CommonInputField';
 import CommonMultiSelectField from '../../../Components/CommonFields/CommonMultiSelectField';
 import CommonDivider from '../../../Components/CommonFields/CommonDivider';
+import { Tooltip } from '@mui/material';
 
 const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, setSelectedMdId }) => {
     const containerRef = useRef(null);
@@ -54,6 +55,7 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
     const [showWorkflowSelection, setShowWorkflowSelection] = useState(false);
     const [roles, setRoles] = useState([]);
     const [isGroupEdited, setIsGroupEdited] = useState(false);
+    const [acknowledgementExists, setAcknowledgementExists] = useState(false);
     console.log(mdValue, 'mdValue')
     useEffect(() => {
         getGroupList()
@@ -92,6 +94,7 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
             setCreatedWorkflowStructure(response?.data)
             setWorkFlow1IsMandatory(response?.data?.approvalFlowMap?.workflow['1']?.flowDetails?.[0]?.approvalRequirement === 'MANDATORY' ? true : false)
             setSelectedAcknowledgementGroups(response?.data?.approvalFlowMap?.workflow['1']?.flowDetails?.[0]?.groups?.map(data => data?.group?.id) || [])
+            setAcknowledgementExists(response?.data?.approvalFlowMap?.workflow['1']?.flowDetails?.[0]?.groups?.map(data => data?.group?.id)?.length !== 0)
         }
     }
 
@@ -531,12 +534,18 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                 </div>
                 <div className={style.displayInRow}>
                     <div className={`${style.spaceBetween}`}>
-                        <button className={`${style.buttonStyleMd} ${style.marginRight} `} onClick={() => { setStep2(true); setStep3(false) }} >BACK</button>
+                        <Tooltip arrow title='Click to go Back'>
+                            <button className={`${style.buttonStyleMd} ${style.marginRight} `} onClick={() => { setStep2(true); setStep3(false) }} >BACK</button>
+                        </Tooltip>
                         {/* {mdValue?.creationType === "RENEW" && (
                             <button className={`${style.buttonStyle} ${style.marginRight} `} onClick={() => handleContinue(true)} >{'PUBLISH'}</button>
                         )} */}
-                        <button className={`${style.outlinedButtonMd} ${style.marginRight} `} onClick={() => { handleContinue(true) }} >SAVE IN PROGRESS</button>
-                        <button className={`${style.buttonStyleMd} ${style.marginRight} `} onClick={() => { handleContinue() }} >CONTINUE</button>
+                        <Tooltip arrow title='Click to Save In-Progress'>
+                            <button className={`${style.outlinedButtonMd} ${style.marginRight} `} onClick={() => { handleContinue(true) }} >SAVE IN PROGRESS</button>
+                        </Tooltip>
+                        <Tooltip arrow title='Click to Continue'>
+                            <button className={`${style.buttonStyleMd} ${style.marginRight} `} onClick={() => { handleContinue() }} >CONTINUE</button>
+                        </Tooltip>
                     </div>
                 </div>
             </div>
@@ -545,15 +554,15 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                     <div className={style.stepsTitleText}>Staff Review for Acknowledgement Prior to Publication</div>
                 </div>
                 <div className={`${style.padding40} ${style.marginTop20}`}>
-                    <div className={`${style.marginTop20} ${style.twoCol}`}>
+                    <div className={`${style.marginTop20} ${style.twoCol} ${acknowledgementExists ? style.disabledView : ''}`}>
                         <div className={style.labelStyle}>Staff Acknowledgement Required?</div>
-                        <CommonSwitch label={workFlow1IsMandatory ? 'YES' : 'NO'} checked={workFlow1IsMandatory} onChange={(e) => { setWorkFlow1IsMandatory(e.target.checked); setWorkflowEdited(true) }} labelName={''} />
+                        <CommonSwitch label={workFlow1IsMandatory ? 'YES' : 'NO'} checked={workFlow1IsMandatory} onChange={acknowledgementExists ? () => { } : (e) => { setWorkFlow1IsMandatory(e.target.checked); setWorkflowEdited(true) }} labelName={''} />
                     </div>
                     {workFlow1IsMandatory && (
-                        <div className={style.padding20}>
+                        <div className={`${style.padding20} ${acknowledgementExists ? style.disabledView : ''}`}>
                             <div className={style.labelStyle}>Select Acknowledgement Groups*</div>
-                            <div className={style.attestationGrid}>
-                                <div ref={containerRef} onFocus={() => setShowAttestationGroupList(true)} onBlur={(e) => handleBlur(e, containerRef)}
+                            <div className={`${style.attestationGrid} `}>
+                                <div ref={containerRef} onFocus={acknowledgementExists ? () => { } : () => setShowAttestationGroupList(true)} onBlur={(e) => handleBlur(e, containerRef)}
                                     tabIndex={0}>
                                     <CommonInputField
                                         className={style.fullWidth}
@@ -566,27 +575,27 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                                         <div className={`${style.attestationGroupCard} ${style.padding20}`} tabIndex={0}>
                                             {groupList?.filter(data => data?.type === "ACKNOWLEDGEMENT")?.map((data, index) => (
                                                 <div className={`${style.groupDisplayGrid} ${style.verticalAlignCenter}`}>
-                                                    <div className={`${style.labelStyle} ${style.cursorPointer}`} onClick={() => handleGroupSelectAcknowledgement(data?.id)}>{data?.name}</div>
+                                                    <div className={`${style.labelStyle} ${style.cursorPointer}`} onClick={acknowledgementExists ? () => { } : () => handleGroupSelectAcknowledgement(data?.id)}>{data?.name}</div>
                                                     <div className={`${style.attestationDescStyle} ${style.verticalAlignCenter}`}
                                                         dangerouslySetInnerHTML={{ __html: data?.description }} />
-                                                    <div className={`${style.attestationViewButton} ${style.cursorPointer}`} onClick={() => getGroupListById(data?.id)}>View Group Members</div>
+                                                    <div className={`${style.attestationViewButton} ${style.cursorPointer}`} onClick={acknowledgementExists ? () => { } : () => getGroupListById(data?.id)}>View Group Members</div>
                                                 </div>
                                             ))}
                                         </div>
                                     )}
                                 </div>
-                                <div className={` ${style.addNewButton} ${style.textColorWhite} ${style.createGroupButton} ${style.marginLeft20} ${style.cursorPointer}`} onClick={() => handleCreateGroup()}>
+                                <div className={` ${style.addNewButton} ${style.textColorWhite} ${style.createGroupButton} ${style.marginLeft20} ${style.cursorPointer}`} onClick={acknowledgementExists ? () => { } : () => handleCreateGroup()}>
                                     <AddIcon />
                                     <span> Create New Group</span>
                                 </div>
                             </div>
                             <div>
-                                <div className={`${style.chipsContainer} ${style.marginTop10}`}>
+                                <div className={`${style.chipsContainer} ${style.marginTop10} ${acknowledgementExists ? style.disabledView : ''}`}>
                                     {selectedAcknowledgementGroups?.map(data => {
                                         return (
                                             <div className={`${style.chips} ${style.displayInRow}`}>
                                                 <div>{groupList?.filter(groupData => groupData?.id === data)?.[0]?.name}</div> <div className={`${style.verticalAlignCenter} ${style.marginLeft10} ${style.cursorPointer}`}
-                                                    onClick={() => { setSelectedAcknowledgementGroups(selectedAcknowledgementGroups?.filter(innerData => innerData !== data)); setWorkflowEdited(true) }}
+                                                    onClick={acknowledgementExists ? () => { } : () => { setSelectedAcknowledgementGroups(selectedAcknowledgementGroups?.filter(innerData => innerData !== data)); setWorkflowEdited(true) }}
                                                 ><CancelIcon sx={{ color: '#06617A', fontSize: 20 }} /></div></div>
                                         )
                                     })}
@@ -729,6 +738,7 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                             value={groupTitle}
                             onChange={(e) => { setGroupTitle(e.target.value); setIsGroupEdited(true) }}
                             type="text"
+                            maxLength={25}
                         // placeholder="Enter Keywords / Tags"
                         />
                     </div>
@@ -755,8 +765,19 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                                 data={groupDesc}
                                 onChange={(event, editor) => {
                                     const data = editor.getData();
-                                    setGroupDesc(data);
-                                    setIsGroupEdited(true)
+                                    const plainText = data.replace(/<[^>]*>/g, ""); // strip HTML tags
+                                    const maxLength = 200; // your limit
+
+                                    if (plainText.length <= maxLength) {
+                                        setGroupDesc(data);
+                                        setIsGroupEdited(true);
+                                    } else {
+                                        // if pasted/typed exceeds max, truncate
+                                        const truncated = plainText.substring(0, maxLength);
+                                        editor.setData(truncated);
+                                        setGroupDesc(truncated);
+                                        setIsGroupEdited(true);
+                                    }
                                 }}
                                 onReady={(editor) => {
                                     editor.editing.view.change((writer) => {
@@ -767,6 +788,7 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                                         );
                                     });
                                 }}
+                                maxLength={100}
                                 config={{
                                     placeholder: "Type your content here...",
                                     toolbar: {

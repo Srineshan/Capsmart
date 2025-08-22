@@ -3,7 +3,7 @@ import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import CommonInputField from '../../../Components/CommonFields/CommonInputField';
 import CommonDateField from '../../../Components/CommonFields/CommonDateField';
-import { TextField } from '@mui/material';
+import { TextField, Tooltip } from '@mui/material';
 import CancelIcon from '@mui/icons-material/Cancel';
 import style from './index.module.scss';
 import CommonSelectField from '../../../Components/CommonFields/CommonSelectField';
@@ -61,8 +61,8 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
             setMdDescription(mdValue?.description ? mdValue?.description : '')
             setReviewFrequency(mdValue?.reviewFrequency?.value === 1 ? 'EVERY_1_YEAR' : mdValue?.reviewFrequency?.value === 2 ? 'EVERY_2_YEARS' : mdValue?.reviewFrequency?.value === 3 ? 'EVERY_3_YEARS' : '');
             setSelectedStaff(mdValue?.authors ? mdValue?.authors?.map(data => data.id)?.[0] : '')
-            setSelectedServiceArea(mdValue?.departments?.flatMap(data => data?.serviceAreas?.map(innerData => innerData?.id) || []) || [])
-            setIdDataLoading(false)
+            setSelectedServiceArea(mdValue?.sites?.[0]?.departments?.flatMap(data => data?.serviceAreas?.map(innerData => innerData?.id) || []) || [])
+            setTimeout(() => setIdDataLoading(false), 0);
         }
     }, [mdValue])
 
@@ -84,7 +84,7 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
     }, [departmentList, selectedDepartment]);
 
     useEffect(() => {
-        if (!isDataLoading) {
+        if (filteredServiceAreas?.length) {
             setSelectedServiceArea(prev =>
                 prev.filter(area => filteredServiceAreas?.map(data => data?.id)?.includes(area))
             );
@@ -271,6 +271,7 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
             groups: [],
             triggerForNewAppointment: false,
             triggerForReAppointment: false,
+            triggerForLocum: false,
             siteSpecific: selectedSite !== '' ? true : false,
         }
 
@@ -290,6 +291,8 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
             data.tags = mdValue?.tags;
             data.triggerForNewAppointment = mdValue?.triggerForNewAppointment;
             data.triggerForReAppointment = mdValue?.triggerForReAppointment;
+            data.triggerForLocum = mdValue?.triggerForLocum;
+            data.excludedUsers = mdValue?.excludedUsers;
             data.updateFor = mdValue?.updateFor;
             data.version = mdValue?.version;
         }
@@ -356,14 +359,21 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
             <div className={`${style.stepHeader} ${style.spaceBetween} ${style.verticalAlignCenter}`}>
                 <div className={style.displayInRow}>
                     <div className={`${style.stepNumber} ${style.marginLeft10}`}>Step 1</div>
-                    <div className={`${style.stepHeading} ${style.marginLeft20}`}>Review & Verify Required Meta Data</div>
+                    <div className={`${style.stepHeading} ${style.marginLeft20}`}>{mdValue?.id ? 'Review & Verify Required Meta Data' : 'Add Required Metadata'}</div>
                 </div>
                 <div className={style.displayInRow}>
                     <div className={`${style.spaceBetween}`}>
-                        <button className={`${style.outlinedButtonMd} ${style.marginRight} `} onClick={() => { handleContinue(true) }} >SAVE IN PROGRESS</button>
-                        <button className={`${style.buttonStyleMd} ${style.marginRight} `} onClick={() => {
-                            handleContinue();
-                        }} >CONTINUE</button>
+                        <Tooltip arrow title='Click to Close'>
+                            <button className={`${style.outlinedButtonMd} ${style.marginRight} `} onClick={() => { handleClose() }} >CLOSE</button>
+                        </Tooltip>
+                        <Tooltip arrow title='Click to Save In-Progress'>
+                            <button className={`${style.outlinedButtonMd} ${style.marginRight} `} onClick={() => { handleContinue(true) }} >SAVE IN PROGRESS</button>
+                        </Tooltip>
+                        <Tooltip arrow title='Click to Continue'>
+                            <button className={`${style.buttonStyleMd} ${style.marginRight} `} onClick={() => {
+                                handleContinue();
+                            }} >CONTINUE</button>
+                        </Tooltip>
                     </div>
                 </div>
             </div>
@@ -398,6 +408,7 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
                                 onChange={(e) => setMdTitle(e.target.value)}
                                 type="text"
                                 placeholder="Enter Title"
+                                maxLength={100}
                             />
                         </div>
                         <div>
@@ -408,6 +419,7 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
                                 type="text"
                                 placeholder="Enter MD ID"
                                 readOnly={mdValue?.id ? true : false}
+                                maxLength={20}
                             />
                         </div>
                         <div>
@@ -417,7 +429,16 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
                                 data={mdDescription}
                                 onChange={(event, editor) => {
                                     const data = editor.getData();
-                                    setMdDescription(data);
+                                    const plainText = data.replace(/<[^>]*>/g, ""); // strip HTML tags
+                                    const maxLength = 200;
+
+                                    if (plainText.length <= maxLength) {
+                                        setMdDescription(data);
+                                    } else {
+                                        const truncated = plainText.substring(0, maxLength);
+                                        editor.setData(truncated);
+                                        setMdDescription(data);
+                                    }
                                 }}
                                 onReady={(editor) => {
                                     editor.editing.view.change((writer) => {

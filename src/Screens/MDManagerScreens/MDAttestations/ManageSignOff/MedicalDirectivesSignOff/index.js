@@ -223,6 +223,25 @@ const ManageMDSignOff = () => {
     const handleClose = () => {
         navigate(`/mdManager/manageSignOff`);
     }
+
+    const checkRequirements = () => {
+        if (approvalStatus === '') {
+            return true;
+        } else if (approvalStatus === 'APPROVED') {
+            if (isSigned) {
+                return false
+            } else {
+                return true
+            }
+        } else if (approvalStatus === 'REJECTED') {
+            if (notes !== "") {
+                return false
+            } else {
+                return true
+            }
+        }
+    }
+
     return (
         <div className={style.screenBackground}>
             <div className={style.welcomeText}>
@@ -395,11 +414,11 @@ const ManageMDSignOff = () => {
                             </div>
                         </div>
                         <div className={`${style.medicalDirectivesCard} ${style.stickyContainer}`}>
-                            <Tooltip title={isScrolledToBottom ? "Click to Continue" : "Scroll to the end of the document"} arrow>
-                                <div className={`${style.outlinedButton} ${style.marginTop10} ${(isScrolledToBottom) ? '' : style.disabled}`} onClick={(isScrolledToBottom) ? () => { handleClose() } : () => { }}>SAVE IN PROGRESS</div>
+                            <Tooltip title={isScrolledToBottom ? checkRequirements() ? "Select Acknowledgement" : "Click to Continue" : "Scroll to the end of the document"} arrow>
+                                <div className={`${style.outlinedButton} ${style.marginTop10} ${(isScrolledToBottom) ? checkRequirements() ? style.disabled : '' : style.disabled}`} onClick={(isScrolledToBottom) ? checkRequirements() ? () => { } : () => { handleClose() } : () => { }}>SAVE IN PROGRESS</div>
                             </Tooltip>
-                            <Tooltip title={isScrolledToBottom ? "Click to Continue" : "Scroll to the end of the document"} arrow>
-                                <div className={`${style.continue} ${style.marginTop10} ${(isScrolledToBottom) ? '' : style.disabled}`} onClick={(isScrolledToBottom) ? () => { handleSend() } : () => { }}>SUBMIT</div>
+                            <Tooltip title={isScrolledToBottom ? checkRequirements() ? "Select Acknowledgement" : "Click to Continue" : "Scroll to the end of the document"} arrow>
+                                <div className={`${style.continue} ${style.marginTop10} ${(isScrolledToBottom) ? checkRequirements() ? style.disabled : '' : style.disabled}`} onClick={(isScrolledToBottom) ? checkRequirements() ? () => { } : () => { handleSend() } : () => { }}>SUBMIT</div>
                             </Tooltip>
                         </div>
                     </div>
