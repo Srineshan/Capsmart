@@ -452,8 +452,8 @@ const RetireMedicalDirective = () => {
             title.push(data?.title);
             desc.push(data?.title)
             mdID.push(data?.mdID);
-            department.push(data?.departments?.length <= 4 ? data?.departments?.map(data => data?.name)?.join(', ') : data?.departments?.length);
-            departmentHoverText.push(data?.departments?.length > 4 ? <div>{data?.departments?.map(data => (<div>{data?.name}</div>))}</div> : '')
+            department.push(data?.sites?.[0]?.departments?.length <= 4 ? data?.sites?.[0]?.departments?.map(data => data?.name)?.join(', ') : data?.sites?.[0]?.departments?.length);
+            departmentHoverText.push(data?.sites?.[0]?.departments?.length > 4 ? <div>{data?.sites?.[0]?.departments?.map(data => (<div>{data?.name}</div>))}</div> : '')
             firstPublished.push(data?.initialPublishedDate ? format(new Date(data?.initialPublishedDate), 'MMM dd, yyyy') : '-');
             lastRevision.push(data?.lastRevisionDate ? format(new Date(data?.lastRevisionDate), 'MMM dd, yyyy') : '-');
             lastUpdated.push(data?.lastModifiedDate ? format(new Date(data?.lastModifiedDate), 'MMM dd, yyyy') : '-');
@@ -665,7 +665,7 @@ const RetireMedicalDirective = () => {
                     <div className={`${style.tabs}`}>
                         <TileApplication selectedTab={'Retire Medical Directives'} getSelectedTab={() => { }} tileLabel="Retired Medical Directives" tileCount={totalTableCount} currentTile="Retire Medical Directives" />
                     </div>
-                    <div ref={componentRef} >
+                    <div ref={componentRef} className={`${style.retiredBigCardStyle}`}>
                         <div className={`${style.reduceMarginTop10} registeredUsers`} ref={PDFRef}>
                             <TableTwo
                                 tableHeaderValues={tableHeaderValues}

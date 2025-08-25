@@ -464,7 +464,7 @@ const Navbar = () => {
               className={style.sanmateoLogo}
             />
           </div>
-          {/* <div className={style.container}>
+          <div className={style.container}>
             <div className={style.roleSection}>
               <img src={roleImage} alt="" className={style.roleIcon} />
               <div className={style.roleLabel}>{workModeType}</div>
@@ -479,7 +479,7 @@ const Navbar = () => {
                 </div>
               </Tooltip>
             )}
-          </div> */}
+          </div>
 
           {!window.location.pathname?.includes('mdManager') ? (
             <>
