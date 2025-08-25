@@ -390,7 +390,7 @@
     height: 100%;
 }
 
-.flex{
+.flex {
     display: flex;
 }
 
@@ -564,9 +564,24 @@
     cursor: not-allowed !important;
 }
 
-@media print{
+.sortingIconDisplay {
+    display: none;
+}
 
-  .tableData {
-    page-break-inside: avoid;
-  }
+.sortingIcon:hover,
+.sortingIconDisplay:hover {
+    .sortingIconDisplay {
+        display: block;
+    }
+}
+
+.selectedSort {
+    display: block;
+}
+
+@media print {
+
+    .tableData {
+        page-break-inside: avoid;
+    }
 }

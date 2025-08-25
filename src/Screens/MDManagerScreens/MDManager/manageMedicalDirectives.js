@@ -1,6 +1,6 @@
 import React, { useState, useEffect, createRef, useCallback, useRef } from 'react';
 import { Classes, Dialog } from '@blueprintjs/core';
-import { GET, POST, PUT, TenantID } from './../../dataSaver';
+import { DELETE, GET, POST, PUT, TenantID } from './../../dataSaver';
 import Tile from '../../../Components/Tile';
 import Table from '../../../Components/TableDesign';
 import { format, startOfWeek, endOfWeek, parse, isValid } from 'date-fns';
@@ -519,10 +519,10 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
         }
     }
 
-    const handleDelete = (data) => {
-        setUserId(data?.id)
-        setShowDeleteConfirmation(true);
-    }
+    // const handleDelete = (data) => {
+    //     setUserId(data?.id)
+    //     setShowDeleteConfirmation(true);
+    // }
 
     const handleModify = (data) => {
         setSelectedMdId(data?.id);
@@ -539,6 +539,18 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
         } catch (error) {
             console.error(error);
             ErrorToaster2('Failed to publish Medical Directive');
+        }
+    }
+
+    const handleDelete = async (data) => {
+        try {
+            const { data: publishedMD } = await DELETE(`medical-directive-service/medicalDirectives/${data?.id}`);
+            getDashboard();
+            getDashboardMetadata();
+            SuccessToaster2('Medical Directive deleted successfully');
+        } catch (error) {
+            console.error(error);
+            ErrorToaster2('Failed to delete Medical Directive');
         }
     }
 
@@ -583,16 +595,20 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
 
     const handleReviseMD = async (data) => {
         try {
-            const { data: revisedMD } = await POST(`medical-directive-service/medicalDirectives/${data?.id}/revise`);
-            setSelectedMdId(revisedMD?.id);
+            const revisedMd = await POST(`medical-directive-service/medicalDirectives/${data?.id}/revise`);
+            if (revisedMd?.response?.status === 409) {
+                ErrorToaster2('A draft already exists with the same MD ID. To create a new revision, please delete the existing draft first.');
+            } else {
+                SuccessToaster2('Medical Directive revised successfully');
+            }
+            setSelectedMdId(revisedMd?.response?.data?.id);
             setIsEdit(true);
             setStep1(true)
             getDashboard();
             getDashboardMetadata();
-            SuccessToaster2('Medical Directive retired successfully');
         } catch (error) {
             console.error(error);
-            ErrorToaster2('Failed to retire Medical Directive');
+            ErrorToaster2('Failed to revise Medical Directive');
         }
     }
 
@@ -943,6 +959,10 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
             'data': 'Publish', 'onClick': handlePublish,
             conditionToShow: `data?.workflowStatus === 'COMPLETED'`
         },
+        {
+            'data': 'Delete', 'onClick': handleDelete,
+            conditionToShow: `data?.workflowStatus === 'NA'`
+        },
     ]
 
     const retiredActions = [
@@ -1092,7 +1112,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
                             hidePagination={true}
                         /> */}
                         {(selectedOption === "Medical Directives Sign Off" && selectedSignOffOption === "level-1") ? (
-                            <div className={`${style.tableDesc} ${style.noteText}`}>{signOffMeta?.['level-1']?.pending} Medical Directives Require Pre-Publication Acknowledgement. Note: Not all Medical Directives Require Pre-Publication Acknowledgement. </div>
+                            <div className={`${style.tableDesc} ${style.noteText}`}>{signOffMeta?.['level-1']?.pending} Medical Directives Require Pre-Publication Acknowledgement.<br /> Note: Not all Medical Directives Require Pre-Publication Acknowledgement. </div>
                         ) : (selectedOption === "Medical Directives Sign Off" && selectedSignOffOption === "level-2") ? (
                             <div className={`${style.tableDesc} ${style.noteText}`}>{signOffMeta?.['level-2']?.pending} Medical Directives Require Leadership Sign Off. </div>
                         ) : ''}
@@ -1178,7 +1198,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
             </Dialog >
             <Dialog isOpen={showRetireDialog} onClose={() => setShowRetireDialog(false)} className={`${style.addMDDialogBackground} ${style.attestationSummaryDialog}`}>
                 <div className={Classes.DIALOG_BODY}>
-                    <div className={style.dialogTitle}>{`Retire Medical Directive`}</div>
+                    <div className={style.dialogTitle}>{`Retire Medical Directive - ${selectedMedicalDirective?.title}`}</div>
                     <div>
                         <div className={style.labelStyle}>Comments*</div>
                         <CKEditor
@@ -1220,7 +1240,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
                     </div>
                     <div>
                         <div className={`${style.spaceBetween} ${style.marginTop20}`}>
-                            <div></div>
+                            <button className={`${style.outlinedButton} `} onClick={() => setShowRetireDialog(false)} >Close</button>
                             <button className={`${style.buttonStyle} ${retireNotes === '' ? style.disabledView : ''}`} onClick={retireNotes === '' ? () => { } : () => handleRetiredMD()} >Save</button>
                         </div>
                     </div>

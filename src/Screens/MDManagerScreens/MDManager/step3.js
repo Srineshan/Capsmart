@@ -511,7 +511,8 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                 acc[member.id] = member;
                 return acc;
             }, {})
-    ).map(m => `${m?.name?.firstName} ${m?.name?.lastName}`) : staffListForExclude?.map(m => `${m?.name?.firstName} ${m?.name?.lastName}`);
+    ).map(m => `${m?.name?.firstName} ${m?.name?.lastName}`) : staffListForExclude?.map(m => `${m?.name?.firstName} ${m?.name?.lastName} ${m?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.departmentName?.name ? `( ${m?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.departmentName?.name} ${m?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.serviceAreaSpecific ? `- ${m?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.serviceAreas?.[0]?.name}` : ''})` : ''
+        }`);
 
     let excludeIdList = targetStaff === 'SELECTED_GROUPS' ? [...new Set(groupList.filter(obj => selectedGroups?.includes(obj?.id)).flatMap(obj => obj?.members?.map(m => m.id)))] : staffListForExclude?.map(m => m?.id)
 
@@ -524,21 +525,21 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                 acc[member.id] = member;
                 return acc;
             }, {})
-    ).map(m => `${m?.name?.firstName} ${m?.name?.lastName}`), [...new Set(groupList.filter(obj => selectedGroups?.includes(obj?.id)).flatMap(obj => obj?.members?.map(m => m?.id)))])
+    ).map(m => `${m?.name?.firstName} ${m?.name?.lastName} `), [...new Set(groupList.filter(obj => selectedGroups?.includes(obj?.id)).flatMap(obj => obj?.members?.map(m => m?.id)))])
     return (
         <div className={style.stepsBackground}>
-            <div className={`${style.stepHeader} ${style.spaceBetween} ${style.verticalAlignCenter}`}>
+            <div className={`${style.stepHeader} ${style.spaceBetween} ${style.verticalAlignCenter} `}>
                 <div className={style.displayInRow}>
-                    <div className={`${style.stepNumber} ${style.marginLeft10}`}>Step 3</div>
-                    <div className={`${style.stepHeading} ${style.marginLeft20}`}>Set Up Staff Review & Attestation Rules</div>
+                    <div className={`${style.stepNumber} ${style.marginLeft10} `}>Step 3</div>
+                    <div className={`${style.stepHeading} ${style.marginLeft20} `}>Set Up Staff Review & Attestation Rules</div>
                 </div>
                 <div className={style.displayInRow}>
-                    <div className={`${style.spaceBetween}`}>
+                    <div className={`${style.spaceBetween} `}>
                         <Tooltip arrow title='Click to go Back'>
                             <button className={`${style.buttonStyleMd} ${style.marginRight} `} onClick={() => { setStep2(true); setStep3(false) }} >BACK</button>
                         </Tooltip>
                         {/* {mdValue?.creationType === "RENEW" && (
-                            <button className={`${style.buttonStyle} ${style.marginRight} `} onClick={() => handleContinue(true)} >{'PUBLISH'}</button>
+                            <button className={`${ style.buttonStyle } ${ style.marginRight } `} onClick={() => handleContinue(true)} >{'PUBLISH'}</button>
                         )} */}
                         <Tooltip arrow title='Click to Save In-Progress'>
                             <button className={`${style.outlinedButtonMd} ${style.marginRight} `} onClick={() => { handleContinue(true) }} >SAVE IN PROGRESS</button>
@@ -549,17 +550,17 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                     </div>
                 </div>
             </div>
-            <div className={`${style.stepContentCard}`}>
-                <div className={`${style.stepsTitleBar} ${style.verticalAlignCenter}`}>
+            <div className={`${style.stepContentCard} `}>
+                <div className={`${style.stepsTitleBar} ${style.verticalAlignCenter} `}>
                     <div className={style.stepsTitleText}>Staff Review for Acknowledgement Prior to Publication</div>
                 </div>
-                <div className={`${style.padding40} ${style.marginTop20}`}>
-                    <div className={`${style.marginTop20} ${style.twoCol} ${acknowledgementExists ? style.disabledView : ''}`}>
+                <div className={`${style.padding40} ${style.marginTop20} `}>
+                    <div className={`${style.marginTop20} ${style.twoCol} ${acknowledgementExists ? style.disabledView : ''} `}>
                         <div className={style.labelStyle}>Staff Acknowledgement Required?</div>
                         <CommonSwitch label={workFlow1IsMandatory ? 'YES' : 'NO'} checked={workFlow1IsMandatory} onChange={acknowledgementExists ? () => { } : (e) => { setWorkFlow1IsMandatory(e.target.checked); setWorkflowEdited(true) }} labelName={''} />
                     </div>
                     {workFlow1IsMandatory && (
-                        <div className={`${style.padding20} ${acknowledgementExists ? style.disabledView : ''}`}>
+                        <div className={`${style.padding20} ${acknowledgementExists ? style.disabledView : ''} `}>
                             <div className={style.labelStyle}>Select Acknowledgement Groups*</div>
                             <div className={`${style.attestationGrid} `}>
                                 <div ref={containerRef} onFocus={acknowledgementExists ? () => { } : () => setShowAttestationGroupList(true)} onBlur={(e) => handleBlur(e, containerRef)}
@@ -572,29 +573,29 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                                     // placeholder="Enter Keywords / Tags"
                                     />
                                     {showAttestationGroupList && (
-                                        <div className={`${style.attestationGroupCard} ${style.padding20}`} tabIndex={0}>
+                                        <div className={`${style.attestationGroupCard} ${style.padding20} `} tabIndex={0}>
                                             {groupList?.filter(data => data?.type === "ACKNOWLEDGEMENT")?.map((data, index) => (
-                                                <div className={`${style.groupDisplayGrid} ${style.verticalAlignCenter}`}>
-                                                    <div className={`${style.labelStyle} ${style.cursorPointer}`} onClick={acknowledgementExists ? () => { } : () => handleGroupSelectAcknowledgement(data?.id)}>{data?.name}</div>
-                                                    <div className={`${style.attestationDescStyle} ${style.verticalAlignCenter}`}
+                                                <div className={`${style.groupDisplayGrid} ${style.verticalAlignCenter} `}>
+                                                    <div className={`${style.labelStyle} ${style.cursorPointer} `} onClick={acknowledgementExists ? () => { } : () => handleGroupSelectAcknowledgement(data?.id)}>{data?.name}</div>
+                                                    <div className={`${style.attestationDescStyle} ${style.verticalAlignCenter} `}
                                                         dangerouslySetInnerHTML={{ __html: data?.description }} />
-                                                    <div className={`${style.attestationViewButton} ${style.cursorPointer}`} onClick={acknowledgementExists ? () => { } : () => getGroupListById(data?.id)}>View Group Members</div>
+                                                    <div className={`${style.attestationViewButton} ${style.cursorPointer} `} onClick={acknowledgementExists ? () => { } : () => getGroupListById(data?.id)}>View Group Members</div>
                                                 </div>
                                             ))}
                                         </div>
                                     )}
                                 </div>
-                                <div className={` ${style.addNewButton} ${style.textColorWhite} ${style.createGroupButton} ${style.marginLeft20} ${style.cursorPointer}`} onClick={acknowledgementExists ? () => { } : () => handleCreateGroup()}>
+                                <div className={` ${style.addNewButton} ${style.textColorWhite} ${style.createGroupButton} ${style.marginLeft20} ${style.cursorPointer} `} onClick={acknowledgementExists ? () => { } : () => handleCreateGroup()}>
                                     <AddIcon />
                                     <span> Create New Group</span>
                                 </div>
                             </div>
                             <div>
-                                <div className={`${style.chipsContainer} ${style.marginTop10} ${acknowledgementExists ? style.disabledView : ''}`}>
+                                <div className={`${style.chipsContainer} ${style.marginTop10} ${acknowledgementExists ? style.disabledView : ''} `}>
                                     {selectedAcknowledgementGroups?.map(data => {
                                         return (
-                                            <div className={`${style.chips} ${style.displayInRow}`}>
-                                                <div>{groupList?.filter(groupData => groupData?.id === data)?.[0]?.name}</div> <div className={`${style.verticalAlignCenter} ${style.marginLeft10} ${style.cursorPointer}`}
+                                            <div className={`${style.chips} ${style.displayInRow} `}>
+                                                <div>{groupList?.filter(groupData => groupData?.id === data)?.[0]?.name}</div> <div className={`${style.verticalAlignCenter} ${style.marginLeft10} ${style.cursorPointer} `}
                                                     onClick={acknowledgementExists ? () => { } : () => { setSelectedAcknowledgementGroups(selectedAcknowledgementGroups?.filter(innerData => innerData !== data)); setWorkflowEdited(true) }}
                                                 ><CancelIcon sx={{ color: '#06617A', fontSize: 20 }} /></div></div>
                                         )
@@ -604,17 +605,17 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                         </div>
                     )}
                 </div>
-                <div className={`${style.stepsTitleBar} ${style.verticalAlignCenter} ${style.marginTop20}`}>
+                <div className={`${style.stepsTitleBar} ${style.verticalAlignCenter} ${style.marginTop20} `}>
                     <div className={style.stepsTitleText}>Attestation Rules to apply</div>
                 </div>
-                <div className={`${style.padding40} ${style.marginTop20}`}>
-                    <div className={`${style.marginTop20} ${style.twoCol}`}>
+                <div className={`${style.padding40} ${style.marginTop20} `}>
+                    <div className={`${style.marginTop20} ${style.twoCol} `}>
                         <div className={style.labelStyle}>Target Staff for Medical Directive review and attestation</div>
                         <CommonRadio
                             value={targetStaff}
                             onChange={(e) => setTargetStaff(e.target.value)}
                             radioValue={["ALL_STAFFS", "SELECTED_DEPARTMENTS", "SELECTED_DIVISIONS", "SELECTED_GROUPS"]}
-                            label={["All Staff Members", "All Selected Department Staff Members", "All Selected Division / Speciality Staff Members", "Selected Groups"]}
+                            label={["All Staff Members", "All Department Staff", "Only Selected Division/Specialty Staff", "Selected Groups"]}
                         />
                     </div>
                     {targetStaff === "SELECTED_GROUPS" && (
@@ -643,29 +644,29 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                                     // placeholder="Enter Keywords / Tags"
                                     />
                                     {showAcknowledgementGroupList && (
-                                        <div className={`${style.attestationGroupCard} ${style.padding20}`} tabIndex={0}>
+                                        <div className={`${style.attestationGroupCard} ${style.padding20} `} tabIndex={0}>
                                             {groupList?.filter(data => data?.type === "ATTESTATION")?.map((data, index) => (
-                                                <div className={`${style.groupDisplayGrid} ${style.verticalAlignCenter}`}>
-                                                    <div className={`${style.labelStyle} ${style.cursorPointer}`} onClick={() => handleGroupSelect(data?.id)}>{data?.name}</div>
-                                                    <div className={`${style.attestationDescStyle} ${style.verticalAlignCenter}`}
+                                                <div className={`${style.groupDisplayGrid} ${style.verticalAlignCenter} `}>
+                                                    <div className={`${style.labelStyle} ${style.cursorPointer} `} onClick={() => handleGroupSelect(data?.id)}>{data?.name}</div>
+                                                    <div className={`${style.attestationDescStyle} ${style.verticalAlignCenter} `}
                                                         dangerouslySetInnerHTML={{ __html: data?.description }} />
-                                                    <div className={`${style.attestationViewButton} ${style.cursorPointer}`} onClick={() => getGroupListById(data?.id)}>View Group Members</div>
+                                                    <div className={`${style.attestationViewButton} ${style.cursorPointer} `} onClick={() => getGroupListById(data?.id)}>View Group Members</div>
                                                 </div>
                                             ))}
                                         </div>
                                     )}
                                 </div>
-                                <div className={` ${style.addNewButton} ${style.textColorWhite} ${style.createGroupButton} ${style.marginLeft20} ${style.cursorPointer}`} onClick={() => handleCreateGroup()}>
+                                <div className={` ${style.addNewButton} ${style.textColorWhite} ${style.createGroupButton} ${style.marginLeft20} ${style.cursorPointer} `} onClick={() => handleCreateGroup()}>
                                     <AddIcon />
                                     <span> Create New Group</span>
                                 </div>
                             </div>
                             <div>
-                                <div className={`${style.chipsContainer} ${style.marginTop10}`}>
+                                <div className={`${style.chipsContainer} ${style.marginTop10} `}>
                                     {selectedGroups?.map(data => {
                                         return (
-                                            <div className={`${style.chips} ${style.displayInRow}`}>
-                                                <div>{groupList?.filter(groupData => groupData?.id === data)?.[0]?.name}</div> <div className={`${style.verticalAlignCenter} ${style.marginLeft10} ${style.cursorPointer}`}
+                                            <div className={`${style.chips} ${style.displayInRow} `}>
+                                                <div>{groupList?.filter(groupData => groupData?.id === data)?.[0]?.name}</div> <div className={`${style.verticalAlignCenter} ${style.marginLeft10} ${style.cursorPointer} `}
                                                     onClick={() => setSelectedGroups(selectedGroups?.filter(innerData => innerData !== data))}
                                                 ><CancelIcon sx={{ color: '#06617A', fontSize: 20 }} /></div></div>
                                         )
@@ -674,9 +675,9 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                             </div>
                         </div>
                     )}
-                    <div className={`${style.marginTop20} ${style.twoCol}`}>
+                    <div className={`${style.marginTop20} ${style.twoCol} `}>
                         <div>
-                            <div className={style.labelStyle}>Select Staff to Exclude from Attesting this Medical Directive</div>
+                            <div className={style.labelStyle}>Select Staff to Exclude from Attesting to this Medical Directive</div>
                             <CommonMultiSelectField
                                 value={selectedExcludeMembers}
                                 onChange={(e) => setSelectedExcludeMembers(e.target.value)}
@@ -691,7 +692,7 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                             />
                         </div>
                     </div>
-                    <div className={`${style.marginTop20} ${style.twoCol}`}>
+                    <div className={`${style.marginTop20} ${style.twoCol} `}>
                         <CommonSelectField
                             value={attestationReviewFrequency}
                             onChange={(e) => setAttestationReviewFrequency(e.target.value)}
@@ -708,28 +709,28 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                     <div className={style.marginTop10}>
                         <CommonDivider />
                     </div>
-                    <div className={`${style.marginTop20} ${style.twoCol}`}>
+                    <div className={`${style.marginTop20} ${style.twoCol} `}>
                         <div className={style.labelStyle}>Auto trigger reviews and attestations on <strong>Revision / Update</strong> of Medical Directive</div>
                         <CommonSwitch label={autoTriggerOnUpdate ? 'YES' : 'NO'} checked={autoTriggerOnUpdate} onChange={(e) => setAutoTriggerOnUpdate(e.target.checked)} labelName={''} />
                     </div>
-                    <div className={`${style.marginTop20} ${style.twoCol}`}>
+                    <div className={`${style.marginTop20} ${style.twoCol} `}>
                         <div className={style.labelStyle}>Auto trigger review and attestations for <strong>New Staff Applicant</strong></div>
                         <CommonSwitch label={autoTriggerForNewAppointment ? 'YES' : 'NO'} checked={autoTriggerForNewAppointment} onChange={(e) => setAutoTriggerForNewAppointment(e.target.checked)} labelName={''} />
                     </div>
-                    <div className={`${style.marginTop20} ${style.twoCol}`}>
+                    <div className={`${style.marginTop20} ${style.twoCol} `}>
                         <div className={style.labelStyle}>Auto trigger review and attestations for <strong>Staff Reappointment</strong></div>
                         <CommonSwitch label={autoTriggerForReappointment ? 'YES' : 'NO'} checked={autoTriggerForReappointment} onChange={(e) => setAutoTriggerForReappointment(e.target.checked)} labelName={''} />
                     </div>
-                    <div className={`${style.marginTop20} ${style.twoCol}`}>
+                    <div className={`${style.marginTop20} ${style.twoCol} `}>
                         <div className={style.labelStyle}>Auto trigger review and attestations for <strong>Locum Renewal / Extensions</strong></div>
                         <CommonSwitch label={autoTriggerForLocum ? 'YES' : 'NO'} checked={autoTriggerForLocum} onChange={(e) => setAutoTriggerForLocum(e.target.checked)} labelName={''} />
                     </div>
                 </div>
             </div>
-            <Dialog isOpen={showAttestationGroup} onClose={() => handleGroupDialogClose()} className={`${style.addMDDialogBackground} ${style.attestationDialog}`}>
+            <Dialog isOpen={showAttestationGroup} onClose={() => handleGroupDialogClose()} className={`${style.addMDDialogBackground} ${style.attestationDialog} `}>
                 <div className={Classes.DIALOG_BODY}>
                     <div className={style.attestationDialogHeaderCard}>
-                        <div className={`${style.attestationDialogTitle} ${style.padding20}`}>Attestation Group</div>
+                        <div className={`${style.attestationDialogTitle} ${style.padding20} `}>Attestation Group</div>
                     </div>
                     <div className={style.marginTop10}>
                         <div className={style.labelStyle}>Group Title*</div>
@@ -819,9 +820,9 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                                 <div className={style.attestationGroupRightCard}>
                                     {staffList?.filter(staff => !selectedStaffs?.includes(staff.id))?.map((data, index) => (
                                         <div className={style.groupGrid} key={index}>
-                                            <div className={`${style.staffName} ${style.verticalAlignCenter} ${style.cursorPointer} ${selectedStaffForMove === data?.id ? style.selectedStaff : ''}`} onClick={() => setSelectedStaffForMove(data?.id)}>{`${data?.name?.firstName} ${data?.name?.lastName?.toUpperCase()}${data?.serviceProviderType?.contractedServiceProviderType ? `, ${data?.serviceProviderType?.contractedServiceProviderType}` : ''}`}</div>
+                                            <div className={`${style.staffName} ${style.verticalAlignCenter} ${style.cursorPointer} ${selectedStaffForMove === data?.id ? style.selectedStaff : ''} `} onClick={() => setSelectedStaffForMove(data?.id)}>{`${data?.name?.firstName} ${data?.name?.lastName?.toUpperCase()}${data?.serviceProviderType?.contractedServiceProviderType ? `, ${data?.serviceProviderType?.contractedServiceProviderType}` : ''} `}</div>
                                             {/* <div className={style.staffName}></div> */}
-                                            <div className={`${style.labelStyle} ${selectedStaffForMove === data?.id ? style.selectedStaff : ''}`}>{data?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.departmentName?.name ? data?.sites?.sites?.[0]?.departmentList?.departments?.map(
+                                            <div className={`${style.labelStyle} ${selectedStaffForMove === data?.id ? style.selectedStaff : ''} `}>{data?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.departmentName?.name ? data?.sites?.sites?.[0]?.departmentList?.departments?.map(
                                                 (dept) => dept?.departmentName?.name
                                             )?.join(', ') : ''}</div>
                                         </div>
@@ -829,17 +830,17 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                                 </div>
                             </div>
                             <div className={style.verticalAlignCenter}>
-                                <div className={`${style.displayInCol}`}>
-                                    <div className={`${style.moveCard} ${style.justifyCenter} ${style.verticalAlignCenter} ${staffList?.filter(staff => !selectedStaffs?.includes(staff.id))?.length === 0 ? style.disabledView : style.cursorPointer}`} onClick={staffList?.filter(staff => !selectedStaffs?.includes(staff.id))?.length === 0 ? () => { } : () => handleMove()}>
+                                <div className={`${style.displayInCol} `}>
+                                    <div className={`${style.moveCard} ${style.justifyCenter} ${style.verticalAlignCenter} ${staffList?.filter(staff => !selectedStaffs?.includes(staff.id))?.length === 0 ? style.disabledView : style.cursorPointer} `} onClick={staffList?.filter(staff => !selectedStaffs?.includes(staff.id))?.length === 0 ? () => { } : () => handleMove()}>
                                         <KeyboardArrowRightIcon sx={{ color: '#06617A' }} />
                                     </div>
-                                    <div className={`${style.moveCard} ${style.marginTop10} ${style.justifyCenter} ${style.verticalAlignCenter} ${staffList?.filter(staff => !selectedStaffs?.includes(staff.id))?.length === 0 ? style.disabledView : style.cursorPointer}`} onClick={staffList?.filter(staff => !selectedStaffs?.includes(staff.id))?.length === 0 ? () => { } : () => handleMoveBulk()}>
+                                    <div className={`${style.moveCard} ${style.marginTop10} ${style.justifyCenter} ${style.verticalAlignCenter} ${staffList?.filter(staff => !selectedStaffs?.includes(staff.id))?.length === 0 ? style.disabledView : style.cursorPointer} `} onClick={staffList?.filter(staff => !selectedStaffs?.includes(staff.id))?.length === 0 ? () => { } : () => handleMoveBulk()}>
                                         <KeyboardDoubleArrowRightIcon sx={{ color: '#06617A' }} />
                                     </div>
-                                    <div className={`${style.moveCard} ${style.marginTop20} ${style.justifyCenter} ${style.verticalAlignCenter} ${staffList?.filter(staff => selectedStaffs?.includes(staff.id))?.length === 0 ? style.disabledView : style.cursorPointer}`} onClick={staffList?.filter(staff => selectedStaffs?.includes(staff.id))?.length === 0 ? () => { } : () => handleRemove()}>
+                                    <div className={`${style.moveCard} ${style.marginTop20} ${style.justifyCenter} ${style.verticalAlignCenter} ${staffList?.filter(staff => selectedStaffs?.includes(staff.id))?.length === 0 ? style.disabledView : style.cursorPointer} `} onClick={staffList?.filter(staff => selectedStaffs?.includes(staff.id))?.length === 0 ? () => { } : () => handleRemove()}>
                                         <KeyboardArrowLeftIcon sx={{ color: '#06617A' }} />
                                     </div>
-                                    <div className={`${style.moveCard} ${style.marginTop10} ${style.justifyCenter} ${style.verticalAlignCenter} ${staffList?.filter(staff => selectedStaffs?.includes(staff.id))?.length === 0 ? style.disabledView : style.cursorPointer}`} onClick={staffList?.filter(staff => selectedStaffs?.includes(staff.id))?.length === 0 ? () => { } : () => handleRemoveBulk()}>
+                                    <div className={`${style.moveCard} ${style.marginTop10} ${style.justifyCenter} ${style.verticalAlignCenter} ${staffList?.filter(staff => selectedStaffs?.includes(staff.id))?.length === 0 ? style.disabledView : style.cursorPointer} `} onClick={staffList?.filter(staff => selectedStaffs?.includes(staff.id))?.length === 0 ? () => { } : () => handleRemoveBulk()}>
                                         <KeyboardDoubleArrowLeftIcon sx={{ color: '#06617A' }} />
                                     </div>
                                 </div>
@@ -849,9 +850,9 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                                 <div className={style.attestationGroupRightCard}>
                                     {staffList?.filter(staff => selectedStaffs?.includes(staff.id))?.map((data, index) => (
                                         <div className={style.groupGrid} key={index}>
-                                            <div className={`${style.staffName} ${style.verticalAlignCenter} ${style.cursorPointer} ${selectedStaffForMove === data?.id ? style.selectedStaff : ''}`} onClick={() => setSelectedStaffForMove(data?.id)}>{`${data?.name?.firstName} ${data?.name?.lastName?.toUpperCase()}${data?.serviceProviderType?.contractedServiceProviderType ? `, ${data?.serviceProviderType?.contractedServiceProviderType}` : ''}`}</div>
+                                            <div className={`${style.staffName} ${style.verticalAlignCenter} ${style.cursorPointer} ${selectedStaffForMove === data?.id ? style.selectedStaff : ''} `} onClick={() => setSelectedStaffForMove(data?.id)}>{`${data?.name?.firstName} ${data?.name?.lastName?.toUpperCase()}${data?.serviceProviderType?.contractedServiceProviderType ? `, ${data?.serviceProviderType?.contractedServiceProviderType}` : ''} `}</div>
                                             {/* <div className={style.staffName}></div> */}
-                                            <div className={`${style.labelStyle} ${selectedStaffForMove === data?.id ? style.selectedStaff : ''}`}>{data?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.departmentName?.name ? data?.sites?.sites?.[0]?.departmentList?.departments?.map(
+                                            <div className={`${style.labelStyle} ${selectedStaffForMove === data?.id ? style.selectedStaff : ''} `}>{data?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.departmentName?.name ? data?.sites?.sites?.[0]?.departmentList?.departments?.map(
                                                 (dept) => dept?.departmentName?.name
                                             )?.join(', ') : ''}</div>
                                         </div>
@@ -861,19 +862,19 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                         </div>
                     </div>
                     <div>
-                        <div className={`${style.spaceBetween} ${style.marginTop20}`}>
+                        <div className={`${style.spaceBetween} ${style.marginTop20} `}>
                             <button className={`${style.outlinedButton} `} onClick={() => handleGroupDialogClose()} >CANCEL</button>
                             <button className={`${style.buttonStyle} ${!isGroupEdited ? style.disabledView : ''} `} onClick={!isGroupEdited ? () => { } : () => handleAddGroup()} >{groupById ? 'UPDATE' : 'ADD'}</button>
                         </div>
                     </div>
                 </div>
             </Dialog >
-            <Dialog isOpen={showWorkflowSelection} onClose={() => setShowWorkflowSelection(false)} className={`${style.addMDDialogBackground} ${style.attestationDialog}`}>
+            <Dialog isOpen={showWorkflowSelection} onClose={() => setShowWorkflowSelection(false)} className={`${style.addMDDialogBackground} ${style.attestationDialog} `}>
                 <div className={Classes.DIALOG_BODY}>
                     <div className={style.attestationDialogHeaderCard}>
-                        <div className={`${style.attestationDialogTitle} ${style.padding20}`}>Workflow Selection</div>
+                        <div className={`${style.attestationDialogTitle} ${style.padding20} `}>Workflow Selection</div>
                     </div>
-                    <div className={`${style.marginTop20} ${style.twoCol}`}>
+                    <div className={`${style.marginTop20} ${style.twoCol} `}>
                         <div className={style.labelStyle}>BOD Approval required?</div>
                         <CommonSwitch label={workFlow1IsMandatory ? 'YES' : 'NO'} checked={workFlow1IsMandatory} onChange={(e) => setWorkFlow1IsMandatory(e.target.checked)} labelName={''} />
                     </div>
@@ -890,7 +891,7 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                                         // firstOptionLabel={'All'}
                                         // firstOptionValue={''}
                                         valueList={roles?.map(option => option?.id)}
-                                        labelList={roles?.map(option => `${option?.roleName}`)}
+                                        labelList={roles?.map(option => `${option?.roleName} `)}
                                         disabledList={roles?.map(() => false)}
                                         required={false}
                                         label={''}
@@ -906,7 +907,7 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                                         // firstOptionLabel={'All'}
                                         // firstOptionValue={''}
                                         valueList={staffList?.map(option => option?.id)}
-                                        labelList={staffList?.map(option => `${option?.applicant?.name?.firstName} ${option?.applicant?.name?.lastName}`)}
+                                        labelList={staffList?.map(option => `${option?.applicant?.name?.firstName} ${option?.applicant?.name?.lastName} `)}
                                         disabledList={staffList?.map(() => false)}
                                         required={false}
                                         label={'Staffs'}
@@ -922,7 +923,7 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                                         // firstOptionLabel={'All'}
                                         // firstOptionValue={''}
                                         valueList={groupList?.map(option => option?.id)}
-                                        labelList={groupList?.map(option => `${option?.name}`)}
+                                        labelList={groupList?.map(option => `${option?.name} `)}
                                         disabledList={groupList?.map(() => false)}
                                         required={false}
                                         label={'Attestation Groups'}
@@ -932,7 +933,7 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                         </div>
                         // )
                     )}
-                    <div className={`${style.marginTop20} ${style.twoCol}`}>
+                    <div className={`${style.marginTop20} ${style.twoCol} `}>
                         <div className={style.labelStyle}>Staff Acknowledgement required?</div>
                         <CommonSwitch label={workFlow2IsMandatory ? 'YES' : 'NO'} checked={workFlow2IsMandatory} onChange={(e) => setWorkFlow2IsMandatory(e.target.checked)} labelName={''} />
                     </div>
@@ -949,7 +950,7 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                                         // firstOptionLabel={'All'}
                                         // firstOptionValue={''}
                                         valueList={roles?.map(option => option?.id)}
-                                        labelList={roles?.map(option => `${option?.roleName}`)}
+                                        labelList={roles?.map(option => `${option?.roleName} `)}
                                         disabledList={roles?.map(() => false)}
                                         required={false}
                                         label={'Roles'}
@@ -965,7 +966,7 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                                         // firstOptionLabel={'All'}
                                         // firstOptionValue={''}
                                         valueList={staffList?.map(option => option?.id)}
-                                        labelList={staffList?.map(option => `${option?.applicant?.name?.firstName} ${option?.applicant?.name?.lastName}`)}
+                                        labelList={staffList?.map(option => `${option?.applicant?.name?.firstName} ${option?.applicant?.name?.lastName} `)}
                                         disabledList={staffList?.map(() => false)}
                                         required={false}
                                         label={'Staffs'}
@@ -981,7 +982,7 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                                         // firstOptionLabel={'All'}
                                         // firstOptionValue={''}
                                         valueList={groupList?.map(option => option?.id)}
-                                        labelList={groupList?.map(option => `${option?.name}`)}
+                                        labelList={groupList?.map(option => `${option?.name} `)}
                                         disabledList={groupList?.map(() => false)}
                                         required={false}
                                         label={'Attestation Groups'}
@@ -992,11 +993,11 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                         // )
                     )}
                     <div>
-                        <div className={`${style.spaceBetween} ${style.marginTop20}`}>
+                        <div className={`${style.spaceBetween} ${style.marginTop20} `}>
                             <button className={`${style.outlinedButton} `} onClick={() => handleWorkflowClose()} >CANCEL</button>
                             <div className={style.displayInRow}>
                                 <button className={`${style.buttonStyle} `} onClick={() => handleSaveWorkflow('Save_And_Start')} >{'Start Sign Off'}</button>
-                                <button className={`${style.buttonStyle} ${style.marginLeft10}`} onClick={() => handleSaveWorkflow('Save')} >{'Save'}</button>
+                                <button className={`${style.buttonStyle} ${style.marginLeft10} `} onClick={() => handleSaveWorkflow('Save')} >{'Save'}</button>
                             </div>
                         </div>
                     </div>

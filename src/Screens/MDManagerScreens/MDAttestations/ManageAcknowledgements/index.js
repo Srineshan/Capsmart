@@ -113,15 +113,21 @@ const ManageAcknowledgement = () => {
     }, [selectedOptionValue]);
 
     useEffect(() => {
-        const timeout = setTimeout(() => {
+        if (loggedInUser?.id) return; // already have user, don't poll again
+
+        const interval = setInterval(() => {
             const stored = sessionStorage.getItem("user");
             if (stored) {
-                setLoggedInUser(JSON.parse(stored));
+                const parsed = JSON.parse(stored);
+                if (parsed?.id) {
+                    setLoggedInUser(parsed);
+                    clearInterval(interval); // stop once found
+                }
             }
-        }, 1000);
+        }, 500);
 
-        return () => clearTimeout(timeout);
-    }, [])
+        return () => clearInterval(interval);
+    }, [loggedInUser]);
 
     useEffect(() => {
         if (selectedOption === "pending" && attestationList?.length > 0 && userData) {
