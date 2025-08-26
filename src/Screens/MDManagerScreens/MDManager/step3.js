@@ -78,7 +78,7 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
             setAutoTriggerOnUpdate(mdValue?.autoTriggerOnUpdate)
             setTargetStaff(mdValue?.updateFor);
             setSelectedExcludeMembers(mdValue?.excludedUsers?.map(data => data?.id) || [])
-            setSelectedGroups(mdValue?.groups?.map(data => data?.id))
+            setSelectedGroups(mdValue?.groups?.map(data => data?.id) || [])
             setAutoTriggerForNewAppointment(mdValue?.triggerForNewAppointment)
             setAutoTriggerForReappointment(mdValue?.triggerForReAppointment)
             setAutoTriggerForLocum(mdValue?.triggerForLocum)

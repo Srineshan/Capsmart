@@ -925,7 +925,8 @@ const App = ({ props }) => {
       isHapicareUser = isHapicareUser !== undefined ? isHapicareUser : sessionStorage.getItem('masterEntity') === 'true' ? true : sessionStorage.getItem('masterEntity') === 'false' ? false : undefined;
       organizations = organizations ? organizations : sessionStorage.getItem('organizations') ? JSON.parse(sessionStorage.getItem('organizations')) : []
       if (Auth() && isHapicareUser !== undefined) {
-        console.log('login route', isHapicareUser, organizations)
+        console.log('login route', isHapicareUser, organizations, jwt(Auth())?.id)
+        sessionStorage.setItem('userId', jwt(Auth())?.id)
         if (isHapicareUser && organizations?.length > 1) {
           setShowDialog(true);
         } else if (isHapicareUser) {

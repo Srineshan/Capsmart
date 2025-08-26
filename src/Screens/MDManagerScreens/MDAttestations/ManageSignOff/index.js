@@ -114,10 +114,10 @@ const ManageSignOff = () => {
 
     useEffect(() => {
         const interval = setInterval(() => {
-            const stored = sessionStorage.getItem("user");
+            const stored = sessionStorage.getItem("userId");
             if (stored) {
-                const parsed = JSON.parse(stored);
-                if (parsed?.id) {
+                const parsed = stored;
+                if (parsed) {
                     setLoggedInUser(parsed);
                     clearInterval(interval); // stop once found
                 }
@@ -153,7 +153,7 @@ const ManageSignOff = () => {
     }, []);
 
     useEffect(() => {
-        if (loggedInUser?.id) {
+        if (loggedInUser) {
             getAttestationMetaList();
         }
     }, [loggedInUser]);
@@ -161,7 +161,9 @@ const ManageSignOff = () => {
     useEffect(() => {
         const controller = new AbortController();
         const signal = controller.signal;
-        getAttestationList(signal);
+        if (loggedInUser) {
+            getAttestationList(signal);
+        }
         return () => controller.abort();
     }, [selectedOption, sortField, sortValue, loggedInUser]);
 
@@ -306,7 +308,7 @@ const ManageSignOff = () => {
 
     const getAttestationMetaList = async () => {
         const response = await GET(
-            `medical-directive-service/medicalDirectives/signOff/meta?assignedUserIds=${loggedInUser?.id}&role=${sessionStorage.getItem('workModeType')}&noOfDays=${30}`
+            `medical-directive-service/medicalDirectives/signOff/meta?assignedUserIds=${loggedInUser}&role=${sessionStorage.getItem('workModeType')}&noOfDays=${30}`
         );
         console.log(response.data);
         setAttestationMeta(response?.data)
@@ -315,9 +317,9 @@ const ManageSignOff = () => {
     const getAttestationList = async (signal) => {
         let url = '';
         if (selectedOption === 'completed') {
-            url = `medical-directive-service/medicalDirectives/signOff?tab=level-2&role=${sessionStorage.getItem('workModeType')}&assignedUserIds=${loggedInUser?.id}&status=${selectedOption}&noOfDays=${30}&sortBy=${sortValue}&sortByField=${sortField}`
+            url = `medical-directive-service/medicalDirectives/signOff?tab=level-2&role=${sessionStorage.getItem('workModeType')}&assignedUserIds=${loggedInUser}&status=${selectedOption}&noOfDays=${30}&sortBy=${sortValue}&sortByField=${sortField}`
         } else {
-            url = `medical-directive-service/medicalDirectives/signOff?tab=level-2&role=${sessionStorage.getItem('workModeType')}&assignedUserIds=${loggedInUser?.id}&status=${selectedOption}&sortBy=${sortValue}&sortByField=${sortField}`
+            url = `medical-directive-service/medicalDirectives/signOff?tab=level-2&role=${sessionStorage.getItem('workModeType')}&assignedUserIds=${loggedInUser}&status=${selectedOption}&sortBy=${sortValue}&sortByField=${sortField}`
         }
         const response = await GET(url, { signal });
         console.log(response.data);

@@ -598,10 +598,11 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
             const revisedMd = await POST(`medical-directive-service/medicalDirectives/${data?.id}/revise`);
             if (revisedMd?.response?.status === 409) {
                 ErrorToaster2('A draft already exists with the same MD ID. To create a new revision, please delete the existing draft first.');
+                setSelectedMdId(revisedMd?.response?.data?.id);
             } else {
                 SuccessToaster2('Medical Directive revised successfully');
+                setSelectedMdId(revisedMd?.data?.id);
             }
-            setSelectedMdId(revisedMd?.response?.data?.id);
             setIsEdit(true);
             setStep1(true)
             getDashboard();
@@ -954,7 +955,10 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
     ]
 
     const draftActionsData = [
-        { 'data': 'Update MD', 'onClick': handleModify },
+        {
+            'data': 'Update MD', 'onClick': handleModify,
+            conditionToShow: `data?.workflowStatus !== 'COMPLETED'`
+        },
         {
             'data': 'Publish', 'onClick': handlePublish,
             conditionToShow: `data?.workflowStatus === 'COMPLETED'`
