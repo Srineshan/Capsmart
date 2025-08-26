@@ -113,8 +113,6 @@ const ManageSignOff = () => {
     }, [selectedOptionValue]);
 
     useEffect(() => {
-        if (loggedInUser?.id) return; // already have user, don't poll again
-
         const interval = setInterval(() => {
             const stored = sessionStorage.getItem("user");
             if (stored) {
@@ -127,7 +125,7 @@ const ManageSignOff = () => {
         }, 500);
 
         return () => clearInterval(interval);
-    }, [loggedInUser]);
+    }, []);
 
     useEffect(() => {
         if (selectedOption === "pending" && attestationList?.length > 0 && userData) {
