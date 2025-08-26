@@ -753,7 +753,7 @@ const ManageAttestationGroups = () => {
                     <Dialog isOpen={showAttestationGroup} onClose={() => handleGroupDialogClose()} className={`${style.addMDDialogBackground} ${style.attestationDialog}`}>
                         <div className={Classes.DIALOG_BODY}>
                             <div className={style.attestationDialogHeaderCard}>
-                                <div className={`${style.attestationDialogTitle} ${style.padding20}`}>Attestation Group</div>
+                                <div className={`${style.attestationDialogTitle} ${style.padding20}`}>Group</div>
                             </div>
                             <div className={style.marginTop10}>
                                 <div className={style.labelStyle}>Group Title*</div>
