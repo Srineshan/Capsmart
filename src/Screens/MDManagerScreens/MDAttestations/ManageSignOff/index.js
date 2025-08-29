@@ -317,9 +317,9 @@ const ManageSignOff = () => {
     const getAttestationList = async (signal) => {
         let url = '';
         if (selectedOption === 'completed') {
-            url = `medical-directive-service/medicalDirectives/signOff?tab=level-2&role=${sessionStorage.getItem('workModeType')}&assignedUserIds=${loggedInUser}&status=${selectedOption}&noOfDays=${30}&sortBy=${sortValue}&sortByField=${sortField}`
+            url = `medical-directive-service/medicalDirectives/signOff?tab=level-3&role=${sessionStorage.getItem('workModeType')}&assignedUserIds=${loggedInUser}&status=${selectedOption}&noOfDays=${30}&sortBy=${sortValue}&sortByField=${sortField}`
         } else {
-            url = `medical-directive-service/medicalDirectives/signOff?tab=level-2&role=${sessionStorage.getItem('workModeType')}&assignedUserIds=${loggedInUser}&status=${selectedOption}&sortBy=${sortValue}&sortByField=${sortField}`
+            url = `medical-directive-service/medicalDirectives/signOff?tab=level-3&role=${sessionStorage.getItem('workModeType')}&assignedUserIds=${loggedInUser}&status=${selectedOption}&sortBy=${sortValue}&sortByField=${sortField}`
         }
         const response = await GET(url, { signal });
         console.log(response.data);
@@ -771,15 +771,15 @@ const ManageSignOff = () => {
                     </div>
                     <div>
                         <div className={`${style.grid2} ${style.marginTop10}`}>
-                            <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Review & Sign Off" bigNumber={attestationMeta?.['level-2']?.pending} smallNum1={attestationMeta?.pending_md?.notPastDueCount} smallNum2={attestationMeta?.pending_md?.pastDueCount} smallText1="Not Done" smallText2="Past Due" currentTile="pending" topText='' smallNum1Color={style.redSmallNumber} smallNum2Color={style.redSmallNumber} smallNum1SelectedColor={style.redSmallNumberSelected} smallNum2SelectedColor={style.redSmallNumberSelected} />
-                            <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Reviewed & Signed Off" bigNumber={attestationMeta?.['level-2']?.completed} smallNum1="" smallNum2="" currentTile="completed" topText='' />
+                            <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Review & Sign Off" bigNumber={attestationMeta?.['level-3']?.pending} smallNum1={attestationMeta?.pending_md?.notPastDueCount} smallNum2={attestationMeta?.pending_md?.pastDueCount} smallText1="Not Done" smallText2="Past Due" currentTile="pending" topText='' smallNum1Color={style.redSmallNumber} smallNum2Color={style.redSmallNumber} smallNum1SelectedColor={style.redSmallNumberSelected} smallNum2SelectedColor={style.redSmallNumberSelected} />
+                            <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Reviewed & Signed Off" bigNumber={attestationMeta?.['level-3']?.completed} smallNum1="" smallNum2="" currentTile="completed" topText='' />
                         </div>
                         <div
                             className={`${style.spaceBetween} ${style.marginLeft30} ${style.marginTop20} `}
                         >
                             <div className={`${style.tabs}`}>
-                                <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Review & Sign Off" tileCount={attestationMeta?.['level-2']?.pending} currentTile="pending" />
-                                <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Reviewed & Signed Off" tileCount={attestationMeta?.['level-2']?.completed} currentTile="completed" />
+                                <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Review & Sign Off" tileCount={attestationMeta?.['level-3']?.pending} currentTile="pending" />
+                                <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Reviewed & Signed Off" tileCount={attestationMeta?.['level-3']?.completed} currentTile="completed" />
                             </div>
                             {/* <div>
                                 <button

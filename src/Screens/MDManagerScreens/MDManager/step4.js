@@ -229,9 +229,9 @@ const MDManagerStep4 = ({ setStep3, setStep4, mdValue, setMdValue, setSelectedMd
         });
         if (workflowEdited) {
             if (selectedSignOffGroups?.length !== 0) {
-                acknowledgementData.approvalFlowMap.workflow[2].flowDetails[0].approvalRequirement = 'MANDATORY';
-                if (workflowStructure?.approvalFlowMap?.workflow[2]?.flowDetails?.[0]?.approvalBy === 'GROUP') {
-                    acknowledgementData.approvalFlowMap.workflow[2].flowDetails[0].groups = transformedGroups
+                acknowledgementData.approvalFlowMap.workflow[3].flowDetails[0].approvalRequirement = 'MANDATORY';
+                if (workflowStructure?.approvalFlowMap?.workflow[3]?.flowDetails?.[0]?.approvalBy === 'GROUP') {
+                    acknowledgementData.approvalFlowMap.workflow[3].flowDetails[0].groups = transformedGroups
                 }
                 await PUT(`medical-directive-service/medicalDirectives/${mdValue?.id}/workflow`, acknowledgementData)
                     .then(response => {
@@ -457,7 +457,7 @@ const MDManagerStep4 = ({ setStep3, setStep4, mdValue, setMdValue, setSelectedMd
                             value={groupTitle}
                             onChange={(e) => { setGroupTitle(e.target.value); setIsGroupEdited(true) }}
                             type="text"
-                            maxLength={25}
+                            maxLength={35}
                         // placeholder="Enter Keywords / Tags"
                         />
                     </div>

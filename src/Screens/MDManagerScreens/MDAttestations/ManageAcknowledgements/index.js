@@ -481,7 +481,7 @@ const ManageAcknowledgement = () => {
             dueDate.push(data?.dueDate);
             attestedDate.push(data?.logs?.[0]?.createdDate ? format(new Date(data?.logs?.[0]?.createdDate), 'MMM dd, yyyy') : '-');
             lastUpdated.push(data?.medicalDirective?.lastModifiedDate ? format(new Date(data?.medicalDirective?.lastModifiedDate), 'MMM dd, yyyy') : '-');
-            signImg.push(<Tooltip title="Click to Review & Attest" arrow><img src={BlueSign} alt="" className={`${style.blueSignImgStyle} ${style.cursorPointer}`} onClick={() => handleEdit(data)} /></Tooltip>);
+            signImg.push(<Tooltip title="Click to Review & Acknowledge" arrow><img src={BlueSign} alt="" className={`${style.blueSignImgStyle} ${style.cursorPointer}`} onClick={() => handleEdit(data)} /></Tooltip>);
         });
 
         return selectedOption === "pending" ? [
@@ -781,8 +781,8 @@ const ManageAcknowledgement = () => {
                             className={`${style.spaceBetween} ${style.marginLeft30} ${style.marginTop20} `}
                         >
                             <div className={`${style.tabs}`}>
-                                <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Review & Attest" tileCount={attestationMeta?.['level-1']?.pending} currentTile="pending" />
-                                <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Attested" tileCount={attestationMeta?.['level-1']?.completed} currentTile="completed" />
+                                <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Review & Acknowledge" tileCount={attestationMeta?.['level-1']?.pending} currentTile="pending" />
+                                <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Reviewed" tileCount={attestationMeta?.['level-1']?.completed} currentTile="completed" />
                             </div>
                             {/* <div>
                                 <button

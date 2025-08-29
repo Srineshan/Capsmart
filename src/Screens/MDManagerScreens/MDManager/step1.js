@@ -83,6 +83,8 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
         return [...new Set(areas)];
     }, [departmentList, selectedDepartment]);
 
+    console.log(filteredServiceAreas, 'filteredServiceAreas')
+
     useEffect(() => {
         if (filteredServiceAreas?.length) {
             setSelectedServiceArea(prev =>
@@ -214,7 +216,6 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
         if (!mdTitle) errors.push("MD Title is required");
         if (!mdId) errors.push("MD ID is required");
         if (!isSaveInProgress) {
-            if (!mdDescription) errors.push("MD Description is required");
             if (!selectedDepartment?.length) errors.push("Department Selection is required");
             if (!reviewFrequency) errors.push("Review Frequency is required");
         }
@@ -423,7 +424,7 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
                             />
                         </div>
                         <div>
-                            <div className={style.labelStyle}>Medical Directive Description*</div>
+                            <div className={style.labelStyle}>Medical Directive Description</div>
                             <CKEditor
                                 editor={ClassicEditor}
                                 data={mdDescription}
@@ -512,7 +513,7 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
                             </div>
                         </div>
                         <div>
-                            <div className={style.labelStyle}>Division / Service Area</div>
+                            <div className={style.labelStyle}>Division / Specialty</div>
                             <CommonMultiSelectField
                                 value={selectedServiceArea}
                                 onChange={(e) => handleServiceAreaSelect(e.target.value)}
@@ -520,7 +521,7 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
                                 // firstOptionLabel={'All'}
                                 // firstOptionValue={''}
                                 valueList={filteredServiceAreas?.map(option => option?.id)}
-                                labelList={filteredServiceAreas?.map(option => `${option?.name}`)}
+                                labelList={filteredServiceAreas?.map(option => `${option?.department?.departmentName?.name} - ${option?.name}`)}
                                 disabledList={filteredServiceAreas?.map(() => false)}
                                 required={true}
                                 label={'Division / Service Area'}
@@ -530,7 +531,7 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
                                     {selectedServiceArea?.map(data => {
                                         return (
                                             <div className={`${style.chips} ${style.displayInRow}`}>
-                                                <div>{filteredServiceAreas?.filter(divisionData => data === divisionData?.id)?.[0]?.name}</div> <div className={`${style.verticalAlignCenter} ${style.marginLeft10} ${style.cursorPointer}`}
+                                                <div>{`${filteredServiceAreas?.filter(divisionData => data === divisionData?.id)?.[0]?.department?.departmentName?.name} - ${filteredServiceAreas?.filter(divisionData => data === divisionData?.id)?.[0]?.name}`}</div> <div className={`${style.verticalAlignCenter} ${style.marginLeft10} ${style.cursorPointer}`}
                                                     onClick={() => setSelectedServiceArea(selectedServiceArea?.filter(innerData => innerData !== data))}
                                                 ><CancelIcon sx={{ color: '#06617A', fontSize: 20 }} /></div></div>
                                         )
