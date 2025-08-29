@@ -713,15 +713,17 @@ const ManageAttestationGroups = () => {
                                 <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Groups" tileCount={groupList?.length} currentTile="REVIEW & ATTEST" />
                             </div>
                             <div>
-                                <button
-                                    className={`${style.borderNone} ${style.backgroundBlue} ${style.borderRadius5} ${style.cursorPointer}`}
-                                    onClick={() => setShowAttestationGroup(true)} // Open dialog on button click
-                                >
-                                    <div className={` ${style.addNewButton} ${style.textColorWhite}`}>
-                                        <AddIcon sx={{ color: "#F5F8F8" }} />
-                                        <span>Create New Group</span>
-                                    </div>
-                                </button>
+                                <Tooltip title="Click to Create New Group" arrow>
+                                    <button
+                                        className={`${style.borderNone} ${style.backgroundBlue} ${style.borderRadius5} ${style.cursorPointer}`}
+                                        onClick={() => setShowAttestationGroup(true)} // Open dialog on button click
+                                    >
+                                        <div className={` ${style.addNewButton} ${style.textColorWhite}`}>
+                                            <AddIcon sx={{ color: "#F5F8F8" }} />
+                                            <span>Create New Group</span>
+                                        </div>
+                                    </button>
+                                </Tooltip>
                             </div>
                         </div>
                         <div className={`${style.bigCardStyle}`}>
@@ -762,7 +764,7 @@ const ManageAttestationGroups = () => {
                                     value={groupTitle}
                                     onChange={(e) => { setGroupTitle(e.target.value); setIsGroupEdited(true) }}
                                     type="text"
-                                    maxLength={25}
+                                    maxLength={35}
                                 // placeholder="Enter Keywords / Tags"
                                 />
                             </div>
@@ -886,8 +888,12 @@ const ManageAttestationGroups = () => {
                             </div>
                             <div>
                                 <div className={`${style.spaceBetween} ${style.marginTop20}`}>
-                                    <button className={`${style.outlinedButton} `} onClick={() => handleGroupDialogClose()} >CANCEL</button>
-                                    <button className={`${style.buttonStyle}   ${!isGroupEdited ? style.disabledView : ''}`} onClick={!isGroupEdited ? () => { } : () => handleAddGroup()} >{groupById ? 'UPDATE' : 'ADD'}</button>
+                                    <Tooltip title="Click to Cancel" arrow>
+                                        <button className={`${style.outlinedButton} `} onClick={() => handleGroupDialogClose()} >CANCEL</button>
+                                    </Tooltip>
+                                    <Tooltip title={`Click to ${groupById ? 'Update' : 'Add'}`} arrow>
+                                        <button className={`${style.buttonStyle}   ${!isGroupEdited ? style.disabledView : ''}`} onClick={!isGroupEdited ? () => { } : () => handleAddGroup()} >{groupById ? 'UPDATE' : 'ADD'}</button>
+                                    </Tooltip>
                                 </div>
                             </div>
                         </div>

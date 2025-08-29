@@ -344,7 +344,8 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         newApplicants: 'New Applicants',
         staffReappointments: 'Reappointments',
         locumExtensionOrRenewal: 'Locum Extension / Renewal',
-        savedReportsArchive: 'Saved Reports Archive'
+        savedReportsArchive: 'Saved Reports Archive',
+        medicalDirectives: 'Medical Directives'
     }
 
     const availableCategories = {
@@ -363,7 +364,8 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         allApplications: 'ALL_APPLICATION',
         locumStaff: 'LOCUM_STAFF',
         permanentStaff: 'PERMANENT_STAFF',
-        locumExtensionOrRenewal: 'LOCUM_EXTENSION_OR_RENEWAL'
+        locumExtensionOrRenewal: 'LOCUM_EXTENSION_OR_RENEWAL',
+        medicalDirectives: 'MEDICAL_DIRECTIVE'
     }
 
     const routeList = {
@@ -400,7 +402,11 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         LOCUM_RENEWAL_OR_EXTENSION_APPLICATIONS_SUMMARY: 'locumRenewalOrExtensionApplicationsSummary',
         DECLINED_OR_NOT_RENEWED_STAFF_SUMMARY: 'declinedOrNotRenewedStaffSummary',
         CARE_PROVIDER_CAREER_MILESTONE_SUMMARY: 'careProviderCareerMilestoneSummary',
-        CARE_PROVIDERS_SUMMARY: 'careProvidersSummary'
+        CARE_PROVIDERS_SUMMARY: 'careProvidersSummary',
+        CURRENT_MEDICAL_DIRECTIVES: 'currentMedicalDirectives',
+        ATTESTATION_OUTSTANDING: 'attestationOutstanding',
+        WORKFLOW: 'workflow',
+        RETIRED_MEDICAL_DIRECTIVES: 'retiredMedicalDirectives'
     }
     const descriptionList = {
         ACTIVITES_SERVICES_LOG_SUMMARY: 'Activities/ Services Log Status Summary',
@@ -426,7 +432,11 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         ACTIVITY_STATUS_TRACKER: `Status Of Activities/ Services By Service Provider For ${format(new Date(), 'MMMM yyyy')}`,
         PAYMENT_TRACKER: 'Payment Processing Status By Service Provider',
         SUBMITTED_APPLICATIONS_REVIEW_SUMMARY: 'submittedApplicationsReviewSummary',
-        STAFF_REAPPOINTMENT_STATUS_SUMMARY: 'staffReappointmentStatusSummary'
+        STAFF_REAPPOINTMENT_STATUS_SUMMARY: 'staffReappointmentStatusSummary',
+        CURRENT_MEDICAL_DIRECTIVES: 'Current Medical Directives',
+        ATTESTATION_OUTSTANDING: 'Attestation Outstanding',
+        WORKFLOW: 'Workflow',
+        RETIRED_MEDICAL_DIRECTIVES: 'Retired Medical Directives'
     }
 
     const titleList = {
@@ -453,7 +463,11 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         ACTIVITY_STATUS_TRACKER: `Status Of Activities/ Services By Service Provider For ${format(new Date(), 'MMMM yyyy')}`,
         PAYMENT_TRACKER: 'Payment Processing Status By Service Provider',
         SUBMITTED_APPLICATIONS_REVIEW_SUMMARY: 'Submitted Applications Review Summary',
-        STAFF_REAPPOINTMENT_STATUS_SUMMARY: 'Staff Reappointment Status Summary'
+        STAFF_REAPPOINTMENT_STATUS_SUMMARY: 'Staff Reappointment Status Summary',
+        CURRENT_MEDICAL_DIRECTIVES: 'Current Medical Directives',
+        ATTESTATION_OUTSTANDING: 'Attestation Outstanding',
+        WORKFLOW: 'Workflow',
+        RETIRED_MEDICAL_DIRECTIVES: 'Retired Medical Directives'
     }
 
     const typeList = {
@@ -488,7 +502,11 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         'staffReappointmentStatusSummary': 'STAFF_REAPPOINTMENT_STATUS_SUMMARY',
         'locumRenewalOrExtensionApplicationsSummary': 'DECLINED_OR_NOT_RENEWED_STAFF_SUMMARY',
         'careProviderCareerMilestoneSummary': 'CARE_PROVIDER_CAREER_MILESTONE_SUMMARY',
-        'declinedOrNotRenewedStaffSummary': 'DECLINED_OR_NOT_RENEWED_STAFF_SUMMARY'
+        'declinedOrNotRenewedStaffSummary': 'DECLINED_OR_NOT_RENEWED_STAFF_SUMMARY',
+        'currentMedicalDirectives': 'CURRENT_MEDICAL_DIRECTIVES',
+        'attestationOutstanding': 'ATTESTATION_OUTSTANDING',
+        'workflow': 'WORKFLOW',
+        'retiredMedicalDirectives': 'RETIRED_MEDICAL_DIRECTIVES'
     }
 
     const availableScheduleValue = {
@@ -574,8 +592,13 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
 
     const getMyReports = async () => {
         setIsLoading(true)
-        const { data: myReport } = await GET(`application-management-service/report/myReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
-        setMyReports(myReport);
+        if (availableCategories[reportType] !== "MEDICAL_DIRECTIVE") {
+            const { data: myReport } = await GET(`application-management-service/report/myReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
+            setMyReports(myReport);
+        } else {
+            const { data: myReport } = await GET(`medical-directive-service/report/myReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
+            setMyReports(myReport);
+        }
         setIsLoading(false)
     }
 
@@ -583,8 +606,13 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
 
     const getSavedReports = async () => {
         setIsLoading(true)
-        const { data: savedReport } = await GET(`application-management-service/report/savedReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
-        setSavedReports(savedReport);
+        if (availableCategories[reportType] !== "MEDICAL_DIRECTIVE") {
+            const { data: savedReport } = await GET(`application-management-service/report/savedReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
+            setSavedReports(savedReport);
+        } else {
+            const { data: savedReport } = await GET(`medical-directive-service/report/savedReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
+            setSavedReports(savedReport);
+        }
         setIsLoading(false)
     }
 
@@ -594,8 +622,13 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
 
     const getStandardTemplates = async () => {
         setIsLoading(true)
-        const { data: standardTemplates } = await GET(`application-management-service/report/standardTemplates?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
-        setStandardTemplates(standardTemplates);
+        if (availableCategories[reportType] !== "MEDICAL_DIRECTIVE") {
+            const { data: standardTemplates } = await GET(`application-management-service/report/standardTemplates?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
+            setStandardTemplates(standardTemplates);
+        } else {
+            const { data: standardTemplates } = await GET(`medical-directive-service/report/standardTemplates?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
+            setStandardTemplates(standardTemplates);
+        }
         setIsLoading(false)
     }
 

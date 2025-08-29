@@ -49,11 +49,11 @@
 }
 
 .marginLeft5 {
-  margin-left: 5px !important;
+    margin-left: 5px !important;
 }
 
 .marginRight5 {
-  margin-right: 5px !important;
+    margin-right: 5px !important;
 }
 
 .bigCardGrid {
@@ -127,8 +127,8 @@
 }
 
 .displayInRow {
-  display: flex;
-  align-items: center;
+    display: flex;
+    align-items: center;
 }
 
 .displayInCol {
@@ -615,12 +615,12 @@
 }
 
 .crossStyleSave {
-  height: 24px;
-  width: 24px;
+    height: 24px;
+    width: 24px;
 }
 
 .justifyEnd {
-  justify-self: end;
+    justify-self: end;
 }
 
 .extensionBorder {
@@ -1852,15 +1852,15 @@
 // }
 
 .reporttypeLeftBackGround {
-  background: radial-gradient(100px 150px at 25% -10%, #0BA5D0 2%, $primarycolor 100%);
-  border-radius: 8px;
-  opacity: 1;
+    background: radial-gradient(100px 150px at 25% -10%, #0BA5D0 2%, $primarycolor 100%);
+    border-radius: 8px;
+    opacity: 1;
 }
 
 .reporttypeLeftBackGround:hover {
-  background: radial-gradient(80px 100px at 28% -10%, #0BA5D0 20%, #054D61 100%);
-  border-radius: 8px;
-  opacity: 1;
+    background: radial-gradient(80px 100px at 28% -10%, #0BA5D0 20%, #054D61 100%);
+    border-radius: 8px;
+    opacity: 1;
 }
 
 .reportLeftTextStyle {
@@ -2059,28 +2059,78 @@
 }
 
 textarea {
-  resize: none;
+    resize: none;
 }
 
 .filterBackground {
-  background-color: rgba(6, 97, 122, 0.1);
-  border-radius: 20px;
-  padding: 5px;
-  max-height: min-content;
-  align-items: center;
+    background-color: rgba(6, 97, 122, 0.1);
+    border-radius: 20px;
+    padding: 5px;
+    max-height: min-content;
+    align-items: center;
 }
 
 .filtertextStyle {
-  text-align: left;
-  font: italic normal medium 14px/22px proxima-nova;
-  letter-spacing: 0px;
-  color: #06617A;
-  opacity: 1;
+    text-align: left;
+    font: italic normal medium 14px/22px proxima-nova;
+    letter-spacing: 0px;
+    color: #06617A;
+    opacity: 1;
 }
 
 .individualTag {
-  background-color: #f1f1f1;
-  padding: 4px 8px;
-  border-radius: 12px;
-  margin-bottom: 4px;
+    background-color: #f1f1f1;
+    padding: 4px 8px;
+    border-radius: 12px;
+    margin-bottom: 4px;
+}
+
+.mdReportCard {
+    background: $secondarycolor 0% 0% no-repeat padding-box;
+    border: 1px solid #9AAFB5;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.mdTitle {
+    text-align: left;
+    font: normal normal bold 18px/20px proxima-nova;
+    color: #454747;
+}
+
+.mdId {
+    text-align: left;
+    font: normal normal bold 14px/20px proxima-nova;
+    color: #454747;
+}
+
+.mdDesc {
+    text-align: left;
+    font: italic normal medium 14px/19px proxima-nova;
+    letter-spacing: 0px;
+    color: #171A1A;
+}
+
+.mdLabel {
+    text-align: left;
+    font: normal normal 600 14px/19px proxima-nova;
+    color: #737575;
+    text-transform: capitalize;
+}
+
+.mdValue {
+    text-align: left;
+    font: normal normal medium 16px/22px proxima-nova;
+    color: #171A1A;
+}
+
+.mdGrid {
+    display: grid;
+    grid-template-columns: 30% 70%;
+}
+
+.outstandingGrid {
+    display: grid;
+    grid-template-columns: 27% 13% 13% 15% 13% 5% 7%;
+    grid-gap: 1%;
 }

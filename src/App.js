@@ -961,7 +961,11 @@ const App = ({ props }) => {
           if (mdRoles?.length === 1) {
             console.log("LoginRole", roles, mdRoles[0])
             sessionStorage.setItem("workModeType", mdRoles[0]);
-            window.location.pathname = "/mdManager";
+            if (mdRoles[0] === "Attester") {
+              window.location.pathname = "/mdManager/manageAttestation";
+            } else {
+              window.location.pathname = "/mdManager";
+            }
           } else {
             sessionStorage.setItem("workModeType", roles[0]);
             let isAppUser =

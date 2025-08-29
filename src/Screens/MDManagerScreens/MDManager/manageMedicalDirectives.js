@@ -274,7 +274,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
     ];
 
     const tableHeaderValues = (selectedOption === 'Current Medical Directives' || selectedOption === 'Retire Medical Directives') ? currentTableHeaderValues : selectedOption === "Draft Medical Directives"
-        ? draftTableHeaderValues : selectedOption === "Medical Directives Sign Off" ? selectedSignOffOption === "level-3" ? MECSignOffTableHeaderValues : revisionTableHeaderValues
+        ? draftTableHeaderValues : selectedOption === "Medical Directives Sign Off" ? selectedSignOffOption === "level-2" ? MECSignOffTableHeaderValues : revisionTableHeaderValues
             : outstandingTableHeaderValues;
 
     const getUser = async () => {
@@ -849,7 +849,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
             { "type": "action", "value": action },
         ] : selectedOption === 'Medical Directives Sign Off' ? [
             ...(
-                selectedSignOffOption === "level-3"
+                selectedSignOffOption === "level-2"
                     ? [{ type: "checkbox", value: checkbox },]
                     : []
             ),
@@ -858,27 +858,27 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
             { "type": "text", "value": mdId },
             { "type": "text", "value": department, tooltipValueText: departmentHoverText },
             ...(
-                selectedSignOffOption !== "level-3"
+                selectedSignOffOption !== "level-2"
                     ? [{ "type": "text", "value": revisionAssignedTo },]
                     : []
             ),
             ...(
-                selectedSignOffOption !== "level-3"
+                selectedSignOffOption !== "level-2"
                     ? [{ "type": "text", "value": acknowledgedOrSignedOff, isAlignCenter: true },]
                     : []
             ),
             ...(
-                selectedSignOffOption === "level-3"
+                selectedSignOffOption === "level-2"
                     ? [{ "type": "text", "value": acknowledgedCount, isAlignCenter: true },]
                     : []
             ),
             ...(
-                selectedSignOffOption === "level-3"
+                selectedSignOffOption === "level-2"
                     ? [{ "type": "text", "value": signedOffCount, isAlignCenter: true },]
                     : []
             ),
             ...(
-                selectedSignOffOption === "level-3"
+                selectedSignOffOption === "level-2"
                     ? [{ "type": "text", "value": lastUpdatedLog },]
                     : []
             ),
@@ -986,7 +986,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
     ]
 
     const actionsData = selectedOption === 'Current Medical Directives' ? registeredActionsData : selectedOption === 'Draft Medical Directives' ? draftActionsData :
-        selectedOption === 'Medical Directives Sign Off' ? selectedSignOffOption === "level-3" ? revisionsActionsData : workflowModifyGroup : selectedOption === "Retire Medical Directives" ? retiredActions : inviteActionsData;
+        selectedOption === 'Medical Directives Sign Off' ? selectedSignOffOption === "level-2" ? revisionsActionsData : workflowModifyGroup : selectedOption === "Retire Medical Directives" ? retiredActions : inviteActionsData;
 
     const handleDownloadClicked = () => {
         toPDF(".registeredUsers", `RegisteredUsersList_${format(new Date(), 'MM_dd_yy')}`);
@@ -1035,19 +1035,19 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
                             <TileApplication selectedTab={selectedSignOffOption} getSelectedTab={getSelectedOptionForSignOff} tileLabel="Acknowledgement" tileCount={signOffMeta?.['level-1']?.pending} currentTile="level-1" />
                         )}
                         {workflowStructure?.approvalFlowMap?.workflow['2'] && (
-                            <TileApplication selectedTab={selectedSignOffOption} getSelectedTab={getSelectedOptionForSignOff} tileLabel="Leadership Sign Off" tileCount={signOffMeta?.['level-2']?.pending} currentTile="level-2" />
+                            <TileApplication selectedTab={selectedSignOffOption} getSelectedTab={getSelectedOptionForSignOff} tileLabel="MAC Approval" tileCount={signOffMeta?.['level-2']?.pending} currentTile="level-2" />
                         )}
                         {workflowStructure?.approvalFlowMap?.workflow['3'] && (
-                            <TileApplication selectedTab={selectedSignOffOption} getSelectedTab={getSelectedOptionForSignOff} tileLabel="MEC Approval" tileCount={signOffMeta?.['level-3']?.pending} currentTile="level-3" />
+                            <TileApplication selectedTab={selectedSignOffOption} getSelectedTab={getSelectedOptionForSignOff} tileLabel="Leadership Sign Off" tileCount={signOffMeta?.['level-3']?.pending} currentTile="level-3" />
                         )}
                     </div>
                 ) : (
                     <div></div>
                 )}
                 <div className={style.displayInRow}>
-                    {(selectedSignOffOption === "level-3" && selectedOption === 'Medical Directives Sign Off') && (
+                    {(selectedSignOffOption === "level-2" && selectedOption === 'Medical Directives Sign Off') && (
                         <div className={`${style.marginRight} ${style.verticalAlignCenter}  ${checkedIds?.length === 0 ? '' : style.cursorPointer} ${checkedIds?.length !== 0 ? '' : style.disabledView}`} onClick={checkedIds?.length !== 0 ? () => setShowUpdateApprovalStatus(true) : () => { }}>
-                            <Tooltip title={checkedIds?.length !== 0 ? "Update MEC Approval" : ""} arrow>
+                            <Tooltip title={checkedIds?.length !== 0 ? "Update MAC Approval" : ""} arrow>
                                 <PeopleOutlinedIcon
                                     sx={{
                                         fontSize: 25,
@@ -1124,7 +1124,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
                             tableHeaderValues={tableHeaderValues}
                             tableDataValues={getValues()}
                             tableData={selectedOption === "Medical Directives Sign Off" ? revisionList : selectedOption === "Attestations Outstanding" ? outstandingList : dashboardData}
-                            gridStyle={selectedOption === 'Attestations Outstanding' ? style.outstandingGrid : selectedOption === 'Current Medical Directives' ? style.mdListGrid : selectedOption === 'Draft Medical Directives' ? style.draftGrid : selectedOption === 'Retire Medical Directives' ? style.mdListGrid : selectedSignOffOption === 'level-3' ? style.level3Grid : style.revisionGrid}
+                            gridStyle={selectedOption === 'Attestations Outstanding' ? style.outstandingGrid : selectedOption === 'Current Medical Directives' ? style.mdListGrid : selectedOption === 'Draft Medical Directives' ? style.draftGrid : selectedOption === 'Retire Medical Directives' ? style.mdListGrid : selectedSignOffOption === 'level-2' ? style.level3Grid : style.revisionGrid}
                             actions={actionsData}
                             scrollStyle={style.scrollStyle}
                             tableSortValues={selectedOption === 'Attestations Outstanding' ? outstandingSortValues : []}
@@ -1260,7 +1260,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
                     ))}
                     <div className={style.marginTop20}>
                         <div>
-                            <div className={style.dialogTitle}>{`MEC Approval Date`}</div>
+                            <div className={style.dialogTitle}>{`MAC Approval Date`}</div>
                             <CommonDateField
                                 className={style.dateWidth}
                                 onChange={(date) => setSelectedMACDate(format(new Date(date), "yyyy-MM-dd'T'00:00"))}

@@ -739,7 +739,7 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                             value={groupTitle}
                             onChange={(e) => { setGroupTitle(e.target.value); setIsGroupEdited(true) }}
                             type="text"
-                            maxLength={25}
+                            maxLength={35}
                         // placeholder="Enter Keywords / Tags"
                         />
                     </div>

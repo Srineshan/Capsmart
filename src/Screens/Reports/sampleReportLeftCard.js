@@ -64,6 +64,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
     const [timesheetIntervals, setTimesheetIntervals] = useState([]);
     const [selectedPosition, setSelectedPosition] = useState('');
     const [selectedApplicationType, setSelectedApplicationType] = useState('');
+    const [workflowLevel, setWorkflowLevel] = useState('All');
     const [selectedReappointmentStatus, setSelectedReappointmentStatus] = useState('');
     const [selectedApplicationSentStatus, setSelectedApplicationSentStatus] = useState('All');
     const [user, setUsers] = useState([]);
@@ -150,6 +151,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         selectedApplicationType: selectedApplicationType,
         selectedReappointmentStatus: selectedReappointmentStatus,
         selectedApplicationSentStatus: selectedApplicationSentStatus,
+        selectedWorkflowLevel: workflowLevel
     };
 
     useEffect(() => {
@@ -365,7 +367,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         getDataToUseInReport(dataToUseInReport);
     }, [renewalreportingTimePeriod, selectedSites, selectedDepartments, selectedPrivilegeCategory, selectedStaffType,
         podType, contractStatus, reportingTimePeriod, selectedApplicationType, selectedReappointmentStatus,
-        selectedPosition, from, to, initialValueSet, selectedTimesheetInterval,selectedApplicationSentStatus]);
+        selectedPosition, from, to, initialValueSet, selectedTimesheetInterval, selectedApplicationSentStatus, workflowLevel]);
 
     useEffect(() => {
         let tempDept = [];
@@ -749,7 +751,8 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                 </Tooltip>
                 {(reportType === "staffReappointmentsNotes" || reportType === "staffReappointments" || reportType === "locumRenewalOrExtensionApplicationsSummary" || reportType === "privilegedStaffSummary" ||
                     reportType === "submittedApplicationsReviewSummary" || reportType === "staffReappointmentTracker" || reportType === "ohipBillingNumbersByCareProvider" || reportType === "careProviderCareerMilestoneSummary" ||
-                    reportType === "declinedOrNotRenewedStaffSummary" || reportType === "reappointmentApplicationNotStarted" || reportType === "currentNotesSummary" || reportType === "staffReappointmentStatusSummary" || reportType === "staffbyTypes" || reportType === "locumStaffbyTypes" || reportType === "locumStaffRenewalStatusTracker" || reportType === "privilegedStaffSummary" || reportType === "careProvidersSummary") ? (
+                    reportType === "declinedOrNotRenewedStaffSummary" || reportType === "reappointmentApplicationNotStarted" || reportType === "currentNotesSummary" || reportType === "staffReappointmentStatusSummary" || reportType === "staffbyTypes" || reportType === "locumStaffbyTypes" || reportType === "locumStaffRenewalStatusTracker" || reportType === "privilegedStaffSummary" || reportType === "careProvidersSummary"
+                    || reportType === "workflow") ? (
                     <>
                         {/* {reportType === "staffReappointmentsNotes" && (
                             <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
@@ -1006,38 +1009,40 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 ))}
                             </Select>
                         </FormControl> */}
-                        <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                            <InputLabel id="demo-multiple-name-label2" className={style.headingtextStyle}>Staff Type</InputLabel>
-                            <Select
-                                labelId="demo-multiple-name-label2"
-                                id="demo-multiple-name2"
-                                multiple
-                                value={selectedStaffType}
-                                onChange={handleChangeStaffType}
-                                MenuProps={MenuProps}
-                                disabled={isLoading}
-                                className={style.textAlignLeft}
-                            >
-                                {staffType?.length >= 2 && (
-                                    <MenuItem value={defaultOption} disabled={isLoading}>All</MenuItem>
-                                )}
-                                {staffType?.map((data) => (
-                                    // <MenuItem
-                                    //     key={data?.dept?.id}
-                                    //     value={data?.dept?.id}
-                                    // >
-                                    //     {`${data?.site?.siteName?.siteName} - ${data?.dept?.departmentName?.name}`}
-                                    // </MenuItem>
-                                    <MenuItem
-                                        key={data?.id}
-                                        value={data?.id}
-                                        disabled={isLoading}
-                                    >
-                                        {data?.applicantType}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
+                        {reportType !== 'workflow' && (
+                            <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                                <InputLabel id="demo-multiple-name-label2" className={style.headingtextStyle}>Staff Type</InputLabel>
+                                <Select
+                                    labelId="demo-multiple-name-label2"
+                                    id="demo-multiple-name2"
+                                    multiple
+                                    value={selectedStaffType}
+                                    onChange={handleChangeStaffType}
+                                    MenuProps={MenuProps}
+                                    disabled={isLoading}
+                                    className={style.textAlignLeft}
+                                >
+                                    {staffType?.length >= 2 && (
+                                        <MenuItem value={defaultOption} disabled={isLoading}>All</MenuItem>
+                                    )}
+                                    {staffType?.map((data) => (
+                                        // <MenuItem
+                                        //     key={data?.dept?.id}
+                                        //     value={data?.dept?.id}
+                                        // >
+                                        //     {`${data?.site?.siteName?.siteName} - ${data?.dept?.departmentName?.name}`}
+                                        // </MenuItem>
+                                        <MenuItem
+                                            key={data?.id}
+                                            value={data?.id}
+                                            disabled={isLoading}
+                                        >
+                                            {data?.applicantType}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                        )}
                         {selectedStaffType?.filter(Boolean).length > 0 && (
                             <div className={`${style.grid2Gap} ${style.marginLeft5}`}>
                                 {selectedStaffType.map((id) => {
@@ -1070,38 +1075,40 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 })}
                             </div>
                         )}
-                        <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                            <InputLabel id="demo-multiple-name-label2" className={style.headingtextStyle}>Privilege Category</InputLabel>
-                            <Select
-                                labelId="demo-multiple-name-label2"
-                                id="demo-multiple-name2"
-                                multiple
-                                value={selectedPrivilegeCategory}
-                                onChange={handleChangePrivilegeCategory}
-                                MenuProps={MenuProps}
-                                disabled={isLoading}
-                                className={style.textAlignLeft}
-                            >
-                                {privilegeCategory?.length >= 2 && (
-                                    <MenuItem value={defaultOption} disabled={isLoading}>All Categories</MenuItem>
-                                )}
-                                {privilegeCategory?.map((data) => (
-                                    // <MenuItem
-                                    //     key={data?.dept?.id}
-                                    //     value={data?.dept?.id}
-                                    // >
-                                    //     {`${data?.site?.siteName?.siteName} - ${data?.dept?.departmentName?.name}`}
-                                    // </MenuItem>
-                                    <MenuItem
-                                        key={data?.id}
-                                        value={data?.id}
-                                        disabled={isLoading}
-                                    >
-                                        {data?.category}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
+                        {reportType !== 'workflow' && (
+                            <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                                <InputLabel id="demo-multiple-name-label2" className={style.headingtextStyle}>Privilege Category</InputLabel>
+                                <Select
+                                    labelId="demo-multiple-name-label2"
+                                    id="demo-multiple-name2"
+                                    multiple
+                                    value={selectedPrivilegeCategory}
+                                    onChange={handleChangePrivilegeCategory}
+                                    MenuProps={MenuProps}
+                                    disabled={isLoading}
+                                    className={style.textAlignLeft}
+                                >
+                                    {privilegeCategory?.length >= 2 && (
+                                        <MenuItem value={defaultOption} disabled={isLoading}>All Categories</MenuItem>
+                                    )}
+                                    {privilegeCategory?.map((data) => (
+                                        // <MenuItem
+                                        //     key={data?.dept?.id}
+                                        //     value={data?.dept?.id}
+                                        // >
+                                        //     {`${data?.site?.siteName?.siteName} - ${data?.dept?.departmentName?.name}`}
+                                        // </MenuItem>
+                                        <MenuItem
+                                            key={data?.id}
+                                            value={data?.id}
+                                            disabled={isLoading}
+                                        >
+                                            {data?.category}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                        )}
                         {selectedPrivilegeCategory?.filter(Boolean).length > 0 && (
                             <div className={`${style.grid2Gap} ${style.marginLeft5}`}>
                                 {selectedPrivilegeCategory.map((id) => {
@@ -1155,7 +1162,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                             </div>
                         )}
 
-                            {(reportType === "staffbyTypes" || reportType === "locumStaffbyTypes") && (
+                        {(reportType === "staffbyTypes" || reportType === "locumStaffbyTypes") && (
                             <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                                 <InputLabel id="demo-simple-select-standard-label3">Application Sent Status</InputLabel>
                                 <Select
@@ -1166,13 +1173,13 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                     MenuProps={MenuProps}
                                     disabled={isLoading}
                                     className={style.textAlignLeft}
-                                   renderValue={(selected) => {
-  if (selected === 'ALL') return 'All';     // Show "All" for empty
-  if (selected === 'SENT') return 'Sent';
-  if (selected === 'RE_SENT') return 'Reminder Sent';
-  if (selected === 'NOT_SENT') return 'Not Sent';
-  return selected;
-}} 
+                                    renderValue={(selected) => {
+                                        if (selected === 'ALL') return 'All';     // Show "All" for empty
+                                        if (selected === 'SENT') return 'Sent';
+                                        if (selected === 'RE_SENT') return 'Reminder Sent';
+                                        if (selected === 'NOT_SENT') return 'Not Sent';
+                                        return selected;
+                                    }}
                                 >
                                     <MenuItem value={'ALL'} disabled={isLoading}>All</MenuItem>
                                     <MenuItem value={'SENT'} disabled={isLoading}>Sent</MenuItem>
@@ -1181,7 +1188,29 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 </Select>
                             </FormControl>
                         )}
-                        {( reportType === "currentNotesSummary") && (
+                        {(reportType === "workflow") && (
+                            <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                                <InputLabel id="demo-simple-select-standard-label3" className={style.headingtextStyle}>Workflow Level</InputLabel>
+                                {/* <InputLabel id="demo-multiple-name-label4" className={style.headingtextStyle}>Application Type</InputLabel> */}
+                                <Select
+                                    labelId="demo-simple-select-standard-label3"
+                                    id="demo-simple-select-standard3"
+                                    // labelId="demo-multiple-name-label4"
+                                    // id="demo-multiple-name4"
+                                    value={workflowLevel}
+                                    onChange={(e) => { setWorkflowLevel(e.target.value) }}
+                                    MenuProps={MenuProps}
+                                    disabled={isLoading}
+                                    className={style.textAlignLeft}
+                                >
+                                    <MenuItem value={'All'} disabled={isLoading}>All</MenuItem>
+                                    <MenuItem value={'1'} disabled={isLoading}>Acknowledgements</MenuItem>
+                                    <MenuItem value={'2'} disabled={isLoading}>MAC Approval</MenuItem>
+                                    <MenuItem value={'3'} disabled={isLoading}>Leadership Sign Off</MenuItem>
+                                </Select>
+                            </FormControl>
+                        )}
+                        {(reportType === "currentNotesSummary") && (
                             <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                                 <InputLabel id="demo-simple-select-standard-label3" className={style.headingtextStyle}>Application Type</InputLabel>
                                 {/* <InputLabel id="demo-multiple-name-label4" className={style.headingtextStyle}>Application Type</InputLabel> */}
