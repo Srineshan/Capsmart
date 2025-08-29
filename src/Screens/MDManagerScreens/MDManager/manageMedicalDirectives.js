@@ -1,6 +1,6 @@
 import React, { useState, useEffect, createRef, useCallback, useRef } from 'react';
 import { Classes, Dialog } from '@blueprintjs/core';
-import { GET, POST, PUT, TenantID } from './../../dataSaver';
+import { DELETE, GET, POST, PUT, TenantID } from './../../dataSaver';
 import Tile from '../../../Components/Tile';
 import Table from '../../../Components/TableDesign';
 import { format, startOfWeek, endOfWeek, parse, isValid } from 'date-fns';
@@ -33,7 +33,7 @@ import { TextField, Tooltip } from '@mui/material';
 import CommonDateField from '../../../Components/CommonFields/CommonDateField';
 import CommonCheckBox from '../../../Components/CommonFields/CommonCheckBox';
 
-const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advancedSearch, setSelectedMdId }) => {
+const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advancedSearch, setSelectedMdId, showAddNewMedicalDirectives, setShowAddNewMedicalDirectives }) => {
     const PDFRef = createRef();
     const navigate = useNavigate()
     const [calendarStart, setCalendarStart] = useState(false);
@@ -69,7 +69,6 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
     const [searchCount, setSearchCount] = useState(0);
     const [approvalStatus, setApprovalStatus] = useState('');
     const [searchTermForTable, setSearchTermForTable] = useState('');
-    const [showAddNewMedicalDirectives, setShowAddNewMedicalDirectives] = useState(false);
     const [showAttestationSummary, setShowAttestationSummary] = useState(false);
     const [showRetireDialog, setShowRetireDialog] = useState(false);
     const [showAddUserDialog, setShowAddUserDialog] = useState(false);
@@ -80,11 +79,12 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
     const [currentMdCount, setCurrentMdCount] = useState(0);
     const [revisionMdCount, setRevisionMdCount] = useState(0);
     const [outstandingMdCount, setOutstandingMdCount] = useState(0);
+    const [outstandingNotStartedCount, setOutstandinNotStartedCount] = useState(0);
     const [signOffMdCount, setSignOffMdCount] = useState(0);
     const [draftMdCount, setDraftMdCount] = useState(0);
     const [inactiveMdCount, setInactiveMdCount] = useState(0);
     const [sortField, setSortField] = useState("DEFAULT");
-    const [sortValue, setSortValue] = useState("DESCENDING");
+    const [sortValue, setSortValue] = useState("ASCENDING");
     const [selectedMedicalDirective, setSelectedMedicalDirective] = useState();
     const [selectedMedicalDirectiveForApproval, setSelectedMedicalDirectiveForApproval] = useState();
     const [approvalNotes, setApprovalNotes] = useState('');
@@ -103,9 +103,14 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
     let cookie = new Cookie();
     let userDetails = cookie.get('user');
     const users = jwt(userDetails);
+    const [outstandingList, setOutstandingList] = useState();
     const publicKey = "-----BEGIN PUBLIC KEY-----MIGeMA0GCSqGSIb3DQEBAQUAA4GMADCBiAKBgHA5SDu30/8uQAqqkQE0NuY4ePBptMGufG6AWnC/88YVLXi4thh7M8VU6kElVJkfXL5DwlfVnwPb08+PK1EcaOWWtp2gdQitkohjZLB9zVE+0OtRrzSc33wItf7Iwisi5dHPggHvfOp5fr+QYWFMa/kKYl3SgNo8fryeLbKKalmdAgMBAAE=-----END PUBLIC KEY-----";
     const [encryptedText, setEncryptedText] = useState(CryptoJS.AES.encrypt(users?.userName + dateTime, publicKey).toString());
     const valuesToUse = viewRegistered ? (selectedOption === 'Current Medical Directives' ? registeredUsers : selectedOption === 'Draft Medical Directives' ? contractedServiceProviderUsers : selectedOption === 'Medical Directives Sign Off' ? deactivatedUsers : invitedUsers) : blockedUsers;
+    const availableGroups = {
+        'NEW': 'New Staff Applicants',
+        'REAPPOINTMENT': 'Staff Reappointments'
+    }
     console.log(loggedInUser)
     useEffect(() => {
         getPublicationWorkflow();
@@ -119,17 +124,27 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
     }, [selectedOption]);
 
     useEffect(() => {
+        const controller = new AbortController();
+        const signal = controller.signal;
+
+        if (selectedOption === "Attestations Outstanding")
+            getAttestationOutstanding(signal)
+
+        return () => controller.abort();
+    }, [selectedOption, sortField, sortValue, advancedSearch]);
+
+    useEffect(() => {
         getRevisionList();
     }, [selectedSignOffOption])
 
     useEffect(() => {
         const controller = new AbortController();
         const signal = controller.signal;
-
-        getDashboard(signal);
+        if (selectedOption !== "Attestations Outstanding")
+            getDashboard(signal);
 
         return () => controller.abort();
-    }, [selectedOption, showAddUserDialog, limit, page, advancedSearch]);
+    }, [selectedOption, showAddUserDialog, limit, page, advancedSearch, sortField, sortValue]);
 
     // useEffect(() => {
     //     userTileValues();
@@ -210,17 +225,16 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
         "Department / Division",
         "First Published",
         "Last Revision",
-        "",
+        "Action",
     ];
     const revisionTableHeaderValues = [
         "No.",
         "Title",
         "MD ID",
         "Department / Division",
-        "Revision Assigned To",
-        "Due Date",
-        "Last Updated",
-        "",
+        "Assigned To",
+        selectedSignOffOption === 'level-1' ? "Acknowledged" : "Signed off",
+        "Action",
     ];
     const MECSignOffTableHeaderValues = [
         <CommonCheckBox
@@ -232,19 +246,20 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
         "Title",
         "MD ID",
         "Department / Division",
-        "Revision Assigned To",
-        "Due Date",
+        "Acknowledged",
+        "Signed Off",
         "Last Updated",
-        "",
+        "Action",
     ];
-
+    const outstandingSortValues = [true, true, true, true, true, false]
     const outstandingTableHeaderValues = [
-        "Attestation Categories",
+        "Attestation Group",
         "Total Count",
-        "Attestated all",
-        "Not Attestated",
-        "Partially Attested",
-        "",
+        "Attested To All",
+        "Not Attested To Any",
+        "Some Attested",
+        '',
+        "Action",
     ];
     const draftTableHeaderValues = [
         "",
@@ -254,12 +269,12 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
         "Author",
         "Type",
         "Version",
-        "Due Date",
-        "",
+        "Last Updated",
+        "Action",
     ];
 
     const tableHeaderValues = (selectedOption === 'Current Medical Directives' || selectedOption === 'Retire Medical Directives') ? currentTableHeaderValues : selectedOption === "Draft Medical Directives"
-        ? draftTableHeaderValues : selectedOption === "Medical Directives Sign Off" ? selectedSignOffOption === "level-3" ? MECSignOffTableHeaderValues : revisionTableHeaderValues
+        ? draftTableHeaderValues : selectedOption === "Medical Directives Sign Off" ? selectedSignOffOption === "level-2" ? MECSignOffTableHeaderValues : revisionTableHeaderValues
             : outstandingTableHeaderValues;
 
     const getUser = async () => {
@@ -286,7 +301,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
     };
 
     const getDashboard = async (signal) => {
-        const { data: dashboardData } = await POST(`medical-directive-service/medicalDirectives/dashboard?offset=${page - 1}&limit=${limit}&isPaginationRequired=${isPaginationRequired}&role=${sessionStorage.getItem('workModeType')}&tab=${selectedOption === "Current Medical Directives" ? "active_md" : selectedOption === "Medical Directives Sign Off" ? "md_revisions" : selectedOption === "Draft Medical Directives" ? "draft_md" : selectedOption === "Retire Medical Directives" ? "inactive_md" : ""}`, advancedSearch, { signal });
+        const { data: dashboardData } = await POST(`medical-directive-service/medicalDirectives/dashboard?offset=${page - 1}&limit=${limit}&isPaginationRequired=${isPaginationRequired}&role=${sessionStorage.getItem('workModeType')}&tab=${selectedOption === "Current Medical Directives" ? "active_md" : selectedOption === "Medical Directives Sign Off" ? "md_revisions" : selectedOption === "Draft Medical Directives" ? "draft_md" : selectedOption === "Retire Medical Directives" ? "inactive_md" : ""}&sortBy=${sortValue}&sortByField=${(selectedOption === "Draft Medical Directives" && sortField === "DEFAULT") ? "WORKFLOW_STATUS" : sortField}`, advancedSearch, { signal });
         setDashboardData(dashboardData?.medicalDirectives);
         setTotalTableCount(dashboardData?.numberOfElements);
     }
@@ -300,8 +315,20 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
         setCurrentMdCount(dashboardMetadata?.active_md?.numberOfElements)
         setSignOffMdCount(dashboardMetadata?.sign_off?.numberOfElements)
         setRevisionMdCount(dashboardMetadata?.md_revisions?.numberOfElements)
-        setOutstandingMdCount(dashboardMetadata?.active_md?.numberOfElements)
+        setOutstandinNotStartedCount(dashboardMetadata?.attestation_outstanding?.notAttestedCount)
+        setOutstandingMdCount(dashboardMetadata?.attestation_outstanding?.totalAttestationCount)
         setDraftMdCount(dashboardMetadata?.draft_md?.numberOfElements)
+    }
+
+    const getAttestationOutstanding = async (signal) => {
+        let userList = []
+        if (advancedSearch?.searchText) {
+            const { data: users } = await POST(`user-management-service/user/allStaffs?searchText=${advancedSearch?.searchText}`);
+            userList = users;
+        }
+        const { data: attestationOutstanding } = await GET(`medical-directive-service/medicalDirectives/attestationOutstanding?sortBy=${sortValue}&sortByField=${sortField}&userIds=${userList?.map(data => data?.id)}`);
+        setOutstandingList(attestationOutstanding)
+        setTotalTableCount(attestationOutstanding?.length)
     }
 
     const userTileValues = async () => {
@@ -309,8 +336,18 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
         setUserMetadata(user);
     }
 
-    const togglePin = () => {
-
+    const handleSendReminder = async (data) => {
+        let payloadData = {
+            appointmentType: data?.appointmentType,
+            positionType: data?.positionType
+        }
+        try {
+            const { data: reminder } = await POST(`medical-directive-service/attestation/sendAttestationEmail`, payloadData);
+            SuccessToaster2('Attestation Outstanding Reminder Sent Successfully');
+        } catch (error) {
+            console.error(error);
+            ErrorToaster2('Failed to send Attestation Outstanding Reminder');
+        }
     }
 
     const getSelectedPage = (value) => {
@@ -376,6 +413,15 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
         // setSelectedMedicalDirectiveForApproval(data)
         // setShowUpdateApprovalStatus(true)
         navigate(`/mdManager/manageMECApproval/${TenantID}/${data?.medicalDirective?.id}`)
+    }
+
+    const handleMemberUpdate = (data) => {
+        if (selectedSignOffOption === "level-1") {
+            sessionStorage.setItem('groupType', 'ACKNOWLEDGEMENT')
+        } else {
+            sessionStorage.setItem('groupType', 'SIGN_OFF')
+        }
+        navigate(`/mdManager/manageAttestationGroups`)
     }
 
     const handleApprovalStatus = async (isReviewRequired) => {
@@ -473,10 +519,10 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
         }
     }
 
-    const handleDelete = (data) => {
-        setUserId(data?.id)
-        setShowDeleteConfirmation(true);
-    }
+    // const handleDelete = (data) => {
+    //     setUserId(data?.id)
+    //     setShowDeleteConfirmation(true);
+    // }
 
     const handleModify = (data) => {
         setSelectedMdId(data?.id);
@@ -493,6 +539,18 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
         } catch (error) {
             console.error(error);
             ErrorToaster2('Failed to publish Medical Directive');
+        }
+    }
+
+    const handleDelete = async (data) => {
+        try {
+            const { data: publishedMD } = await DELETE(`medical-directive-service/medicalDirectives/${data?.id}`);
+            getDashboard();
+            getDashboardMetadata();
+            SuccessToaster2('Medical Directive deleted successfully');
+        } catch (error) {
+            console.error(error);
+            ErrorToaster2('Failed to delete Medical Directive');
         }
     }
 
@@ -537,16 +595,21 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
 
     const handleReviseMD = async (data) => {
         try {
-            const { data: revisedMD } = await POST(`medical-directive-service/medicalDirectives/${data?.id}/revise`);
-            setSelectedMdId(revisedMD?.id);
+            const revisedMd = await POST(`medical-directive-service/medicalDirectives/${data?.id}/revise`);
+            if (revisedMd?.response?.status === 409) {
+                ErrorToaster2('A draft already exists with the same MD ID. To create a new revision, please delete the existing draft first.');
+                setSelectedMdId(revisedMd?.response?.data?.id);
+            } else {
+                SuccessToaster2('Medical Directive revised successfully');
+                setSelectedMdId(revisedMd?.data?.id);
+            }
             setIsEdit(true);
             setStep1(true)
             getDashboard();
             getDashboardMetadata();
-            SuccessToaster2('Medical Directive retired successfully');
         } catch (error) {
             console.error(error);
-            ErrorToaster2('Failed to retire Medical Directive');
+            ErrorToaster2('Failed to revise Medical Directive');
         }
     }
 
@@ -574,7 +637,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
     }
 
     const getRevisionList = async () => {
-        let url = sessionStorage.getItem('workModeType') === "MD Recordkeeper" ?
+        let url = sessionStorage.getItem('workModeType') === "MD Librarian" ?
             `medical-directive-service/medicalDirectives/signOff?tab=${selectedSignOffOption}&role=${sessionStorage.getItem('workModeType')}` :
             `medical-directive-service/medicalDirectives/signOff?tab=${selectedSignOffOption}&role=${sessionStorage.getItem('workModeType')}&assignedUserIds=${loggedInUser?.id}`
         const response = await GET(url);
@@ -634,6 +697,16 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
     let type = [];
     let checkbox = [];
     let action = [];
+    let expandedList = [];
+    let deptNames = [];
+    let deptTotalCount = [];
+    let deptAttestedAll = [];
+    let deptNotAttested = [];
+    let deptPartiallyAttested = [];
+    let acknowledgedOrSignedOff = [];
+    let acknowledgedCount = [];
+    let lastUpdatedLog = [];
+    let signedOffCount = [];
 
     const getValues = () => {
         dot = [];
@@ -654,10 +727,14 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
         notAttested = [];
         partiallyAttested = [];
         revisionAssignedTo = [];
+        acknowledgedOrSignedOff = []
         lastUpdated = [];
         version = [];
         type = [];
         checkbox = [];
+        acknowledgedCount = [];
+        signedOffCount = [];
+        lastUpdatedLog = [];
         action = [];
         if (selectedOption === "Medical Directives Sign Off") {
             revisionList?.map((data, index) => {
@@ -671,12 +748,12 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
                 );
                 // dot.push(data?.activated ? 'green' : 'grey');
                 // dotTooltipValues.push(data?.activated ? 'Activated' : 'Deactivated');
-                no.push(index + 1);
+                no.push((index + 1) + ((page - 1) * limit));
                 title.push(data?.medicalDirective?.title);
                 desc.push(data?.medicalDirective?.title)
                 mdId.push(data?.medicalDirective?.mdID);
-                department.push(data?.medicalDirective?.departments?.length <= 4 ? data?.medicalDirective?.departments?.map(data => data?.name)?.join(', ') : data?.medicalDirective?.departments?.length);
-                departmentHoverText.push(data?.medicalDirective?.departments?.length > 4 ? <div>{data?.medicalDirective?.departments?.map(data => (<div>{data?.name}</div>))}</div> : '')
+                department.push(data?.medicalDirective?.sites?.[0]?.departments?.length <= 4 ? data?.medicalDirective?.sites?.[0]?.departments?.map(data => data?.name)?.join(', ') : data?.medicalDirective?.sites?.[0]?.departments?.length);
+                departmentHoverText.push(data?.medicalDirective?.sites?.[0]?.departments?.length > 4 ? <div>{data?.medicalDirective?.sites?.[0]?.departments?.map(data => (<div>{data?.name}</div>))}</div> : '')
                 firstPublished.push(data?.medicalDirective?.initialPublishedDate ? format(new Date(data?.medicalDirective?.initialPublishedDate), 'MMM dd, yyyy') : '-');
                 lastRevision.push(data?.medicalDirective?.lastRevisionDate ? format(new Date(data?.medicalDirective?.lastRevisionDate), 'MMM dd, yyyy') : '-');
                 lastUpdated.push(data?.medicalDirective?.lastModifiedDate ? format(new Date(data?.medicalDirective?.lastModifiedDate), 'MMM dd, yyyy') : '-');
@@ -687,19 +764,65 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
                 attestedAll.push('-');
                 notAttested.push('-');
                 partiallyAttested.push('-');
-                revisionAssignedTo.push('-');
+                const totalCompletedCount = data?.groups?.reduce(
+                    (sum, group) => sum + (group?.completedCount || 0),
+                    0
+                );
+
+                const totalPendingCount = data?.groups?.reduce(
+                    (sum, group) => sum + (group?.pendingCount || 0),
+                    0
+                );
+                acknowledgedOrSignedOff.push(`${totalCompletedCount}/${totalPendingCount}`)
+                revisionAssignedTo.push(data?.groups?.map(group => group?.group?.name)?.join(', '));
+                acknowledgedCount.push(data?.workflow?.workflowStatusByLevels?.[0]?.reviewedUsers?.length || '-');
+                signedOffCount.push(data?.workflow?.workflowStatusByLevels?.[1]?.reviewedUsers?.length || '-');
+                lastUpdatedLog.push(data?.workflow?.workflowStatusByLevels?.[1]?.workflowActionDate ? format(new Date(data?.workflow?.workflowStatusByLevels?.[1]?.workflowActionDate), 'MMM dd, yyyy') : '-')
+                action.push(true);
+            })
+        } else if (selectedOption === "Attestations Outstanding") {
+            outstandingList?.forEach((group) => {
+                deptNames = [];
+                deptTotalCount = [];
+                deptAttestedAll = [];
+                deptNotAttested = [];
+                deptPartiallyAttested = [];
+
+                group?.departments?.forEach((dept) => {
+                    deptNames.push(dept?.name || '-');
+                    deptTotalCount.push(dept?.stats?.totalCount || '-');
+                    deptAttestedAll.push(dept?.stats?.attestedCount || '-');
+                    deptNotAttested.push(dept?.stats?.notAttestedCount || '-');
+                    deptPartiallyAttested.push(dept?.stats?.partiallyAttestedCount || '-');
+                });
+
+                expandedList.push([
+                    { type: "text", value: deptNames },
+                    { type: "text", value: deptTotalCount, isAlignCenter: true },
+                    { type: "text", value: deptAttestedAll, isAlignCenter: true },
+                    { type: "text", value: deptNotAttested, isAlignCenter: true },
+                    { type: "text", value: deptPartiallyAttested, isAlignCenter: true },
+                ]);
+            });
+            console.log(expandedList, 'expandedList')
+            outstandingList?.map((data, index) => {
+                attestationCategory.push(data?.groupName || '-')
+                totalCount.push(data?.stats?.totalCount || '-')
+                attestedAll.push(data?.stats?.attestedCount || '-')
+                notAttested.push(data?.stats?.notAttestedCount || '-')
+                partiallyAttested.push(data?.stats?.partiallyAttestedCount || '-')
                 action.push(true);
             })
         } else {
             dashboardData?.map((data, index) => {
                 dot.push(data?.workflowStatus === 'COMPLETED' ? 'green' : data?.workflowStatus === 'IN_PROGRESS' ? 'yellow' : 'grey');
                 dotTooltipValues.push(data?.workflowStatus === 'COMPLETED' ? 'Workflow Completed' : data?.workflowStatus === 'IN_PROGRESS' ? 'Workflow In-Progress' : 'Not Yet Started');
-                no.push(index + 1);
+                no.push((index + 1) + ((page - 1) * limit));
                 title.push(data?.title);
                 desc.push(data?.title)
                 mdId.push(data?.mdID);
-                department.push(data?.departments?.length <= 4 ? data?.departments?.map(data => data?.name)?.join(', ') : data?.departments?.length);
-                departmentHoverText.push(data?.departments?.length > 4 ? <div>{data?.departments?.map(data => (<div>{data?.name}</div>))}</div> : '')
+                department.push(data?.sites?.[0]?.departments?.length <= 4 ? data?.sites?.[0]?.departments?.map(data => data?.name)?.join(', ') : data?.sites?.[0]?.departments?.length);
+                departmentHoverText.push(data?.sites?.[0]?.departments?.length > 4 ? <div>{data?.sites?.[0]?.departments?.map(data => (<div>{data?.name}</div>))}</div> : '')
                 firstPublished.push(data?.initialPublishedDate ? format(new Date(data?.initialPublishedDate), 'MMM dd, yyyy') : '-');
                 lastRevision.push(data?.lastRevisionDate ? format(new Date(data?.lastRevisionDate), 'MMM dd, yyyy') : '-');
                 lastUpdated.push(data?.lastModifiedDate ? format(new Date(data?.lastModifiedDate), 'MMM dd, yyyy') : '-');
@@ -726,7 +849,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
             { "type": "action", "value": action },
         ] : selectedOption === 'Medical Directives Sign Off' ? [
             ...(
-                selectedSignOffOption === "level-3"
+                selectedSignOffOption === "level-2"
                     ? [{ type: "checkbox", value: checkbox },]
                     : []
             ),
@@ -734,14 +857,32 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
             { "type": "text", "value": title },
             { "type": "text", "value": mdId },
             { "type": "text", "value": department, tooltipValueText: departmentHoverText },
-            { "type": "text", "value": revisionAssignedTo },
-            { "type": "text", "value": dueDate },
-            { "type": "text", "value": lastRevision },
             ...(
-                selectedSignOffOption === "level-3"
-                    ? [{ "type": "action", "value": action },]
+                selectedSignOffOption !== "level-2"
+                    ? [{ "type": "text", "value": revisionAssignedTo },]
                     : []
-            )
+            ),
+            ...(
+                selectedSignOffOption !== "level-2"
+                    ? [{ "type": "text", "value": acknowledgedOrSignedOff, isAlignCenter: true },]
+                    : []
+            ),
+            ...(
+                selectedSignOffOption === "level-2"
+                    ? [{ "type": "text", "value": acknowledgedCount, isAlignCenter: true },]
+                    : []
+            ),
+            ...(
+                selectedSignOffOption === "level-2"
+                    ? [{ "type": "text", "value": signedOffCount, isAlignCenter: true },]
+                    : []
+            ),
+            ...(
+                selectedSignOffOption === "level-2"
+                    ? [{ "type": "text", "value": lastUpdatedLog },]
+                    : []
+            ),
+            { "type": "action", "value": action },
         ] : selectedOption === 'Draft Medical Directives' ? [
             { "type": "dot", "value": dot, 'tooltipValue': dotTooltipValues },
             { "type": "text", "value": title },
@@ -749,7 +890,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
             { "type": "text", "value": department, tooltipValueText: departmentHoverText },
             { "type": "text", "value": author },
             { "type": "text", "value": type },
-            { "type": "text", "value": version },
+            { "type": "text", "value": version, isAlignCenter: true },
             { "type": "text", "value": lastUpdated },
             { "type": "action", "value": action },
         ] : selectedOption === 'Retire Medical Directives' ? [
@@ -762,10 +903,10 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
             { "type": "action", "value": action },
         ] : [
             { "type": "text", "value": attestationCategory },
-            { "type": "text", "value": totalCount },
-            { "type": "text", "value": attestedAll },
-            { "type": "text", "value": notAttested },
-            { "type": "text", "value": partiallyAttested },
+            { "type": "text", "value": totalCount, isAlignCenter: true },
+            { "type": "text", "value": attestedAll, isAlignCenter: true },
+            { "type": "text", "value": notAttested, isAlignCenter: true },
+            { "type": "text", "value": partiallyAttested, isAlignCenter: true },
             { "type": "expand", "value": action },
             { "type": "action", "value": action },
         ]
@@ -814,8 +955,18 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
     ]
 
     const draftActionsData = [
-        { 'data': 'Update MD', 'onClick': handleModify },
-        { 'data': 'Publish', 'onClick': handlePublish },
+        {
+            'data': 'Update MD', 'onClick': handleModify,
+            conditionToShow: `data?.workflowStatus !== 'COMPLETED'`
+        },
+        {
+            'data': 'Publish', 'onClick': handlePublish,
+            conditionToShow: `data?.workflowStatus === 'COMPLETED'`
+        },
+        {
+            'data': 'Delete', 'onClick': handleDelete,
+            conditionToShow: `data?.workflowStatus === 'NA'`
+        },
     ]
 
     const retiredActions = [
@@ -828,12 +979,14 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
 
     const revisionsActionsData = [{ 'data': 'Update', 'onClick': handleUpdateApprovalStatus }]
 
-    const inviteActionsData = [{ 'data': 'Delete', 'onClick': handleDelete },
-    { 'data': 'Reminder', 'onClick': togglePin }
+    const workflowModifyGroup = [{ 'data': 'Modify Members', 'onClick': handleMemberUpdate }]
+
+    const inviteActionsData = [
+        { 'data': 'Reminder', 'onClick': handleSendReminder, 'hoverText': 'Click to Send Reminder' }
     ]
 
     const actionsData = selectedOption === 'Current Medical Directives' ? registeredActionsData : selectedOption === 'Draft Medical Directives' ? draftActionsData :
-        selectedOption === 'Medical Directives Sign Off' ? revisionsActionsData : selectedOption === "Retire Medical Directives" ? retiredActions : inviteActionsData;
+        selectedOption === 'Medical Directives Sign Off' ? selectedSignOffOption === "level-2" ? revisionsActionsData : workflowModifyGroup : selectedOption === "Retire Medical Directives" ? retiredActions : inviteActionsData;
 
     const handleDownloadClicked = () => {
         toPDF(".registeredUsers", `RegisteredUsersList_${format(new Date(), 'MM_dd_yy')}`);
@@ -869,9 +1022,9 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
         <div>
             <div className={`${style.grid4} ${style.marginTop10}`}>
                 <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Current Medical Directives" bigNumber={currentMdCount} smallNum1={newMdCount} smallNum2={upcomingMdCount} smallText1="New Directives" smallText2="Upcoming For Review" currentTile="Current Medical Directives" topText='' smallNum1Color={style.greenSmallNumber} smallNum2Color={style.yellowSmallNumber} smallNum1SelectedColor={style.greenSmallNumberSelected} smallNum2SelectedColor={style.yellowSmallNumberSelected} />
-                <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Attestations Outstanding" bigNumber={0} smallNum1={0} smallNum2={0} smallText1="Not Started" smallText2="Past Due" currentTile="Attestations Outstanding" topText='' smallNum1Color={style.redSmallNumber} smallNum1SelectedColor={style.redSmallNumberSelected} smallNum2Color={style.redSmallNumber} smallNum2SelectedColor={style.redSmallNumberSelected} />
-                <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Medical Directives Sign Off" bigNumber={signOffMdCount} smallNum1="" smallNum2="" currentTile="Medical Directives Sign Off" topText='' />
+                <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Attestations Outstanding" bigNumber={outstandingMdCount} smallNum1={outstandingNotStartedCount} smallNum2={0} smallText1="Not Started" smallText2="Past Due" currentTile="Attestations Outstanding" topText='' smallNum1Color={style.redSmallNumber} smallNum1SelectedColor={style.redSmallNumberSelected} smallNum2Color={style.redSmallNumber} smallNum2SelectedColor={style.redSmallNumberSelected} />
                 <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Drafts / Revisions" bigNumber={draftMdCount} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="Draft Medical Directives" topText='' smallNum1Color={style.greenSmallNumber} smallNum2Color={style.redSmallNumber} smallNum1SelectedColor={style.greenSmallNumberSelected} smallNum2SelectedColor={style.redSmallNumberSelected} />
+                <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="MD Review & Approvals" bigNumber={signOffMdCount} smallNum1="" smallNum2="" currentTile="Medical Directives Sign Off" topText='' />
             </div>
             <div
                 className={`${style.spaceBetween} ${style.marginLeft30} ${style.marginTop20} `}
@@ -882,19 +1035,19 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
                             <TileApplication selectedTab={selectedSignOffOption} getSelectedTab={getSelectedOptionForSignOff} tileLabel="Acknowledgement" tileCount={signOffMeta?.['level-1']?.pending} currentTile="level-1" />
                         )}
                         {workflowStructure?.approvalFlowMap?.workflow['2'] && (
-                            <TileApplication selectedTab={selectedSignOffOption} getSelectedTab={getSelectedOptionForSignOff} tileLabel="Leadership Sign Off" tileCount={signOffMeta?.['level-2']?.pending} currentTile="level-2" />
+                            <TileApplication selectedTab={selectedSignOffOption} getSelectedTab={getSelectedOptionForSignOff} tileLabel="MAC Approval" tileCount={signOffMeta?.['level-2']?.pending} currentTile="level-2" />
                         )}
                         {workflowStructure?.approvalFlowMap?.workflow['3'] && (
-                            <TileApplication selectedTab={selectedSignOffOption} getSelectedTab={getSelectedOptionForSignOff} tileLabel="MEC Approval" tileCount={signOffMeta?.['level-3']?.pending} currentTile="level-3" />
+                            <TileApplication selectedTab={selectedSignOffOption} getSelectedTab={getSelectedOptionForSignOff} tileLabel="Leadership Sign Off" tileCount={signOffMeta?.['level-3']?.pending} currentTile="level-3" />
                         )}
                     </div>
                 ) : (
                     <div></div>
                 )}
                 <div className={style.displayInRow}>
-                    {(selectedSignOffOption === "level-3" && selectedOption === 'Medical Directives Sign Off') && (
+                    {(selectedSignOffOption === "level-2" && selectedOption === 'Medical Directives Sign Off') && (
                         <div className={`${style.marginRight} ${style.verticalAlignCenter}  ${checkedIds?.length === 0 ? '' : style.cursorPointer} ${checkedIds?.length !== 0 ? '' : style.disabledView}`} onClick={checkedIds?.length !== 0 ? () => setShowUpdateApprovalStatus(true) : () => { }}>
-                            <Tooltip title={checkedIds?.length !== 0 ? "Update MEC Approval" : ""} arrow>
+                            <Tooltip title={checkedIds?.length !== 0 ? "Update MAC Approval" : ""} arrow>
                                 <PeopleOutlinedIcon
                                     sx={{
                                         fontSize: 25,
@@ -904,7 +1057,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
                             </Tooltip>
                         </div>
                     )}
-                    <button
+                    {/* <button
                         className={`${style.borderNone} ${style.backgroundBlue} ${style.borderRadius5}`}
                         onClick={() => setShowAddNewMedicalDirectives(true)} // Open dialog on button click
                     >
@@ -912,7 +1065,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
                             <AddIcon sx={{ color: "#F5F8F8" }} />
                             <span> Add New</span>
                         </div>
-                    </button>
+                    </button> */}
                 </div>
             </div>
             <div className={`${style.bigCardStyle}`}>
@@ -962,15 +1115,22 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
                             actions={actionsData}
                             hidePagination={true}
                         /> */}
+                        {(selectedOption === "Medical Directives Sign Off" && selectedSignOffOption === "level-1") ? (
+                            <div className={`${style.tableDesc} ${style.noteText}`}>{signOffMeta?.['level-1']?.pending} Medical Directives Require Pre-Publication Acknowledgement.<br /> Note: Not all Medical Directives Require Pre-Publication Acknowledgement. </div>
+                        ) : (selectedOption === "Medical Directives Sign Off" && selectedSignOffOption === "level-2") ? (
+                            <div className={`${style.tableDesc} ${style.noteText}`}>{signOffMeta?.['level-2']?.pending} Medical Directives Require Leadership Sign Off. </div>
+                        ) : ''}
                         <TableTwo
                             tableHeaderValues={tableHeaderValues}
                             tableDataValues={getValues()}
-                            tableData={selectedOption === "Medical Directives Sign Off" ? revisionList : dashboardData}
-                            gridStyle={selectedOption === 'Attestations Outstanding' ? style.outstandingGrid : selectedOption === 'Current Medical Directives' ? style.mdListGrid : selectedOption === 'Draft Medical Directives' ? style.draftGrid : selectedOption === 'Retire Medical Directives' ? style.mdListGrid : selectedSignOffOption === 'level-3' ? style.level3Grid : style.revisionGrid}
-                            actions={selectedOption === "Medical Directives Sign Off" ? selectedSignOffOption === "level-3" ? actionsData : [] : actionsData}
-                            // scrollStyle={style.contractScrollStyle}
-                            tableSortValues={[]}
-                            heading={"There are no Record for you to manage"}
+                            tableData={selectedOption === "Medical Directives Sign Off" ? revisionList : selectedOption === "Attestations Outstanding" ? outstandingList : dashboardData}
+                            gridStyle={selectedOption === 'Attestations Outstanding' ? style.outstandingGrid : selectedOption === 'Current Medical Directives' ? style.mdListGrid : selectedOption === 'Draft Medical Directives' ? style.draftGrid : selectedOption === 'Retire Medical Directives' ? style.mdListGrid : selectedSignOffOption === 'level-2' ? style.level3Grid : style.revisionGrid}
+                            actions={actionsData}
+                            scrollStyle={style.scrollStyle}
+                            tableSortValues={selectedOption === 'Attestations Outstanding' ? outstandingSortValues : []}
+                            heading={"There are no Records to display"}
+                            getHandleSort={getHandleSort}
+                            sortValue={{ sortBy: sortValue, sortByField: sortField }}
                             onClickFunction={() => { }}
                             hidePagination={false}
                             getSelectedPage={getSelectedPage}
@@ -982,6 +1142,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
                             onLimitChange={handleLimitChange}
                             checkedIds={checkedIds}
                             handleCheckboxClick={handleCheckboxClick}
+                            expandedList={expandedList}
                         />
                     </div>
                 </div>
@@ -991,7 +1152,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
             <Dialog isOpen={showAddNewMedicalDirectives} onClose={() => setShowAddNewMedicalDirectives(false)} className={`${style.addMDDialogBackground} ${style.addNewMDDialog}`}>
                 <div className={Classes.DIALOG_BODY}>
                     <div className={style.dialogTitle}>Adding New Medical Directives To Database</div>
-                    <div className={`${style.dialogDesc} ${style.marginTop20}`}>Do you have an existing copy of the medical directive that you want to add to the data base?</div>
+                    <div className={`${style.dialogDesc} ${style.marginTop20}`}>Do you have an existing copy of the medical directive that you want to add to the database?</div>
                     <input
                         type="file"
                         ref={fileInputRef}
@@ -1041,7 +1202,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
             </Dialog >
             <Dialog isOpen={showRetireDialog} onClose={() => setShowRetireDialog(false)} className={`${style.addMDDialogBackground} ${style.attestationSummaryDialog}`}>
                 <div className={Classes.DIALOG_BODY}>
-                    <div className={style.dialogTitle}>{`Retire Medical Directive`}</div>
+                    <div className={style.dialogTitle}>{`Retire Medical Directive - ${selectedMedicalDirective?.title}`}</div>
                     <div>
                         <div className={style.labelStyle}>Comments*</div>
                         <CKEditor
@@ -1083,7 +1244,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
                     </div>
                     <div>
                         <div className={`${style.spaceBetween} ${style.marginTop20}`}>
-                            <div></div>
+                            <button className={`${style.outlinedButton} `} onClick={() => setShowRetireDialog(false)} >Close</button>
                             <button className={`${style.buttonStyle} ${retireNotes === '' ? style.disabledView : ''}`} onClick={retireNotes === '' ? () => { } : () => handleRetiredMD()} >Save</button>
                         </div>
                     </div>
@@ -1099,7 +1260,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
                     ))}
                     <div className={style.marginTop20}>
                         <div>
-                            <div className={style.dialogTitle}>{`MEC Approval Date`}</div>
+                            <div className={style.dialogTitle}>{`MAC Approval Date`}</div>
                             <CommonDateField
                                 className={style.dateWidth}
                                 onChange={(date) => setSelectedMACDate(format(new Date(date), "yyyy-MM-dd'T'00:00"))}

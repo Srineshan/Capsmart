@@ -140,7 +140,8 @@
 
 .reviewAndAttestGrid {
     display: grid;
-    grid-template-columns: 3% 3% 40% 8% 8% 14% 14% 3%;
+    // grid-template-columns: 3% 3% 40% 8% 8% 14% 14% 3%;
+    grid-template-columns: 3% 44% 8% 8% 14% 14% 3%;
     gap: 1%;
 }
 
@@ -272,4 +273,9 @@
     height: 20px;
     width: auto;
     object-fit: contain;
+}
+
+.scrollStyle {
+    max-height: calc(100vh - 350px);
+    overflow: scroll;
 }

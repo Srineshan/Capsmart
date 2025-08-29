@@ -34,7 +34,7 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tableData, hidePagination, gridStyle, actions, getSelectedPage, totalCount, page, scrollStyle, tableSortValues, heading, subHeading, subHeading2, onClickText, onClickFunction, buttonComponent, getHandleSort, sortValue, checkedIds, filteredIds, isUploadYourDocTable, hasVerificationAttempted, searchTermForTable, searchCount, setSearchTermForTable, onLimitChange, searchField }) => {
+const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tableData, hidePagination, gridStyle, actions, getSelectedPage, totalCount, page, scrollStyle, tableSortValues, heading, subHeading, subHeading2, onClickText, onClickFunction, buttonComponent, getHandleSort, sortValue, checkedIds, filteredIds, isUploadYourDocTable, hasVerificationAttempted, searchTermForTable, searchCount, setSearchTermForTable, onLimitChange, searchField, expandedList }) => {
     const [showOptions, setShowOptions] = useState(false);
     const [selectedMenuIndex, setSelectedMenuIndex] = useState(-1);
     const [selectedMenuColIndex, setSelectedMenuColIndex] = useState(-1);
@@ -132,7 +132,13 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         ATTESTATION_STATUS: ['Attestation Status'],
         ATTESTATION_DATE: ['Attestation Date'],
         TENURE_END_DATE: ['Days to Expiration', 'Expiry Date', 'Last End Date', 'Days Since Expired'],
-        TENURE_START_DATE: ['Start Date']
+        TENURE_START_DATE: ['Start Date'],
+        USER_NAME: ['Name'],
+        STAFF_COUNT: ['Total Count'],
+        ATTESTED_COUNT: ['Attestated all'],
+        NOT_ATTESTED_COUNT: ['Not Attestated To Any'],
+        PARTIALLY_ATTESTED_COUNT: ['Some Attested'],
+        GROUP_NAME: ['Attestation Group']
     }
 
     const availableSortValueEnum = {
@@ -169,7 +175,13 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         'Expiry Date': 'TENURE_END_DATE',
         'Start Date': 'TENURE_START_DATE',
         'Last End Date': 'TENURE_END_DATE',
-        'Days Since Expired': 'TENURE_END_DATE'
+        'Days Since Expired': 'TENURE_END_DATE',
+        'Name': 'USER_NAME',
+        'Total Count': 'STAFF_COUNT',
+        'Attestated all': 'ATTESTED_COUNT',
+        'Not Attestated To Any': 'NOT_ATTESTED_COUNT',
+        'Some Attested': 'PARTIALLY_ATTESTED_COUNT',
+        'Attestation Group': 'GROUP_NAME'
     }
 
 
@@ -465,7 +477,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
             <div>
                 <div className={`${style.tableHeader} ${gridStyle} ${style.marginTop10}`}>
                     {tableHeaderValues?.map((data, index) => (
-                        <div className={` ${style.verticalAlignCenter}`} key={index}>
+                        <div className={` ${style.verticalAlignCenter} ${style.sortingIcon}`} key={index}>
                             {data === 'CHECKBOX' ? (
                                 <img src={Checkbox} alt="" className={`${style.CheckboxImgStyle} ${style.marginLeft30}`} />
                             ) : data === 'POD Icon' ? (
@@ -475,17 +487,20 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                             ) : (
                                 <div className={`${data === "" && style.marginLeft30} ${style.tableHeaderFontStyle}`}>{data}</div>
                             )}
-                            {tableSortValues?.[index] && (availableSortValue[sortValue?.sortByField]?.includes(data) && sortValue?.sortBy === 'ASCENDING') ? (
-                                <img src={AscendingSort} alt="" className={`${style.sortImgStyle} ${style.cursorPointer}`} onClick={() => getHandleSort(availableSortValueEnum[data], 'ASCENDING')} />
-                            ) : tableSortValues?.[index] && (availableSortValue[sortValue?.sortByField]?.includes(data) && sortValue?.sortBy === 'DESCENDING') ? (
-                                <img src={DescendingSort} alt="" className={`${style.sortImgStyle} ${style.cursorPointer}`} onClick={() => getHandleSort(availableSortValueEnum[data], 'DESCENDING')} />
-                            ) : tableSortValues?.[index] && (
-                                <img src={Sort} alt="" className={`${style.sortImgStyle} ${style.cursorPointer}`} onClick={() => getHandleSort(availableSortValueEnum[data], 'NONE')} />
-                            )
-                                //  : (
-                                //     <img src={DescendingSort} alt="" className={style.sortImgStyle} />
-                                // )
-                            }
+                            <div className={`${style.sortingIconDisplay}
+                            ${(tableSortValues?.[index] && (availableSortValue[sortValue?.sortByField]?.includes(data) && sortValue?.sortBy === 'ASCENDING') || (tableSortValues?.[index] && (availableSortValue[sortValue?.sortByField]?.includes(data) && sortValue?.sortBy === 'DESCENDING')) ? style.selectedSort : '')}`}>
+                                {tableSortValues?.[index] && (availableSortValue[sortValue?.sortByField]?.includes(data) && sortValue?.sortBy === 'ASCENDING') ? (
+                                    <img src={AscendingSort} alt="" className={`${style.sortImgStyle} ${style.cursorPointer}`} onClick={() => getHandleSort(availableSortValueEnum[data], 'ASCENDING')} />
+                                ) : tableSortValues?.[index] && (availableSortValue[sortValue?.sortByField]?.includes(data) && sortValue?.sortBy === 'DESCENDING') ? (
+                                    <img src={DescendingSort} alt="" className={`${style.sortImgStyle} ${style.cursorPointer}`} onClick={() => getHandleSort(availableSortValueEnum[data], 'DESCENDING')} />
+                                ) : tableSortValues?.[index] && (
+                                    <img src={Sort} alt="" className={`${style.sortImgStyle} ${style.cursorPointer}`} onClick={() => getHandleSort(availableSortValueEnum[data], 'NONE')} />
+                                )
+                                    //  : (
+                                    //     <img src={DescendingSort} alt="" className={style.sortImgStyle} />
+                                    // )
+                                }
+                            </div>
                         </div>
                     ))}
                 </div>
@@ -689,6 +704,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                                 ${style.verticalAlignCenter}
                                                                 ${style.cursorArrow}
                                                                 ${tableData?.onClickFunction ? `${style.cursorPointer} ${style.textHoverColor}` : ''}
+                                                                ${tableData?.isAlignCenter ? style.justifyCenter : ''}
                                                             `}
                                                         onClick={tableData?.onClickFunction ? () => { tableData?.onClickFunction(data, index); } : undefined}
                                                         dangerouslySetInnerHTML={{
@@ -1335,7 +1351,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                                 </div>
                                                             )
                                                         : visibleActions?.length === 1 ? (
-                                                            <Tooltip title={'Click to View'} arrow>
+                                                            <Tooltip title={visibleActions[0]?.hoverText ? visibleActions[0]?.hoverText : 'Click to View'} arrow>
                                                                 <span className={`${style.singleActionText}`}
                                                                     onClick={() => {
                                                                         visibleActions[0]?.onClick(data);
@@ -1421,12 +1437,32 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                     ) : null)
                                 ))}
                             </div >
-                            {index === expandedIndex && (
+                            {(index === expandedIndex && expandedList?.[expandedIndex]?.length !== 0) &&
+                                expandedList?.[expandedIndex]?.[0]?.value?.map((expandedData, innerIndex) => (
+                                    <div className={`${style.tableData}  ${expandedIndex % 2 === 0 ? style.alternativeBackground : ''} ${style.marginTop5} ${gridStyle}`} key={innerIndex}>
+                                        {expandedList?.[expandedIndex].map((expandedData, statIndex) =>
+                                            expandedData?.type === "text" ? (
+                                                <Tooltip title={expandedData?.tooltipValueText?.[innerIndex]} arrow>
+                                                    <div
+                                                        className={`
+                                                                ${style.tableDataFontStyle}
+                                                                ${style.verticalAlignCenter}
+                                                                ${style.cursorArrow}
+                                                                ${expandedData?.onClickFunction ? `${style.cursorPointer} ${style.textHoverColor}` : ''}
+                                                                ${statIndex === 0 ? style.marginLeft30 : ''}
+                                                                ${expandedData?.isAlignCenter ? style.justifyCenter : ''}
+                                                            `}
+                                                        onClick={expandedData?.onClickFunction ? () => { expandedData?.onClickFunction(expandedData, innerIndex); } : undefined}
+                                                        dangerouslySetInnerHTML={{
+                                                            __html: getHighlightedHTML(String(expandedData?.value?.[innerIndex] || ''), searchTermForTable)
+                                                        }}
+                                                    />
+                                                </Tooltip>
+                                            ) : '')}
+                                    </div>
+                                ))
+                            }
 
-                                <div className={`${style.tableData} ${style.marginTop5} ${gridStyle}`} key={index}>
-
-                                </div>
-                            )}
                         </>
                     )) : (
                         // <div>

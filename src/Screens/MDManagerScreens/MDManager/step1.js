@@ -3,12 +3,12 @@ import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import CommonInputField from '../../../Components/CommonFields/CommonInputField';
 import CommonDateField from '../../../Components/CommonFields/CommonDateField';
-import { TextField } from '@mui/material';
+import { TextField, Tooltip } from '@mui/material';
 import CancelIcon from '@mui/icons-material/Cancel';
 import style from './index.module.scss';
 import CommonSelectField from '../../../Components/CommonFields/CommonSelectField';
-import { format } from 'date-fns';
-import { GET, POST, PUT } from '../../dataSaver';
+import { add, format, sub } from 'date-fns';
+import { GET, POST, PUT, TenantID } from '../../dataSaver';
 import { ErrorToaster2, SuccessToaster2 } from '../../../utils/toaster';
 import CommonMultiSelectField from '../../../Components/CommonFields/CommonMultiSelectField';
 import { area } from 'd3';
@@ -25,6 +25,7 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
     const [selectedDepartment, setSelectedDepartment] = useState([]);
     const [selectedServiceArea, setSelectedServiceArea] = useState([]);
     const [departmentList, setDepartmentList] = useState([]);
+    const [entitySiteList, setEntitySiteList] = useState([]);
     const [staffList, setStaffList] = useState([]);
     const [selectedStaff, setSelectedStaff] = useState('');
     const [reviewFrequency, setReviewFrequency] = useState('');
@@ -32,9 +33,11 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
     const [fileType, setFileType] = useState('');
     const [isDataLoading, setIdDataLoading] = useState(false);
     const [selectedDeptValue, setSelectedDeptValue] = useState("");
+    const selectedSite = sessionStorage.getItem('selectedSite') || ''
     useEffect(() => {
         getDepartmentList();
         getStaffList()
+        getEntitySites()
     }, [])
 
     useEffect(() => {
@@ -49,7 +52,7 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
         console.log(mdValue, 'mdValue', mdValue?.departments?.flatMap(data => data?.serviceAreas?.map(innerData => innerData?.id) || []) || [])
         if (mdValue) {
             setIdDataLoading(true)
-            setSelectedDepartment(mdValue?.departments?.map(data => data?.id))
+            setSelectedDepartment(mdValue?.sites?.[0]?.departments?.map(data => data?.id))
             setFileType(mdValue?.file ? getFileTypeFromUrl(mdValue?.file?.fileURL) : '')
             setPreviewUrl(mdValue?.file ? mdValue?.file?.fileURL : '')
             setMdTitle(mdValue?.title)
@@ -58,8 +61,8 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
             setMdDescription(mdValue?.description ? mdValue?.description : '')
             setReviewFrequency(mdValue?.reviewFrequency?.value === 1 ? 'EVERY_1_YEAR' : mdValue?.reviewFrequency?.value === 2 ? 'EVERY_2_YEARS' : mdValue?.reviewFrequency?.value === 3 ? 'EVERY_3_YEARS' : '');
             setSelectedStaff(mdValue?.authors ? mdValue?.authors?.map(data => data.id)?.[0] : '')
-            setSelectedServiceArea(mdValue?.departments?.flatMap(data => data?.serviceAreas?.map(innerData => innerData?.id) || []) || [])
-            setIdDataLoading(false)
+            setSelectedServiceArea(mdValue?.sites?.[0]?.departments?.flatMap(data => data?.serviceAreas?.map(innerData => innerData?.id) || []) || [])
+            setTimeout(() => setIdDataLoading(false), 0);
         }
     }, [mdValue])
 
@@ -73,15 +76,17 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
 
     const filteredServiceAreas = useMemo(() => {
         const areas = departmentList
-            .filter(dept => selectedDepartment.includes(dept.id))
-            .flatMap(dept => dept?.serviceAreas || []);
+            ?.filter(dept => selectedDepartment?.includes(dept.id))
+            ?.flatMap(dept => dept?.serviceAreas || []);
         console.log(areas, departmentList, selectedDepartment)
         // Optional: remove duplicates
         return [...new Set(areas)];
     }, [departmentList, selectedDepartment]);
 
+    console.log(filteredServiceAreas, 'filteredServiceAreas')
+
     useEffect(() => {
-        if (!isDataLoading) {
+        if (filteredServiceAreas?.length) {
             setSelectedServiceArea(prev =>
                 prev.filter(area => filteredServiceAreas?.map(data => data?.id)?.includes(area))
             );
@@ -189,6 +194,13 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
         setDepartmentList(department);
     }
 
+    const getEntitySites = async () => {
+        const { data: entitySites } = await GET(
+            `entity-service/entity/ListOfIds?entityIds=${TenantID}`
+        );
+        setEntitySiteList(entitySites?.[0]);
+    }
+
     const getStaffList = async () => {
         const response = await GET(
             `application-management-service/staff?status=ACTIVE&sortByField=STAFF_NAME&isPaginationRequired=${false}&limit=${9999}`
@@ -197,25 +209,47 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
         setStaffList(response?.data?.staffs)
     }
 
-    const handleContinue = async () => {
+    const handleContinue = async (isSaveInProgress) => {
+
+        let errors = [];
+
+        if (!mdTitle) errors.push("MD Title is required");
+        if (!mdId) errors.push("MD ID is required");
+        if (!isSaveInProgress) {
+            if (!selectedDepartment?.length) errors.push("Department Selection is required");
+            if (!reviewFrequency) errors.push("Review Frequency is required");
+        }
+        if (errors.length) {
+            errors.forEach(err => ErrorToaster2(err));
+            return;
+        }
         const formData = new FormData();
 
         let data = {
             title: mdTitle,
             description: mdDescription,
             mdID: mdId,
-            departments: selectedDepartment?.map(deptData => (
+            sites: [
                 {
-                    id: deptData,
-                    name: departmentList?.filter(data => data?.id === deptData)?.[0]?.departmentName?.name,
-                    serviceAreas: filteredServiceAreas?.filter(data => data?.department?.id === deptData)?.filter(area =>
-                        selectedServiceArea?.includes(area?.id)
-                    ),
-                    excludedServiceAreas: [],
-                    serviceAreasExcluded: false,
-                    serviceAreaSpecific: selectedServiceArea?.length !== 0 ? true : false
+                    id: selectedSite,
+                    name: entitySiteList?.sites?.filter(site => site?.id === selectedSite)?.[0]?.siteName?.siteName,
+                    departmentSpecific: selectedDepartment?.length !== 0 ? true : false,
+                    departments: selectedDepartment?.map(deptData => (
+                        {
+                            id: deptData,
+                            name: departmentList?.filter(data => data?.id === deptData)?.[0]?.departmentName?.name,
+                            serviceAreas: filteredServiceAreas?.filter(data => data?.department?.id === deptData)?.filter(area =>
+                                selectedServiceArea?.includes(area?.id)
+                            ),
+                            excludedServiceAreas: [],
+                            serviceAreasExcluded: false,
+                            serviceAreaSpecific: filteredServiceAreas?.filter(data => data?.department?.id === deptData)?.filter(area =>
+                                selectedServiceArea?.includes(area?.id)
+                            )?.length !== 0 ? true : false
+                        }
+                    ))
                 }
-            )),
+            ],
             // implementers: [],
             reviewFrequency: {
                 value: reviewFrequency === "EVERY_1_YEAR" ? 1 : reviewFrequency === "EVERY_2_YEARS" ? 2 : reviewFrequency === "EVERY_3_YEARS" ? 3 : 0,
@@ -238,7 +272,8 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
             groups: [],
             triggerForNewAppointment: false,
             triggerForReAppointment: false,
-            departmentSpecific: selectedDepartment !== '' ? true : false,
+            triggerForLocum: false,
+            siteSpecific: selectedSite !== '' ? true : false,
         }
 
         if (mdValue?.id) {
@@ -257,6 +292,8 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
             data.tags = mdValue?.tags;
             data.triggerForNewAppointment = mdValue?.triggerForNewAppointment;
             data.triggerForReAppointment = mdValue?.triggerForReAppointment;
+            data.triggerForLocum = mdValue?.triggerForLocum;
+            data.excludedUsers = mdValue?.excludedUsers;
             data.updateFor = mdValue?.updateFor;
             data.version = mdValue?.version;
         }
@@ -275,15 +312,19 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
         if (mdValue?.id) {
             try {
                 const response = await PUT(`medical-directive-service/medicalDirectives/${mdValue?.id}`, formData)
-                setStep1(false);
-                setStep2(true);
-                SuccessToaster2('MD Uploaded Successfully');
+                if (isSaveInProgress) {
+                    handleClose()
+                } else {
+                    setStep1(false);
+                    setStep2(true);
+                }
+                SuccessToaster2('MD Updated Successfully');
                 console.log(response, 'error')
                 getMD(response?.data);
             }
             catch (error) {
                 console.log(error, 'error')
-                ErrorToaster2('MD Upload Failed');
+                ErrorToaster2('MD Updated Failed');
             }
         } else {
             try {
@@ -291,9 +332,13 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
                 if (response?.response?.status === 409) {
                     ErrorToaster2(response?.response?.data);
                 } else {
-                    SuccessToaster2('MD Uploaded Successfully');
-                    setStep1(false);
-                    setStep2(true);
+                    SuccessToaster2('MD Updated Successfully');
+                    if (isSaveInProgress) {
+                        handleClose()
+                    } else {
+                        setStep1(false);
+                        setStep2(true);
+                    }
                     getMD(response?.data);
                 }
                 console.log(response, 'error')
@@ -308,20 +353,28 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
     const handleClose = () => {
         setMdValue();
         setSelectedMdId('');
+        setStep1(false);
     }
     return (
         <div className={style.stepsBackground}>
             <div className={`${style.stepHeader} ${style.spaceBetween} ${style.verticalAlignCenter}`}>
                 <div className={style.displayInRow}>
                     <div className={`${style.stepNumber} ${style.marginLeft10}`}>Step 1</div>
-                    <div className={`${style.stepHeading} ${style.marginLeft20}`}>Review & Verify Required Meta Data</div>
+                    <div className={`${style.stepHeading} ${style.marginLeft20}`}>{mdValue?.id ? 'Review & Verify Required Meta Data' : 'Add Required Metadata'}</div>
                 </div>
                 <div className={style.displayInRow}>
                     <div className={`${style.spaceBetween}`}>
-                        <button className={`${style.outlinedButtonMd} ${style.marginRight} `} onClick={() => { setStep1(false); handleClose() }} >SAVE IN PROGRESS</button>
-                        <button className={`${style.buttonStyleMd} ${style.marginRight} `} onClick={() => {
-                            handleContinue();
-                        }} >CONTINUE</button>
+                        <Tooltip arrow title='Click to Close'>
+                            <button className={`${style.outlinedButtonMd} ${style.marginRight} `} onClick={() => { handleClose() }} >CLOSE</button>
+                        </Tooltip>
+                        <Tooltip arrow title='Click to Save In-Progress'>
+                            <button className={`${style.outlinedButtonMd} ${style.marginRight} `} onClick={() => { handleContinue(true) }} >SAVE IN PROGRESS</button>
+                        </Tooltip>
+                        <Tooltip arrow title='Click to Continue'>
+                            <button className={`${style.buttonStyleMd} ${style.marginRight} `} onClick={() => {
+                                handleContinue();
+                            }} >CONTINUE</button>
+                        </Tooltip>
                     </div>
                 </div>
             </div>
@@ -356,6 +409,7 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
                                 onChange={(e) => setMdTitle(e.target.value)}
                                 type="text"
                                 placeholder="Enter Title"
+                                maxLength={100}
                             />
                         </div>
                         <div>
@@ -366,16 +420,26 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
                                 type="text"
                                 placeholder="Enter MD ID"
                                 readOnly={mdValue?.id ? true : false}
+                                maxLength={20}
                             />
                         </div>
                         <div>
-                            <div className={style.labelStyle}>Medical Directive Description*</div>
+                            <div className={style.labelStyle}>Medical Directive Description</div>
                             <CKEditor
                                 editor={ClassicEditor}
                                 data={mdDescription}
                                 onChange={(event, editor) => {
                                     const data = editor.getData();
-                                    setMdDescription(data);
+                                    const plainText = data.replace(/<[^>]*>/g, ""); // strip HTML tags
+                                    const maxLength = 200;
+
+                                    if (plainText.length <= maxLength) {
+                                        setMdDescription(data);
+                                    } else {
+                                        const truncated = plainText.substring(0, maxLength);
+                                        editor.setData(truncated);
+                                        setMdDescription(data);
+                                    }
                                 }}
                                 onReady={(editor) => {
                                     editor.editing.view.change((writer) => {
@@ -449,7 +513,7 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
                             </div>
                         </div>
                         <div>
-                            <div className={style.labelStyle}>Division / Service Area</div>
+                            <div className={style.labelStyle}>Division / Specialty</div>
                             <CommonMultiSelectField
                                 value={selectedServiceArea}
                                 onChange={(e) => handleServiceAreaSelect(e.target.value)}
@@ -457,7 +521,7 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
                                 // firstOptionLabel={'All'}
                                 // firstOptionValue={''}
                                 valueList={filteredServiceAreas?.map(option => option?.id)}
-                                labelList={filteredServiceAreas?.map(option => `${option?.name}`)}
+                                labelList={filteredServiceAreas?.map(option => `${option?.department?.departmentName?.name} - ${option?.name}`)}
                                 disabledList={filteredServiceAreas?.map(() => false)}
                                 required={true}
                                 label={'Division / Service Area'}
@@ -467,7 +531,7 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
                                     {selectedServiceArea?.map(data => {
                                         return (
                                             <div className={`${style.chips} ${style.displayInRow}`}>
-                                                <div>{filteredServiceAreas?.filter(divisionData => data === divisionData?.id)?.[0]?.name}</div> <div className={`${style.verticalAlignCenter} ${style.marginLeft10} ${style.cursorPointer}`}
+                                                <div>{`${filteredServiceAreas?.filter(divisionData => data === divisionData?.id)?.[0]?.department?.departmentName?.name} - ${filteredServiceAreas?.filter(divisionData => data === divisionData?.id)?.[0]?.name}`}</div> <div className={`${style.verticalAlignCenter} ${style.marginLeft10} ${style.cursorPointer}`}
                                                     onClick={() => setSelectedServiceArea(selectedServiceArea?.filter(innerData => innerData !== data))}
                                                 ><CancelIcon sx={{ color: '#06617A', fontSize: 20 }} /></div></div>
                                         )
@@ -506,8 +570,8 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
                             open={calendarStart}
                             onOpen={() => setCalendarStart(true)}
                             onClose={() => setCalendarStart(false)}
-                            // minDate={sub(new Date(), { years: 3 })}
-                            // maxDate={add(new Date(), { months: 6 })}
+                            minDate={sub(new Date(), { years: 3 })}
+                            maxDate={add(new Date(), { months: 6 })}
                             value={SelectedDate}
                             onChange={(newValue) =>
                                 setSelectedDate(format(new Date(newValue), "yyyy-MM-dd'T'00:00"))

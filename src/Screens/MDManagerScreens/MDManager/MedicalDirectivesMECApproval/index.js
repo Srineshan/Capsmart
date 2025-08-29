@@ -275,7 +275,7 @@ const MedicalDirectivesMECApproval = () => {
     return (
         <div className={style.screenBackground}>
             <div className={style.welcomeText}>
-                <ApplicationHeader title={`${medicalDirectives?.title}`} close={true} closeClick={handleClose} />
+                <ApplicationHeader title={`${medicalDirectives?.mdID}: ${medicalDirectives?.title}`} close={true} closeClick={handleClose} />
             </div>
             <div className={style.headerData}>
                 <span style={{ marginLeft: '20px' }}>Ordering Of Laboratory Investigations - IPAC</span>
@@ -289,20 +289,20 @@ const MedicalDirectivesMECApproval = () => {
                 </div> */}
                 <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
                     <div>
-                        <div className={style.medicalDirectivesCard}>
+                        {/* <div className={style.medicalDirectivesCard}>
                             <div className={style.title}>{`${medicalDirectives?.title}`} <span className={style.mdIDStyle}>{medicalDirectives?.mdID}</span></div>
                             {(!isScrolledToBottom) && (
                                 <div className={`${style.marginTop10} ${style.description} ${style.attestationRequiredText}`}>You need to scroll to the end of the document before you can certify that it has been viewed by you.</div>
                             )}
-                        </div>
-                        <div className={`${style.medicalDirectivesCard} ${style.marginTop}`}>
+                        </div> */}
+                        <div className={`${style.medicalDirectivesCard}`}>
                             <CommonPdfViewer pdfurl={medicalDirectives?.file?.fileURL} setIsScrolledToBottom={setIsScrolledToBottom} />
 
                             {/* <iframe src={`${medicalDirectives?.file?.fileURL}`} className={style.pdfDisplay} ref={iframeRef} /> */}
                         </div>
                     </div>
                     <div className={`${style.medicalDirectivesCard} ${style.stickyContainer}`}>
-                        <div className={style.dialogTitle}>{`MEC Approval Date`}</div>
+                        <div className={style.dialogTitle}>{`MAC Approval`}</div>
                         <CommonDateField
                             className={style.dateWidth}
                             onChange={(date) => setSelectedMACDate(format(new Date(date), "yyyy-MM-dd'T'00:00"))}
@@ -325,10 +325,10 @@ const MedicalDirectivesMECApproval = () => {
                             )}
                         />
                         <Tooltip title={!selectedMACDate ? "Select Approval Date to Continue" : "Click to Continue"} arrow>
-                            <div className={`${style.outlinedButton} ${style.marginTop10}`} onClick={() => { handleApprovalStatus(true) }}>REJECTED BY MEC</div>
+                            <div className={`${style.outlinedButton} ${style.marginTop10}`} onClick={() => { handleApprovalStatus(true) }}>REJECTED BY MAC</div>
                         </Tooltip>
                         <Tooltip title={!selectedMACDate ? "Select Approval Date to Continue" : "Click to Continue"} arrow>
-                            <div className={`${style.continue} ${style.marginTop10} ${!selectedMACDate ? style.disabledView : ''}`} onClick={!selectedMACDate ? () => { } : () => { handleApprovalStatus(false) }}>APPROVED BY MEC</div>
+                            <div className={`${style.continue} ${style.marginTop10} ${!selectedMACDate ? style.disabledView : ''}`} onClick={!selectedMACDate ? () => { } : () => { handleApprovalStatus(false) }}>APPROVED BY MAC</div>
                         </Tooltip>
                     </div>
                 </div>

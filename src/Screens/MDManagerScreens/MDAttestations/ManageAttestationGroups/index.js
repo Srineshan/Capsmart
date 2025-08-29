@@ -91,12 +91,18 @@ const ManageAttestationGroups = () => {
     const [showAttestationGroup, setShowAttestationGroup] = useState(false);
     const [selectedStaffs, setSelectedStaffs] = useState([]);
     const [selectedStaffForMove, setSelectedStaffForMove] = useState([]);
+    const [selectedGroupType, setSelectedGroupType] = useState([]);
+    const [isGroupEdited, setIsGroupEdited] = useState(false);
     useEffect(() => {
         console.log(selectedOption, 'option')
         if (selectedOptionValue !== undefined && selectedOptionValue !== null) {
             setSelectedOption(selectedOptionValue);
         }
     }, [selectedOptionValue]);
+
+    useEffect(() => {
+        setSelectedGroupType((sessionStorage.getItem('groupType') && sessionStorage.getItem('groupType') !== 'undefined') ? [sessionStorage.getItem('groupType')] : [])
+    }, [sessionStorage.getItem('groupType')])
 
     useEffect(() => {
         if (!medicalDirectivesAttestation)
@@ -108,8 +114,16 @@ const ManageAttestationGroups = () => {
         userTileValues();
         getEntity();
         getDepartmentList();
-        getGroupList();
     }, []);
+
+    useEffect(() => {
+        const controller = new AbortController();
+        const signal = controller.signal;
+
+        getGroupList(signal);
+
+        return () => controller.abort();
+    }, [selectedGroupType]);
 
     useEffect(() => {
         getStaffList()
@@ -129,6 +143,7 @@ const ManageAttestationGroups = () => {
             id: id,
             name: matchedStaff?.name,
             email: matchedStaff?.email,
+            sites: matchedStaff?.sites
         };
     });
 
@@ -231,9 +246,9 @@ const ManageAttestationGroups = () => {
         setShowAttestationGroup(true)
     }
 
-    const getGroupList = async () => {
+    const getGroupList = async (signal) => {
         const response = await GET(
-            `medical-directive-service/medicalDirectiveGroup`
+            `medical-directive-service/medicalDirectiveGroup?type=${selectedGroupType}`, { signal }
         );
         console.log(response.data, 'group');
         setGroupList(response?.data)
@@ -243,7 +258,7 @@ const ManageAttestationGroups = () => {
         // const response = await GET(
         //     `application-management-service/staff?status=ACTIVE&sortByField=STAFF_NAME&isPaginationRequired=${false}&limit=${9999}`
         // );
-        const response = await GET(
+        const response = await POST(
             `user-management-service/user/allStaffs?status=ACTIVE&roles=${groupType === "ACKNOWLEDGEMENT" ? ["Acknowledger"] : groupType === "SIGN_OFF" ? ["Reviewer / Approver"] : groupType === "ATTESTATION" ? ["Attester"] : []}`
         );
         console.log(response.data);
@@ -449,21 +464,25 @@ const ManageAttestationGroups = () => {
         if (!selectedStaffs?.includes(selectedStaffForMove)) {
             setSelectedStaffs(prev => [...prev, selectedStaffForMove]);
         }
+        setIsGroupEdited(true)
     }
 
     const handleRemove = () => {
         console.log('filterCheck')
         setSelectedStaffs(selectedStaffs?.filter(data => data !== selectedStaffForMove))
+        setIsGroupEdited(true)
     }
 
     const handleMoveBulk = () => {
         console.log('filterCheck')
         setSelectedStaffs(staffList?.map(data => data?.id))
+        setIsGroupEdited(true)
     }
 
     const handleRemoveBulk = () => {
         console.log('filterCheck')
         setSelectedStaffs([])
+        setIsGroupEdited(true)
     }
 
     const handleGroupSelect = (id) => {
@@ -477,6 +496,16 @@ const ManageAttestationGroups = () => {
     }
 
     const handleAddGroup = async () => {
+        let errors = [];
+
+        if (!groupTitle) errors.push("Group Title is required.");
+        if (!groupType) errors.push("Group Type is required.");
+        if (selectedStaffs?.length === 0) errors.push("Group Members is required");
+        if (errors.length) {
+            errors.forEach(err => ErrorToaster2(err));
+            return;
+        }
+
         let data = {
             "name": groupTitle,
             "description": groupDesc,
@@ -576,17 +605,17 @@ const ManageAttestationGroups = () => {
                                         />
                                     </div>
                                     <div className={style.marginTop10}>
-                                        <div className={style.labelStyle}>Attestation Groups</div>
+                                        <div className={style.labelStyle}>Group Type</div>
                                         <CommonMultiSelectField
-                                            value={selectedGroups}
-                                            onChange={(e) => handleGroupSelect(e.target.value)}
+                                            value={selectedGroupType}
+                                            onChange={(e) => setSelectedGroupType(e.target.value)}
                                             className={style.fullWidth}
                                             widthValue='250px'
                                             // firstOptionLabel={'All'}
                                             // firstOptionValue={''}
-                                            valueList={groupList?.map(option => option?.id)}
-                                            labelList={groupList?.map(option => `${option?.name}`)}
-                                            disabledList={groupList?.map(() => false)}
+                                            valueList={["ACKNOWLEDGEMENT", "ATTESTATION", "SIGN_OFF"]?.map(option => option)}
+                                            labelList={["Acknowledgement", "Attestation", "Sign Off"]?.map(option => option)}
+                                            disabledList={["Acknowledgement", "Attestation", "Sign Off"]?.map(() => false)}
                                             required={false}
                                             label={'Attestation Groups'}
                                         />
@@ -681,18 +710,20 @@ const ManageAttestationGroups = () => {
                             className={`${style.spaceBetween} ${style.marginLeft30} ${style.marginTop10} `}
                         >
                             <div className={`${style.tabs}`}>
-                                <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Attestation Group" tileCount={groupList?.length} currentTile="REVIEW & ATTEST" />
+                                <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Groups" tileCount={groupList?.length} currentTile="REVIEW & ATTEST" />
                             </div>
                             <div>
-                                <button
-                                    className={`${style.borderNone} ${style.backgroundBlue} ${style.borderRadius5} ${style.cursorPointer}`}
-                                    onClick={() => setShowAttestationGroup(true)} // Open dialog on button click
-                                >
-                                    <div className={` ${style.addNewButton} ${style.textColorWhite}`}>
-                                        <AddIcon sx={{ color: "#F5F8F8" }} />
-                                        <span>Create New Group</span>
-                                    </div>
-                                </button>
+                                <Tooltip title="Click to Create New Group" arrow>
+                                    <button
+                                        className={`${style.borderNone} ${style.backgroundBlue} ${style.borderRadius5} ${style.cursorPointer}`}
+                                        onClick={() => setShowAttestationGroup(true)} // Open dialog on button click
+                                    >
+                                        <div className={` ${style.addNewButton} ${style.textColorWhite}`}>
+                                            <AddIcon sx={{ color: "#F5F8F8" }} />
+                                            <span>Create New Group</span>
+                                        </div>
+                                    </button>
+                                </Tooltip>
                             </div>
                         </div>
                         <div className={`${style.bigCardStyle}`}>
@@ -724,15 +755,16 @@ const ManageAttestationGroups = () => {
                     <Dialog isOpen={showAttestationGroup} onClose={() => handleGroupDialogClose()} className={`${style.addMDDialogBackground} ${style.attestationDialog}`}>
                         <div className={Classes.DIALOG_BODY}>
                             <div className={style.attestationDialogHeaderCard}>
-                                <div className={`${style.attestationDialogTitle} ${style.padding20}`}>Attestation Group</div>
+                                <div className={`${style.attestationDialogTitle} ${style.padding20}`}>Group</div>
                             </div>
                             <div className={style.marginTop10}>
                                 <div className={style.labelStyle}>Group Title*</div>
                                 <CommonInputField
                                     className={style.fullWidth}
                                     value={groupTitle}
-                                    onChange={(e) => setGroupTitle(e.target.value)}
+                                    onChange={(e) => { setGroupTitle(e.target.value); setIsGroupEdited(true) }}
                                     type="text"
+                                    maxLength={35}
                                 // placeholder="Enter Keywords / Tags"
                                 />
                             </div>
@@ -740,7 +772,7 @@ const ManageAttestationGroups = () => {
                                 <div className={style.labelStyle}>Group Type*</div>
                                 <CommonSelectField
                                     value={groupType}
-                                    onChange={(e) => setGroupType(e.target.value)}
+                                    onChange={(e) => { setGroupType(e.target.value); setIsGroupEdited(true) }}
                                     className={style.fullWidth1}
                                     //   firstOptionLabel={'Select Category'}
                                     //   firstOptionValue={''}
@@ -759,7 +791,19 @@ const ManageAttestationGroups = () => {
                                         data={groupDesc}
                                         onChange={(event, editor) => {
                                             const data = editor.getData();
-                                            setGroupDesc(data);
+                                            const plainText = data.replace(/<[^>]*>/g, ""); // strip HTML tags
+                                            const maxLength = 200; // your limit
+
+                                            if (plainText.length <= maxLength) {
+                                                setGroupDesc(data);
+                                                setIsGroupEdited(true);
+                                            } else {
+                                                // if pasted/typed exceeds max, truncate
+                                                const truncated = plainText.substring(0, maxLength);
+                                                editor.setData(truncated);
+                                                setGroupDesc(truncated);
+                                                setIsGroupEdited(true);
+                                            }
                                         }}
                                         onReady={(editor) => {
                                             editor.editing.view.change((writer) => {
@@ -825,7 +869,7 @@ const ManageAttestationGroups = () => {
                                         </div>
                                     </div>
                                     <div>
-                                        <div className={style.labelStyle}>Attestation Group Members ({staffList?.filter(staff => selectedStaffs?.includes(staff.id))?.length})</div>
+                                        <div className={style.labelStyle}>Group Members ({staffList?.filter(staff => selectedStaffs?.includes(staff.id))?.length})</div>
                                         <div className={style.attestationGroupRightCard}>
                                             {staffList?.filter(staff => selectedStaffs?.includes(staff.id))?.map((data, index) => (
                                                 <div className={`${style.groupGrid} `} key={index}>
@@ -844,8 +888,12 @@ const ManageAttestationGroups = () => {
                             </div>
                             <div>
                                 <div className={`${style.spaceBetween} ${style.marginTop20}`}>
-                                    <button className={`${style.outlinedButton} `} onClick={() => handleGroupDialogClose()} >CANCEL</button>
-                                    <button className={`${style.buttonStyle} `} onClick={() => handleAddGroup()} >{groupById ? 'UPDATE' : 'ADD'}</button>
+                                    <Tooltip title="Click to Cancel" arrow>
+                                        <button className={`${style.outlinedButton} `} onClick={() => handleGroupDialogClose()} >CANCEL</button>
+                                    </Tooltip>
+                                    <Tooltip title={`Click to ${groupById ? 'Update' : 'Add'}`} arrow>
+                                        <button className={`${style.buttonStyle}   ${!isGroupEdited ? style.disabledView : ''}`} onClick={!isGroupEdited ? () => { } : () => handleAddGroup()} >{groupById ? 'UPDATE' : 'ADD'}</button>
+                                    </Tooltip>
                                 </div>
                             </div>
                         </div>

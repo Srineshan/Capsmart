@@ -53,6 +53,7 @@ const MDLibrary = () => {
     const [groupList, setGroupList] = useState([]);
     const [mdTitle, setMdTitle] = useState('');
     const [selectedDepartmentSpecialities, setSelectedDepartmentSpecialities] = useState('');
+    const selectedSite = sessionStorage.getItem('selectedSite') || ''
     const [selectedGroups, setSelectedGroups] = useState([]);
     const [selectedCombinations, setSelectedCombinations] = useState([]);
     const [selectedAuthor, setSelectedAuthor] = useState('');
@@ -151,6 +152,7 @@ const MDLibrary = () => {
             id: id,
             name: matchedStaff?.applicant?.name,
             email: matchedStaff?.applicant?.email,
+            sites: matchedStaff?.sites
         };
     });
 
@@ -273,7 +275,7 @@ const MDLibrary = () => {
         // setDashboardData(dashboardData?.medicalDirectives);
         // setTotalTableCount(dashboardData?.numberOfElements);
         let data = {
-            departmentSpecialties: [selectedDepartmentSpecialities !== "" ? selectedDepartmentSpecialities : departmentId],
+            siteDepartmentSpecialties: [selectedDepartmentSpecialities !== "" ? `${selectedSite}#${selectedDepartmentSpecialities}` : `${selectedSite}#${departmentId}`],
             searchText: searchTermForTable,
             mdID: mdId,
             title: mdTitle,
@@ -304,7 +306,7 @@ const MDLibrary = () => {
     }
 
     const getLibraryMeta = async () => {
-        let url = `medical-directive-service/medicalDirectives/library/meta?departmentSpecialties=${[selectedDepartmentSpecialities !== "" ? selectedDepartmentSpecialities : departmentId]}`
+        let url = `medical-directive-service/medicalDirectives/library/meta?siteDepartmentSpecialties=${[selectedDepartmentSpecialities !== "" ? `${selectedSite}%23${selectedDepartmentSpecialities?.replace(/#/g, "%23")}` : `${selectedSite}%23${departmentId}`]}`
         const response = await axios(`${baseUrl()}/${url}`, {
             method: "GET",
             headers: {
@@ -313,7 +315,7 @@ const MDLibrary = () => {
             },
         });
         setMdLibraryMeta(response?.data)
-        console.log(response?.data, 'withoutHeaders')
+        console.log(response?.data, 'withoutHeaders', selectedDepartmentSpecialities)
     }
 
     let title = [];
@@ -330,7 +332,7 @@ const MDLibrary = () => {
 
         dashboardData?.map((data, index) => {
             title.push(data?.title);
-            type.push(data?.revisionStatus === "NA" ? 'New' : 'Revised')
+            type.push(data?.creationType === "NEW" ? 'New' : 'Revised')
             mdID.push(data?.mdID);
             lastUpdated.push(data?.lastModifiedDate ? format(new Date(data?.lastModifiedDate), 'MMM dd, yyyy') : '-');
         })
@@ -387,6 +389,9 @@ const MDLibrary = () => {
                         alt=""
                         className={style.logo}
                     />
+                    {!showMD && (
+                        <div className={`${style.titleText} ${style.verticalAlignCenter} ${style.marginLeft20}`}>{`${departmentList?.filter(data => data?.id === (selectedDepartmentSpecialities !== "" ? selectedDepartmentSpecialities?.split('#')?.[0] : departmentId))?.[0]?.departmentName?.name} ${selectedDepartmentSpecialities?.split('#')?.length > 1 ? `/ ${departmentList?.filter(data => data?.id === (selectedDepartmentSpecialities !== "" ? selectedDepartmentSpecialities?.split('#')?.[0] : departmentId))?.[0]?.serviceAreas?.filter(innerData => innerData?.id === selectedDepartmentSpecialities?.split('#')?.[1])?.[0]?.name}` : ''} Medical Directives Library`}</div>
+                    )}
                     {showMD && (
                         <div className={`${style.titleText} ${style.verticalAlignCenter} ${style.marginLeft20}`}>{selectedMD?.title ? `${selectedMD?.mdID} : ${selectedMD?.title}` : ''}</div>
                     )}
@@ -407,9 +412,9 @@ const MDLibrary = () => {
                 <div className={style.screenBackground}>
                     <div className={style.mdlGrid}>
                         <div>
-                            <div className={style.departmentName}> {`${departmentList?.filter(data => data?.id === (selectedDepartmentSpecialities !== "" ? selectedDepartmentSpecialities?.split('#')?.[0] : departmentId))?.[0]?.departmentName?.name} ${selectedDepartmentSpecialities?.split('#')?.length > 1 ? `/ ${departmentList?.filter(data => data?.id === (selectedDepartmentSpecialities !== "" ? selectedDepartmentSpecialities?.split('#')?.[0] : departmentId))?.[0]?.serviceAreas?.filter(innerData => innerData?.id === selectedDepartmentSpecialities?.split('#')?.[1])?.[0]?.name}` : ''}`}</div>
-                            <div className={style.description}>You can readily access Medical Directives to review by clicking on any of the data widgets OR by searching the data base for the department. You also have access to the full Medical Directives Library through the access on the bottom right.</div>
-                            <div className={`${style.deptCardGrid} ${style.marginTop}`}>
+                            {/* <div className={style.departmentName}> {`${departmentList?.filter(data => data?.id === (selectedDepartmentSpecialities !== "" ? selectedDepartmentSpecialities?.split('#')?.[0] : departmentId))?.[0]?.departmentName?.name} ${selectedDepartmentSpecialities?.split('#')?.length > 1 ? `/ ${departmentList?.filter(data => data?.id === (selectedDepartmentSpecialities !== "" ? selectedDepartmentSpecialities?.split('#')?.[0] : departmentId))?.[0]?.serviceAreas?.filter(innerData => innerData?.id === selectedDepartmentSpecialities?.split('#')?.[1])?.[0]?.name}` : ''}`}</div> */}
+                            <div className={style.description}>Use the options below to quickly access Medical Directives for your Department / Division.</div>
+                            {/* <div className={`${style.deptCardGrid} ${style.marginTop}`}>
                                 <div className={`${style.verticalAlignCenter} ${style.cursorPointer}`} onClick={() => scroll('left')}>
                                     <KeyboardArrowLeftIcon sx={{ fontSize: '30px', color: "#06617A" }} />
                                 </div>
@@ -438,12 +443,12 @@ const MDLibrary = () => {
                                 <div className={`${style.verticalAlignCenter} ${style.cursorPointer}`} onClick={() => scroll('right')}>
                                     <KeyboardArrowRightIcon sx={{ fontSize: '30px', color: "#06617A" }} />
                                 </div>
-                            </div>
+                            </div> */}
                             <div className={`${style.mdCard} ${style.marginTop} ${style.searchGrid} ${style.cursorPointer}`} onClick={() => setShowList(true)}>
                                 <TextField
                                     size="small"
                                     variant="outlined"
-                                    placeholder={'Search By Medical Directive Title OR Key Words'}
+                                    placeholder={'Search By Medical Directive Title OR Key Words OR MD ID'}
                                     value={''}
                                     onChange={() => { }}
                                     fullWidth
@@ -464,10 +469,10 @@ const MDLibrary = () => {
                                         // ),
                                     }}
                                 />
-                                <div className={style.button}>Advanced Search</div>
+                                <div className={style.button}>Search</div>
                             </div>
                             <div className={`${style.mdCard} ${style.marginTop}`}>
-                                <div className={style.mdCardTitle}>{`Current Medical Directive status for {department name}`}</div>
+                                <div className={style.mdCardTitle}>{`Current Medical Directive revision status for ${departmentList?.filter(data => data?.id === (selectedDepartmentSpecialities !== "" ? selectedDepartmentSpecialities?.split('#')?.[0] : departmentId))?.[0]?.departmentName?.name} ${selectedDepartmentSpecialities?.split('#')?.length > 1 ? `/ ${departmentList?.filter(data => data?.id === (selectedDepartmentSpecialities !== "" ? selectedDepartmentSpecialities?.split('#')?.[0] : departmentId))?.[0]?.serviceAreas?.filter(innerData => innerData?.id === selectedDepartmentSpecialities?.split('#')?.[1])?.[0]?.name}` : ''} over the past 3 years`}</div>
                                 <div className={`${style.marginTop} ${style.mdTypeCardGrid}`}>
                                     <div className={`${style.mdTypeCard} ${style.cursorPointer}`} onClick={() => { setCreationType(''); setShowList(true) }}>
                                         <div className={style.cardTitle}>{`All Medical Directives`}</div>
@@ -497,8 +502,8 @@ const MDLibrary = () => {
                                 <div className={`${style.loginIconStyle} ${style.verticalAlignCenter} ${style.justifyCenter}`}>
                                     <PersonOutlineOutlinedIcon sx={{ fontSize: '30px', color: '#FFFFFF' }} />
                                 </div>
-                                <div className={`${style.mdlCardTitle} ${style.marginLeft10}`}>
-                                    Login
+                                <div className={`${style.mdlCardTitleLogin} ${style.marginLeft10}`}>
+                                    Department Staff Login For Attestation Status
                                 </div>
                             </div>
                         </div>
@@ -741,7 +746,7 @@ const MDLibrary = () => {
                                         actions={[]}
                                         // scrollStyle={style.contractScrollStyle}
                                         tableSortValues={[]}
-                                        heading={"There are no Record for you to manage"}
+                                        heading={creationType === "NEW" ? "There are no new Medical Directives" : 'There are no revised Medical Directives'}
                                         onClickFunction={() => { }}
                                         hidePagination={false}
                                         getSelectedPage={getSelectedPage}

@@ -97,7 +97,11 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
         staffReappointmentStatusSummary: 'Staff Reappointment Status Summary',
         locumRenewalOrExtensionApplicationsSummary: 'Locum Renewal / Extension Applications Summary',
         careProviderCareerMilestoneSummary: 'Care Providers Career Milestone Summary',
-        declinedOrNotRenewedStaffSummary: 'Declined Or Not Renewed Staff Summary'
+        declinedOrNotRenewedStaffSummary: 'Declined Or Not Renewed Staff Summary',
+        currentMedicalDirectives: 'Current Medical Directives',
+        retiredMedicalDirectives: 'Retired Medical Directives',
+        workflow: 'Medical Directives Workflow',
+        attestationOutstanding: 'Medical Directives Attestation Outstanding'
     }
 
     const availableCategories = {
@@ -125,7 +129,11 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
         staffReappointmentStatusSummary: 'STAFF_REAPPOINTMENT',
         locumRenewalOrExtensionApplicationsSummary: 'LOCUM_EXTENSION_OR_RENEWAL',
         careProviderCareerMilestoneSummary: 'PERMANENT_STAFF',
-        declinedOrNotRenewedStaffSummary: 'LOCUM_EXTENSION_OR_RENEWAL'
+        declinedOrNotRenewedStaffSummary: 'LOCUM_EXTENSION_OR_RENEWAL',
+        currentMedicalDirectives: 'CURRENT_MEDICAL_DIRECTIVES',
+        retiredMedicalDirectives: 'RETIRED_MEDICAL_DIRECTIVES',
+        workflow: 'WORKFLOW',
+        attestationOutstanding: 'ATTESTATION_OUTSTANDING'
     }
 
     const typeList = {
@@ -552,13 +560,13 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                     <div className={style.spaceBetween}>
                         <p className={`${style.extensionStyle} ${style.marginTop} ${style.bold}`}>Save This Report Output</p>
                         <Tooltip title="Click to Close" arrow>
-                        {/* <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => setShowSaveReportOutput(false)} /> */}
-                             <img
+                            {/* <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => setShowSaveReportOutput(false)} /> */}
+                            <img
                                 src={CrossPink}
                                 alt="cross"
                                 className={`${style.crossStyleSave} ${style.cursorPointer} ${style.marginLeft}`}
                                 onClick={() => setShowSaveReportOutput(false)}
-                                />
+                            />
                         </Tooltip>
                     </div>
                     <div className={style.extensionBorder}></div>
@@ -576,8 +584,8 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                             </div>
                             <div>
                                 <div className={`${style.justifyCenter} ${style.marginTop20}`}>
-                                     <Tooltip title="Click to Save" arrow>
-                                    <button className={`${style.saveButtonStyle} ${style.marginLeft20} ${style.cursorPointer} `} onClick={() => { handleDownload(); }}>Save</button>
+                                    <Tooltip title="Click to Save" arrow>
+                                        <button className={`${style.saveButtonStyle} ${style.marginLeft20} ${style.cursorPointer} `} onClick={() => { handleDownload(); }}>Save</button>
                                     </Tooltip>
                                 </div>
                             </div>
@@ -588,17 +596,17 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
             <Dialog isOpen={showReportSavedDialog} onClose={() => setShowReportSavedDialog(false)} className={`${style.dialogPaddingBottom}`}>
                 <div className={`${Classes.DIALOG_BODY} ${style.deleteEcecutedContractDialogBackgroundSave}`}>
                     <div className={style.justifyEnd}>
-                     <Tooltip title="Click to Close" arrow>
-                        <img
-                        src={CrossPink}
-                        alt="cross"
-                        className={`${style.crossStyleSave} ${style.cursorPointer} ${style.marginLeft}`}
-                        onClick={() => {
-                            setShowReportSavedDialog(false);
-                        }}
-                        />
+                        <Tooltip title="Click to Close" arrow>
+                            <img
+                                src={CrossPink}
+                                alt="cross"
+                                className={`${style.crossStyleSave} ${style.cursorPointer} ${style.marginLeft}`}
+                                onClick={() => {
+                                    setShowReportSavedDialog(false);
+                                }}
+                            />
                         </Tooltip>
-                        </div>
+                    </div>
                     {/* <div className={style.justifyCenter}>
                         <div className={style.reportIconStyle}></div>
                     </div> */}

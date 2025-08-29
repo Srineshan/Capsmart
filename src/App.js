@@ -798,6 +798,7 @@ const App = ({ props }) => {
     await axios(`${baseUrl()}/entity-service/entityID`, requestHeader)
       .then((response) => {
         if (response?.data?.id) {
+          console.log(response?.data, 'login route')
           isHapicareUser = response?.data?.masterEntity;
           sessionStorage.setItem('masterEntity', response?.data?.masterEntity)
           cookie.set("entityId", response?.data?.id, {
@@ -921,8 +922,11 @@ const App = ({ props }) => {
     const fetchData = () => {
       console.log('login route', Auth())
       const initialRoute = localStorage.getItem("initialRoute");
-      if (Auth()) {
-        console.log('login route', isHapicareUser, organizations)
+      isHapicareUser = isHapicareUser !== undefined ? isHapicareUser : sessionStorage.getItem('masterEntity') === 'true' ? true : sessionStorage.getItem('masterEntity') === 'false' ? false : undefined;
+      organizations = organizations ? organizations : sessionStorage.getItem('organizations') ? JSON.parse(sessionStorage.getItem('organizations')) : []
+      if (Auth() && isHapicareUser !== undefined) {
+        console.log('login route', isHapicareUser, organizations, jwt(Auth())?.id)
+        sessionStorage.setItem('userId', jwt(Auth())?.id)
         if (isHapicareUser && organizations?.length > 1) {
           setShowDialog(true);
         } else if (isHapicareUser) {
@@ -957,7 +961,11 @@ const App = ({ props }) => {
           if (mdRoles?.length === 1) {
             console.log("LoginRole", roles, mdRoles[0])
             sessionStorage.setItem("workModeType", mdRoles[0]);
-            window.location.pathname = "/mdManager";
+            if (mdRoles[0] === "Attester") {
+              window.location.pathname = "/mdManager/manageAttestation";
+            } else {
+              window.location.pathname = "/mdManager";
+            }
           } else {
             sessionStorage.setItem("workModeType", roles[0]);
             let isAppUser =
@@ -1029,8 +1037,7 @@ const App = ({ props }) => {
         window.location.pathname = "/loginPage";
       }
     }
-    if (!Auth()) {
-      console.log('login route', isHapicareUser, organizations, sessionStorage.getItem('organizations') ? JSON.parse(sessionStorage.getItem('organizations')) : [])
+    if (!Auth() || isHapicareUser === undefined) {
       setTimeout(() => {
         fetchData();
       }, 2000);

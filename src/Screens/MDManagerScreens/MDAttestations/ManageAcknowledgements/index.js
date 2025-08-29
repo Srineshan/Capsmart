@@ -35,7 +35,7 @@ const ManageAcknowledgement = () => {
     const componentRef = useRef(null);
     const [sortField, setSortField] = useState('TITLE');
     const [sortValue, setSortValue] = useState('ASCENDING');
-    let loggedInUser = sessionStorage.getItem('user') ? JSON.parse(sessionStorage.getItem('user')) : {};
+    const [loggedInUser, setLoggedInUser] = useState(null);
     const reactToPrintContent = useCallback(() => {
         return componentRef.current;
     }, [componentRef.current]);
@@ -113,8 +113,19 @@ const ManageAcknowledgement = () => {
     }, [selectedOptionValue]);
 
     useEffect(() => {
-        loggedInUser = sessionStorage.getItem('user') ? JSON.parse(sessionStorage.getItem('user')) : {}
-    }, [sessionStorage.getItem('user')])
+        const interval = setInterval(() => {
+            const stored = sessionStorage.getItem("userId");
+            if (stored) {
+                const parsed = stored;
+                if (parsed) {
+                    setLoggedInUser(parsed);
+                    clearInterval(interval); // stop once found
+                }
+            }
+        }, 500);
+
+        return () => clearInterval(interval);
+    }, []);
 
     useEffect(() => {
         if (selectedOption === "pending" && attestationList?.length > 0 && userData) {
@@ -143,21 +154,21 @@ const ManageAcknowledgement = () => {
     }, []);
 
     useEffect(() => {
-        if (loggedInUser?.id) {
+        if (loggedInUser) {
             getAttestationMetaList();
         }
-    }, []);
+    }, [loggedInUser]);
 
     useEffect(() => {
         const controller = new AbortController();
         const signal = controller.signal;
         console.log(loggedInUser)
-        if (loggedInUser?.id) {
+        if (loggedInUser) {
             getAttestationList(signal);
         }
 
         return () => controller.abort();
-    }, [selectedOption, sortField, sortValue]);
+    }, [selectedOption, sortField, sortValue, loggedInUser]);
 
     // useEffect(() => {
     //     if (entityId !== "" && entityId !== undefined) {
@@ -298,7 +309,7 @@ const ManageAcknowledgement = () => {
     }
 
     const getAttestationMetaList = async () => {
-        const response = await GET(`medical-directive-service/medicalDirectives/signOff/meta?assignedUserIds=${loggedInUser?.id}&role=${sessionStorage.getItem('workModeType')}&noOfDays=${30}`);
+        const response = await GET(`medical-directive-service/medicalDirectives/signOff/meta?assignedUserIds=${loggedInUser}&role=${sessionStorage.getItem('workModeType')}&noOfDays=${30}`);
         console.log(response.data);
         setAttestationMeta(response?.data)
     }
@@ -309,9 +320,9 @@ const ManageAcknowledgement = () => {
         // );
         let url = '';
         if (selectedOption === 'completed') {
-            url = `medical-directive-service/medicalDirectives/signOff?tab=level-1&role=${sessionStorage.getItem('workModeType')}&assignedUserIds=${loggedInUser?.id}&status=${selectedOption}&noOfDays=${30}&sortBy=${sortValue}&sortByField=${sortField}`
+            url = `medical-directive-service/medicalDirectives/signOff?tab=level-1&role=${sessionStorage.getItem('workModeType')}&assignedUserIds=${loggedInUser}&status=${selectedOption}&noOfDays=${30}&sortBy=${sortValue}&sortByField=${sortField}`
         } else {
-            url = `medical-directive-service/medicalDirectives/signOff?tab=level-1&role=${sessionStorage.getItem('workModeType')}&assignedUserIds=${loggedInUser?.id}&status=${selectedOption}&sortBy=${sortValue}&sortByField=${sortField}`
+            url = `medical-directive-service/medicalDirectives/signOff?tab=level-1&role=${sessionStorage.getItem('workModeType')}&assignedUserIds=${loggedInUser}&status=${selectedOption}&sortBy=${sortValue}&sortByField=${sortField}`
         }
         const response = await GET(url, { signal });
         console.log(response.data);
@@ -391,16 +402,16 @@ const ManageAcknowledgement = () => {
 
 
     const reviewAndAttestHeaderValues = [
-        <CommonCheckBox
-            size="medium"
-            checked={checkedIds?.length === attestationList?.length}
-            onChange={handleSelectAllClick}
-        />,
+        // <CommonCheckBox
+        //     size="medium"
+        //     checked={checkedIds?.length === attestationList?.length}
+        //     onChange={handleSelectAllClick}
+        // />,
         "",
         "Title",
         "MD ID",
         "Type",
-        "Attestation Due Date",
+        "Due Date",
         "Last Updated",
         ""
     ];
@@ -408,11 +419,11 @@ const ManageAcknowledgement = () => {
         "Title",
         "MD ID",
         "Type",
-        "Last Attestation Date",
+        "Acknowledged Date",
     ];
 
     const reviewAndAttestSortValues = [
-        false,
+        // false,
         false,
         true,
         true,
@@ -468,13 +479,13 @@ const ManageAcknowledgement = () => {
             id.push(data?.medicalDirective?.mdID);
             type.push(data?.medicalDirective?.revisionStatus === "NA" ? 'New' : "Revised");
             dueDate.push(data?.dueDate);
-            attestedDate.push(data?.attestationLog?.createdDate ? format(new Date(data?.attestationLog?.createdDate), 'MMM dd, yyyy') : '-');
+            attestedDate.push(data?.logs?.[0]?.createdDate ? format(new Date(data?.logs?.[0]?.createdDate), 'MMM dd, yyyy') : '-');
             lastUpdated.push(data?.medicalDirective?.lastModifiedDate ? format(new Date(data?.medicalDirective?.lastModifiedDate), 'MMM dd, yyyy') : '-');
-            signImg.push(<img src={BlueSign} alt="" className={`${style.blueSignImgStyle} ${style.cursorPointer}`} onClick={() => handleEdit(data)} />);
+            signImg.push(<Tooltip title="Click to Review & Acknowledge" arrow><img src={BlueSign} alt="" className={`${style.blueSignImgStyle} ${style.cursorPointer}`} onClick={() => handleEdit(data)} /></Tooltip>);
         });
 
         return selectedOption === "pending" ? [
-            { type: "checkbox", value: checkbox },
+            // { type: "checkbox", value: checkbox },
             { type: "dot", value: title },
             { type: "text", value: title },
             { type: "text", value: id },
@@ -770,10 +781,10 @@ const ManageAcknowledgement = () => {
                             className={`${style.spaceBetween} ${style.marginLeft30} ${style.marginTop20} `}
                         >
                             <div className={`${style.tabs}`}>
-                                <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Review & Attest" tileCount={attestationMeta?.['level-1']?.pending} currentTile="pending" />
-                                <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Attested" tileCount={attestationMeta?.['level-1']?.completed} currentTile="completed" />
+                                <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Review & Acknowledge" tileCount={attestationMeta?.['level-1']?.pending} currentTile="pending" />
+                                <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Reviewed" tileCount={attestationMeta?.['level-1']?.completed} currentTile="completed" />
                             </div>
-                            <div>
+                            {/* <div>
                                 <button
                                     className={`${style.borderNone} ${style.backgroundBlue} ${style.borderRadius5} ${style.cursorPointer} ${checkedIds?.length === 0 ? style.disabled : ''}`}
                                     onClick={checkedIds?.length === 0 ? () => { } : () => setShowReviewAndAttestDialog(true)} // Open dialog on button click
@@ -783,7 +794,7 @@ const ManageAcknowledgement = () => {
                                         <span>Review & Attest</span>
                                     </div>
                                 </button>
-                            </div>
+                            </div> */}
                         </div>
                         <div className={`${style.bigCardStyle}`}>
                             <div ref={componentRef} className={style.marginTop20}>
@@ -794,7 +805,7 @@ const ManageAcknowledgement = () => {
                                         tableData={attestationList}
                                         gridStyle={selectedOption === 'pending' ? style.reviewAndAttestGrid : style.attestedGrid}
                                         // actions={actionsData}
-                                        // scrollStyle={style.contractScrollStyle}
+                                        scrollStyle={style.scrollStyle}
                                         tableSortValues={tableSortValues}
                                         getHandleSort={getHandleSort}
                                         sortValue={{ sortBy: sortValue, sortByField: sortField }}

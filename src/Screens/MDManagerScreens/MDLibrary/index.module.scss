@@ -2,7 +2,7 @@
 
 .navbarStyle {
     background: #FFFFFF 0% 0% no-repeat padding-box;
-    height: 60px;
+    height: 80px;
     padding: 0 80px;
 }
 
@@ -37,7 +37,7 @@
     top: 10px;
     left: 22px;
     width: auto;
-    height: 40px;
+    height: 60px;
     object-fit: contain;
     margin-right: 40px;
 }
@@ -178,6 +178,12 @@
     color: $primarycolor;
 }
 
+.mdlCardTitleLogin {
+    text-align: left;
+    font: normal normal bold 16px/25px proxima-nova;
+    color: $primarycolor;
+}
+
 .mdlLogo {
     width: 60px;
     height: auto;
@@ -186,7 +192,7 @@
 
 .loginIconStyle {
     height: 40px;
-    width: 40px;
+    width: 60px;
     border-radius: 50%;
     background-color: $primarycolor;
 }

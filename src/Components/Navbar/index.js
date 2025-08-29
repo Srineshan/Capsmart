@@ -73,12 +73,15 @@ const Navbar = () => {
   const [anchorElTools, setAnchorElTools] = useState(null);
   const [anchorElGuide, setAnchorElGuide] = useState(null);
   const [openPrivileged, setOpenPrivileged] = useState(null);
+  const [anchorElSettings, setAnchorElSettings] = useState(null);
   const openTools = Boolean(anchorElTools);
   const openGuide = Boolean(anchorElGuide);
   const openStaff = Boolean(openPrivileged);
+  const openSettings = Boolean(anchorElSettings);
   const popoverAnchorStaff = useRef(null);
   const popoverAnchorTools = useRef(null);
   const popoverAnchorGuide = useRef(null);
+  const popoverAnchorSettings = useRef(null);
   const [hospitalLogo, setHospitalLogo] = useState(null);
   const [logo, setLogo] = useState(sessionStorage?.getItem("logo"));
   const [isActivityServiceLogAvailable, setIsActivityServiceLogAvailable] =
@@ -282,6 +285,10 @@ const Navbar = () => {
     setOpenPrivileged(event.currentTarget);
   };
 
+  const handleClickSettings = (event) => {
+    setAnchorElSettings(event.currentTarget);
+  };
+
   const handleCloseTools = () => {
     setAnchorElTools(null);
   };
@@ -292,6 +299,10 @@ const Navbar = () => {
 
   const handleCloseStaff = () => {
     setOpenPrivileged(null);
+  };
+
+  const handleCloseSettings = () => {
+    setAnchorElSettings(null);
   };
 
   const sendEmail = (email) => {
@@ -437,7 +448,7 @@ const Navbar = () => {
     window.location.pathname = "/"
     sessionStorage.setItem('applicationCreationType', 'REAPPOINTMENT');
   };
-  // console.log(selectedWorkingMode);
+  console.log(currentUserDetails, 'currentUserDetails');
 
   return (
     <div className={style.navbarStyle}>
@@ -469,34 +480,8 @@ const Navbar = () => {
               </Tooltip>
             )}
           </div>
-          {/* <div
-            className={`${style.menuStyle} ${window.location.pathname.includes(homeLink) && !window.location.pathname.includes('contractsWithABusinessEntity') &&
-              style.activeMenuColor
-              }`}
-            onClick={homeRoute}
-          >
-            <p>HOME - {(selectedWorkingMode !== null && selectedWorkingMode !== '' && selectedWorkingMode !== undefined) ? selectedWorkingMode : currentUserRoles?.[0]?.toUpperCase()}</p>
-          </div> */}
 
-          {
-            //   isContractManager && (
-            //     <Link to={'/contracts'} className={style.noFontStyle}>
-            //         <div className={`${style.menuStyle} ${window.location.pathname === "/contracts" && style.activeMenuColor}`}>
-            //             <p>CONTRACT MANAGER</p>
-            //         </div>
-            //     </Link>
-            // )
-          }
-          {/* {
-            isContractManager && (
-              <Link to={'/staffs'} className={style.noFontStyle}>
-                <div className={`${style.menuStyle} ${window.location.pathname.includes("/staffs") && style.activeMenuColor}`}>
-                  <p>MANAGER WORKSPACE</p>
-                </div>
-              </Link>
-            )
-          } */}
-          {!window.location.pathname?.includes('mdManager') ? (
+          {(!window.location.pathname?.includes('mdManager') && !window.location.pathname?.includes('medicalDirectives')) ? (
             <>
               {workModeType !== "Entity Sys Admin" && (
                 <Link to={"/applications"} onClick={() => sessionStorage.setItem('applicationCreationType', 'REAPPOINTMENT')} className={style.noFontStyle}>
@@ -898,14 +883,14 @@ const Navbar = () => {
             </>
           ) : (
             <>
-              {workModeType === "MD Recordkeeper" ? (
+              {workModeType === "MD Librarian" ? (
                 <Link to={"/mdManager"} className={style.noFontStyle}>
                   <div
                     className={`${style.menuStyle} ${(window.location.pathname.includes("/mdManager") && window.location.pathname === "/mdManager") &&
                       style.activeMenuColor
                       }`}
                   >
-                    <p>MEDICAL DIRECTIVES</p>
+                    <p>MEDICAL DIRECTIVES (MD)</p>
                   </div>
                 </Link>
               ) : (
@@ -919,7 +904,16 @@ const Navbar = () => {
                   </div>
                 </Link>
               )}
-              <div
+              <Link to={"/mdManager/manageAttestation"} className={style.noFontStyle}>
+                <div
+                  className={`${style.menuStyle} ${(window.location.pathname.includes("/manageAttestation") && !window.location.pathname.includes("/manageAttestationGroups")) &&
+                    style.activeMenuColor
+                    }`}
+                >
+                  <p>ATTESTATIONS</p>
+                </div>
+              </Link>
+              {/* <div
                 ref={popoverAnchorStaff}
                 onMouseEnter={(e) => handleClickStaff(e)}
                 onMouseLeave={() => handleCloseStaff()}
@@ -954,7 +948,6 @@ const Navbar = () => {
                   }}
                 >
                   <div className={style.helpCardStyle}>
-                    {/* {workModeType === "Department Head" || workModeType === "Credentialing Committee" ? ( */}
                     <Link
                       className={style.noFontStyle1}
                       to={"/mdManager/manageAttestationGroups"}
@@ -964,8 +957,6 @@ const Navbar = () => {
                       >
                         Manage Attestation Groups</div>
                     </Link>
-
-                    {/* ) : ""} */}
                     <Link
                       className={style.noFontStyle1}
                       to={"/mdManager/manageAttestation"}
@@ -974,7 +965,7 @@ const Navbar = () => {
                     </Link>
                   </div>
                 </Popover>
-              </div>
+              </div> */}
               {workModeType === "Acknowledger" && (
                 <Link to={"/mdManager/manageAcknowledgement"} className={style.noFontStyle}>
                   <div
@@ -997,150 +988,162 @@ const Navbar = () => {
                   </div>
                 </Link>
               )}
-              <div>
-                <div
-                  className={`${style.menuStyle} ${(window.location.pathname.includes("/reports") ||
-                    window.location.pathname.includes("/reportTypeOverview") ||
-                    window.location.pathname.includes("/myReport")) &&
-                    style.activeMenuColor
-                    }`}
-                  ref={popoverAnchor}
-                  onMouseEnter={(e) => handleClick(e)}
-                  onMouseLeave={() => handleClose()}
-                  aria-owns={open ? "mouse-over-popover" : undefined}
-                  aria-haspopup="true"
-                >
-                  <p>REPORTS</p>
-                  <Popover
-                    id={"mouse-over-popover"}
-                    open={open}
-                    anchorEl={popoverAnchor.current}
-                    onClose={handleClose}
-                    anchorOrigin={{
-                      vertical: "bottom",
-                      horizontal: "left",
-                    }}
-                    classes={{
-                      paper: classes.popoverContent,
-                    }}
-                    PaperProps={{
-                      onMouseEnter: handleClick,
-                      onMouseLeave: handleClose,
-                    }}
+              {!window.location.pathname?.includes('mdManager') ? (
+                <div>
+                  <div
+                    className={`${style.menuStyle} ${(window.location.pathname.includes("/reports") ||
+                      window.location.pathname.includes("/reportTypeOverview") ||
+                      window.location.pathname.includes("/myReport")) &&
+                      style.activeMenuColor
+                      }`}
+                    ref={popoverAnchor}
+                    onMouseEnter={(e) => handleClick(e)}
+                    onMouseLeave={() => handleClose()}
+                    aria-owns={open ? "mouse-over-popover" : undefined}
+                    aria-haspopup="true"
                   >
-                    <div
-                      className={style.optionsCardStyle}
-                      onClick={() => handleClose()}
+                    <p>REPORTS</p>
+                    <Popover
+                      id={"mouse-over-popover"}
+                      open={open}
+                      anchorEl={popoverAnchor.current}
+                      onClose={handleClose}
+                      anchorOrigin={{
+                        vertical: "bottom",
+                        horizontal: "left",
+                      }}
+                      classes={{
+                        paper: classes.popoverContent,
+                      }}
+                      PaperProps={{
+                        onMouseEnter: handleClick,
+                        onMouseLeave: handleClose,
+                      }}
                     >
-                      <Link
-                        to={""}
-                        className={style.noFontStyle}
+                      <div
+                        className={style.optionsCardStyle}
+                        onClick={() => handleClose()}
                       >
-                        <div className={`${style.dropdownContainer}`}>
-                          <div className={style.menuWidth}>
-                            <div className={style.spaceBetween}>
-                              <div className={`${style.dropdownItem}`}>Privileged Staff</div>
-                              <div className={style.marginTopAuto}>
-                                {showAllStaffMenu ? (
-                                  <RemoveIcon
-                                    sx={{ fontSize: 20, color: "#F5F9FD", cursor: "pointer", marginRight: '10px' }}
-                                    onClick={() =>
-                                      setShowAllStaffMenu(false)
-                                    } />
-                                ) : (
-                                  <AddIcon
-                                    sx={{ fontSize: 20, color: "#F5F9FD", cursor: "pointer", marginRight: '10px' }}
-                                    onClick={() =>
-                                      setShowAllStaffMenu(true)
-                                    } />
-                                )}
+                        <Link
+                          to={""}
+                          className={style.noFontStyle}
+                        >
+                          <div className={`${style.dropdownContainer}`}>
+                            <div className={style.menuWidth}>
+                              <div className={style.spaceBetween}>
+                                <div className={`${style.dropdownItem}`}>Privileged Staff</div>
+                                <div className={style.marginTopAuto}>
+                                  {showAllStaffMenu ? (
+                                    <RemoveIcon
+                                      sx={{ fontSize: 20, color: "#F5F9FD", cursor: "pointer", marginRight: '10px' }}
+                                      onClick={() =>
+                                        setShowAllStaffMenu(false)
+                                      } />
+                                  ) : (
+                                    <AddIcon
+                                      sx={{ fontSize: 20, color: "#F5F9FD", cursor: "pointer", marginRight: '10px' }}
+                                      onClick={() =>
+                                        setShowAllStaffMenu(true)
+                                      } />
+                                  )}
+                                </div>
                               </div>
                             </div>
-                          </div>
-                          {showAllStaffMenu && (
-                            <>
-                              <Link
-                                to={"/reports/allStaffMembers"}
-                                className={style.noFontStyle}
-                              >
-                                <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`}>All Staff Members</div>
-                              </Link>
-                              <Link
-                                to={"/reports/permanentStaff"}
-                                className={style.noFontStyle}
-                              >
-                                <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`}>Permanent Staff</div>
-                              </Link>
-                              <Link
-                                to={"/reports/locumStaff"}
-                                className={style.noFontStyle}
-                              >
-                                <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`}>Locum Staff</div>
-                              </Link>
-                            </>
-                          )}
-                          <div className={style.menuDivider}></div>
-                          <div>
-                            <div className={style.spaceBetween}>
-                              <div className={`${style.dropdownItem}`}>Staff Applications</div>
-                              <div className={style.marginTopAuto}>
-                                {showStaffApplicationMenu ? (
-                                  <RemoveIcon
-                                    sx={{ fontSize: 20, color: "#F5F9FD", cursor: "pointer", marginRight: '10px' }}
-                                    onClick={() =>
-                                      setShowStaffApplicationMenu(false)
-                                    } />
-                                ) : (
-                                  <AddIcon
-                                    sx={{ fontSize: 20, color: "#F5F9FD", cursor: "pointer", marginRight: '10px' }}
-                                    onClick={() =>
-                                      setShowStaffApplicationMenu(true)
-                                    } />
-                                )}
+                            {showAllStaffMenu && (
+                              <>
+                                <Link
+                                  to={"/reports/allStaffMembers"}
+                                  className={style.noFontStyle}
+                                >
+                                  <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`}>All Staff Members</div>
+                                </Link>
+                                <Link
+                                  to={"/reports/permanentStaff"}
+                                  className={style.noFontStyle}
+                                >
+                                  <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`}>Permanent Staff</div>
+                                </Link>
+                                <Link
+                                  to={"/reports/locumStaff"}
+                                  className={style.noFontStyle}
+                                >
+                                  <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`}>Locum Staff</div>
+                                </Link>
+                              </>
+                            )}
+                            <div className={style.menuDivider}></div>
+                            <div>
+                              <div className={style.spaceBetween}>
+                                <div className={`${style.dropdownItem}`}>Staff Applications</div>
+                                <div className={style.marginTopAuto}>
+                                  {showStaffApplicationMenu ? (
+                                    <RemoveIcon
+                                      sx={{ fontSize: 20, color: "#F5F9FD", cursor: "pointer", marginRight: '10px' }}
+                                      onClick={() =>
+                                        setShowStaffApplicationMenu(false)
+                                      } />
+                                  ) : (
+                                    <AddIcon
+                                      sx={{ fontSize: 20, color: "#F5F9FD", cursor: "pointer", marginRight: '10px' }}
+                                      onClick={() =>
+                                        setShowStaffApplicationMenu(true)
+                                      } />
+                                  )}
+                                </div>
                               </div>
                             </div>
-                          </div>
-                          {showStaffApplicationMenu && (
-                            <>
-                              <Link
-                                to={"/reports/allApplications"}
-                                className={style.noFontStyle}
-                              >
-                                <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`}>All Applications</div>
-                              </Link>
-                              <Link
-                                to={"/reports/newApplicants"}
-                                className={style.noFontStyle}
-                              >
-                                <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`}>New Applicants</div>
-                              </Link>
-                              <Link
-                                to={"/reports/staffReappointments"}
-                                className={style.noFontStyle}
-                              >
-                                <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`}>Reappointments</div>
-                              </Link>
-                              <Link
-                                to={"/reports/locumExtensionOrRenewal"}
-                                className={style.noFontStyle}
-                              >
-                                <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`}>Locum Extension / Renewals</div>
-                              </Link>
-                            </>
-                          )}
-                          {/* <div className={`${style.dropdownItem}`}>System Administration</div>
+                            {showStaffApplicationMenu && (
+                              <>
+                                <Link
+                                  to={"/reports/allApplications"}
+                                  className={style.noFontStyle}
+                                >
+                                  <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`}>All Applications</div>
+                                </Link>
+                                <Link
+                                  to={"/reports/newApplicants"}
+                                  className={style.noFontStyle}
+                                >
+                                  <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`}>New Applicants</div>
+                                </Link>
+                                <Link
+                                  to={"/reports/staffReappointments"}
+                                  className={style.noFontStyle}
+                                >
+                                  <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`}>Reappointments</div>
+                                </Link>
+                                <Link
+                                  to={"/reports/locumExtensionOrRenewal"}
+                                  className={style.noFontStyle}
+                                >
+                                  <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`}>Locum Extension / Renewals</div>
+                                </Link>
+                              </>
+                            )}
+                            {/* <div className={`${style.dropdownItem}`}>System Administration</div>
                       <Link
                         to={"/reports/savedReportsArchive"}
                         className={style.noFontStyle}
                       >
                         <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`}>Saved Reports Archive</div>
                       </Link> */}
-                        </div>
-                      </Link>
-                    </div>
-                  </Popover>
+                          </div>
+                        </Link>
+                      </div>
+                    </Popover>
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <Link to={"/reports/medicalDirectives"} onClick={() => sessionStorage.setItem('applicationCreationType', 'REAPPOINTMENT')} className={style.noFontStyle}>
+                  <div
+                    className={`${style.menuStyle} ${window.location.pathname.includes("/applications") &&
+                      style.activeMenuColor
+                      }`}
+                  >
+                    <p>REPORTS</p>
+                  </div>
+                </Link>
+              )}
               <Link to={"/mdManager/retired"} className={style.noFontStyle}>
                 <div
                   className={`${style.menuStyle} ${(window.location.pathname.includes("/retired")) &&
@@ -1154,7 +1157,7 @@ const Navbar = () => {
           )}
         </div>
 
-        <div className={`${style.displayInRow} ${style.centerAlignCenter}`}>
+        <div className={`${style.displayInRow} ${style.centerAlignCenter} ${style.marginRight}`}>
           {/* <Tooltip title={"Go to Your Profile Page"} arrow>
             <Link to={'/profile'} > */}
           <div
@@ -1204,7 +1207,7 @@ const Navbar = () => {
                     ? format(new Date(currentUserDetails?.lastLogin), `${dateFormat}, HH:mm a`)
                     : '-'}
                 </div>
-                {currentUserDetails?.roles?.length > 1 && (
+                {((currentUserDetails?.roles?.map(data => data?.roleName)?.includes(workModeType) ? currentUserDetails?.roles?.length > 1 : currentUserDetails?.mdRoles?.length > 1) || (currentUserDetails?.mdRoles?.length >= 1 && currentUserDetails?.roles?.length >= 1)) && (
                   <Tooltip title={"Click to Switch Workspace"} arrow>
                     <div
                       className={`${style.buttonBackgroundStyle} ${style.marginTop10} ${style.cursorPointer}`}
@@ -1230,8 +1233,71 @@ const Navbar = () => {
           <img src={NotificationsIcon} alt="print" className={style.icons} />
           <img src={RedBackground} alt="print" className={style.notificationIcon} />
           <img src={NotificationCount} alt="print" className={style.notificationCount} /> */}
-          <div className={`${style.centerAlign} ${style.iconSize}`}><SettingsOutlinedIcon fontSize="small" /></div>
           {/* <div className={`${style.centerAlign} ${style.iconSize}`}><HelpOutlineOutlinedIcon fontSize="large" /></div> */}
+          {workModeType === "MD Librarian" && (
+            <div
+              ref={popoverAnchorSettings}
+              onMouseEnter={(e) => handleClickSettings(e)}
+              onMouseLeave={() => handleCloseSettings()}
+              aria-owns={openStaff ? "mouse-over-popover" : undefined}
+              aria-haspopup="true"
+            >
+              <div className={`${style.centerAlign} ${style.iconSize}`}><SettingsOutlinedIcon fontSize="small" /></div>
+              <Popover
+                id={"mouse-over-popover"}
+                open={openSettings}
+                anchorEl={popoverAnchorSettings.current}
+                onClose={handleCloseSettings}
+                anchorOrigin={{
+                  vertical: "bottom",
+                  horizontal: "center",
+                }}
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "center",
+                }}
+                classes={{
+                  paper: classes.popoverContent,
+                }}
+                PaperProps={{
+                  style: { width: "200px" },
+                  onMouseEnter: handleClickSettings,
+                  onMouseLeave: handleCloseSettings,
+                }}
+              >
+                <div className={style.helpCardStyle}>
+                  <Link
+                    className={style.noFontStyle1}
+                    to={"/mdManager/manageAttestationGroups"}
+                  >
+                    <div className={`${style.options1} ${style.cursorPointer} ${window.location.pathname.includes("/activeStaff")
+                      }`} onClick={() => sessionStorage.setItem('groupType', 'ATTESTATION')}
+                    >
+                      Manage Attestation Groups</div>
+                  </Link>
+                  <Link
+                    className={style.noFontStyle1}
+                    to={"/mdManager/manageAttestationGroups"}
+                  >
+                    <div className={`${style.options1} ${style.cursorPointer} ${window.location.pathname.includes("/activeStaff")
+                      }`} onClick={() => sessionStorage.setItem('groupType', 'ACKNOWLEDGEMENT')}
+                    >
+                      Manage Acknowledgement Groups</div>
+                  </Link>
+                  <Link
+                    className={style.noFontStyle1}
+                    to={"/mdManager/manageAttestationGroups"}
+                  >
+                    <div className={`${style.options1} ${style.cursorPointer} ${window.location.pathname.includes("/activeStaff")
+                      }`} onClick={() => sessionStorage.setItem('groupType', 'SIGN_OFF')}
+                    >
+                      Manage Sign Off Groups</div>
+                  </Link>
+
+                </div>
+              </Popover>
+            </div>
+          )}
           <div
             ref={popoverAnchorGuide}
             onMouseEnter={(e) => handleClickGuide(e)}
