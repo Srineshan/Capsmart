@@ -99,6 +99,14 @@ const WorkModeDialog = ({ getIsOpen }) => {
     }
   }, [selectedWorkSpace]);
 
+  useEffect(() => {
+    if (userRole?.length === 0 && userMDRole?.length !== 0 && userMDRole && userRole) {
+      setSelectedWorkSpace('MD_MANAGER')
+    } else if (userRole?.length !== 0 && userMDRole?.length === 0 && userMDRole && userRole) {
+      setSelectedWorkSpace('CAP_MANAGER')
+    }
+  }, [userRole, userMDRole])
+
   const setUserDetails = async () => {
     const { data: userData } = await GET(`user-management-service/user/${users?.id}`);
     setUserData(userData)

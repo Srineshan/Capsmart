@@ -74,12 +74,15 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType, setIsL
     const [reportDescription, setReportDescription] = useState('');
     const [deliverySchedule, setDeliverySchedule] = useState('');
     const [startDate, setStartDate] = useState(new Date());
-    const [deliveryTime, setDeliveryTime] = useState(new Date());
+    const [deliveryTime, setDeliveryTime] = useState(null);
     const [scheduledFor, setScheduledFor] = useState('MYSELF');
     const [showDeliveryDialog, setShowDeliveryDialog] = useState(false);
     const [isAddRecipients, setIsAddRecipients] = useState(false);
     const [isReadOnly, setIsReadOnly] = useState(false);
     const [userDetails, setUserDetails] = useState({});
+    const [siteId, setSiteId] = useState(() =>
+        sessionStorage.getItem('selectedSite') || ''
+    );
     // const category = (reportType === 'activitiesOrServices' || reportType === 'addOnActivities' || reportType === 'scheduledActivity') ?
     //     'SERVICES_ACTIVITIES' :
     //     (reportType === 'staffReappointmentsNotes' || reportType === 'staffReappointments') ?
@@ -134,7 +137,11 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType, setIsL
         'staffReappointmentStatusSummary': 'STAFF_REAPPOINTMENT',
         'locumRenewalOrExtensionApplicationsSummary': 'LOCUM_EXTENSION_OR_RENEWAL',
         'careProviderCareerMilestoneSummary': 'PERMANENT_STAFF',
-        'declinedOrNotRenewedStaffSummary': 'LOCUM_EXTENSION_OR_RENEWAL'
+        'declinedOrNotRenewedStaffSummary': 'LOCUM_EXTENSION_OR_RENEWAL',
+        'currentMedicalDirectives': 'MEDICAL_DIRECTIVE',
+        'retiredMedicalDirectives': 'MEDICAL_DIRECTIVE',
+        'workflow': 'MEDICAL_DIRECTIVE',
+        'attestationOutstanding': 'MEDICAL_DIRECTIVE'
     }
 
     // const type = (reportType === 'activitiesOrServices' ?
@@ -175,7 +182,11 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType, setIsL
         'staffReappointmentStatusSummary': 'STAFF_REAPPOINTMENT_STATUS_SUMMARY',
         'locumRenewalOrExtensionApplicationsSummary': 'DECLINED_OR_NOT_RENEWED_STAFF_SUMMARY',
         'careProviderCareerMilestoneSummary': 'CARE_PROVIDER_CAREER_MILESTONE_SUMMARY',
-        'declinedOrNotRenewedStaffSummary': 'DECLINED_OR_NOT_RENEWED_STAFF_SUMMARY'
+        'declinedOrNotRenewedStaffSummary': 'DECLINED_OR_NOT_RENEWED_STAFF_SUMMARY',
+        'currentMedicalDirectives': 'CURRENT_MEDICAL_DIRECTIVES',
+        'retiredMedicalDirectives': 'RETIRED_MEDICAL_DIRECTIVES',
+        'workflow': 'WORKFLOW',
+        'attestationOutstanding': 'ATTESTATION_OUTSTANDING'
     }
 
     const filters = {
@@ -201,6 +212,7 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType, setIsL
     useEffect(() => {
         console.log('enteredInMyreport')
         if (myReportContent) {
+            console.log('enteredInMyreport')
             // setIsReadOnly(true)
             setReportName(myReportContent?.title)
             setIsPrivate(myReportContent?.private)
@@ -214,7 +226,7 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType, setIsL
         }
     }, [myReportContent?.title])
 
-    console.log(reportName, reportDescription, myReportContent, deliveryTime, new Date(myReportContent?.schedule?.deliveryTime))
+    console.log(reportName, reportDescription, myReportContent, deliveryTime, startDate)
 
     const getUserDetail = async () => {
         const { data: user } = await GET(`user-management-service/user/${currentUserData?.id}`);
@@ -249,14 +261,19 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType, setIsL
                     'endDate': dataToUseInReport?.to,
                     'applicantTypeId': dataToUseInReport?.selectedStaffType?.[0] !== '' ? dataToUseInReport?.selectedStaffType : [],
                     // 'sites': dataToUseInReport?.selectedSites?.[0] !== '' ? dataToUseInReport?.selectedSites : [],
-                    'departmentSpecialties': dataToUseInReport?.selectedDepartments?.[0] !== '' ? dataToUseInReport?.selectedDepartments : [],
+                    'departmentSpecialties': dataToUseInReport?.selectedDepartments?.[0] !== '' ? availableCategories[reportType] === 'MEDICAL_DIRECTIVE' ? dataToUseInReport?.selectedDepartments?.map(deptId => `${siteId}#${deptId}`) : dataToUseInReport?.selectedDepartments : [],
                     'privilegingCategoryId': dataToUseInReport?.selectedPrivilegeCategory !== '' ? dataToUseInReport?.selectedPrivilegeCategory : '',
                     "positionType": dataToUseInReport?.selectedPosition !== "" ? [dataToUseInReport?.selectedPosition] : [],
                     "applicationCreationType": dataToUseInReport?.selectedApplicationType !== "" ? [dataToUseInReport?.selectedApplicationType] : [],
                     // "intervals": decodeURIComponent(dataToUseInReport?.selectedTimesheetInterval).split(','),
                     "applicationCurrentLevel": sessionStorage.getItem('workModeType'),
                     "staffReappointmentStatus": dataToUseInReport?.selectedReappointmentStatus ? [dataToUseInReport?.selectedReappointmentStatus] : [],
-                    "applicationSentStatus": dataToUseInReport?.selectedApplicationSentStatus ? [dataToUseInReport?.selectedApplicationSentStatus] : []
+                    "applicationSentStatus": dataToUseInReport?.selectedApplicationSentStatus ? [dataToUseInReport?.selectedApplicationSentStatus] : [],
+                    "groupIds": dataToUseInReport?.selectedGroups?.[0] !== '' ? dataToUseInReport?.selectedGroups : [],
+                    "authorIds": dataToUseInReport?.selectedAuthors?.[0] !== '' ? dataToUseInReport?.selectedAuthors : [],
+                    "currentLevel": dataToUseInReport?.selectedWorkflowLevel !== "All" ? dataToUseInReport?.selectedWorkflowLevel : '',
+                    "lastPublishedStartDate": dataToUseInReport?.from,
+                    "lastPublishedEndDate": dataToUseInReport?.to,
                 },
                 filterDisplayNames: [
                     { name: 'Reporting Period used for this report', values: [`${dataToUseInReport?.fromToDisplay} - ${dataToUseInReport?.toToDisplay}`] },
@@ -266,13 +283,18 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType, setIsL
                     { name: 'Position', values: dataToUseInReport?.selectedPosition !== "" ? [dataToUseInReport?.selectedPosition] : [] },
                     { name: 'Application Type', values: [availableApplicationTypes[dataToUseInReport?.selectedApplicationType] || 'All Application Type'] },
                     { name: 'Reappointment Status', values: [dataToUseInReport?.selectedReappointmentStatus || 'All Applications'] },
-                    { name: 'Application Sent Status', values: [dataToUseInReport?.selectedApplicationSentStatus || 'All'] }
+                    { name: 'Application Sent Status', values: [dataToUseInReport?.selectedApplicationSentStatus || 'All'] },
+                    { name: 'Groups', values: [dataToUseInReport?.selectedGroupsToSend?.map(data => data?.name).join(', ') || 'All Groups'] },
+                    { name: 'Authors', values: [dataToUseInReport?.selectedAuthorsToSend?.map(data => `${data?.name?.firstName} ${data?.name?.lastName}`).join(', ') || '-'] },
+                    { name: 'Workflow Level', values: dataToUseInReport?.selectedWorkflowLevel !== "All" ? [dataToUseInReport?.selectedWorkflowLevel] : "" }
                 ],
                 "private": isPrivate
             }
         }
         console.log(data, 'dataInConsole')
         if (reportName !== '' && reportDescription !== '') {
+            let url = availableCategories[reportType] === "MEDICAL_DIRECTIVE" ? 'medical-directive-service/report/myReport/' : 'application-management-service/report/myReport/'
+
             if (myReportContent) {
                 let newData = {
                     "tenant": {
@@ -300,21 +322,26 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType, setIsL
                             'endDate': dataToUseInReport?.to,
                             'applicantTypeId': dataToUseInReport?.selectedStaffType?.[0] !== '' ? dataToUseInReport?.selectedStaffType : [],
                             // 'sites': dataToUseInReport?.selectedSites?.[0] !== '' ? dataToUseInReport?.selectedSites : [],
-                            'departmentSpecialties': dataToUseInReport?.selectedDepartments?.[0] !== '' ? dataToUseInReport?.selectedDepartments : [],
+                            'departmentSpecialties': dataToUseInReport?.selectedDepartments?.[0] !== '' ? availableCategories[reportType] === 'MEDICAL_DIRECTIVE' ? dataToUseInReport?.selectedDepartments?.map(deptId => `${siteId}#${deptId}`) : dataToUseInReport?.selectedDepartments : [],
                             'privilegingCategoryId': dataToUseInReport?.selectedPrivilegeCategory !== '' ? dataToUseInReport?.selectedPrivilegeCategory : '',
                             "positionType": dataToUseInReport?.selectedPosition !== "" ? [dataToUseInReport?.selectedPosition] : [],
                             "applicationCreationType": dataToUseInReport?.selectedApplicationType !== "" ? [dataToUseInReport?.selectedApplicationType] : [],
                             // "intervals": decodeURIComponent(dataToUseInReport?.selectedTimesheetInterval).split(','),
                             "applicationCurrentLevel": sessionStorage.getItem('workModeType'),
                             "staffReappointmentStatus": dataToUseInReport?.selectedReappointmentStatus ? [dataToUseInReport?.selectedReappointmentStatus] : [],
-                            "applicationSentStatus": dataToUseInReport?.selectedApplicationSentStatus ? [dataToUseInReport?.selectedApplicationSentStatus] : []
+                            "applicationSentStatus": dataToUseInReport?.selectedApplicationSentStatus ? [dataToUseInReport?.selectedApplicationSentStatus] : [],
+                            "groupIds": dataToUseInReport?.selectedGroups?.[0] !== '' ? dataToUseInReport?.selectedGroups : [],
+                            "authorIds": dataToUseInReport?.selectedAuthors?.[0] !== '' ? dataToUseInReport?.selectedAuthors : [],
+                            "currentLevel": dataToUseInReport?.selectedWorkflowLevel !== "All" ? dataToUseInReport?.selectedWorkflowLevel : '',
+                            "lastPublishedStartDate": dataToUseInReport?.from,
+                            "lastPublishedEndDate": dataToUseInReport?.to,
                         },
                         "private": isPrivate
                     }
                 }
 
                 if (isNew) {
-                    await POST('application-management-service/report/myReport/', JSON.stringify(newData))
+                    await POST(`${url}`, JSON.stringify(newData))
                         .then(response => {
                             SuccessToaster('Report Saved Successfully');
                         })
@@ -323,7 +350,7 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType, setIsL
                         })
                     getSaveReportDialog(false);
                 } else {
-                    await PUT(`application-management-service/report/myReport/${myReportId}`, JSON.stringify(data))
+                    await PUT(`${url}/${myReportId}`, JSON.stringify(data))
                         .then(response => {
                             SuccessToaster('Report Updated Successfully');
                         })
@@ -334,7 +361,7 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType, setIsL
                 }
             }
             else {
-                await POST('application-management-service/report/myReport/', JSON.stringify(data))
+                await POST(`${url}`, JSON.stringify(data))
                     .then(response => {
                         SuccessToaster('Report Saved Successfully');
                     })
@@ -347,7 +374,7 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType, setIsL
             ErrorToaster('All Fields are Mandatory');
         }
     }
-    console.log(availableCategories[reportType], 'savereport')
+    console.log(availableCategories[reportType], 'savereport', startDate, deliveryTime)
 
     return (
         <div>

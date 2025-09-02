@@ -271,7 +271,7 @@ const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicati
                         ) : <iframe src={`${file?.fileURL}#toolbar=1&view=fitV`} width="100%" height="600px"></iframe>}
                     </div>
                     <div className={style.marginTop}>
-                        {!window.location.pathname.includes("reappointmentApplicationForm") && (
+                        {(!window.location.pathname.includes("reappointmentApplicationForm") && !window.location.pathname.includes("locumApplicationForm")) && (
                             <div className={style.marginTop10}>
                                 <div className={style.lableStyle}>Reason for Editing Document Details by MSO *</div>
                                 <div className={style.marginTop10}>
