@@ -1744,6 +1744,12 @@
     grid-gap: 1%;
 }
 
+.workflowGrid {
+    display: grid;
+    grid-template-columns: 32% 13% 23% 18% 10%;
+    grid-gap: 1%;
+}
+
 .trackTableHeaderGrid {
     display: grid;
     grid-template-columns: .9fr .7fr .4fr;

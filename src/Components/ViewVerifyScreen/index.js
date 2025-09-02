@@ -632,19 +632,19 @@ const NewActiveApplication = ({
   const handlePopoverClose = () => {
     setAnchorEl(null);
   };
-    const getShowDeleteConfirmation = (value) => {
-        setShowDeleteConfirmation(value);
-    }
-
-    const getDeleteConfirmation = (value) => {
-        if (value && noteToDelete) {
-    handleDeleteNote(noteToDelete);
+  const getShowDeleteConfirmation = (value) => {
+    setShowDeleteConfirmation(value);
   }
+
+  const getDeleteConfirmation = (value) => {
+    if (value && noteToDelete) {
+      handleDeleteNote(noteToDelete);
     }
-const onDeleteClick = (id) => {
-  setNoteToDelete(id);
-  setShowDeleteConfirmation(true);
-};
+  }
+  const onDeleteClick = (id) => {
+    setNoteToDelete(id);
+    setShowDeleteConfirmation(true);
+  };
   useEffect(() => {
     getFormSchema(formSchemaId);
   }, [formSchemaId]);
@@ -1735,7 +1735,12 @@ const onDeleteClick = (id) => {
       const { data: medicalDirectives } = await GET(
         `medical-directive-service/medicalDirectives/application/${applicationId}?isNewAppointment=${form?.creationType !== 'REAPPOINTMENT'}&isReAppointment=${form?.creationType === 'REAPPOINTMENT'}`
       );
-      let temp = [...medicalDirectives?.completed, ...medicalDirectives?.pending, ...medicalDirectives?.reviewInprogress, ...medicalDirectives?.pastDue]
+      let temp = [
+        ...(medicalDirectives?.completed ?? []),
+        ...(medicalDirectives?.pending ?? []),
+        ...(medicalDirectives?.reviewInprogress ?? []),
+        ...(medicalDirectives?.pastDue ?? [])
+      ];
       setMedicalDirectives(temp)
       console.log(medicalDirectives, 'medicalDirectives')
     }
@@ -2162,7 +2167,7 @@ const onDeleteClick = (id) => {
     try {
       // Safely format each log's approved date
       return log?.createdDate
-        ? format(new Date(log.createdDate),`${dateFormat}, HH:mm`)
+        ? format(new Date(log.createdDate), `${dateFormat}, HH:mm`)
         : "-";
     } catch (error) {
       console.error("Error formatting date:", error);
@@ -12392,7 +12397,7 @@ const onDeleteClick = (id) => {
                                               <DeleteOutlineIcon
                                                 sx={{ fontSize: 20 }}
                                                 className={`${style.notesIconDelete} ${style.cursorPointer}`}
-                                                onClick={() =>onDeleteClick(log?.id) }
+                                                onClick={() => onDeleteClick(log?.id)}
                                               />
                                             </Tooltip>
                                           </div>
@@ -13246,13 +13251,13 @@ const onDeleteClick = (id) => {
               getPreApplicationForReplace={getPreApplication}
             />
           )}
-           {
-                          showDeleteConfirmation && (
-                              <DeleteConfirmationDialog getShowDeleteConfirmation={getShowDeleteConfirmation}
-                                  getDeleteConfirmation={getDeleteConfirmation}
-                                  confirmationText="Do you want to delete this Notes?" />
-                          )
-                      }
+          {
+            showDeleteConfirmation && (
+              <DeleteConfirmationDialog getShowDeleteConfirmation={getShowDeleteConfirmation}
+                getDeleteConfirmation={getDeleteConfirmation}
+                confirmationText="Do you want to delete this Notes?" />
+            )
+          }
           {/* <Dialog isOpen={showCurrentPrivileges} onClose={() => setShowCurrentPrivileges(false)} className={`${style.eSignDialog} ${style.eSignDialogBackground}`} canOutsideClickClose={false} canEscapeKeyClose={false}>
           <div>
             <div className={Classes.DIALOG_BODY}>

@@ -111,6 +111,7 @@ const Navbar = () => {
   const [userId, setUserId] = useState();
   const canadaData = sessionStorage.getItem('canadaData') !== 'undefined' ? JSON.parse(sessionStorage.getItem('canadaData')) : {};
   const dateFormat = canadaData?.dateFormat || 'MMM dd, yyyy';
+  const availableMDReports = ['currentMedicalDirectives', 'retiredMedicalDirectives', 'workflow', 'attestationOutstanding']
 
   const roleIcons = {
     "Staff Manager": SMimgHover,
@@ -481,7 +482,7 @@ const Navbar = () => {
             )}
           </div>
 
-          {(!window.location.pathname?.includes('mdManager') && !window.location.pathname?.includes('medicalDirectives')) ? (
+          {(!window.location.pathname?.includes('mdManager') && !window.location.pathname?.includes('medicalDirectives') && !availableMDReports.some(str => window.location.pathname?.includes(str))) ? (
             <>
               {workModeType !== "Entity Sys Admin" && (
                 <Link to={"/applications"} onClick={() => sessionStorage.setItem('applicationCreationType', 'REAPPOINTMENT')} className={style.noFontStyle}>
@@ -1305,7 +1306,7 @@ const Navbar = () => {
             aria-owns={openGuide ? "mouse-over-popover" : undefined}
             aria-haspopup="true"
           >
-            <div className={`${style.alignContent} ${style.iconSize1} ${style?.cursorPointer}`}><HelpOutlineOutlinedIcon fontSize="small" sx={{ "&:hover": { color: "#06617A" } }} /></div>
+            <div className={`${style.alignContent} ${style.marginLeft20} ${style.iconSize1} ${style?.cursorPointer}`}><HelpOutlineOutlinedIcon fontSize="small" sx={{ "&:hover": { color: "#06617A" } }} /></div>
             <Popover
               id={"mouse-over-popover"}
               open={openGuide}

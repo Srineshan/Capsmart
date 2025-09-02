@@ -210,7 +210,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
 
     const innerHeaderValues = [
         "No.",
-        "Applicant Type",
+        // "Applicant Type",
         "Applicant Name",
         "Department / Division",
         "Attestation Status",
@@ -922,14 +922,23 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
         const attestationDate = [];
         const actionItem = [];
 
-        selectedMedicalDirectiveList?.allApplicants?.map((data, index) => {
+        selectedMedicalDirectiveList?.allUsers?.map((data, index) => {
             const result = tryParseDate(data?.attestationLog?.esign?.signedDate);
             dot.push(data?.attestationLog ? "green" : 'red');
             dotTooltipValues.push(data?.attestationLog ? "Attested" : 'Not Attested')
             no.push(index + 1 + ".")
-            applicantName.push(`${formatFirstNameLastName(data?.application?.applicant?.name?.firstName, data?.application?.applicant?.name?.lastName)}`);
-            dept.push(`${data?.application?.basicDetailReferences?.department?.name} ${data?.application?.basicDetailReferences?.specialty?.name ? `- ${data?.application?.basicDetailReferences?.specialty?.name}` : ''}`)
-            type.push(data?.application?.basicDetailReferences?.applicantType?.serviceProviderType)
+            applicantName.push(`${formatFirstNameLastName(data?.user?.name?.firstName, data?.user?.name?.lastName)}`);
+            dept.push(...(data?.user?.sites?.sites ?? []).map(site =>
+                (site?.departmentList?.departments ?? [])
+                    .map(dept =>
+                        `${dept?.departmentName?.name ?? '-'}${dept?.serviceAreas?.length
+                            ? ` / ${dept.serviceAreas.map(sa => sa?.name ?? '').join(', ')}`
+                            : ''
+                        }`
+                    )
+                    .join(', ')
+            ))
+            type.push(`-`)
             attestationDate.push(data?.attestationLog?.esign?.signedDate ? result.parsedDate ? format(result.parsedDate, dateFormat) : '-' : '-');
             // actionItem.push(
             //     <div className={style.viewOrRtt} onClick={data?.attestationLog ? () => handleInnerSelectData(data) : () => { }}>{data?.attestationLog ? 'View' : 'Request'}</div>
@@ -938,7 +947,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
 
         return [
             { type: "text", value: no },
-            { type: "text", value: type },
+            // { type: "text", value: type },
             { type: "text", value: applicantName },
             { type: "text", value: dept },
             { type: "dot", value: dot, tooltipValue: dotTooltipValues },
@@ -1175,7 +1184,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
                     <TableTwo
                         tableHeaderValues={innerHeaderValues}
                         tableDataValues={getInnerTableValuesByMedicalDirecties()}
-                        tableData={selectedMedicalDirectiveList?.allApplicants}
+                        tableData={selectedMedicalDirectiveList?.allUsers}
                         gridStyle={style.byInnerMedicalDirectiveGrid}
                         actions={[]}
                         scrollStyle={style.contractScrollStyle}

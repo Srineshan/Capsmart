@@ -876,8 +876,67 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
       mdName.push(data?.medicalDirectives?.title);
       mdNameHoverText.push('Click to view the attestation Log for this Medical Directive by each Applicant')
       mdId.push(data?.medicalDirectives?.mdID);
-      departmentSpecific.push(data?.medicalDirectives?.departmentSpecific ? `${data?.medicalDirectives?.departments?.map(data => data?.serviceAreaSpecific ? `${data?.serviceAreas?.map(specialty => `${data?.name} -  ${specialty?.name}`)?.join(', ')}` : data?.name)?.length > 3 ? `${data?.medicalDirectives?.departments?.map(data => data?.serviceAreaSpecific ? `${data?.serviceAreas?.map(specialty => `${data?.name} -  ${specialty?.name}`)?.join(', ')}` : data?.name)?.length} Departments` : data?.medicalDirectives?.departments?.map(data => data?.serviceAreaSpecific ? `${data?.serviceAreas?.map(specialty => `${data?.name} -  ${specialty?.name}`)?.join(', ')}` : data?.name)?.join(', ')}` : 'General')
-      departmentSpecificHover.push(data?.medicalDirectives?.departmentSpecific ? [`${data?.medicalDirectives?.departments?.map(data => data?.serviceAreaSpecific ? `${data?.serviceAreas?.map(specialty => `${data?.name} -  ${specialty?.name}`)}` : data?.name)}`] : ['General']);
+      departmentSpecific.push(
+        ...(data?.medicalDirectives?.sites ?? []).map(site => {
+          if (!site.departmentSpecific) return null; // skip if not departmentSpecific
+
+          const depts = Array.isArray(site?.departments) ? site.departments : [];
+          if (!depts.length) return null;
+
+          // If more than 3 departments → just show count
+          if (depts.length > 3) {
+            return `${depts.length} Departments`;
+          }
+
+          return depts
+            .map(dept => {
+              // If serviceAreaSpecific → show service areas
+              if (dept?.serviceAreaSpecific) {
+                const saNames = (Array.isArray(dept?.serviceAreas) ? dept.serviceAreas : [])
+                  .map(sa => sa?.name)
+                  .filter(Boolean);
+
+                if (saNames.length > 3) {
+                  return `${dept?.name ?? '-'} ( ${saNames.length} Service Areas )`;
+                }
+                return `${dept?.name ?? '-'} ( ${saNames.join(', ')} )`;
+              }
+
+              // If not serviceAreaSpecific → just department name
+              return dept?.name ?? '-';
+            })
+            .filter(Boolean)
+            .join(', ');
+        }).filter(Boolean)
+      );
+      // departmentSpecific.push(data?.medicalDirectives?.siteSpecific ? `${data?.medicalDirectives?.departments?.map(data => data?.serviceAreaSpecific ? `${data?.serviceAreas?.map(specialty => `${data?.name} -  ${specialty?.name}`)?.join(', ')}` : data?.name)?.length > 3 ? `${data?.medicalDirectives?.departments?.map(data => data?.serviceAreaSpecific ? `${data?.serviceAreas?.map(specialty => `${data?.name} -  ${specialty?.name}`)?.join(', ')}` : data?.name)?.length} Departments` : data?.medicalDirectives?.departments?.map(data => data?.serviceAreaSpecific ? `${data?.serviceAreas?.map(specialty => `${data?.name} -  ${specialty?.name}`)?.join(', ')}` : data?.name)?.join(', ')}` : 'General')
+      if (data?.medicalDirectives?.siteSpecific) {
+        departmentSpecificHover.push(
+          ...(data?.medicalDirectives?.sites ?? [])
+            .map(site => {
+              if (!site.departmentSpecific) return null;
+
+              const depts = Array.isArray(site?.departments) ? site.departments : [];
+              if (!depts.length) return null;
+
+              return depts
+                .map(dept => {
+                  if (dept?.serviceAreaSpecific) {
+                    const saNames = (Array.isArray(dept?.serviceAreas) ? dept.serviceAreas : [])
+                      .map(sa => sa?.name)
+                      .filter(Boolean);
+                    return `${dept?.name ?? '-'} ( ${saNames.join(', ')} )`;
+                  }
+                  return dept?.name ?? '-';
+                })
+                .filter(Boolean)
+            })
+            .filter(Boolean)
+        );
+      } else {
+        departmentSpecificHover.push(['General']);
+      }
+      console.log(departmentSpecificHover, departmentSpecific, 'departmentSpecific')
       attestedBy.push(data?.attestedCount > 0 ? data?.attestedCount : '-');
       notAttested.push(data?.notAttestedCount > 0 ? data?.notAttestedCount : '-')
       // action.push((data?.attestedCount !== 0 || data?.notAttestedCount !== 0) ? true : false);

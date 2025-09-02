@@ -79,8 +79,8 @@ const MDManagerStep4 = ({ setStep3, setStep4, mdValue, setMdValue, setSelectedMd
         );
         setWorkflowStructure(response?.data)
         // setWorkFlow2IsMandatory(response?.data?.approvalFlowMap?.workflow['2']?.flowDetails?.[0]?.approvalRequirement === 'MANDATORY' ? true : false)
-        setSelectedSignOffGroups(response?.data?.approvalFlowMap?.workflow['2']?.flowDetails?.[0]?.groups?.map(data => data?.group?.id))
-        setSignOffExists(response?.data?.approvalFlowMap?.workflow['2']?.flowDetails?.[0]?.groups?.map(data => data?.group?.id)?.length !== 0)
+        setSelectedSignOffGroups(response?.data?.approvalFlowMap?.workflow['3']?.flowDetails?.[0]?.groups?.map(data => data?.group?.id))
+        setSignOffExists(response?.data?.approvalFlowMap?.workflow['3']?.flowDetails?.[0]?.groups?.map(data => data?.group?.id)?.length !== 0)
     }
 
     const getStaffList = async () => {
@@ -325,16 +325,16 @@ const MDManagerStep4 = ({ setStep3, setStep4, mdValue, setMdValue, setSelectedMd
             data.approvalFlowMap.workflow[1].flowDetails[0].roles = transformedRoles
         }
         if (workFlow2IsMandatory) {
-            data.approvalFlowMap.workflow[2].flowDetails[0].approvalRequirement = 'MANDATORY';
-            if (workflowStructure?.approvalFlowMap?.workflow[2]?.flowDetails?.[0]?.approvalBy === 'GROUP') {
-                data.approvalFlowMap.workflow[2].flowDetails[0].groups = transformedGroups
+            data.approvalFlowMap.workflow[3].flowDetails[0].approvalRequirement = 'MANDATORY';
+            if (workflowStructure?.approvalFlowMap?.workflow[3]?.flowDetails?.[0]?.approvalBy === 'GROUP') {
+                data.approvalFlowMap.workflow[3].flowDetails[0].groups = transformedGroups
             }
         } else {
-            if (data?.approvalFlowMap?.workflow?.[2]) {
-                delete data.approvalFlowMap.workflow["2"]
+            if (data?.approvalFlowMap?.workflow?.[3]) {
+                delete data.approvalFlowMap.workflow["3"]
             }
         }
-        console.log(workflowStructure?.approvalFlowMap?.workflow[2]?.flowDetails?.[0]?.approvalBy === 'GROUP', data)
+        console.log(workflowStructure?.approvalFlowMap?.workflow[3]?.flowDetails?.[0]?.approvalBy === 'GROUP', data)
         await POST(`medical-directive-service/medicalDirectives/${mdValue?.id}/workflow`, data)
             .then(response => {
                 SuccessToaster2('Workflow Added Successfully');

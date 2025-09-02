@@ -685,33 +685,33 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                             </div>
                                         )
                                             : tableData?.type === "text" ? (
-                                                // <Tooltip title={tableData?.tooltipValueText?.[index]} arrow>
-                                                //     <p className={`${style.tableDataFontStyle} ${style.verticalAlignCenter} ${style.cursorArrow} ${tableData?.onClickFunction ? `${style.cursorPointer} ${style.textHoverColor}` : ''}`} onClick={tableData?.onClickFunction ? () => { tableData?.onClickFunction(data, index) } : () => { }}>
-                                                //         {searchTermForTable?.trim() ?
-                                                //             String(tableData?.value?.[index] || '')?.split(new RegExp(`(${searchTermForTable})`, 'gi'))?.map((part, i) =>
-                                                //                 part?.toLowerCase() === searchTermForTable?.toLowerCase() ?
-                                                //                     <span key={i} style={{ backgroundColor: 'yellow' }}>{part}</span> :
-                                                //                     part
-                                                //             ) :
-                                                //             tableData?.value?.[index]
-                                                //         }
-                                                //     </p>
-                                                // </Tooltip>
                                                 <Tooltip title={tableData?.tooltipValueText?.[index]} arrow>
-                                                    <div
-                                                        className={`
-                                                                ${style.tableDataFontStyle}
-                                                                ${style.verticalAlignCenter}
-                                                                ${style.cursorArrow}
-                                                                ${tableData?.onClickFunction ? `${style.cursorPointer} ${style.textHoverColor}` : ''}
-                                                                ${tableData?.isAlignCenter ? style.justifyCenter : ''}
-                                                            `}
-                                                        onClick={tableData?.onClickFunction ? () => { tableData?.onClickFunction(data, index); } : undefined}
-                                                        dangerouslySetInnerHTML={{
-                                                            __html: getHighlightedHTML(String(tableData?.value?.[index] || ''), searchTermForTable)
-                                                        }}
-                                                    />
+                                                    <p className={`${style.tableDataFontStyle} ${style.verticalAlignCenter} ${style.cursorArrow} ${tableData?.onClickFunction ? `${style.cursorPointer} ${style.textHoverColor}` : ''}`} onClick={tableData?.onClickFunction ? () => { tableData?.onClickFunction(data, index) } : () => { }}>
+                                                        {searchTermForTable?.trim() ?
+                                                            String(tableData?.value?.[index] || '')?.split(new RegExp(`(${searchTermForTable})`, 'gi'))?.map((part, i) =>
+                                                                part?.toLowerCase() === searchTermForTable?.toLowerCase() ?
+                                                                    <span key={i} style={{ backgroundColor: 'yellow' }}>{part}</span> :
+                                                                    part
+                                                            ) :
+                                                            tableData?.value?.[index]
+                                                        }
+                                                    </p>
                                                 </Tooltip>
+                                                // <Tooltip title={tableData?.tooltipValueText?.[index]} arrow>
+                                                //     <div
+                                                //         className={`
+                                                //                 ${style.tableDataFontStyle}
+                                                //                 ${style.verticalAlignCenter}
+                                                //                 ${style.cursorArrow}
+                                                //                 ${tableData?.onClickFunction ? `${style.cursorPointer} ${style.textHoverColor}` : ''}
+                                                //                 ${tableData?.isAlignCenter ? style.justifyCenter : ''}
+                                                //             `}
+                                                //         onClick={tableData?.onClickFunction ? () => { tableData?.onClickFunction(data, index); } : undefined}
+                                                //         dangerouslySetInnerHTML={{
+                                                //             __html: getHighlightedHTML(String(tableData?.value?.[index] || ''), searchTermForTable)
+                                                //         }}
+                                                //     />
+                                                // </Tooltip>
                                             ) : tableData?.type === "textWithHover" ? (
                                                 <div onMouseEnter={(e) => handleClickTextWithHover(e, index, tableDataIndex)}
                                                     onMouseLeave={() => handleCloseTextWithHover()}

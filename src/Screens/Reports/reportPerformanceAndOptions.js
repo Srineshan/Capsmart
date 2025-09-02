@@ -61,6 +61,9 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
     const [searchTerm, setSearchTerm] = useState('');
     const [searchData, setSearchData] = useState([]);
     const [selectedUsers, setSelectedUsers] = useState([]);
+    const [siteId, setSiteId] = useState(() =>
+        sessionStorage.getItem('selectedSite') || ''
+    );
     const reportTitleList = {
         // staffReappointmentsNotes: 'Upcoming Contract Renewals',
         staffReappointmentsNotes: 'Staff Reappointments to Process',
@@ -130,10 +133,10 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
         locumRenewalOrExtensionApplicationsSummary: 'LOCUM_EXTENSION_OR_RENEWAL',
         careProviderCareerMilestoneSummary: 'PERMANENT_STAFF',
         declinedOrNotRenewedStaffSummary: 'LOCUM_EXTENSION_OR_RENEWAL',
-        currentMedicalDirectives: 'CURRENT_MEDICAL_DIRECTIVES',
-        retiredMedicalDirectives: 'RETIRED_MEDICAL_DIRECTIVES',
-        workflow: 'WORKFLOW',
-        attestationOutstanding: 'ATTESTATION_OUTSTANDING'
+        currentMedicalDirectives: 'MEDICAL_DIRECTIVE',
+        retiredMedicalDirectives: 'MEDICAL_DIRECTIVE',
+        workflow: 'MEDICAL_DIRECTIVE',
+        attestationOutstanding: 'MEDICAL_DIRECTIVE'
     }
 
     const typeList = {
@@ -168,7 +171,11 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
         'staffReappointmentStatusSummary': 'STAFF_REAPPOINTMENT_STATUS_SUMMARY',
         'locumRenewalOrExtensionApplicationsSummary': 'DECLINED_OR_NOT_RENEWED_STAFF_SUMMARY',
         'careProviderCareerMilestoneSummary': 'CARE_PROVIDER_CAREER_MILESTONE_SUMMARY',
-        'declinedOrNotRenewedStaffSummary': 'DECLINED_OR_NOT_RENEWED_STAFF_SUMMARY'
+        'declinedOrNotRenewedStaffSummary': 'DECLINED_OR_NOT_RENEWED_STAFF_SUMMARY',
+        'currentMedicalDirectives': 'CURRENT_MEDICAL_DIRECTIVES',
+        'retiredMedicalDirectives': 'RETIRED_MEDICAL_DIRECTIVES',
+        'workflow': 'WORKFLOW',
+        'attestationOutstanding': 'ATTESTATION_OUTSTANDING'
     }
 
     const availableApplicationTypes = {
@@ -299,13 +306,18 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                 'startDate': dataToUseInReport?.from,
                 'endDate': dataToUseInReport?.to,
                 'applicantTypeId': dataToUseInReport?.selectedStaffType?.[0] !== '' ? dataToUseInReport?.selectedStaffType : [],
-                'departmentSpecialties': dataToUseInReport?.selectedDepartments?.[0] !== '' ? dataToUseInReport?.selectedDepartments : [],
+                'departmentSpecialties': dataToUseInReport?.selectedDepartments?.[0] !== '' ? availableCategories[reportType] === 'MEDICAL_DIRECTIVE' ? dataToUseInReport?.selectedDepartments?.map(deptId => `${siteId}#${deptId}`) : dataToUseInReport?.selectedDepartments : [],
                 'privilegingCategoryId': dataToUseInReport?.selectedPrivilegeCategory !== '' ? dataToUseInReport?.selectedPrivilegeCategory : '',
                 "positionType": dataToUseInReport?.selectedPosition !== "" ? [dataToUseInReport?.selectedPosition] : [],
                 "applicationCreationType": dataToUseInReport?.selectedApplicationType !== "" ? [dataToUseInReport?.selectedApplicationType] : [],
                 "applicationCurrentLevel": sessionStorage.getItem('workModeType'),
                 "staffReappointmentStatus": dataToUseInReport?.selectedReappointmentStatus ? [dataToUseInReport?.selectedReappointmentStatus] : [],
                 "applicationSentStatus": dataToUseInReport?.selectedApplicationSentStatus ? [dataToUseInReport?.selectedApplicationSentStatus] : [],
+                "groupIds": dataToUseInReport?.selectedGroups?.[0] !== '' ? dataToUseInReport?.selectedGroups : [],
+                "authorIds": dataToUseInReport?.selectedAuthors?.[0] !== '' ? dataToUseInReport?.selectedAuthors : [],
+                "currentLevel": dataToUseInReport?.selectedWorkflowLevel !== "All" ? dataToUseInReport?.selectedWorkflowLevel : '',
+                "lastPublishedStartDate": dataToUseInReport?.from,
+                "lastPublishedEndDate": dataToUseInReport?.to,
             },
             filterDisplayNames: [
                 { name: 'Reporting Period used for this report', values: [`${dataToUseInReport?.fromToDisplay} - ${dataToUseInReport?.toToDisplay}`] },
@@ -315,7 +327,10 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                 { name: 'Position', values: dataToUseInReport?.selectedPosition !== "" ? [dataToUseInReport?.selectedPosition] : [] },
                 { name: 'Application Type', values: [availableApplicationTypes[dataToUseInReport?.selectedApplicationType] || 'All Application Type'] },
                 { name: 'Reappointment Status', values: [dataToUseInReport?.selectedReappointmentStatus || 'All Applications'] },
-                { name: 'Application Sent Status', values: [dataToUseInReport?.selectedApplicationSentStatus || 'All'] }
+                { name: 'Application Sent Status', values: [dataToUseInReport?.selectedApplicationSentStatus || 'All'] },
+                { name: 'Groups', values: [dataToUseInReport?.selectedGroupsToSend?.map(data => data?.name).join(', ') || 'All Groups'] },
+                { name: 'Authors', values: [dataToUseInReport?.selectedAuthorsToSend?.map(data => `${data?.name?.firstName} ${data?.name?.lastName}`).join(', ') || '-'] },
+                { name: 'Workflow Level', values: dataToUseInReport?.selectedWorkflowLevel !== "All" ? [dataToUseInReport?.selectedWorkflowLevel] : "" }
             ],
         }
         const formData = new FormData();
@@ -327,7 +342,7 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
             formData.append('savedReportFile', blob, uniqueFileName);
 
             try {
-                const response = await POST(`application-management-service/report/savedReport/`, formData);
+                const response = await POST(availableCategories[reportType] === 'MEDICAL_DIRECTIVE' ? 'medical-directive-service/report/savedReport/' : `application-management-service/report/savedReport/`, formData);
                 console.log(response?.data);
                 setShowReportSavedDialog(true);
             } catch (error) {
