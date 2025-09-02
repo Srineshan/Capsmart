@@ -33,7 +33,7 @@ import ESignature from "../../Components/ESignature";
 import CancelIcon from '@mui/icons-material/Cancel';
 import AdditionalPrivilegesDialog from "../../Screens/ReappointmentApplicationForm/PrivilegeSelection/AdditionalPrivilegesDialog";
 
-const LocumExtensiveDialog = ({ getIsOpen, selectedTab,requestedType }) => {
+const LocumExtensiveDialog = ({ getIsOpen, selectedTab, requestedType }) => {
   let cookie = new Cookie();
   let userDetails = cookie.get("user");
   const { setValue, value } = useComboboxControls({ initialValue: "" });
@@ -132,7 +132,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab,requestedType }) => {
   const workModeType = sessionStorage.getItem("workModeType");
   let staffLocumId;
   let name = `${formDetails?.basicDetails?.applicant?.name?.firstName} ${formDetails?.basicDetails?.applicant?.name?.lastName} `;
-console.log("requestedType",requestedType)
+  console.log("requestedType", requestedType)
 
   console.log("tableDataValue", selectApplicant, covererNameList, covererId, selectedTab)
   useEffect(() => {
@@ -142,63 +142,63 @@ console.log("requestedType",requestedType)
     getActiveUserData();
   }, [applicationType, id]);
 
-  console.log('Reloading...',ReloadAlert);
+  console.log('Reloading...', ReloadAlert);
 
-    useEffect(() => {
-        if (ReloadAlert) {
-            console.log('Reloading123...');
-        }
-    }, [ReloadAlert]);
+  useEffect(() => {
+    if (ReloadAlert) {
+      console.log('Reloading123...');
+    }
+  }, [ReloadAlert]);
 
-useEffect(() => {
+  useEffect(() => {
     const handleBeforeUnload = (event) => {
-        // Show confirmation for reload/close
-        const confirmed = window.confirm(
-            'CAUTION!\nExiting your browser will disrupt the extension application you are working on. You will lose your data and will have to redo this application. Are you sure you want to Exit?'
-        );
-        
-        if (confirmed) {
-            // User clicked "OK" (reload/exit)
-            setReloadAlert(true);
-            // Allow the unload to proceed
-            return undefined;
-        } else {
-            // User clicked "Cancel"
-            setReloadAlert(false);
-            // Prevent unload
-            event.preventDefault();
-            return event.returnValue = '';
-        }
+      // Show confirmation for reload/close
+      const confirmed = window.confirm(
+        'CAUTION!\nExiting your browser will disrupt the extension application you are working on. You will lose your data and will have to redo this application. Are you sure you want to Exit?'
+      );
+
+      if (confirmed) {
+        // User clicked "OK" (reload/exit)
+        setReloadAlert(true);
+        // Allow the unload to proceed
+        return undefined;
+      } else {
+        // User clicked "Cancel"
+        setReloadAlert(false);
+        // Prevent unload
+        event.preventDefault();
+        return event.returnValue = '';
+      }
     };
 
     const handleBackNavigation = (event) => {
-        // Show confirmation manually (for Back button)
-        const confirmed = window.confirm(
-            'CAUTION!\nExiting your browser will disrupt the extension application you are working on. You will lose your data and will have to redo this application. Are you sure you want to Exit?'
-        );
-        
-        if (confirmed) {
-            // User clicked "OK" (reload/exit)
-            setReloadAlert(true);
-        } else {
-            // User clicked "Cancel"
-            setReloadAlert(false);
-            window.history.pushState(null, null, window.location.pathname);
-        }
+      // Show confirmation manually (for Back button)
+      const confirmed = window.confirm(
+        'CAUTION!\nExiting your browser will disrupt the extension application you are working on. You will lose your data and will have to redo this application. Are you sure you want to Exit?'
+      );
+
+      if (confirmed) {
+        // User clicked "OK" (reload/exit)
+        setReloadAlert(true);
+      } else {
+        // User clicked "Cancel"
+        setReloadAlert(false);
+        window.history.pushState(null, null, window.location.pathname);
+      }
     };
 
     // Add listeners only when dialogs are active
     if (showSelectedPrivilegeLocum) {
-        window.addEventListener('beforeunload', handleBeforeUnload);
-        window.addEventListener('popstate', handleBackNavigation);
-        window.history.pushState(null, null, window.location.pathname);
+      window.addEventListener('beforeunload', handleBeforeUnload);
+      window.addEventListener('popstate', handleBackNavigation);
+      window.history.pushState(null, null, window.location.pathname);
     }
 
     return () => {
-        window.removeEventListener('beforeunload', handleBeforeUnload);
-        window.removeEventListener('popstate', handleBackNavigation);
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener('popstate', handleBackNavigation);
     };
-}, [showSelectedPrivilegeLocum]);
+  }, [showSelectedPrivilegeLocum]);
 
 
   useEffect(() => {
@@ -2759,8 +2759,8 @@ useEffect(() => {
   const ExpireDate = selectDataLocum?.tenure?.to
     ? new Date(selectDataLocum?.tenure?.to).toISOString().split('T')[0] + 'T00:00'
     : null;
-  
-    console.log("Date to Expire :", ExpireDate ,"expire Date add one day :", format(addDays(new Date(ExpireDate), 1), dateFormat))  
+
+  console.log("Date to Expire :", ExpireDate, "expire Date add one day :", format(addDays(new Date(ExpireDate), 1), dateFormat))
 
   // Validate date before using
   const isExpireDateValid = ExpireDate && isValid(ExpireDate);
@@ -4682,13 +4682,13 @@ useEffect(() => {
         {/* <div className={style.spaceBetween}> */}
         <div className={style.heading1}>
           Locum {selectedTab === "ACTIVELOCUM" ? "Extension" : "Renewal"} Application has been sent to
-           {selectDataLocum?.applicant?.name?.lastName?.charAt(0).toUpperCase() +
+          {selectDataLocum?.applicant?.name?.lastName?.charAt(0).toUpperCase() +
             selectDataLocum?.applicant?.name?.lastName?.slice(1).toLowerCase()}
           {", "}
           {selectDataLocum?.applicant?.name?.firstName
             ? selectDataLocum?.applicant?.name?.firstName.charAt(0).toUpperCase() +
             selectDataLocum?.applicant?.name?.firstName.slice(1).toLowerCase()
-            : ""} 
+            : ""}
           {/* Locum {selectedTab === "ACTIVELOCUM" ? "Extension" : "Renewal"} Request has been sent */}
         </div>
         {/* <div className={style.displayInRow}>

@@ -121,6 +121,9 @@ const ReportTypeOverview = () => {
     const [applicationType, setApplicationType] = useState(() =>
         sessionStorage.getItem('applicationCreationType') || 'NEW'
     );
+    const [siteId, setSiteId] = useState(() =>
+        sessionStorage.getItem('selectedSite') || ''
+    );
     const [apexStackedBarChartDisplay, setApexStackedBarChartDisplay] = useState(
         <ApexStackedBarChart stackedSeries={stackedSeries} stackedCategories={stackedCategories} />
     )
@@ -263,7 +266,7 @@ const ReportTypeOverview = () => {
             return () => controller.abort();
         }
         console.log(dataToUseInReport, 'dataToUseInReport', (dataToUseInReport?.initialValueSet && ((dataToUseInReport?.selectedDepartments?.length !== 1 ? !dataToUseInReport?.selectedDepartments.includes('') : true) && (dataToUseInReport?.selectedStaffType?.length !== 1 ? !dataToUseInReport?.selectedStaffType.includes('') : true) && (dataToUseInReport?.selectedPrivilegeCategory?.length !== 1 ? !dataToUseInReport?.selectedPrivilegeCategory.includes('') : true))))
-    }, [dataToUseInReport?.from, dataToUseInReport?.to, dataToUseInReport?.selectedPrivilegeCategory, dataToUseInReport?.selectedStaffType, dataToUseInReport?.selectedSites, dataToUseInReport?.selectedDepartments, dataToUseInReport?.renewalreportingTimePeriod, dataToUseInReport?.selectedPosition, dataToUseInReport?.selectedApplicationType, dataToUseInReport?.initialValueSet, dataToUseInReport?.selectedTimesheetInterval, dataToUseInReport?.selectedReappointmentStatus, dataToUseInReport?.selectedApplicationSentStatus, dataToUseInReport?.selectedWorkflowLevel]);
+    }, [dataToUseInReport?.from, dataToUseInReport?.to, dataToUseInReport?.selectedPrivilegeCategory, dataToUseInReport?.selectedStaffType, dataToUseInReport?.selectedSites, dataToUseInReport?.selectedDepartments, dataToUseInReport?.selectedGroups, dataToUseInReport?.selectedAuthors, dataToUseInReport?.renewalreportingTimePeriod, dataToUseInReport?.selectedPosition, dataToUseInReport?.selectedApplicationType, dataToUseInReport?.initialValueSet, dataToUseInReport?.selectedTimesheetInterval, dataToUseInReport?.selectedReappointmentStatus, dataToUseInReport?.selectedApplicationSentStatus, dataToUseInReport?.selectedWorkflowLevel]);
 
     useEffect(() => {
         setApexStackedBarChartDisplay(<ApexStackedBarChart stackedSeries={stackedSeries} stackedCategories={stackedCategories} />);
@@ -1241,29 +1244,88 @@ const ReportTypeOverview = () => {
 
     const getCurrentMedicalDirective = async (signal) => {
         setIsLoading(true)
-        const { data: data } = await GET(`medical-directive-service/report/currentMedicalDirectives`, { signal });
-        setCurrentMedicalDirectives(data);
+        if (!isMyReport) {
+            const queryParams = new URLSearchParams({
+            });
+
+            if (dataToUseInReport?.selectedDepartments) {
+                queryParams.append('siteDepartmentSpecialties', dataToUseInReport?.selectedDepartments?.map(
+                    (deptId) => `${siteId}#${deptId}`
+                ));
+            }
+            const { data: data } = await GET(`medical-directive-service/report/currentMedicalDirectives?${queryParams.toString()}`, { signal });
+            setCurrentMedicalDirectives(data);
+        } else {
+            const { data: data } = await GET(`medical-directive-service/report/myReport/currentMedicalDirectives?id=${myReportId}`, { signal });
+            setCurrentMedicalDirectives(data);
+        }
         setIsLoading(false)
     }
 
     const getRetiredMedicalDirective = async (signal) => {
         setIsLoading(true)
-        const { data: data } = await GET(`medical-directive-service/report/retiredMedicalDirectives`, { signal });
-        setRetiredMedicalDirectives(data);
+        if (!isMyReport) {
+            const queryParams = new URLSearchParams({
+            });
+
+            if (dataToUseInReport?.selectedDepartments) {
+                queryParams.append('siteDepartmentSpecialties', dataToUseInReport?.selectedDepartments?.map(
+                    (deptId) => `${siteId}#${deptId}`
+                ));
+            }
+            if (dataToUseInReport?.selectedAuthors) {
+                queryParams.append('authorIds', dataToUseInReport?.selectedAuthors);
+            }
+            if (dataToUseInReport?.selectedGroups) {
+                queryParams.append('groupIds', dataToUseInReport?.selectedGroups);
+            }
+            const { data: data } = await GET(`medical-directive-service/report/retiredMedicalDirectives?${queryParams.toString()}`, { signal });
+            setRetiredMedicalDirectives(data);
+        } else {
+            const { data: data } = await GET(`medical-directive-service/report/myReport/retiredMedicalDirectives?id=${myReportId}`, { signal });
+            setRetiredMedicalDirectives(data);
+        }
         setIsLoading(false)
     }
 
     const getMedicalDirectivesWorkflow = async (signal) => {
         setIsLoading(true)
-        const { data: data } = await GET(`medical-directive-service/report/workflow?currentLevel=${dataToUseInReport?.selectedWorkflowLevel !== "All" ? dataToUseInReport?.selectedWorkflowLevel : ''}`, { signal });
-        setMedicalDirectivesWorkflow(data);
+        if (!isMyReport) {
+            const queryParams = new URLSearchParams({
+            });
+
+            if (dataToUseInReport?.selectedDepartments) {
+                queryParams.append('siteDepartmentSpecialties', dataToUseInReport?.selectedDepartments?.map(
+                    (deptId) => `${siteId}#${deptId}`
+                ));
+            }
+            if (dataToUseInReport?.selectedAuthors) {
+                queryParams.append('authorIds', dataToUseInReport?.selectedAuthors);
+            }
+            if (dataToUseInReport?.selectedGroups) {
+                queryParams.append('groupIds', dataToUseInReport?.selectedGroups);
+            }
+            if (dataToUseInReport?.selectedWorkflowLevel) {
+                queryParams.append('currentLevel', dataToUseInReport?.selectedWorkflowLevel !== "All" ? dataToUseInReport?.selectedWorkflowLevel : '');
+            }
+            const { data: data } = await GET(`medical-directive-service/report/workflow?${queryParams.toString()}`, { signal });
+            setMedicalDirectivesWorkflow(data);
+        } else {
+            const { data: data } = await GET(`medical-directive-service/report/myReport/workflow?id=${myReportId}`, { signal });
+            setMedicalDirectivesWorkflow(data);
+        }
         setIsLoading(false)
     }
 
     const getAttestationOutstanding = async (signal) => {
         setIsLoading(true)
-        const { data: data } = await GET(`medical-directive-service/report/attestationOutstanding`, { signal });
-        setAttestationOutstanding(data);
+        if (!isMyReport) {
+            const { data: data } = await GET(`medical-directive-service/report/attestationOutstanding?siteIds?=${siteId}`, { signal });
+            setAttestationOutstanding(data);
+        } else {
+            const { data: data } = await GET(`medical-directive-service/report/myReport/attestationOutstanding?id=${myReportId}`, { signal });
+            setAttestationOutstanding(data);
+        }
         setIsLoading(false)
     }
 
@@ -2886,7 +2948,7 @@ const ReportTypeOverview = () => {
                                                     <div className={`${style.entityNameBolderStyle} ${style.textAlignCenter} ${style.marginTop5} `}>
                                                         {isMyReport ? myReportContent?.title : reportTitleList[reportType]}
                                                     </div>
-                                                    {(dataToUseInReport?.reportingTimePeriod !== "" && reportType !== "staffReappointmentTracker" && reportType !== "privilegedStaffSummary" && reportType !== "locumStaffbyTypes" && reportType !== "staffbyTypes" && reportType !== "locumStaffRenewalStatusTracker" && reportType !== "staffReappointmentStatusSummary" && reportType !== "ohipBillingNumbersByCareProvider") && (
+                                                    {(dataToUseInReport?.reportingTimePeriod !== "" && reportType !== "staffReappointmentTracker" && reportType !== "privilegedStaffSummary" && reportType !== "locumStaffbyTypes" && reportType !== "staffbyTypes" && reportType !== "locumStaffRenewalStatusTracker" && reportType !== "staffReappointmentStatusSummary" && reportType !== "ohipBillingNumbersByCareProvider" && reportType !== "currentMedicalDirectives" && reportType !== "retiredMedicalDirectives" && reportType !== "workflow" && reportType !== "attestationOutstanding") && (
                                                         <div className={`${style.reportRunByTextStyle} ${style.textAlignCenter} ${style.marginTop5} `}>Reporting Period used for this report : {dataToUseInReport?.reportingTimePeriod} ({dataToUseInReport?.fromToDisplay} to {dataToUseInReport?.toToDisplay}) </div>
                                                     )}
                                                     {/* {(reportType === "paymentProcessingStatusTracker") && (
@@ -2917,6 +2979,28 @@ const ReportTypeOverview = () => {
                                                                 </div>
                                                                 <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.departmentName?.name).join(', ') || 'All Departments'}</div>
                                                             </div>
+                                                            {reportType !== "currentMedicalDirectives" && (
+                                                                <div>
+                                                                    <div className={`${style.reportRunByParamStyle} ${style.marginTop5}`}>
+                                                                        {(dataToUseInReport?.selectedGroupsToSend?.length === 1 &&
+                                                                            dataToUseInReport?.selectedGroupsToSend[0]?.name)
+                                                                            ? 'Group'
+                                                                            : 'Groups'}
+                                                                    </div>
+                                                                    <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedGroupsToSend?.map(data => data?.name).join(', ') || 'All Groups'}</div>
+                                                                </div>
+                                                            )}
+                                                            {reportType !== "currentMedicalDirectives" && (
+                                                                <div>
+                                                                    <div className={`${style.reportRunByParamStyle} ${style.marginTop5}`}>
+                                                                        {(dataToUseInReport?.selectedAuthorsToSend?.length === 1 &&
+                                                                            dataToUseInReport?.selectedAuthorsToSend[0]?.name)
+                                                                            ? 'Author'
+                                                                            : 'Authors'}
+                                                                    </div>
+                                                                    <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedAuthorsToSend?.map(data => `${data?.name?.firstName} ${data?.name?.lastName}`).join(', ') || '-'}</div>
+                                                                </div>
+                                                            )}
                                                         </div>
                                                     )}
                                                     {(reportType === "staffReappointmentsNotes" || reportType === "staffReappointments" || reportType === "locumRenewalOrExtensionApplicationsSummary" || reportType === "privilegedStaffSummary" ||
@@ -3983,7 +4067,7 @@ const ReportTypeOverview = () => {
                                                                                         </div>
                                                                                     </div>
                                                                                 )) : (
-                                                                                    <ReportNoDataBox heading={'You do not have any Locum Extensions / Renewals'}
+                                                                                    <ReportNoDataBox heading={'You do not have any Current Medical Directives'}
                                                                                         subHeading={''} />
                                                                                 )
                                                                         ) : (reportType === "retiredMedicalDirectives") ? (
@@ -4033,7 +4117,7 @@ const ReportTypeOverview = () => {
                                                                                         </div>
                                                                                     </div>
                                                                                 )) : (
-                                                                                    <ReportNoDataBox heading={'You do not have any Locum Extensions / Renewals'}
+                                                                                    <ReportNoDataBox heading={'You do not have any Retired Medical Directives'}
                                                                                         subHeading={''} />
                                                                                 )
                                                                         ) : reportType === 'workflow' ?
@@ -4043,7 +4127,7 @@ const ReportTypeOverview = () => {
                                                                                     tableHeader={['MD Title', 'MD ID', 'Department / Division', 'Assigned To', 'Acknowledged']}
                                                                                     tableValue={medicalDirectivesWorkflow}
                                                                                     activitiesServicesValues={getMedicalDirectivesWorkflowValues()}
-                                                                                    styleName={style.multiProviderGrid}
+                                                                                    styleName={style.workflowGrid}
                                                                                 />
                                                                             ) : (
                                                                                 <ReportNoDataBox heading={'Based on the parameters selected and applied, there were NO RECORDS found to include in the report.'}

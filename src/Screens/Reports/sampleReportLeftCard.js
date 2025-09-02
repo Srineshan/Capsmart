@@ -48,8 +48,14 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
     const [selectedContractsToSend, setSelectedContractsToSend] = useState([]);
     const [selectedDepartments, setSelectedDepartments] = useState([]);
     const [selectedDepartmentsToSend, setSelectedDepartmentsToSend] = useState([]);
+    const [selectedGroups, setSelectedGroups] = useState([]);
+    const [selectedGroupsToSend, setSelectedGroupsToSend] = useState([]);
+    const [selectedAuthors, setSelectedAuthors] = useState([]);
+    const [selectedAuthorsToSend, setSelectedAuthorsToSend] = useState([]);
     const [sites, setSites] = useState([]);
     const [departments, setDepartments] = useState([]);
+    const [groups, setGroups] = useState([]);
+    const [authors, setAuthors] = useState([]);
     const [contracts, setContracts] = useState([]);
     const [selectedContracts, setSelectedContracts] = useState([]);
     const [staffType, setStaffType] = useState([]);
@@ -129,7 +135,11 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         selectedSites: selectedSites,
         selectedSitesToSend: selectedSitesToSend,
         selectedDepartments: selectedDepartments,
+        selectedGroups: selectedGroups,
+        selectedAuthors: selectedAuthors,
         selectedDepartmentsToSend: selectedDepartmentsToSend,
+        selectedGroupsToSend: selectedGroupsToSend,
+        selectedAuthorsToSend: selectedAuthorsToSend,
         selectedStaffType: selectedStaffType,
         selectedStaffTypeToSend: selectedStaffTypeToSend,
         sites: sites,
@@ -151,7 +161,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         selectedApplicationType: selectedApplicationType,
         selectedReappointmentStatus: selectedReappointmentStatus,
         selectedApplicationSentStatus: selectedApplicationSentStatus,
-        selectedWorkflowLevel: workflowLevel
+        selectedWorkflowLevel: workflowLevel,
     };
 
     useEffect(() => {
@@ -159,6 +169,8 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         setUserDetails();
         getActivityLogger();
         getStaffType();
+        getStaffList();
+        getGroupList();
         getPrivilegeCategory();
         // getContractAndUserList();
         if (reportType === 'paymentProcessingStatusTracker') {
@@ -282,6 +294,22 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         setStaffType(applicant)
     }
 
+    const getStaffList = async () => {
+        const response = await GET(
+            `user-management-service/user/allStaffs?status=ACTIVE&roles=${"Author / Owner"}`
+        );
+        console.log(response.data);
+        setAuthors(response?.data || [])
+    }
+
+    const getGroupList = async () => {
+        const response = await GET(
+            `medical-directive-service/medicalDirectiveGroup`
+        );
+        console.log(response.data);
+        setGroups(response?.data)
+    }
+
     const getPrivilegeCategory = async (signal) => {
         let url = `entity-service/privilege`
 
@@ -325,7 +353,10 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
             if (reportFilter?.endDate)
                 setTo(new Date(reportFilter?.endDate));
             // setSelectedSites(reportFilter?.sites);
-            setSelectedDepartments(reportFilter?.departmentSpecialties ? reportFilter?.departmentSpecialties : []);
+            setSelectedDepartments(reportFilter?.departmentSpecialties ? reportFilter?.departmentSpecialties?.map(data => data?.split('#')?.length > 1 ? data?.split('#')?.[1] : data) : []);
+            setSelectedGroups(reportFilter?.groupIds ? reportFilter?.groupIds : []);
+            setSelectedAuthors(reportFilter?.authorIds ? reportFilter?.authorIds : []);
+            setWorkflowLevel(reportFilter?.currentLevel ? reportFilter?.currentLevel : 'All')
             setSelectedStaffType(reportFilter?.applicantTypeId ? reportFilter?.applicantTypeId : [])
             setSelectedPrivilegeCategory(reportFilter?.privilegingCategoryId ? reportFilter?.privilegingCategoryId : [])
             setSelectedPosition(reportFilter?.positionType ? reportFilter?.positionType?.[0] : '')
@@ -337,14 +368,28 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         if (reportFilter) {
             let sitesToShow = [];
             let departmentsToShow = [];
+            let groupsToShow = [];
+            let authorsToShow = [];
             let staffsToShow = [];
             let privilegeCategoryToShow = [];
             departments?.map(data => {
                 if (reportFilter?.departmentSpecialties?.includes(data?.id)) {
-                    departmentsToShow.push(data)
+                    departmentsToShow.push(data?.id?.split('#')?.length > 1 ? data?.id?.split('#')?.[1] : data?.id)
                 }
             })
             setSelectedDepartmentsToSend(departmentsToShow)
+            groups?.map(data => {
+                if (reportFilter?.groupIds?.includes(data?.id)) {
+                    groupsToShow.push(data)
+                }
+            })
+            setSelectedGroupsToSend(groupsToShow)
+            authors?.map(data => {
+                if (reportFilter?.authorIds?.includes(data?.id)) {
+                    authorsToShow.push(data)
+                }
+            })
+            setSelectedAuthorsToSend(authorsToShow)
             staffType?.map(data => {
                 if (reportFilter?.applicantTypeId?.includes(data?.id)) {
                     staffsToShow.push(data)
@@ -367,7 +412,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         getDataToUseInReport(dataToUseInReport);
     }, [renewalreportingTimePeriod, selectedSites, selectedDepartments, selectedPrivilegeCategory, selectedStaffType,
         podType, contractStatus, reportingTimePeriod, selectedApplicationType, selectedReappointmentStatus,
-        selectedPosition, from, to, initialValueSet, selectedTimesheetInterval, selectedApplicationSentStatus, workflowLevel]);
+        selectedPosition, from, to, initialValueSet, selectedTimesheetInterval, selectedApplicationSentStatus, workflowLevel, selectedAuthors, selectedGroups]);
 
     useEffect(() => {
         let tempDept = [];
@@ -447,6 +492,22 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
             setSelectedDepartments(selectedDepartments?.filter(value => value !== defaultOption))
         }
 
+        if (selectedGroups?.length === 0) {
+            if (groups?.length !== 1) {
+                setSelectedGroups([defaultOption]);
+            }
+        } else if (selectedGroups?.length >= 2 && selectedGroups.includes(defaultOption)) {
+            setSelectedGroups(selectedGroups?.filter(value => value !== defaultOption))
+        }
+
+        if (selectedAuthors?.length === 0) {
+            if (authors?.length !== 1) {
+                setSelectedAuthors([defaultOption]);
+            }
+        } else if (selectedAuthors?.length >= 2 && selectedAuthors.includes(defaultOption)) {
+            setSelectedAuthors(selectedAuthors?.filter(value => value !== defaultOption))
+        }
+
         if (selectedContractedServiceProvider?.length === 0) {
             if (contractedServiceProviders?.length !== 1) {
                 setSelectedContractedServiceProvider([defaultOption]);
@@ -483,7 +544,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         }, 2000);
         return () => clearTimeout(timer);
 
-    }, [defaultOption, selectedSites, selectedDepartments, selectedContractedServiceProvider, selectedContracts, selectedStaffType, selectedPrivilegeCategory]);
+    }, [defaultOption, selectedSites, selectedDepartments, selectedContractedServiceProvider, selectedContracts, selectedStaffType, selectedPrivilegeCategory, selectedGroups, selectedAuthors]);
 
     useEffect(() => {
         if (myReportIdFromUrl)
@@ -589,6 +650,50 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
             );
             setSelectedDepartmentsToSend(
                 typeof value === 'string' ? departments?.filter(data => value.split(',')?.includes(data?.id))?.map(data => data) : departments?.filter(data => value?.includes(data?.id))?.map(data => data),
+            );
+        }
+        setSelectedContracts([defaultOption]);
+        setSelectedContractsToSend([]);
+        setSelectedContractedServiceProvider([defaultOption]);
+        setSelectedContractedServiceProviderToSend([]);
+    };
+
+    const handleChangeGroups = (event) => {
+        const {
+            target: { value },
+        } = event;
+        console.log(value[value?.length - 1], value)
+        if (value?.length >= 2 && value[value?.length - 1] === defaultOption) {
+            setSelectedGroups([defaultOption]);
+            setSelectedGroupsToSend([]);
+        } else {
+            setSelectedGroups(
+                typeof value === 'string' ? value.split(',') : value
+            );
+            setSelectedGroupsToSend(
+                typeof value === 'string' ? groups?.filter(data => value.split(',')?.includes(data?.id))?.map(data => data) : groups?.filter(data => value?.includes(data?.id))?.map(data => data),
+            );
+        }
+        setSelectedContracts([defaultOption]);
+        setSelectedContractsToSend([]);
+        setSelectedContractedServiceProvider([defaultOption]);
+        setSelectedContractedServiceProviderToSend([]);
+    };
+
+    const handleChangeAuthors = (event) => {
+        const {
+            target: { value },
+        } = event;
+        console.log(value[value?.length - 1], value)
+        if (value?.length >= 2 && value[value?.length - 1] === defaultOption) {
+            setSelectedAuthors([defaultOption]);
+            setSelectedAuthorsToSend([]);
+        } else {
+            setSelectedAuthors(
+                typeof value === 'string' ? value.split(',') : value
+            );
+            setSelectedAuthorsToSend(
+                typeof value === 'string' ? authors?.filter(data => value.split(',')?.includes(data?.id))?.map(data => data) : authors?.filter(data => value?.includes(data?.id))?.map(data => data),
             );
         }
         setSelectedContracts([defaultOption]);
@@ -752,67 +857,9 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                 {(reportType === "staffReappointmentsNotes" || reportType === "staffReappointments" || reportType === "locumRenewalOrExtensionApplicationsSummary" || reportType === "privilegedStaffSummary" ||
                     reportType === "submittedApplicationsReviewSummary" || reportType === "staffReappointmentTracker" || reportType === "ohipBillingNumbersByCareProvider" || reportType === "careProviderCareerMilestoneSummary" ||
                     reportType === "declinedOrNotRenewedStaffSummary" || reportType === "reappointmentApplicationNotStarted" || reportType === "currentNotesSummary" || reportType === "staffReappointmentStatusSummary" || reportType === "staffbyTypes" || reportType === "locumStaffbyTypes" || reportType === "locumStaffRenewalStatusTracker" || reportType === "privilegedStaffSummary" || reportType === "careProvidersSummary"
-                    || reportType === "workflow") ? (
+                    || reportType === "workflow" || reportType === "currentMedicalDirectives" || reportType === "retiredMedicalDirectives") ? (
                     <>
-                        {/* {reportType === "staffReappointmentsNotes" && (
-                            <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                                <InputLabel id="demo-simple-select-standard-label1">{reportType === "staffReappointmentsNotes" ? 'Renewal' : 'Expiration'} Time Frame</InputLabel>
-                                <Select
-                                    labelId="demo-simple-select-standard-label1"
-                                    id="demo-simple-select-standard1"
-                                    value={renewalreportingTimePeriod}
-                                    onChange={(e) => { setRenewalreportingTimePeriod(e.target.value) }}
-                                    label="Renewal Time Frame"
-                                    disabled={isMyReport || isLoading}
-                                >
-                                    <MenuItem value={30} disabled={isMyReport || isLoading}>{reportType === "staffReappointmentsNotes" ? 'Renewal' : 'Expiration'} Within Next 30 days</MenuItem>
-                                    <MenuItem value={60} disabled={isMyReport || isLoading}>{reportType === "staffReappointmentsNotes" ? 'Renewal' : 'Expiration'} Within Next 60 days</MenuItem>
-                                    <MenuItem value={90} disabled={isMyReport || isLoading}>{reportType === "staffReappointmentsNotes" ? 'Renewal' : 'Expiration'} Within Next 90 days</MenuItem>
-                                </Select>
-                            </FormControl>
-                        )} */}
-                        {/* <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                            <InputLabel id="demo-multiple-name-label2" className={style.headingtextStyle}>Site</InputLabel>
-                            <Select
-                                labelId="demo-multiple-name-label2"
-                                id="demo-multiple-name2"
-                                multiple
-                                value={selectedSites}
-                                onChange={handleChangeSites}
-                                MenuProps={MenuProps}
-                                disabled={isMyReport || isLoading}
-                            >
-                                {sites?.length >= 2 && (
-                                    <MenuItem value={defaultOption} disabled={isMyReport || isLoading}>All Sites</MenuItem>
-                                )}
-                                {sites?.map((data) => (
-                                    <MenuItem
-                                        key={data?.id}
-                                        value={data?.id}
-                                        disabled={isMyReport || isLoading}
-                                    >
-                                        {data?.siteName?.siteName}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl> */}
-                        {/* <FormControl variant="standard" sx={{ m: 1, width: "250px", marginTop: "20px" }}>
-                            <InputLabel id="month-selector-label">Reporting Period</InputLabel>
-                            <Select
-                                labelId="month-selector-label"
-                                id="month-selector"
-                                value={selectedMonth}
-                                onChange={handleMonthChange}
-                                disabled={isMyReport || isLoading}
-                            >
-                                {monthOptions.map((month) => (
-                                    <MenuItem key={month} value={month}>
-                                        {month}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl> */}
-                        {reportType !== "staffReappointmentTracker" && reportType !== "ohipBillingNumbersByCareProvider" && reportType !== "privilegedStaffSummary" && reportType !== "locumStaffbyTypes" && reportType !== "staffbyTypes" && reportType !== "locumStaffRenewalStatusTracker" && reportType !== 'staffReappointmentStatusSummary' && (
+                        {reportType !== "staffReappointmentTracker" && reportType !== "ohipBillingNumbersByCareProvider" && reportType !== "privilegedStaffSummary" && reportType !== "locumStaffbyTypes" && reportType !== "staffbyTypes" && reportType !== "locumStaffRenewalStatusTracker" && reportType !== 'staffReappointmentStatusSummary' && reportType !== "workflow" && reportType !== "currentMedicalDirectives" && reportType !== "retiredMedicalDirectives" && (
                             <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                                 <InputLabel id="demo-multiple-name-label1" className={style.headingtextStyle}>Reporting Time Period</InputLabel>
                                 <Select
@@ -949,6 +996,148 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 })}
                             </div>
                         )}
+                        {reportType !== "currentMedicalDirectives" && (
+                            <>
+                                <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                                    <InputLabel id="demo-multiple-name-label2" className={style.headingtextStyle}>Groups</InputLabel>
+                                    <Select
+                                        labelId="demo-multiple-name-label2"
+                                        id="demo-multiple-name2"
+                                        multiple
+                                        value={selectedGroups}
+                                        onChange={handleChangeGroups}
+                                        MenuProps={MenuProps}
+                                        disabled={isLoading}
+                                        className={style.textAlignLeft}
+                                        renderValue={(selected) => {
+                                            if (selected?.length === 1) {
+                                                const group = groups?.find(grp => grp?.id === selected[0]);
+                                                console.log("")
+                                                return group?.name || 'All';
+                                            } else if (selected.length > 1) {
+                                                return `${selected.length} Selected`;
+                                            } else {
+                                                return '';
+                                            }
+                                        }}
+                                    >
+                                        {groups?.length >= 2 && (
+                                            <MenuItem value={defaultOption} disabled={isLoading}>All</MenuItem>
+                                        )}
+                                        {groups?.map((data) => (
+                                            <MenuItem
+                                                key={data?.id}
+                                                value={data?.id}
+                                                disabled={isLoading}
+                                            >
+                                                {data?.name}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                                {selectedGroups?.filter(Boolean).length > 0 && (
+                                    <div className={`${style.grid2Gap} ${style.marginLeft5}`}>
+                                        {selectedGroups.map((id) => {
+                                            const group = groups?.find(grp => grp?.id === id);
+                                            return (
+                                                <div key={id} className={`${style.spaceBetween} ${style.marginRight5} ${style.filterBackground}`}>
+                                                    <div className={`${style.filtertextStyle}`}>{group?.name}</div>
+                                                    <Tooltip title="Remove Filter" arrow>
+                                                        <CancelOutlinedIcon
+                                                            sx={{
+                                                                fontSize: 15,
+                                                                color: "#06617A",
+                                                                marginLeft: "5px",
+                                                            }}
+                                                            className={style.cursorPointer}
+                                                            onClick={() => {
+                                                                const updatedGroups = selectedGroups?.filter(grpId => grpId !== id);
+                                                                setSelectedGroups(updatedGroups);
+
+                                                                const updatedGroupsToSend = groups
+                                                                    ?.filter(data => updatedGroups?.includes(data?.id))
+                                                                    ?.map(data => data);
+
+                                                                setSelectedGroupsToSend(updatedGroupsToSend);
+                                                            }}
+                                                        />
+                                                    </Tooltip>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                )}
+                                <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                                    <InputLabel id="demo-multiple-name-label2" className={style.headingtextStyle}>Author / Owner</InputLabel>
+                                    <Select
+                                        labelId="demo-multiple-name-label2"
+                                        id="demo-multiple-name2"
+                                        multiple
+                                        value={selectedAuthors}
+                                        onChange={handleChangeAuthors}
+                                        MenuProps={MenuProps}
+                                        disabled={isLoading}
+                                        className={style.textAlignLeft}
+                                        renderValue={(selected) => {
+                                            if (selected?.length === 1) {
+                                                const author = authors?.find(auth => auth?.id === selected[0]);
+                                                console.log("")
+                                                return author?.name || 'All';
+                                            } else if (selected.length > 1) {
+                                                return `${selected.length} Selected`;
+                                            } else {
+                                                return '';
+                                            }
+                                        }}
+                                    >
+                                        {authors?.length >= 2 && (
+                                            <MenuItem value={defaultOption} disabled={isLoading}>All</MenuItem>
+                                        )}
+                                        {authors?.map((data) => (
+                                            <MenuItem
+                                                key={data?.id}
+                                                value={data?.id}
+                                                disabled={isLoading}
+                                            >
+                                                {`${data?.name?.firstName} ${data?.name?.lastName}`}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                                {selectedAuthors?.filter(Boolean).length > 0 && (
+                                    <div className={`${style.grid2Gap} ${style.marginLeft5}`}>
+                                        {selectedAuthors?.map((id) => {
+                                            const author = authors?.find(auth => auth?.id === id);
+                                            return (
+                                                <div key={id} className={`${style.spaceBetween} ${style.marginRight5} ${style.filterBackground}`}>
+                                                    <div className={`${style.filtertextStyle}`}>{`${author?.name?.firstName} ${author?.name?.lastName}`}</div>
+                                                    <Tooltip title="Remove Filter" arrow>
+                                                        <CancelOutlinedIcon
+                                                            sx={{
+                                                                fontSize: 15,
+                                                                color: "#06617A",
+                                                                marginLeft: "5px",
+                                                            }}
+                                                            className={style.cursorPointer}
+                                                            onClick={() => {
+                                                                const updatedAuthors = selectedAuthors?.filter(authId => authId !== id);
+                                                                setSelectedAuthors(updatedAuthors);
+
+                                                                const updatedAuthorsToSend = authors
+                                                                    ?.filter(data => updatedAuthors?.includes(data?.id))
+                                                                    ?.map(data => data);
+
+                                                                setSelectedAuthorsToSend(updatedAuthorsToSend);
+                                                            }}
+                                                        />
+                                                    </Tooltip>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                )}
+                            </>
+                        )}
                         {/* <div>
                             <InputLabel id="demo-multiple-name-label2" className={style.headingtextStyle}>Departments</InputLabel>
                             <CommonMultiSelectField
@@ -1009,7 +1198,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 ))}
                             </Select>
                         </FormControl> */}
-                        {reportType !== 'workflow' && (
+                        {reportType !== 'workflow' && reportType === "workflow" && reportType === "currentMedicalDirectives" && (
                             <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                                 <InputLabel id="demo-multiple-name-label2" className={style.headingtextStyle}>Staff Type</InputLabel>
                                 <Select
@@ -1075,7 +1264,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 })}
                             </div>
                         )}
-                        {reportType !== 'workflow' && (
+                        {reportType !== 'workflow' && reportType === "workflow" && reportType === "currentMedicalDirectives" && (
                             <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                                 <InputLabel id="demo-multiple-name-label2" className={style.headingtextStyle}>Privilege Category</InputLabel>
                                 <Select
