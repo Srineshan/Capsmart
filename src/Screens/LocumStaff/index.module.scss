@@ -2668,7 +2668,7 @@ input[type="file"] {
 }
 
 .contractScrollStyle {
-  height: calc(100vh - 295px);
+  height: calc(100vh - 345px);
   overflow: scroll;
 }
 
@@ -3571,7 +3571,17 @@ input[type="number"] {
   z-index: 9999;
 }
 
-.customStyle{
+.customStyle {
   font-style: italic;
   font-weight: 600;
+}
+
+.tableDesc {
+  text-align: left;
+  font: italic normal normal 16px/20px proxima-nova;
+  color: #171A1A;
+}
+
+.noteText {
+  color: #FB4643;
 }

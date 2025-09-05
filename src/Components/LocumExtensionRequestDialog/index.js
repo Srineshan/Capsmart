@@ -225,9 +225,9 @@ const LocumExtensiveRequestDialog = ({ getIsOpen, tableDataValue, selectedTab })
   }, [selectDataLocum]);
 
   const reappointmentRequestApplication = async () => {
-     const startDate = selectDataLocum?.tenure?.to
-    ? new Date(selectDataLocum?.tenure?.to).toISOString().split('T')[0] + 'T00:00'
-    : null;
+    const startDate = selectDataLocum?.tenure?.to
+      ? new Date(selectDataLocum?.tenure?.to).toISOString().split('T')[0] + 'T00:00'
+      : null;
     const fromDate = selectedTab === "ACTIVELOCUM"
       ? format(addDays(new Date(startDate), 1), 'yyyy-MM-dd')
       : selectedTab === "EXPIREDLOCUM" && customStartDate
@@ -287,7 +287,7 @@ const LocumExtensiveRequestDialog = ({ getIsOpen, tableDataValue, selectedTab })
                 id: DepartmentId,
                 serviceAreaIds: [speciltyId],
                 // serviceAreaSpecific: speciltyId ? true : false
-                serviceAreaSpecific:false
+                serviceAreaSpecific: false
               }
             ],
             departmentSpecific: true
@@ -330,7 +330,7 @@ const LocumExtensiveRequestDialog = ({ getIsOpen, tableDataValue, selectedTab })
 
   };
 
-   const handleDateChangeStart = (date, field) => {
+  const handleDateChangeStart = (date, field) => {
     const formattedDate = format(new Date(date), "yyyy-MM-dd'T'00:00")
     setCustomStartDate(formattedDate);
     // setSelectedMonth(formattedDate);
@@ -405,7 +405,7 @@ const LocumExtensiveRequestDialog = ({ getIsOpen, tableDataValue, selectedTab })
     // Add "Custom End Date" option
     const now = new Date();
     months.push({
-      label: 'Custom End Date',
+      label: 'Custom Date',
       value: 'Custom'
     });
 
@@ -420,11 +420,11 @@ const LocumExtensiveRequestDialog = ({ getIsOpen, tableDataValue, selectedTab })
   const lastModifiedDate = formDetails?.lastModifiedDate;
   const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), dateFormat) : "-";
   //  const ExpireDate = selectDataLocum?.tenure?.to;
- const ExpireDate = selectDataLocum?.tenure?.to
-  ? new Date(selectDataLocum?.tenure?.to).toISOString().split('T')[0] + 'T00:00'
-  : null;
+  const ExpireDate = selectDataLocum?.tenure?.to
+    ? new Date(selectDataLocum?.tenure?.to).toISOString().split('T')[0] + 'T00:00'
+    : null;
 
-  console.log("Date to Expire :", ExpireDate ,"expire Date add one day :", format(addDays(new Date(ExpireDate), 1), dateFormat))  
+  console.log("Date to Expire :", ExpireDate, "expire Date add one day :", format(addDays(new Date(ExpireDate), 1), dateFormat))
 
   const formattedExpiringDate = ExpireDate ? format(new Date(ExpireDate), dateFormat) : "-";
   const daysRemaining = ExpireDate ? Math.abs(differenceInDays(new Date(ExpireDate), new Date())) : null;
@@ -437,11 +437,11 @@ const LocumExtensiveRequestDialog = ({ getIsOpen, tableDataValue, selectedTab })
       : currentDateNow;
 
   const minDateValueValid =
-  selectedTab === 'ACTIVELOCUM'
-    ? ExpireDate
-      ? addDays(new Date(ExpireDate), 30)
-      : null
-    : addDays(currentDateNow,30);
+    selectedTab === 'ACTIVELOCUM'
+      ? ExpireDate
+        ? addDays(new Date(ExpireDate), 30)
+        : null
+      : addDays(currentDateNow, 30);
 
   const maxDateValue =
     selectedTab === 'ACTIVELOCUM'
@@ -596,7 +596,7 @@ const LocumExtensiveRequestDialog = ({ getIsOpen, tableDataValue, selectedTab })
                     {/* </div> */}
                     <div className={`${selectedTab === "ACTIVELOCUM" ? style.marginLeft : ""} ${style.rejectionHeadingTextStyle}`}>
                       Start Date <br />
-                      {selectedTab === "EXPIREDLOCUM" ? (
+                      {(selectedTab === "EXPIREDLOCUM" || selectedMonth === "Custom") ? (
                         <div className={`${style.marginTopLess}`}>
                           <CommonDateField
                             className={`${style.fullWidth}`}
@@ -915,32 +915,32 @@ const LocumExtensiveRequestDialog = ({ getIsOpen, tableDataValue, selectedTab })
                 <div className={`${style.cancelButton} ${style.cancelButtonTextStyle}`}>Cancel</div>
               </div> */}
               <Tooltip title="Click to Continue" arrow >
-              <div
-                className={`${style.reviewButtonStyle}
+                <div
+                  className={`${style.reviewButtonStyle}
                  ${style.cursorPointer}
                   ${style.marginLeft}`}
-                // onClick={getApplicationNotes}
-                // style={{
-                //   pointerEvents: isApproveEnabled ? 'auto' : 'none',
-                //   opacity: isApproveEnabled ? 1 : 0.5
-                // }}
-                style={{
-                  pointerEvents: isValidDateRange() ? "auto" : "none",
-                  opacity: isValidDateRange() ? 1 : 0.5,
-                }}
-                onClick={async () => {
-                if (isValidDateRange()) {
-                  try {
-                    await reappointmentRequestApplication();
-                    getIsOpen(false);
-                  } catch (error) {
-                    console.error("Error in reappointment request:", error);
-                  }
-                }
-              }}
-              >
-                <div className={style.reviewButton}>Continue</div>
-              </div>
+                  // onClick={getApplicationNotes}
+                  // style={{
+                  //   pointerEvents: isApproveEnabled ? 'auto' : 'none',
+                  //   opacity: isApproveEnabled ? 1 : 0.5
+                  // }}
+                  style={{
+                    pointerEvents: isValidDateRange() ? "auto" : "none",
+                    opacity: isValidDateRange() ? 1 : 0.5,
+                  }}
+                  onClick={async () => {
+                    if (isValidDateRange()) {
+                      try {
+                        await reappointmentRequestApplication();
+                        getIsOpen(false);
+                      } catch (error) {
+                        console.error("Error in reappointment request:", error);
+                      }
+                    }
+                  }}
+                >
+                  <div className={style.reviewButton}>Continue</div>
+                </div>
               </Tooltip>
             </div>
           </div>

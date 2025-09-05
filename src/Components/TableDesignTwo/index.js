@@ -404,7 +404,8 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
     }, [userDetails])
 
     useEffect(() => {
-        setUserDetails();
+        if (users?.id)
+            setUserDetails();
     }, [users?.id])
 
     const setUserDetails = async () => {
@@ -507,7 +508,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                 <div className={`${scrollStyle} ${style.tableBodyScroll} ${style.pagebreak}`}>
                     {(tableData?.length !== 0 && tableData?.length !== undefined) ? tableData?.map((data, index) => (
                         <>
-                            <div className={`${style.tableData} ${style.marginTop5} ${gridStyle} ${clickedIndex === index ? style.tableDataClicked : ""}
+                            <div className={`${style.tableData} ${index % 2 === 0 ? style.alternativeBackground : ''} ${style.marginTop5} ${gridStyle} ${clickedIndex === index ? style.tableDataClicked : ""}
                             ${isUploadYourDocTable && hasVerificationAttempted && (data?.isVerified === false || data?.isVerified === null || data?.isVerified === undefined || data?.isVerified == null) ? style.redBorder : ''}`} key={index}>
                                 {tableDataValues?.map((tableData, tableDataIndex) => (
                                     tableData?.type === "dot" ? (
@@ -686,7 +687,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                         )
                                             : tableData?.type === "text" ? (
                                                 <Tooltip title={tableData?.tooltipValueText?.[index]} arrow>
-                                                    <p className={`${style.tableDataFontStyle} ${style.verticalAlignCenter} ${style.cursorArrow} ${tableData?.onClickFunction ? `${style.cursorPointer} ${style.textHoverColor}` : ''}`} onClick={tableData?.onClickFunction ? () => { tableData?.onClickFunction(data, index) } : () => { }}>
+                                                    <p className={`${style.tableDataFontStyle} ${style.verticalAlignCenter} ${style.cursorArrow} ${tableData?.onClickFunction ? `${style.cursorPointer} ${style.textHoverColor}` : ''} ${tableData?.isAlignCenter ? style.justifyCenter : ''}`} onClick={tableData?.onClickFunction ? () => { tableData?.onClickFunction(data, index) } : () => { }}>
                                                         {searchTermForTable?.trim() ?
                                                             String(tableData?.value?.[index] || '')?.split(new RegExp(`(${searchTermForTable})`, 'gi'))?.map((part, i) =>
                                                                 part?.toLowerCase() === searchTermForTable?.toLowerCase() ?
@@ -1339,7 +1340,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                                     }}
                                                                     key={0}
                                                                 >
-                                                                    {visibleActions[0]?.data}
+                                                                    {visibleActions[0]?.conditionForAlternateText !== undefined ? eval(visibleActions[0]?.conditionForAlternateText) : visibleActions[0]?.data}
                                                                 </div>
                                                             )
                                                             : (
@@ -1347,7 +1348,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                                     className={`${style.tableDataFontStyleForButton} ${visibleActions[0]?.isIndent ? style.marginLeft30 : ''} ${style.disabledLook}`}
                                                                     key={0}
                                                                 >
-                                                                    {visibleActions[0]?.data}
+                                                                    {visibleActions[0]?.conditionForAlternateText !== undefined ? eval(visibleActions[0]?.conditionForAlternateText) : visibleActions[0]?.data}
                                                                 </div>
                                                             )
                                                         : visibleActions?.length === 1 ? (
@@ -1358,7 +1359,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                                         handleClose();
                                                                     }}
                                                                     key={0}>
-                                                                    {visibleActions[0]?.data}
+                                                                    {visibleActions[0]?.conditionForAlternateText !== undefined ? eval(visibleActions[0]?.conditionForAlternateText) : visibleActions[0]?.data}
                                                                 </span>
                                                             </Tooltip>
                                                         ) : (
@@ -1386,7 +1387,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                                         <React.Fragment key={actionsIndex}>
                                                                             <div className={`${style.divider}`}></div>
                                                                             <div className={`${style.isParagraph}`}>
-                                                                                {actionsData.data}
+                                                                                {actionsData?.conditionForAlternateText !== undefined ? eval(actionsData?.conditionForAlternateText) : actionsData.data}
                                                                             </div>
                                                                         </React.Fragment>
                                                                     ) : actionsData?.conditionToShow !== undefined ? (
@@ -1398,7 +1399,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                                             } : () => { }}
                                                                             key={actionsIndex}
                                                                         >
-                                                                            {actionsData.data}
+                                                                            {actionsData?.conditionForAlternateText !== undefined ? eval(actionsData?.conditionForAlternateText) : actionsData.data}
                                                                         </div>
                                                                     ) : (
                                                                         <div
@@ -1409,7 +1410,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                                             }}
                                                                             key={actionsIndex}
                                                                         >
-                                                                            {actionsData.data}
+                                                                            {actionsData?.conditionForAlternateText !== undefined ? eval(actionsData?.conditionForAlternateText) : actionsData.data}
                                                                         </div>
                                                                     );
                                                                 })}

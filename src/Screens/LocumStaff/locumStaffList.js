@@ -2028,12 +2028,20 @@ const LocumStaffList = ({
       requiredValue: "boolean",
       onClick: onClickExtensiveRequestLocumDialog,
       conditionToShow: `data?.extensionRequestStatus === "NA" && data?.reAppointmentInitiated === false && ((new Date(data?.tenure?.to) - new Date()) / (1000 * 60 * 60 * 24)) <= 30`,
+      conditionForAlternateText: `data?.reAppointmentInitiated === true ? "Application Sent" : data?.extensionRequestStatus === "REQUESTED" ? "Extension Requested" :  "Request Extension"`
     },
-    // {
-    //   data: "Create Note",
-    //   requiredValue: "boolean",
-    //   onClick: onClickNotesDialog,
-    // },
+    {
+      data: "Send Reminder To Dept Head",
+      requiredValue: "boolean",
+      onClick: () => { },
+      conditionToShow: `data?.reAppointmentInitiated === false && data?.extensionRequestStatus !== "NOT_REQUESTED"`
+    },
+    {
+      data: "Send Reminder To Applicant",
+      requiredValue: "boolean",
+      onClick: () => { },
+      conditionToShow: `data?.reAppointmentInitiated === true`
+    },
   ];
 
   const expiredLocumActionsData = [
@@ -2066,21 +2074,24 @@ const LocumStaffList = ({
 
   const expiredLocumActionsSMData = [
     {
-      data: "Request Renew",
+      data: "Request To Renew",
       requiredValue: "boolean",
       onClick: onClickExtensiveRequestLocumDialog,
       conditionToShow: `data?.extensionRequestStatus === "NA" && data?.reAppointmentInitiated === false`,
+      conditionForAlternateText: `data?.reAppointmentInitiated === true ? "Application Sent" : data?.extensionRequestStatus === "REQUESTED" ? "Renewal Requested" :  "Request To Renew"`
     },
-    // {
-    //   data: "Send Reminder",
-    //   requiredValue: "boolean",
-    //   onClick: "",
-    // },
-    // {
-    //   data: "Create Note",
-    //   requiredValue: "boolean",
-    //   onClick: onClickNotesDialog,
-    // },
+    {
+      data: "Send Reminder To Dept Head",
+      requiredValue: "boolean",
+      onClick: () => { },
+      conditionToShow: `data?.reAppointmentInitiated === false && data?.extensionRequestStatus !== "NOT_REQUESTED"`
+    },
+    {
+      data: "Send Reminder To Applicant",
+      requiredValue: "boolean",
+      onClick: () => { },
+      conditionToShow: `data?.reAppointmentInitiated === true`
+    },
 
   ];
 
@@ -2183,7 +2194,7 @@ const LocumStaffList = ({
         <div>
           <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
             <div className={style.searchFieldAlignment}>
-              <CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} isOnClickAvailable={true} placeholder={'Search By Locum Staff'} />
+              <CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} isOnClickAvailable={true} onClickFunc={(data, index) => onClickViewAndVerifyFunction(data.id)} placeholder={'Search By Locum Staff'} />
             </div>
             <div className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
               <div className={`${style.spaceBetween} ${style.marginLeftRight10}`}>
@@ -2413,31 +2424,36 @@ const LocumStaffList = ({
                 <CircularProgress sx={{ color: "#06617A" }} />
               </div>
             ) : (
-              <div ref={componentRef}>
-                <div
-                  className={`${style.reduceMarginTop10} ${style.margin20} staffApplicationList`}
-                  ref={PDFRef}
-                >
-                  <TableTwo
-                    tableHeaderValues={tableHeaderValues}
-                    tableDataValues={tableDataValues}
-                    tableData={tableData}
-                    gridStyle={gridStyle}
-                    actions={actions}
-                    scrollStyle={style.contractScrollStyle}
-                    tableSortValues={tableSortValues}
-                    heading={"There are no Records for you to manage"}
-                    onClickFunction={() => { }}
-                    getHandleSort={getHandleSort}
-                    sortValue={{ sortBy: sortValue, sortByField: sortField }}
-                    getSelectedPage={getSelectedPage}
-                    totalCount={tableTotalValues}
-                    page={page}
-                    searchTermForTable={searchTermForTable}
-                    searchCount={searchCount}
-                    setSearchTermForTable={setSearchTermForTable}
-                    onLimitChange={handleLimitChange}
-                  />
+              <div>
+                {selectedTab === "ACTIVELOCUM" && (
+                  <div className={`${style.tableDesc} ${style.noteText} ${style.marginLeft20} ${style.marginTop10}`}>{tableData?.filter(data => differenceInDays(new Date(data?.tenure?.to), new Date()) < 30)?.length} Active Locum Applicants Nearing Expiration.</div>
+                )}
+                <div ref={componentRef}>
+                  <div
+                    className={`${style.reduceMarginTop10} ${style.margin20} staffApplicationList`}
+                    ref={PDFRef}
+                  >
+                    <TableTwo
+                      tableHeaderValues={tableHeaderValues}
+                      tableDataValues={tableDataValues}
+                      tableData={tableData}
+                      gridStyle={gridStyle}
+                      actions={actions}
+                      scrollStyle={style.contractScrollStyle}
+                      tableSortValues={tableSortValues}
+                      heading={"There are no Records for you to manage"}
+                      onClickFunction={() => { }}
+                      getHandleSort={getHandleSort}
+                      sortValue={{ sortBy: sortValue, sortByField: sortField }}
+                      getSelectedPage={getSelectedPage}
+                      totalCount={tableTotalValues}
+                      page={page}
+                      searchTermForTable={searchTermForTable}
+                      searchCount={searchCount}
+                      setSearchTermForTable={setSearchTermForTable}
+                      onLimitChange={handleLimitChange}
+                    />
+                  </div>
                 </div>
               </div>
             )}
