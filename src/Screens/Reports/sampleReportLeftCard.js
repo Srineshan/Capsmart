@@ -39,6 +39,8 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
     const [activityType, setActivityType] = useState('Outpatient Clinic Service');
     const [activityPerformed, setActivityPerformed] = useState('Half Day Clinic Session');
     const [renewalreportingTimePeriod, setRenewalreportingTimePeriod] = useState(30);
+    const [noOfDays, setNoOfDays] = useState(30);
+    const [trackerTabName, setTrackerTabName] = useState('medical_directive_tab');
     const [contractContinuationPolicy, setContractContinuationPolicy] = useState('ALL');
     const [contractStatus, setContractStatus] = useState('ACTIVE');
     const [podType, setPodType] = useState('Medical Staff Membership & Privileges');
@@ -162,6 +164,8 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         selectedReappointmentStatus: selectedReappointmentStatus,
         selectedApplicationSentStatus: selectedApplicationSentStatus,
         selectedWorkflowLevel: workflowLevel,
+        noOfDays: noOfDays,
+        tab: trackerTabName
     };
 
     useEffect(() => {
@@ -412,7 +416,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         getDataToUseInReport(dataToUseInReport);
     }, [renewalreportingTimePeriod, selectedSites, selectedDepartments, selectedPrivilegeCategory, selectedStaffType,
         podType, contractStatus, reportingTimePeriod, selectedApplicationType, selectedReappointmentStatus,
-        selectedPosition, from, to, initialValueSet, selectedTimesheetInterval, selectedApplicationSentStatus, workflowLevel, selectedAuthors, selectedGroups]);
+        selectedPosition, from, to, initialValueSet, selectedTimesheetInterval, selectedApplicationSentStatus, workflowLevel, selectedAuthors, selectedGroups, noOfDays, trackerTabName]);
 
     useEffect(() => {
         let tempDept = [];
@@ -857,9 +861,9 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                 {(reportType === "staffReappointmentsNotes" || reportType === "staffReappointments" || reportType === "locumRenewalOrExtensionApplicationsSummary" || reportType === "privilegedStaffSummary" ||
                     reportType === "submittedApplicationsReviewSummary" || reportType === "staffReappointmentTracker" || reportType === "ohipBillingNumbersByCareProvider" || reportType === "careProviderCareerMilestoneSummary" ||
                     reportType === "declinedOrNotRenewedStaffSummary" || reportType === "reappointmentApplicationNotStarted" || reportType === "currentNotesSummary" || reportType === "staffReappointmentStatusSummary" || reportType === "staffbyTypes" || reportType === "locumStaffbyTypes" || reportType === "locumStaffRenewalStatusTracker" || reportType === "privilegedStaffSummary" || reportType === "careProvidersSummary"
-                    || reportType === "workflow" || reportType === "currentMedicalDirectives" || reportType === "retiredMedicalDirectives") ? (
+                    || reportType === "workflow" || reportType === "currentMedicalDirectives" || reportType === "retiredMedicalDirectives" || reportType === "upcomingForReview" || reportType === "medicalDirectivesTracker") ? (
                     <>
-                        {reportType !== "staffReappointmentTracker" && reportType !== "ohipBillingNumbersByCareProvider" && reportType !== "privilegedStaffSummary" && reportType !== "locumStaffbyTypes" && reportType !== "staffbyTypes" && reportType !== "locumStaffRenewalStatusTracker" && reportType !== 'staffReappointmentStatusSummary' && reportType !== "workflow" && reportType !== "currentMedicalDirectives" && reportType !== "retiredMedicalDirectives" && (
+                        {reportType !== "staffReappointmentTracker" && reportType !== "ohipBillingNumbersByCareProvider" && reportType !== "privilegedStaffSummary" && reportType !== "locumStaffbyTypes" && reportType !== "currentNotesSummary" && reportType !== "staffbyTypes" && reportType !== "locumStaffRenewalStatusTracker" && reportType !== 'staffReappointmentStatusSummary' && reportType !== "workflow" && reportType !== "currentMedicalDirectives" && reportType !== "retiredMedicalDirectives" && reportType !== "upcomingForReview" && reportType !== "medicalDirectivesTracker" && (
                             <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                                 <InputLabel id="demo-multiple-name-label1" className={style.headingtextStyle}>Reporting Time Period</InputLabel>
                                 <Select
@@ -927,43 +931,45 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 </div>
                             </>
                         )}
-                        <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                            <InputLabel id="demo-multiple-name-label2" className={style.headingtextStyle}>Departments</InputLabel>
-                            <Select
-                                labelId="demo-multiple-name-label2"
-                                id="demo-multiple-name2"
-                                multiple
-                                value={selectedDepartments}
-                                onChange={handleChangeDepartments}
-                                MenuProps={MenuProps}
-                                disabled={isLoading}
-                                className={style.textAlignLeft}
-                                renderValue={(selected) => {
-                                    if (selected?.length === 1) {
-                                        const dept = departments?.find(dep => dep?.id === selected[0]);
-                                        console.log("")
-                                        return dept?.departmentName?.name || 'All';
-                                    } else if (selected.length > 1) {
-                                        return `${selected.length} Selected`;
-                                    } else {
-                                        return '';
-                                    }
-                                }}
-                            >
-                                {departments?.length >= 2 && (
-                                    <MenuItem value={defaultOption} disabled={isLoading}>All</MenuItem>
-                                )}
-                                {departments?.map((data) => (
-                                    <MenuItem
-                                        key={data?.id}
-                                        value={data?.id}
-                                        disabled={isLoading}
-                                    >
-                                        {data?.departmentName?.name}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
+                        {reportType !== "medicalDirectivesTracker" && (
+                            <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                                <InputLabel id="demo-multiple-name-label2" className={style.headingtextStyle}>Departments</InputLabel>
+                                <Select
+                                    labelId="demo-multiple-name-label2"
+                                    id="demo-multiple-name2"
+                                    multiple
+                                    value={selectedDepartments}
+                                    onChange={handleChangeDepartments}
+                                    MenuProps={MenuProps}
+                                    disabled={isLoading}
+                                    className={style.textAlignLeft}
+                                    renderValue={(selected) => {
+                                        if (selected?.length === 1) {
+                                            const dept = departments?.find(dep => dep?.id === selected[0]);
+                                            console.log("")
+                                            return dept?.departmentName?.name || 'All';
+                                        } else if (selected.length > 1) {
+                                            return `${selected.length} Selected`;
+                                        } else {
+                                            return '';
+                                        }
+                                    }}
+                                >
+                                    {departments?.length >= 2 && (
+                                        <MenuItem value={defaultOption} disabled={isLoading}>All</MenuItem>
+                                    )}
+                                    {departments?.map((data) => (
+                                        <MenuItem
+                                            key={data?.id}
+                                            value={data?.id}
+                                            disabled={isLoading}
+                                        >
+                                            {data?.departmentName?.name}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                        )}
                         {selectedDepartments?.filter(Boolean).length > 0 && (
                             <div className={`${style.grid2Gap} ${style.marginLeft5}`}>
                                 {selectedDepartments.map((id) => {
@@ -996,7 +1002,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 })}
                             </div>
                         )}
-                        {reportType !== "currentMedicalDirectives" && (
+                        {reportType !== "currentMedicalDirectives" && (reportType === "workflow" || reportType === "retiredMedicalDirectives" || reportType === "upcomingForReview") && (
                             <>
                                 <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                                     <InputLabel id="demo-multiple-name-label2" className={style.headingtextStyle}>Groups</InputLabel>
@@ -1198,7 +1204,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 ))}
                             </Select>
                         </FormControl> */}
-                        {reportType !== 'workflow' && reportType === "workflow" && reportType === "currentMedicalDirectives" && (
+                        {reportType !== 'workflow' && reportType !== "currentMedicalDirectives" && reportType !== "retiredMedicalDirectives" && reportType !== "upcomingForReview" && reportType !== "medicalDirectivesTracker" && (
                             <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                                 <InputLabel id="demo-multiple-name-label2" className={style.headingtextStyle}>Staff Type</InputLabel>
                                 <Select
@@ -1264,7 +1270,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 })}
                             </div>
                         )}
-                        {reportType !== 'workflow' && reportType === "workflow" && reportType === "currentMedicalDirectives" && (
+                        {reportType !== 'workflow' && reportType !== "currentMedicalDirectives" && reportType !== "retiredMedicalDirectives" && reportType !== "upcomingForReview" && reportType !== "medicalDirectivesTracker" && (
                             <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                                 <InputLabel id="demo-multiple-name-label2" className={style.headingtextStyle}>Privilege Category</InputLabel>
                                 <Select
@@ -1350,6 +1356,25 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 })}
                             </div>
                         )}
+                        {reportType === "upcomingForReview" && (
+                            <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                                <InputLabel id="demo-simple-select-standard-label3">Review In</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-standard-label3"
+                                    id="demo-simple-select-standard3"
+                                    value={noOfDays}
+                                    onChange={(e) => { setNoOfDays(e.target.value) }}
+                                    MenuProps={MenuProps}
+                                    disabled={isLoading}
+                                    className={style.textAlignLeft}
+                                >
+                                    <MenuItem value={'30'} disabled={isLoading}>30 Days</MenuItem>
+                                    <MenuItem value={'60'} disabled={isLoading}>60 Days</MenuItem>
+                                    <MenuItem value={'90'} disabled={isLoading}>90 Days</MenuItem>
+                                    <MenuItem value={'120'} disabled={isLoading}>120 Days</MenuItem>
+                                </Select>
+                            </FormControl>
+                        )}
 
                         {(reportType === "staffbyTypes" || reportType === "locumStaffbyTypes") && (
                             <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
@@ -1396,6 +1421,27 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                     <MenuItem value={'1'} disabled={isLoading}>Acknowledgements</MenuItem>
                                     <MenuItem value={'2'} disabled={isLoading}>MAC Approval</MenuItem>
                                     <MenuItem value={'3'} disabled={isLoading}>Leadership Sign Off</MenuItem>
+                                </Select>
+                            </FormControl>
+                        )}
+                        {(reportType === "medicalDirectivesTracker") && (
+                            <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                                <InputLabel id="demo-simple-select-standard-label3" className={style.headingtextStyle}>Medical Directive Tracker</InputLabel>
+                                {/* <InputLabel id="demo-multiple-name-label4" className={style.headingtextStyle}>Application Type</InputLabel> */}
+                                <Select
+                                    labelId="demo-simple-select-standard-label3"
+                                    id="demo-simple-select-standard3"
+                                    // labelId="demo-multiple-name-label4"
+                                    // id="demo-multiple-name4"
+                                    value={trackerTabName}
+                                    onChange={(e) => { setTrackerTabName(e.target.value) }}
+                                    MenuProps={MenuProps}
+                                    disabled={isLoading}
+                                    className={style.textAlignLeft}
+                                >
+                                    <MenuItem value={'medical_directive_tab'} disabled={isLoading}>By Medical Directive</MenuItem>
+                                    <MenuItem value={'applicant_tab'} disabled={isLoading}>By Applicant</MenuItem>
+                                    <MenuItem value={'department_tab'} disabled={isLoading}>By Department</MenuItem>
                                 </Select>
                             </FormControl>
                         )}

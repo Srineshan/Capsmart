@@ -141,7 +141,9 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType, setIsL
         'currentMedicalDirectives': 'MEDICAL_DIRECTIVE',
         'retiredMedicalDirectives': 'MEDICAL_DIRECTIVE',
         'workflow': 'MEDICAL_DIRECTIVE',
-        'attestationOutstanding': 'MEDICAL_DIRECTIVE'
+        'attestationOutstanding': 'MEDICAL_DIRECTIVE',
+        'medicalDirectivesTracker': 'MEDICAL_DIRECTIVE',
+        'upcomingForReview': 'MEDICAL_DIRECTIVE'
     }
 
     // const type = (reportType === 'activitiesOrServices' ?
@@ -186,7 +188,9 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType, setIsL
         'currentMedicalDirectives': 'CURRENT_MEDICAL_DIRECTIVES',
         'retiredMedicalDirectives': 'RETIRED_MEDICAL_DIRECTIVES',
         'workflow': 'WORKFLOW',
-        'attestationOutstanding': 'ATTESTATION_OUTSTANDING'
+        'attestationOutstanding': 'ATTESTATION_OUTSTANDING',
+        'medicalDirectivesTracker': 'MEDICAL_DIRECTIVE_TRACKER',
+        'upcomingForReview': 'UPCOMING_FOR_REVIEW'
     }
 
     const filters = {
@@ -274,6 +278,8 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType, setIsL
                     "currentLevel": dataToUseInReport?.selectedWorkflowLevel !== "All" ? dataToUseInReport?.selectedWorkflowLevel : '',
                     "lastPublishedStartDate": dataToUseInReport?.from,
                     "lastPublishedEndDate": dataToUseInReport?.to,
+                    "noOfDays": dataToUseInReport?.noOfDays,
+                    "tab": dataToUseInReport?.tab
                 },
                 filterDisplayNames: [
                     { name: 'Reporting Period used for this report', values: [`${dataToUseInReport?.fromToDisplay} - ${dataToUseInReport?.toToDisplay}`] },
@@ -286,7 +292,9 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType, setIsL
                     { name: 'Application Sent Status', values: [dataToUseInReport?.selectedApplicationSentStatus || 'All'] },
                     { name: 'Groups', values: [dataToUseInReport?.selectedGroupsToSend?.map(data => data?.name).join(', ') || 'All Groups'] },
                     { name: 'Authors', values: [dataToUseInReport?.selectedAuthorsToSend?.map(data => `${data?.name?.firstName} ${data?.name?.lastName}`).join(', ') || '-'] },
-                    { name: 'Workflow Level', values: dataToUseInReport?.selectedWorkflowLevel !== "All" ? [dataToUseInReport?.selectedWorkflowLevel] : "" }
+                    { name: 'Workflow Level', values: dataToUseInReport?.selectedWorkflowLevel !== "All" ? [dataToUseInReport?.selectedWorkflowLevel] : [""] },
+                    { name: 'Renewal In', values: dataToUseInReport?.noOfDays ? [dataToUseInReport?.noOfDays] : [""] },
+                    { name: 'Medical Directive Tracker', values: dataToUseInReport?.tab !== "All" ? [dataToUseInReport?.tab] : [""] },
                 ],
                 "private": isPrivate
             }
@@ -335,6 +343,7 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType, setIsL
                             "currentLevel": dataToUseInReport?.selectedWorkflowLevel !== "All" ? dataToUseInReport?.selectedWorkflowLevel : '',
                             "lastPublishedStartDate": dataToUseInReport?.from,
                             "lastPublishedEndDate": dataToUseInReport?.to,
+                            "noOfDays": dataToUseInReport?.noOfDays
                         },
                         "private": isPrivate
                     }

@@ -4681,7 +4681,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab, requestedType }) => {
         {/* <div className={style.spaceBetween}> */}
         <div className={style.heading1}>
           Locum {selectedTab === "ACTIVELOCUM" ? "Extension" : "Renewal"} Application has been sent to
-          {selectDataLocum?.applicant?.name?.lastName?.charAt(0).toUpperCase() +
+          {" "} {selectDataLocum?.applicant?.name?.lastName?.charAt(0).toUpperCase() +
             selectDataLocum?.applicant?.name?.lastName?.slice(1).toLowerCase()}
           {", "}
           {selectDataLocum?.applicant?.name?.firstName

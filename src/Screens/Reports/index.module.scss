@@ -1750,6 +1750,18 @@
     grid-gap: 1%;
 }
 
+.applicantGrid {
+    display: grid;
+    grid-template-columns: 23% 17% 28% 14% 14%;
+    grid-gap: 1%;
+}
+
+.departmentGrid {
+    display: grid;
+    grid-template-columns: 24% 30% 10% 10% 10% 10%;
+    grid-gap: 1%;
+}
+
 .trackTableHeaderGrid {
     display: grid;
     grid-template-columns: .9fr .7fr .4fr;
@@ -2092,10 +2104,14 @@ textarea {
 }
 
 .mdReportCard {
-    background: $secondarycolor 0% 0% no-repeat padding-box;
+    background: #FFFFFF 0% 0% no-repeat padding-box;
     border: 1px solid #9AAFB5;
     border-radius: 8px;
     padding: 10px;
+}
+
+.mdCardAlternateBackground {
+    background: $secondarycolor 0% 0% no-repeat padding-box;
 }
 
 .mdTitle {
@@ -2137,6 +2153,6 @@ textarea {
 
 .outstandingGrid {
     display: grid;
-    grid-template-columns: 27% 13% 13% 15% 13% 5% 7%;
+    grid-template-columns: 34% 10% 15% 17% 13% 5%;
     grid-gap: 1%;
 }
