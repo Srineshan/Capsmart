@@ -789,7 +789,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
                 deptPartiallyAttested = [];
 
                 group?.departments?.forEach((dept) => {
-                    deptNames.push(dept?.name || '-');
+                    deptNames.push(`${dept?.name} ${dept?.stats?.totalPendingAttestationCount ? `(${dept?.stats?.totalPendingAttestationCount})` : ''}` || '-');
                     deptTotalCount.push(dept?.stats?.totalCount || '-');
                     deptAttestedAll.push(dept?.stats?.attestedCount || '-');
                     deptNotAttested.push(dept?.stats?.notAttestedCount || '-');
@@ -806,7 +806,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
             });
             console.log(expandedList, 'expandedList')
             outstandingList?.map((data, index) => {
-                attestationCategory.push(data?.groupName || '-')
+                attestationCategory.push(`${data?.groupName} ${data?.stats?.totalPendingAttestationCount ? `(${data?.stats?.totalPendingAttestationCount})` : ''}` || '-')
                 totalCount.push(data?.stats?.totalCount || '-')
                 attestedAll.push(data?.stats?.attestedCount || '-')
                 notAttested.push(data?.stats?.notAttestedCount || '-')

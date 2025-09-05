@@ -68,7 +68,7 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
     const currentUserDetails = currentUser();
     const [isExpanded, setIsExpanded] = useState(true);
     const myReportsHeaderValues = ["Report Title", "Schedule", "Saved Parameters", "Last Updated", "Action"];
-    const reportingTemplateHeaderValues = ["Report Template Title", "Type", "Last Run by", "Last Run Date/ Time", "Last Updated by", "Last Updated", "Action"];
+    const reportingTemplateHeaderValues = ["Report Template Title", "Type", "Last Run By", "Last Run Date / Time", "Last Updated By", "Last Updated", "Action"];
     const savedReportsHeaderValues = ["Saved Report", "Reporting Period", "Saved On", "Action"];
     const [sortField, setSortField] = useState("DEFAULT");
     const [sortValue, setSortValue] = useState("DESCENDING");
@@ -406,7 +406,9 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         CURRENT_MEDICAL_DIRECTIVES: 'currentMedicalDirectives',
         ATTESTATION_OUTSTANDING: 'attestationOutstanding',
         WORKFLOW: 'workflow',
-        RETIRED_MEDICAL_DIRECTIVES: 'retiredMedicalDirectives'
+        RETIRED_MEDICAL_DIRECTIVES: 'retiredMedicalDirectives',
+        MEDICAL_DIRECTIVE_TRACKER: 'medicalDirectivesTracker',
+        UPCOMING_FOR_REVIEW: 'upcomingForReview'
     }
     const descriptionList = {
         ACTIVITES_SERVICES_LOG_SUMMARY: 'Activities/ Services Log Status Summary',
@@ -436,7 +438,9 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         CURRENT_MEDICAL_DIRECTIVES: 'Current Medical Directives',
         ATTESTATION_OUTSTANDING: 'Attestation Outstanding',
         WORKFLOW: 'Workflow',
-        RETIRED_MEDICAL_DIRECTIVES: 'Retired Medical Directives'
+        RETIRED_MEDICAL_DIRECTIVES: 'Retired Medical Directives',
+        MEDICAL_DIRECTIVE_TRACKER: 'Medical Directives Tracker',
+        UPCOMING_FOR_REVIEW: 'Upcoming For Review'
     }
 
     const titleList = {
@@ -467,7 +471,9 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         CURRENT_MEDICAL_DIRECTIVES: 'Current Medical Directives',
         ATTESTATION_OUTSTANDING: 'Attestation Outstanding',
         WORKFLOW: 'Workflow',
-        RETIRED_MEDICAL_DIRECTIVES: 'Retired Medical Directives'
+        RETIRED_MEDICAL_DIRECTIVES: 'Retired Medical Directives',
+        MEDICAL_DIRECTIVE_TRACKER: 'Medical Directives Tracker',
+        UPCOMING_FOR_REVIEW: 'Upcoming For Review'
     }
 
     const typeList = {
@@ -506,7 +512,9 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         'currentMedicalDirectives': 'CURRENT_MEDICAL_DIRECTIVES',
         'attestationOutstanding': 'ATTESTATION_OUTSTANDING',
         'workflow': 'WORKFLOW',
-        'retiredMedicalDirectives': 'RETIRED_MEDICAL_DIRECTIVES'
+        'retiredMedicalDirectives': 'RETIRED_MEDICAL_DIRECTIVES',
+        'medicalDirectivesTracker': 'MEDICAL_DIRECTIVE_TRACKER',
+        'upcomingForReview': 'UPCOMING_FOR_REVIEW'
     }
 
     const availableScheduleValue = {
@@ -767,12 +775,13 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
     console.log(tableDataValues, 'tableDataValues')
     return (
         <div className={style.margin20}>
-            <div className={isExpanded ? style.bigCardGrid : style.smallCardGrid}>
+            <div>
+                {/* <div className={isExpanded ? style.bigCardGrid : style.smallCardGrid}>
                 <div>
                     <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
                         <div></div>
                     </SideBar>
-                </div>
+                </div> */}
                 {/* <div className={style.bigCardStyle}>
                     <div className={style.paginationCol}>
                         <div className={` ${style.titleStyle} ${style.margin20}`}>
@@ -905,7 +914,7 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
                             className={`${style.spaceBetween} ${style.marginLeft30} `}
                         >
                             <div className={`${style.tabs}`}>
-                                <TileApplication selectedTab={selectedTopTab} getSelectedTab={() => { }} tileLabel={`Reports Accross ${availableParentList[reportType]}`} currentTile="" />
+                                <TileApplication selectedTab={selectedTopTab} getSelectedTab={() => { }} tileLabel={`${availableParentList[reportType]} Reports`} currentTile="" />
                             </div>
                         </div>
                         <div className={`${style.borderStyleTiles} ${style.marginLeft30}`}></div>

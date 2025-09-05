@@ -104,7 +104,9 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
         currentMedicalDirectives: 'Current Medical Directives',
         retiredMedicalDirectives: 'Retired Medical Directives',
         workflow: 'Medical Directives Workflow',
-        attestationOutstanding: 'Medical Directives Attestation Outstanding'
+        attestationOutstanding: 'Medical Directives Attestation Outstanding',
+        medicalDirectivesTracker: 'Medical Directives Tracker',
+        upcomingForReview: 'Upcoming For Review'
     }
 
     const availableCategories = {
@@ -136,7 +138,9 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
         currentMedicalDirectives: 'MEDICAL_DIRECTIVE',
         retiredMedicalDirectives: 'MEDICAL_DIRECTIVE',
         workflow: 'MEDICAL_DIRECTIVE',
-        attestationOutstanding: 'MEDICAL_DIRECTIVE'
+        attestationOutstanding: 'MEDICAL_DIRECTIVE',
+        medicalDirectivesTracker: 'MEDICAL_DIRECTIVE',
+        upcomingForReview: 'MEDICAL_DIRECTIVE'
     }
 
     const typeList = {
@@ -175,7 +179,9 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
         'currentMedicalDirectives': 'CURRENT_MEDICAL_DIRECTIVES',
         'retiredMedicalDirectives': 'RETIRED_MEDICAL_DIRECTIVES',
         'workflow': 'WORKFLOW',
-        'attestationOutstanding': 'ATTESTATION_OUTSTANDING'
+        'attestationOutstanding': 'ATTESTATION_OUTSTANDING',
+        'medicalDirectivesTracker': 'MEDICAL_DIRECTIVE_TRACKER',
+        'upcomingForReview': 'UPCOMING_FOR_REVIEW'
     }
 
     const availableApplicationTypes = {
@@ -262,8 +268,9 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
     };
 
     const handleDownload = (isShare) => {
+        let userData = (sessionStorage.getItem('user') && sessionStorage.getItem('user') !== 'undefined') ? JSON.parse(sessionStorage.getItem('user')) : {}
         setIsFullScreenLoading(true)
-        const uniqueFileName = `SavedReport_${Date.now()}.pdf`;
+        const uniqueFileName = `${reportTitleList[reportType].replace(/\s+/g, "_")}_${format(new Date(), 'MMM_dd_yyyy_HH_mm_ss')}_${`${userData?.name?.firstName?.[0] ? userData?.name?.firstName?.[0] : ''}${userData?.name?.lastName?.[0] ? userData?.name?.lastName?.[0] : ''}`}.pdf`;
         setShowSaveReportOutput(false)
         setShowShareDialog(false)
         const element = refToUse.current;
@@ -276,7 +283,7 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                 useCORS: true,
                 logging: true,
             },
-            jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
+            jsPDF: { unit: "in", format: "letter", orientation: "landscape" },
             pagebreak: { mode: [] },
         };
 
@@ -293,7 +300,7 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
         let userData = (sessionStorage.getItem('user') && sessionStorage.getItem('user') !== 'undefined') ? JSON.parse(sessionStorage.getItem('user')) : {}
         console.log(userData, 'userData')
         let data = {
-            reportName: reportTitleList[reportType],
+            reportName: reportName || reportTitleList[reportType],
             reportNotes: reportDescription,
             runDate: new Date(),
             reportDoc: {
@@ -330,7 +337,7 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                 { name: 'Application Sent Status', values: [dataToUseInReport?.selectedApplicationSentStatus || 'All'] },
                 { name: 'Groups', values: [dataToUseInReport?.selectedGroupsToSend?.map(data => data?.name).join(', ') || 'All Groups'] },
                 { name: 'Authors', values: [dataToUseInReport?.selectedAuthorsToSend?.map(data => `${data?.name?.firstName} ${data?.name?.lastName}`).join(', ') || '-'] },
-                { name: 'Workflow Level', values: dataToUseInReport?.selectedWorkflowLevel !== "All" ? [dataToUseInReport?.selectedWorkflowLevel] : "" }
+                { name: 'Workflow Level', values: dataToUseInReport?.selectedWorkflowLevel !== "All" ? [dataToUseInReport?.selectedWorkflowLevel] : [""] }
             ],
         }
         const formData = new FormData();
@@ -357,7 +364,7 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
         let data = {
             mailIds: selectedUsers?.map(data => data?.mailId),
             savedReportIds: [],
-            reportName: reportTitleList[reportType],
+            reportName: reportName || reportTitleList[reportType],
             file: {
                 fileName: uniqueFileName
             },
@@ -590,7 +597,7 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                             <div className={`${style.marginTop20} ${style.recipientsDataHeight}`}>
                                 <div className={style.displayInCol}>
                                     <label for="standard-basic" className={style.saveReportLabelStyle}>Report Output Name</label>
-                                    <TextField id="standard-basic" variant="standard" value={reportTitleList[reportType]} className={`${style.threeColWidth} ${style.saveReportFieldStyle} ${style.marginTop10}`} />
+                                    <TextField id="standard-basic" variant="standard" value={reportName || reportTitleList[reportType]} className={`${style.threeColWidth} ${style.saveReportFieldStyle} ${style.marginTop10}`} onChange={(e) => setReportName(e.target.value)} />
                                 </div>
                                 <div className={style.marginTop20}>
                                     <label for="description" className={`${style.saveReportLabelStyle}`}>Report Output Notes</label>
