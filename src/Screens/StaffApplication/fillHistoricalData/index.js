@@ -7,7 +7,7 @@ import CommonInputField from "../../../Components/CommonFields/CommonInputField"
 import CommonDateField from "../../../Components/CommonFields/CommonDateField";
 import { format, parse } from "date-fns";
 import CommonSelectField from "../../../Components/CommonFields/CommonSelectField";
-import { GET, PUT, POST, TenantID,DELETE } from "../../dataSaver";
+import { GET, PUT, POST, TenantID, DELETE } from "../../dataSaver";
 import CommonTextField from "../../../Components/CommonFields/CommonTextField";
 import { Button, TextField, Tooltip } from "@mui/material";
 import CommonDropZone from "../../../Components/CommonFields/CommonDropZone";
@@ -44,7 +44,7 @@ const HistoricalData = () => {
   const [officeAddress, setOfficeAddress] = useState("");
   const [city, setCity] = useState("");
   const [province, setProvince] = useState("");
-  const [zipCode, setZipCode] = useState(""); 
+  const [zipCode, setZipCode] = useState("");
   const [homeAddress, setHomeAddress] = useState("");
   const [homeCity, setHomeCity] = useState("");
   const [homeProvince, setHomeProvince] = useState("");
@@ -71,7 +71,7 @@ const HistoricalData = () => {
   const [serviceAreas, setServiceAreas] = useState([]);
   const [individualList, setIndividualList] = useState([]);
   const [selectedApplication, setSelectedApplication] = useState();
-   const dropzoneStyle = {
+  const dropzoneStyle = {
     width: "100%",
     height: "auto",
     borderWidth: 2,
@@ -139,8 +139,8 @@ const HistoricalData = () => {
   });
 
   const [hospitalPrivileges, setHospitalPrivileges] = useState([]);
-  const [hospitalName,setHospitalName] = useState("");
-  const [hospitalPrivilegeCategory,setHospitalPrivilegeCategory]= useState()
+  const [hospitalName, setHospitalName] = useState("");
+  const [hospitalPrivilegeCategory, setHospitalPrivilegeCategory] = useState()
   const [privilegesOtherHospital, setPrivilegesOtherHospital] = useState("");
   const [hospitalPrivilege, setHospitalPrivilege] = useState("");
   const [physicalHealth, setPhysicalHealth] = useState({
@@ -213,15 +213,15 @@ const HistoricalData = () => {
   const [restrictiontext, setRestrictionText] = useState("");
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [selectedFileId, setSelectedFileId] = useState(null);
-  const tableHeader = ['Staff Name','Email', 'Staff Type','Department','Privilege', 'Action'];
+  const tableHeader = ['Staff Name', 'Email', 'Staff Type', 'Department', 'Privilege', 'Action'];
 
   const canadianPostalCodeRegex = /^[A-Za-z]\d[A-Za-z][ -]?\d[A-Za-z]\d$/;
 
   const isValidCanadianZip = (code) => canadianPostalCodeRegex.test(code);
 
-//   useEffect(() => {
-//     validateFields();
-// }, [firstName, lastName, email, contactNo, zipCode,dob,province,preferredPhone,city,officeAddress,homeAddress,homeZipcode,homeCity,homeProvince,applicantType,department,privilege]);
+  //   useEffect(() => {
+  //     validateFields();
+  // }, [firstName, lastName, email, contactNo, zipCode,dob,province,preferredPhone,city,officeAddress,homeAddress,homeZipcode,homeCity,homeProvince,applicantType,department,privilege]);
 
 
 
@@ -234,41 +234,41 @@ const HistoricalData = () => {
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     const phoneRegex = /^(?:\(\d{3}\)|\d{3})[-.\s]?\d{3}[-.\s]?\d{4}$/;
     const postalCodeRegex = /^[A-Za-z]\d[A-Za-z][ -]?\d[A-Za-z]\d$/;
-  
-  
-    if (!firstName||!firstName.trim()) newErrors.firstName = "First Name - Required";
-    if (!lastName||!lastName.trim()) newErrors.lastName = "Last Name - Required";
-    if (!dob||!dob.trim()) newErrors.dob = "Date of Birth - Required";
+
+
+    if (!firstName || !firstName.trim()) newErrors.firstName = "First Name - Required";
+    if (!lastName || !lastName.trim()) newErrors.lastName = "Last Name - Required";
+    if (!dob || !dob.trim()) newErrors.dob = "Date of Birth - Required";
     if (!email || !email.trim()) newErrors.email = "Email - Required";
-  else if (!emailRegex.test(email)) newErrors.email = "Email - Invalid email format";
+    else if (!emailRegex.test(email)) newErrors.email = "Email - Invalid email format";
     if (!officeAddress || !officeAddress.trim()) newErrors.officeAddress = "Office Address - Required";
     if (!zipCode || !zipCode.trim()) newErrors.zipCode = "Postal Code - Required";
     else if (!postalCodeRegex.test(zipCode)) newErrors.zipCode = "Postal Code - Invalid postal code format (e.g., K1A 0B1)";
-    if (!city||!city.trim()) newErrors.city = " City - Required";
-    if (!province||!province.trim()) newErrors.province = "Province - Required";
-    if (!homeAddress||!homeAddress.trim()) newErrors.homeAddress = "Home Address Line - Required";
-    if (!homeZipcode||!homeZipcode.trim()) newErrors.homeZipcode = "Postal Code - Required";
-  else if (!postalCodeRegex.test(homeZipcode)) newErrors.homeZipcode = "POstal Code - Invalid postal code format (e.g., K1A 0B1)";
-    if (!homeCity||!homeCity.trim()) newErrors.homeCity = "City - Required";
-    if (!homeProvince||!homeProvince.trim()) newErrors.homeProvince = "Province - Required";
-    if (!contactNo||!contactNo.trim()) newErrors.contactNo = "Phone Number - Required";
-  else if (!phoneRegex.test(contactNo)) newErrors.contactNo = "Phone Number - Invalid Phone Number format";
+    if (!city || !city.trim()) newErrors.city = " City - Required";
+    if (!province || !province.trim()) newErrors.province = "Province - Required";
+    if (!homeAddress || !homeAddress.trim()) newErrors.homeAddress = "Home Address Line - Required";
+    if (!homeZipcode || !homeZipcode.trim()) newErrors.homeZipcode = "Postal Code - Required";
+    else if (!postalCodeRegex.test(homeZipcode)) newErrors.homeZipcode = "POstal Code - Invalid postal code format (e.g., K1A 0B1)";
+    if (!homeCity || !homeCity.trim()) newErrors.homeCity = "City - Required";
+    if (!homeProvince || !homeProvince.trim()) newErrors.homeProvince = "Province - Required";
+    if (!contactNo || !contactNo.trim()) newErrors.contactNo = "Phone Number - Required";
+    else if (!phoneRegex.test(contactNo)) newErrors.contactNo = "Phone Number - Invalid Phone Number format";
     if (!phoneRegex.test(preferredPhone)) newErrors.preferredPhone = "CMH Phone - Invalid Phone Number format";
-    if (!applicantType||!applicantType.trim()) newErrors.applicantType = "Applicant Type - Required";
-  if (!privilege||!privilege.trim()) newErrors.privilege = "Privilege Category - Required";
-  if (!department||!department.trim()) newErrors.department = "Department - Required";
-  if (!dateOfStart||!dateOfStart.trim()) newErrors.dateOfStart = "Start Date - Required";
-  if (!dateOfEnd||!dateOfEnd.trim()) newErrors.dateOfEnd = "End Date - Required";
-  setErrors(newErrors);
+    if (!applicantType || !applicantType.trim()) newErrors.applicantType = "Applicant Type - Required";
+    if (!privilege || !privilege.trim()) newErrors.privilege = "Privilege Category - Required";
+    if (!department || !department.trim()) newErrors.department = "Department - Required";
+    if (!dateOfStart || !dateOfStart.trim()) newErrors.dateOfStart = "Start Date - Required";
+    if (!dateOfEnd || !dateOfEnd.trim()) newErrors.dateOfEnd = "End Date - Required";
+    setErrors(newErrors);
 
-  let missingFields = Object.entries(newErrors).map(([key, value]) => ({
-    key,
-    label: value
-}));
+    let missingFields = Object.entries(newErrors).map(([key, value]) => ({
+      key,
+      label: value
+    }));
 
-setWarningFields(missingFields);
+    setWarningFields(missingFields);
 
-return Object.keys(newErrors).length === 0;
+    return Object.keys(newErrors).length === 0;
 
 
   };
@@ -341,21 +341,21 @@ return Object.keys(newErrors).length === 0;
     }
   };
 
-const handleDateOfStartChange = (newDate) => {
-  if (newDate instanceof Date && !isNaN(newDate)) {
-    setDateOfStart(newDate.toISOString().split("T")[0]); // "YYYY-MM-DD"
-  } else {
-    setDateOfStart("");
-  }
-};
+  const handleDateOfStartChange = (newDate) => {
+    if (newDate instanceof Date && !isNaN(newDate)) {
+      setDateOfStart(newDate.toISOString().split("T")[0]); // "YYYY-MM-DD"
+    } else {
+      setDateOfStart("");
+    }
+  };
 
-const handleDateOfEndChange = (newDate) => {
-  if (newDate instanceof Date && !isNaN(newDate)) {
-    setDateOfEnd(newDate.toISOString().split("T")[0]); // "YYYY-MM-DD"
-  } else {
-    setDateOfEnd("");
-  }
-};
+  const handleDateOfEndChange = (newDate) => {
+    if (newDate instanceof Date && !isNaN(newDate)) {
+      setDateOfEnd(newDate.toISOString().split("T")[0]); // "YYYY-MM-DD"
+    } else {
+      setDateOfEnd("");
+    }
+  };
 
 
 
@@ -418,8 +418,8 @@ const handleDateOfEndChange = (newDate) => {
       console.error(`Error uploading file for ${category}:`, error);
     }
     finally {
-      setIsLoading(false); 
-  }
+      setIsLoading(false);
+    }
 
     acceptedFiles.forEach((file) => {
       console.log(`Uploaded file for ${category}:`, file.name);
@@ -429,124 +429,124 @@ const handleDateOfEndChange = (newDate) => {
   };
 
 
-   const changeHandler = async (event) => {
-      console.log("Event received:", event);
-    
-      const newFilesArray = Array.from(event);
-      console.log("Converted files array:", newFilesArray);
-    
-      const existingFileNames = (files || []).map(file => file.name);
-      const seenInCurrentSelection = new Set();
-      const filteredNewFiles = [];
-    
-      newFilesArray.forEach(file => {
-        if (existingFileNames.includes(file.name)) {
-          ErrorToaster2(`File "${file.name}" already exists`);
-        } else if (seenInCurrentSelection.has(file.name)) {
-          ErrorToaster2(`Duplicate file "${file.name}" selected in this upload`);
-        } else {
-          seenInCurrentSelection.add(file.name);
-          filteredNewFiles.push(file);
-        }
-      });
-    
-      if (filteredNewFiles.length === 0) {
-        return; 
+  const changeHandler = async (event) => {
+    console.log("Event received:", event);
+
+    const newFilesArray = Array.from(event);
+    console.log("Converted files array:", newFilesArray);
+
+    const existingFileNames = (files || []).map(file => file.name);
+    const seenInCurrentSelection = new Set();
+    const filteredNewFiles = [];
+
+    newFilesArray.forEach(file => {
+      if (existingFileNames.includes(file.name)) {
+        ErrorToaster2(`File "${file.name}" already exists`);
+      } else if (seenInCurrentSelection.has(file.name)) {
+        ErrorToaster2(`Duplicate file "${file.name}" selected in this upload`);
+      } else {
+        seenInCurrentSelection.add(file.name);
+        filteredNewFiles.push(file);
       }
-    
-      const updatedFiles = [...(files || []), ...filteredNewFiles];
-      setFiles(updatedFiles);
-    
-  
-  
-      const formData = new FormData();
-      let fileNameArray = [];
-  
-      filteredNewFiles.forEach(file => {
-        const fileInfo = {
-          "filePath": file.path || '',
-          "fileName": file.name,
-          "fileURL": "",
-          "fileType": file.type,
-          "classification": "",
-          "verified": true,
-          "valid": true,
-        };
-        fileNameArray.push(fileInfo);
-        formData.append('documents', file);
-      });
-  
-      const blob = new Blob([JSON.stringify(fileNameArray)], {
-        type: "application/json"
-      });
-      formData.append('files', blob);
-  
-      try {
-        setIsLoading(true);
-         const response = await POST(
+    });
+
+    if (filteredNewFiles.length === 0) {
+      return;
+    }
+
+    const updatedFiles = [...(files || []), ...filteredNewFiles];
+    setFiles(updatedFiles);
+
+
+
+    const formData = new FormData();
+    let fileNameArray = [];
+
+    filteredNewFiles.forEach(file => {
+      const fileInfo = {
+        "filePath": file.path || '',
+        "fileName": file.name,
+        "fileURL": "",
+        "fileType": file.type,
+        "classification": "",
+        "verified": true,
+        "valid": true,
+      };
+      fileNameArray.push(fileInfo);
+      formData.append('documents', file);
+    });
+
+    const blob = new Blob([JSON.stringify(fileNameArray)], {
+      type: "application/json"
+    });
+    formData.append('files', blob);
+
+    try {
+      setIsLoading(true);
+      const response = await POST(
         'application-management-service/application/historicFileUpload/bulk',
         formData,
       );
-        console.log("API Response:", response);
-        SuccessToaster2('File Uploaded Successfully');
-        console.log("Response data:", response?.data);
-        setUploadFileData(prevData => {
-          // Merge previous data with new data
-          return [...(prevData || []), ...(response?.data || [])];
-        });
-        setIsLoading(false);
-        console.log("Responseupload:", uploadFileData);
-        return response?.data;
-      } catch (error) {
-        SuccessToaster2('File Upload Failed');
-        console.error("Error:", error);
-        setIsLoading(false);
-        return null;
-      }
-    };
+      console.log("API Response:", response);
+      SuccessToaster2('File Uploaded Successfully');
+      console.log("Response data:", response?.data);
+      setUploadFileData(prevData => {
+        // Merge previous data with new data
+        return [...(prevData || []), ...(response?.data || [])];
+      });
+      setIsLoading(false);
+      console.log("Responseupload:", uploadFileData);
+      return response?.data;
+    } catch (error) {
+      SuccessToaster2('File Upload Failed');
+      console.error("Error:", error);
+      setIsLoading(false);
+      return null;
+    }
+  };
 
-    const handleDeleteFile = async (fileIdToDelete) => {
-  try {
-    const requestBody = [fileIdToDelete];
-    console.log("Delete File:",fileIdToDelete);
-    const { data: response } = await DELETE('document-management-service/document', requestBody);
-    SuccessToaster2("File deleted successfully");
+  const handleDeleteFile = async (fileIdToDelete) => {
+    try {
+      const requestBody = [fileIdToDelete];
+      console.log("Delete File:", fileIdToDelete);
+      const { data: response } = await DELETE('document-management-service/document', requestBody);
+      SuccessToaster2("File deleted successfully");
 
-    // Remove the deleted file from uploadFileData
-    setUploadFileData(prevData =>
-      prevData.filter(file => file?.id !== fileIdToDelete)
-    );
-    setShowDeleteConfirmation(false); // close confirmation dialog
-  } catch (error) {
-    SuccessToaster2("File deletion failed");
-    console.error("Delete error:", error);
-    setShowDeleteConfirmation(false); // close even on error
-  }
-};
+      // Remove the deleted file from uploadFileData
+      setUploadFileData(prevData =>
+        prevData.filter(file => file?.id !== fileIdToDelete)
+      );
+      setShowDeleteConfirmation(false); // close confirmation dialog
+    } catch (error) {
+      SuccessToaster2("File deletion failed");
+      console.error("Delete error:", error);
+      setShowDeleteConfirmation(false); // close even on error
+    }
+  };
 
 
-  
+
   const getApplicantTypes = async () => {
     const { data: types } = await GET("entity-service/applicantType");
     setApplicantTypeList(types);
   };
 
-const getShowDeleteConfirmation = (value) => {
-  setShowDeleteConfirmation(value);
-};
+  const getShowDeleteConfirmation = (value) => {
+    setShowDeleteConfirmation(value);
+  };
 
-const getDeleteConfirmation = (value) => {
-  if (value && selectedFileId) {
-    handleDeleteFile(selectedFileId);
-    setSelectedFileId(null);
-  }
-};
+  const getDeleteConfirmation = (value) => {
+    if (value && selectedFileId) {
+      handleDeleteFile(selectedFileId);
+      setSelectedFileId(null);
+    }
+  };
 
 
-  
+
 
   const getPrivilegeCategories = async () => {
-    const { data: types } = await GET(`entity-service/privilege?applicantTypeId=${applicantType}`);
+    const { data: types } = await GET(`entity-service/privilege?applicantTypeIds=${applicantType}`);
     const filteredTypes = types.filter(item => item.category !== "Locum Tenens");
     setPrivilegeCategoryList(filteredTypes);
   };
@@ -650,7 +650,7 @@ const getDeleteConfirmation = (value) => {
   const handleEditClick = (application) => {
     setIsEdit(true);
     setSelectedApplication(application);
-    setShowForm(true); 
+    setShowForm(true);
   };
 
   const handleCancelClick = () => {
@@ -724,7 +724,7 @@ const getDeleteConfirmation = (value) => {
     }
     finally {
       setIsLoading(false); // Stop loading
-  }
+    }
   };
 
 
@@ -733,9 +733,9 @@ const getDeleteConfirmation = (value) => {
     setPrivilegesOtherHospital(value);
 
     if (value === "No") {
-      setHospitalPrivileges([]); 
+      setHospitalPrivileges([]);
     }
-};
+  };
 
   const getItems = (data) => {
     let temp = [];
@@ -749,51 +749,51 @@ const getDeleteConfirmation = (value) => {
 
   const handleSave = () => {
     if (hospitalName && hospitalPrivilegeCategory) {
-        const selectedHospital = hospitalList.find(
-          (item) => item.name === hospitalName
-        );
-        const selectedPrivilegeCategory = privilegeOtherList.find(
-            (item) => item.id === hospitalPrivilegeCategory.id
-        );
+      const selectedHospital = hospitalList.find(
+        (item) => item.name === hospitalName
+      );
+      const selectedPrivilegeCategory = privilegeOtherList.find(
+        (item) => item.id === hospitalPrivilegeCategory.id
+      );
 
-           // Check for duplicate before adding
-    const isDuplicate = hospitalPrivileges.some(
-      (item) =>
-        item.hospitalName === selectedHospital?.name &&
-        item.privilegeCategory?.id === selectedPrivilegeCategory?.id
-    );
+      // Check for duplicate before adding
+      const isDuplicate = hospitalPrivileges.some(
+        (item) =>
+          item.hospitalName === selectedHospital?.name &&
+          item.privilegeCategory?.id === selectedPrivilegeCategory?.id
+      );
 
-    if (isDuplicate) {
-      ErrorToaster2("This Hospital and Privilege Category pair already exists.");
-      console.log("Duplicate Hospital and Privilege Category pair:", selectedHospital?.name, selectedPrivilegeCategory?.id); 
-      setHospitalName("");
-      setHospitalPrivilege("");
-      return;
+      if (isDuplicate) {
+        ErrorToaster2("This Hospital and Privilege Category pair already exists.");
+        console.log("Duplicate Hospital and Privilege Category pair:", selectedHospital?.name, selectedPrivilegeCategory?.id);
+        setHospitalName("");
+        setHospitalPrivilege("");
+        return;
+      }
+
+      const newPrivilege = {
+        id: selectedHospital?.id || "",
+        hospitalName: selectedHospital?.name || "",
+        privileges: "",
+        privilegeCategory: {
+          id: selectedPrivilegeCategory.id,
+          name: selectedPrivilegeCategory?.category || "",
+          type: selectedPrivilegeCategory?.type || "",
+        },
+      };
+
+      setHospitalPrivileges((prev) => [...prev, newPrivilege]);
     }
-
-        const newPrivilege = {
-          id: selectedHospital?.id || "",
-            hospitalName: selectedHospital?.name || "",
-            privileges: "",
-            privilegeCategory: {
-                id: selectedPrivilegeCategory.id,
-                name: selectedPrivilegeCategory?.category || "",
-                type: selectedPrivilegeCategory?.type || "",
-            },
-        };
-
-        setHospitalPrivileges((prev) => [...prev, newPrivilege]);
-    }
-};
+  };
 
 
 
   const handleEditorChange = (event, editor, setState) => {
     const data = editor.getData();
-  
+
     // Extract plain text content
     const textContent = editor.editing.view.document.getRoot().getChild(0)?.getChild(0)?.data || "";
-  
+
     // Allow updates only if character count is within the limit
     if (textContent.length <= 150) {
       setState((prev) => ({
@@ -808,12 +808,12 @@ const getDeleteConfirmation = (value) => {
     const data = editor.getData();
 
     const textContent = editor.editing.view.document.getRoot()?.getChild(0)?.getChild(0)?.data || "";
-  
+
     if (textContent.length <= 150) {
       setRestrictionText(data);
     }
   };
-  
+
 
   const getIndividuallist = async () => {
     try {
@@ -925,8 +925,8 @@ const getDeleteConfirmation = (value) => {
       console.error("Error uploading file:", error);
     }
     finally {
-      setIsLoading(false); 
-  }
+      setIsLoading(false);
+    }
   };
 
 
@@ -949,17 +949,15 @@ const getDeleteConfirmation = (value) => {
               serviceAreaName: subSpeciality !== "" || null || undefined
                 ? serviceAreas.find((data) => data.id === subSpeciality)?.name || ""
                 : "",
-              departmentSpecialtyName: `${
-                departmentList.find((data) => data.id === department)?.departmentName.name || ""
-              }${subSpeciality !== "" || null || undefined ? ` - ${
-                serviceAreas.find((data) => data.id === subSpeciality)?.name || ""
-              }` : ""}`,
-          }
-            ] 
+              departmentSpecialtyName: `${departmentList.find((data) => data.id === department)?.departmentName.name || ""
+                }${subSpeciality !== "" || null || undefined ? ` - ${serviceAreas.find((data) => data.id === subSpeciality)?.name || ""
+                  }` : ""}`,
+            }
+          ]
           : [],
     });
   };
-  
+
 
   const handleWhoCoverageTypeChange = (currentState, setState, value) => {
     setState({
@@ -969,25 +967,23 @@ const getDeleteConfirmation = (value) => {
       obstetricsGroupDetails:
         value === "Department/Speciality Group"
           ? [
-              {
-                departmentId: department,
-                departmentName:
-                  departmentList.find((data) => data.id === department)?.departmentName.name || "",
-                serviceAreaId: subSpeciality,
-                serviceAreaName:
-                  serviceAreas.find((data) => data.id === subSpeciality)?.name || "",
-                departmentSpecialtyName: `${
-                  departmentList.find((data) => data.id === department)?.departmentName.name || ""
-                } - ${
-                  serviceAreas.find((data) => data.id === subSpeciality)?.name || ""
+            {
+              departmentId: department,
+              departmentName:
+                departmentList.find((data) => data.id === department)?.departmentName.name || "",
+              serviceAreaId: subSpeciality,
+              serviceAreaName:
+                serviceAreas.find((data) => data.id === subSpeciality)?.name || "",
+              departmentSpecialtyName: `${departmentList.find((data) => data.id === department)?.departmentName.name || ""
+                } - ${serviceAreas.find((data) => data.id === subSpeciality)?.name || ""
                 }`,
-              },
-            ]
+            },
+          ]
           : [],
     });
   };
- 
-  
+
+
 
   const handleIndividualChange = (currentState, setState, value) => {
     const selectedIndividual = individualList.find((data) => data.id === value);
@@ -995,11 +991,11 @@ const getDeleteConfirmation = (value) => {
       ...currentState,
       providerDetails: selectedIndividual
         ? [
-            {
-              id: selectedIndividual.id,
-              name: `${selectedIndividual.applicant?.name?.firstName} ${selectedIndividual.applicant?.name?.lastName}`,
-            },
-          ]
+          {
+            id: selectedIndividual.id,
+            name: `${selectedIndividual.applicant?.name?.firstName} ${selectedIndividual.applicant?.name?.lastName}`,
+          },
+        ]
         : [],
       groupDetails: [],
     });
@@ -1011,11 +1007,11 @@ const getDeleteConfirmation = (value) => {
       ...currentState,
       obstetricsProviderDetails: selectedIndividual
         ? [
-            {
-              id: selectedIndividual.id,
-              name: `${selectedIndividual.applicant?.name?.firstName} ${selectedIndividual.applicant?.name?.lastName}`,
-            },
-          ]
+          {
+            id: selectedIndividual.id,
+            name: `${selectedIndividual.applicant?.name?.firstName} ${selectedIndividual.applicant?.name?.lastName}`,
+          },
+        ]
         : [],
       obstetricsGroupDetails: [],
     });
@@ -1025,10 +1021,10 @@ const getDeleteConfirmation = (value) => {
   const handleSwitchChange = (event) => {
     const isChecked = event.target.checked;
     setIsOfficeAddressSameAsHomeAddress(isChecked);
-  
+
     if (isChecked) {
-      setOfficeAddress(homeAddress || ""); 
-      setZipCode(homeZipcode || ""); 
+      setOfficeAddress(homeAddress || "");
+      setZipCode(homeZipcode || "");
       setCity(homeCity || "");
       setProvince(homeProvince || "");
     } else {
@@ -1038,7 +1034,7 @@ const getDeleteConfirmation = (value) => {
       setProvince("");
     }
   };
-  
+
 
   const getTableDataValues = () => {
     let name = [];
@@ -1061,7 +1057,7 @@ const getDeleteConfirmation = (value) => {
     })
     return [
       { type: "text", value: name },
-      {type: "text", value: email },
+      { type: "text", value: email },
       { type: "text", value: applicantType },
       { type: "text", value: department },
       { type: "text", value: privilege },
@@ -1069,37 +1065,37 @@ const getDeleteConfirmation = (value) => {
   }
 
   const HistoricalActionData = [
-      {
+    {
       data: "Modify",
       requiredValue: "boolean",
       onClick: (application) => handleEditClick(application),
       conditionToShow: `data?.staff === null || data?.staff === undefined || data?.staff === ""`,
     },
-      {
+    {
       data: "Activate",
       requiredValue: "boolean",
       onClick: (data) => handleActivateApplication(data),
       conditionToShow: `data?.staff === null || data?.staff === undefined || data?.staff === ""`
     }
-   ]
+  ]
 
-  
-const handleActivateApplication = async (data) => {
-  const importedDataId = data?.id;
-  if (!importedDataId) {
-    ErrorToaster2("Invalid application data.");
-    return;
-  }
 
-  try {
-    const { data } = await GET(`application-management-service/application/oldData/${importedDataId}/activate`);
-    console.log("Activation response:", data);
-    SuccessToaster2("Application activated successfully");
-    getApplicationOldData();
-  } catch (error) {
-    ErrorToaster2(error);
-  }
-};
+  const handleActivateApplication = async (data) => {
+    const importedDataId = data?.id;
+    if (!importedDataId) {
+      ErrorToaster2("Invalid application data.");
+      return;
+    }
+
+    try {
+      const { data } = await GET(`application-management-service/application/oldData/${importedDataId}/activate`);
+      console.log("Activation response:", data);
+      SuccessToaster2("Application activated successfully");
+      getApplicationOldData();
+    } catch (error) {
+      ErrorToaster2(error);
+    }
+  };
 
 
   useEffect(() => {
@@ -1169,7 +1165,7 @@ const handleActivateApplication = async (data) => {
         content: selectedApplication?.professionalIssues?.pendingActions?.remarks,
         responseFile: selectedApplication?.professionalIssues?.pendingActions?.attachment
       });
-      setPrivilegesOtherHospital( selectedApplication?.professionalIssues?.otherHospitalPrivilegesExist );
+      setPrivilegesOtherHospital(selectedApplication?.professionalIssues?.otherHospitalPrivilegesExist);
       setHospitalPrivileges(selectedApplication?.professionalIssues?.hospitalPrivileges);
       setTerminatedReason({
         radioValue: selectedApplication?.professionalIssues?.privilegesReduced?.response,
@@ -1197,20 +1193,20 @@ const handleActivateApplication = async (data) => {
       setAgreement(selectedApplication?.confirmation?.agreementToTerms);
       setApplicantType(selectedApplication?.applicantType?.id);
       setCoverage({
-        providerType:selectedApplication?.coverageDetails?.providerType,
-        providerDetails:selectedApplication?.coverageDetails?.providerDetails,
-        groupDetails:selectedApplication?.coverageDetails?.groupDetails
+        providerType: selectedApplication?.coverageDetails?.providerType,
+        providerDetails: selectedApplication?.coverageDetails?.providerDetails,
+        groupDetails: selectedApplication?.coverageDetails?.groupDetails
       });
       setWhoCoverage({
-        obstetricsProviderType:selectedApplication?.coverageDetails?.obstetricsProviderType,
-        obstetricsGroupDetails:selectedApplication?.coverageDetails?.obstetricsGroupDetails,
-        obstetricsProviderDetails:selectedApplication?.coverageDetails?.obstetricsProviderDetails
+        obstetricsProviderType: selectedApplication?.coverageDetails?.obstetricsProviderType,
+        obstetricsGroupDetails: selectedApplication?.coverageDetails?.obstetricsGroupDetails,
+        obstetricsProviderDetails: selectedApplication?.coverageDetails?.obstetricsProviderDetails
       })
     }
   }, [selectedApplication]);
 
 
- 
+
 
 
 
@@ -1318,7 +1314,7 @@ const handleActivateApplication = async (data) => {
       setShowValidationDialog(true); // Show missing fields
       ErrorToaster2("Please fill all required fields.");
       return;
-  }
+    }
 
     var application = {
       ...saveData,
@@ -1333,7 +1329,7 @@ const handleActivateApplication = async (data) => {
           streetName: officeAddress,
           city: city,
           province: province,
-          pinCode:zipCode,
+          pinCode: zipCode,
         },
         residence: {
           streetName: homeAddress,
@@ -1362,8 +1358,8 @@ const handleActivateApplication = async (data) => {
         changePrivilegesFromPreviousYear: true,
         privilegeSetFiles: uploadFileData,
         tenure: {
-          from:dateOfStart,
-          to:dateOfEnd
+          from: dateOfStart,
+          to: dateOfEnd
         }
       },
       professionalInformation: {
@@ -1440,10 +1436,10 @@ const handleActivateApplication = async (data) => {
       coverageDetails: {
         providerType: coverage.providerType,
         providerDetails: coverage.providerDetails,
-        groupDetails:coverage.groupDetails,
+        groupDetails: coverage.groupDetails,
         obstetricsProviderType: whoCoverage.obstetricsProviderType,
         obstetricsProviderDetails: whoCoverage.obstetricsProviderDetails,
-        obstetricsGroupDetails:whoCoverage.obstetricsGroupDetails
+        obstetricsGroupDetails: whoCoverage.obstetricsGroupDetails
       },
       confirmation: {
         physicianName: physicianName,
@@ -1459,7 +1455,7 @@ const handleActivateApplication = async (data) => {
     };
 
 
- 
+
     if (!isEdit) {
       await POST("application-management-service/application/createStaffFromOldData", JSON.stringify(application))
         .then((response) => {
@@ -1488,7 +1484,7 @@ const handleActivateApplication = async (data) => {
         });
     }
   };
-  return (  
+  return (
     <>
       {!showForm ? (
         <>
@@ -1503,33 +1499,33 @@ const handleActivateApplication = async (data) => {
               </button>
             </div>
             <div className={`${style.marginLeftRight20}`}>
-            <TableTwo
-              tableHeaderValues={tableHeader}
-              tableDataValues={getTableDataValues()}
-              tableData={applicationOldData}
-              gridStyle={style.applicantGrid}
-              actions={HistoricalActionData}
-              scrollStyle={style.contractScrollStyle}
-              tableSortValues={[]}
-              heading={'There are no records to display'}
-              hidePagination={true}
-            />
+              <TableTwo
+                tableHeaderValues={tableHeader}
+                tableDataValues={getTableDataValues()}
+                tableData={applicationOldData}
+                gridStyle={style.applicantGrid}
+                actions={HistoricalActionData}
+                scrollStyle={style.contractScrollStyle}
+                tableSortValues={[]}
+                heading={'There are no records to display'}
+                hidePagination={true}
+              />
             </div>
           </div>
         </>) : (
-          <>
-             {isLoading && (
-                <div
-                    className={`${style.verticalAlignCenter} ${style.justifyCenter} ${style.loadingOverlay}`}
-                >
-                    <div className={style.uploadContainer}>
-                        <div className={style.fileImportingMsg}>We are importing your documents.</div>
-                        <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
-                        <div className={style.fileImportingMsg}>Please wait! Do not close your browser window.</div>
-                    </div>
-                </div>
-            )}
-            <Navbar />
+        <>
+          {isLoading && (
+            <div
+              className={`${style.verticalAlignCenter} ${style.justifyCenter} ${style.loadingOverlay}`}
+            >
+              <div className={style.uploadContainer}>
+                <div className={style.fileImportingMsg}>We are importing your documents.</div>
+                <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
+                <div className={style.fileImportingMsg}>Please wait! Do not close your browser window.</div>
+              </div>
+            </div>
+          )}
+          <Navbar />
           <div className={style.margin10}>
             <div className={`${style.formContainer} ${style.margin10}`}>
               <h2 className={style.heading}>Personal Information</h2>
@@ -1820,139 +1816,139 @@ const handleActivateApplication = async (data) => {
                     />
                   </div>
                 )}
-                </div>
-                  <div className={`${style.formContainer} ${style.marginTop}`}>
-                    <div className={` ${style.cursorPointer}`}>
-                    
-                                  <>
-                    
-                                    <Dropzone
-                                      style={dropzoneStyle}
-                                      onDrop={(acceptedFiles) => changeHandler(acceptedFiles)}
-                                      accept={{
-                                        'image/jpeg': [],
-                                        'image/png': [],
-                                        'image/jpg': [],
-                                        'application/pdf': []
-                                      }}
-                                    >
-                                      {({ getRootProps, getInputProps }) => (
-                                        <section>
-                                          <div {...getRootProps()}>
-                                            <input {...getInputProps()} />
-                                            <div className={style.uploadBorderStyle}>
-                                              <div className={`${style.spaceBetween} ${style.displayInRowCenter}`}>
-                                                <div className={style.uploadTextStyle}>
-                                                  Upload Signed Privilege Sets
-                                                </div>
-                                                <div className={`${style.marginLeftRight20}`}>
-                                                  Click To Upload
-                                                </div>
-                                              </div>
-                                            </div>
-                                          </div>
-                                        </section>
-                                      )}
-                                    </Dropzone>
-                                  </>
-                    
-                    </div>
-                       {uploadFileData.length > 0 && (
-                                  <div>
-                                    {uploadFileData.map((file, index) => (
-                                      <div key={index} className={`${style.alignItem} ${style.marginTop10}`}>
-                                        <div className={`${style.oneColumnGrid}`}>
-                                          <div className={`${style.displayInRow} ${style.referenceCardStyle}`}>
-                                            <DescriptionIcon className={style.docsIcon} />
-                                            <div className={style.marginLeft20}>{file?.file?.fileName}</div>
-                                          </div>
-                                           <div className={`${style.displayInRow}`}>
-                                          <img src={DeleteIcon} alt="" className={style.docTypeImgStyle}   onClick={() => {
-                                              setSelectedFileId(file?.id);
-                                              setShowDeleteConfirmation(true);
-                                              }}/>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    ))}
-                                  </div>
-                                )}
-                  </div>
-                  <h2 className={`${style.heading1} ${style.marginTop}`}>Tenure</h2>
-              <div className={style.gridContainer4}>
-                  <div className={style.inputGroup}>
-                    <CommonDateField
-                      label="Start Date"
-                      value={dateOfStart ? new Date(dateOfStart) : null}
-                      onChange={handleDateOfStartChange}
-                      InputProps={{
-                        style: {
-                          fontSize: 14,
-                          height: 30,
-                        },
+              </div>
+              <div className={`${style.formContainer} ${style.marginTop}`}>
+                <div className={` ${style.cursorPointer}`}>
+
+                  <>
+
+                    <Dropzone
+                      style={dropzoneStyle}
+                      onDrop={(acceptedFiles) => changeHandler(acceptedFiles)}
+                      accept={{
+                        'image/jpeg': [],
+                        'image/png': [],
+                        'image/jpg': [],
+                        'application/pdf': []
                       }}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          inputProps={{
-                            ...params.inputProps,
-                            placeholder: "MM-DD-YYYY",
-                            readOnly: true,
-                          }}
-                          fullWidth
-                        />
+                    >
+                      {({ getRootProps, getInputProps }) => (
+                        <section>
+                          <div {...getRootProps()}>
+                            <input {...getInputProps()} />
+                            <div className={style.uploadBorderStyle}>
+                              <div className={`${style.spaceBetween} ${style.displayInRowCenter}`}>
+                                <div className={style.uploadTextStyle}>
+                                  Upload Signed Privilege Sets
+                                </div>
+                                <div className={`${style.marginLeftRight20}`}>
+                                  Click To Upload
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </section>
                       )}
-                      required
-                      className={`${style.fullwidth} ${errors["dateOfStart"] ? style.errorField : ""}`}
-                    />
-                </div> 
-                
+                    </Dropzone>
+                  </>
+
+                </div>
+                {uploadFileData.length > 0 && (
+                  <div>
+                    {uploadFileData.map((file, index) => (
+                      <div key={index} className={`${style.alignItem} ${style.marginTop10}`}>
+                        <div className={`${style.oneColumnGrid}`}>
+                          <div className={`${style.displayInRow} ${style.referenceCardStyle}`}>
+                            <DescriptionIcon className={style.docsIcon} />
+                            <div className={style.marginLeft20}>{file?.file?.fileName}</div>
+                          </div>
+                          <div className={`${style.displayInRow}`}>
+                            <img src={DeleteIcon} alt="" className={style.docTypeImgStyle} onClick={() => {
+                              setSelectedFileId(file?.id);
+                              setShowDeleteConfirmation(true);
+                            }} />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <h2 className={`${style.heading1} ${style.marginTop}`}>Tenure</h2>
+              <div className={style.gridContainer4}>
                 <div className={style.inputGroup}>
                   <CommonDateField
-                      label="End Date"
-                      value={dateOfEnd ? new Date(dateOfEnd) : null}
-                      onChange={handleDateOfEndChange}
-                      InputProps={{
-                        style: {
-                          fontSize: 14,
-                          height: 30,
-                        },
-                      }}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          inputProps={{
-                            ...params.inputProps,
-                            placeholder: "MM-DD-YYYY",
-                            readOnly: true,
-                          }}
-                          fullWidth
-                        />
-                      )}
-                      minDate={dateOfStart ? new Date(dateOfStart) : new Date()}
-                      required
-                      className={`${style.fullwidth} ${errors["dateOfEnd"] ? style.errorField : ""}`}
-                    />
+                    label="Start Date"
+                    value={dateOfStart ? new Date(dateOfStart) : null}
+                    onChange={handleDateOfStartChange}
+                    InputProps={{
+                      style: {
+                        fontSize: 14,
+                        height: 30,
+                      },
+                    }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        inputProps={{
+                          ...params.inputProps,
+                          placeholder: "MM-DD-YYYY",
+                          readOnly: true,
+                        }}
+                        fullWidth
+                      />
+                    )}
+                    required
+                    className={`${style.fullwidth} ${errors["dateOfStart"] ? style.errorField : ""}`}
+                  />
                 </div>
-                 <div></div>
+
+                <div className={style.inputGroup}>
+                  <CommonDateField
+                    label="End Date"
+                    value={dateOfEnd ? new Date(dateOfEnd) : null}
+                    onChange={handleDateOfEndChange}
+                    InputProps={{
+                      style: {
+                        fontSize: 14,
+                        height: 30,
+                      },
+                    }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        inputProps={{
+                          ...params.inputProps,
+                          placeholder: "MM-DD-YYYY",
+                          readOnly: true,
+                        }}
+                        fullWidth
+                      />
+                    )}
+                    minDate={dateOfStart ? new Date(dateOfStart) : new Date()}
+                    required
+                    className={`${style.fullwidth} ${errors["dateOfEnd"] ? style.errorField : ""}`}
+                  />
                 </div>
+                <div></div>
+              </div>
             </div>
 
             <div className={`${style.formContainer} ${style.marginTop20} ${style.margin10}`}>
               <h2 className={style.heading}>Professional Information</h2>
-                <div className={style.gridContainer1}>
-                  <div className={style.gridContainer4}>
-                <div className={style.inputGroup}>
-                  <CommonTextField
-                    label="OHIP Billing"
-                    value={billingNo}
-                    onChange={(e) => setBillingNo(e.target.value)}
-                    placeholder="Enter OHIP No"
-                    className={style.fullwidth} />
-                    </div>
-                    <div></div>
-                    <div></div>
-                    </div>
+              <div className={style.gridContainer1}>
+                <div className={style.gridContainer4}>
+                  <div className={style.inputGroup}>
+                    <CommonTextField
+                      label="OHIP Billing"
+                      value={billingNo}
+                      onChange={(e) => setBillingNo(e.target.value)}
+                      placeholder="Enter OHIP No"
+                      className={style.fullwidth} />
+                  </div>
+                  <div></div>
+                  <div></div>
+                </div>
                 <div className={style.inputRow}>
                   <div className={style.inputField}>
                     <CommonTextField
@@ -2253,16 +2249,16 @@ const handleActivateApplication = async (data) => {
                             counterElement.style.padding = "2px 5px";
                             counterElement.style.borderRadius = "4px";
                             counterElement.style.pointerEvents = "none";
-              
+
                             const editorContainer = editor.ui.view.editable.element;
                             editorContainer.parentNode.appendChild(counterElement);
-              
+
                             // Listen for changes in the editor
                             editor.model.document.on("change:data", () => {
                               const data = editor.getData();
                               const textContent = data.replace(/<[^>]*>/g, ""); // Strip HTML to get pure text
                               counterElement.innerText = `${textContent.length}/150`;
-              
+
                               if (textContent.length > 150) {
                                 // Prevent further input by trimming the content
                                 editor.setData(textContent.slice(0, 150));
@@ -2335,16 +2331,16 @@ const handleActivateApplication = async (data) => {
                             counterElement.style.padding = "2px 5px";
                             counterElement.style.borderRadius = "4px";
                             counterElement.style.pointerEvents = "none";
-              
+
                             const editorContainer = editor.ui.view.editable.element;
                             editorContainer.parentNode.appendChild(counterElement);
-              
+
                             // Listen for changes in the editor
                             editor.model.document.on("change:data", () => {
                               const data = editor.getData();
                               const textContent = data.replace(/<[^>]*>/g, ""); // Strip HTML to get pure text
                               counterElement.innerText = `${textContent.length}/150`;
-              
+
                               if (textContent.length > 150) {
                                 // Prevent further input by trimming the content
                                 editor.setData(textContent.slice(0, 150));
@@ -2415,16 +2411,16 @@ const handleActivateApplication = async (data) => {
                             counterElement.style.padding = "2px 5px";
                             counterElement.style.borderRadius = "4px";
                             counterElement.style.pointerEvents = "none";
-              
+
                             const editorContainer = editor.ui.view.editable.element;
                             editorContainer.parentNode.appendChild(counterElement);
-              
+
                             // Listen for changes in the editor
                             editor.model.document.on("change:data", () => {
                               const data = editor.getData();
                               const textContent = data.replace(/<[^>]*>/g, ""); // Strip HTML to get pure text
                               counterElement.innerText = `${textContent.length}/150`;
-              
+
                               if (textContent.length > 150) {
                                 // Prevent further input by trimming the content
                                 editor.setData(textContent.slice(0, 150));
@@ -2495,16 +2491,16 @@ const handleActivateApplication = async (data) => {
                             counterElement.style.padding = "2px 5px";
                             counterElement.style.borderRadius = "4px";
                             counterElement.style.pointerEvents = "none";
-              
+
                             const editorContainer = editor.ui.view.editable.element;
                             editorContainer.parentNode.appendChild(counterElement);
-              
+
                             // Listen for changes in the editor
                             editor.model.document.on("change:data", () => {
                               const data = editor.getData();
                               const textContent = data.replace(/<[^>]*>/g, ""); // Strip HTML to get pure text
                               counterElement.innerText = `${textContent.length}/150`;
-              
+
                               if (textContent.length > 150) {
                                 // Prevent further input by trimming the content
                                 editor.setData(textContent.slice(0, 150));
@@ -2576,16 +2572,16 @@ const handleActivateApplication = async (data) => {
                             counterElement.style.padding = "2px 5px";
                             counterElement.style.borderRadius = "4px";
                             counterElement.style.pointerEvents = "none";
-              
+
                             const editorContainer = editor.ui.view.editable.element;
                             editorContainer.parentNode.appendChild(counterElement);
-              
+
                             // Listen for changes in the editor
                             editor.model.document.on("change:data", () => {
                               const data = editor.getData();
                               const textContent = data.replace(/<[^>]*>/g, ""); // Strip HTML to get pure text
                               counterElement.innerText = `${textContent.length}/150`;
-              
+
                               if (textContent.length > 150) {
                                 // Prevent further input by trimming the content
                                 editor.setData(textContent.slice(0, 150));
@@ -2698,7 +2694,7 @@ const handleActivateApplication = async (data) => {
                       )}
                     </>
                   )}
-              
+
                 </div>
 
                 <div className={style.inputGroup5}>
@@ -2741,16 +2737,16 @@ const handleActivateApplication = async (data) => {
                             counterElement.style.padding = "2px 5px";
                             counterElement.style.borderRadius = "4px";
                             counterElement.style.pointerEvents = "none";
-              
+
                             const editorContainer = editor.ui.view.editable.element;
                             editorContainer.parentNode.appendChild(counterElement);
-              
+
                             // Listen for changes in the editor
                             editor.model.document.on("change:data", () => {
                               const data = editor.getData();
                               const textContent = data.replace(/<[^>]*>/g, ""); // Strip HTML to get pure text
                               counterElement.innerText = `${textContent.length}/150`;
-              
+
                               if (textContent.length > 150) {
                                 // Prevent further input by trimming the content
                                 editor.setData(textContent.slice(0, 150));
@@ -2821,16 +2817,16 @@ const handleActivateApplication = async (data) => {
                             counterElement.style.padding = "2px 5px";
                             counterElement.style.borderRadius = "4px";
                             counterElement.style.pointerEvents = "none";
-              
+
                             const editorContainer = editor.ui.view.editable.element;
                             editorContainer.parentNode.appendChild(counterElement);
-              
+
                             // Listen for changes in the editor
                             editor.model.document.on("change:data", () => {
                               const data = editor.getData();
                               const textContent = data.replace(/<[^>]*>/g, ""); // Strip HTML to get pure text
                               counterElement.innerText = `${textContent.length}/150`;
-              
+
                               if (textContent.length > 150) {
                                 // Prevent further input by trimming the content
                                 editor.setData(textContent.slice(0, 150));
@@ -2901,16 +2897,16 @@ const handleActivateApplication = async (data) => {
                             counterElement.style.padding = "2px 5px";
                             counterElement.style.borderRadius = "4px";
                             counterElement.style.pointerEvents = "none";
-              
+
                             const editorContainer = editor.ui.view.editable.element;
                             editorContainer.parentNode.appendChild(counterElement);
-              
+
                             // Listen for changes in the editor
                             editor.model.document.on("change:data", () => {
                               const data = editor.getData();
                               const textContent = data.replace(/<[^>]*>/g, ""); // Strip HTML to get pure text
                               counterElement.innerText = `${textContent.length}/150`;
-              
+
                               if (textContent.length > 150) {
                                 // Prevent further input by trimming the content
                                 editor.setData(textContent.slice(0, 150));
@@ -3008,16 +3004,16 @@ const handleActivateApplication = async (data) => {
                           counterElement.style.padding = "2px 5px";
                           counterElement.style.borderRadius = "4px";
                           counterElement.style.pointerEvents = "none";
-            
+
                           const editorContainer = editor.ui.view.editable.element;
                           editorContainer.parentNode.appendChild(counterElement);
-            
+
                           // Listen for changes in the editor
                           editor.model.document.on("change:data", () => {
                             const data = editor.getData();
                             const textContent = data.replace(/<[^>]*>/g, ""); // Strip HTML to get pure text
                             counterElement.innerText = `${textContent.length}/150`;
-            
+
                             if (textContent.length > 150) {
                               // Prevent further input by trimming the content
                               editor.setData(textContent.slice(0, 150));
@@ -3278,14 +3274,14 @@ const handleActivateApplication = async (data) => {
               getIsOpen={setShowValidationDialog}
               labelList={warningFields}
             />
-            )}
-             {
-              showDeleteConfirmation && (
-                <DeleteConfirmationDialog getShowDeleteConfirmation={getShowDeleteConfirmation}
-                  getDeleteConfirmation={getDeleteConfirmation}
-                  confirmationText="Do you want to delete this Uploaded Signed Privilege Set?" />
-                            )
-                        }
+          )}
+          {
+            showDeleteConfirmation && (
+              <DeleteConfirmationDialog getShowDeleteConfirmation={getShowDeleteConfirmation}
+                getDeleteConfirmation={getDeleteConfirmation}
+                confirmationText="Do you want to delete this Uploaded Signed Privilege Set?" />
+            )
+          }
         </>
       )}
     </>
