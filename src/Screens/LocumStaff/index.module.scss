@@ -1233,9 +1233,13 @@ body::-webkit-scrollbar {
 }
 
 .crossStyle {
-  color: linear-gradient($primarycolor, $statusred) !important;
-  margin-bottom: 15px;
-  cursor: pointer;
+  height: 18px;
+  width: 18px;
+
+  @media (max-width: 1000px) {
+    height: 16px;
+    width: 16px;
+  }
 }
 
 .newContractCrossStyle {
@@ -3584,4 +3588,48 @@ input[type="number"] {
 
 .noteText {
   color: #FB4643;
+}
+
+.reminderDialog {
+  height: 75%;
+  width: 50%;
+
+  @media (max-width: 1130px) {
+    height: auto;
+    width: auto;
+  }
+}
+
+.reminderDialogBackground {
+  background: #ffffff 0% 0% no-repeat padding-box;
+  padding: 20px 40px 0px 40px;
+  border-radius: 20px !important;
+}
+
+.heading {
+  text-align: left;
+  font: normal normal bold 20px/28px proxima-nova;
+  color: #2C2C2C;
+  text-transform: capitalize;
+}
+
+.continueValidation {
+  background: $primarycolor 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 6px #00000029;
+  border-radius: 8px;
+  text-align: center;
+  font: normal normal bold 17px/30px proxima-nova;
+  letter-spacing: 0px;
+  color: #FFFFFF;
+  text-transform: uppercase;
+  padding: 5px;
+  cursor: pointer;
+  width: 240px;
+}
+
+.continueValidation:hover {
+  background: #044D61 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 12px #00000052;
+  border-radius: 8px;
+  opacity: 1;
 }

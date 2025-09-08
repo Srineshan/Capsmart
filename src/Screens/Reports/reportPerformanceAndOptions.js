@@ -300,7 +300,7 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
         let userData = (sessionStorage.getItem('user') && sessionStorage.getItem('user') !== 'undefined') ? JSON.parse(sessionStorage.getItem('user')) : {}
         console.log(userData, 'userData')
         let data = {
-            reportName: reportName || reportTitleList[reportType],
+            reportName: reportName,
             reportNotes: reportDescription,
             runDate: new Date(),
             reportDoc: {
@@ -364,7 +364,7 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
         let data = {
             mailIds: selectedUsers?.map(data => data?.mailId),
             savedReportIds: [],
-            reportName: reportName || reportTitleList[reportType],
+            reportName: reportName,
             file: {
                 fileName: uniqueFileName
             },
@@ -489,7 +489,7 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                         <div className={`${style.iconPadding} ${style.cursorPointer}`}
                             onMouseEnter={(e) => setAnchorElSave(e.currentTarget)} onMouseLeave={() => setAnchorElSave(null)} aria-owns={openSave ? 'mouse-over-popover' : undefined}
                             aria-haspopup="true">
-                            <img src={ReportsSchedule} alt="" className={`${style.reportsActions} ${style.marginTop5}`} onClick={() => setShowSaveReportOutput(true)} />
+                            <img src={ReportsSchedule} alt="" className={`${style.reportsActions} ${style.marginTop5}`} onClick={() => { setShowSaveReportOutput(true); setReportName(reportTitleList[reportType]); }} />
                             <Popover
                                 id={'mouse-over-popover'}
                                 sx={{
@@ -597,7 +597,7 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                             <div className={`${style.marginTop20} ${style.recipientsDataHeight}`}>
                                 <div className={style.displayInCol}>
                                     <label for="standard-basic" className={style.saveReportLabelStyle}>Report Output Name</label>
-                                    <TextField id="standard-basic" variant="standard" value={reportName || reportTitleList[reportType]} className={`${style.threeColWidth} ${style.saveReportFieldStyle} ${style.marginTop10}`} onChange={(e) => setReportName(e.target.value)} />
+                                    <TextField id="standard-basic" variant="standard" value={reportName} className={`${style.threeColWidth} ${style.saveReportFieldStyle} ${style.marginTop10}`} onChange={(e) => setReportName(e.target.value)} />
                                 </div>
                                 <div className={style.marginTop20}>
                                     <label for="description" className={`${style.saveReportLabelStyle}`}>Report Output Notes</label>
@@ -617,7 +617,7 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
             </Dialog>
             <Dialog isOpen={showReportSavedDialog} onClose={() => setShowReportSavedDialog(false)} className={`${style.dialogPaddingBottom}`}>
                 <div className={`${Classes.DIALOG_BODY} ${style.deleteEcecutedContractDialogBackgroundSave}`}>
-                    <div className={style.justifyEnd}>
+                    {/* <div className={style.justifyEnd}>
                         <Tooltip title="Click to Close" arrow>
                             <img
                                 src={CrossPink}
@@ -628,11 +628,16 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                                 }}
                             />
                         </Tooltip>
-                    </div>
+                    </div> */}
                     {/* <div className={style.justifyCenter}>
                         <div className={style.reportIconStyle}></div>
                     </div> */}
-                    <div className={style.reportSavedStyle}>Report Saved</div>
+                    <div className={style.reportSavedStyle}>{reportName} Saved Successfully!</div>
+                    <div>
+                        <div className={`${style.justifyCenter} ${style.marginTop20}`}>
+                            <button className={`${style.cloneButtonStyle} ${style.marginLeft20} ${style.cursorPointer}  `} onClick={() => setShowReportSavedDialog(false)}>{'Close'}</button>
+                        </div>
+                    </div>
                 </div>
             </Dialog>
             {/* <Dialog isOpen={isLoading} onClose={() => setShowReportRefreshingDialog(false)} className={`${style.reportSavedDialog} ${style.dialogPaddingBottom}`} canOutsideClickClose={false}>

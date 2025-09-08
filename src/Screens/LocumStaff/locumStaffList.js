@@ -20,7 +20,9 @@ import RemoveIcon from "@mui/icons-material/Remove";
 import AddIcon from "@mui/icons-material/Add";
 import CircularProgress from "@mui/material/CircularProgress";
 import { format, differenceInDays } from "date-fns";
+import { Dialog, Classes } from '@blueprintjs/core';
 import TableTwo from "../../Components/TableDesignTwo";
+import CrossPink from "./../../images/crossPink.png";
 import PublicIcon from "@mui/icons-material/Public";
 import PermIdentityIcon from "@mui/icons-material/PermIdentity";
 import style from "./index.module.scss";
@@ -30,7 +32,7 @@ import ProgressBar from "@ramonak/react-progress-bar";
 import { useNavigate } from "react-router-dom";
 import { GET, PUT, POST, TenantID } from "../dataSaver";
 import CircleIcon from "@mui/icons-material/Circle";
-import { SuccessToaster } from "../../utils/toaster";
+import { SuccessToaster, SuccessToaster2 } from "../../utils/toaster";
 import { ErrorToaster } from "../../utils/toaster";
 import Tooltip from "@mui/material/Tooltip";
 import { formatFirstNameLastName } from "../../utils/formatting";
@@ -38,6 +40,8 @@ import CommonSearchField from "../../Components/CommonFields/CommonSearchField";
 import CommonSelectField from "../../Components/CommonFields/CommonSelectField";
 import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
+import { CKEditor } from '@ckeditor/ckeditor5-react';
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import LoadingScreen from "../../Components/LoadingScreen";
 import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined';
 import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined';
@@ -96,6 +100,8 @@ const LocumStaffList = ({
   const [applicationType, setApplicationType] = useState(() =>
     sessionStorage.getItem('applicationCreationType') || 'NEW'
   );
+  const [notesToDeptHead, setNotesToDeptHead] = useState('');
+  const [isShowSendReminder, setIsShowSendReminder] = useState(false);
   const workModeType = sessionStorage.getItem("workModeType")
   const [userDepartmentList, setUserDepartmentList] = useState('');
   const [searchCount, setSearchCount] = useState(0);
@@ -104,6 +110,7 @@ const LocumStaffList = ({
   const [selectedDepartmentFilter, setSelectedDepartmentFilter] = useState("");
   const [selectedServiceArea, setSelectedServiceArea] = useState("");
   const [selectedSpeciality, setSelectedSpeciality] = useState("");
+  const [selectedStaff, setSelectedStaff] = useState("");
   const [limit, setLimit] = useState(9999);
   const [isLoadingImage, setIsLoadingImage] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
@@ -289,6 +296,36 @@ const LocumStaffList = ({
     getLocumExtensiveRequestDialog(true);
     sessionStorage.setItem("applicationId", data?.id);
   };
+
+  const handleSendReminderToDeptHead = (data) => {
+    setIsShowSendReminder(true);
+    setSelectedStaff(data?.id);
+  }
+
+  const handleSendReminderToApplicant = async (data) => {
+    await POST(`application-management-service/application/${data?.onGoingApplication?.id}/sendEmail`)
+      .then((response) => {
+        SuccessToaster2("Reminder Sent Successfully!");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
+  const sendReminderToDeptHead = async () => {
+    let data = {
+      notes: notesToDeptHead
+    }
+    await POST(`application-management-service/staff/${selectedStaff}/sendExtensionReminderToDepartmentHead`, data)
+      .then((response) => {
+        SuccessToaster2("Reminder Sent Successfully!");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    setIsShowSendReminder(false);
+  }
+
 
   const onClickNotesDialog = (data) => {
     getNotesDialog(true);
@@ -2033,13 +2070,13 @@ const LocumStaffList = ({
     {
       data: "Send Reminder To Dept Head",
       requiredValue: "boolean",
-      onClick: () => { },
-      conditionToShow: `data?.reAppointmentInitiated === false && data?.extensionRequestStatus !== "NOT_REQUESTED"`
+      onClick: handleSendReminderToDeptHead,
+      conditionToShow: `data?.reAppointmentInitiated === false && data?.extensionRequestStatus !== "NOT_REQUESTED"  && ((new Date(data?.tenure?.to) - new Date()) / (1000 * 60 * 60 * 24)) <= 30`
     },
     {
       data: "Send Reminder To Applicant",
       requiredValue: "boolean",
-      onClick: () => { },
+      onClick: handleSendReminderToApplicant,
       conditionToShow: `data?.reAppointmentInitiated === true`
     },
   ];
@@ -2083,14 +2120,14 @@ const LocumStaffList = ({
     {
       data: "Send Reminder To Dept Head",
       requiredValue: "boolean",
-      onClick: () => { },
+      onClick: handleSendReminderToDeptHead,
       conditionToShow: `data?.reAppointmentInitiated === false && data?.extensionRequestStatus !== "NOT_REQUESTED"`
     },
     {
       data: "Send Reminder To Applicant",
       requiredValue: "boolean",
-      onClick: () => { },
-      conditionToShow: `data?.reAppointmentInitiated === true`
+      onClick: handleSendReminderToApplicant,
+      conditionToShow: `data?.reAppointmentInitiated === true && data?.onGoingApplication?.id !== null`
     },
 
   ];
@@ -2471,6 +2508,82 @@ const LocumStaffList = ({
         </div>
         <p className={style.poweredBy}>© {new Date().getFullYear()} HapiCare</p>
       </div>
+      <Dialog
+        isOpen={isShowSendReminder}
+        onClose={() => setIsShowSendReminder(false)}
+        className={`${style.reminderDialog} ${style.reminderDialogBackground}`}
+        canOutsideClickClose={false}
+        canEscapeKeyClose={false}
+      >
+        <div>
+          <div className={Classes.DIALOG_BODY}>
+            <div className={style.spaceBetween}>
+              <div className={style.heading}>
+                Send Reminder To Department Head.
+              </div>
+              <div className={style.displayInRow}>
+                <img
+                  src={CrossPink}
+                  alt="cross"
+                  className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft} `}
+                  onClick={() => {
+
+                  }}
+                />
+              </div>
+            </div>
+            <div className={style.marginTop20}>
+              <CKEditor
+                editor={ClassicEditor}
+                data={notesToDeptHead}
+                onChange={(event, editor) => {
+                  const data = editor.getData();
+                  setNotesToDeptHead(data);
+                }}
+                config={{
+                  placeholder: "Enter Notes To Department Head",
+                  toolbar: {
+                    shouldNotGroupWhenFull: true,
+                    sticky: true,
+                    items: [
+                      'undo', 'redo',
+                      '|',
+                      'heading',
+                      '|',
+                      'fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor',
+                      '|',
+                      'bold', 'italic', 'strikethrough', 'subscript', 'superscript', 'code',
+                      '|',
+                      'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'
+                    ],
+                  },
+                  autoGrow: false,
+                }}
+                onReady={(editor) => {
+                  editor.editing.view.change((writer) => {
+                    writer.setStyle(
+                      "height",
+                      "100px",
+                      editor.editing.view.document.getRoot()
+                    );
+                  });
+                }}
+              />
+            </div>
+            <div className={`${style.spaceBetween} ${style.marginTop20}`}>
+              <div></div>
+              <div
+                className={`${style.continueValidation} ${style.marginLeft}`}
+                onClick={() => {
+                  sendReminderToDeptHead()
+                }}
+              >
+                SEND REMINDER
+              </div>
+            </div>
+          </div>
+        </div>
+      </Dialog>
     </div>
   );
 };

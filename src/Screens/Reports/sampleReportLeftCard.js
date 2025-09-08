@@ -295,7 +295,8 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         const { data: applicant } = await GET(
             `entity-service/applicantType`
         );
-        setStaffType(applicant)
+        const filteredApplicant = applicant.filter(item => item.id !== "66dc4517788741fedc982f05");
+        setStaffType(filteredApplicant)
     }
 
     const getStaffList = async () => {
@@ -318,7 +319,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         let url = `entity-service/privilege`
 
         if (selectedStaffType?.[0] !== '') {
-            url += `?applicantTypeId=${selectedStaffType?.[0] === '' ? [] : selectedStaffType}`
+            url += `?applicantTypeIds=${selectedStaffType?.[0] === '' ? [] : selectedStaffType}`
         }
 
         const { data: privilege } = await GET(url, { signal });
@@ -369,7 +370,9 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
     }, [currentUserDetails, myReportId])
 
     useEffect(() => {
-        if (reportFilter) {
+        console.log(reportFilter, 'reportFilter')
+        if (Object.keys(reportFilter).length !== 0) {
+            console.log(reportFilter, 'reportFilter')
             let sitesToShow = [];
             let departmentsToShow = [];
             let groupsToShow = [];

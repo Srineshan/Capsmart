@@ -271,10 +271,18 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
     }
 
     const onClickDeleteReport = async (data) => {
-        await DELETE(`application-management-service/report/savedReport/${data?.id}`)
-            .then((response) => {
-                getSavedReports();
-            })
+        if (availableCategories[reportType] !== "MEDICAL_DIRECTIVE") {
+            await DELETE(`application-management-service/report/savedReport/${data?.id}`)
+                .then((response) => {
+                    getSavedReports();
+                })
+        } else {
+            await DELETE(`medical-directive-service/report/savedReport/${data?.id}`)
+                .then((response) => {
+                    getSavedReports();
+                })
+        }
+
     }
 
     const onClickViewReport = (data) => {
