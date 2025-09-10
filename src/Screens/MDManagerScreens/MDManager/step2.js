@@ -52,6 +52,30 @@ const MDManagerStep2 = ({ setStep1, setStep2, setStep3, mdValue, getMD, setMdVal
             })
 
     }
+    const handleSaveInProgress = async () => {
+        const formData = new FormData();
+        console.log(mdValue)
+        let data = mdValue;
+        data.lastSavedSection = 'step2';
+        formData.append(
+            "metaDataDTO",
+            new Blob([JSON.stringify(data)], {
+                type: "application/json",
+            })
+        );
+
+        console.log(data)
+
+        await PUT(`medical-directive-service/medicalDirectives/${mdValue?.id}`, formData)
+            .then(response => {
+                SuccessToaster2('MD Saved Successfully');
+                console.log(response?.data)
+                setStep2(false)
+            })
+            .catch(error => {
+            })
+
+    }
     const handleClose = () => {
         setMdValue();
         setSelectedMdId('');
@@ -84,7 +108,7 @@ const MDManagerStep2 = ({ setStep1, setStep2, setStep3, mdValue, getMD, setMdVal
                             <button className={`${style.outlinedButtonMd} ${style.marginRight} `} onClick={() => setIsConfirmationDialog(true)} >REPLACE DOCUMENT</button>
                         </Tooltip>
                         <Tooltip arrow title='Click to Save In-Progress'>
-                            <button className={`${style.outlinedButtonMd} ${style.marginRight} `} onClick={() => { setStep2(false); handleClose() }} >SAVE IN PROGRESS</button>
+                            <button className={`${style.outlinedButtonMd} ${style.marginRight} `} onClick={() => { handleSaveInProgress() }} >SAVE IN PROGRESS</button>
                         </Tooltip>
                         <Tooltip arrow title='Click to Continue'>
                             <button className={`${style.buttonStyleMd} ${style.marginRight} `} onClick={() => { setStep2(false); setStep3(true) }} >CONTINUE</button>

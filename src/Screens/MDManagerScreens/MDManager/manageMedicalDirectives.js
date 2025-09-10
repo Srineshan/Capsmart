@@ -34,7 +34,7 @@ import CommonDateField from '../../../Components/CommonFields/CommonDateField';
 import CommonCheckBox from '../../../Components/CommonFields/CommonCheckBox';
 import LoadingScreen from '../../../Components/LoadingScreen';
 
-const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advancedSearch, setSelectedMdId, showAddNewMedicalDirectives, setShowAddNewMedicalDirectives }) => {
+const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setStep2, setStep3, setMdFile, advancedSearch, setSelectedMdId, showAddNewMedicalDirectives, setShowAddNewMedicalDirectives }) => {
     const PDFRef = createRef();
     const navigate = useNavigate()
     const [calendarStart, setCalendarStart] = useState(false);
@@ -566,7 +566,17 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
     const handleModify = (data) => {
         setSelectedMdId(data?.id);
         setIsEdit(true);
-        setStep1(true)
+        if (data?.lastSavedSection !== '' && data?.lastSavedSection) {
+            if (data?.lastSavedSection === 'step1') {
+                setStep1(true)
+            } else if (data?.lastSavedSection === 'step2') {
+                setStep2(true)
+            } else if (data?.lastSavedSection === 'step3') {
+                setStep3(true)
+            }
+        } else {
+            setStep1(true)
+        }
     }
 
     const handlePublish = async (data) => {

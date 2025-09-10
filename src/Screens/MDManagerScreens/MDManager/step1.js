@@ -276,6 +276,7 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
             siteSpecific: selectedSite !== '' ? true : false,
         }
 
+
         if (mdValue?.id) {
             data.id = mdValue?.id;
             data.attestationPeriod = mdValue?.attestationPeriod;
@@ -297,7 +298,11 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
             data.updateFor = mdValue?.updateFor;
             data.version = mdValue?.version;
         }
-
+        if (isSaveInProgress) {
+            data.lastSavedSection = 'step1';
+        } else {
+            data.lastSavedSection = '';
+        }
         formData.append(
             "metaDataDTO",
             new Blob([JSON.stringify(data)], {

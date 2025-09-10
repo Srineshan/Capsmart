@@ -308,6 +308,11 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
             positionType: user?.positionType,
             tenant: user?.tenant
         }))
+        if (isSaveInProgress) {
+            data.lastSavedSection = 'step3';
+        } else {
+            data.lastSavedSection = '';
+        }
         formData.append(
             "metaDataDTO",
             new Blob([JSON.stringify(data)], {
