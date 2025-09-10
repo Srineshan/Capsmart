@@ -432,9 +432,9 @@ const LocumExtensiveRequestDialog = ({ getIsOpen, tableDataValue, selectedTab })
   const priorExpireDate = selectDataLocum?.tenure?.to
   const minDateValue =
     selectedTab === 'ACTIVELOCUM'
-      ? ExpireDate
-        ? addDays(new Date(ExpireDate), 30)
-        : null
+      ? priorExpireDate
+        ? addDays(new Date(priorExpireDate), 1)
+        : currentDateNow
       : addDays(new Date(priorExpireDate), 1);
 
   const minDateValueValid =

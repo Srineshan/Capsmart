@@ -143,7 +143,7 @@ const LocumRequestDialog = ({ getIsOpen, selectedTab }) => {
     // Add "Custom End Date" option
     const now = new Date();
     months.push({
-      label: 'Custom End Date',
+      label: 'Custom Date',
       value: 'Custom'
     });
 
@@ -194,9 +194,9 @@ const LocumRequestDialog = ({ getIsOpen, selectedTab }) => {
   //       : null
   const minDateValue =
     selectDataLocum?.locumRenewalDetails?.reappointmentType === 'EXTENSION'
-      ? ExpireDate
-        ? addDays(new Date(ExpireDate), 30)
-        : null
+      ? priorExpireDate
+        ? addDays(new Date(priorExpireDate), 1)
+        : currentDateNow
       : addDays(new Date(priorExpireDate), 1);
 
   const minDateValueValid =
@@ -210,12 +210,12 @@ const LocumRequestDialog = ({ getIsOpen, selectedTab }) => {
   //   ? addYears(new Date(ExpireDateRequest), 1)
   //   : null
 
-    const maxDateValue =
-        selectDataLocum?.locumRenewalDetails?.reappointmentType === 'EXTENSION'
-          ? ExpireDateRequest
-            ? addYears(new Date(ExpireDateRequest), 1)
-            : null
-          : addYears(currentDateNow, 1);
+  const maxDateValue =
+    selectDataLocum?.locumRenewalDetails?.reappointmentType === 'EXTENSION'
+      ? ExpireDateRequest
+        ? addYears(new Date(ExpireDateRequest), 1)
+        : null
+      : addYears(currentDateNow, 1);
   const [currentDate, setCurrentDate] = useState(
     format(new Date(), dateFormat)
   );
@@ -4691,14 +4691,14 @@ const LocumRequestDialog = ({ getIsOpen, selectedTab }) => {
       >
         {/* <div className={style.spaceBetween}> */}
         <div className={style.heading1}>
-           Locum {selectDataLocum?.locumRenewalDetails?.reappointmentType === "EXTENSION" ? "Extension" : "Renewal"} Application has been sent to {" "}
+          Locum {selectDataLocum?.locumRenewalDetails?.reappointmentType === "EXTENSION" ? "Extension" : "Renewal"} Application has been sent to {" "}
           {selectDataLocum?.staff?.applicant?.name?.lastName?.charAt(0).toUpperCase() +
             selectDataLocum?.staff?.applicant?.name?.lastName?.slice(1).toLowerCase()}
           {", "}
           {selectDataLocum?.staff?.applicant?.name?.firstName
             ? selectDataLocum?.staff?.applicant?.name?.firstName.charAt(0).toUpperCase() +
             selectDataLocum?.staff?.applicant?.name?.firstName.slice(1).toLowerCase()
-            : ""} 
+            : ""}
           {/* Locum {selectDataLocum?.locumRenewalDetails?.reappointmentType === "EXTENSION" ? "Extension" : "Renewal"} Request has been sent */}
         </div>
         {/* <div className={style.displayInRow}>
