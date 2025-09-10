@@ -810,7 +810,7 @@ const LocumStaffList = ({
         else if (expiredDays <= 30) {
           iconStatus.push(<WarningAmberOutlinedIcon style={{ fontSize: 20, color: '#EBB433' }} />);
         }
-        {
+        else {
           iconStatus.push("");
         }
 
@@ -2000,13 +2000,14 @@ const LocumStaffList = ({
       data: "Extend?",
       requiredValue: "boolean",
       onClick: onClickExtensiverequestRequiredLocumDialog,
-      conditionToShow: `data?.extensionRequestStatus === "NA" && data?.reAppointmentInitiated === false && ((new Date(data?.tenure?.to) - new Date()) / (1000 * 60 * 60 * 24)) <= 30`,
+      conditionToShow: `data?.extensionRequestStatus === "NA" && data?.reAppointmentInitiated === false`,
+      // conditionToShow: `data?.extensionRequestStatus === "NA" && data?.reAppointmentInitiated === false && ((new Date(data?.tenure?.to) - new Date()) / (1000 * 60 * 60 * 24)) <= 30`,
     },
     {
       data: "Extension Not Required?",
       requiredValue: "boolean",
       onClick: onClickExtensiverequestNotRequiredLocumDialog,
-      conditionToShow: `data?.extensionRequestStatus === "NA" && data?.reAppointmentInitiated === false && ((new Date(data?.tenure?.to) - new Date()) / (1000 * 60 * 60 * 24)) <= 30`,
+      conditionToShow: `data?.extensionRequestStatus === "NA" && data?.reAppointmentInitiated === false`,
     },
     {
       data: "Review?",
@@ -2027,7 +2028,7 @@ const LocumStaffList = ({
       data: "Request Extension",
       requiredValue: "boolean",
       onClick: onClickExtensiveRequestLocumDialog,
-      conditionToShow: `data?.extensionRequestStatus === "NA" && data?.reAppointmentInitiated === false && ((new Date(data?.tenure?.to) - new Date()) / (1000 * 60 * 60 * 24)) <= 30`,
+      conditionToShow: `data?.extensionRequestStatus === "NA" && data?.reAppointmentInitiated === false`,
       conditionForAlternateText: `data?.reAppointmentInitiated === true ? "Application Sent" : data?.extensionRequestStatus === "REQUESTED" ? "Extension Requested" :  "Request Extension"`
     },
     {

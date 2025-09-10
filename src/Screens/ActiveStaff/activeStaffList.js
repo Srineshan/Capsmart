@@ -68,6 +68,8 @@ const ActiveStaffList = ({
   const [searchCount, setSearchCount] = useState(0);
   const [limit, setLimit] = useState(9999);
   const [isLoadingImage, setIsLoadingImage] = useState(false);
+  const workModeType = sessionStorage.getItem("workModeType")
+  const userDetailsFetchOption = (sessionStorage.getItem('user') !== "undefined" && sessionStorage.getItem('user')) ? JSON.parse(sessionStorage.getItem('user')) : {};
   const canadaData = sessionStorage.getItem('canadaData') !== 'undefined' ? JSON.parse(sessionStorage.getItem('canadaData')) : {};
   const dateFormat = canadaData?.dateFormat || 'MMM dd, yyyy';
   const permanentHeaderValues = ["", "Staff Name", "Staff ID", "Staff Type", "Docs", "Notes", "Last Updated", "Action"];
@@ -174,8 +176,12 @@ const ActiveStaffList = ({
 
   const getActiveUserDataSearch = async (signal) => {
     try {
+      const userDepartmentListData =
+        userDetailsFetchOption?.sites?.sites[0]?.departmentList?.departments?.[0]?.id;
       let apiUrl = `application-management-service/staff?status=ACTIVE&searchText=${searchTerm}`;
-
+      if (userDepartmentListData && workModeType === "Department Head") {
+        apiUrl += `&departmentId=${userDepartmentListData}`;
+      }
       const response = await GET(apiUrl, { signal });
 
       console.log("Application data", response?.data?.staffs);
@@ -193,11 +199,17 @@ const ActiveStaffList = ({
 
   const getActiveUserData = async () => {
     try {
+      const userDepartmentListData =
+        userDetailsFetchOption?.sites?.sites[0]?.departmentList?.departments?.[0]?.id;
+      let apiUrl = `application-management-service/staff?type=${selectedTab}&status=ACTIVE&limit=${limit}&offset=${page - 1}&searchText=${searchTermForTable}&sortBy=${sortValue}&sortByField=${sortField}`
+      if (userDepartmentListData && workModeType === "Department Head") {
+        apiUrl += `&departmentId=${userDepartmentListData}`;
+      }
       setIsLoadingImage(true)
       const response = await GET(
         // `application-management-service/application/workflowUser?tab=${selectedTab}`
         //  `application-management-service/application/workflowUser?tab=${selectedTab}&sortBy=${sortValue}&sortByField=${sortField}&applicationCreationType=REAPPOINTMENT`
-        `application-management-service/staff?type=${selectedTab}&status=ACTIVE&limit=${limit}&offset=${page - 1}&searchText=${searchTermForTable}&sortBy=${sortValue}&sortByField=${sortField}`
+        apiUrl
       );
       console.log("Application data", response?.data?.staffs);
       setTableData(response?.data?.staffs);
@@ -822,11 +834,11 @@ const ActiveStaffList = ({
 
   return (
     <div className={style.margin20}>
-       {isLoadingImage && (
-              <div className={style.loadingOverlay}>
-                <LoadingScreen />
-              </div>
-            )}
+      {isLoadingImage && (
+        <div className={style.loadingOverlay}>
+          <LoadingScreen />
+        </div>
+      )}
       <div className={isExpanded ? style.bigCardGrid : style.smallCardGrid}>
         <div>
           <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
@@ -847,6 +859,7 @@ const ActiveStaffList = ({
               getSelectedTab={getSelectedTab}
               selectedTab={selectedTab}
               reFetchMetaData={reFetchMetaData}
+              totalCount={totalCount}
               getReFetchMetadata={getReFetchMetaData}
             />
 

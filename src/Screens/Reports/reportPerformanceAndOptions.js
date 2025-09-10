@@ -390,7 +390,7 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
             formData.append('document', blob, uniqueFileName);
             console.log(formData, blob, data, pdfBlob)
             try {
-                const response = await POST(`application-management-service/report/shareReports/`, formData);
+                const response = await POST(availableCategories[reportType] === 'MEDICAL_DIRECTIVE' ? 'medical-directive-service/report/shareReports/' : `application-management-service/report/shareReports/`, formData);
                 console.log(response?.data);
                 SuccessToaster2('Report Output Shared Successfully!')
             } catch (error) {

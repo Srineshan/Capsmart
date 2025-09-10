@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import TileApplication from '../../Components/TileApplication';
 import style from './index.module.scss';
-import { GET,POST } from './../../Screens/dataSaver';
+import { GET, POST } from './../../Screens/dataSaver';
 
-const ActiveStaffTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, setReFetchMetaData }) => {
+const ActiveStaffTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, setReFetchMetaData, totalCount }) => {
   const [counts, setCounts] = useState({
     LOCUM_STAFF: 0,
     PERMANENT_STAFF: 0,
@@ -36,8 +36,8 @@ const ActiveStaffTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, setReF
 
   return (
     <div className={`${style.tabs}`}>
-      <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="Full Time" tileCount={counts?.PERMANENT_STAFF} currentTile="PERMANENT" />
-      <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="Locum Tennens" tileCount={counts?.LOCUM_STAFF} currentTile="LOCUM" />
+      <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="Full Time" tileCount={totalCount} currentTile="PERMANENT" />
+      {/* <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="Locum Tennens" tileCount={counts?.LOCUM_STAFF} currentTile="LOCUM" /> */}
       {/* <TileApplication selectedTab={selectedTab} getSelectedTab={getSelectedTab} tileLabel="Temporary" tileCount={counts?.PROVISIONAL} currentTile="PROVISIONAL" /> */}
     </div>
   )
