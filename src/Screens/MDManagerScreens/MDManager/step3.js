@@ -19,7 +19,7 @@ import CommonMultiSelectField from '../../../Components/CommonFields/CommonMulti
 import CommonDivider from '../../../Components/CommonFields/CommonDivider';
 import { Tooltip } from '@mui/material';
 
-const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, setSelectedMdId }) => {
+const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, setSelectedMdId, getMD }) => {
     const containerRef = useRef(null);
     const containerRef2 = useRef(null);
     const [targetStaff, setTargetStaff] = useState('ALL_STAFFS');
@@ -94,7 +94,7 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
             setCreatedWorkflowStructure(response?.data)
             setWorkFlow1IsMandatory(response?.data?.approvalFlowMap?.workflow['1']?.flowDetails?.[0]?.approvalRequirement === 'MANDATORY' ? true : false)
             setSelectedAcknowledgementGroups(response?.data?.approvalFlowMap?.workflow['1']?.flowDetails?.[0]?.groups?.map(data => data?.group?.id) || [])
-            setAcknowledgementExists(response?.data?.approvalFlowMap?.workflow['1']?.flowDetails?.[0]?.groups?.map(data => data?.group?.id)?.length !== 0)
+            setAcknowledgementExists(mdValue?.workflowStatus === "IN_PROGRESS")
         }
     }
 
@@ -322,6 +322,7 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
             .then(response => {
                 SuccessToaster2('MD Updateded Successfully');
                 console.log(response?.data)
+                getMD(response?.data);
             })
             .catch(error => {
                 ErrorToaster2('MD Upload Failed');
@@ -353,9 +354,14 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                 acknowledgementData.approvalFlowMap.workflow[1].flowDetails[0].groups = transformedGroups
             }
         } else {
-            acknowledgementData.approvalFlowMap.workflow[1].required = false;
+            if (
+                acknowledgementData?.approvalFlowMap?.workflow &&
+                acknowledgementData.approvalFlowMap.workflow[1]
+            ) {
+                acknowledgementData.approvalFlowMap.workflow[1].required = false;
+            }
         }
-        if (workflowEdited) {
+        if (workflowEdited || mdValue?.workflowStatus === "NA") {
             if (mdValue?.workflowStatus === "NA") {
                 await POST(`medical-directive-service/medicalDirectives/${mdValue?.id}/workflow`, acknowledgementData)
                     .then(response => {

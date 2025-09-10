@@ -412,7 +412,7 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
                                 maxLength={100}
                             />
                         </div>
-                        <div>
+                        <div className={mdValue?.id ? style.disabledView : ''}>
                             <div className={style.labelStyle}>Medical Directive ID *</div>
                             <CommonInputField
                                 value={mdId}

@@ -32,6 +32,7 @@ import Cookie from 'universal-cookie';
 import { TextField, Tooltip } from '@mui/material';
 import CommonDateField from '../../../Components/CommonFields/CommonDateField';
 import CommonCheckBox from '../../../Components/CommonFields/CommonCheckBox';
+import LoadingScreen from '../../../Components/LoadingScreen';
 
 const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advancedSearch, setSelectedMdId, showAddNewMedicalDirectives, setShowAddNewMedicalDirectives }) => {
     const PDFRef = createRef();
@@ -104,6 +105,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
     let userDetails = cookie.get('user');
     const users = jwt(userDetails);
     const [outstandingList, setOutstandingList] = useState();
+    const [isLoading, setIsLoading] = useState(false);
     const publicKey = "-----BEGIN PUBLIC KEY-----MIGeMA0GCSqGSIb3DQEBAQUAA4GMADCBiAKBgHA5SDu30/8uQAqqkQE0NuY4ePBptMGufG6AWnC/88YVLXi4thh7M8VU6kElVJkfXL5DwlfVnwPb08+PK1EcaOWWtp2gdQitkohjZLB9zVE+0OtRrzSc33wItf7Iwisi5dHPggHvfOp5fr+QYWFMa/kKYl3SgNo8fryeLbKKalmdAgMBAAE=-----END PUBLIC KEY-----";
     const [encryptedText, setEncryptedText] = useState(CryptoJS.AES.encrypt(users?.userName + dateTime, publicKey).toString());
     const valuesToUse = viewRegistered ? (selectedOption === 'Current Medical Directives' ? registeredUsers : selectedOption === 'Draft Medical Directives' ? contractedServiceProviderUsers : selectedOption === 'Medical Directives Sign Off' ? deactivatedUsers : invitedUsers) : blockedUsers;
@@ -134,8 +136,10 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
     }, [selectedOption, sortField, sortValue, advancedSearch]);
 
     useEffect(() => {
-        getRevisionList();
-    }, [selectedSignOffOption])
+        if (selectedOption === "Medical Directives Sign Off") {
+            getRevisionList();
+        }
+    }, [selectedSignOffOption, selectedOption])
 
     useEffect(() => {
         const controller = new AbortController();
@@ -300,10 +304,45 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
         }
     };
 
+    let currentRequestId = 0;
     const getDashboard = async (signal) => {
-        const { data: dashboardData } = await POST(`medical-directive-service/medicalDirectives/dashboard?offset=${page - 1}&limit=${limit}&isPaginationRequired=${isPaginationRequired}&role=${sessionStorage.getItem('workModeType')}&tab=${selectedOption === "Current Medical Directives" ? "active_md" : selectedOption === "Medical Directives Sign Off" ? "md_revisions" : selectedOption === "Draft Medical Directives" ? "draft_md" : selectedOption === "Retire Medical Directives" ? "inactive_md" : ""}&sortBy=${sortValue}&sortByField=${(selectedOption === "Draft Medical Directives" && sortField === "DEFAULT") ? "WORKFLOW_STATUS" : sortField}`, advancedSearch, { signal });
-        setDashboardData(dashboardData?.medicalDirectives);
-        setTotalTableCount(dashboardData?.numberOfElements);
+        const requestId = ++currentRequestId;
+        try {
+            setIsLoading(true);
+
+            const { data: dashboardData } = await POST(
+                `medical-directive-service/medicalDirectives/dashboard?offset=${page - 1}&limit=${limit}&isPaginationRequired=${isPaginationRequired}&role=${sessionStorage.getItem(
+                    "workModeType"
+                )}&tab=${selectedOption === "Current Medical Directives"
+                    ? "active_md"
+                    : selectedOption === "Medical Directives Sign Off"
+                        ? "md_revisions"
+                        : selectedOption === "Draft Medical Directives"
+                            ? "draft_md"
+                            : selectedOption === "Retire Medical Directives"
+                                ? "inactive_md"
+                                : ""
+                }&sortBy=${sortValue}&sortByField=${selectedOption === "Draft Medical Directives" && sortField === "DEFAULT"
+                    ? "WORKFLOW_STATUS"
+                    : sortField
+                }`,
+                advancedSearch,
+                { signal }
+            );
+
+            setDashboardData(dashboardData?.medicalDirectives);
+            setTotalTableCount(dashboardData?.numberOfElements);
+        } catch (err) {
+            if (err.name === "AbortError") {
+                console.log("Request aborted");
+            } else {
+                console.error("Failed to fetch dashboard:", err);
+            }
+        } finally {
+            if (requestId === currentRequestId) {
+                setIsLoading(false);
+            }
+        }
     }
 
     const getDashboardMetadata = async () => {
@@ -637,12 +676,14 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
     }
 
     const getRevisionList = async () => {
+        setIsLoading(true)
         let url = sessionStorage.getItem('workModeType') === "MD Librarian" ?
             `medical-directive-service/medicalDirectives/signOff?tab=${selectedSignOffOption}&role=${sessionStorage.getItem('workModeType')}` :
             `medical-directive-service/medicalDirectives/signOff?tab=${selectedSignOffOption}&role=${sessionStorage.getItem('workModeType')}&assignedUserIds=${loggedInUser?.id}`
         const response = await GET(url);
         console.log(response.data?.medicalDirectivesWithWorkflow);
         setRevisionList(response?.data?.medicalDirectivesWithWorkflow)
+        setIsLoading(false)
     }
 
     const handleCheckboxClick = (id, innerData) => {
@@ -1029,6 +1070,11 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setMdFile, advan
     console.log(inactiveMdCount, 'inactiveMdCount', revisionList?.filter(item => checkedIds.includes(item?.medicalDirective?.id)))
     return (
         <div>
+            {isLoading && (
+                <div className={style.loadingOverlay}>
+                    <LoadingScreen />
+                </div>
+            )}
             <div className={`${style.grid4} ${style.marginTop10}`}>
                 <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Current Medical Directives" bigNumber={currentMdCount} smallNum1={newMdCount} smallNum2={upcomingMdCount} smallText1="New Directives" smallText2="Upcoming For Review" currentTile="Current Medical Directives" topText='' smallNum1Color={style.greenSmallNumber} smallNum2Color={style.yellowSmallNumber} smallNum1SelectedColor={style.greenSmallNumberSelected} smallNum2SelectedColor={style.yellowSmallNumberSelected} />
                 <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Attestations Outstanding" bigNumber={outstandingMdCount} smallNum1={outstandingNotStartedCount} smallNum2={0} smallText1="Not Started" smallText2="Past Due" currentTile="Attestations Outstanding" topText='' smallNum1Color={style.redSmallNumber} smallNum1SelectedColor={style.redSmallNumberSelected} smallNum2Color={style.redSmallNumber} smallNum2SelectedColor={style.redSmallNumberSelected} />
