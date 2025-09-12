@@ -187,9 +187,9 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
             response = await POST(url, null, { signal });
         }
 
-        if (targetStaff?.includes("SELECTED_DEPARTMENTS")) {
-            response = await POST(url, deptPayload, { signal });
-        }
+        // if (targetStaff?.includes("SELECTED_DEPARTMENTS")) {
+        //     response = await POST(url, deptPayload, { signal });
+        // }
 
         if (targetStaff?.includes("SELECTED_DEPARTMENT_AND_DIVISION")) {
             response = await POST(url, divPayload, { signal });
@@ -362,15 +362,15 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                 return;
             }
         }
-        let excludedUserList = targetStaff?.includes("SELECTED_GROUPS") ? Object.values(
-            groupList
-                .filter(obj => selectedGroups?.includes(obj?.id))
-                .flatMap(obj => obj?.members)
-                .reduce((acc, member) => {
-                    acc[member.id] = member;
-                    return acc;
-                }, {})
-        ) : staffListForExclude;
+        // let excludedUserList = targetStaff?.includes("SELECTED_GROUPS") ? Object.values(
+        //     groupList
+        //         .filter(obj => selectedGroups?.includes(obj?.id))
+        //         .flatMap(obj => obj?.members)
+        //         .reduce((acc, member) => {
+        //             acc[member.id] = member;
+        //             return acc;
+        //         }, {})
+        // ) : staffListForExclude;
 
         const formData = new FormData();
         console.log(mdValue)
@@ -958,29 +958,29 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
     //     }, {})
     // );
 
-    let excludeLabelList = targetStaff === 'SELECTED_GROUPS' ? Object.values(
-        groupList
-            .filter(obj => selectedGroups?.includes(obj?.id))
-            .flatMap(obj => obj?.members)
-            .reduce((acc, member) => {
-                acc[member.id] = member;
-                return acc;
-            }, {})
-    ).map(m => `${m?.name?.firstName} ${m?.name?.lastName}`) : staffListForExclude?.map(m => `${m?.name?.firstName} ${m?.name?.lastName} ${m?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.departmentName?.name ? `( ${m?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.departmentName?.name} ${m?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.serviceAreaSpecific ? `- ${m?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.serviceAreas?.[0]?.name}` : ''})` : ''
-        }`);
+    // let excludeLabelList = targetStaff === 'SELECTED_GROUPS' ? Object.values(
+    //     groupList
+    //         .filter(obj => selectedGroups?.includes(obj?.id))
+    //         .flatMap(obj => obj?.members)
+    //         .reduce((acc, member) => {
+    //             acc[member.id] = member;
+    //             return acc;
+    //         }, {})
+    // ).map(m => `${m?.name?.firstName} ${m?.name?.lastName}`) : staffListForExclude?.map(m => `${m?.name?.firstName} ${m?.name?.lastName} ${m?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.departmentName?.name ? `( ${m?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.departmentName?.name} ${m?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.serviceAreaSpecific ? `- ${m?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.serviceAreas?.[0]?.name}` : ''})` : ''
+    //     }`);
 
-    let excludeIdList = targetStaff === 'SELECTED_GROUPS' ? [...new Set(groupList.filter(obj => selectedGroups?.includes(obj?.id)).flatMap(obj => obj?.members?.map(m => m.id)))] : staffListForExclude?.map(m => m?.id)
+    // let excludeIdList = targetStaff === 'SELECTED_GROUPS' ? [...new Set(groupList.filter(obj => selectedGroups?.includes(obj?.id)).flatMap(obj => obj?.members?.map(m => m.id)))] : staffListForExclude?.map(m => m?.id)
 
-    let excludeDisabledList = targetStaff === 'SELECTED_GROUPS' ? [...new Set(groupList.filter(obj => selectedGroups?.includes(obj?.id)).flatMap(obj => obj?.members?.map(m => m.id)))]?.map(() => false) : staffListForExclude?.map(m => false)
-    console.log(staffList?.filter(staff => selectedStaffs?.includes(staff.id)), 'filterCheck', selectedStaffs, selectedStaffForMove, Object.values(
-        groupList
-            .filter(obj => selectedGroups?.includes(obj?.id))
-            .flatMap(obj => obj?.members)
-            .reduce((acc, member) => {
-                acc[member.id] = member;
-                return acc;
-            }, {})
-    ).map(m => `${m?.name?.firstName} ${m?.name?.lastName} `), [...new Set(groupList.filter(obj => selectedGroups?.includes(obj?.id)).flatMap(obj => obj?.members?.map(m => m?.id)))])
+    // let excludeDisabledList = targetStaff === 'SELECTED_GROUPS' ? [...new Set(groupList.filter(obj => selectedGroups?.includes(obj?.id)).flatMap(obj => obj?.members?.map(m => m.id)))]?.map(() => false) : staffListForExclude?.map(m => false)
+    // console.log(staffList?.filter(staff => selectedStaffs?.includes(staff.id)), 'filterCheck', selectedStaffs, selectedStaffForMove, Object.values(
+    //     groupList
+    //         .filter(obj => selectedGroups?.includes(obj?.id))
+    //         .flatMap(obj => obj?.members)
+    //         .reduce((acc, member) => {
+    //             acc[member.id] = member;
+    //             return acc;
+    //         }, {})
+    // ).map(m => `${m?.name?.firstName} ${m?.name?.lastName} `), [...new Set(groupList.filter(obj => selectedGroups?.includes(obj?.id)).flatMap(obj => obj?.members?.map(m => m?.id)))])
 
     console.log(selectedGroupsWithApplicantTypes, 'selectedGroupsWithApplicantTypes', uniqueUsers, groupList
         .filter(obj => selectedGroupsWithApplicantTypes?.map(data => data?.id)?.includes(obj?.id))
@@ -1216,7 +1216,7 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                                     <div className={style.exclusionNote}>
                                         This will allow you to include Staff members from specific attestation groups that have been created.
                                     </div>
-                                    {groupList?.map(group => (
+                                    {groupList?.filter(data => data?.type === "ATTESTATION")?.map(group => (
                                         <div key={group.id} className={style.marginTop20}>
                                             <CommonCheckBox
                                                 checked={selectedGroupsWithApplicantTypes?.map(group => group?.id)?.includes(group?.id)}
@@ -1244,30 +1244,15 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                             )}
                         </div>
                     </div>
-                    {targetStaff === "SELECTED_GROUPS" && (
+                    {/* {targetStaff === "SELECTED_GROUPS" && (
                         <div className={style.padding20}>
-                            {/* <CommonSelectField
-                                //   value={selectedCategory}
-                                //   onChange={(e) => setSelectedCategory(e.target.value)}
-                                className={style.fullWidth1}
-                                //   firstOptionLabel={'Select Category'}
-                                //   firstOptionValue={''}
-                                valueList={["Emergency Department Registered Users", "Every 2 Year", "Every 3 Year"]}
-                                labelList={["Emergency Department Registered Users", "Every 2 Year", "Every 3 Year"]}
-                                disabledList={false}
-                                required={true}
-                                label={"Authorized Implementers / Responsible Disciplines"}
-                            /> */}
                             <div className={style.labelStyle}>Select Staff to Attest to this Medical Directive*</div>
                             <div className={style.attestationGrid}>
                                 <div ref={containerRef2} onFocus={() => setShowAcknowledgementGroupList(true)} onBlur={(e) => handleBlur(e, containerRef2)}
                                     tabIndex={0}>
                                     <CommonInputField
                                         className={style.fullWidth}
-                                        // value={keyword}
-                                        // onChange={(e) => setKeyword(e.target.value)}
                                         type="text"
-                                    // placeholder="Enter Keywords / Tags"
                                     />
                                     {showAcknowledgementGroupList && (
                                         <div className={`${style.attestationGroupCard} ${style.padding20} `} tabIndex={0}>
@@ -1300,7 +1285,7 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                                 </div>
                             </div>
                         </div>
-                    )}
+                    )} */}
                     {/* <div className={`${style.marginTop20} ${style.twoCol} `}>
                         <div>
                             <div className={style.labelStyle}>Select Staff to Exclude from Attesting to this Medical Directive</div>

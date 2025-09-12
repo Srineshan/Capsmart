@@ -268,12 +268,13 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
                 fileName: mdFile?.name,
             },
             autoTriggerOnUpdate: false,
-            updateFor: 'ALL_STAFFS',
+            updateFor: ['SELECTED_DEPARTMENT_AND_DIVISION'],
             groups: [],
             triggerForNewAppointment: false,
             triggerForReAppointment: false,
             triggerForLocum: false,
             siteSpecific: selectedSite !== '' ? true : false,
+            attestationSiteSpecific: selectedSite !== '' ? true : false,
         }
 
         if ((!mdValue?.id || !mdValue?.attestationSites) && selectedDepartment?.length !== 0) {
