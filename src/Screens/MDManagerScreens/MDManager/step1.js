@@ -276,6 +276,34 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
             siteSpecific: selectedSite !== '' ? true : false,
         }
 
+        if ((!mdValue?.id || !mdValue?.attestationSites) && selectedDepartment?.length !== 0) {
+            data.attestationSites = [
+                {
+                    id: selectedSite,
+                    name: entitySiteList?.sites?.filter(site => site?.id === selectedSite)?.[0]?.siteName?.siteName,
+                    departmentSpecific: selectedDepartment?.length !== 0 ? true : false,
+                    departments: selectedDepartment?.map(deptData => (
+                        {
+                            id: deptData,
+                            name: departmentList?.filter(data => data?.id === deptData)?.[0]?.departmentName?.name,
+                            serviceAreas: filteredServiceAreas?.filter(data => data?.department?.id === deptData)?.filter(area =>
+                                selectedServiceArea?.includes(area?.id)
+                            ),
+                            excludedServiceAreas: [],
+                            serviceAreasExcluded: false,
+                            serviceAreaSpecific: filteredServiceAreas?.filter(data => data?.department?.id === deptData)?.filter(area =>
+                                selectedServiceArea?.includes(area?.id)
+                            )?.length !== 0 ? true : false
+                        }
+                    ))
+                }
+            ]
+        }
+
+        if (mdValue?.id && mdValue?.attestationSites) {
+            data.attestationSites = mdValue?.attestationSites
+        }
+
 
         if (mdValue?.id) {
             data.id = mdValue?.id;

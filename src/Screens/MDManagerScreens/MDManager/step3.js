@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import style from './index.module.scss';
 import { Classes, Dialog } from '@blueprintjs/core';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
@@ -18,11 +18,12 @@ import CommonInputField from '../../../Components/CommonFields/CommonInputField'
 import CommonMultiSelectField from '../../../Components/CommonFields/CommonMultiSelectField';
 import CommonDivider from '../../../Components/CommonFields/CommonDivider';
 import { Tooltip } from '@mui/material';
+import CommonCheckBox from '../../../Components/CommonFields/CommonCheckBox';
 
 const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, setSelectedMdId, getMD }) => {
     const containerRef = useRef(null);
     const containerRef2 = useRef(null);
-    const [targetStaff, setTargetStaff] = useState('ALL_STAFFS');
+    const [targetStaff, setTargetStaff] = useState(['SELECTED_DEPARTMENT_AND_DIVISION']);
     const [attestationReviewFrequency, setAttestationReviewFrequency] = useState('');
     const [groupTitle, setGroupTitle] = useState('');
     const [groupType, setGroupType] = useState('');
@@ -40,6 +41,7 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
     const [showAttestationGroup, setShowAttestationGroup] = useState(false);
     const [selectedStaffs, setSelectedStaffs] = useState([]);
     const [selectedGroups, setSelectedGroups] = useState([]);
+    const [selectedGroupsWithApplicantTypes, setSelectedGroupsWithApplicantTypes] = useState([]);
     const [selectedAcknowledgementGroups, setSelectedAcknowledgementGroups] = useState([]);
     const [workflowEdited, setWorkflowEdited] = useState(false);
     const [workFlow1IsMandatory, setWorkFlow1IsMandatory] = useState(false);
@@ -50,17 +52,20 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
     const [selectedGroupsWorkflow, setSelectedGroupsWorkflow] = useState([]);
     const [selectedExcludeMembers, setSelectedExcludeMembers] = useState([]);
     const [selectedStaffForMove, setSelectedStaffForMove] = useState([]);
+    const [selectedStaffForMoveForExclusion, setSelectedStaffForMoveForExclusion] = useState([]);
     const [workflowStructure, setWorkflowStructure] = useState();
     const [createdWorkflowStructure, setCreatedWorkflowStructure] = useState();
     const [showWorkflowSelection, setShowWorkflowSelection] = useState(false);
     const [roles, setRoles] = useState([]);
     const [isGroupEdited, setIsGroupEdited] = useState(false);
     const [acknowledgementExists, setAcknowledgementExists] = useState(false);
+    const [staffType, setStaffType] = useState([]);
     console.log(mdValue, 'mdValue')
     useEffect(() => {
         getGroupList()
         getPublicationWorkflow();
         getRoles();
+        getStaffType();
     }, [])
 
     useEffect(() => {
@@ -68,23 +73,75 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
     }, [groupType])
 
     useEffect(() => {
-        getStaffListForExclude()
-    }, [targetStaff])
+        const controller = new AbortController();
+        const signal = controller.signal;
+        getStaffListForExclude(signal)
+        return () => controller.abort();
+    }, [targetStaff, mdValue])
 
     useEffect(() => {
         console.log(mdValue, 'mdValue', mdValue?.departments?.flatMap(data => data?.serviceAreas?.map(innerData => innerData?.id) || []) || [])
         if (mdValue) {
             setAttestationReviewFrequency(mdValue?.attestationPeriod?.value === 1 ? 'EVERY_1_YEAR' : mdValue?.attestationPeriod?.value === 2 ? 'EVERY_2_YEARS' : mdValue?.attestationPeriod?.value === 3 ? 'EVERY_3_YEARS' : '');
             setAutoTriggerOnUpdate(mdValue?.autoTriggerOnUpdate)
-            setTargetStaff(mdValue?.updateFor);
+            setTargetStaff(mdValue?.updateFor || []);
             setSelectedExcludeMembers(mdValue?.excludedUsers?.map(data => data?.id) || [])
-            setSelectedGroups(mdValue?.groups?.map(data => data?.id) || [])
+            setSelectedGroupsWithApplicantTypes(mdValue?.groups || [])
             setAutoTriggerForNewAppointment(mdValue?.triggerForNewAppointment)
             setAutoTriggerForReappointment(mdValue?.triggerForReAppointment)
             setAutoTriggerForLocum(mdValue?.triggerForLocum)
             getWorkflow();
         }
     }, [mdValue])
+
+    const uniqueUsers = useMemo(() => {
+        let users = [];
+
+        if (targetStaff?.includes("SELECTED_GROUPS")) {
+            const groupMembers = groupList
+                .filter(group =>
+                    selectedGroupsWithApplicantTypes?.some(sel => sel?.id === group?.id)
+                )
+                .flatMap(group => {
+                    const selectedGroup = selectedGroupsWithApplicantTypes?.find(
+                        sel => sel?.id === group?.id
+                    );
+
+                    if (!selectedGroup) return [];
+
+                    if (selectedGroup.applicantTypeSpecific === false) {
+                        return group?.members || [];
+                    }
+
+                    const selectedApplicantTypeIds =
+                        selectedGroup?.applicantTypes?.map(type => type?.id) || [];
+
+                    return (
+                        group?.members?.filter(member =>
+                            selectedApplicantTypeIds.includes(member?.applicantType?.id)
+                        ) || []
+                    );
+                });
+            console.log(groupMembers, 'groupMembers', selectedGroupsWithApplicantTypes)
+            users = [...users, ...groupMembers];
+        }
+
+        if (targetStaff?.includes("SELECTED_DEPARTMENT_AND_DIVISION")) {
+            users = [...users, ...(Array.isArray(staffListForExclude) ? staffListForExclude : [])];
+        }
+
+        if (targetStaff?.includes("ALL_STAFFS")) {
+            users = [...users, ...(Array.isArray(staffListForExclude) ? staffListForExclude : [])];
+        }
+
+        // Deduplicate by user id
+        return Object.values(
+            users.reduce((acc, user) => {
+                acc[user.id] = user;
+                return acc;
+            }, {})
+        );
+    }, [targetStaff, groupList, staffListForExclude, selectedGroupsWithApplicantTypes]);
 
     const getWorkflow = async () => {
         const response = await GET(
@@ -109,8 +166,8 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
         setStaffList(response?.data)
     }
 
-    const getStaffListForExclude = async () => {
-        const deptPayload = mdValue?.sites?.map(site => ({
+    const getStaffListForExclude = async (signal) => {
+        const deptPayload = mdValue?.attestationSites?.map(site => ({
             siteId: site.id,
             departmentAndServiceAreaId: site.departments.map(dept => ({
                 id: dept.id,
@@ -120,25 +177,27 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
             departmentSpecific: site.departmentSpecific
         }));
 
-        const divPayload = mdValue?.sites?.map(site => ({
-            siteId: site.id,
-            departmentAndServiceAreaId: site.departments.map(dept => ({
-                id: dept.id,
-                serviceAreaIds: dept.serviceAreas.map(sa => sa.id),
-                serviceAreaSpecific: dept.serviceAreaSpecific
-            })),
-            departmentSpecific: site.departmentSpecific
-        }));
+        const divPayload = {
+            attestationSites: mdValue?.attestationSites
+        }
 
         let url = `user-management-service/user/allStaffs?status=ACTIVE`
         let response;
-        if (targetStaff === 'ALL_STAFFS') {
-            response = await POST(url);
-        } else if (targetStaff === 'SELECTED_DEPARTMENTS') {
-            response = await POST(url, deptPayload);
-        } else if (targetStaff === 'SELECTED_DIVISIONS') {
-            response = await POST(url, divPayload);
+        if (targetStaff?.includes("ALL_STAFFS")) {
+            response = await POST(url, null, { signal });
         }
+
+        if (targetStaff?.includes("SELECTED_DEPARTMENTS")) {
+            response = await POST(url, deptPayload, { signal });
+        }
+
+        if (targetStaff?.includes("SELECTED_DEPARTMENT_AND_DIVISION")) {
+            response = await POST(url, divPayload, { signal });
+        }
+
+        // if (targetStaff?.includes("SELECTED_GROUPS")) {
+        //     response = await POST(url, groupsPayload);
+        // }
         console.log(response?.data);
         setStaffListForExclude(response?.data)
     }
@@ -162,6 +221,13 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
         setSelectedStaffs(response?.data?.members?.map(data => data?.id))
         setGroupById(response?.data)
         setShowAttestationGroup(true)
+    }
+
+    const getStaffType = async () => {
+        const { data: applicant } = await GET(
+            `entity-service/applicantType`
+        );
+        setStaffType(applicant)
     }
 
     const getPublicationWorkflow = async () => {
@@ -232,11 +298,32 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
         setIsGroupEdited(true)
     }
 
-    const handleGroupSelect = (id) => {
-        if (!selectedGroups?.includes(id)) {
-            setSelectedGroups(prev => [...prev, id]);
+    const handleMoveForExclude = () => {
+        if (!selectedExcludeMembers?.includes(selectedStaffForMoveForExclusion)) {
+            setSelectedExcludeMembers(prev => [...prev, selectedStaffForMoveForExclusion]);
         }
     }
+
+    const handleRemoveForExclude = () => {
+        console.log('filterCheck')
+        setSelectedExcludeMembers(staffListForExclude?.filter(data => data !== selectedStaffForMoveForExclusion))
+    }
+
+    const handleMoveBulkForExclude = () => {
+        console.log('filterCheck')
+        setSelectedExcludeMembers(staffListForExclude?.map(data => data?.id))
+    }
+
+    const handleRemoveBulkForExclude = () => {
+        console.log('filterCheck')
+        setSelectedExcludeMembers([])
+    }
+
+    // const handleGroupSelect = (id) => {
+    //     if (!selectedGroups?.includes(id)) {
+    //         setSelectedGroups(prev => [...prev, id]);
+    //     }
+    // }
 
     const handleGroupSelectAcknowledgement = (id) => {
         setWorkflowEdited(true)
@@ -268,14 +355,14 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
             let errors = [];
 
             if (workFlow1IsMandatory && selectedAcknowledgementGroups?.length === 0) errors.push("Acknowledgement Group selection is required.");
-            if (targetStaff === 'SELECTED_GROUPS' && selectedGroups?.length === 0) errors.push("Attestation Group Selection is required.");
+            if (targetStaff?.includes('SELECTED_GROUPS') && selectedGroupsWithApplicantTypes?.length === 0) errors.push("Attestation Group Selection is required.");
             if (!attestationReviewFrequency) errors.push("Frequency of Review for Attestation (if none within the period selected) is required");
             if (errors.length) {
                 errors.forEach(err => ErrorToaster2(err));
                 return;
             }
         }
-        let excludedUserList = targetStaff === 'SELECTED_GROUPS' ? Object.values(
+        let excludedUserList = targetStaff?.includes("SELECTED_GROUPS") ? Object.values(
             groupList
                 .filter(obj => selectedGroups?.includes(obj?.id))
                 .flatMap(obj => obj?.members)
@@ -284,6 +371,7 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                     return acc;
                 }, {})
         ) : staffListForExclude;
+
         const formData = new FormData();
         console.log(mdValue)
 
@@ -294,11 +382,11 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
         };
         data.autoTriggerOnUpdate = autoTriggerOnUpdate;
         data.updateFor = targetStaff;
-        data.groups = filteredGroupArray;
+        data.groups = targetStaff?.includes("SELECTED_GROUPS") ? selectedGroupsWithApplicantTypes : [];
         data.triggerForNewAppointment = autoTriggerForNewAppointment;
         data.triggerForReAppointment = autoTriggerForReappointment;
         data.triggerForLocum = autoTriggerForLocum;
-        data.excludedUsers = excludedUserList?.filter(obj => selectedExcludeMembers?.includes(obj.id)).map(user => ({
+        data.excludedUsers = uniqueUsers?.filter(obj => selectedExcludeMembers?.includes(obj.id)).map(user => ({
             id: user?.id,
             name: user?.name,
             email: user?.email,
@@ -514,6 +602,362 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
         setStep3(false);
     }
 
+    const handleDeptLevelStaffTypeRemoval = (deptId, staffTypeId, isChecked) => {
+        if (!isChecked) {
+            setMdValue(prev => {
+                let temp = { ...prev };
+
+                const deptIndex = temp?.attestationSites?.[0]?.departments?.findIndex(
+                    d => d.id === deptId
+                );
+
+                if (deptIndex > -1) {
+                    let dept = { ...temp.attestationSites[0].departments[deptIndex] };
+
+                    if (dept.applicantTypes === null || dept.applicantTypes?.length === 0) {
+                        dept.applicantTypes = staffType
+                            ?.filter(type => type?.id !== staffTypeId)
+                            ?.map(type => ({
+                                id: type?.id,
+                                applicantType: type?.applicantType
+                            }));
+                        dept.applicantTypeSpecific = staffType?.filter(type => type?.id !== staffTypeId)?.length > 0 ? true : false;
+                    } else {
+                        dept.applicantTypes = dept.applicantTypes
+                            ?.filter(type => type?.id !== staffTypeId)
+                            ?.map(type => ({
+                                id: type?.id,
+                                applicantType: type?.applicantType
+                            }));
+                        dept.applicantTypeSpecific = dept.applicantTypes?.length > 0 ? true : false;
+                    }
+
+                    temp.attestationSites[0].departments = [
+                        ...temp.attestationSites[0].departments.slice(0, deptIndex),
+                        dept,
+                        ...temp.attestationSites[0].departments.slice(deptIndex + 1),
+                    ];
+                }
+                console.log(temp)
+                return temp;
+            });
+        } else {
+            setMdValue(prev => {
+                let temp = { ...prev };
+
+                const deptIndex = temp?.attestationSites?.[0]?.departments?.findIndex(
+                    d => d.id === deptId
+                );
+                if (deptIndex > -1) {
+                    let dept = { ...temp.attestationSites[0].departments[deptIndex] };
+                    const newStaff = staffType?.find(type => type.id === staffTypeId);
+
+                    if (newStaff) {
+                        dept.applicantTypes = [
+                            ...(dept.applicantTypes || []),
+                            { id: newStaff.id, applicantType: newStaff.applicantType }
+                        ];
+                    }
+                    dept.applicantTypeSpecific = staffType?.length !== dept.applicantTypes?.length ? true : false;
+                    temp.attestationSites[0].departments = [
+                        ...temp.attestationSites[0].departments.slice(0, deptIndex),
+                        dept,
+                        ...temp.attestationSites[0].departments.slice(deptIndex + 1),
+                    ];
+                }
+                console.log(temp)
+                return temp;
+            });
+        }
+    }
+
+    const handleServiceLevelStaffTypeRemoval = (deptId, serviceId, staffTypeId, isChecked) => {
+        if (!isChecked) {
+            setMdValue(prev => {
+                let temp = { ...prev };
+
+                const deptIndex = temp?.attestationSites?.[0]?.departments?.findIndex(
+                    d => d.id === deptId
+                );
+
+                if (deptIndex > -1) {
+                    let dept = { ...temp.attestationSites[0].departments[deptIndex] };
+
+                    const serviceIndex = dept?.serviceAreas?.findIndex(s => s.id === serviceId);
+
+                    if (serviceIndex > -1) {
+                        let service = { ...dept.serviceAreas[serviceIndex] };
+
+                        if (!service.applicantTypes || service.applicantTypes?.length === 0) {
+                            service.applicantTypes = staffType
+                                ?.filter(type => type?.id !== staffTypeId)
+                                ?.map(type => ({
+                                    id: type?.id,
+                                    applicantType: type?.applicantType
+                                }));
+                            service.applicantTypeSpecific =
+                                staffType?.filter(type => type?.id !== staffTypeId)?.length > 0;
+                        } else {
+                            service.applicantTypes = service.applicantTypes
+                                ?.filter(type => type?.id !== staffTypeId)
+                                ?.map(type => ({
+                                    id: type?.id,
+                                    applicantType: type?.applicantType
+                                }));
+                            service.applicantTypeSpecific = service.applicantTypes?.length > 0;
+                        }
+
+                        // replace updated service back into dept
+                        dept.serviceAreas = [
+                            ...dept.serviceAreas.slice(0, serviceIndex),
+                            service,
+                            ...dept.serviceAreas.slice(serviceIndex + 1),
+                        ];
+
+                        // replace updated dept back into sites
+                        temp.attestationSites[0].departments = [
+                            ...temp.attestationSites[0].departments.slice(0, deptIndex),
+                            dept,
+                            ...temp.attestationSites[0].departments.slice(deptIndex + 1),
+                        ];
+                    }
+                }
+                console.log(temp)
+                return temp;
+            });
+        } else {
+            setMdValue(prev => {
+                let temp = { ...prev };
+
+                const deptIndex = temp?.attestationSites?.[0]?.departments?.findIndex(
+                    d => d.id === deptId
+                );
+
+                if (deptIndex > -1) {
+                    let dept = { ...temp.attestationSites[0].departments[deptIndex] };
+
+                    const serviceIndex = dept?.serviceAreas?.findIndex(s => s.id === serviceId);
+
+                    if (serviceIndex > -1) {
+                        let service = { ...dept.serviceAreas[serviceIndex] };
+
+                        const newStaff = staffType?.find(type => type.id === staffTypeId);
+
+                        if (newStaff) {
+                            service.applicantTypes = [
+                                ...(service.applicantTypes || []),
+                                { id: newStaff.id, applicantType: newStaff.applicantType }
+                            ];
+                        }
+
+                        service.applicantTypeSpecific =
+                            staffType?.length !== service.applicantTypes?.length;
+
+                        // replace updated service back into dept
+                        dept.serviceAreas = [
+                            ...dept.serviceAreas.slice(0, serviceIndex),
+                            service,
+                            ...dept.serviceAreas.slice(serviceIndex + 1),
+                        ];
+
+                        // replace updated dept back into sites
+                        temp.attestationSites[0].departments = [
+                            ...temp.attestationSites[0].departments.slice(0, deptIndex),
+                            dept,
+                            ...temp.attestationSites[0].departments.slice(deptIndex + 1),
+                        ];
+                    }
+                }
+                console.log(temp)
+                return temp;
+            });
+        }
+    };
+
+    const handleServiceAreaToggle = (deptId, serviceArea, isChecked) => {
+        setMdValue(prev => {
+            let temp = { ...prev };
+
+            const deptIndex = temp?.attestationSites?.[0]?.departments?.findIndex(
+                d => d.id === deptId
+            );
+
+            if (deptIndex > -1) {
+                let dept = { ...temp.attestationSites[0].departments[deptIndex] };
+
+                if (isChecked) {
+                    const exists = dept.serviceAreas?.some(sa => sa.id === serviceArea.id);
+
+                    if (!exists) {
+                        const newService = {
+                            id: serviceArea.id,
+                            name: serviceArea.name,
+                            applicantTypes: null,
+                            applicantTypeSpecific: false,
+                            excludedServiceAreas: [],
+                            serviceAreasExcluded: false,
+                            serviceAreaSpecific: false
+                        };
+
+                        dept.serviceAreas = [...(dept.serviceAreas || []), newService];
+                    }
+                } else {
+                    dept.serviceAreas = dept.serviceAreas?.filter(sa => sa.id !== serviceArea.id) || [];
+                }
+
+                temp.attestationSites[0].departments = [
+                    ...temp.attestationSites[0].departments.slice(0, deptIndex),
+                    dept,
+                    ...temp.attestationSites[0].departments.slice(deptIndex + 1),
+                ];
+            }
+
+            return temp;
+        });
+    };
+
+    const handleDepartmentToggle = (dept, isChecked) => {
+        setMdValue(prev => {
+            let temp = { ...prev };
+
+            const deptIndex = temp?.attestationSites?.[0]?.departments?.findIndex(
+                d => d.id === dept.id
+            );
+
+            if (isChecked) {
+                if (deptIndex === -1) {
+                    const newDept = {
+                        id: dept.id,
+                        name: dept.name,
+                        serviceAreas: dept.serviceAreas,
+                        excludedServiceAreas: [],
+                        applicantTypes: null,
+                        applicantTypeSpecific: false,
+                        serviceAreasExcluded: false,
+                        serviceAreaSpecific: false
+                    };
+
+                    temp.attestationSites[0].departments = [
+                        ...(temp.attestationSites?.[0]?.departments || []),
+                        newDept
+                    ];
+                }
+            } else {
+                temp.attestationSites[0].departments =
+                    temp.attestationSites?.[0]?.departments?.filter(d => d.id !== dept.id) || [];
+            }
+
+            return temp;
+        });
+    };
+
+    const handleGroupSelect = (group, checked) => {
+        setSelectedGroupsWithApplicantTypes(prev => {
+            if (checked) {
+                if (!prev.some(g => g.id === group.id)) {
+                    return [
+                        ...prev,
+                        {
+                            id: group.id,
+                            name: group.name,
+                            applicantTypeSpecific: false,
+                            applicantTypes: [],
+                        },
+                    ];
+                }
+                console.log(prev)
+                return prev;
+            } else {
+                console.log(prev.filter(g => g.id !== group.id))
+                return prev.filter(g => g.id !== group.id);
+            }
+        });
+    };
+
+    const handleGroupLevelStaffTypeToggle = (groupId, staffTypeId, isChecked) => {
+        setSelectedGroupsWithApplicantTypes(prev => {
+            return prev.map(group => {
+                if (group.id === groupId) {
+                    if (!isChecked) {
+                        if (!group.applicantTypes || group.applicantTypes.length === 0) {
+                            const remainingTypes = staffType
+                                ?.filter(type => type.id !== staffTypeId)
+                                ?.map(type => ({ id: type.id, applicantType: type.applicantType }));
+                            return {
+                                ...group,
+                                applicantTypes: remainingTypes,
+                                applicantTypeSpecific: remainingTypes.length > 0,
+                            };
+                        } else {
+                            const updatedTypes = group.applicantTypes
+                                ?.filter(type => type.id !== staffTypeId)
+                                ?.map(type => ({ id: type.id, applicantType: type.applicantType }));
+                            return {
+                                ...group,
+                                applicantTypes: updatedTypes,
+                                applicantTypeSpecific: updatedTypes.length > 0,
+                            };
+                        }
+                    } else {
+                        const newStaff = staffType?.find(type => type.id === staffTypeId);
+                        if (newStaff) {
+                            const updatedTypes = [
+                                ...(group.applicantTypes || []),
+                                { id: newStaff.id, applicantType: newStaff.applicantType },
+                            ];
+                            return {
+                                ...group,
+                                applicantTypes: updatedTypes,
+                                applicantTypeSpecific: updatedTypes.length < staffType.length,
+                            };
+                        }
+                    }
+                }
+                return group;
+            });
+        });
+    };
+
+    // let users = [];
+
+    // if (targetStaff?.includes("SELECTED_GROUPS")) {
+    //     const groupMembers = groupList
+    //         .filter(obj =>
+    //             selectedGroupsWithApplicantTypes?.map(data => data?.id)?.includes(obj?.id)
+    //         )
+    //         .flatMap(obj => {
+    //             if (!obj?.applicantTypeSpecific) {
+    //                 return obj?.members || [];
+    //             }
+
+    //             const selectedApplicantTypeIds = selectedGroupsWithApplicantTypes
+    //                 ?.find(data => data?.id === obj?.id)
+    //                 ?.applicantTypes?.map(type => type?.id) || [];
+
+    //             return obj?.members?.filter(member =>
+    //                 selectedApplicantTypeIds.includes(member?.applicantType?.id)
+    //             ) || [];
+    //         });
+    //     console.log(groupMembers, 'groupMembers')
+
+    //     users = [...users, ...groupMembers];
+    // }
+
+    // if (targetStaff?.includes("SELECTED_DEPARTMENT_AND_DIVISION")) {
+    //     users = [...users, ...(Array.isArray(staffListForExclude) ? staffListForExclude : [])];
+    // }
+
+    // if (targetStaff?.includes("ALL_STAFFS")) {
+    //     users = [...users, ...(Array.isArray(staffListForExclude) ? staffListForExclude : [])];
+    // }
+
+    // const uniqueUsers = Object.values(
+    //     users.reduce((acc, user) => {
+    //         acc[user.id] = user;
+    //         return acc;
+    //     }, {})
+    // );
+
     let excludeLabelList = targetStaff === 'SELECTED_GROUPS' ? Object.values(
         groupList
             .filter(obj => selectedGroups?.includes(obj?.id))
@@ -537,6 +981,10 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                 return acc;
             }, {})
     ).map(m => `${m?.name?.firstName} ${m?.name?.lastName} `), [...new Set(groupList.filter(obj => selectedGroups?.includes(obj?.id)).flatMap(obj => obj?.members?.map(m => m?.id)))])
+
+    console.log(selectedGroupsWithApplicantTypes, 'selectedGroupsWithApplicantTypes', uniqueUsers, groupList
+        .filter(obj => selectedGroupsWithApplicantTypes?.map(data => data?.id)?.includes(obj?.id))
+        .flatMap(obj => obj?.members))
     return (
         <div className={style.stepsBackground}>
             <div className={`${style.stepHeader} ${style.spaceBetween} ${style.verticalAlignCenter} `}>
@@ -620,14 +1068,181 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                     <div className={style.stepsTitleText}>Attestation Rules to apply</div>
                 </div>
                 <div className={`${style.padding40} ${style.marginTop20} `}>
-                    <div className={`${style.marginTop20} ${style.twoCol} `}>
-                        <div className={style.labelStyle}>Target Staff for Medical Directive review and attestation</div>
-                        <CommonRadio
-                            value={targetStaff}
-                            onChange={(e) => setTargetStaff(e.target.value)}
-                            radioValue={["ALL_STAFFS", "SELECTED_DEPARTMENTS", "SELECTED_DIVISIONS", "SELECTED_GROUPS"]}
-                            label={["All Staff Members", "All Department Staff", "Only Selected Division/Specialty Staff", "Selected Groups"]}
-                        />
+                    <div className={`${style.marginTop20}`}>
+                        <div className={style.labelStyle}>Target Staff to Include for reviewing and attesting to this Medical Directive</div>
+                        <div className={style.targetStaffGrid}>
+                            <CommonRadio
+                                value={targetStaff?.find(
+                                    data =>
+                                        data === 'ALL_STAFFS' ||
+                                        data === 'SELECTED_DEPARTMENT_AND_DIVISION'
+                                ) || ""}
+                                onChange={(e) => {
+                                    let temp = [...targetStaff];
+                                    if (e.target.value === "ALL_STAFFS") {
+                                        temp = ["ALL_STAFFS"];
+                                    } else if (e.target.value === "SELECTED_DEPARTMENT_AND_DIVISION") {
+                                        temp = ["SELECTED_DEPARTMENT_AND_DIVISION"];
+                                    }
+                                    setTargetStaff(temp);
+                                }}
+                                radioValue={["ALL_STAFFS", "SELECTED_DEPARTMENT_AND_DIVISION"]}
+                                label={[
+                                    "All Facility Staff Members",
+                                    "Department & Division / Speciality Staff Members",
+                                ]}
+                            />
+                            <div className={targetStaff?.includes("ALL_STAFFS") ? style.disabledView : ''}>
+                                <CommonCheckBox
+                                    checked={targetStaff?.includes("SELECTED_GROUPS")}
+                                    onChange={(e) => {
+                                        let temp = [...targetStaff];
+                                        if (e.target.checked && !targetStaff?.includes("ALL_STAFFS")) {
+                                            if (!temp.includes("SELECTED_GROUPS")) {
+                                                temp.push("SELECTED_GROUPS");
+                                            }
+                                        } else {
+                                            temp = temp.filter(data => data !== "SELECTED_GROUPS");
+                                        }
+                                        setTargetStaff(temp);
+                                    }}
+                                    label={`Include Staff Members From Select Custom Attestation Group(s)`}
+                                />
+                            </div>
+                        </div>
+                        <div className={style.targetStaffGrid}>
+                            {targetStaff?.includes("SELECTED_DEPARTMENT_AND_DIVISION") && (
+                                <div>
+                                    <div className={style.exclusionNote}>
+                                        Selecting this option will require Staff Members specified below to attest to this Medical Directive.
+                                    </div>
+                                    {mdValue?.sites?.[0]?.departments?.map((department) => {
+                                        // find the matching dept from attestationSites by id
+                                        const attDept = mdValue?.attestationSites?.[0]?.departments?.find(
+                                            (d) => d.id === department.id
+                                        );
+
+                                        return (
+                                            <div key={department.id} className={style.marginTop20}>
+                                                {/* Department level checkbox */}
+                                                <CommonCheckBox
+                                                    checked={!!attDept}
+                                                    onChange={(e) => handleDepartmentToggle(department, e.target.checked)}
+                                                    label={department?.name}
+                                                />
+
+                                                {department?.serviceAreas?.length > 0 && (
+                                                    <div className={style.marginLeft20}>
+                                                        {department?.serviceAreas?.map((service) => {
+                                                            const attService = attDept?.serviceAreas?.find(
+                                                                (s) => s.id === service.id
+                                                            );
+
+                                                            return (
+                                                                <div key={service.id}>
+                                                                    <CommonCheckBox
+                                                                        checked={!!attService}
+                                                                        onChange={(e) =>
+                                                                            handleServiceAreaToggle(department?.id, service, e.target.checked)
+                                                                        }
+                                                                        label={service?.name}
+                                                                        className={style.reduceMarginTop}
+                                                                    />
+
+                                                                    {staffType?.length > 0 && (
+                                                                        <div className={style.marginLeft50}>
+                                                                            {staffType?.map((type) => (
+                                                                                <CommonCheckBox
+                                                                                    key={type.id}
+                                                                                    checked={
+                                                                                        attService
+                                                                                            ? attService.applicantTypes?.some(
+                                                                                                (at) => at.id === type.id
+                                                                                            ) ||
+                                                                                            !attService.applicantTypeSpecific
+                                                                                            : false
+                                                                                    }
+                                                                                    onChange={(e) =>
+                                                                                        handleServiceLevelStaffTypeRemoval(
+                                                                                            department?.id,
+                                                                                            service?.id,
+                                                                                            type?.id,
+                                                                                            e.target.checked
+                                                                                        )
+                                                                                    }
+                                                                                    label={type?.applicantType}
+                                                                                    className={style.reduceMarginTop}
+                                                                                />
+                                                                            ))}
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                            );
+                                                        })}
+                                                    </div>
+                                                )}
+
+                                                {department?.serviceAreas?.length === 0 && staffType?.length > 0 && (
+                                                    <div className={style.marginLeft70}>
+                                                        {staffType?.map((type) => (
+                                                            <CommonCheckBox
+                                                                key={type.id}
+                                                                checked={
+                                                                    attDept
+                                                                        ? attDept.applicantTypes?.some((at) => at.id === type.id) ||
+                                                                        !attDept.applicantTypeSpecific
+                                                                        : false
+                                                                }
+                                                                onChange={(e) =>
+                                                                    handleDeptLevelStaffTypeRemoval(
+                                                                        department?.id,
+                                                                        type?.id,
+                                                                        e.target.checked
+                                                                    )
+                                                                }
+                                                                label={type?.applicantType}
+                                                                className={style.reduceMarginTop}
+                                                            />
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            )}
+                            {targetStaff?.includes("SELECTED_GROUPS") && (
+                                <div>
+                                    <div className={style.exclusionNote}>
+                                        This will allow you to include Staff members from specific attestation groups that have been created.
+                                    </div>
+                                    {groupList?.map(group => (
+                                        <div key={group.id} className={style.marginTop20}>
+                                            <CommonCheckBox
+                                                checked={selectedGroupsWithApplicantTypes?.map(group => group?.id)?.includes(group?.id)}
+                                                onChange={(e) => handleGroupSelect(group, e.target.checked)}
+                                                label={group?.name}
+                                                className={style.reduceMarginTop}
+                                            />
+
+                                            {staffType?.length > 0 && (
+                                                <div className={style.marginLeft50}>
+                                                    {staffType?.map(type => (
+                                                        <CommonCheckBox
+                                                            key={type.id}
+                                                            checked={selectedGroupsWithApplicantTypes?.map(innerGroup => innerGroup?.id)?.includes(group?.id) && (selectedGroupsWithApplicantTypes?.filter(innerGroup => innerGroup?.id === group?.id)?.[0]?.applicantTypes?.some(t => t.id === type.id) || !selectedGroupsWithApplicantTypes?.filter(innerGroup => innerGroup?.id === group?.id)?.[0]?.applicantTypeSpecific)}
+                                                            onChange={(e) => handleGroupLevelStaffTypeToggle(group.id, type.id, e.target.checked)}
+                                                            label={type.applicantType}
+                                                            className={style.reduceMarginTop}
+                                                        />
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                     </div>
                     {targetStaff === "SELECTED_GROUPS" && (
                         <div className={style.padding20}>
@@ -686,7 +1301,7 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                             </div>
                         </div>
                     )}
-                    <div className={`${style.marginTop20} ${style.twoCol} `}>
+                    {/* <div className={`${style.marginTop20} ${style.twoCol} `}>
                         <div>
                             <div className={style.labelStyle}>Select Staff to Exclude from Attesting to this Medical Directive</div>
                             <CommonMultiSelectField
@@ -701,6 +1316,55 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                                 required={false}
                                 label={'Excluded Staff Members'}
                             />
+                        </div>
+                    </div> */}
+                    <div className={style.marginTop10}>
+                        <div className={style.attestationGroupGrid}>
+                            <div>
+                                <div className={style.labelStyle}>Included Staff Members to Exclude from ({uniqueUsers?.filter(staff => !selectedExcludeMembers?.includes(staff.id))?.length})</div>
+
+                                <div className={style.attestationGroupRightCard}>
+                                    {uniqueUsers?.filter(staff => !selectedExcludeMembers?.includes(staff.id))?.map((data, index) => (
+                                        <div className={style.groupGrid} key={index}>
+                                            <div className={`${style.staffName} ${style.verticalAlignCenter} ${style.cursorPointer} ${selectedStaffForMoveForExclusion === data?.id ? style.selectedStaff : ''} `} onClick={() => setSelectedStaffForMoveForExclusion(data?.id)}>{`${data?.name?.firstName} ${data?.name?.lastName?.toUpperCase()}${data?.serviceProviderType?.contractedServiceProviderType ? `, ${data?.serviceProviderType?.contractedServiceProviderType}` : ''} `}</div>
+                                            {/* <div className={style.staffName}></div> */}
+                                            <div className={`${style.labelStyle} ${selectedStaffForMoveForExclusion === data?.id ? style.selectedStaff : ''} `}>{data?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.departmentName?.name ? data?.sites?.sites?.[0]?.departmentList?.departments?.map(
+                                                (dept) => dept?.departmentName?.name
+                                            )?.join(', ') : ''} {data?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.serviceAreas?.length > 0 ? ` - ${data?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.serviceAreas?.map(divName => divName?.name)?.join(', ')}` : ''}</div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className={style.verticalAlignCenter}>
+                                <div className={`${style.displayInCol} `}>
+                                    <div className={`${style.moveCard} ${style.justifyCenter} ${style.verticalAlignCenter} ${staffListForExclude?.filter(staff => !selectedExcludeMembers?.includes(staff.id))?.length === 0 ? style.disabledView : style.cursorPointer} `} onClick={staffListForExclude?.filter(staff => !selectedExcludeMembers?.includes(staff.id))?.length === 0 ? () => { } : () => handleMoveForExclude()}>
+                                        <KeyboardArrowRightIcon sx={{ color: '#06617A' }} />
+                                    </div>
+                                    <div className={`${style.moveCard} ${style.marginTop10} ${style.justifyCenter} ${style.verticalAlignCenter} ${staffListForExclude?.filter(staff => !selectedExcludeMembers?.includes(staff.id))?.length === 0 ? style.disabledView : style.cursorPointer} `} onClick={staffListForExclude?.filter(staff => !selectedExcludeMembers?.includes(staff.id))?.length === 0 ? () => { } : () => handleMoveBulkForExclude()}>
+                                        <KeyboardDoubleArrowRightIcon sx={{ color: '#06617A' }} />
+                                    </div>
+                                    <div className={`${style.moveCard} ${style.marginTop20} ${style.justifyCenter} ${style.verticalAlignCenter} ${staffListForExclude?.filter(staff => selectedExcludeMembers?.includes(staff.id))?.length === 0 ? style.disabledView : style.cursorPointer} `} onClick={staffListForExclude?.filter(staff => selectedExcludeMembers?.includes(staff.id))?.length === 0 ? () => { } : () => handleRemoveForExclude()}>
+                                        <KeyboardArrowLeftIcon sx={{ color: '#06617A' }} />
+                                    </div>
+                                    <div className={`${style.moveCard} ${style.marginTop10} ${style.justifyCenter} ${style.verticalAlignCenter} ${staffListForExclude?.filter(staff => selectedExcludeMembers?.includes(staff.id))?.length === 0 ? style.disabledView : style.cursorPointer} `} onClick={staffListForExclude?.filter(staff => selectedExcludeMembers?.includes(staff.id))?.length === 0 ? () => { } : () => handleRemoveBulkForExclude()}>
+                                        <KeyboardDoubleArrowLeftIcon sx={{ color: '#06617A' }} />
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <div className={style.labelStyle}>Staff Members To Exclude From This Attestation ({uniqueUsers?.filter(staff => selectedExcludeMembers?.includes(staff.id))?.length})</div>
+                                <div className={style.attestationGroupRightCard}>
+                                    {uniqueUsers?.filter(staff => selectedExcludeMembers?.includes(staff.id))?.map((data, index) => (
+                                        <div className={style.groupGrid} key={index}>
+                                            <div className={`${style.staffName} ${style.verticalAlignCenter} ${style.cursorPointer} ${selectedStaffForMove === data?.id ? style.selectedStaff : ''} `} onClick={() => setSelectedStaffForMoveForExclusion(data?.id)}>{`${data?.name?.firstName} ${data?.name?.lastName?.toUpperCase()}${data?.serviceProviderType?.contractedServiceProviderType ? `, ${data?.serviceProviderType?.contractedServiceProviderType}` : ''} `}</div>
+                                            {/* <div className={style.staffName}></div> */}
+                                            <div className={`${style.labelStyle} ${selectedStaffForMoveForExclusion === data?.id ? style.selectedStaff : ''} `}>{data?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.departmentName?.name ? data?.sites?.sites?.[0]?.departmentList?.departments?.map(
+                                                (dept) => dept?.departmentName?.name
+                                            )?.join(', ') : ''} {data?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.serviceAreas?.length > 0 ? ` - ${data?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.serviceAreas?.map(divName => divName?.name)?.join(', ')}` : ''}</div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div className={`${style.marginTop20} ${style.twoCol} `}>

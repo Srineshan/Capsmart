@@ -287,6 +287,8 @@ const ManageAttestation = () => {
         );
         console.log(response.data);
         setAttestationList(response?.data?.medicalDirectives)
+        setTotalTableCount(response?.data?.numberOfElements)
+        setSearchCount(response?.data?.numberOfElements)
     }
 
     const getEntity = async () => {
