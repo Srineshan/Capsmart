@@ -370,7 +370,7 @@ const MDManager = () => {
   ) : step2 ? (
     <MDManagerStep2 setStep1={setStep1} setStep3={setStep3} setStep2={setStep2} mdValue={mdValue} getMD={getMD} setMdValue={setMdValue} setSelectedMdId={setSelectedMdId} />
   ) : step3 ? (
-    <MDManagerStep3 setStep2={setStep2} setStep3={setStep3} setStep4={setStep4} mdValue={mdValue} setMdValue={setMdValue} setSelectedMdId={setSelectedMdId} />
+    <MDManagerStep3 setStep2={setStep2} setStep3={setStep3} setStep4={setStep4} mdValue={mdValue} setMdValue={setMdValue} getMD={getMD} setSelectedMdId={setSelectedMdId} />
   ) : step4 ? (
     <MDManagerStep4 setStep3={setStep3} setStep4={setStep4} mdValue={mdValue} setMdValue={setMdValue} setSelectedMdId={setSelectedMdId} />
   ) : (
@@ -574,7 +574,7 @@ const MDManager = () => {
         </div>
         <div>
           {selectedOption === "MANAGE MEDICAL DIRECTIVES" ? (
-            <ManageMedicalDirectives getSelectedOption={getSelectedOption} setStep1={setStep1} setMdFile={setMdFile} advancedSearch={advancedSearch} setSelectedMdId={setSelectedMdId} showAddNewMedicalDirectives={showAddNewMedicalDirectives} setShowAddNewMedicalDirectives={setShowAddNewMedicalDirectives} />
+            <ManageMedicalDirectives getSelectedOption={getSelectedOption} setStep1={setStep1} setStep2={setStep2} setStep3={setStep3} setMdFile={setMdFile} advancedSearch={advancedSearch} setSelectedMdId={setSelectedMdId} showAddNewMedicalDirectives={showAddNewMedicalDirectives} setShowAddNewMedicalDirectives={setShowAddNewMedicalDirectives} />
           ) : selectedOption === "OPEN FEEDBACK TICKETS" ? (
             <FeedbackTicket getSelectedOption={getSelectedOption} />
           ) : selectedOption === "DATA UPLOADS" ? (

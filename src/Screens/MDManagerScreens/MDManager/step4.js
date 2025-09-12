@@ -20,6 +20,7 @@ import { Tooltip } from '@mui/material';
 
 const MDManagerStep4 = ({ setStep3, setStep4, mdValue, setMdValue, setSelectedMdId }) => {
     const containerRef = useRef(null);
+    const [isConfirmationDialog, setIsConfirmationDialog] = useState(false);
     const [targetStaff, setTargetStaff] = useState('ALL_STAFFS');
     const [attestationReviewFrequency, setAttestationReviewFrequency] = useState('');
     const [groupTitle, setGroupTitle] = useState('');
@@ -78,9 +79,10 @@ const MDManagerStep4 = ({ setStep3, setStep4, mdValue, setMdValue, setSelectedMd
             `medical-directive-service/medicalDirectives/${mdValue?.id}/workflow`
         );
         setWorkflowStructure(response?.data)
+        console.log(response, response?.data?.approvalFlowMap?.workflow['3']?.flowDetails?.[0]?.groups?.map(data => data?.group?.id) || [])
         // setWorkFlow2IsMandatory(response?.data?.approvalFlowMap?.workflow['2']?.flowDetails?.[0]?.approvalRequirement === 'MANDATORY' ? true : false)
-        setSelectedSignOffGroups(response?.data?.approvalFlowMap?.workflow['3']?.flowDetails?.[0]?.groups?.map(data => data?.group?.id))
-        setSignOffExists(response?.data?.approvalFlowMap?.workflow['3']?.flowDetails?.[0]?.groups?.map(data => data?.group?.id)?.length !== 0)
+        setSelectedSignOffGroups(response?.data?.approvalFlowMap?.workflow['3']?.flowDetails?.[0]?.groups?.map(data => data?.group?.id) || [])
+        setSignOffExists(mdValue?.workflowStatus === "IN_PROGRESS")
     }
 
     const getStaffList = async () => {
@@ -229,7 +231,11 @@ const MDManagerStep4 = ({ setStep3, setStep4, mdValue, setMdValue, setSelectedMd
         });
         if (workflowEdited) {
             if (selectedSignOffGroups?.length !== 0) {
-                acknowledgementData.approvalFlowMap.workflow[3].flowDetails[0].approvalRequirement = 'MANDATORY';
+                if (
+                    acknowledgementData?.approvalFlowMap?.workflow?.[3]?.flowDetails?.[0]
+                ) {
+                    acknowledgementData.approvalFlowMap.workflow[3].flowDetails[0].approvalRequirement = "MANDATORY";
+                }
                 if (workflowStructure?.approvalFlowMap?.workflow[3]?.flowDetails?.[0]?.approvalBy === 'GROUP') {
                     acknowledgementData.approvalFlowMap.workflow[3].flowDetails[0].groups = transformedGroups
                 }
@@ -249,6 +255,7 @@ const MDManagerStep4 = ({ setStep3, setStep4, mdValue, setMdValue, setSelectedMd
                     // ErrorToaster2('Something Failed. Please Try later!');
                 })
         }
+        setIsConfirmationDialog(false)
         setStep4(false)
         // setShowWorkflowSelection(true)
     }
@@ -372,7 +379,6 @@ const MDManagerStep4 = ({ setStep3, setStep4, mdValue, setMdValue, setSelectedMd
         setMdValue();
         setSelectedMdId('');
     }
-    console.log(staffList.filter(staff => selectedStaffs?.includes(staff.id)), 'filterCheck', selectedStaffs, selectedStaffForMove)
     return (
         <div className={style.stepsBackground}>
             <div className={`${style.stepHeader} ${style.spaceBetween} ${style.verticalAlignCenter}`}>
@@ -390,7 +396,7 @@ const MDManagerStep4 = ({ setStep3, setStep4, mdValue, setMdValue, setSelectedMd
                         )} */}
                         {/* <button className={`${style.outlinedButtonMd} ${style.marginRight} `} onClick={() => { setStep4(false); handleClose() }} >SAVE IN PROGRESS</button> */}
                         <Tooltip arrow title='Click to Continue'>
-                            <button className={`${style.buttonStyleMd} ${style.marginRight} `} onClick={() => { handleContinue() }} >CONTINUE</button>
+                            <button className={`${style.buttonStyleMd} ${style.marginRight} `} onClick={() => { signOffExists ? setStep4(false) : setIsConfirmationDialog(true) }} >CONTINUE</button>
                         </Tooltip>
                     </div>
                 </div>
@@ -582,6 +588,23 @@ const MDManagerStep4 = ({ setStep3, setStep4, mdValue, setMdValue, setSelectedMd
                         <div className={`${style.spaceBetween} ${style.marginTop20}`}>
                             <button className={`${style.outlinedButton} `} onClick={() => handleGroupDialogClose()} >CANCEL</button>
                             <button className={`${style.buttonStyle}  ${!isGroupEdited ? style.disabledView : ''}`} onClick={!isGroupEdited ? () => { } : () => handleAddGroup()} >{groupById ? 'UPDATE' : 'ADD'}</button>
+                        </div>
+                    </div>
+                </div>
+            </Dialog >
+            <Dialog isOpen={isConfirmationDialog} onClose={() => setIsConfirmationDialog(false)} className={`${style.addMDDialogBackground} ${style.confirmationDialog} `}>
+                <div className={Classes.DIALOG_BODY}>
+                    <div className={style.attestationDialogHeaderCard}>
+                        <div className={`${style.attestationDialogTitle} ${style.padding20} `}>Start Workflow?</div>
+                    </div>
+                    <div className={`${style.marginTop10} `}>
+                        <div className={style.labelStyle}>Once you start the Medical Directive workflow, you won’t be able to edit the acknowledgement or leadership sign-off settings.</div>
+                    </div>
+
+                    <div>
+                        <div className={`${style.spaceBetween} ${style.marginTop20} `}>
+                            <button className={`${style.outlinedButton} `} onClick={() => setIsConfirmationDialog(false)} >CANCEL</button>
+                            <button className={`${style.buttonStyle} ${style.marginLeft10} `} onClick={() => handleContinue()} >{'YES, CONTINUE'}</button>
                         </div>
                     </div>
                 </div>

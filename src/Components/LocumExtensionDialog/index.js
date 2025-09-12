@@ -2800,7 +2800,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab, requestedType }) => {
     // Add "Custom End Date" option
     const now = new Date();
     months.push({
-      label: 'Custom End Date',
+      label: 'Custom Date',
       value: 'Custom'
     });
 
@@ -2824,19 +2824,20 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab, requestedType }) => {
   // ? monthsList.find(month => month.value === selectedMonth)?.label
   // : "Custom End Date";
   const currentDateNow = new Date();
+  const priorExpireDate = selectDataLocum?.tenure?.to
   const minDateValue =
     selectedTab === 'ACTIVELOCUM'
-      ? ExpireDate
-        ? addDays(new Date(ExpireDate), 30)
-        : null
-      : currentDateNow;
+      ? priorExpireDate
+        ? addDays(new Date(priorExpireDate), 1)
+        : currentDateNow
+      : addDays(new Date(priorExpireDate), 1);
 
   const minDateValueValid =
     selectedTab === 'ACTIVELOCUM'
       ? ExpireDate
         ? addDays(new Date(ExpireDate), 30)
         : null
-      : addDays(currentDateNow, 30);
+      : currentDateNow
 
   const maxDateValue =
     selectedTab === 'ACTIVELOCUM'
@@ -3030,7 +3031,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab, requestedType }) => {
                           {/* </div> */}
                           <div className={`${selectedTab === "ACTIVELOCUM" ? style.marginLeft : ""} ${style.rejectionHeadingTextStyle}`}>
                             Start Date <br />
-                            {selectedTab === "EXPIREDLOCUM" ? (
+                            {(selectedTab === "EXPIREDLOCUM" || selectedMonth === "Custom") ? (
                               <div className={`${style.marginTopLess}`}>
                                 <CommonDateField
                                   className={`${style.fullWidth}`}

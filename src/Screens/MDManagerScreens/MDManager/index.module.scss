@@ -93,6 +93,14 @@
     margin-left: 20px;
 }
 
+.marginLeft50 {
+    margin-left: 50px;
+}
+
+.marginLeft70 {
+    margin-left: 70px;
+}
+
 .marginRight {
     margin-right: 10px;
 }
@@ -287,6 +295,13 @@
 .attestationDialog {
     // height: 95vh !important;
     width: 85% !important;
+    overflow: scroll;
+}
+
+
+.confirmationDialog {
+    // height: 95vh !important;
+    width: 50% !important;
     overflow: scroll;
 }
 
@@ -687,7 +702,7 @@
 
 .labelStyle {
     text-align: left;
-    font: normal normal normal 14px/32px proxima-nova;
+    font: normal normal normal 14px/20px proxima-nova;
     color: $textgrey;
 }
 
@@ -949,4 +964,39 @@
 
 .noteText {
     color: #FB4643;
+}
+
+.loadingOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.exclusionNote {
+    text-align: left;
+    font: normal normal bold 16px/20px proxima-nova;
+    color: #FF6562;
+}
+
+.targetStaffGrid {
+    display: grid;
+    grid-template-columns: 63% 36%;
+    gap: 1%;
+}
+
+.targetStaffNoteGrid {
+    display: grid;
+    grid-template-columns: 24% 40% 34%;
+    gap: 1%;
+}
+
+.reduceMarginTop {
+    margin-top: -10px;
 }

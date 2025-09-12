@@ -327,6 +327,8 @@ const ManageAcknowledgement = () => {
         const response = await GET(url, { signal });
         console.log(response.data);
         setAttestationList(response?.data?.medicalDirectivesWithWorkflow)
+        setTotalTableCount(response?.data?.numberOfElements)
+        setSearchCount(response?.data?.numberOfElements)
     }
 
     const getEntity = async () => {

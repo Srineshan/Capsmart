@@ -1,12 +1,14 @@
 import React, { useState, useRef } from 'react';
 import style from './index.module.scss';
 import { PUT } from '../../dataSaver';
+import { Classes, Dialog } from '@blueprintjs/core';
 import CommonPdfViewer from '../../../Components/CommonPdfViewer';
 import { ErrorToaster2, SuccessToaster2 } from '../../../utils/toaster';
 import { Tooltip } from '@mui/material';
 
 const MDManagerStep2 = ({ setStep1, setStep2, setStep3, mdValue, getMD, setMdValue, setSelectedMdId }) => {
     const fileInputRef = useRef(null);
+    const [isConfirmationDialog, setIsConfirmationDialog] = useState(false);
     const handleReplaceCopy = () => {
         fileInputRef.current.click();
     }
@@ -50,9 +52,38 @@ const MDManagerStep2 = ({ setStep1, setStep2, setStep3, mdValue, getMD, setMdVal
             })
 
     }
+    const handleSaveInProgress = async () => {
+        const formData = new FormData();
+        console.log(mdValue)
+        let data = mdValue;
+        data.lastSavedSection = 'step2';
+        formData.append(
+            "metaDataDTO",
+            new Blob([JSON.stringify(data)], {
+                type: "application/json",
+            })
+        );
+
+        console.log(data)
+
+        await PUT(`medical-directive-service/medicalDirectives/${mdValue?.id}`, formData)
+            .then(response => {
+                SuccessToaster2('MD Saved Successfully');
+                console.log(response?.data)
+                setStep2(false)
+            })
+            .catch(error => {
+            })
+
+    }
     const handleClose = () => {
         setMdValue();
         setSelectedMdId('');
+    }
+
+    const handleConfirmReplace = () => {
+        setIsConfirmationDialog(false);
+        handleReplaceCopy();
     }
     console.log(mdValue)
     return (
@@ -74,10 +105,10 @@ const MDManagerStep2 = ({ setStep1, setStep2, setStep3, mdValue, getMD, setMdVal
                             <button className={`${style.buttonStyleMd} ${style.marginRight} `} onClick={() => { setStep1(true); setStep2(false) }} >BACK</button>
                         </Tooltip>
                         <Tooltip arrow title='Click to Replace Document'>
-                            <button className={`${style.outlinedButtonMd} ${style.marginRight} `} onClick={() => handleReplaceCopy()} >REPLACE DOCUMENT</button>
+                            <button className={`${style.outlinedButtonMd} ${style.marginRight} `} onClick={() => setIsConfirmationDialog(true)} >REPLACE DOCUMENT</button>
                         </Tooltip>
                         <Tooltip arrow title='Click to Save In-Progress'>
-                            <button className={`${style.outlinedButtonMd} ${style.marginRight} `} onClick={() => { setStep2(false); handleClose() }} >SAVE IN PROGRESS</button>
+                            <button className={`${style.outlinedButtonMd} ${style.marginRight} `} onClick={() => { handleSaveInProgress() }} >SAVE IN PROGRESS</button>
                         </Tooltip>
                         <Tooltip arrow title='Click to Continue'>
                             <button className={`${style.buttonStyleMd} ${style.marginRight} `} onClick={() => { setStep2(false); setStep3(true) }} >CONTINUE</button>
@@ -95,6 +126,23 @@ const MDManagerStep2 = ({ setStep1, setStep2, setStep3, mdValue, getMD, setMdVal
                     {/* <CommonPdfViewer pdfurl={mdValue?.file?.fileURL} /> */}
                 </div>
             </div>
+            <Dialog isOpen={isConfirmationDialog} onClose={() => setIsConfirmationDialog(false)} className={`${style.addMDDialogBackground} ${style.confirmationDialog} `}>
+                <div className={Classes.DIALOG_BODY}>
+                    <div className={style.attestationDialogHeaderCard}>
+                        <div className={`${style.attestationDialogTitle} ${style.padding20} `}>Confirm Document Replacement</div>
+                    </div>
+                    <div className={`${style.marginTop10} `}>
+                        <div className={style.labelStyle}>Are you sure you want to replace the existing Medical Directive document by uploading a new one?</div>
+                    </div>
+
+                    <div>
+                        <div className={`${style.spaceBetween} ${style.marginTop20} `}>
+                            <button className={`${style.outlinedButton} `} onClick={() => setIsConfirmationDialog(false)} >CANCEL</button>
+                            <button className={`${style.buttonStyle} ${style.marginLeft10} `} onClick={() => handleConfirmReplace()} >{'YES, UPLOAD'}</button>
+                        </div>
+                    </div>
+                </div>
+            </Dialog >
         </div>
     )
 }

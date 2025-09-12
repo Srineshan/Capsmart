@@ -143,7 +143,8 @@ const ManageAttestationGroups = () => {
             id: id,
             name: matchedStaff?.name,
             email: matchedStaff?.email,
-            sites: matchedStaff?.sites
+            sites: matchedStaff?.sites,
+            applicantType: matchedStaff?.applicantType
         };
     });
 
