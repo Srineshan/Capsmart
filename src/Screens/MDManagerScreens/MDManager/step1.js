@@ -4,6 +4,7 @@ import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import CommonInputField from '../../../Components/CommonFields/CommonInputField';
 import CommonDateField from '../../../Components/CommonFields/CommonDateField';
 import { TextField, Tooltip } from '@mui/material';
+import { Classes, Dialog } from '@blueprintjs/core';
 import CancelIcon from '@mui/icons-material/Cancel';
 import style from './index.module.scss';
 import CommonSelectField from '../../../Components/CommonFields/CommonSelectField';
@@ -33,6 +34,7 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
     const [fileType, setFileType] = useState('');
     const [isDataLoading, setIdDataLoading] = useState(false);
     const [selectedDeptValue, setSelectedDeptValue] = useState("");
+    const [isSaveInProgressDialog, setIsSaveInProgressDialog] = useState(false);
     const selectedSite = sessionStorage.getItem('selectedSite') || ''
     useEffect(() => {
         getDepartmentList();
@@ -267,12 +269,12 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
             file: mdValue?.id ? mdValue?.file : {
                 fileName: mdFile?.name,
             },
-            autoTriggerOnUpdate: false,
-            updateFor: ['SELECTED_DEPARTMENT_AND_DIVISION'],
+            autoTriggerOnUpdate: true,
+            updateFor: [],
             groups: [],
-            triggerForNewAppointment: false,
-            triggerForReAppointment: false,
-            triggerForLocum: false,
+            triggerForNewAppointment: true,
+            triggerForReAppointment: true,
+            triggerForLocum: true,
             siteSpecific: selectedSite !== '' ? true : false,
             attestationSiteSpecific: selectedSite !== '' ? true : false,
         }
@@ -347,6 +349,7 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
             try {
                 const response = await PUT(`medical-directive-service/medicalDirectives/${mdValue?.id}`, formData)
                 if (isSaveInProgress) {
+                    await PUT(`medical-directive-service/medicalDirectives/${mdValue?.id}/saveInprogress`, 'step1')
                     handleClose()
                 } else {
                     setStep1(false);
@@ -368,6 +371,7 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
                 } else {
                     SuccessToaster2('MD Updated Successfully');
                     if (isSaveInProgress) {
+                        await PUT(`medical-directive-service/medicalDirectives/${mdValue?.id}/saveInprogress`, 'step1')
                         handleClose()
                     } else {
                         setStep1(false);
@@ -402,7 +406,7 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
                             <button className={`${style.outlinedButtonMd} ${style.marginRight} `} onClick={() => { handleClose() }} >CLOSE</button>
                         </Tooltip>
                         <Tooltip arrow title='Click to Save In-Progress'>
-                            <button className={`${style.outlinedButtonMd} ${style.marginRight} `} onClick={() => { handleContinue(true) }} >SAVE IN PROGRESS</button>
+                            <button className={`${style.outlinedButtonMd} ${style.marginRight} `} onClick={() => { setIsSaveInProgressDialog(true) }} >SAVE IN PROGRESS</button>
                         </Tooltip>
                         <Tooltip arrow title='Click to Continue'>
                             <button className={`${style.buttonStyleMd} ${style.marginRight} `} onClick={() => {
@@ -656,6 +660,23 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
                     </div>
                 </div>
             </div>
+            <Dialog isOpen={isSaveInProgressDialog} onClose={() => setIsSaveInProgressDialog(false)} className={`${style.addMDDialogBackground} ${style.confirmationDialog} `}>
+                <div className={Classes.DIALOG_BODY}>
+                    <div className={style.attestationDialogHeaderCard}>
+                        <div className={`${style.attestationDialogTitle} ${style.padding20} `}>Confirm Save In-Progress</div>
+                    </div>
+                    <div className={`${style.marginTop10} `}>
+                        <div className={style.labelStyle}>Your current progress will be saved. You can return and continue from where you left off.</div>
+                    </div>
+
+                    <div>
+                        <div className={`${style.spaceBetween} ${style.marginTop20} `}>
+                            <button className={`${style.outlinedButtonWithBiggerWidth} `} onClick={() => setIsSaveInProgressDialog(false)} >CANCEL</button>
+                            <button className={`${style.buttonStyleWithBiggerWidth} ${style.marginLeft10} `} onClick={() => { handleContinue(true) }} >{'SAVE & CONTINUE LATER'}</button>
+                        </div>
+                    </div>
+                </div>
+            </Dialog >
         </div>
     )
 }

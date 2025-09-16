@@ -1002,7 +1002,9 @@ const Navbar = () => {
               </Link>
               <Link to={"/mdManager/retired"} className={style.noFontStyle}>
                 <div
-                  className={`${style.menuStyle} ${(window.location.pathname.includes("/retired")) &&
+                  className={`${style.menuStyle} ${(window.location.pathname.includes("/retired") && !(window.location.pathname.includes("/reports") ||
+                    window.location.pathname.includes("/reportTypeOverview") ||
+                    window.location.pathname.includes("/myReport"))) &&
                     style.activeMenuColor
                     }`}
                 >

@@ -7,7 +7,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import style from './index.module.scss';
 
 
-const CommonRadio = ({ onChange, className, value, radioValue, label, required, readOnly }) => {
+const CommonRadio = ({ onChange, className, value, radioValue, label, required, readOnly, isRow }) => {
   const contractStatus = sessionStorage.getItem('Selected Contract Status');
   const warningCheck = (value === '');
   const theme = createTheme({
@@ -24,7 +24,7 @@ const CommonRadio = ({ onChange, className, value, radioValue, label, required, 
     <ThemeProvider theme={theme}>
       <FormControl>
         <RadioGroup
-          row
+          row={isRow !== undefined ? isRow : true}
           className={className}
           value={value}
           onChange={onChange}

@@ -4220,7 +4220,7 @@ const ReportTypeOverview = () => {
                                                                                         <div className={style.spaceBetween}>
                                                                                             <div className={style.displayInRow}>
 
-                                                                                                <div className={style.mdTitle}><span className={style.mdTitle}>{`${index + 1}, `}</span>{data?.title}</div>
+                                                                                                <div className={style.mdTitle}><span className={style.mdTitle}>{`${index + 1}. `}</span>{data?.title}</div>
                                                                                             </div>
                                                                                             <div className={style.mdId}>{data?.mdID}</div>
                                                                                         </div>
@@ -4271,7 +4271,7 @@ const ReportTypeOverview = () => {
                                                                                 retiredMedicalDirectives?.map((data, index) => (
                                                                                     <div className={`${style.mdReportCard} ${index % 2 === 0 ? style.mdCardAlternateBackground : ''} ${style.marginTop20}`} key={index}>
                                                                                         <div className={style.spaceBetween}>
-                                                                                            <div className={style.mdTitle}><span className={style.mdTitle}>{`${index + 1}, `}</span>{data?.title}</div>
+                                                                                            <div className={style.mdTitle}><span className={style.mdTitle}>{`${index + 1}. `}</span>{data?.title}</div>
                                                                                             <div className={style.mdId}>{data?.mdID}</div>
                                                                                         </div>
                                                                                         <div className={`${style.mdDesc} ${style.marginTop}`}

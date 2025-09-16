@@ -574,7 +574,7 @@ const MDManager = () => {
         </div>
         <div>
           {selectedOption === "MANAGE MEDICAL DIRECTIVES" ? (
-            <ManageMedicalDirectives getSelectedOption={getSelectedOption} setStep1={setStep1} setStep2={setStep2} setStep3={setStep3} setMdFile={setMdFile} advancedSearch={advancedSearch} setSelectedMdId={setSelectedMdId} showAddNewMedicalDirectives={showAddNewMedicalDirectives} setShowAddNewMedicalDirectives={setShowAddNewMedicalDirectives} />
+            <ManageMedicalDirectives getSelectedOption={getSelectedOption} setStep1={setStep1} setStep2={setStep2} setStep3={setStep3} setStep4={setStep4} setMdFile={setMdFile} advancedSearch={advancedSearch} setSelectedMdId={setSelectedMdId} showAddNewMedicalDirectives={showAddNewMedicalDirectives} setShowAddNewMedicalDirectives={setShowAddNewMedicalDirectives} />
           ) : selectedOption === "OPEN FEEDBACK TICKETS" ? (
             <FeedbackTicket getSelectedOption={getSelectedOption} />
           ) : selectedOption === "DATA UPLOADS" ? (
