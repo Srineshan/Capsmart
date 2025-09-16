@@ -389,6 +389,18 @@
     // margin-bottom: -10px;
 }
 
+.buttonStyleWithBiggerWidth {
+    background-color: $primarycolor;
+    color: white;
+    border: 1px solid $primarycolor;
+    height: 40px;
+    width: 240px;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    // margin-bottom: -10px;
+}
+
 .outlinedButton {
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #00000029;
@@ -396,6 +408,18 @@
     border-radius: 8px;
     height: 40px;
     width: 140px;
+    font-weight: bold;
+    color: $primarycolor;
+    cursor: pointer;
+}
+
+.outlinedButtonWithBiggerWidth {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 6px #00000029;
+    border: 0.5px solid #9AAFB5;
+    border-radius: 8px;
+    height: 40px;
+    width: 240px;
     font-weight: bold;
     color: $primarycolor;
     cursor: pointer;
@@ -752,16 +776,16 @@
 
 .attestationGroupGrid {
     display: grid;
-    grid-template-columns: 43% 10% 43%;
+    grid-template-columns: 44% 8% 44%;
     gap: 2%;
 }
 
 .attestationGroupLeftCard {
-    background: rgba(20, 53, 143, 0.5);
-    border: 0.20000000298023224px solid #14358F;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
+    border: 0.20000000298023224px solid #9AAFB5;
     border-radius: 8px;
     padding: 20px;
-    height: 300px;
+    height: 248px;
     overflow: scroll
 }
 
@@ -790,6 +814,12 @@
 .groupGrid {
     display: grid;
     grid-template-columns: 60% 38%;
+    gap: 1%;
+}
+
+.groupGrid3Col {
+    display: grid;
+    grid-template-columns: 40% 38% 20%;
     gap: 1%;
 }
 
@@ -999,4 +1029,13 @@
 
 .reduceMarginTop {
     margin-top: -10px;
+}
+
+.acknowledgementNote {
+    color: #FB4643;
+    background-color: #FFF5F5;
+    border: 1px solid #FB4643;
+    border-radius: 4px;
+    padding: 10px;
+    text-align: left;
 }

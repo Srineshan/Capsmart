@@ -1366,6 +1366,7 @@ const App = ({ props }) => {
                 <Route path="/mdManager/manageSignOff" element={<ProtectedRoute><ManageSignOff /></ProtectedRoute>} />
                 <Route path="/mdManager/manageAttestationGroups" element={<ProtectedRoute><ManageAttestationGroups /></ProtectedRoute>} />
                 <Route path="/mdManager/libraries/:entityId/:departmentId" element={<MDLibrary />} />
+                <Route path="/mdManager/libraries/:entityId/:departmentId/:selectedMDId" element={<MDLibrary />} />
                 <Route path="/mdManager/step1" element={<ProtectedRoute><MDManagerStep1 /></ProtectedRoute>} />
                 <Route path="/thankyou" element={<ProtectedRoute><Thankyou /></ProtectedRoute>} />
                 <Route path="/reportType" element={<ProtectedRoute><ReportType /></ProtectedRoute>} />
