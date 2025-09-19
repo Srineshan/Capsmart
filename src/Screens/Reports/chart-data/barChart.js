@@ -16,7 +16,7 @@ const ApexBarChart = ({ series, categories, reportingPeriod, yAxisTitle, xAxisTi
             plotOptions: {
                 bar: {
                     horizontal: false,
-                    columnWidth: '25%',
+                    columnWidth: '100%',
                     endingShape: 'rounded'
                 },
             },

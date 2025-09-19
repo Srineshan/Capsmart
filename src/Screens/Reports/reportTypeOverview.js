@@ -41,6 +41,9 @@ import TableTwo from "../../Components/TableDesignTwo"
 import ReportsStaffTable from '../../Components/ReportStaffbyType';
 import ReportsApplicantWithAllDataTable from '../../Components/ReportApplicantWithAllData';
 import { currentUser } from '../../utils/auth';
+import GaugeChart from './chart-data/gaugeChart';
+import FunnelChart from './chart-data/funnelChart';
+import DonutChart from './chart-data/donutChart';
 
 const ReportTypeOverview = () => {
     const location = useLocation();

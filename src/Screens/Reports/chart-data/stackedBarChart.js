@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Chart from 'react-apexcharts';
 
-const ApexStackedBarChart = ({ stackedSeries, stackedCategories }) => {
+const ApexStackedBarChart = ({ stackedSeries, stackedCategories, horizontal }) => {
   const [series, setSeries] = useState(stackedSeries);
   const [categories, setCategories] = useState(stackedCategories);
   useEffect(() => {
@@ -45,7 +45,7 @@ const ApexStackedBarChart = ({ stackedSeries, stackedCategories }) => {
       }],
       plotOptions: {
         bar: {
-          horizontal: false,
+          horizontal: horizontal ? true : false,
           columnWidth: '25%',
           backgroundBarColors: ["#1DD174", "#FFD950", "#F46044"],
           endingShape: 'rounded',

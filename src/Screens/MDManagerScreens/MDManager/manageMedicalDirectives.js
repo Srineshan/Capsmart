@@ -123,9 +123,12 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setStep2, setSte
     }, [])
 
     useEffect(() => {
-        sessionStorage.setItem('mdOption', "Draft Medical Directives")
-        setSelectedOption("Draft Medical Directives")
-        setSelectedMdId(mdIdFromSearch);
+        if (mdIdFromSearch) {
+            console.log(mdIdFromSearch)
+            sessionStorage.setItem('mdOption', "Draft Medical Directives")
+            setSelectedOption("Draft Medical Directives")
+            setSelectedMdId(mdIdFromSearch);
+        }
         if (!initialized && mdIdFromSearch && dashboardData?.filter(data => data?.id === mdIdFromSearch)?.length > 0) {
             setTimeout(() => {
                 let mdTempData = dashboardData?.filter(data => data?.id === mdIdFromSearch)?.[0]
