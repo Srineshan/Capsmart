@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="139" height="128.007" viewBox="0 0 139 128.007">
+  <g id="Icon_ionic-ios-calendar" data-name="Icon ionic-ios-calendar" transform="translate(-1.219 -2.391)">
+    <g id="Rectangle_59213" data-name="Rectangle 59213" transform="translate(13.219 51.083)" fill="#f5f7f8" stroke="#7a7e7e" stroke-width="3">
+      <rect width="115" height="69" rx="8" stroke="none"/>
+      <rect x="1.5" y="1.5" width="112" height="66" rx="6.5" fill="none"/>
+    </g>
+    <path id="Path_133181" data-name="Path 133181" d="M125.777,6.75H112.756v7.813a2.612,2.612,0,0,1-2.6,2.6h-5.209a2.612,2.612,0,0,1-2.6-2.6V6.75h-62.5v7.813a2.612,2.612,0,0,1-2.6,2.6H32.022a2.612,2.612,0,0,1-2.6-2.6V6.75H16.4A13.06,13.06,0,0,0,3.375,19.772v88.546A13.06,13.06,0,0,0,16.4,121.339H125.777A13.06,13.06,0,0,0,138.8,108.318V19.772A13.06,13.06,0,0,0,125.777,6.75Z" transform="translate(-0.368 7.558)" fill="none" stroke="#7a7e7e" stroke-width="3"/>
+    <path id="Path_133182" data-name="Path 133182" d="M19.417,7.1a2.612,2.612,0,0,0-2.6-2.6H11.6A2.612,2.612,0,0,0,9,7.1v7.813H19.417Z" transform="translate(20.05 -0.609)" fill="none" stroke="#7a7e7e" stroke-width="3"/>
+    <path id="Path_133183" data-name="Path 133183" d="M35.167,7.1a2.612,2.612,0,0,0-2.6-2.6H27.354a2.612,2.612,0,0,0-2.6,2.6v7.813H35.167Z" transform="translate(77.22 -0.609)" fill="none" stroke="#7a7e7e" stroke-width="3"/>
+    <g id="Rectangle_59211" data-name="Rectangle 59211" transform="translate(1.219 13.083)" fill="#ff6562" stroke="#7a7e7e" stroke-width="3">
+      <path d="M13,0H126a13,13,0,0,1,13,13V31a0,0,0,0,1,0,0H0a0,0,0,0,1,0,0V13A13,13,0,0,1,13,0Z" stroke="none"/>
+      <path d="M13,1.5H126A11.5,11.5,0,0,1,137.5,13V28a1.5,1.5,0,0,1-1.5,1.5H3A1.5,1.5,0,0,1,1.5,28V13A11.5,11.5,0,0,1,13,1.5Z" fill="none"/>
+    </g>
+    <rect id="Rectangle_59214" data-name="Rectangle 59214" width="133" height="3" transform="translate(4.219 39.083)" fill="#ec5552"/>
+    <g id="Rectangle_59209" data-name="Rectangle 59209" transform="translate(27.219 3.083)" fill="#fff" stroke="#757e7a" stroke-width="3">
+      <rect width="14" height="23" rx="5" stroke="none"/>
+      <rect x="1.5" y="1.5" width="11" height="20" rx="3.5" fill="none"/>
+    </g>
+    <g id="Rectangle_59212" data-name="Rectangle 59212" transform="translate(100.219 3.083)" fill="#fff" stroke="#757e7a" stroke-width="3">
+      <rect width="14" height="23" rx="5" stroke="none"/>
+      <rect x="1.5" y="1.5" width="11" height="20" rx="3.5" fill="none"/>
+    </g>
+  </g>
+</svg>

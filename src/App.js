@@ -55,6 +55,7 @@ const ActiveContracts = React.lazy(() => import("./Screens/ContractManager"));
 const StaffManager = React.lazy(() => import("./Screens/StaffManager"));
 const Applicant = React.lazy(() => import("./Screens/Applicant"));
 const StaffApplication = React.lazy(() => import("./Screens/StaffApplication"));
+const ApplicationDashboard = React.lazy(() => import("./Screens/Dashboard"));
 const ActiveStaff = React.lazy(() => import("./Screens/ActiveStaff"));
 const LocumStaff = React.lazy(() => import("./Screens/LocumStaff"));
 const DescopeLoginDialog = React.lazy(() => import("./Components/DescopeLogin"));
@@ -1084,6 +1085,7 @@ const App = ({ props }) => {
                 <Route path="/contracts" element={<ProtectedRoute><ActiveContracts /></ProtectedRoute>} />
                 <Route path="/staffs" element={<ProtectedRoute><StaffManager /></ProtectedRoute>} />
                 <Route path="/applications" element={<ProtectedRoute><StaffApplication /></ProtectedRoute>} />
+                <Route path="/applications/dashboard" element={<ProtectedRoute><ApplicationDashboard /></ProtectedRoute>} />
                 <Route path="/applicationById/:applicationTypeFromUrl/:applicationId" element={<ProtectedRoute><StaffApplication /></ProtectedRoute>} />
                 <Route path="/activeStaff" element={<ProtectedRoute><ActiveStaff /></ProtectedRoute>} />
                 <Route path="/locumStaff" element={<ProtectedRoute><LocumStaff /></ProtectedRoute>} />

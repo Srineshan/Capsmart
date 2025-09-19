@@ -487,7 +487,7 @@ const Navbar = () => {
               {workModeType !== "Entity Sys Admin" && (
                 <Link to={"/applications"} onClick={() => sessionStorage.setItem('applicationCreationType', 'REAPPOINTMENT')} className={style.noFontStyle}>
                   <div
-                    className={`${style.menuStyle} ${window.location.pathname.includes("/applications") &&
+                    className={`${style.menuStyle} ${(window.location.pathname.includes("/applications") && !window.location.pathname.includes("/dashboard")) &&
                       style.activeMenuColor
                       }`}
                   >
@@ -569,7 +569,15 @@ const Navbar = () => {
               >
                 <p>INACTIVE STAFF</p>
               </div>
-
+              <Link to={"/applications/dashboard"} className={style.noFontStyle}>
+                <div
+                  className={`${style.menuStyle} ${window.location.pathname.includes("/dashboard") &&
+                    style.activeMenuColor
+                    }`}
+                >
+                  <p>DASHBOARD</p>
+                </div>
+              </Link>
               {/* {
             isContractManager && (
               <div>
@@ -784,7 +792,6 @@ const Navbar = () => {
               </div>
 
               {/* )} */}
-
               {isEntityLevelAdmin && (
                 <div>
                   <div
