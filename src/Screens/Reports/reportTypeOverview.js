@@ -123,6 +123,13 @@ const ReportTypeOverview = () => {
     const [upcomingForReview, setUpcomingForReview] = useState();
     const [attestationOutstanding, setAttestationOutstanding] = useState();
     const [tableDataStatus, setTableDataStatus] = useState([]);
+    const [expiredDocumentsSummaryForStaff, setExpiredDocumentsSummaryForStaff] = useState([]);
+    const [staffDocumentsExpiration, setStaffDocumentsExpiration] = useState([]);
+    const [inactiveStaffSummary, setInactiveStaffSummary] = useState([]);
+    const [newStaffAppointmentsSummary, setNewStaffAppointmentsSummary] = useState([]);
+    const [appointmentHistorySummary, setAppointmentHistorySummary] = useState([]);
+    const [inactiveStaffSummaryByMonth, setInactiveStaffSummaryByMonth] = useState([]);
+    const [staffUploadedDocumentsSummary, setStaffUploadedDocumentsSummary] = useState([]);
     const [applicationType, setApplicationType] = useState(() =>
         sessionStorage.getItem('applicationCreationType') || 'NEW'
     );
@@ -356,6 +363,27 @@ const ReportTypeOverview = () => {
                 break;
             case 'upcomingForReview':
                 getUpcomingForReview();
+                break;
+            case 'expiredDocumentsSummaryForStaff':
+                getExpiredDocumentsSummaryForStaff(signal)
+                break;
+            case 'documentsExpirationSummaryForStaff':
+                getDocumentsExpirationSummaryForStaff(signal)
+                break;
+            case 'inactiveStaffSummary':
+                getInactiveStaffSummary(signal)
+                break;
+            case 'newStaffAppointmentsSummary':
+                getNewStaffAppointmentsSummary(signal)
+                break;
+            case 'appointmentHistorySummary':
+                getAppointmentHistorySummary(signal)
+                break;
+            case 'inactiveStaffSummaryByMonth':
+                getInactiveStaffSummaryByMonth(signal)
+                break;
+            case 'staffUploadedDocumentsSummary':
+                getStaffUploadedDocumentsSummary(signal)
                 break;
             default:
                 // Optional: handle unknown reportType
@@ -1210,7 +1238,7 @@ const ReportTypeOverview = () => {
         }
     }
 
-    console.log("staff", dataToUseInReport?.selectedStaffType, dataToUseInReport?.selectedDepartments, dataToUseInReport?.selectedPrivilegeCategory);
+    console.log("staff", dataToUseInReport?.selectedStaffType, dataToUseInReport?.selectedDepartments, dataToUseInReport?.selectedPrivilegeCategory, dataToUseInReport?.selectedPosition);
 
 
 
@@ -1357,6 +1385,185 @@ const ReportTypeOverview = () => {
         } else {
             const { data: data } = await GET(`medical-directive-service/report/myReport/upcomingForReview?id=${myReportId}`, { signal });
             setUpcomingForReview(data);
+        }
+        setIsLoading(false)
+    }
+
+    const getExpiredDocumentsSummaryForStaff = async (signal) => {
+        setIsLoading(true)
+        if (!isMyReport) {
+            const queryParams = new URLSearchParams({
+            });
+
+            if (dataToUseInReport?.selectedPosition) {
+                queryParams.append('positionType', dataToUseInReport?.selectedPosition);
+            }
+
+            const { data: data } = await GET(`application-management-service/report/staffExpiredDocuments?${queryParams.toString()}`, { signal });
+            setExpiredDocumentsSummaryForStaff(data);
+        } else {
+            const { data: data } = await GET(`application-management-service/report/myReport/staffExpiredDocuments?id=${myReportId}`, { signal });
+            setExpiredDocumentsSummaryForStaff(data);
+        }
+        setIsLoading(false)
+    }
+
+    const getDocumentsExpirationSummaryForStaff = async (signal) => {
+        setIsLoading(true)
+        if (!isMyReport) {
+            const queryParams = new URLSearchParams({
+            });
+
+            if (dataToUseInReport?.selectedPosition) {
+                queryParams.append('positionType', dataToUseInReport?.selectedPosition);
+            }
+
+            if (dataToUseInReport?.noOfDays) {
+                queryParams.append('noOfDays', dataToUseInReport?.noOfDays);
+            }
+
+            const { data: data } = await GET(`application-management-service/report/staffDocumentsExpiration?${queryParams.toString()}`, { signal });
+            setStaffDocumentsExpiration(data);
+        } else {
+            const { data: data } = await GET(`application-management-service/report/myReport/staffDocumentsExpiration?id=${myReportId}`, { signal });
+            setStaffDocumentsExpiration(data);
+        }
+        setIsLoading(false)
+    }
+
+    const getInactiveStaffSummary = async (signal) => {
+        setIsLoading(true)
+        if (!isMyReport) {
+            const queryParams = new URLSearchParams({
+            });
+
+            if (dataToUseInReport?.selectedPosition) {
+                queryParams.append('positionType', dataToUseInReport?.selectedPosition);
+            }
+
+            const { data: data } = await GET(`application-management-service/report/inactiveStaffs?${queryParams.toString()}`, { signal });
+            setInactiveStaffSummary(data);
+        } else {
+            const { data: data } = await GET(`application-management-service/report/myReport/inactiveStaffs?id=${myReportId}`, { signal });
+            setInactiveStaffSummary(data);
+        }
+        setIsLoading(false)
+    }
+
+    const getNewStaffAppointmentsSummary = async (signal) => {
+        setIsLoading(true)
+        if (!isMyReport) {
+            const queryParams = new URLSearchParams({
+            });
+            if (dataToUseInReport?.selectedStaffType) {
+                queryParams.append('applicantTypeId', dataToUseInReport?.selectedStaffType);
+            }
+
+            if (dataToUseInReport?.from) {
+                queryParams.append('startDate', dataToUseInReport?.from);
+            }
+
+            if (dataToUseInReport?.to) {
+                queryParams.append('endDate', dataToUseInReport?.to);
+            }
+
+            if (dataToUseInReport?.selectedDepartments) {
+                queryParams.append('departmentSpecialties', dataToUseInReport?.selectedDepartments);
+            }
+            if (dataToUseInReport?.selectedPosition) {
+                queryParams.append('positionType', dataToUseInReport?.selectedPosition);
+            }
+
+            const { data: data } = await GET(`application-management-service/report/newStaffAppointments?${queryParams.toString()}`, { signal });
+            setNewStaffAppointmentsSummary(data);
+        } else {
+            const { data: data } = await GET(`application-management-service/report/myReport/newStaffAppointments?id=${myReportId}`, { signal });
+            setNewStaffAppointmentsSummary(data);
+        }
+        setIsLoading(false)
+    }
+
+    const getAppointmentHistorySummary = async (signal) => {
+        setIsLoading(true)
+        if (!isMyReport) {
+            const queryParams = new URLSearchParams({
+            });
+            if (dataToUseInReport?.selectedStaffType) {
+                queryParams.append('applicantTypeId', dataToUseInReport?.selectedStaffType);
+            }
+
+            if (dataToUseInReport?.selectedDepartments) {
+                queryParams.append('departmentSpecialties', dataToUseInReport?.selectedDepartments);
+            }
+            if (dataToUseInReport?.selectedPosition) {
+                queryParams.append('positionType', dataToUseInReport?.selectedPosition);
+            }
+
+            const { data: data } = await GET(`application-management-service/report/appointmentHistory?${queryParams.toString()}`, { signal });
+            setAppointmentHistorySummary(data);
+        } else {
+            const { data: data } = await GET(`application-management-service/report/myReport/appointmentHistory?id=${myReportId}`, { signal });
+            setAppointmentHistorySummary(data);
+        }
+        setIsLoading(false)
+    }
+
+    const getInactiveStaffSummaryByMonth = async (signal) => {
+        setIsLoading(true)
+        if (!isMyReport) {
+            const queryParams = new URLSearchParams({
+            });
+            if (dataToUseInReport?.from) {
+                queryParams.append('startDate', dataToUseInReport?.from);
+            }
+
+            if (dataToUseInReport?.to) {
+                queryParams.append('endDate', dataToUseInReport?.to);
+            }
+
+            if (dataToUseInReport?.selectedPosition) {
+                queryParams.append('positionType', dataToUseInReport?.selectedPosition);
+            }
+
+            const { data: data } = await GET(`application-management-service/report/inactiveStaffsByMonth?${queryParams.toString()}`, { signal });
+            setInactiveStaffSummaryByMonth(data);
+        } else {
+            const { data: data } = await GET(`application-management-service/report/myReport/inactiveStaffsByMonth?id=${myReportId}`, { signal });
+            setInactiveStaffSummaryByMonth(data);
+        }
+        setIsLoading(false)
+    }
+
+    const getStaffUploadedDocumentsSummary = async (signal) => {
+        setIsLoading(true)
+        if (!isMyReport) {
+            const queryParams = new URLSearchParams({
+            });
+            if (dataToUseInReport?.from) {
+                queryParams.append('startDate', dataToUseInReport?.from);
+            }
+
+            if (dataToUseInReport?.to) {
+                queryParams.append('endDate', dataToUseInReport?.to);
+            }
+
+            if (dataToUseInReport?.selectedStaffType) {
+                queryParams.append('applicantTypeId', dataToUseInReport?.selectedStaffType);
+            }
+
+            if (dataToUseInReport?.selectedDepartments) {
+                queryParams.append('departmentSpecialties', dataToUseInReport?.selectedDepartments);
+            }
+
+            if (dataToUseInReport?.selectedPosition) {
+                queryParams.append('positionType', dataToUseInReport?.selectedPosition);
+            }
+
+            const { data: data } = await GET(`application-management-service/report/staffUploadedDocuments?${queryParams.toString()}`, { signal });
+            setStaffUploadedDocumentsSummary(data);
+        } else {
+            const { data: data } = await GET(`application-management-service/report/myReport/staffUploadedDocuments?id=${myReportId}`, { signal });
+            setStaffUploadedDocumentsSummary(data);
         }
         setIsLoading(false)
     }
