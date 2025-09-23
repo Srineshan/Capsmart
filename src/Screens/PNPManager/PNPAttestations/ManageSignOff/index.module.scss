@@ -1,0 +1,281 @@
+@import "../../../../index.scss";
+
+.screenBackground {
+    background: #EDEDF3 0% 0% no-repeat padding-box;
+}
+
+.smallCardGrid {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    grid-gap: 20px;
+    margin-top: 20px;
+}
+
+.bigCardGrid {
+    display: grid;
+    grid-template-columns: 1fr 4fr;
+    grid-gap: 10px;
+    margin-top: 20px;
+}
+
+.margin20 {
+    margin: 20px;
+}
+
+.marginLeft {
+    margin-left: 20px;
+}
+
+.searchFieldCard {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 6px #1713380F;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.advancedSearchText {
+    font: normal normal normal 16px/24px proxima-nova;
+    color: $primarycolor;
+    text-align: left;
+}
+
+.marginTop10 {
+    margin-top: 10px;
+}
+
+.marginTop20 {
+    margin-top: 20px;
+}
+
+.labelStyle {
+    text-align: left;
+    font: normal normal normal 14px/32px proxima-nova;
+    color: $textgrey;
+}
+
+.fullWidth {
+    width: 100% !important;
+}
+
+.twoCol {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 20px;
+}
+
+.grid2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 20px;
+}
+
+.spaceBetween {
+    display: flex;
+    justify-content: space-between;
+}
+
+.marginLeft30 {
+    margin-left: 30px;
+}
+
+.tabs {
+    display: flex;
+    flex-direction: row;
+}
+
+.borderNone {
+    border: none;
+}
+
+.backgroundBlue {
+    background-color: $primarycolor;
+}
+
+.borderRadius5 {
+    border-radius: 5px;
+}
+
+.addNewButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: $primarycolor;
+    padding: 5px;
+    box-shadow: 0px 3px 11px $primarycolor;
+}
+
+.textColorWhite {
+    color: white;
+}
+
+.yellowSmallNumber {
+    color: $statusyellow;
+    background-color: #fff2cc;
+}
+
+.yellowSmallNumberSelected {
+    color: #fff;
+    background-color: $statusyellow;
+}
+
+.greenSmallNumber {
+    color: #14B15A;
+    background-color: #d1fae3;
+}
+
+.greenSmallNumberSelected {
+    color: #fff;
+    background-color: #14B15A;
+}
+
+.redSmallNumber {
+    color: #F94848;
+    background-color: #fdcece;
+}
+
+.redSmallNumberSelected {
+    color: #fff;
+    background-color: #F94848;
+}
+
+.reviewAndAttestGrid {
+    display: grid;
+    // grid-template-columns: 3% 3% 40% 8% 8% 14% 14% 3%;
+    grid-template-columns: 3% 44% 8% 8% 14% 14% 3%;
+    gap: 1%;
+}
+
+.attestedGrid {
+    display: grid;
+    grid-template-columns: 60% 10% 13% 13%;
+    gap: 1%;
+}
+
+.bigCardStyle {
+    height: calc(100vh - 230px);
+    overflow: scroll;
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 10px 20px #C4C8D066;
+    border-radius: 6px;
+    opacity: 1;
+    padding: 5px;
+}
+
+.cursorPointer {
+    cursor: pointer;
+}
+
+.attestMDDialogBackground {
+    background: #ffffff 0% 0% no-repeat padding-box;
+    padding: 20px 20px 0px 20px;
+    border-radius: 20px !important;
+    border: 5px solid rgba(255, 255, 255, 0.4);
+}
+
+.attestMDDialog {
+    width: 40% !important;
+}
+
+.buttonStyle {
+    background-color: $primarycolor;
+    color: white;
+    border: 1px solid $primarycolor;
+    height: 40px;
+    width: 140px;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    // margin-bottom: -10px;
+}
+
+.dialogTitle {
+    text-align: left;
+    font: normal normal bold 16px/20px proxima-nova;
+    color: $primarycolor;
+}
+
+.dialogDesc {
+    text-align: left;
+    font: normal normal normal 14px/20px proxima-nova;
+    letter-spacing: 0px;
+    color: $textgrey;
+}
+
+.dateTitle {
+    text-align: left;
+    font: normal normal bold 17px/26px proxima-nova;
+    letter-spacing: 0px;
+    color: #2C2C2C;
+}
+
+.date {
+    text-align: left;
+    font: normal normal normal 17px/26px proxima-nova;
+    letter-spacing: 0px;
+    color: #2C2C2C;
+}
+
+.displayInRow {
+    display: flex;
+    flex-direction: row;
+}
+
+.verticalAlignCenter {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.disabled {
+    cursor: not-allowed !important;
+    opacity: 0.5 !important;
+}
+
+.continue {
+    background: $primarycolor 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 6px #00000029;
+    border-radius: 8px;
+    text-align: center;
+    font: normal normal bold 17px/30px proxima-nova;
+    letter-spacing: 0px;
+    color: #FFFFFF;
+    text-transform: uppercase;
+    padding: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 240px;
+
+    @media (max-width: 768px) {
+        width: 420px;
+        justify-content: center;
+    }
+}
+
+.continue:hover {
+    background: #044D61 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #00000052;
+    border-radius: 8px;
+    opacity: 1;
+}
+
+.justifyCenter {
+    display: flex;
+    justify-content: center;
+}
+
+.blueSignImgStyle {
+    height: 30px;
+    width: auto;
+    object-fit: contain;
+}
+
+.whiteSignImgStyle {
+    height: 20px;
+    width: auto;
+    object-fit: contain;
+}
+
+.scrollStyle {
+    max-height: calc(100vh - 350px);
+    overflow: scroll;
+}

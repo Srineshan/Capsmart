@@ -46,6 +46,13 @@ const ManageSignOff = React.lazy(() => import("./Screens/MDManagerScreens/MDAtte
 const ManageAttestationGroups = React.lazy(() => import("./Screens/MDManagerScreens/MDAttestations/ManageAttestationGroups"));
 const MDLibrary = React.lazy(() => import("./Screens/MDManagerScreens/MDLibrary"));
 const MDManagerStep1 = React.lazy(() => import("./Screens/MDManagerScreens/MDManager/step1"));
+const RetirePNPManager = React.lazy(() => import("./Screens/PNPManager/PNPManager/retirePNP"));
+const PNPManager = React.lazy(() => import("./Screens/PNPManager/PNPManager"));
+const ManagePNPAttestation = React.lazy(() => import("./Screens/PNPManager/PNPAttestations/ManageAttestations"));
+const ManagePNPAcknowledgement = React.lazy(() => import("./Screens/PNPManager/PNPAttestations/ManageAcknowledgements"));
+const ManagePNPSignOff = React.lazy(() => import("./Screens/PNPManager/PNPAttestations/ManageSignOff"));
+const ManagePNPAttestationGroups = React.lazy(() => import("./Screens/PNPManager/PNPAttestations/ManageAttestationGroups"));
+const PNPLibrary = React.lazy(() => import("./Screens/PNPManager/PNPLibrary"));
 const HistoricalData = React.lazy(() => import("./Screens/CAPManager/StaffApplication/fillHistoricalData"));
 const ApplicationSubmitted = React.lazy(() => import("./Components/ApplicationSubmitted"));
 const FunctionalTitleForCustomer = React.lazy(() =>
@@ -323,10 +330,16 @@ const MDRequestAttest = React.lazy(() =>
 );
 const MDAttest = React.lazy(() => import("./Screens/CAPManager/MDRequestAttest/MedicalDirectivesAttest"));
 const MDAttestStatus = React.lazy(() => import("./Screens/MDManagerScreens/MDManager/MedicalDirectivesAttestStatus"));
+const AttestStatusPNP = React.lazy(() => import("./Screens/PNPManager/PNPManager/PNPAttestStatus"));
 const ManageMDAttest = React.lazy(() => import("./Screens/MDManagerScreens/MDAttestations/ManageAttestations/MedicalDirectivesAttest"));
 const ManageMDAcknowledgement = React.lazy(() => import("./Screens/MDManagerScreens/MDAttestations/ManageAcknowledgements/MedicalDirectivesAcknowledge"));
 const ManageMDSignOff = React.lazy(() => import("./Screens/MDManagerScreens/MDAttestations/ManageSignOff/MedicalDirectivesSignOff"));
 const MedicalDirectivesMECApproval = React.lazy(() => import("./Screens/MDManagerScreens/MDManager/MedicalDirectivesMECApproval"));
+const PNPAttestStatus = React.lazy(() => import("./Screens/MDManagerScreens/MDManager/MedicalDirectivesAttestStatus"));
+const ManagePNPAttest = React.lazy(() => import("./Screens/MDManagerScreens/MDAttestations/ManageAttestations/MedicalDirectivesAttest"));
+const ManageAcknowledgementPNP = React.lazy(() => import("./Screens/MDManagerScreens/MDAttestations/ManageAcknowledgements/MedicalDirectivesAcknowledge"));
+const ManageSignOffPNP = React.lazy(() => import("./Screens/MDManagerScreens/MDAttestations/ManageSignOff/MedicalDirectivesSignOff"));
+const PNPMECApproval = React.lazy(() => import("./Screens/MDManagerScreens/MDManager/MedicalDirectivesMECApproval"));
 let isHapicareUser;
 let organizations;
 const App = ({ props }) => {
@@ -939,8 +952,10 @@ const App = ({ props }) => {
         console.log('login route', isHapicareUser, organizations)
         const roles = !isHapicareUser ? jwt(Auth())?.roles?.split(",")?.filter(s => s.trim() !== '') : organizations?.[0]?.roles?.map(data => data?.roleName);
         const mdRoles = !isHapicareUser ? jwt(Auth())?.mdRoles?.split(",")?.filter(s => s.trim() !== '') : organizations?.[0]?.mdRoles?.map(data => data?.roleName);
+        const pnpRoles = !isHapicareUser ? jwt(Auth())?.pnpRoles?.split(",")?.filter(s => s.trim() !== '') : organizations?.[0]?.pnpRoles?.map(data => data?.roleName);
         console.log("LoginRole", roles, mdRoles, isHapicareUser, organizations)
-        if (roles?.length > 1 || (roles?.length >= 1 && mdRoles?.length >= 1)) {
+        const count = [roles, mdRoles, pnpRoles]?.filter(arr => arr?.length >= 1).length;
+        if (roles?.length > 1 || mdRoles?.length > 1 || pnpRoles?.length > 1 || (count > 1)) {
           console.log("LoginRole1111", roles)
           console.log('login route', isHapicareUser, organizations)
           // return(
@@ -949,16 +964,22 @@ const App = ({ props }) => {
           if (roles?.length > 1 && (localStorage?.getItem('initialRoute') !== undefined && localStorage?.getItem('initialRoute') !== 'undefined' && localStorage?.getItem('initialRoute') !== null && localStorage?.getItem('initialRoute')?.includes('/applicationById/REAPPOINTMENT') && localStorage?.getItem('initialRoute')?.includes('/applicationById/LOCUM'))) {
             sessionStorage.setItem("workModeType", roles[0]);
             window.location.pathname = localStorage?.getItem('initialRoute');
+          } else if (mdRoles?.length > 1 && (localStorage?.getItem('initialRoute') !== undefined && localStorage?.getItem('initialRoute') !== 'undefined' && localStorage?.getItem('initialRoute') !== null && localStorage?.getItem('initialRoute')?.includes('/applicationById/REAPPOINTMENT') && localStorage?.getItem('initialRoute')?.includes('/applicationById/LOCUM'))) {
+            sessionStorage.setItem("workModeType", mdRoles[0]);
+            window.location.pathname = localStorage?.getItem('initialRoute');
+          } else if (mdRoles?.length > 1 && (localStorage?.getItem('initialRoute') !== undefined && localStorage?.getItem('initialRoute') !== 'undefined' && localStorage?.getItem('initialRoute') !== null && localStorage?.getItem('initialRoute')?.includes('/applicationById/REAPPOINTMENT') && localStorage?.getItem('initialRoute')?.includes('/applicationById/LOCUM'))) {
+            sessionStorage.setItem("workModeType", mdRoles[0]);
+            window.location.pathname = localStorage?.getItem('initialRoute');
           } else {
             setShowDialog(true);
           }
-        } else if ((roles?.length === 1 || mdRoles?.length === 1) && localStorage?.getItem('initialRoute') !== undefined && localStorage?.getItem('initialRoute') !== 'undefined' && localStorage?.getItem('initialRoute') !== null) {
-          sessionStorage.setItem("workModeType", mdRoles?.length === 1 ? mdRoles[0] : roles[0]);
+        } else if ((roles?.length === 1 || mdRoles?.length === 1 || pnpRoles?.length === 1) && localStorage?.getItem('initialRoute') !== undefined && localStorage?.getItem('initialRoute') !== 'undefined' && localStorage?.getItem('initialRoute') !== null) {
+          sessionStorage.setItem("workModeType", mdRoles?.length === 1 ? mdRoles[0] : pnpRoles?.length === 1 ? pnpRoles[0] : roles[0]);
           window.location.href = `${initialRoute}`;
           console.log("initialRoute", initialRoute)
           localStorage?.removeItem('initialRoute')
         }
-        else if (roles?.length === 1 || mdRoles?.length === 1) {
+        else if (roles?.length === 1 || mdRoles?.length === 1 || pnpRoles?.length === 1) {
           if (mdRoles?.length === 1) {
             console.log("LoginRole", roles, mdRoles[0])
             sessionStorage.setItem("workModeType", mdRoles[0]);
@@ -966,6 +987,14 @@ const App = ({ props }) => {
               window.location.pathname = "/mdManager/manageAttestation";
             } else {
               window.location.pathname = "/mdManager";
+            }
+          } else if (pnpRoles?.length === 1) {
+            console.log("LoginRole", roles, pnpRoles[0])
+            sessionStorage.setItem("workModeType", pnpRoles[0]);
+            if (pnpRoles[0] === "Attester") {
+              window.location.pathname = "/pnpManager/manageAttestation";
+            } else {
+              window.location.pathname = "/pnpManager";
             }
           } else {
             sessionStorage.setItem("workModeType", roles[0]);
@@ -1370,6 +1399,14 @@ const App = ({ props }) => {
                 <Route path="/mdManager/libraries/:entityId/:departmentId" element={<MDLibrary />} />
                 <Route path="/mdManager/libraries/:entityId/:departmentId/:selectedMDId" element={<MDLibrary />} />
                 <Route path="/mdManager/step1" element={<ProtectedRoute><MDManagerStep1 /></ProtectedRoute>} />
+                <Route path="/pnpManager/retired" element={<ProtectedRoute><RetirePNPManager /></ProtectedRoute>} />
+                <Route path="/pnpManager" element={<ProtectedRoute><PNPManager /></ProtectedRoute>} />
+                <Route path="/pnpManager/manageAttestation" element={<ProtectedRoute><ManagePNPAttestation /></ProtectedRoute>} />
+                <Route path="/pnpManager/manageAcknowledgement" element={<ProtectedRoute><ManagePNPAcknowledgement /></ProtectedRoute>} />
+                <Route path="/pnpManager/manageSignOff" element={<ProtectedRoute><ManagePNPSignOff /></ProtectedRoute>} />
+                <Route path="/pnpManager/manageAttestationGroups" element={<ProtectedRoute><ManagePNPAttestationGroups /></ProtectedRoute>} />
+                <Route path="/pnpManager/libraries/:entityId/:departmentId" element={<PNPLibrary />} />
+                <Route path="/pnpManager/libraries/:entityId/:departmentId/:selectedMDId" element={<PNPLibrary />} />
                 <Route path="/thankyou" element={<ProtectedRoute><Thankyou /></ProtectedRoute>} />
                 <Route path="/reportType" element={<ProtectedRoute><ReportType /></ProtectedRoute>} />
                 <Route
@@ -1427,6 +1464,26 @@ const App = ({ props }) => {
                 <Route
                   path="/mdManager/mdAttestStatus/:entityId/:medicalDirectivesId"
                   element={<ProtectedRoute><MDAttestStatus /></ProtectedRoute>}
+                />
+                <Route
+                  path="/pnpManager/manageAttestation/:entityId/:medicalDirectivesId"
+                  element={<ProtectedRoute><ManagePNPAttest /></ProtectedRoute>}
+                />
+                <Route
+                  path="/pnpManager/manageAcknowledgement/:entityId/:medicalDirectivesId"
+                  element={<ProtectedRoute><ManageAcknowledgementPNP /></ProtectedRoute>}
+                />
+                <Route
+                  path="/pnpManager/manageSignOff/:entityId/:medicalDirectivesId"
+                  element={<ProtectedRoute><ManageSignOffPNP /></ProtectedRoute>}
+                />
+                <Route
+                  path="/pnpManager/manageMECApproval/:entityId/:medicalDirectivesId"
+                  element={<ProtectedRoute><PNPMECApproval /></ProtectedRoute>}
+                />
+                <Route
+                  path="/pnpManager/mdAttestStatus/:entityId/:medicalDirectivesId"
+                  element={<ProtectedRoute><AttestStatusPNP /></ProtectedRoute>}
                 />
                 <Route
                   path="/locumApplicationForm/:applicationId/:section/:step"
