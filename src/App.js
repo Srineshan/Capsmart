@@ -27,7 +27,7 @@ import LoginDialog from "./Components/LoginDialog";
 import Departments from "./Screens/ReferenceList/department/Department";
 import ApplicantTypesByEntity from "./Screens/ReferenceList/applicantTypeByEntity/applicantTypesByEntity";
 import Speciality from "./Screens/ReferenceList/speciality/Speciality";
-import AcknowledgementReview from "./Screens/ApplicationForm/AcknowledgementReview";
+import AcknowledgementReview from "./Screens/CAPManager/ApplicationForm/AcknowledgementReview";
 import ApplicantProcessingCheckList from "./Screens/ReferenceList/applicantCheckList/ApplicantProcessingCheckList";
 import { PrivilegeListManager } from "./Screens/ReferenceList/privilegeListManager/PrivilegeListManager";
 import PaymentList from "./Screens/ReferenceList/paymentList/paymentList";
@@ -46,18 +46,18 @@ const ManageSignOff = React.lazy(() => import("./Screens/MDManagerScreens/MDAtte
 const ManageAttestationGroups = React.lazy(() => import("./Screens/MDManagerScreens/MDAttestations/ManageAttestationGroups"));
 const MDLibrary = React.lazy(() => import("./Screens/MDManagerScreens/MDLibrary"));
 const MDManagerStep1 = React.lazy(() => import("./Screens/MDManagerScreens/MDManager/step1"));
-const HistoricalData = React.lazy(() => import("./Screens/StaffApplication/fillHistoricalData"));
+const HistoricalData = React.lazy(() => import("./Screens/CAPManager/StaffApplication/fillHistoricalData"));
 const ApplicationSubmitted = React.lazy(() => import("./Components/ApplicationSubmitted"));
 const FunctionalTitleForCustomer = React.lazy(() =>
   import("./Screens/ReferenceList/functionalTitleForCustomer")
 );
 const ActiveContracts = React.lazy(() => import("./Screens/ContractManager"));
-const StaffManager = React.lazy(() => import("./Screens/StaffManager"));
-const Applicant = React.lazy(() => import("./Screens/Applicant"));
-const StaffApplication = React.lazy(() => import("./Screens/StaffApplication"));
-const ApplicationDashboard = React.lazy(() => import("./Screens/Dashboard"));
-const ActiveStaff = React.lazy(() => import("./Screens/ActiveStaff"));
-const LocumStaff = React.lazy(() => import("./Screens/LocumStaff"));
+const StaffManager = React.lazy(() => import("./Screens/CAPManager/StaffManager"));
+const Applicant = React.lazy(() => import("./Screens/CAPManager/Applicant"));
+const StaffApplication = React.lazy(() => import("./Screens/CAPManager/StaffApplication"));
+const ApplicationDashboard = React.lazy(() => import("./Screens/CAPManager/Dashboard"));
+const ActiveStaff = React.lazy(() => import("./Screens/CAPManager/ActiveStaff"));
+const LocumStaff = React.lazy(() => import("./Screens/CAPManager/LocumStaff"));
 const DescopeLoginDialog = React.lazy(() => import("./Components/DescopeLogin"));
 const Welcome = React.lazy(() =>
   import("./Screens/SuperAdminDashboard/welcome")
@@ -252,12 +252,12 @@ const ClientAdminDashboard = React.lazy(() =>
   import("./Screens/ReferenceList/customerAdminDashboard")
 );
 const ApplicationSummary = React.lazy(() =>
-  import("./Screens/ApplicationForm/ApplicationSummary")
+  import("./Screens/CAPManager/ApplicationForm/ApplicationSummary")
 );
 const ApplicationAcknowledgement = React.lazy(() =>
-  import("./Screens/ApplicationForm/ApplicationAcknowledgement")
+  import("./Screens/CAPManager/ApplicationForm/ApplicationAcknowledgement")
 );
-const PODCheck = React.lazy(() => import("./Screens/ApplicationForm/PODCheck"));
+const PODCheck = React.lazy(() => import("./Screens/CAPManager/ApplicationForm/PODCheck"));
 // const ApplicantTypesByEntity = React.lazy(() =>
 //   import("./Screens/ReferenceList//referenceList/contractServiceProviderBySiteType")
 // );
@@ -269,59 +269,59 @@ const PODCheck = React.lazy(() => import("./Screens/ApplicationForm/PODCheck"));
 const Thankyou = React.lazy(() =>
   import("./Screens/SuperAdminDashboard/thankyou")
 );
-const ApplicationForm = React.lazy(() => import("./Screens/ApplicationForm"));
-const ReappointmentApplicationForm = React.lazy(() => import("./Screens/ReappointmentApplicationForm"));
-const LocumApplicationForm = React.lazy(() => import("./Screens/LocumApplicationForm"));
-const MedicalDirectivesAttest = React.lazy(() => import("./Screens/ReappointmentApplicationForm/MedicalDirectives/MedicalDirectivesAttest"));
-const LocumMedicalDirectivesAttest = React.lazy(() => import("./Screens/LocumApplicationForm/MedicalDirectives/MedicalDirectivesAttest"));
+const ApplicationForm = React.lazy(() => import("./Screens/CAPManager/ApplicationForm"));
+const ReappointmentApplicationForm = React.lazy(() => import("./Screens/CAPManager/ReappointmentApplicationForm"));
+const LocumApplicationForm = React.lazy(() => import("./Screens/CAPManager/LocumApplicationForm"));
+const MedicalDirectivesAttest = React.lazy(() => import("./Screens/CAPManager/ReappointmentApplicationForm/MedicalDirectives/MedicalDirectivesAttest"));
+const LocumMedicalDirectivesAttest = React.lazy(() => import("./Screens/CAPManager/LocumApplicationForm/MedicalDirectives/MedicalDirectivesAttest"));
 const ApplicationFormRequirement = React.lazy(() =>
-  import("./Screens/ApplicationForm/ApplicationFormRequirement")
+  import("./Screens/CAPManager/ApplicationForm/ApplicationFormRequirement")
 );
 const ReappointmentApplicationFormRequirement = React.lazy(() =>
-  import("./Screens/ReappointmentApplicationForm/ReappointmentApplicationFormRequirement")
+  import("./Screens/CAPManager/ReappointmentApplicationForm/ReappointmentApplicationFormRequirement")
 );
 const LocumApplicationFormRequirement = React.lazy(() =>
-  import("./Screens/LocumApplicationForm/LocumApplicationFormRequirement")
+  import("./Screens/CAPManager/LocumApplicationForm/LocumApplicationFormRequirement")
 );
 const ApplicationRequest = React.lazy(() =>
-  import("./Screens/ApplicationRequest")
+  import("./Screens/CAPManager/ApplicationRequest")
 );
 const CompleteApplicationRequest = React.lazy(() =>
-  import("./Screens/ApplicationRequest/CompleteApplicationRequest")
+  import("./Screens/CAPManager/ApplicationRequest/CompleteApplicationRequest")
 );
 const CreateStaffMemberApplication = React.lazy(() =>
-  import("./Screens/CreateStaffMemberApplication")
+  import("./Screens/CAPManager/CreateStaffMemberApplication")
 );
 
 const CreateStaffReapplication = React.lazy(() =>
-  import("./Screens/CreateStaffReapplication")
+  import("./Screens/CAPManager/CreateStaffReapplication")
 );
 
 const ApplicantPortalRFC = React.lazy(() =>
-  import("./Screens/ApplicantPortalRFC")
+  import("./Screens/CAPManager/ApplicantPortalRFC")
 );
 
 
 const ApplicantPortalDashboard = React.lazy(() =>
-  import("./Screens/ApplicantDashboard")
+  import("./Screens/CAPManager/ApplicantDashboard")
 );
 
 const ApplicationSetup = React.lazy(() =>
-  import("./Screens/ApplicationSetup/ApplicationConfiguration")
+  import("./Screens/CAPManager/ApplicationSetup/ApplicationConfiguration")
 );
 
 const MedicalDirectivesAttestRFC = React.lazy(() =>
-  import("./Screens/MedicalDirectiveAttestRFC")
+  import("./Screens/CAPManager/MedicalDirectiveAttestRFC")
 );
 
 const MedicalDirectivesAttestDisplay = React.lazy(() =>
-  import("./Screens/MedicalDirectivesAttestDisplay")
+  import("./Screens/CAPManager/MedicalDirectivesAttestDisplay")
 );
 
 const MDRequestAttest = React.lazy(() =>
-  import("./Screens/MDRequestAttest")
+  import("./Screens/CAPManager/MDRequestAttest")
 );
-const MDAttest = React.lazy(() => import("./Screens/MDRequestAttest/MedicalDirectivesAttest"));
+const MDAttest = React.lazy(() => import("./Screens/CAPManager/MDRequestAttest/MedicalDirectivesAttest"));
 const MDAttestStatus = React.lazy(() => import("./Screens/MDManagerScreens/MDManager/MedicalDirectivesAttestStatus"));
 const ManageMDAttest = React.lazy(() => import("./Screens/MDManagerScreens/MDAttestations/ManageAttestations/MedicalDirectivesAttest"));
 const ManageMDAcknowledgement = React.lazy(() => import("./Screens/MDManagerScreens/MDAttestations/ManageAcknowledgements/MedicalDirectivesAcknowledge"));
@@ -792,7 +792,7 @@ const App = ({ props }) => {
         method: "GET",
         headers: {
           "Authorization": `Bearer ${authorization}`,
-          "X-subdomain": 'master',
+          "X-subdomain": 'cmh-hospital',
         },
       };
     console.log(requestHeader, 'requestHeader')
@@ -835,7 +835,7 @@ const App = ({ props }) => {
         "Content-Type": "application/json",
         "X-tenantID": id,
         "Authorization": `Bearer ${authorization}`,
-        "X-subdomain": 'master',
+        "X-subdomain": 'cmh-hospital',
       },
     }
     fetch(`${baseUrl()}/user-management-service/auth/login`, requestOptions)

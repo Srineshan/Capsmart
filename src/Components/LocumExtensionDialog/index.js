@@ -31,7 +31,7 @@ import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import ESignature from "../../Components/ESignature";
 import CancelIcon from '@mui/icons-material/Cancel';
-import AdditionalPrivilegesDialog from "../../Screens/ReappointmentApplicationForm/PrivilegeSelection/AdditionalPrivilegesDialog";
+import AdditionalPrivilegesDialog from "../../Screens/CAPManager/ReappointmentApplicationForm/PrivilegeSelection/AdditionalPrivilegesDialog";
 
 const LocumExtensiveDialog = ({ getIsOpen, selectedTab, requestedType }) => {
   let cookie = new Cookie();

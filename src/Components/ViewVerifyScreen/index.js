@@ -45,7 +45,7 @@ import KeyboardArrowUpOutlinedIcon from '@mui/icons-material/KeyboardArrowUpOutl
 import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
-import ApplicationDecline from "../../Screens/StaffApplication/applicationDeclineDialog";
+import ApplicationDecline from "../../Screens/CAPManager/StaffApplication/applicationDeclineDialog";
 import ApplicationHeader from "../../Components/ApplicationHeader";
 import ApplicationFieldCard from "../../Components/ApplicationFieldCard";
 import CommonDivider from "../../Components/CommonFields/CommonDivider";

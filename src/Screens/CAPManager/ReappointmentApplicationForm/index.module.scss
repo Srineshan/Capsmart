@@ -1,0 +1,302 @@
+@import "../../../index.scss";
+
+.screenPadding {
+    padding: 20px 100px;
+    height: calc(100vh - 80px);
+    overflow: auto;
+    overflow-y: scroll !important;
+    // scrollbar-width: thin !important;
+    scrollbar-color: gray $tableheadbg !important;
+}
+
+.screenBackground {
+    background: $secondarycolor 0% 0% no-repeat padding-box;
+}
+
+.marginTop {
+    margin-top: 20px;
+}
+
+.marginTop10 {
+    margin-top: 10px;
+}
+
+.marginLeft10 {
+    margin-left: 10px !important;
+}
+
+.applicationScreenGrid {
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+    grid-gap: 20px;
+    position: relative;
+
+    @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+    }
+}
+
+.stickyContainer {
+    position: fixed;
+    bottom: 0;
+    z-index: 10;
+    padding: 0px 20px 20px 20px;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
+    right: 100px;
+    width: calc(25% - 50px);
+}
+
+@media (max-width: 948px) {
+    .stickyContainer {
+        position: fixed;
+        bottom: 0;
+        left: auto;
+        right: auto;
+        width: auto;
+        padding: 0px 20px 20px 20px;
+        margin: 0 auto;
+        box-sizing: border-box;
+    }
+}
+
+@media (max-width: 768px) {
+    .stickyContainer {
+        position: sticky;
+        bottom: 0;
+        left: auto;
+        right: auto;
+        width: auto;
+        padding: 20px 20px 20px 20px;
+        margin: 0 auto;
+        box-sizing: border-box;
+    }
+}
+
+.saveInProgress {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 6px #00000029;
+    border: 0.5px solid $primarycolor;
+    border-radius: 8px;
+    text-align: center;
+    font: normal normal bold 17px/30px proxima-nova;
+    letter-spacing: 0px;
+    color: $primarycolor;
+    text-transform: uppercase;
+    padding: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.saveInProgress:hover {
+    background: #F1F6F7 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #00000052;
+    border: 0.5px solid #9AAFB5;
+    border-radius: 8px;
+    opacity: 1;
+}
+
+.continue {
+    background: $primarycolor 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 6px #00000029;
+    border-radius: 8px;
+    text-align: center;
+    font: normal normal bold 17px/30px proxima-nova;
+    letter-spacing: 0px;
+    color: #FFFFFF;
+    text-transform: uppercase;
+    padding: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.continue:hover {
+    background: #044D61 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #00000052;
+    border-radius: 8px;
+    opacity: 1;
+}
+
+.applicationCardStyle {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 5px 20px #52575D4D;
+    border-radius: 20px;
+    border: 0.4000000059604645px solid #e5e6e6;
+    padding: 20px;
+}
+
+.twoCol {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.fourCol {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.progressStyle {
+    height: 10px;
+    width: 100%;
+    opacity: 1;
+}
+
+.progressStyleBackground {
+    background: transparent linear-gradient(90deg, $primarycolor 0%, $primarycolor 2%, #E9E9F0 5%, #E9E9F0 100%) 0% 0% no-repeat padding-box;
+}
+
+.siteDisplayCard {
+    background: #EFEEFC 0% 0% no-repeat padding-box;
+    border: 0.4000000059604645px solid $secondarycolor;
+    border-radius: 6px;
+    padding: 10px;
+}
+
+.siteDisplayGrid {
+    display: grid;
+    grid-template-columns: 94% 5%;
+    gap: 1%;
+}
+
+.siteDisplaySiteTextStyle {
+    text-align: left;
+    font: normal normal bold 13px/20px proxima-nova;
+    color: #2C2C2C;
+}
+
+.siteDisplayDepartmentTextStyle {
+    text-align: left;
+    font: normal normal bold 12px/24px proxima-nova;
+    letter-spacing: 0px;
+    color: #52575D99;
+}
+
+.siteDisplaySurgeryTextStyle {
+    text-align: left;
+    font: normal normal bold 10px/24px proxima-nova;
+    letter-spacing: 0px;
+}
+
+.addedSites {
+    text-align: left;
+    font: normal normal bold 15px/26px proxima-nova;
+    letter-spacing: 0px;
+    color: #94979A;
+    text-transform: capitalize;
+}
+
+@media (max-width: 900px) {
+    .screenPadding {
+        padding: 10px;
+        overflow: scroll;
+    }
+
+    .applicationScreenGrid {
+        display: grid;
+        grid-template-columns: 3fr 1fr;
+        grid-gap: 20px;
+        position: relative;
+    }
+}
+
+@media (max-width: 480px) {
+    .screenPadding {
+        padding: 10px;
+        overflow: scroll;
+    }
+
+    .applicationScreenGrid {
+        display: grid;
+        grid-template-columns: 3fr 1fr;
+        grid-gap: 20px;
+        position: relative;
+    }
+}
+
+.fileLoadingStyle {
+    height: 200px;
+    width: 40%;
+    object-fit: contain;
+}
+
+.loadingOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.justifyCenter {
+    display: flex;
+    justify-content: center;
+}
+
+.verticalAlignCenter {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.spaceBetween {
+    display: flex;
+    justify-content: space-between;
+}
+
+// .displayInRow {
+//     display: flex;
+//     flex-direction: row;
+// }
+
+// .footerIconStyle {
+//     height: 30px;
+//     width: 80px;
+//     object-fit: contain;
+// }
+
+// .poweredBy {
+//     text-align: left;
+//     font: normal normal normal 14px/20px proxima-nova;
+//     letter-spacing: 0px;
+//     color: $primarycolor;
+//     opacity: 1;
+//     margin: 5px 0 0 10px;
+// }
+
+// .paddingForFooter {
+//     padding: 0px 100px;
+// }
+
+.footerContainer {
+    display: flex;
+    justify-content: center;
+    /* Centers horizontally */
+    align-items: center;
+    /* Centers vertically */
+    flex-direction: row;
+    /* Ensures items are in a single row */
+    padding: 0 20px;
+    /* Optional padding */
+}
+
+.footerIconStyle {
+    height: 30px;
+    width: 80px;
+    object-fit: contain;
+    margin-right: 10px;
+    /* Adds spacing between image and text */
+}
+
+.poweredBy {
+    text-align: center;
+    font: normal normal normal 14px/20px proxima-nova;
+    color: $primarycolor;
+    margin: 0;
+    /* Removes any default margins for alignment */
+}
