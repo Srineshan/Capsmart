@@ -406,7 +406,7 @@ const ManageSignOff = () => {
         // />,
         "",
         "Title",
-        "MD ID",
+        "PNP ID",
         "Type",
         "Sign Off Due Date",
         "Last Updated",
@@ -414,7 +414,7 @@ const ManageSignOff = () => {
     ];
     const attestedHeaderValues = [
         "Title",
-        "MD ID",
+        "PNP ID",
         "Type",
         "Signed Off Date",
     ];
@@ -615,16 +615,16 @@ const ManageSignOff = () => {
                                     {showAdvancedSearch && (
                                         <>
                                             {/* <div className={style.marginTop10}>
-                                                <div className={style.labelStyle}>Medical Directive ID</div>
+                                                <div className={style.labelStyle}>Policy & Procedure ID</div>
                                                 <CommonInputField
                                                     value={mdId}
                                                     onChange={(e) => setMdId(e.target.value)}
                                                     type="text"
-                                                    placeholder="Enter MD ID"
+                                                    placeholder="Enter PNP ID"
                                                 />
                                             </div>
                                             <div className={style.marginTop10}>
-                                                <div className={style.labelStyle}>Medical Directive Title</div>
+                                                <div className={style.labelStyle}>Policy & Procedure Title</div>
                                                 <CommonInputField
                                                     value={mdTitle}
                                                     onChange={(e) => setMdTitle(e.target.value)}

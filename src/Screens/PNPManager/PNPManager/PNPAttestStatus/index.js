@@ -219,8 +219,8 @@ const PNPAttestStatus = () => {
                             </div>
                         )}
                         <div className={`${style.medicalDirectivesCard} ${style.marginTop10} ${style.stickyContainer}`}>
-                            <div className={style.title}><strong>{`Medical Directive Attestation`} </strong></div>
-                            <div className={`${style.marginTop10} ${style.description}`}>You have to review and attest to this Medical Directive that has been assigned to you.</div>
+                            <div className={style.title}><strong>{`Policy & Procedure Attestation`} </strong></div>
+                            <div className={`${style.marginTop10} ${style.description}`}>You have to review and attest to this Policy & Procedure that has been assigned to you.</div>
                             {(!isScrolledToBottom) ? (
                                 <Tooltip title="Scroll to the end of the document" arrow>
                                     <div>

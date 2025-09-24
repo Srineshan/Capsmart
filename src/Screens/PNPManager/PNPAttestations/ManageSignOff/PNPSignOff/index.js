@@ -330,7 +330,7 @@ const ManagePNPSignOff = () => {
                                                         size="small"
                                                     />
                                                 }
-                                                label={'I reject this Medical Directive'}
+                                                label={'I reject this Policy & Procedure'}
                                                 componentsProps={{ typography: { variant: "subtitle2" } }}
                                             />
                                         </div>

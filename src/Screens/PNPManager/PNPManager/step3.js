@@ -357,10 +357,10 @@ const PNPManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, se
     const handlePublish = async (data) => {
         try {
             const { data: publishedMD } = await POST(`medical-directive-service/medicalDirectives/${mdValue?.id}/publish`);
-            SuccessToaster2('Medical Directive published successfully');
+            SuccessToaster2('Policy & Procedure published successfully');
         } catch (error) {
             console.error(error);
-            ErrorToaster2('Failed to publish Medical Directive');
+            ErrorToaster2('Failed to publish Policy & Procedure');
         }
     }
 
@@ -428,20 +428,20 @@ const PNPManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, se
 
         await PUT(`medical-directive-service/medicalDirectives/${mdValue?.id}`, formData)
             .then(response => {
-                SuccessToaster2('MD Updateded Successfully');
+                SuccessToaster2('PNP Updateded Successfully');
                 console.log(response?.data)
                 getMD(response?.data);
             })
             .catch(error => {
-                ErrorToaster2('MD Upload Failed');
+                ErrorToaster2('PNP Upload Failed');
             })
         // if (isPublish) {
         //     try {
         //         const { data: publishedMD } = await POST(`medical-directive-service/medicalDirectives/${mdValue?.id}/publish`);
-        //         SuccessToaster2('Medical Directive published successfully');
+        //         SuccessToaster2('Policy & Procedure published successfully');
         //     } catch (error) {
         //         console.error(error);
-        //         ErrorToaster2('Failed to publish Medical Directive');
+        //         ErrorToaster2('Failed to publish Policy & Procedure');
         //     }
         // }
         let acknowledgementData = mdValue?.workflowStatus === "NA" ? workflowStructure : createdWorkflowStructure;
@@ -1069,7 +1069,7 @@ const PNPManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, se
                         <CommonSwitch label={workFlow1IsMandatory ? 'YES' : 'NO'} checked={workFlow1IsMandatory} onChange={acknowledgementExists ? () => { } : (e) => { setWorkFlow1IsMandatory(e.target.checked); setWorkflowEdited(true) }} labelName={''} />
                         {!workFlow1IsMandatory && (
                             <div className={style.acknowledgementNote}>
-                                This Medical Directive does not require pre-publication acknowledgement from any department-specific staff. However, the final draft must still be reviewed and approved by the MAC and Leadership Team.
+                                This Policy & Procedure does not require pre-publication acknowledgement from any department-specific staff. However, the final draft must still be reviewed and approved by the MAC and Leadership Team.
                             </div>
                         )}
                     </div>
@@ -1124,7 +1124,7 @@ const PNPManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, se
                 </div>
                 <div className={`${style.padding40} ${style.marginTop20} `}>
                     <div className={`${style.marginTop20}`}>
-                        <div className={style.labelStyle}>Target Staff to Include for reviewing and attesting to this Medical Directive</div>
+                        <div className={style.labelStyle}>Target Staff to Include for reviewing and attesting to this Policy & Procedure</div>
                         <div className={style.twoCol}>
                             <CommonRadio
                                 isRow={false}
@@ -1175,7 +1175,7 @@ const PNPManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, se
                                 {targetStaff?.includes("SELECTED_DEPARTMENT_AND_DIVISION") && (
                                     <div>
                                         <div className={style.exclusionNote}>
-                                            Selecting this option will require Staff Members specified below to attest to this Medical Directive.
+                                            Selecting this option will require Staff Members specified below to attest to this Policy & Procedure.
                                         </div>
                                         {mdValue?.sites?.[0]?.departments?.map((department) => {
                                             // find the matching dept from attestationSites by id
@@ -1344,7 +1344,7 @@ const PNPManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, se
                     </div>
                     {/* {targetStaff === "SELECTED_GROUPS" && (
                         <div className={style.padding20}>
-                            <div className={style.labelStyle}>Select Staff to Attest to this Medical Directive*</div>
+                            <div className={style.labelStyle}>Select Staff to Attest to this Policy & Procedure*</div>
                             <div className={style.attestationGrid}>
                                 <div ref={containerRef2} onFocus={() => setShowAcknowledgementGroupList(true)} onBlur={(e) => handleBlur(e, containerRef2)}
                                     tabIndex={0}>
@@ -1386,7 +1386,7 @@ const PNPManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, se
                     )} */}
                     {/* <div className={`${style.marginTop20} ${style.twoCol} `}>
                         <div>
-                            <div className={style.labelStyle}>Select Staff to Exclude from Attesting to this Medical Directive</div>
+                            <div className={style.labelStyle}>Select Staff to Exclude from Attesting to this Policy & Procedure</div>
                             <CommonMultiSelectField
                                 value={selectedExcludeMembers}
                                 onChange={(e) => setSelectedExcludeMembers(e.target.value)}
@@ -1510,7 +1510,7 @@ const PNPManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, se
                         <div className={style.stepsTitleText}>Auto-Trigger Rules for Reviews and Attestations</div>
                     </div>
                     <div className={`${style.marginTop20} ${style.twoCol} `}>
-                        <div className={style.labelStyle}>Auto trigger reviews and attestations on <strong>Revision / Update</strong> of Medical Directive</div>
+                        <div className={style.labelStyle}>Auto trigger reviews and attestations on <strong>Revision / Update</strong> of Policy & Procedure</div>
                         <CommonSwitch label={autoTriggerOnUpdate ? 'YES' : 'NO'} checked={autoTriggerOnUpdate} onChange={(e) => setAutoTriggerOnUpdate(e.target.checked)} labelName={''} />
                     </div>
                     <div className={`${style.marginTop20} ${style.twoCol} `}>

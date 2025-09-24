@@ -43,20 +43,20 @@ const PNPManagerStep2 = ({ setStep1, setStep2, setStep3, mdValue, getMD, setMdVa
 
         await PUT(`medical-directive-service/medicalDirectives/${mdValue?.id}`, formData)
             .then(response => {
-                SuccessToaster2('MD Uploaded Successfully');
+                SuccessToaster2('PNP Uploaded Successfully');
                 console.log(response?.data)
                 setStep3(false)
                 getMD(response?.data);
             })
             .catch(error => {
-                ErrorToaster2('MD Upload Failed');
+                ErrorToaster2('PNP Upload Failed');
             })
 
     }
     const handleSaveInProgress = async () => {
         await PUT(`medical-directive-service/medicalDirectives/${mdValue?.id}/saveInprogress`, 'step2')
             .then(response => {
-                SuccessToaster2('MD Saved Successfully');
+                SuccessToaster2('PNP Saved Successfully');
                 console.log(response?.data)
                 setStep2(false)
             })
@@ -78,7 +78,7 @@ const PNPManagerStep2 = ({ setStep1, setStep2, setStep3, mdValue, getMD, setMdVa
             <div className={`${style.stepHeader} ${style.spaceBetween} ${style.verticalAlignCenter}`}>
                 <div className={style.displayInRow}>
                     <div className={`${style.stepNumber} ${style.marginLeft10}`}>Step 2</div>
-                    <div className={`${style.stepHeading} ${style.marginLeft20}`}>Review Medical Directive</div>
+                    <div className={`${style.stepHeading} ${style.marginLeft20}`}>Review Policy & Procedure</div>
                 </div>
                 <input
                     type="file"
@@ -105,7 +105,7 @@ const PNPManagerStep2 = ({ setStep1, setStep2, setStep3, mdValue, getMD, setMdVa
             </div>
             <div className={style.stepContentCard}>
                 <div className={`${style.stepsTitleBar} ${style.verticalAlignCenter}`}>
-                    <div className={style.stepsTitleText}>Medical Directive Meta Data</div>
+                    <div className={style.stepsTitleText}>Policy & Procedure Meta Data</div>
                 </div>
                 <div className={style.marginTop20}>
                     <iframe src={`${mdValue?.file?.fileURL}#toolbar=1&view=fitH`}
@@ -119,7 +119,7 @@ const PNPManagerStep2 = ({ setStep1, setStep2, setStep3, mdValue, getMD, setMdVa
                         <div className={`${style.attestationDialogTitle} ${style.padding20} `}>Confirm Document Replacement</div>
                     </div>
                     <div className={`${style.marginTop10} `}>
-                        <div className={style.labelStyle}>Are you sure you want to replace the existing Medical Directive document by uploading a new one?</div>
+                        <div className={style.labelStyle}>Are you sure you want to replace the existing Policy & Procedure document by uploading a new one?</div>
                     </div>
 
                     <div>

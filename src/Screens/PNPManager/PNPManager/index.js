@@ -383,7 +383,7 @@ const PNPManager = () => {
         <div>
           <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
             <div>
-              <Tooltip title={"Add New MD"} arrow>
+              <Tooltip title={"Add New PNP"} arrow>
                 <div
                   className={`${style.addStyle} ${style.displayInRow} ${style.applicationButton} ${style.marginTop10} ${style.alignCenter} ${style.cursorPointer}`}
                 >
@@ -397,7 +397,7 @@ const PNPManager = () => {
                       className={`${style.alignCenter} ${style.marginLeft10}`}
                       onClick={() => { setShowAddNewMedicalDirectives(true) }}
                     >
-                      {'Add New MD'}
+                      {'Add New PNP'}
                     </div>
 
                   </div>
@@ -418,16 +418,16 @@ const PNPManager = () => {
                 {showAdvancedSearch && (
                   <>
                     {/* <div className={style.marginTop10}>
-                    <div className={style.labelStyle}>Medical Directive ID</div>
+                    <div className={style.labelStyle}>Policy & Procedure ID</div>
                     <CommonInputField
                       value={mdId}
                       onChange={(e) => setMdId(e.target.value)}
                       type="text"
-                      placeholder="Enter MD ID"
+                      placeholder="Enter PNP ID"
                     />
                   </div>
                   <div className={style.marginTop10}>
-                    <div className={style.labelStyle}>Medical Directive Title</div>
+                    <div className={style.labelStyle}>Policy & Procedure Title</div>
                     <CommonInputField
                       value={mdTitle}
                       onChange={(e) => setMdTitle(e.target.value)}

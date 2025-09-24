@@ -215,8 +215,8 @@ const PNPManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValu
 
         let errors = [];
 
-        if (!mdTitle) errors.push("MD Title is required");
-        if (!mdId) errors.push("MD ID is required");
+        if (!mdTitle) errors.push("PNP Title is required");
+        if (!mdId) errors.push("PNP ID is required");
         if (!isSaveInProgress) {
             if (!selectedDepartment?.length) errors.push("Department Selection is required");
             if (!reviewFrequency) errors.push("Review Frequency is required");
@@ -355,13 +355,13 @@ const PNPManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValu
                     setStep1(false);
                     setStep2(true);
                 }
-                SuccessToaster2('MD Updated Successfully');
+                SuccessToaster2('PNP Updated Successfully');
                 console.log(response, 'error')
                 getMD(response?.data);
             }
             catch (error) {
                 console.log(error, 'error')
-                ErrorToaster2('MD Updated Failed');
+                ErrorToaster2('PNP Updated Failed');
             }
         } else {
             try {
@@ -369,7 +369,7 @@ const PNPManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValu
                 if (response?.response?.status === 409) {
                     ErrorToaster2(response?.response?.data);
                 } else {
-                    SuccessToaster2('MD Updated Successfully');
+                    SuccessToaster2('PNP Updated Successfully');
                     if (isSaveInProgress) {
                         await PUT(`medical-directive-service/medicalDirectives/${mdValue?.id}/saveInprogress`, 'step1')
                         handleClose()
@@ -383,7 +383,7 @@ const PNPManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValu
             }
             catch (error) {
                 console.log(error, 'error')
-                ErrorToaster2('MD Upload Failed');
+                ErrorToaster2('PNP Upload Failed');
             }
         }
     }
@@ -418,7 +418,7 @@ const PNPManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValu
             </div>
             <div className={style.stepContentCard}>
                 <div className={`${style.stepsTitleBar} ${style.verticalAlignCenter}`}>
-                    <div className={style.stepsTitleText}>Medical Directive Meta Data</div>
+                    <div className={style.stepsTitleText}>Policy & Procedure Meta Data</div>
                 </div>
                 <div className={style.padding20}>
                     <div className={`${style.pdfThumbnailDisplay} ${style.margin20}`}>
@@ -441,7 +441,7 @@ const PNPManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValu
                             />
                         </div> */}
                         <div>
-                            <div className={style.labelStyle}>Medical Directive Title*</div>
+                            <div className={style.labelStyle}>Policy & Procedure Title*</div>
                             <CommonInputField
                                 value={mdTitle}
                                 onChange={(e) => setMdTitle(e.target.value)}
@@ -451,18 +451,18 @@ const PNPManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValu
                             />
                         </div>
                         <div className={mdValue?.id ? style.disabledView : ''}>
-                            <div className={style.labelStyle}>Medical Directive ID *</div>
+                            <div className={style.labelStyle}>Policy & Procedure ID *</div>
                             <CommonInputField
                                 value={mdId}
                                 onChange={(e) => setMdId(e.target.value)}
                                 type="text"
-                                placeholder="Enter MD ID"
+                                placeholder="Enter PNP ID"
                                 readOnly={mdValue?.id ? true : false}
                                 maxLength={20}
                             />
                         </div>
                         <div>
-                            <div className={style.labelStyle}>Medical Directive Description</div>
+                            <div className={style.labelStyle}>Policy & Procedure Description</div>
                             <CKEditor
                                 editor={ClassicEditor}
                                 data={mdDescription}

@@ -371,7 +371,7 @@ const ManageAttestation = () => {
         />,
         "",
         "Title",
-        "MD ID",
+        "PNP ID",
         "Type",
         "Attestation Due Date",
         "Last Updated",
@@ -379,7 +379,7 @@ const ManageAttestation = () => {
     ];
     const attestedHeaderValues = [
         "Title",
-        "MD ID",
+        "PNP ID",
         "Type",
         "Last Attestation Date",
     ];
@@ -563,16 +563,16 @@ const ManageAttestation = () => {
                                     {showAdvancedSearch && (
                                         <>
                                             {/* <div className={style.marginTop10}>
-                                                <div className={style.labelStyle}>Medical Directive ID</div>
+                                                <div className={style.labelStyle}>Policy & Procedure ID</div>
                                                 <CommonInputField
                                                     value={mdId}
                                                     onChange={(e) => setMdId(e.target.value)}
                                                     type="text"
-                                                    placeholder="Enter MD ID"
+                                                    placeholder="Enter PNP ID"
                                                 />
                                             </div>
                                             <div className={style.marginTop10}>
-                                                <div className={style.labelStyle}>Medical Directive Title</div>
+                                                <div className={style.labelStyle}>Policy & Procedure Title</div>
                                                 <CommonInputField
                                                     value={mdTitle}
                                                     onChange={(e) => setMdTitle(e.target.value)}

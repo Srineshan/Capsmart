@@ -405,7 +405,7 @@ const PNPLibrary = () => {
     };
     const tableHeaderValues = [
         "Title",
-        "MD ID",
+        "PNP ID",
         "Type",
         "Last Updated",
     ]
@@ -480,7 +480,7 @@ const PNPLibrary = () => {
                                 <TextField
                                     size="small"
                                     variant="outlined"
-                                    placeholder={'Search By Medical Directive Title OR Key Words OR MD ID'}
+                                    placeholder={'Search By Policy & Procedure Title OR Key Words OR PNP ID'}
                                     value={''}
                                     onChange={() => { }}
                                     fullWidth
@@ -504,7 +504,7 @@ const PNPLibrary = () => {
                                 <div className={style.button}>Search</div>
                             </div>
                             <div className={`${style.mdCard} ${style.marginTop}`}>
-                                <div className={style.mdCardTitle}>{`Current Medical Directive revision status for ${departmentList?.filter(data => data?.id === (selectedDepartmentSpecialities !== "" ? selectedDepartmentSpecialities?.split('#')?.[0] : departmentId))?.[0]?.departmentName?.name} ${selectedDepartmentSpecialities?.split('#')?.length > 1 ? `/ ${departmentList?.filter(data => data?.id === (selectedDepartmentSpecialities !== "" ? selectedDepartmentSpecialities?.split('#')?.[0] : departmentId))?.[0]?.serviceAreas?.filter(innerData => innerData?.id === selectedDepartmentSpecialities?.split('#')?.[1])?.[0]?.name}` : ''} over the past 3 years`}</div>
+                                <div className={style.mdCardTitle}>{`Current Policy & Procedure revision status for ${departmentList?.filter(data => data?.id === (selectedDepartmentSpecialities !== "" ? selectedDepartmentSpecialities?.split('#')?.[0] : departmentId))?.[0]?.departmentName?.name} ${selectedDepartmentSpecialities?.split('#')?.length > 1 ? `/ ${departmentList?.filter(data => data?.id === (selectedDepartmentSpecialities !== "" ? selectedDepartmentSpecialities?.split('#')?.[0] : departmentId))?.[0]?.serviceAreas?.filter(innerData => innerData?.id === selectedDepartmentSpecialities?.split('#')?.[1])?.[0]?.name}` : ''} over the past 3 years`}</div>
                                 <div className={`${style.marginTop} ${style.mdTypeCardGrid}`}>
                                     <div className={`${style.mdTypeCard} ${style.cursorPointer}`} onClick={() => { setCreationType(''); setShowList(true) }}>
                                         <div className={style.cardTitle}>{`All Policies & Procedures`}</div>
@@ -590,7 +590,7 @@ const PNPLibrary = () => {
                             <TextField
                                 size="small"
                                 variant="outlined"
-                                placeholder={'Search By Medical Directive Title OR Key Words'}
+                                placeholder={'Search By Policy & Procedure Title OR Key Words'}
                                 value={searchTermForTable}
                                 onChange={(e) => setSearchTermForTable(e.target.value)}
                                 fullWidth
@@ -616,16 +616,16 @@ const PNPLibrary = () => {
                         {showAdvancedSearch && (
                             <div className={`${style.mdCard} ${style.advancedSearchGrid}`}>
                                 {/* <div className={style.marginTop10}>
-                                    <div className={style.labelStyle}>Medical Directive ID</div>
+                                    <div className={style.labelStyle}>Policy & Procedure ID</div>
                                     <CommonInputField
                                         value={mdId}
                                         onChange={(e) => setMdId(e.target.value)}
                                         type="text"
-                                        placeholder="Enter MD ID"
+                                        placeholder="Enter PNP ID"
                                     />
                                 </div>
                                 <div className={style.marginTop10}>
-                                    <div className={style.labelStyle}>Medical Directive Title</div>
+                                    <div className={style.labelStyle}>Policy & Procedure Title</div>
                                     <CommonInputField
                                         value={mdTitle}
                                         onChange={(e) => setMdTitle(e.target.value)}

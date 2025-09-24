@@ -202,10 +202,10 @@ const PNPManagerStep4 = ({ setStep3, setStep4, mdValue, setMdValue, setSelectedM
     const handlePublish = async (data) => {
         try {
             const { data: publishedMD } = await POST(`medical-directive-service/medicalDirectives/${mdValue?.id}/publish`);
-            SuccessToaster2('Medical Directive published successfully');
+            SuccessToaster2('Policy & Procedure published successfully');
         } catch (error) {
             console.error(error);
-            ErrorToaster2('Failed to publish Medical Directive');
+            ErrorToaster2('Failed to publish Policy & Procedure');
         }
     }
 
@@ -224,10 +224,10 @@ const PNPManagerStep4 = ({ setStep3, setStep4, mdValue, setMdValue, setSelectedM
             );
             await PUT(`medical-directive-service/medicalDirectives/${mdValue?.id}`, formData)
                 .then(response => {
-                    SuccessToaster2('MD Updateded Successfully');
+                    SuccessToaster2('PNP Updateded Successfully');
                 })
                 .catch(error => {
-                    ErrorToaster2('MD Upload Failed');
+                    ErrorToaster2('PNP Upload Failed');
                 })
             await PUT(`medical-directive-service/medicalDirectives/${mdValue?.id}/saveInprogress`, 'step4')
             handleClose();
@@ -429,7 +429,7 @@ const PNPManagerStep4 = ({ setStep3, setStep4, mdValue, setMdValue, setSelectedM
             </div>
             <div className={`${style.stepContentCard}`}>
                 <div className={`${style.stepsTitleBar} ${style.verticalAlignCenter}`}>
-                    <div className={style.stepsTitleText}>Leadership Sign Off Prior To Publication Of This Medical Directive Into The Library</div>
+                    <div className={style.stepsTitleText}>Leadership Sign Off Prior To Publication Of This Policy & Procedure Into The Library</div>
                 </div>
                 <div className={`${style.padding40} ${style.marginTop20} ${signOffExists ? style.disabledView : ''}`}>
                     <div className={style.padding20}>
@@ -621,11 +621,11 @@ const PNPManagerStep4 = ({ setStep3, setStep4, mdValue, setMdValue, setSelectedM
             <Dialog isOpen={isConfirmationDialog} onClose={() => setIsConfirmationDialog(false)} className={`${style.addMDDialogBackground} ${style.confirmationDialog} `}>
                 <div className={Classes.DIALOG_BODY}>
                     <div className={style.attestationDialogHeaderCard}>
-                        <div className={`${style.attestationDialogTitle} ${style.padding20} `}>Great Job! Your Medical Directive Authoring is Complete!</div>
+                        <div className={`${style.attestationDialogTitle} ${style.padding20} `}>Great Job! Your Policy & Procedure Authoring is Complete!</div>
                     </div>
                     <div className={`${style.marginTop10} `}>
-                        <div className={style.labelStyle}>All of the steps required for publishing this Medical Directive have been defined. Once you click on "Start Pre-Publication Workflow" this Medical Directive will be moved over to "MD Review & Approvals" list.</div>
-                        <div className={`${style.labelStyle} ${style.marginTop20}`}>Please note, from this list you will only be able to assign or reassign members within workflow groups, but not be able modify the meta data or the content of the Medical Directive.</div>
+                        <div className={style.labelStyle}>All of the steps required for publishing this Policy & Procedure have been defined. Once you click on "Start Pre-Publication Workflow" this Policy & Procedure will be moved over to "PNP Review & Approvals" list.</div>
+                        <div className={`${style.labelStyle} ${style.marginTop20}`}>Please note, from this list you will only be able to assign or reassign members within workflow groups, but not be able modify the meta data or the content of the Policy & Procedure.</div>
                     </div>
 
                     <div>

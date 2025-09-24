@@ -261,7 +261,7 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
     const currentTableHeaderValues = [
         "No.",
         "Title",
-        "MD ID",
+        "PNP ID",
         "Department / Division",
         "First Published",
         "Last Revision",
@@ -270,7 +270,7 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
     const revisionTableHeaderValues = [
         "No.",
         "Title",
-        "MD ID",
+        "PNP ID",
         "Department / Division",
         "Assigned To",
         selectedSignOffOption === 'level-1' ? "Acknowledged" : "Signed off",
@@ -284,7 +284,7 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
         />,
         "No.",
         "Title",
-        "MD ID",
+        "PNP ID",
         "Department / Division",
         "Acknowledged",
         "Signed Off",
@@ -304,7 +304,7 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
     const draftTableHeaderValues = [
         "",
         "Title",
-        "MD ID",
+        "PNP ID",
         "Department / Division",
         "Author",
         "Type",
@@ -623,10 +623,10 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
             const { data: publishedMD } = await POST(`medical-directive-service/medicalDirectives/${data?.id}/publish`);
             getDashboard();
             getDashboardMetadata();
-            SuccessToaster2('Medical Directive published successfully');
+            SuccessToaster2('Policy & Procedure published successfully');
         } catch (error) {
             console.error(error);
-            ErrorToaster2('Failed to publish Medical Directive');
+            ErrorToaster2('Failed to publish Policy & Procedure');
         }
     }
 
@@ -635,10 +635,10 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
             const { data: publishedMD } = await DELETE(`medical-directive-service/medicalDirectives/${data?.id}`);
             getDashboard();
             getDashboardMetadata();
-            SuccessToaster2('Medical Directive deleted successfully');
+            SuccessToaster2('Policy & Procedure deleted successfully');
         } catch (error) {
             console.error(error);
-            ErrorToaster2('Failed to delete Medical Directive');
+            ErrorToaster2('Failed to delete Policy & Procedure');
         }
     }
 
@@ -664,10 +664,10 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
             getDashboard();
             getDashboardMetadata();
             setSelectedMedicalDirective();
-            SuccessToaster2('Medical Directive retired successfully');
+            SuccessToaster2('Policy & Procedure retired successfully');
         } catch (error) {
             console.error(error);
-            ErrorToaster2('Failed to retire Medical Directive');
+            ErrorToaster2('Failed to retire Policy & Procedure');
         }
         setShowRetireDialog(false)
     }
@@ -685,10 +685,10 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
         try {
             const revisedMd = await POST(`medical-directive-service/medicalDirectives/${data?.id}/revise`);
             if (revisedMd?.response?.status === 409) {
-                ErrorToaster2('A draft already exists with the same MD ID. To create a new revision, please delete the existing draft first.');
+                ErrorToaster2('A draft already exists with the same PNP ID. To create a new revision, please delete the existing draft first.');
                 setSelectedMdId(revisedMd?.response?.data?.id);
             } else {
-                SuccessToaster2('Medical Directive revised successfully');
+                SuccessToaster2('Policy & Procedure revised successfully');
                 setSelectedMdId(revisedMd?.data?.id);
             }
             setIsEdit(true);
@@ -697,7 +697,7 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
             getDashboardMetadata();
         } catch (error) {
             console.error(error);
-            ErrorToaster2('Failed to revise Medical Directive');
+            ErrorToaster2('Failed to revise Policy & Procedure');
         }
     }
 
@@ -726,7 +726,7 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
 
     const getRevisionList = async () => {
         setIsLoading(true)
-        let url = sessionStorage.getItem('workModeType') === "MD Librarian" ?
+        let url = sessionStorage.getItem('workModeType') === "PNP Librarian" ?
             `medical-directive-service/medicalDirectives/signOff?tab=${selectedSignOffOption}&role=${sessionStorage.getItem('workModeType')}` :
             `medical-directive-service/medicalDirectives/signOff?tab=${selectedSignOffOption}&role=${sessionStorage.getItem('workModeType')}&assignedUserIds=${loggedInUser?.id}`
         const response = await GET(url);
@@ -1048,19 +1048,19 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
 
     const registeredActionsData = [{ 'data': 'View Detail', 'onClick': handleView },
     {
-        'data': 'Update / Revise Medical Directive',
+        'data': 'Update / Revise Policy & Procedure',
         'onClick': handleReviseMD,
         'conditionToShow': `data?.revisionStatus === "NA"`,
-        'conditionForAlternateText': `data?.revisionStatus !== "NA" ? 'Currently Under Revision' : 'Update / Revise Medical Directive'`
+        'conditionForAlternateText': `data?.revisionStatus !== "NA" ? 'Currently Under Revision' : 'Update / Revise Policy & Procedure'`
     },
     { 'data': 'Attestation Summary', 'onClick': handleViewAttestationSummary },
-    { 'data': 'Retire Medical Directive', 'onClick': handleShowRetireDialog },
+    { 'data': 'Retire Policy & Procedure', 'onClick': handleShowRetireDialog },
         // {'data': 'Assign Surrogate', 'onClick': togglePin}
     ]
 
     const draftActionsData = [
         {
-            'data': 'Update MD', 'onClick': handleModify,
+            'data': 'Update PNP', 'onClick': handleModify,
             conditionToShow: `data?.workflowStatus !== 'COMPLETED'`
         },
         {
@@ -1133,7 +1133,7 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
                 <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Current Policies & Procedures" bigNumber={currentMdCount} smallNum1={newMdCount} smallNum2={upcomingMdCount} smallText1="New Directives" smallText2="Upcoming For Review" currentTile="Current Policies & Procedures" topText='' smallNum1Color={style.greenSmallNumber} smallNum2Color={style.yellowSmallNumber} smallNum1SelectedColor={style.greenSmallNumberSelected} smallNum2SelectedColor={style.yellowSmallNumberSelected} />
                 <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Attestations Outstanding" bigNumber={outstandingMdCount} smallNum1={outstandingNotStartedCount} smallNum2={0} smallText1="Not Started" smallText2="Past Due" currentTile="Attestations Outstanding" topText='' smallNum1Color={style.redSmallNumber} smallNum1SelectedColor={style.redSmallNumberSelected} smallNum2Color={style.redSmallNumber} smallNum2SelectedColor={style.redSmallNumberSelected} />
                 <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Drafts / Revisions" bigNumber={draftMdCount} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="Draft Policies & Procedures" topText='' smallNum1Color={style.greenSmallNumber} smallNum2Color={style.redSmallNumber} smallNum1SelectedColor={style.greenSmallNumberSelected} smallNum2SelectedColor={style.redSmallNumberSelected} />
-                <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="MD Review & Approvals" bigNumber={signOffMdCount} smallNum1="" smallNum2="" currentTile="Policies & Procedures Sign Off" topText='' />
+                <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="PNP Review & Approvals" bigNumber={signOffMdCount} smallNum1="" smallNum2="" currentTile="Policies & Procedures Sign Off" topText='' />
             </div>
             <div
                 className={`${style.spaceBetween} ${style.marginLeft30} ${style.marginTop20} `}
@@ -1311,7 +1311,7 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
             </Dialog >
             <Dialog isOpen={showRetireDialog} onClose={() => setShowRetireDialog(false)} className={`${style.addMDDialogBackground} ${style.attestationSummaryDialog}`}>
                 <div className={Classes.DIALOG_BODY}>
-                    <div className={style.dialogTitle}>{`Retire Medical Directive - ${selectedMedicalDirective?.title}`}</div>
+                    <div className={style.dialogTitle}>{`Retire Policy & Procedure - ${selectedMedicalDirective?.title}`}</div>
                     <div>
                         <div className={style.labelStyle}>Comments*</div>
                         <CKEditor

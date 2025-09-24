@@ -345,7 +345,7 @@ const ManageAttestationGroups = () => {
     ];
     const attestedHeaderValues = [
         "Title",
-        "MD ID",
+        "PNP ID",
         "Type",
         "Last Attestation Date",
     ];
@@ -552,18 +552,18 @@ const ManageAttestationGroups = () => {
                                     <CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} isOnClickAvailable={false} onClickFunc={() => { }} placeholder={"Search"} />
                                 </div>
                                 <div className={`${style.searchFieldCard} ${style.marginTop20}`}>
-                                    <div className={style.advancedSearchText}>Advanced MD Search Criteria</div>
+                                    <div className={style.advancedSearchText}>Advanced PNP Search Criteria</div>
                                     <div className={style.marginTop10}>
-                                        <div className={style.labelStyle}>Medical Directive ID</div>
+                                        <div className={style.labelStyle}>Policy & Procedure ID</div>
                                         <CommonInputField
                                             value={mdId}
                                             onChange={(e) => setMdId(e.target.value)}
                                             type="text"
-                                            placeholder="Enter MD ID"
+                                            placeholder="Enter PNP ID"
                                         />
                                     </div>
                                     <div className={style.marginTop10}>
-                                        <div className={style.labelStyle}>Medical Directive Title</div>
+                                        <div className={style.labelStyle}>Policy & Procedure Title</div>
                                         <CommonInputField
                                             value={mdTitle}
                                             onChange={(e) => setMdTitle(e.target.value)}
