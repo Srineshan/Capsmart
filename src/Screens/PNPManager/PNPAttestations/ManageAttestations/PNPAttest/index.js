@@ -199,7 +199,7 @@ const ManagePNPAttest = () => {
                                 <Tooltip title="Scroll to the end of the document" arrow>
                                     <div>
                                         <div className={` ${style.marginTop10} ${style.leftAlign} ${style.disabled}`}>
-                                            <CommonCheckBox checked={medicalDirectivesAttestation} label={'I hereby confirm that by signing, I agree to the delegation and implementation of the Medical Directives and Delegated Acts used within the Cambridge Memorial Hospital.'} />
+                                            <CommonCheckBox checked={medicalDirectivesAttestation} label={'I hereby confirm that by signing, I agree to the delegation and implementation of the Policies & Procedures and Delegated Acts used within the Cambridge Memorial Hospital.'} />
                                         </div>
                                         <div className={style.disabled}>
                                             <div
@@ -231,7 +231,7 @@ const ManagePNPAttest = () => {
                             ) : (
                                 <>
                                     <div className={` ${style.marginTop10} ${style.leftAlign} ${isScrolledToBottom ? '' : style.disabled}`}>
-                                        <CommonCheckBox checked={medicalDirectivesAttestation} label={'I hereby confirm that by signing, I agree to the delegation and implementation of the Medical Directives and Delegated Acts used within the Cambridge Memorial Hospital.'} onChange={(e) => { setMedicalDirectivesAttestation(e.target.checked) }} />
+                                        <CommonCheckBox checked={medicalDirectivesAttestation} label={'I hereby confirm that by signing, I agree to the delegation and implementation of the Policies & Procedures and Delegated Acts used within the Cambridge Memorial Hospital.'} onChange={(e) => { setMedicalDirectivesAttestation(e.target.checked) }} />
                                     </div>
                                     <div>
                                         <div onClick={medicalDirectivesAttestation ? () => { setIsSigned(!isSigned); } : () => { }}

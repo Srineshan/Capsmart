@@ -1028,7 +1028,7 @@ const Navbar = () => {
                       style.activeMenuColor
                       }`}
                   >
-                    <p>POLICIES & PROCEDURES (P&P)</p>
+                    <p>POLICIES & PROCEDURES (PNP)</p>
                   </div>
                 </Link>
               ) : (

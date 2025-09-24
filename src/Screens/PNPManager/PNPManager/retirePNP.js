@@ -663,7 +663,7 @@ const RetirePNP = () => {
                 </div>
                 <div>
                     <div className={`${style.tabs}`}>
-                        <TileApplication selectedTab={'Retire Medical Directives'} getSelectedTab={() => { }} tileLabel="Retired Medical Directives" tileCount={totalTableCount} currentTile="Retire Medical Directives" />
+                        <TileApplication selectedTab={'Retire Policies & Procedures'} getSelectedTab={() => { }} tileLabel="Retired Policies & Procedures" tileCount={totalTableCount} currentTile="Retire Policies & Procedures" />
                     </div>
                     <div ref={componentRef} className={`${style.retiredBigCardStyle}`}>
                         <div className={`${style.reduceMarginTop10} registeredUsers`} ref={PDFRef}>

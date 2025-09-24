@@ -50,7 +50,7 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
     const fileInputRef = useRef(null);
     const [checkedIds, setCheckedIds] = useState([]);
     const [viewRegistered, setViewRegistered] = useState(true);
-    const [selectedOption, setSelectedOption] = useState('Current Medical Directives');
+    const [selectedOption, setSelectedOption] = useState('Current Policies & Procedures');
     const [registeredUsers, setRegisteredUsers] = useState([]);
     const [contractedServiceProviderUsers, setContractedServiceProviderUsers] = useState([]);
     const [deactivatedUsers, setDeactivatedUsers] = useState([]);
@@ -111,7 +111,7 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
     const [initialized, setInitialized] = useState(false);
     const publicKey = "-----BEGIN PUBLIC KEY-----MIGeMA0GCSqGSIb3DQEBAQUAA4GMADCBiAKBgHA5SDu30/8uQAqqkQE0NuY4ePBptMGufG6AWnC/88YVLXi4thh7M8VU6kElVJkfXL5DwlfVnwPb08+PK1EcaOWWtp2gdQitkohjZLB9zVE+0OtRrzSc33wItf7Iwisi5dHPggHvfOp5fr+QYWFMa/kKYl3SgNo8fryeLbKKalmdAgMBAAE=-----END PUBLIC KEY-----";
     const [encryptedText, setEncryptedText] = useState(CryptoJS.AES.encrypt(users?.userName + dateTime, publicKey).toString());
-    const valuesToUse = viewRegistered ? (selectedOption === 'Current Medical Directives' ? registeredUsers : selectedOption === 'Draft Medical Directives' ? contractedServiceProviderUsers : selectedOption === 'Medical Directives Sign Off' ? deactivatedUsers : invitedUsers) : blockedUsers;
+    const valuesToUse = viewRegistered ? (selectedOption === 'Current Policies & Procedures' ? registeredUsers : selectedOption === 'Draft Policies & Procedures' ? contractedServiceProviderUsers : selectedOption === 'Policies & Procedures Sign Off' ? deactivatedUsers : invitedUsers) : blockedUsers;
     const availableGroups = {
         'NEW': 'New Staff Applicants',
         'REAPPOINTMENT': 'Staff Reappointments'
@@ -125,8 +125,8 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
     useEffect(() => {
         if (mdIdFromSearch) {
             console.log(mdIdFromSearch)
-            sessionStorage.setItem('mdOption', "Draft Medical Directives")
-            setSelectedOption("Draft Medical Directives")
+            sessionStorage.setItem('mdOption', "Draft Policies & Procedures")
+            setSelectedOption("Draft Policies & Procedures")
             setSelectedMdId(mdIdFromSearch);
         }
         if (!initialized && mdIdFromSearch && dashboardData?.filter(data => data?.id === mdIdFromSearch)?.length > 0) {
@@ -167,7 +167,7 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
     }, [selectedOption, sortField, sortValue, advancedSearch]);
 
     useEffect(() => {
-        if (selectedOption === "Medical Directives Sign Off") {
+        if (selectedOption === "Policies & Procedures Sign Off") {
             getRevisionList();
         }
     }, [selectedSignOffOption, selectedOption])
@@ -313,22 +313,22 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
         "Action",
     ];
 
-    const tableHeaderValues = (selectedOption === 'Current Medical Directives' || selectedOption === 'Retire Medical Directives') ? currentTableHeaderValues : selectedOption === "Draft Medical Directives"
-        ? draftTableHeaderValues : selectedOption === "Medical Directives Sign Off" ? selectedSignOffOption === "level-2" ? MECSignOffTableHeaderValues : revisionTableHeaderValues
+    const tableHeaderValues = (selectedOption === 'Current Policies & Procedures' || selectedOption === 'Retire Policies & Procedures') ? currentTableHeaderValues : selectedOption === "Draft Policies & Procedures"
+        ? draftTableHeaderValues : selectedOption === "Policies & Procedures Sign Off" ? selectedSignOffOption === "level-2" ? MECSignOffTableHeaderValues : revisionTableHeaderValues
             : outstandingTableHeaderValues;
 
     const getUser = async () => {
-        if (selectedOption === 'Current Medical Directives') {
+        if (selectedOption === 'Current Policies & Procedures') {
             const { data: user } = await GET(`user-management-service/user?userType=REGISTERED_USER`);
             setRegisteredUsers(user?.filter(data => data?.blocked === false)?.map(data => data));
             setBlockedUsers(user?.filter(data => data?.blocked === true)?.map(data => data));
         }
-        if (selectedOption === 'Draft Medical Directives') {
+        if (selectedOption === 'Draft Policies & Procedures') {
             const { data: user } = await GET(`user-management-service/user?userType=CONTRACTED_SERVICE_PROVIDER_USER`);
             setContractedServiceProviderUsers(user?.filter(data => data?.blocked === false)?.map(data => data));
             setBlockedUsers(user?.filter(data => data?.blocked === true)?.map(data => data));
         }
-        if (selectedOption === 'Medical Directives Sign Off') {
+        if (selectedOption === 'Policies & Procedures Sign Off') {
             const { data: user } = await GET(`user-management-service/user?activated=false`);
             setDeactivatedUsers(user?.filter(data => data?.blocked === false)?.map(data => data));
             setBlockedUsers(user?.filter(data => data?.blocked === true)?.map(data => data));
@@ -349,16 +349,16 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
             const { data: dashboardData } = await POST(
                 `medical-directive-service/medicalDirectives/dashboard?offset=${page - 1}&limit=${limit}&isPaginationRequired=${isPaginationRequired}&role=${sessionStorage.getItem(
                     "workModeType"
-                )}&tab=${selectedOption === "Current Medical Directives"
+                )}&tab=${selectedOption === "Current Policies & Procedures"
                     ? "active_md"
-                    : selectedOption === "Medical Directives Sign Off"
+                    : selectedOption === "Policies & Procedures Sign Off"
                         ? "md_revisions"
-                        : selectedOption === "Draft Medical Directives"
+                        : selectedOption === "Draft Policies & Procedures"
                             ? "draft_md"
-                            : selectedOption === "Retire Medical Directives"
+                            : selectedOption === "Retire Policies & Procedures"
                                 ? "inactive_md"
                                 : ""
-                }&sortBy=${sortValue}&sortByField=${selectedOption === "Draft Medical Directives" && sortField === "DEFAULT"
+                }&sortBy=${sortValue}&sortByField=${selectedOption === "Draft Policies & Procedures" && sortField === "DEFAULT"
                     ? "WORKFLOW_STATUS"
                     : sortField
                 }`,
@@ -826,7 +826,7 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
         signedOffCount = [];
         lastUpdatedLog = [];
         action = [];
-        if (selectedOption === "Medical Directives Sign Off") {
+        if (selectedOption === "Policies & Procedures Sign Off") {
             revisionList?.map((data, index) => {
                 checkbox.push(
                     <CommonCheckBox
@@ -929,7 +929,7 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
                 action.push(true);
             })
         }
-        return selectedOption === 'Current Medical Directives' ? [
+        return selectedOption === 'Current Policies & Procedures' ? [
             { "type": "text", "value": no },
             { "type": "text", "value": title, tooltipValueText: desc },
             { "type": "text", "value": mdId },
@@ -937,7 +937,7 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
             { "type": "text", "value": firstPublished },
             { "type": "text", "value": lastRevision },
             { "type": "action", "value": action },
-        ] : selectedOption === 'Medical Directives Sign Off' ? [
+        ] : selectedOption === 'Policies & Procedures Sign Off' ? [
             ...(
                 selectedSignOffOption === "level-2"
                     ? [{ type: "checkbox", value: checkbox },]
@@ -973,7 +973,7 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
                     : []
             ),
             { "type": "action", "value": action },
-        ] : selectedOption === 'Draft Medical Directives' ? [
+        ] : selectedOption === 'Draft Policies & Procedures' ? [
             { "type": "dot", "value": dot, 'tooltipValue': dotTooltipValues },
             { "type": "text", "value": title },
             { "type": "text", "value": mdId },
@@ -983,7 +983,7 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
             { "type": "text", "value": version, isAlignCenter: true },
             { "type": "text", "value": lastUpdated },
             { "type": "action", "value": action },
-        ] : selectedOption === 'Retire Medical Directives' ? [
+        ] : selectedOption === 'Retire Policies & Procedures' ? [
             { "type": "text", "value": no },
             { "type": "text", "value": title, tooltipValueText: desc },
             { "type": "text", "value": mdId },
@@ -1089,8 +1089,8 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
         { 'data': 'Reminder', 'onClick': handleSendReminder, 'hoverText': 'Click to Send Reminder' }
     ]
 
-    const actionsData = selectedOption === 'Current Medical Directives' ? registeredActionsData : selectedOption === 'Draft Medical Directives' ? draftActionsData :
-        selectedOption === 'Medical Directives Sign Off' ? selectedSignOffOption === "level-2" ? revisionsActionsData : workflowModifyGroup : selectedOption === "Retire Medical Directives" ? retiredActions : inviteActionsData;
+    const actionsData = selectedOption === 'Current Policies & Procedures' ? registeredActionsData : selectedOption === 'Draft Policies & Procedures' ? draftActionsData :
+        selectedOption === 'Policies & Procedures Sign Off' ? selectedSignOffOption === "level-2" ? revisionsActionsData : workflowModifyGroup : selectedOption === "Retire Policies & Procedures" ? retiredActions : inviteActionsData;
 
     const handleDownloadClicked = () => {
         toPDF(".registeredUsers", `RegisteredUsersList_${format(new Date(), 'MM_dd_yy')}`);
@@ -1130,15 +1130,15 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
                 </div>
             )}
             <div className={`${style.grid4} ${style.marginTop10}`}>
-                <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Current Medical Directives" bigNumber={currentMdCount} smallNum1={newMdCount} smallNum2={upcomingMdCount} smallText1="New Directives" smallText2="Upcoming For Review" currentTile="Current Medical Directives" topText='' smallNum1Color={style.greenSmallNumber} smallNum2Color={style.yellowSmallNumber} smallNum1SelectedColor={style.greenSmallNumberSelected} smallNum2SelectedColor={style.yellowSmallNumberSelected} />
+                <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Current Policies & Procedures" bigNumber={currentMdCount} smallNum1={newMdCount} smallNum2={upcomingMdCount} smallText1="New Directives" smallText2="Upcoming For Review" currentTile="Current Policies & Procedures" topText='' smallNum1Color={style.greenSmallNumber} smallNum2Color={style.yellowSmallNumber} smallNum1SelectedColor={style.greenSmallNumberSelected} smallNum2SelectedColor={style.yellowSmallNumberSelected} />
                 <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Attestations Outstanding" bigNumber={outstandingMdCount} smallNum1={outstandingNotStartedCount} smallNum2={0} smallText1="Not Started" smallText2="Past Due" currentTile="Attestations Outstanding" topText='' smallNum1Color={style.redSmallNumber} smallNum1SelectedColor={style.redSmallNumberSelected} smallNum2Color={style.redSmallNumber} smallNum2SelectedColor={style.redSmallNumberSelected} />
-                <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Drafts / Revisions" bigNumber={draftMdCount} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="Draft Medical Directives" topText='' smallNum1Color={style.greenSmallNumber} smallNum2Color={style.redSmallNumber} smallNum1SelectedColor={style.greenSmallNumberSelected} smallNum2SelectedColor={style.redSmallNumberSelected} />
-                <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="MD Review & Approvals" bigNumber={signOffMdCount} smallNum1="" smallNum2="" currentTile="Medical Directives Sign Off" topText='' />
+                <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Drafts / Revisions" bigNumber={draftMdCount} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="Draft Policies & Procedures" topText='' smallNum1Color={style.greenSmallNumber} smallNum2Color={style.redSmallNumber} smallNum1SelectedColor={style.greenSmallNumberSelected} smallNum2SelectedColor={style.redSmallNumberSelected} />
+                <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="MD Review & Approvals" bigNumber={signOffMdCount} smallNum1="" smallNum2="" currentTile="Policies & Procedures Sign Off" topText='' />
             </div>
             <div
                 className={`${style.spaceBetween} ${style.marginLeft30} ${style.marginTop20} `}
             >
-                {selectedOption === 'Medical Directives Sign Off' ? (
+                {selectedOption === 'Policies & Procedures Sign Off' ? (
                     <div className={`${style.tabs}`}>
                         {workflowStructure?.approvalFlowMap?.workflow['1'] && (
                             <TileApplication selectedTab={selectedSignOffOption} getSelectedTab={getSelectedOptionForSignOff} tileLabel="Acknowledgement" tileCount={signOffMeta?.['level-1']?.pending} currentTile="level-1" />
@@ -1154,7 +1154,7 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
                     <div></div>
                 )}
                 <div className={style.displayInRow}>
-                    {(selectedSignOffOption === "level-2" && selectedOption === 'Medical Directives Sign Off') && (
+                    {(selectedSignOffOption === "level-2" && selectedOption === 'Policies & Procedures Sign Off') && (
                         <div className={`${style.marginRight} ${style.verticalAlignCenter}  ${checkedIds?.length === 0 ? '' : style.cursorPointer} ${checkedIds?.length !== 0 ? '' : style.disabledView}`} onClick={checkedIds?.length !== 0 ? () => setShowUpdateApprovalStatus(true) : () => { }}>
                             <Tooltip title={checkedIds?.length !== 0 ? "Update MAC Approval" : ""} arrow>
                                 <PeopleOutlinedIcon
@@ -1180,17 +1180,17 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
             <div className={`${style.bigCardStyle}`}>
                 {/* <div className={style.spaceBetween}>
                     <div>
-                        {(selectedOption === 'Current Medical Directives') ? (
+                        {(selectedOption === 'Current Policies & Procedures') ? (
                             <div className={style.buttonGroupUsers}>
                                 <button className={viewRegistered && style.activeButton} onClick={() => setViewRegistered(true)}>Registered ( {registeredUsers?.length} )</button>
                                 <button className={!viewRegistered ? style.activeButton : style.red} onClick={() => setViewRegistered(false)}>Blocked ( {blockedUsers?.length} )</button>
                             </div>
-                        ) : (selectedOption === 'Draft Medical Directives') ? (
+                        ) : (selectedOption === 'Draft Policies & Procedures') ? (
                             <div className={style.buttonGroupUsers}>
                                 <button className={viewRegistered && style.activeButton} onClick={() => setViewRegistered(true)}>Registered ( {contractedServiceProviderUsers?.length} )</button>
                                 <button className={!viewRegistered ? style.activeButton : style.red} onClick={() => setViewRegistered(false)}>Blocked ( {blockedUsers?.length} )</button>
                             </div>
-                        ) : selectedOption === 'Medical Directives Sign Off' ? (
+                        ) : selectedOption === 'Policies & Procedures Sign Off' ? (
                             <div className={style.buttonGroupUsers}>
                                 <button className={style.activeButton} >Deactivated Users ( {deactivatedUsers?.length} )</button>
                             </div>
@@ -1207,7 +1207,7 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
                         <div className={`${style.alignCenter} ${style.cursorPointer} ${style.marginLeft20}`} onClick={() => handlePrint()}>
                             <PrintOutlinedIcon sx={{ fontSize: 30, color: '#06617A' }} />
                         </div>
-                        {selectedOption === 'Current Medical Directives' && (
+                        {selectedOption === 'Current Policies & Procedures' && (
                             <div className={`${style.alignCenter} ${style.cursorPointer} ${style.marginLeft20}`}>
                                 <AddCircleOutlineIcon sx={{ fontSize: 30, color: '#06617A' }} onClick={() => setShowAddUserDialog(true)} />
                             </div>
@@ -1220,20 +1220,20 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
                             tableHeaderValues={tableHeaderValues}
                             tableDataValues={getValues()}
                             tableData={valuesToUse}
-                            gridStyle={selectedOption === 'Attestations Outstanding' ? style.invitedUsersGrid : isMultiSiteEntity ? (selectedOption === 'Current Medical Directives' || selectedOption === 'Draft Medical Directives') ? style.registeredUsersMultiSiteGrid : style.mdListGrid : style.mdListGrid}
+                            gridStyle={selectedOption === 'Attestations Outstanding' ? style.invitedUsersGrid : isMultiSiteEntity ? (selectedOption === 'Current Policies & Procedures' || selectedOption === 'Draft Policies & Procedures') ? style.registeredUsersMultiSiteGrid : style.mdListGrid : style.mdListGrid}
                             actions={actionsData}
                             hidePagination={true}
                         /> */}
-                        {(selectedOption === "Medical Directives Sign Off" && selectedSignOffOption === "level-1") ? (
-                            <div className={`${style.tableDesc} ${style.noteText}`}>{signOffMeta?.['level-1']?.pending} Medical Directives Require Pre-Publication Acknowledgement.<br /> Note: Not all Medical Directives Require Pre-Publication Acknowledgement. </div>
-                        ) : (selectedOption === "Medical Directives Sign Off" && selectedSignOffOption === "level-2") ? (
-                            <div className={`${style.tableDesc} ${style.noteText}`}>{signOffMeta?.['level-2']?.pending} Medical Directives Require Leadership Sign Off. </div>
+                        {(selectedOption === "Policies & Procedures Sign Off" && selectedSignOffOption === "level-1") ? (
+                            <div className={`${style.tableDesc} ${style.noteText}`}>{signOffMeta?.['level-1']?.pending} Policies & Procedures Require Pre-Publication Acknowledgement.<br /> Note: Not all Policies & Procedures Require Pre-Publication Acknowledgement. </div>
+                        ) : (selectedOption === "Policies & Procedures Sign Off" && selectedSignOffOption === "level-2") ? (
+                            <div className={`${style.tableDesc} ${style.noteText}`}>{signOffMeta?.['level-2']?.pending} Policies & Procedures Require Leadership Sign Off. </div>
                         ) : ''}
                         <TableTwo
                             tableHeaderValues={tableHeaderValues}
                             tableDataValues={getValues()}
-                            tableData={selectedOption === "Medical Directives Sign Off" ? revisionList : selectedOption === "Attestations Outstanding" ? outstandingList : dashboardData}
-                            gridStyle={selectedOption === 'Attestations Outstanding' ? style.outstandingGrid : selectedOption === 'Current Medical Directives' ? style.mdListGrid : selectedOption === 'Draft Medical Directives' ? style.draftGrid : selectedOption === 'Retire Medical Directives' ? style.mdListGrid : selectedSignOffOption === 'level-2' ? style.level3Grid : style.revisionGrid}
+                            tableData={selectedOption === "Policies & Procedures Sign Off" ? revisionList : selectedOption === "Attestations Outstanding" ? outstandingList : dashboardData}
+                            gridStyle={selectedOption === 'Attestations Outstanding' ? style.outstandingGrid : selectedOption === 'Current Policies & Procedures' ? style.mdListGrid : selectedOption === 'Draft Policies & Procedures' ? style.draftGrid : selectedOption === 'Retire Policies & Procedures' ? style.mdListGrid : selectedSignOffOption === 'level-2' ? style.level3Grid : style.revisionGrid}
                             actions={actionsData}
                             scrollStyle={style.scrollStyle}
                             tableSortValues={selectedOption === 'Attestations Outstanding' ? outstandingSortValues : []}
@@ -1260,7 +1260,7 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
             {showAddUserDialog && <AddUserInCustomerAdmin getManageUserDialog={getManageUserDialog} isEdit={isEdit} userId={userId} />}
             <Dialog isOpen={showAddNewMedicalDirectives} onClose={() => setShowAddNewMedicalDirectives(false)} className={`${style.addMDDialogBackground} ${style.addNewMDDialog}`}>
                 <div className={Classes.DIALOG_BODY}>
-                    <div className={style.dialogTitle}>Adding New Medical Directives To Database</div>
+                    <div className={style.dialogTitle}>Adding New Policies & Procedures To Database</div>
                     <div className={`${style.dialogDesc} ${style.marginTop20}`}>Do you have an existing copy of the medical directive that you want to add to the database?</div>
                     <input
                         type="file"

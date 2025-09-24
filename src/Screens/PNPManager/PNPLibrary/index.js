@@ -281,7 +281,7 @@ const PNPLibrary = () => {
 
     const getDashboard = async (signal) => {
         let url = `medical-directive-service/medicalDirectives/dashboard?offset=${page - 1}&limit=${limit}&isPaginationRequired=${isPaginationRequired}&role=${sessionStorage.getItem('workModeType')}`
-        // const { data: dashboardData } = await POST(`medical-directive-service/medicalDirectives/dashboard?offset=${page - 1}&limit=${limit}&isPaginationRequired=${isPaginationRequired}&tab=${selectedOption === "Current Medical Directives" ? "active_md" : selectedOption === "Medical Directives Revisions" ? "md_revisions" : selectedOption === "Draft Medical Directives" ? "draft_md" : ""}`, advancedSearch, { signal });
+        // const { data: dashboardData } = await POST(`medical-directive-service/medicalDirectives/dashboard?offset=${page - 1}&limit=${limit}&isPaginationRequired=${isPaginationRequired}&tab=${selectedOption === "Current Policies & Procedures" ? "active_md" : selectedOption === "Policies & Procedures Revisions" ? "md_revisions" : selectedOption === "Draft Policies & Procedures" ? "draft_md" : ""}`, advancedSearch, { signal });
         // setDashboardData(dashboardData?.medicalDirectives);
         // setTotalTableCount(dashboardData?.numberOfElements);
         let data = {
@@ -419,7 +419,7 @@ const PNPLibrary = () => {
                         className={style.logo}
                     />
                     {!showMD && (
-                        <div className={`${style.titleText} ${style.verticalAlignCenter} ${style.marginLeft20}`}>{`${departmentList?.filter(data => data?.id === (selectedDepartmentSpecialities !== "" ? selectedDepartmentSpecialities?.split('#')?.[0] : departmentId))?.[0]?.departmentName?.name} ${selectedDepartmentSpecialities?.split('#')?.length > 1 ? `/ ${departmentList?.filter(data => data?.id === (selectedDepartmentSpecialities !== "" ? selectedDepartmentSpecialities?.split('#')?.[0] : departmentId))?.[0]?.serviceAreas?.filter(innerData => innerData?.id === selectedDepartmentSpecialities?.split('#')?.[1])?.[0]?.name}` : ''} Medical Directives Library`}</div>
+                        <div className={`${style.titleText} ${style.verticalAlignCenter} ${style.marginLeft20}`}>{`${departmentList?.filter(data => data?.id === (selectedDepartmentSpecialities !== "" ? selectedDepartmentSpecialities?.split('#')?.[0] : departmentId))?.[0]?.departmentName?.name} ${selectedDepartmentSpecialities?.split('#')?.length > 1 ? `/ ${departmentList?.filter(data => data?.id === (selectedDepartmentSpecialities !== "" ? selectedDepartmentSpecialities?.split('#')?.[0] : departmentId))?.[0]?.serviceAreas?.filter(innerData => innerData?.id === selectedDepartmentSpecialities?.split('#')?.[1])?.[0]?.name}` : ''} Policies & Procedures Library`}</div>
                     )}
                     {showMD && (
                         <div className={`${style.titleText} ${style.verticalAlignCenter} ${style.marginLeft20}`}>{selectedMD?.title ? `${selectedMD?.mdID} : ${selectedMD?.title}` : ''}</div>
@@ -445,7 +445,7 @@ const PNPLibrary = () => {
                     <div className={style.mdlGrid}>
                         <div>
                             {/* <div className={style.departmentName}> {`${departmentList?.filter(data => data?.id === (selectedDepartmentSpecialities !== "" ? selectedDepartmentSpecialities?.split('#')?.[0] : departmentId))?.[0]?.departmentName?.name} ${selectedDepartmentSpecialities?.split('#')?.length > 1 ? `/ ${departmentList?.filter(data => data?.id === (selectedDepartmentSpecialities !== "" ? selectedDepartmentSpecialities?.split('#')?.[0] : departmentId))?.[0]?.serviceAreas?.filter(innerData => innerData?.id === selectedDepartmentSpecialities?.split('#')?.[1])?.[0]?.name}` : ''}`}</div> */}
-                            <div className={style.description}>Use the options below to quickly access Medical Directives for your Department / Division.</div>
+                            <div className={style.description}>Use the options below to quickly access Policies & Procedures for your Department / Division.</div>
                             {/* <div className={`${style.deptCardGrid} ${style.marginTop}`}>
                                 <div className={`${style.verticalAlignCenter} ${style.cursorPointer}`} onClick={() => scroll('left')}>
                                     <KeyboardArrowLeftIcon sx={{ fontSize: '30px', color: "#06617A" }} />
@@ -507,7 +507,7 @@ const PNPLibrary = () => {
                                 <div className={style.mdCardTitle}>{`Current Medical Directive revision status for ${departmentList?.filter(data => data?.id === (selectedDepartmentSpecialities !== "" ? selectedDepartmentSpecialities?.split('#')?.[0] : departmentId))?.[0]?.departmentName?.name} ${selectedDepartmentSpecialities?.split('#')?.length > 1 ? `/ ${departmentList?.filter(data => data?.id === (selectedDepartmentSpecialities !== "" ? selectedDepartmentSpecialities?.split('#')?.[0] : departmentId))?.[0]?.serviceAreas?.filter(innerData => innerData?.id === selectedDepartmentSpecialities?.split('#')?.[1])?.[0]?.name}` : ''} over the past 3 years`}</div>
                                 <div className={`${style.marginTop} ${style.mdTypeCardGrid}`}>
                                     <div className={`${style.mdTypeCard} ${style.cursorPointer}`} onClick={() => { setCreationType(''); setShowList(true) }}>
-                                        <div className={style.cardTitle}>{`All Medical Directives`}</div>
+                                        <div className={style.cardTitle}>{`All Policies & Procedures`}</div>
                                         <div className={`${style.cardCount}`}>{mdLibraryMeta?.totalMedicalDirectives}</div>
                                     </div>
                                     <div className={`${style.mdTypeCard} ${style.cursorPointer}`} onClick={() => { setCreationType('NEW'); setShowList(true) }}>
@@ -527,7 +527,7 @@ const PNPLibrary = () => {
                                     <img src={MDManager} alt="MDL" className={style.mdlLogo} />
                                 </div>
                                 <div className={style.mdlCardTitle}>
-                                    Medical Directives Library
+                                    Policies & Procedures Library
                                 </div>
                             </div>
                             <div className={`${style.loginCard} ${style.verticalAlignCenter} ${style.cursorPointer} ${style.marginTop}`} onClick={() => navigate(`/loginPage`)}>
@@ -767,7 +767,7 @@ const PNPLibrary = () => {
                             </div>
                         )}
                         <div className={`${style.mdCard} ${style.marginTop}`}>
-                            <div className={style.deptTableHeading}>{`Medical Directives For ${departmentList?.filter(data => data?.id === (selectedDepartmentSpecialities !== "" ? selectedDepartmentSpecialities?.split('#')?.[0] : departmentId))?.[0]?.departmentName?.name} ${selectedDepartmentSpecialities?.split('#')?.length > 1 ? `- ${departmentList?.filter(data => data?.id === (selectedDepartmentSpecialities !== "" ? selectedDepartmentSpecialities?.split('#')?.[0] : departmentId))?.[0]?.serviceAreas?.filter(innerData => innerData?.id === selectedDepartmentSpecialities?.split('#')?.[1])?.[0]?.name}` : ''} (${dashboardData?.length})`}</div>
+                            <div className={style.deptTableHeading}>{`Policies & Procedures For ${departmentList?.filter(data => data?.id === (selectedDepartmentSpecialities !== "" ? selectedDepartmentSpecialities?.split('#')?.[0] : departmentId))?.[0]?.departmentName?.name} ${selectedDepartmentSpecialities?.split('#')?.length > 1 ? `- ${departmentList?.filter(data => data?.id === (selectedDepartmentSpecialities !== "" ? selectedDepartmentSpecialities?.split('#')?.[0] : departmentId))?.[0]?.serviceAreas?.filter(innerData => innerData?.id === selectedDepartmentSpecialities?.split('#')?.[1])?.[0]?.name}` : ''} (${dashboardData?.length})`}</div>
                             <div ref={componentRef} className={style.marginTop20}>
                                 <div className={`${style.reduceMarginTop10} registeredUsers`} ref={PDFRef}>
                                     <TableTwo
@@ -778,7 +778,7 @@ const PNPLibrary = () => {
                                         actions={[]}
                                         // scrollStyle={style.contractScrollStyle}
                                         tableSortValues={[]}
-                                        heading={creationType === "NEW" ? "There are no new Medical Directives" : 'There are no revised Medical Directives'}
+                                        heading={creationType === "NEW" ? "There are no new Policies & Procedures" : 'There are no revised Policies & Procedures'}
                                         onClickFunction={() => { }}
                                         hidePagination={false}
                                         getSelectedPage={getSelectedPage}

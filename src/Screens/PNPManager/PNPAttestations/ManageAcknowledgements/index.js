@@ -830,11 +830,11 @@ const ManageAcknowledgement = () => {
                     </div>
                     <Dialog isOpen={showReviewAndAttestDialog} onClose={() => setShowReviewAndAttestDialog(false)} className={`${style.attestMDDialogBackground} ${style.attestMDDialog}`}>
                         <div className={Classes.DIALOG_BODY}>
-                            <div className={style.dialogTitle}>Medical Directives Review & Attestations</div>
-                            <div className={`${style.dialogDesc} ${style.marginTop20}`}>You are attesting to {checkedIds?.length} Medical Directives that were assigned to you for review.</div>
+                            <div className={style.dialogTitle}>Policies & Procedures Review & Attestations</div>
+                            <div className={`${style.dialogDesc} ${style.marginTop20}`}>You are attesting to {checkedIds?.length} Policies & Procedures that were assigned to you for review.</div>
                             <div>
                                 <div className={` ${style.marginTop10} ${style.leftAlign}`}>
-                                    <CommonCheckBox checked={medicalDirectivesAttestation} label={'I certify that I have read the Medical Directives assigned to me and have a good understanding of them.'}
+                                    <CommonCheckBox checked={medicalDirectivesAttestation} label={'I certify that I have read the Policies & Procedures assigned to me and have a good understanding of them.'}
                                         onChange={(e) => setMedicalDirectivesAttestation(e.target.checked)} />
                                 </div>
                                 <div className={`${medicalDirectivesAttestation ? "" : style.disabled} ${style.displayInRow} ${style.verticalAlignCenter}`}>
