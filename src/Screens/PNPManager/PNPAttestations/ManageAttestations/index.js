@@ -259,7 +259,7 @@ const ManageAttestation = () => {
 
     const getGroupList = async () => {
         const response = await GET(
-            `medical-directive-service/medicalDirectiveGroup`
+            `policy-and-procedure-management-service/policyAndProceduresGroup`
         );
         console.log(response.data);
         setGroupList(response?.data)
@@ -275,7 +275,7 @@ const ManageAttestation = () => {
 
     const getAttestationMetaList = async () => {
         const response = await GET(
-            `medical-directive-service/attestation/byUser/meta`
+            `policy-and-procedure-management-service/attestation/byUser/meta`
         );
         console.log(response.data);
         setAttestationMeta(response?.data)
@@ -283,7 +283,7 @@ const ManageAttestation = () => {
 
     const getAttestationList = async (signal) => {
         const response = await POST(
-            `medical-directive-service/attestation/byUser?offset=${page - 1}&limit=${limit}&isPaginationRequired=${isPaginationRequired}&userId=${users?.id}&tab=${selectedOption}`, advancedSearch, { signal }
+            `policy-and-procedure-management-service/attestation/byUser?offset=${page - 1}&limit=${limit}&isPaginationRequired=${isPaginationRequired}&userId=${users?.id}&tab=${selectedOption}`, advancedSearch, { signal }
         );
         console.log(response.data);
         setAttestationList(response?.data?.medicalDirectives)
@@ -509,7 +509,7 @@ const ManageAttestation = () => {
     }
 
     const handleEdit = (data) => {
-        navigate(`/mdManager/manageAttestation/${entityId}/${data?.medicalDirective?.id}`)
+        navigate(`/pnpManager/manageAttestation/${entityId}/${data?.medicalDirective?.id}`)
     }
 
     const handleSubmitAttestBulk = async () => {
@@ -527,7 +527,7 @@ const ManageAttestation = () => {
             }
         }
         console.log(temp, 'checkedIds', users)
-        await POST(`medical-directive-service/medicalDirectives/attest/bulk`, temp)
+        await POST(`policy-and-procedure-management-service/policyAndProcedures/attest/bulk`, temp)
             .then(response => {
                 getAttestationList();
                 getAttestationMetaList();

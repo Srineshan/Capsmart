@@ -182,7 +182,7 @@ const PNPManager = () => {
 
   const getGroupList = async () => {
     const response = await GET(
-      `medical-directive-service/medicalDirectiveGroup`
+      `policy-and-procedure-management-service/policyAndProceduresGroup`
     );
     console.log(response.data);
     setGroupList(response?.data)
@@ -190,7 +190,7 @@ const PNPManager = () => {
 
   const getMDByID = async () => {
     const response = await GET(
-      `medical-directive-service/medicalDirectives/${selectedMdId}`
+      `policy-and-procedure-management-service/policyAndProcedures/${selectedMdId}`
     );
     console.log(response.data, 'mdValue');
     setMdValue(response?.data)

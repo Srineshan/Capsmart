@@ -292,7 +292,7 @@ const ManageSignOff = () => {
 
     const getGroupList = async () => {
         const response = await GET(
-            `medical-directive-service/medicalDirectiveGroup`
+            `policy-and-procedure-management-service/policyAndProceduresGroup`
         );
         console.log(response.data);
         setGroupList(response?.data)
@@ -308,7 +308,7 @@ const ManageSignOff = () => {
 
     const getAttestationMetaList = async () => {
         const response = await GET(
-            `medical-directive-service/medicalDirectives/signOff/meta?assignedUserIds=${loggedInUser}&role=${sessionStorage.getItem('workModeType')}&noOfDays=${30}`
+            `policy-and-procedure-management-service/policyAndProcedures/signOff/meta?assignedUserIds=${loggedInUser}&role=${sessionStorage.getItem('workModeType')}&noOfDays=${30}`
         );
         console.log(response.data);
         setAttestationMeta(response?.data)
@@ -317,9 +317,9 @@ const ManageSignOff = () => {
     const getAttestationList = async (signal) => {
         let url = '';
         if (selectedOption === 'completed') {
-            url = `medical-directive-service/medicalDirectives/signOff?tab=level-3&role=${sessionStorage.getItem('workModeType')}&assignedUserIds=${loggedInUser}&status=${selectedOption}&noOfDays=${30}&sortBy=${sortValue}&sortByField=${sortField}`
+            url = `policy-and-procedure-management-service/policyAndProcedures/signOff?tab=level-3&role=${sessionStorage.getItem('workModeType')}&assignedUserIds=${loggedInUser}&status=${selectedOption}&noOfDays=${30}&sortBy=${sortValue}&sortByField=${sortField}`
         } else {
-            url = `medical-directive-service/medicalDirectives/signOff?tab=level-3&role=${sessionStorage.getItem('workModeType')}&assignedUserIds=${loggedInUser}&status=${selectedOption}&sortBy=${sortValue}&sortByField=${sortField}`
+            url = `policy-and-procedure-management-service/policyAndProcedures/signOff?tab=level-3&role=${sessionStorage.getItem('workModeType')}&assignedUserIds=${loggedInUser}&status=${selectedOption}&sortBy=${sortValue}&sortByField=${sortField}`
         }
         const response = await GET(url, { signal });
         console.log(response.data);
@@ -561,7 +561,7 @@ const ManageSignOff = () => {
     }
 
     const handleEdit = (data) => {
-        navigate(`/mdManager/manageSignOff/${entityId}/${data?.medicalDirective?.id}`)
+        navigate(`/pnpManager/manageSignOff/${entityId}/${data?.medicalDirective?.id}`)
     }
 
     const handleSubmitAttestBulk = async () => {
@@ -579,7 +579,7 @@ const ManageSignOff = () => {
             }
         }
         console.log(temp, 'checkedIds', users)
-        await POST(`medical-directive-service/medicalDirectives/attest/bulk`, temp)
+        await POST(`policy-and-procedure-management-service/policyAndProcedures/attest/bulk`, temp)
             .then(response => {
                 getAttestationList();
                 getAttestationMetaList();

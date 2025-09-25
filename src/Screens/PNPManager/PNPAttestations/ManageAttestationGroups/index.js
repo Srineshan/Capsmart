@@ -236,7 +236,7 @@ const ManageAttestationGroups = () => {
 
     const getGroupListById = async (id) => {
         const response = await GET(
-            `medical-directive-service/medicalDirectiveGroup/${id}`
+            `policy-and-procedure-management-service/policyAndProceduresGroup/${id}`
         );
         console.log(response.data);
         setGroupTitle(response?.data?.name)
@@ -249,7 +249,7 @@ const ManageAttestationGroups = () => {
 
     const getGroupList = async (signal) => {
         const response = await GET(
-            `medical-directive-service/medicalDirectiveGroup?type=${selectedGroupType}`, { signal }
+            `policy-and-procedure-management-service/policyAndProceduresGroup?type=${selectedGroupType}`, { signal }
         );
         console.log(response.data, 'group');
         setGroupList(response?.data)
@@ -281,7 +281,7 @@ const ManageAttestationGroups = () => {
 
     const handleDelete = async (id) => {
         try {
-            const response = await DELETE(`medical-directive-service/medicalDirectiveGroup/${id}`);
+            const response = await DELETE(`policy-and-procedure-management-service/policyAndProceduresGroup/${id}`);
             if (response?.response?.status === 400) {
                 ErrorToaster2(response?.response?.data);
             } else {
@@ -516,7 +516,7 @@ const ManageAttestationGroups = () => {
 
         console.log(data)
         if (!groupById) {
-            await POST(`medical-directive-service/medicalDirectiveGroup`, data)
+            await POST(`policy-and-procedure-management-service/policyAndProceduresGroup`, data)
                 .then(response => {
                     SuccessToaster2('Group Added Successfully');
                     console.log(response?.data)
@@ -526,7 +526,7 @@ const ManageAttestationGroups = () => {
                     ErrorToaster2('Something Failed. Please Try later!');
                 })
         } else {
-            await PUT(`medical-directive-service/medicalDirectiveGroup/${groupById?.id}`, data)
+            await PUT(`policy-and-procedure-management-service/policyAndProceduresGroup/${groupById?.id}`, data)
                 .then(response => {
                     SuccessToaster2('Group Updated Successfully');
                     console.log(response?.data)

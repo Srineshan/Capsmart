@@ -31,7 +31,7 @@ const dropzoneStyle = {
 
 const ManagePNPSignOff = () => {
     const { entityId, medicalDirectivesId } = useParams();
-    const [medicalDirectives, setMedicalDirectives] = useState()
+    const [policyAndProcedures, setPolicyAndProcedures] = useState()
     const [medicalDirectivesAttestationLog, setMedicalDirectivesAttestationLog] = useState()
     const iframeRef = useRef(null);
     const navigate = useNavigate()
@@ -125,18 +125,18 @@ const ManagePNPSignOff = () => {
 
     const getMedicalDirectives = async () => {
         if (medicalDirectivesId !== undefined) {
-            const { data: medicalDirectives } = await GET(
-                `medical-directive-service/medicalDirectives/${medicalDirectivesId}`
+            const { data: policyAndProcedures } = await GET(
+                `policy-and-procedure-management-service/policyAndProcedures/${medicalDirectivesId}`
             );
-            setMedicalDirectives(medicalDirectives);
-            console.log(medicalDirectives, 'medicalDirectives')
+            setPolicyAndProcedures(policyAndProcedures);
+            console.log(policyAndProcedures, 'policyAndProcedures')
         }
     }
 
     const getAttestationLog = async () => {
         if (medicalDirectivesId !== undefined) {
             const { data: medicalDirectivesAttestationLog } = await GET(
-                `medical-directive-service/attestationLog?medicalDirectiveId=${medicalDirectivesId}&userId=${users?.id}`
+                `policy-and-procedure-management-service/attestationLog?medicalDirectiveId=${medicalDirectivesId}&userId=${users?.id}`
             );
             setMedicalDirectivesAttestationLog(medicalDirectivesAttestationLog)
             console.log(medicalDirectivesAttestationLog, 'medicalDirectivesAttestationLog')
@@ -169,9 +169,9 @@ const ManagePNPSignOff = () => {
                 signedDate: isSigned ? format(new Date(), canadaData?.dateFormat || 'dd/MM/yyyy') : ''
             }
         }
-        await POST(`medical-directive-service/medicalDirectives/${medicalDirectivesId}/attest`, temp)
+        await POST(`policy-and-procedure-management-service/policyAndProcedures/${medicalDirectivesId}/attest`, temp)
             .then(response => {
-                navigate(`/mdManager/manageSignOff`);
+                navigate(`/pnpManager/manageSignOff`);
                 getAttestationLog();
                 console.log(response, response?.response?.data)
             })
@@ -215,13 +215,13 @@ const ManagePNPSignOff = () => {
         });
         formData.append('workFlowActionDetailsDTO', blob);
         console.log(data, fileNameArray, approvalStatus)
-        await PUT(`medical-directive-service/medicalDirectives/${medicalDirectivesId}/workflowAction/${approvalStatus}`, formData)
+        await PUT(`policy-and-procedure-management-service/policyAndProcedures/${medicalDirectivesId}/workflowAction/${approvalStatus}`, formData)
         setShowSendToDialog(false);
         handleClose();
     }
 
     const handleClose = () => {
-        navigate(`/mdManager/manageSignOff`);
+        navigate(`/pnpManager/manageSignOff`);
     }
 
     const checkRequirements = () => {
@@ -245,7 +245,7 @@ const ManagePNPSignOff = () => {
     return (
         <div className={style.screenBackground}>
             <div className={style.welcomeText}>
-                <ApplicationHeader title={`${medicalDirectives?.title}`} close={true} closeClick={handleClose} />
+                <ApplicationHeader title={`${policyAndProcedures?.title}`} close={true} closeClick={handleClose} />
             </div>
             <div className={style.headerData}>
                 <span style={{ marginLeft: '20px' }}>Ordering Of Laboratory Investigations - IPAC</span>
@@ -255,20 +255,20 @@ const ManagePNPSignOff = () => {
             </div>
             <div className={style.screenPadding}>
                 {/* <div>
-                    <div className={style.breadcrumbStyle}>{`REAPPOINTMENT APPLICATION > MEDICAL DIRECTIVES STATUS >> ${medicalDirectives?.title}`}</div>
+                    <div className={style.breadcrumbStyle}>{`REAPPOINTMENT APPLICATION > MEDICAL DIRECTIVES STATUS >> ${policyAndProcedures?.title}`}</div>
                 </div> */}
                 <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
                     <div>
                         <div className={style.medicalDirectivesCard}>
-                            <div className={style.title}>{`${medicalDirectives?.title}`} <span className={style.mdIDStyle}>{medicalDirectives?.mdID}</span></div>
+                            <div className={style.title}>{`${policyAndProcedures?.title}`} <span className={style.mdIDStyle}>{policyAndProcedures?.mdID}</span></div>
                             {(!isScrolledToBottom) && (
                                 <div className={`${style.marginTop10} ${style.description} ${style.attestationRequiredText}`}>You need to scroll to the end of the document before you can certify that it has been viewed by you.</div>
                             )}
                         </div>
                         <div className={`${style.medicalDirectivesCard} ${style.marginTop}`}>
-                            <CommonPdfViewer pdfurl={medicalDirectives?.file?.fileURL} setIsScrolledToBottom={setIsScrolledToBottom} />
+                            <CommonPdfViewer pdfurl={policyAndProcedures?.file?.fileURL} setIsScrolledToBottom={setIsScrolledToBottom} />
 
-                            {/* <iframe src={`${medicalDirectives?.file?.fileURL}`} className={style.pdfDisplay} ref={iframeRef} /> */}
+                            {/* <iframe src={`${policyAndProcedures?.file?.fileURL}`} className={style.pdfDisplay} ref={iframeRef} /> */}
                         </div>
                     </div>
                     <div>
@@ -452,7 +452,7 @@ const ManagePNPSignOff = () => {
                         </div>
                         <div className={`${style.pagebreak}`}>
                             <div className={style.medicalDirectivesCard}>
-                                <div className={style.title}>{`${medicalDirectives?.title}`} <span className={style.mdIDStyle}>{medicalDirectives?.mdID}</span></div>
+                                <div className={style.title}>{`${policyAndProcedures?.title}`} <span className={style.mdIDStyle}>{policyAndProcedures?.mdID}</span></div>
                             </div>
                             <div className={`${style.marginTop10}`}>
                                 <CKEditor

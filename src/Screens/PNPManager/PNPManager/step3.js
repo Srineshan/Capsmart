@@ -155,7 +155,7 @@ const PNPManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, se
 
     const getWorkflow = async () => {
         const response = await GET(
-            `medical-directive-service/medicalDirectives/${mdValue?.id}/workflow`
+            `policy-and-procedure-management-service/policyAndProcedures/${mdValue?.id}/workflow`
         );
         if (response?.data) {
             setCreatedWorkflowStructure(response?.data)
@@ -214,7 +214,7 @@ const PNPManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, se
 
     const getGroupList = async () => {
         const response = await GET(
-            `medical-directive-service/medicalDirectiveGroup`
+            `policy-and-procedure-management-service/policyAndProceduresGroup`
         );
         console.log(response.data);
         setGroupList(response?.data)
@@ -222,7 +222,7 @@ const PNPManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, se
 
     const getGroupListById = async (id) => {
         const response = await GET(
-            `medical-directive-service/medicalDirectiveGroup/${id}`
+            `policy-and-procedure-management-service/policyAndProceduresGroup/${id}`
         );
         console.log(response.data);
         setGroupTitle(response?.data?.name)
@@ -242,7 +242,7 @@ const PNPManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, se
 
     const getPublicationWorkflow = async () => {
         const response = await GET(
-            `medical-directive-service/publicationWorkFlow`
+            `policy-and-procedure-management-service/publicationWorkFlow`
         );
         setWorkflowStructure(response.data?.[0])
         console.log(response.data?.[0], 'workflow');
@@ -356,7 +356,7 @@ const PNPManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, se
 
     const handlePublish = async (data) => {
         try {
-            const { data: publishedMD } = await POST(`medical-directive-service/medicalDirectives/${mdValue?.id}/publish`);
+            const { data: publishedMD } = await POST(`policy-and-procedure-management-service/policyAndProcedures/${mdValue?.id}/publish`);
             SuccessToaster2('Policy & Procedure published successfully');
         } catch (error) {
             console.error(error);
@@ -426,7 +426,7 @@ const PNPManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, se
 
         console.log(data)
 
-        await PUT(`medical-directive-service/medicalDirectives/${mdValue?.id}`, formData)
+        await PUT(`policy-and-procedure-management-service/policyAndProcedures/${mdValue?.id}`, formData)
             .then(response => {
                 SuccessToaster2('PNP Updateded Successfully');
                 console.log(response?.data)
@@ -437,7 +437,7 @@ const PNPManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, se
             })
         // if (isPublish) {
         //     try {
-        //         const { data: publishedMD } = await POST(`medical-directive-service/medicalDirectives/${mdValue?.id}/publish`);
+        //         const { data: publishedMD } = await POST(`policy-and-procedure-management-service/policyAndProcedures/${mdValue?.id}/publish`);
         //         SuccessToaster2('Policy & Procedure published successfully');
         //     } catch (error) {
         //         console.error(error);
@@ -471,7 +471,7 @@ const PNPManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, se
         }
         if (workflowEdited || mdValue?.workflowStatus === "NA") {
             if (mdValue?.workflowStatus === "NA") {
-                await POST(`medical-directive-service/medicalDirectives/${mdValue?.id}/workflow`, acknowledgementData)
+                await POST(`policy-and-procedure-management-service/policyAndProcedures/${mdValue?.id}/workflow`, acknowledgementData)
                     .then(response => {
                         SuccessToaster2('Workflow Added Successfully');
                     })
@@ -479,7 +479,7 @@ const PNPManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, se
                         ErrorToaster2('Something Failed. Please Try later!');
                     })
             } else {
-                await PUT(`medical-directive-service/medicalDirectives/${mdValue?.id}/workflow`, acknowledgementData)
+                await PUT(`policy-and-procedure-management-service/policyAndProcedures/${mdValue?.id}/workflow`, acknowledgementData)
                     .then(response => {
                         SuccessToaster2('Workflow Added Successfully');
                     })
@@ -489,7 +489,7 @@ const PNPManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, se
             }
         }
         if (isSaveInProgress) {
-            await PUT(`medical-directive-service/medicalDirectives/${mdValue?.id}/saveInprogress`, 'step3')
+            await PUT(`policy-and-procedure-management-service/policyAndProcedures/${mdValue?.id}/saveInprogress`, 'step3')
             handleClose()
         } else {
             setStep3(false)
@@ -517,7 +517,7 @@ const PNPManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, se
 
         console.log(data)
         if (!groupById) {
-            await POST(`medical-directive-service/medicalDirectiveGroup`, data)
+            await POST(`policy-and-procedure-management-service/policyAndProceduresGroup`, data)
                 .then(response => {
                     SuccessToaster2('Group Added Successfully');
                     console.log(response?.data)
@@ -527,7 +527,7 @@ const PNPManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, se
                     ErrorToaster2('Something Failed. Please Try later!');
                 })
         } else {
-            await PUT(`medical-directive-service/medicalDirectiveGroup/${groupById?.id}`, data)
+            await PUT(`policy-and-procedure-management-service/policyAndProceduresGroup/${groupById?.id}`, data)
                 .then(response => {
                     SuccessToaster2('Group Updated Successfully');
                     console.log(response?.data)
@@ -580,7 +580,7 @@ const PNPManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, se
             }
         }
         console.log(workflowStructure?.approvalFlowMap?.workflow[2]?.flowDetails?.[0]?.approvalBy === 'GROUP', data)
-        await POST(`medical-directive-service/medicalDirectives/${mdValue?.id}/workflow`, data)
+        await POST(`policy-and-procedure-management-service/policyAndProcedures/${mdValue?.id}/workflow`, data)
             .then(response => {
                 SuccessToaster2('Workflow Added Successfully');
             })
@@ -588,7 +588,7 @@ const PNPManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, se
                 ErrorToaster2('Something Failed. Please Try later!');
             })
         if (type === 'Save_And_Start') {
-            await PUT(`medical-directive-service/medicalDirectives/${mdValue?.id}/startWorkflow`)
+            await PUT(`policy-and-procedure-management-service/policyAndProcedures/${mdValue?.id}/startWorkflow`)
                 .then(response => {
                     SuccessToaster2('Sign Off Started Successfully');
                 })

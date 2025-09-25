@@ -41,7 +41,7 @@ const PNPManagerStep2 = ({ setStep1, setStep2, setStep3, mdValue, getMD, setMdVa
 
         console.log(data)
 
-        await PUT(`medical-directive-service/medicalDirectives/${mdValue?.id}`, formData)
+        await PUT(`policy-and-procedure-management-service/policyAndProcedures/${mdValue?.id}`, formData)
             .then(response => {
                 SuccessToaster2('PNP Uploaded Successfully');
                 console.log(response?.data)
@@ -54,7 +54,7 @@ const PNPManagerStep2 = ({ setStep1, setStep2, setStep3, mdValue, getMD, setMdVa
 
     }
     const handleSaveInProgress = async () => {
-        await PUT(`medical-directive-service/medicalDirectives/${mdValue?.id}/saveInprogress`, 'step2')
+        await PUT(`policy-and-procedure-management-service/policyAndProcedures/${mdValue?.id}/saveInprogress`, 'step2')
             .then(response => {
                 SuccessToaster2('PNP Saved Successfully');
                 console.log(response?.data)

@@ -17,7 +17,7 @@ import CommonDivider from '../../../../Components/CommonFields/CommonDivider';
 
 const PNPAttestStatus = () => {
     const { entityId, medicalDirectivesId } = useParams();
-    const [medicalDirectives, setMedicalDirectives] = useState()
+    const [policyAndProcedures, setPolicyAndProcedures] = useState()
     const [medicalDirectivesSummary, setMedicalDirectivesSummary] = useState()
     const [medicalDirectivesAttestationLog, setMedicalDirectivesAttestationLog] = useState()
     const iframeRef = useRef(null);
@@ -54,7 +54,7 @@ const PNPAttestStatus = () => {
 
     useEffect(() => {
         getMDLogs()
-    }, [medicalDirectives])
+    }, [policyAndProcedures])
 
 
     // useEffect(() => {
@@ -116,22 +116,22 @@ const PNPAttestStatus = () => {
 
     const getMedicalDirectives = async () => {
         if (medicalDirectivesId !== undefined) {
-            const { data: medicalDirectives } = await GET(
-                `medical-directive-service/medicalDirectives/${medicalDirectivesId}`
+            const { data: policyAndProcedures } = await GET(
+                `policy-and-procedure-management-service/policyAndProcedures/${medicalDirectivesId}`
             );
-            setMedicalDirectives(medicalDirectives);
+            setPolicyAndProcedures(policyAndProcedures);
             const { data: medicalDirectivesSummary } = await GET(
-                `medical-directive-service/medicalDirectives/${medicalDirectivesId}/attestationSummaryByGroup`
+                `policy-and-procedure-management-service/policyAndProcedures/${medicalDirectivesId}/attestationSummaryByGroup`
             );
             setMedicalDirectivesSummary(medicalDirectivesSummary);
-            console.log(medicalDirectives, 'medicalDirectives', medicalDirectivesSummary)
+            console.log(policyAndProcedures, 'policyAndProcedures', medicalDirectivesSummary)
         }
     }
 
     const getMDLogs = async () => {
         if (medicalDirectivesId !== undefined) {
             const { data: medicalDirectivesLog } = await GET(
-                `medical-directive-service/medicalDirectives/${medicalDirectivesId}/logs?workflowAction=${medicalDirectives?.status === "INACTIVE" ? 'RETIRED' : 'REVISED'}`
+                `policy-and-procedure-management-service/policyAndProcedures/${medicalDirectivesId}/logs?workflowAction=${policyAndProcedures?.status === "INACTIVE" ? 'RETIRED' : 'REVISED'}`
             );
             setMDLog(medicalDirectivesLog)
         }
@@ -140,7 +140,7 @@ const PNPAttestStatus = () => {
     const getAttestationLog = async () => {
         if (medicalDirectivesId !== undefined) {
             const { data: medicalDirectivesAttestationLog } = await GET(
-                `medical-directive-service/attestationLog?medicalDirectiveId=${medicalDirectivesId}&userId=${users?.id}`
+                `policy-and-procedure-management-service/attestationLog?medicalDirectiveId=${medicalDirectivesId}&userId=${users?.id}`
             );
             setMedicalDirectivesAttestationLog(medicalDirectivesAttestationLog)
             console.log(medicalDirectivesAttestationLog, 'medicalDirectivesAttestationLog')
@@ -166,7 +166,7 @@ const PNPAttestStatus = () => {
                 signedDate: isSigned ? format(new Date(), canadaData?.dateFormat || 'dd/MM/yyyy') : ''
             }
         }
-        await POST(`medical-directive-service/medicalDirectives/${medicalDirectivesId}/attest`, temp)
+        await POST(`policy-and-procedure-management-service/policyAndProcedures/${medicalDirectivesId}/attest`, temp)
             .then(response => {
                 navigate(`/tenant/${entityId}/medicalDirectives`);
                 getAttestationLog();
@@ -178,16 +178,16 @@ const PNPAttestStatus = () => {
     }
 
     const handleClose = () => {
-        if (medicalDirectives?.status !== "INACTIVE") {
-            navigate(`/mdManager`);
+        if (policyAndProcedures?.status !== "INACTIVE") {
+            navigate(`/pnpManager`);
         } else {
-            navigate(`/mdManager/retired`);
+            navigate(`/pnpManager/retired`);
         }
     }
     return (
         <div className={style.screenBackground}>
             <div className={style.welcomeText}>
-                <ApplicationHeader title={`${medicalDirectives?.title ? `${medicalDirectives?.mdID} : ${medicalDirectives?.title}` : ''}`} close={true} closeClick={handleClose} />
+                <ApplicationHeader title={`${policyAndProcedures?.title ? `${policyAndProcedures?.mdID} : ${policyAndProcedures?.title}` : ''}`} close={true} closeClick={handleClose} />
             </div>
             <div className={style.headerData}>
                 <span style={{ marginLeft: '20px' }}>Ordering Of Laboratory Investigations - IPAC</span>
@@ -197,25 +197,25 @@ const PNPAttestStatus = () => {
             </div>
             <div className={style.screenPadding}>
                 {/* <div>
-                    <div className={style.breadcrumbStyle}>{`REAPPOINTMENT APPLICATION > MEDICAL DIRECTIVES STATUS >> ${medicalDirectives?.title}`}</div>
+                    <div className={style.breadcrumbStyle}>{`REAPPOINTMENT APPLICATION > MEDICAL DIRECTIVES STATUS >> ${policyAndProcedures?.title}`}</div>
                 </div> */}
                 <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
                     <div>
-                        {medicalDirectives?.description && (
+                        {policyAndProcedures?.description && (
                             <div className={style.medicalDirectivesCard}>
-                                <div className={style.title}>{`${medicalDirectives?.description}`}</div>
+                                <div className={style.title}>{`${policyAndProcedures?.description}`}</div>
                             </div>
                         )}
-                        <div className={`${style.medicalDirectivesCard} ${medicalDirectives?.description ? style.marginTop : ''}`}>
-                            <CommonPdfViewer pdfurl={medicalDirectives?.file?.fileURL} />
+                        <div className={`${style.medicalDirectivesCard} ${policyAndProcedures?.description ? style.marginTop : ''}`}>
+                            <CommonPdfViewer pdfurl={policyAndProcedures?.file?.fileURL} />
 
-                            {/* <iframe src={`${medicalDirectives?.file?.fileURL}`} className={style.pdfDisplay} ref={iframeRef} /> */}
+                            {/* <iframe src={`${policyAndProcedures?.file?.fileURL}`} className={style.pdfDisplay} ref={iframeRef} /> */}
                         </div>
                     </div>
                     <div>
                         {/* {!isScrolledToBottom && (
                             <div className={style.medicalDirectivesCard}>
-                                <div className={style.title}>{`Attestation Due In ${medicalDirectives?.noOfDaysToAttest} Days`} </div>
+                                <div className={style.title}>{`Attestation Due In ${policyAndProcedures?.noOfDaysToAttest} Days`} </div>
                             </div>
                         )}
                         <div className={`${style.medicalDirectivesCard} ${style.marginTop10} ${style.stickyContainer}`}>
@@ -278,7 +278,7 @@ const PNPAttestStatus = () => {
                                 </>
                             )}
                         </div> */}
-                        {medicalDirectives?.status !== "INACTIVE" ? (
+                        {policyAndProcedures?.status !== "INACTIVE" ? (
                             <>
                                 <div className={`${style.medicalDirectivesCard}`}>
                                     <div className={style.title}><strong>{`Attestations Status`} </strong></div>

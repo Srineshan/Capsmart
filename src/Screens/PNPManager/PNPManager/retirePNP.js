@@ -159,7 +159,7 @@ const RetirePNP = () => {
     };
 
     const getDashboard = async (signal) => {
-        const { data: dashboardData } = await POST(`medical-directive-service/medicalDirectives/dashboard?offset=${page - 1}&limit=${limit}&isPaginationRequired=${isPaginationRequired}&tab=${"inactive_md"}&role=${sessionStorage.getItem('workModeType')}`, advancedSearch, { signal });
+        const { data: dashboardData } = await POST(`policy-and-procedure-management-service/policyAndProcedures/dashboard?offset=${page - 1}&limit=${limit}&isPaginationRequired=${isPaginationRequired}&tab=${"inactive_md"}&role=${sessionStorage.getItem('workModeType')}`, advancedSearch, { signal });
         setDashboardData(dashboardData?.medicalDirectives);
         setTotalTableCount(dashboardData?.numberOfElements);
     }
@@ -206,7 +206,7 @@ const RetirePNP = () => {
 
     const getGroupList = async () => {
         const response = await GET(
-            `medical-directive-service/medicalDirectiveGroup`
+            `policy-and-procedure-management-service/policyAndProceduresGroup`
         );
         console.log(response.data);
         setGroupList(response?.data)
@@ -214,7 +214,7 @@ const RetirePNP = () => {
 
     const getMDByID = async () => {
         const response = await GET(
-            `medical-directive-service/medicalDirectives/${selectedMdId}`
+            `policy-and-procedure-management-service/policyAndProcedures/${selectedMdId}`
         );
         console.log(response.data, 'mdValue');
         setMdValue(response?.data)
@@ -365,7 +365,7 @@ const RetirePNP = () => {
     };
 
     const handleView = (data) => {
-        navigate(`/mdManager/mdAttestStatus/${TenantID}/${data?.id}`)
+        navigate(`/pnpManager/mdAttestStatus/${TenantID}/${data?.id}`)
     }
 
     const actionsData = [

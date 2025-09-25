@@ -211,7 +211,7 @@ const PNPLibrary = () => {
 
     const getGroupList = async () => {
         const response = await GET(
-            `medical-directive-service/medicalDirectiveGroup`
+            `policy-and-procedure-management-service/policyAndProceduresGroup`
         );
         console.log(response.data);
         setGroupList(response?.data)
@@ -280,8 +280,8 @@ const PNPLibrary = () => {
     };
 
     const getDashboard = async (signal) => {
-        let url = `medical-directive-service/medicalDirectives/dashboard?offset=${page - 1}&limit=${limit}&isPaginationRequired=${isPaginationRequired}&role=${sessionStorage.getItem('workModeType')}`
-        // const { data: dashboardData } = await POST(`medical-directive-service/medicalDirectives/dashboard?offset=${page - 1}&limit=${limit}&isPaginationRequired=${isPaginationRequired}&tab=${selectedOption === "Current Policies & Procedures" ? "active_md" : selectedOption === "Policies & Procedures Revisions" ? "md_revisions" : selectedOption === "Draft Policies & Procedures" ? "draft_md" : ""}`, advancedSearch, { signal });
+        let url = `policy-and-procedure-management-service/policyAndProcedures/dashboard?offset=${page - 1}&limit=${limit}&isPaginationRequired=${isPaginationRequired}&role=${sessionStorage.getItem('workModeType')}`
+        // const { data: dashboardData } = await POST(`policy-and-procedure-management-service/policyAndProcedures/dashboard?offset=${page - 1}&limit=${limit}&isPaginationRequired=${isPaginationRequired}&tab=${selectedOption === "Current Policies & Procedures" ? "active_md" : selectedOption === "Policies & Procedures Revisions" ? "md_revisions" : selectedOption === "Draft Policies & Procedures" ? "draft_md" : ""}`, advancedSearch, { signal });
         // setDashboardData(dashboardData?.medicalDirectives);
         // setTotalTableCount(dashboardData?.numberOfElements);
         let data = {
@@ -316,7 +316,7 @@ const PNPLibrary = () => {
     }
 
     const getLibraryMeta = async () => {
-        let url = `medical-directive-service/medicalDirectives/library/meta?siteDepartmentSpecialties=${[selectedDepartmentSpecialities !== "" ? `${selectedSite}%23${selectedDepartmentSpecialities?.replace(/#/g, "%23")}` : `${selectedSite}%23${departmentId}`]}`
+        let url = `policy-and-procedure-management-service/policyAndProcedures/library/meta?siteDepartmentSpecialties=${[selectedDepartmentSpecialities !== "" ? `${selectedSite}%23${selectedDepartmentSpecialities?.replace(/#/g, "%23")}` : `${selectedSite}%23${departmentId}`]}`
         const response = await axios(`${baseUrl()}/${url}`, {
             method: "GET",
             headers: {

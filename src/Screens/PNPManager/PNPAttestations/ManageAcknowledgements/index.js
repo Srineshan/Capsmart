@@ -294,7 +294,7 @@ const ManageAcknowledgement = () => {
 
     const getGroupList = async () => {
         const response = await GET(
-            `medical-directive-service/medicalDirectiveGroup`
+            `policy-and-procedure-management-service/policyAndProceduresGroup`
         );
         console.log(response.data);
         setGroupList(response?.data)
@@ -309,20 +309,20 @@ const ManageAcknowledgement = () => {
     }
 
     const getAttestationMetaList = async () => {
-        const response = await GET(`medical-directive-service/medicalDirectives/signOff/meta?assignedUserIds=${loggedInUser}&role=${sessionStorage.getItem('workModeType')}&noOfDays=${30}`);
+        const response = await GET(`policy-and-procedure-management-service/policyAndProcedures/signOff/meta?assignedUserIds=${loggedInUser}&role=${sessionStorage.getItem('workModeType')}&noOfDays=${30}`);
         console.log(response.data);
         setAttestationMeta(response?.data)
     }
 
     const getAttestationList = async (signal) => {
         // const response = await POST(
-        //     `medical-directive-service/attestation/byUser?offset=${page - 1}&limit=${limit}&isPaginationRequired=${isPaginationRequired}&userId=${users?.id}&tab=${selectedOption}`, advancedSearch, { signal }
+        //     `policy-and-procedure-management-service/attestation/byUser?offset=${page - 1}&limit=${limit}&isPaginationRequired=${isPaginationRequired}&userId=${users?.id}&tab=${selectedOption}`, advancedSearch, { signal }
         // );
         let url = '';
         if (selectedOption === 'completed') {
-            url = `medical-directive-service/medicalDirectives/signOff?tab=level-1&role=${sessionStorage.getItem('workModeType')}&assignedUserIds=${loggedInUser}&status=${selectedOption}&noOfDays=${30}&sortBy=${sortValue}&sortByField=${sortField}`
+            url = `policy-and-procedure-management-service/policyAndProcedures/signOff?tab=level-1&role=${sessionStorage.getItem('workModeType')}&assignedUserIds=${loggedInUser}&status=${selectedOption}&noOfDays=${30}&sortBy=${sortValue}&sortByField=${sortField}`
         } else {
-            url = `medical-directive-service/medicalDirectives/signOff?tab=level-1&role=${sessionStorage.getItem('workModeType')}&assignedUserIds=${loggedInUser}&status=${selectedOption}&sortBy=${sortValue}&sortByField=${sortField}`
+            url = `policy-and-procedure-management-service/policyAndProcedures/signOff?tab=level-1&role=${sessionStorage.getItem('workModeType')}&assignedUserIds=${loggedInUser}&status=${selectedOption}&sortBy=${sortValue}&sortByField=${sortField}`
         }
         const response = await GET(url, { signal });
         console.log(response.data);
@@ -566,7 +566,7 @@ const ManageAcknowledgement = () => {
     }
 
     const handleEdit = (data) => {
-        navigate(`/mdManager/manageAcknowledgement/${entityId}/${data?.medicalDirective?.id}`)
+        navigate(`/pnpManager/manageAcknowledgement/${entityId}/${data?.medicalDirective?.id}`)
     }
 
     const handleSubmitAttestBulk = async () => {
@@ -584,7 +584,7 @@ const ManageAcknowledgement = () => {
             }
         }
         console.log(temp, 'checkedIds', users)
-        await POST(`medical-directive-service/medicalDirectives/attest/bulk`, temp)
+        await POST(`policy-and-procedure-management-service/policyAndProcedures/attest/bulk`, temp)
             .then(response => {
                 getAttestationList();
                 getAttestationMetaList();

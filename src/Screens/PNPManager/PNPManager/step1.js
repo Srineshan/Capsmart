@@ -347,9 +347,9 @@ const PNPManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValu
         console.log(mdFile, data)
         if (mdValue?.id) {
             try {
-                const response = await PUT(`medical-directive-service/medicalDirectives/${mdValue?.id}`, formData)
+                const response = await PUT(`policy-and-procedure-management-service/policyAndProcedures/${mdValue?.id}`, formData)
                 if (isSaveInProgress) {
-                    await PUT(`medical-directive-service/medicalDirectives/${mdValue?.id}/saveInprogress`, 'step1')
+                    await PUT(`policy-and-procedure-management-service/policyAndProcedures/${mdValue?.id}/saveInprogress`, 'step1')
                     handleClose()
                 } else {
                     setStep1(false);
@@ -365,13 +365,13 @@ const PNPManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValu
             }
         } else {
             try {
-                const response = await POST(`medical-directive-service/medicalDirectives`, formData)
+                const response = await POST(`policy-and-procedure-management-service/policyAndProcedures`, formData)
                 if (response?.response?.status === 409) {
                     ErrorToaster2(response?.response?.data);
                 } else {
                     SuccessToaster2('PNP Updated Successfully');
                     if (isSaveInProgress) {
-                        await PUT(`medical-directive-service/medicalDirectives/${mdValue?.id}/saveInprogress`, 'step1')
+                        await PUT(`policy-and-procedure-management-service/policyAndProcedures/${mdValue?.id}/saveInprogress`, 'step1')
                         handleClose()
                     } else {
                         setStep1(false);

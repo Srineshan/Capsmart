@@ -228,13 +228,13 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
     };
 
     // const getMDList = async () => {
-    //     const { data: mdList } = await GET(`medical-directive-service/medicalDirectives`);
+    //     const { data: mdList } = await GET(`policy-and-procedure-management-service/policyAndProcedures`);
     //     setMdList(mdList)
     // }
 
     const getPublicationWorkflow = async () => {
         const response = await GET(
-            `medical-directive-service/publicationWorkFlow`
+            `policy-and-procedure-management-service/publicationWorkFlow`
         );
         setWorkflowStructure(response.data?.[0])
         console.log(response.data?.[0], 'workflow');
@@ -242,7 +242,7 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
 
     const getMedicalDirectiveSummaryLevel2 = async (id) => {
         const { data: medicalDirectiveSummaryLevel2 } = await GET(
-            `medical-directive-service/medicalDirectives/${id}/summary?sortBy=${sortValue}&sortByField=${sortField}&limit=${limit}&searchText=${searchTermForTable}&isPaginationRequired=${limit === 9999 ? false : true}&offset=${page - 1}`
+            `policy-and-procedure-management-service/policyAndProcedures/${id}/summary?sortBy=${sortValue}&sortByField=${sortField}&limit=${limit}&searchText=${searchTermForTable}&isPaginationRequired=${limit === 9999 ? false : true}&offset=${page - 1}`
         );
         setSelectedMedicalDirectiveList(medicalDirectiveSummaryLevel2);
         // setAttestationSummaryTotal()
@@ -347,7 +347,7 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
             setIsLoading(true);
 
             const { data: dashboardData } = await POST(
-                `medical-directive-service/medicalDirectives/dashboard?offset=${page - 1}&limit=${limit}&isPaginationRequired=${isPaginationRequired}&role=${sessionStorage.getItem(
+                `policy-and-procedure-management-service/policyAndProcedures/dashboard?offset=${page - 1}&limit=${limit}&isPaginationRequired=${isPaginationRequired}&role=${sessionStorage.getItem(
                     "workModeType"
                 )}&tab=${selectedOption === "Current Policies & Procedures"
                     ? "active_md"
@@ -382,7 +382,7 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
     }
 
     const getDashboardMetadata = async () => {
-        const { data: dashboardMetadata } = await GET(`medical-directive-service/medicalDirectives/dashboard/meta?role=${sessionStorage.getItem('workModeType')}`);
+        const { data: dashboardMetadata } = await GET(`policy-and-procedure-management-service/policyAndProcedures/dashboard/meta?role=${sessionStorage.getItem('workModeType')}`);
         setDashboardMetaData(dashboardMetadata);
         setInactiveMdCount(dashboardMetadata?.inactive_md?.numberOfElements)
         setNewMdCount(dashboardMetadata?.active_md?.newDirectivesCount);
@@ -401,7 +401,7 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
             const { data: users } = await POST(`user-management-service/user/allStaffs?searchText=${advancedSearch?.searchText}`);
             userList = users;
         }
-        const { data: attestationOutstanding } = await GET(`medical-directive-service/medicalDirectives/attestationOutstanding?sortBy=${sortValue}&sortByField=${sortField}&userIds=${userList?.map(data => data?.id)}`);
+        const { data: attestationOutstanding } = await GET(`policy-and-procedure-management-service/policyAndProcedures/attestationOutstanding?sortBy=${sortValue}&sortByField=${sortField}&userIds=${userList?.map(data => data?.id)}`);
         setOutstandingList(attestationOutstanding)
         setTotalTableCount(attestationOutstanding?.length)
     }
@@ -417,7 +417,7 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
             positionType: data?.positionType
         }
         try {
-            const { data: reminder } = await POST(`medical-directive-service/attestation/sendAttestationEmail`, payloadData);
+            const { data: reminder } = await POST(`policy-and-procedure-management-service/attestation/sendAttestationEmail`, payloadData);
             SuccessToaster2('Attestation Outstanding Reminder Sent Successfully');
         } catch (error) {
             console.error(error);
@@ -488,7 +488,7 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
         // console.log(data)
         // setSelectedMedicalDirectiveForApproval(data)
         // setShowUpdateApprovalStatus(true)
-        navigate(`/mdManager/manageMECApproval/${TenantID}/${data?.medicalDirective?.id}`)
+        navigate(`/pnpManager/manageMECApproval/${TenantID}/${data?.medicalDirective?.id}`)
     }
 
     const handleMemberUpdate = (data) => {
@@ -497,7 +497,7 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
         } else {
             sessionStorage.setItem('groupType', 'SIGN_OFF')
         }
-        navigate(`/mdManager/manageAttestationGroups`)
+        navigate(`/pnpManager/manageAttestationGroups`)
     }
 
     const handleApprovalStatus = async (isReviewRequired) => {
@@ -508,7 +508,7 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
             },
             "approvedDate": format(new Date(selectedMACDate), 'yyyy-MM-dd')
         }
-        await PUT(`medical-directive-service/medicalDirectives/${selectedMedicalDirectiveForApproval?.medicalDirective?.id}/workflowAction/${isReviewRequired ? 'REJECTED' : 'APPROVED'}`, data)
+        await PUT(`policy-and-procedure-management-service/policyAndProcedures/${selectedMedicalDirectiveForApproval?.medicalDirective?.id}/workflowAction/${isReviewRequired ? 'REJECTED' : 'APPROVED'}`, data)
             .then(response => {
                 SuccessToaster2('Approval Updated Successfully');
                 getRevisionList();
@@ -542,7 +542,7 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
             type: "application/json"
         });
         formData.append('workFlowActionDetailsDTO', blob);
-        await PUT(`medical-directive-service/medicalDirectives/bulk/workflowAction/${'APPROVED'}`, formData)
+        await PUT(`policy-and-procedure-management-service/policyAndProcedures/bulk/workflowAction/${'APPROVED'}`, formData)
             .then(response => {
                 SuccessToaster2('Approval Updated Successfully');
                 getRevisionList();
@@ -620,7 +620,7 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
 
     const handlePublish = async (data) => {
         try {
-            const { data: publishedMD } = await POST(`medical-directive-service/medicalDirectives/${data?.id}/publish`);
+            const { data: publishedMD } = await POST(`policy-and-procedure-management-service/policyAndProcedures/${data?.id}/publish`);
             getDashboard();
             getDashboardMetadata();
             SuccessToaster2('Policy & Procedure published successfully');
@@ -632,7 +632,7 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
 
     const handleDelete = async (data) => {
         try {
-            const { data: publishedMD } = await DELETE(`medical-directive-service/medicalDirectives/${data?.id}`);
+            const { data: publishedMD } = await DELETE(`policy-and-procedure-management-service/policyAndProcedures/${data?.id}`);
             getDashboard();
             getDashboardMetadata();
             SuccessToaster2('Policy & Procedure deleted successfully');
@@ -643,11 +643,11 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
     }
 
     const handleView = (data) => {
-        navigate(`/mdManager/mdAttestStatus/${TenantID}/${data?.id}`)
+        navigate(`/pnpManager/mdAttestStatus/${TenantID}/${data?.id}`)
     }
 
     const handleViewMEC = (data) => {
-        navigate(`/mdManager/manageMECApproval/${TenantID}/${data?.medicalDirective?.id}`)
+        navigate(`/pnpManager/manageMECApproval/${TenantID}/${data?.medicalDirective?.id}`)
     }
 
     const handleViewAttestationSummary = (data) => {
@@ -660,7 +660,7 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
             notes: retireNotes
         }
         try {
-            const { data: retiredMD } = await PUT(`medical-directive-service/medicalDirectives/${selectedMedicalDirective?.id}/retire`, temp);
+            const { data: retiredMD } = await PUT(`policy-and-procedure-management-service/policyAndProcedures/${selectedMedicalDirective?.id}/retire`, temp);
             getDashboard();
             getDashboardMetadata();
             setSelectedMedicalDirective();
@@ -683,7 +683,7 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
 
     const handleReviseMD = async (data) => {
         try {
-            const revisedMd = await POST(`medical-directive-service/medicalDirectives/${data?.id}/revise`);
+            const revisedMd = await POST(`policy-and-procedure-management-service/policyAndProcedures/${data?.id}/revise`);
             if (revisedMd?.response?.status === 409) {
                 ErrorToaster2('A draft already exists with the same PNP ID. To create a new revision, please delete the existing draft first.');
                 setSelectedMdId(revisedMd?.response?.data?.id);
@@ -727,8 +727,8 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
     const getRevisionList = async () => {
         setIsLoading(true)
         let url = sessionStorage.getItem('workModeType') === "PNP Librarian" ?
-            `medical-directive-service/medicalDirectives/signOff?tab=${selectedSignOffOption}&role=${sessionStorage.getItem('workModeType')}` :
-            `medical-directive-service/medicalDirectives/signOff?tab=${selectedSignOffOption}&role=${sessionStorage.getItem('workModeType')}&assignedUserIds=${loggedInUser?.id}`
+            `policy-and-procedure-management-service/policyAndProcedures/signOff?tab=${selectedSignOffOption}&role=${sessionStorage.getItem('workModeType')}` :
+            `policy-and-procedure-management-service/policyAndProcedures/signOff?tab=${selectedSignOffOption}&role=${sessionStorage.getItem('workModeType')}&assignedUserIds=${loggedInUser?.id}`
         const response = await GET(url);
         console.log(response.data?.medicalDirectivesWithWorkflow);
         setRevisionList(response?.data?.medicalDirectivesWithWorkflow)
@@ -747,7 +747,7 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
 
     const getSignOffMeta = async () => {
         const response = await GET(
-            `medical-directive-service/medicalDirectives/signOff/meta`
+            `policy-and-procedure-management-service/policyAndProcedures/signOff/meta`
         );
         setSignOffMeta(response?.data)
     }
