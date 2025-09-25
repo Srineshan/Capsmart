@@ -418,6 +418,7 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         APPOINTMENT_HISTORY_SUMMARY: 'appointmentHistorySummary',
         INACTIVE_STAFF_SUMMARY_BY_MONTH: 'inactiveStaffSummaryByMonth',
         STAFF_UPLOADED_DOCUMENTS_SUMMARY: 'staffUploadedDocumentsSummary',
+        LOCUM_TERM_EXPIRATION_SUMMARY: 'locumTermExpirationSummary',
         CURRENT_MEDICAL_DIRECTIVES: 'currentMedicalDirectives',
         ATTESTATION_OUTSTANDING: 'attestationOutstanding',
         WORKFLOW: 'workflow',

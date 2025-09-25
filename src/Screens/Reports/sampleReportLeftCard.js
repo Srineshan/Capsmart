@@ -865,9 +865,9 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                     reportType === "submittedApplicationsReviewSummary" || reportType === "staffReappointmentTracker" || reportType === "ohipBillingNumbersByCareProvider" || reportType === "careProviderCareerMilestoneSummary" ||
                     reportType === "declinedOrNotRenewedStaffSummary" || reportType === "reappointmentApplicationNotStarted" || reportType === "currentNotesSummary" || reportType === "staffReappointmentStatusSummary" || reportType === "staffbyTypes" || reportType === "locumStaffbyTypes" || reportType === "locumStaffRenewalStatusTracker" || reportType === "privilegedStaffSummary" || reportType === "careProvidersSummary"
                     || reportType === "workflow" || reportType === "currentMedicalDirectives" || reportType === "retiredMedicalDirectives" || reportType === "upcomingForReview" || reportType === "medicalDirectivesTracker" || reportType === "expiredDocumentsSummaryForStaff" || reportType === "documentsExpirationSummaryForStaff" || reportType === "appointmentHistorySummary" || reportType === "inactiveStaffSummary"
-                    || reportType === "newStaffAppointmentsSummary" || reportType === "inactiveStaffSummaryByMonth" || reportType === "staffUploadedDocumentsSummary") ? (
+                    || reportType === "newStaffAppointmentsSummary" || reportType === "inactiveStaffSummaryByMonth" || reportType === "staffUploadedDocumentsSummary" || reportType === "locumTermExpirationSummary") ? (
                     <>
-                        {reportType !== "staffReappointmentTracker" && reportType !== "ohipBillingNumbersByCareProvider" && reportType !== "privilegedStaffSummary" && reportType !== "locumStaffbyTypes" && reportType !== "currentNotesSummary" && reportType !== "staffbyTypes" && reportType !== "locumStaffRenewalStatusTracker" && reportType !== 'staffReappointmentStatusSummary' && reportType !== "workflow" && reportType !== "currentMedicalDirectives" && reportType !== "retiredMedicalDirectives" && reportType !== "upcomingForReview" && reportType !== "medicalDirectivesTracker" && reportType !== "reappointmentApplicationNotStarted" && reportType !== "locumRenewalOrExtensionApplicationsSummary" && reportType !== "declinedOrNotRenewedStaffSummary" && (
+                        {reportType !== "staffReappointmentTracker" && reportType !== "ohipBillingNumbersByCareProvider" && reportType !== "privilegedStaffSummary" && reportType !== "locumStaffbyTypes" && reportType !== "currentNotesSummary" && reportType !== "staffbyTypes" && reportType !== "locumStaffRenewalStatusTracker" && reportType !== 'staffReappointmentStatusSummary' && reportType !== "workflow" && reportType !== "currentMedicalDirectives" && reportType !== "retiredMedicalDirectives" && reportType !== "upcomingForReview" && reportType !== "medicalDirectivesTracker" && reportType !== "reappointmentApplicationNotStarted" && reportType !== "locumRenewalOrExtensionApplicationsSummary" && reportType !== "declinedOrNotRenewedStaffSummary" && reportType !== "expiredDocumentsSummaryForStaff" && reportType !== "documentsExpirationSummaryForStaff" && reportType !== "inactiveStaffSummary" && reportType !== "appointmentHistorySummary" && (
                             <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                                 <InputLabel id="demo-multiple-name-label1" className={style.headingtextStyle}>Reporting Time Period</InputLabel>
                                 <Select
@@ -935,7 +935,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 </div>
                             </>
                         )}
-                        {reportType !== "medicalDirectivesTracker" && (
+                        {(reportType !== "medicalDirectivesTracker" && reportType !== "expiredDocumentsSummaryForStaff" && reportType !== "documentsExpirationSummaryForStaff" && reportType !== "inactiveStaffSummary" && reportType !== "inactiveStaffSummaryByMonth") && (
                             <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                                 <InputLabel id="demo-multiple-name-label2" className={style.headingtextStyle}>Departments</InputLabel>
                                 <Select
@@ -1208,7 +1208,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 ))}
                             </Select>
                         </FormControl> */}
-                        {reportType !== 'workflow' && reportType !== "currentMedicalDirectives" && reportType !== "retiredMedicalDirectives" && reportType !== "upcomingForReview" && reportType !== "medicalDirectivesTracker" && (
+                        {reportType !== 'workflow' && reportType !== "currentMedicalDirectives" && reportType !== "retiredMedicalDirectives" && reportType !== "upcomingForReview" && reportType !== "medicalDirectivesTracker" && reportType !== "expiredDocumentsSummaryForStaff" && reportType !== "documentsExpirationSummaryForStaff" && reportType !== "inactiveStaffSummary" && reportType !== "inactiveStaffSummaryByMonth" && (
                             <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                                 <InputLabel id="demo-multiple-name-label2" className={style.headingtextStyle}>Staff Type</InputLabel>
                                 <Select
@@ -1274,7 +1274,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 })}
                             </div>
                         )}
-                        {reportType !== 'workflow' && reportType !== "currentMedicalDirectives" && reportType !== "retiredMedicalDirectives" && reportType !== "upcomingForReview" && reportType !== "medicalDirectivesTracker" && (
+                        {reportType !== 'workflow' && reportType !== "currentMedicalDirectives" && reportType !== "retiredMedicalDirectives" && reportType !== "upcomingForReview" && reportType !== "medicalDirectivesTracker" && reportType !== "expiredDocumentsSummaryForStaff" && reportType !== "documentsExpirationSummaryForStaff" && reportType !== "inactiveStaffSummary" && reportType !== "newStaffAppointmentsSummary" && reportType !== "appointmentHistorySummary" && reportType !== "inactiveStaffSummaryByMonth" && reportType !== "staffUploadedDocumentsSummary" && reportType !== "locumTermExpirationSummary" && (
                             <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                                 <InputLabel id="demo-multiple-name-label2" className={style.headingtextStyle}>Privilege Category</InputLabel>
                                 <Select

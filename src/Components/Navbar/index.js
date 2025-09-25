@@ -720,12 +720,12 @@ const Navbar = () => {
                             >
                               <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`}>Permanent Staff</div>
                             </Link>
-                            {/* <Link
+                            <Link
                               to={"/reports/locumStaff"}
                               className={style.noFontStyle}
                             >
                               <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`}>Locum Staff</div>
-                            </Link> */}
+                            </Link>
                           </>
                         )}
                         <div className={style.menuDivider}></div>

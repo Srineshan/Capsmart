@@ -301,7 +301,7 @@ const Dashboard = () => {
                                         <div className={style.chartHeaderText}>Average days: <span className={style.chartHeaderRightText}>20.5</span></div>
                                     </div>
                                     <div className={`${style.chartBody} ${style.fullHeight}`}>
-                                        <ApexBarChart series={barChartSeries} categories={barChartCategories} reportingPeriod={``} yAxisTitle="DAYS" xAxisTitle="Submitted Applications" />
+                                        <ApexBarChart series={barChartSeries} categories={barChartCategories} reportingPeriod={``} yAxisTitle="DAYS" xAxisTitle="Submitted Applications" fullWidth={true} />
                                     </div>
                                 </div>
                             </div>

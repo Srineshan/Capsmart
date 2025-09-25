@@ -1,7 +1,7 @@
 import React from 'react';
 import Chart from 'react-apexcharts';
 
-const ApexBarChart = ({ series, categories, reportingPeriod, yAxisTitle, xAxisTitle }) => {
+const ApexBarChart = ({ series, categories, reportingPeriod, yAxisTitle, xAxisTitle, fullWidth }) => {
 
     const chartData = {
         series: series,
@@ -16,7 +16,7 @@ const ApexBarChart = ({ series, categories, reportingPeriod, yAxisTitle, xAxisTi
             plotOptions: {
                 bar: {
                     horizontal: false,
-                    columnWidth: '100%',
+                    columnWidth: fullWidth ? '100%' : '10%',
                     endingShape: 'rounded'
                 },
             },

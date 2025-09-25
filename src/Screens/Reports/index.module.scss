@@ -1916,6 +1916,18 @@
     grid-gap: 1%;
 }
 
+.expiredDocsGrid {
+    display: grid;
+    grid-template-columns: 3% 15% 35% 15% 10% 16%;
+    grid-gap: 1%;
+}
+
+.inactiveStaffGrid {
+    display: grid;
+    grid-template-columns: 3% 20% 35% 10% 10% 16%;
+    grid-gap: 1%;
+}
+
 .statusTrackerGrid {
     display: grid;
     grid-template-columns: 3% 17% 15% 25% 19% 15%;
