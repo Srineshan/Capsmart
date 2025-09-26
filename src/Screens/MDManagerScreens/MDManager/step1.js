@@ -608,7 +608,7 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
                             open={calendarStart}
                             onOpen={() => setCalendarStart(true)}
                             onClose={() => setCalendarStart(false)}
-                            minDate={sub(new Date(), { years: 3 })}
+                            minDate={sub(new Date(), { years: 20 })}
                             maxDate={add(new Date(), { months: 6 })}
                             value={SelectedDate}
                             onChange={(newValue) =>

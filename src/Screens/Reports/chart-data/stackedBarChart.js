@@ -12,7 +12,7 @@ const ApexStackedBarChart = ({ stackedSeries, stackedCategories, horizontal }) =
   const chartData = {
     series: series,
     type: 'bar',
-    color: ["#1DD174", "#FFD950", "#F46044"],
+    color: ["#73D035", "#FFC100", "#FF851C", '#FF6562', '#3F8ADF'],
     options: {
       chart: {
         type: 'bar',
@@ -24,12 +24,12 @@ const ApexStackedBarChart = ({ stackedSeries, stackedCategories, horizontal }) =
         zoom: {
           enabled: false
         },
-        color: ["#1DD174", "#FFD950", "#F46044"],
+        color: ["#73D035", "#FFC100", "#FF851C", '#FF6562', '#3F8ADF'],
       },
       dataLabels: {
         enabled: false,
       },
-      color: ["#1DD174", "#FFD950", "#F46044"],
+      colors: ["#73D035", "#FFC100", "#FF851C", '#FF6562', '#3F8ADF'],
       responsive: [{
         breakpoint: 480,
         options: {
@@ -47,7 +47,7 @@ const ApexStackedBarChart = ({ stackedSeries, stackedCategories, horizontal }) =
         bar: {
           horizontal: horizontal ? true : false,
           columnWidth: '25%',
-          backgroundBarColors: ["#1DD174", "#FFD950", "#F46044"],
+          backgroundBarColors: ["#73D035", "#FFC100", "#FF851C", '#FF6562', '#3F8ADF'],
           endingShape: 'rounded',
         },
       },

@@ -1,7 +1,7 @@
 import React from 'react';
 import Chart from 'react-apexcharts';
 
-const DonutChart = ({ height, legendPosition, series = [], labels = [] }) => {
+const DonutChart = ({ height, legendPosition, series = [], labels = [], colors }) => {
     // const series = [280, 200, 140, 100, 50]; // Raw counts for each stage
     const options = {
         chart: {
@@ -16,16 +16,7 @@ const DonutChart = ({ height, legendPosition, series = [], labels = [] }) => {
             },
         },
         labels: labels,
-        colors: [
-            '#3F8ADF',
-            '#FF6562',
-            '#FF851C',
-            '#73D035',
-            '#FFC100',
-            '#FF669C',
-            '#9B43DE',
-            '#973283'
-        ],
+        colors: colors ? colors : ["#73D035", "#FFC100", "#FF851C", '#FF6562', '#3F8ADF'],
         fill: {
             type: 'solid',
             opacity: 1
@@ -36,7 +27,7 @@ const DonutChart = ({ height, legendPosition, series = [], labels = [] }) => {
                 return `(${val?.toFixed(0)}%)`;
             },
             style: {
-                colors: ['#fff'],
+                colors: ['#000'],
                 fontSize: '12px',
                 textShadow: 'none' // Explicitly remove shadow
             },
@@ -63,7 +54,7 @@ const DonutChart = ({ height, legendPosition, series = [], labels = [] }) => {
         plotOptions: {
             pie: {
                 donut: {
-                    size: '70%', // Hole size as per requirement
+                    size: '60%', // Hole size as per requirement
                     labels: {
                         show: true,
                         name: {

@@ -69,7 +69,7 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
     const [isExpanded, setIsExpanded] = useState(true);
     const myReportsHeaderValues = ["Report Title", "Schedule", "Saved Parameters", "Last Updated", "Action"];
     const reportingTemplateHeaderValues = ["Report Template Title", "Type", "Last Run By", "Last Run Date / Time", "Last Updated By", "Last Updated", "Action"];
-    const savedReportsHeaderValues = ["Saved Report", "Reporting Period", "Saved On", "Action"];
+    const savedReportsHeaderValues = ["Saved Report", "", "Saved On", "Action"];
     const [sortField, setSortField] = useState("DEFAULT");
     const [sortValue, setSortValue] = useState("DESCENDING");
     const [page, setPage] = useState(1);
@@ -411,6 +411,14 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         DECLINED_OR_NOT_RENEWED_STAFF_SUMMARY: 'declinedOrNotRenewedStaffSummary',
         CARE_PROVIDER_CAREER_MILESTONE_SUMMARY: 'careProviderCareerMilestoneSummary',
         CARE_PROVIDERS_SUMMARY: 'careProvidersSummary',
+        EXPIRED_DOCUMENTS_SUMMARY_FOR_STAFF: 'expiredDocumentsSummaryForStaff',
+        DOCUMENTS_EXPIRATION_SUMMARY_FOR_STAFF: 'documentsExpirationSummaryForStaff',
+        INACTIVE_STAFF_SUMMARY: 'inactiveStaffSummary',
+        NEW_STAFF_APPOINTMENTS_SUMMARY: 'newStaffAppointmentsSummary',
+        APPOINTMENT_HISTORY_SUMMARY: 'appointmentHistorySummary',
+        INACTIVE_STAFF_SUMMARY_BY_MONTH: 'inactiveStaffSummaryByMonth',
+        STAFF_UPLOADED_DOCUMENTS_SUMMARY: 'staffUploadedDocumentsSummary',
+        LOCUM_TERM_EXPIRATION_SUMMARY: 'locumTermExpirationSummary',
         CURRENT_MEDICAL_DIRECTIVES: 'currentMedicalDirectives',
         ATTESTATION_OUTSTANDING: 'attestationOutstanding',
         WORKFLOW: 'workflow',

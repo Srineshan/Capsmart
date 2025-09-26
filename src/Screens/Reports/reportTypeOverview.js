@@ -123,6 +123,14 @@ const ReportTypeOverview = () => {
     const [upcomingForReview, setUpcomingForReview] = useState();
     const [attestationOutstanding, setAttestationOutstanding] = useState();
     const [tableDataStatus, setTableDataStatus] = useState([]);
+    const [expiredDocumentsSummaryForStaff, setExpiredDocumentsSummaryForStaff] = useState([]);
+    const [staffDocumentsExpiration, setStaffDocumentsExpiration] = useState([]);
+    const [inactiveStaffSummary, setInactiveStaffSummary] = useState([]);
+    const [newStaffAppointmentsSummary, setNewStaffAppointmentsSummary] = useState([]);
+    const [appointmentHistorySummary, setAppointmentHistorySummary] = useState([]);
+    const [inactiveStaffSummaryByMonth, setInactiveStaffSummaryByMonth] = useState([]);
+    const [staffUploadedDocumentsSummary, setStaffUploadedDocumentsSummary] = useState([]);
+    const [locumTermExpirationSummary, setLocumTermExpirationSummary] = useState([]);
     const [applicationType, setApplicationType] = useState(() =>
         sessionStorage.getItem('applicationCreationType') || 'NEW'
     );
@@ -357,6 +365,30 @@ const ReportTypeOverview = () => {
             case 'upcomingForReview':
                 getUpcomingForReview();
                 break;
+            case 'expiredDocumentsSummaryForStaff':
+                getExpiredDocumentsSummaryForStaff(signal)
+                break;
+            case 'documentsExpirationSummaryForStaff':
+                getDocumentsExpirationSummaryForStaff(signal)
+                break;
+            case 'inactiveStaffSummary':
+                getInactiveStaffSummary(signal)
+                break;
+            case 'newStaffAppointmentsSummary':
+                getNewStaffAppointmentsSummary(signal)
+                break;
+            case 'appointmentHistorySummary':
+                getAppointmentHistorySummary(signal)
+                break;
+            case 'inactiveStaffSummaryByMonth':
+                getInactiveStaffSummaryByMonth(signal)
+                break;
+            case 'staffUploadedDocumentsSummary':
+                getStaffUploadedDocumentsSummary(signal)
+                break;
+            case 'locumTermExpirationSummary':
+                getLocumTermExpirationSummary(signal)
+                break;
             default:
                 // Optional: handle unknown reportType
                 break;
@@ -447,6 +479,14 @@ const ReportTypeOverview = () => {
         careProviderCareerMilestoneSummary: 'Care Providers Career Milestone Summary',
         declinedOrNotRenewedStaffSummary: 'Declined Or Not Renewed Staff Summary',
         locumStaffbyTypes: ' Locum Staff Renewal / Extension Application Status',
+        expiredDocumentsSummaryForStaff: 'Expired Staff Documents',
+        documentsExpirationSummaryForStaff: 'Expiring Staff Documents',
+        inactiveStaffSummary: 'Inactive Staff',
+        newStaffAppointmentsSummary: 'New Staff Appointments',
+        appointmentHistorySummary: 'Appointment History',
+        inactiveStaffSummaryByMonth: 'Inactive Staff Summary By Month',
+        staffUploadedDocumentsSummary: 'Staff Uploaded Documents',
+        locumTermExpirationSummary: 'Locum Term Expiration',
         currentMedicalDirectives: 'Current Medical Directives',
         retiredMedicalDirectives: 'Retired Medical Directives',
         workflow: 'Medical Directives Workflow',
@@ -1210,7 +1250,7 @@ const ReportTypeOverview = () => {
         }
     }
 
-    console.log("staff", dataToUseInReport?.selectedStaffType, dataToUseInReport?.selectedDepartments, dataToUseInReport?.selectedPrivilegeCategory);
+    console.log("staff", dataToUseInReport?.selectedStaffType, dataToUseInReport?.selectedDepartments, dataToUseInReport?.selectedPrivilegeCategory, dataToUseInReport?.selectedPosition);
 
 
 
@@ -1357,6 +1397,215 @@ const ReportTypeOverview = () => {
         } else {
             const { data: data } = await GET(`medical-directive-service/report/myReport/upcomingForReview?id=${myReportId}`, { signal });
             setUpcomingForReview(data);
+        }
+        setIsLoading(false)
+    }
+
+    const getExpiredDocumentsSummaryForStaff = async (signal) => {
+        setIsLoading(true)
+        if (!isMyReport) {
+            const queryParams = new URLSearchParams({
+            });
+
+            if (dataToUseInReport?.selectedPosition) {
+                queryParams.append('positionType', dataToUseInReport?.selectedPosition);
+            }
+
+            const { data: data } = await GET(`application-management-service/report/staffExpiredDocuments?${queryParams.toString()}`, { signal });
+            setExpiredDocumentsSummaryForStaff(data);
+        } else {
+            const { data: data } = await GET(`application-management-service/report/myReport/staffExpiredDocuments?id=${myReportId}`, { signal });
+            setExpiredDocumentsSummaryForStaff(data);
+        }
+        setIsLoading(false)
+    }
+
+    const getDocumentsExpirationSummaryForStaff = async (signal) => {
+        setIsLoading(true)
+        if (!isMyReport) {
+            const queryParams = new URLSearchParams({
+            });
+
+            if (dataToUseInReport?.selectedPosition) {
+                queryParams.append('positionType', dataToUseInReport?.selectedPosition);
+            }
+
+            if (dataToUseInReport?.noOfDays) {
+                queryParams.append('noOfDays', dataToUseInReport?.noOfDays);
+            }
+
+            const { data: data } = await GET(`application-management-service/report/staffDocumentsExpiration?${queryParams.toString()}`, { signal });
+            setStaffDocumentsExpiration(data);
+        } else {
+            const { data: data } = await GET(`application-management-service/report/myReport/staffDocumentsExpiration?id=${myReportId}`, { signal });
+            setStaffDocumentsExpiration(data);
+        }
+        setIsLoading(false)
+    }
+
+    const getInactiveStaffSummary = async (signal) => {
+        setIsLoading(true)
+        if (!isMyReport) {
+            const queryParams = new URLSearchParams({
+            });
+
+            if (dataToUseInReport?.selectedPosition) {
+                queryParams.append('positionType', dataToUseInReport?.selectedPosition);
+            }
+
+            const { data: data } = await GET(`application-management-service/report/inactiveStaffs?${queryParams.toString()}`, { signal });
+            setInactiveStaffSummary(data);
+        } else {
+            const { data: data } = await GET(`application-management-service/report/myReport/inactiveStaffs?id=${myReportId}`, { signal });
+            setInactiveStaffSummary(data);
+        }
+        setIsLoading(false)
+    }
+
+    const getNewStaffAppointmentsSummary = async (signal) => {
+        setIsLoading(true)
+        if (!isMyReport) {
+            const queryParams = new URLSearchParams({
+            });
+            if (dataToUseInReport?.selectedStaffType) {
+                queryParams.append('applicantTypeId', dataToUseInReport?.selectedStaffType);
+            }
+
+            if (dataToUseInReport?.from) {
+                queryParams.append('startDate', dataToUseInReport?.from);
+            }
+
+            if (dataToUseInReport?.to) {
+                queryParams.append('endDate', dataToUseInReport?.to);
+            }
+
+            if (dataToUseInReport?.selectedDepartments) {
+                queryParams.append('departmentSpecialties', dataToUseInReport?.selectedDepartments);
+            }
+            if (dataToUseInReport?.selectedPosition) {
+                queryParams.append('positionType', dataToUseInReport?.selectedPosition);
+            }
+
+            const { data: data } = await GET(`application-management-service/report/newStaffAppointments?${queryParams.toString()}`, { signal });
+            setNewStaffAppointmentsSummary(data);
+        } else {
+            const { data: data } = await GET(`application-management-service/report/myReport/newStaffAppointments?id=${myReportId}`, { signal });
+            setNewStaffAppointmentsSummary(data);
+        }
+        setIsLoading(false)
+    }
+
+    const getAppointmentHistorySummary = async (signal) => {
+        setIsLoading(true)
+        if (!isMyReport) {
+            const queryParams = new URLSearchParams({
+            });
+            if (dataToUseInReport?.selectedStaffType) {
+                queryParams.append('applicantTypeId', dataToUseInReport?.selectedStaffType);
+            }
+
+            if (dataToUseInReport?.selectedDepartments) {
+                queryParams.append('departmentSpecialties', dataToUseInReport?.selectedDepartments);
+            }
+            if (dataToUseInReport?.selectedPosition) {
+                queryParams.append('positionType', dataToUseInReport?.selectedPosition);
+            }
+
+            const { data: data } = await GET(`application-management-service/report/appointmentHistory?${queryParams.toString()}`, { signal });
+            setAppointmentHistorySummary(data);
+        } else {
+            const { data: data } = await GET(`application-management-service/report/myReport/appointmentHistory?id=${myReportId}`, { signal });
+            setAppointmentHistorySummary(data);
+        }
+        setIsLoading(false)
+    }
+
+    const getInactiveStaffSummaryByMonth = async (signal) => {
+        setIsLoading(true)
+        if (!isMyReport) {
+            const queryParams = new URLSearchParams({
+            });
+            if (dataToUseInReport?.from) {
+                queryParams.append('startDate', dataToUseInReport?.from);
+            }
+
+            if (dataToUseInReport?.to) {
+                queryParams.append('endDate', dataToUseInReport?.to);
+            }
+
+            if (dataToUseInReport?.selectedPosition) {
+                queryParams.append('positionType', dataToUseInReport?.selectedPosition);
+            }
+
+            const { data: data } = await GET(`application-management-service/report/inactiveStaffsByMonth?${queryParams.toString()}`, { signal });
+            setInactiveStaffSummaryByMonth(data);
+        } else {
+            const { data: data } = await GET(`application-management-service/report/myReport/inactiveStaffsByMonth?id=${myReportId}`, { signal });
+            setInactiveStaffSummaryByMonth(data);
+        }
+        setIsLoading(false)
+    }
+
+    const getStaffUploadedDocumentsSummary = async (signal) => {
+        setIsLoading(true)
+        if (!isMyReport) {
+            const queryParams = new URLSearchParams({
+            });
+            if (dataToUseInReport?.from) {
+                queryParams.append('startDate', dataToUseInReport?.from);
+            }
+
+            if (dataToUseInReport?.to) {
+                queryParams.append('endDate', dataToUseInReport?.to);
+            }
+
+            if (dataToUseInReport?.selectedStaffType) {
+                queryParams.append('applicantTypeId', dataToUseInReport?.selectedStaffType);
+            }
+
+            if (dataToUseInReport?.selectedDepartments) {
+                queryParams.append('departmentSpecialties', dataToUseInReport?.selectedDepartments);
+            }
+
+            if (dataToUseInReport?.selectedPosition) {
+                queryParams.append('positionType', dataToUseInReport?.selectedPosition);
+            }
+
+            const { data: data } = await GET(`application-management-service/report/staffUploadedDocuments?${queryParams.toString()}`, { signal });
+            setStaffUploadedDocumentsSummary(data);
+        } else {
+            const { data: data } = await GET(`application-management-service/report/myReport/staffUploadedDocuments?id=${myReportId}`, { signal });
+            setStaffUploadedDocumentsSummary(data);
+        }
+        setIsLoading(false)
+    }
+
+    const getLocumTermExpirationSummary = async (signal) => {
+        setIsLoading(true)
+        if (!isMyReport) {
+            const queryParams = new URLSearchParams({
+            });
+            if (dataToUseInReport?.from) {
+                queryParams.append('startDate', dataToUseInReport?.from);
+            }
+
+            if (dataToUseInReport?.to) {
+                queryParams.append('endDate', dataToUseInReport?.to);
+            }
+
+            if (dataToUseInReport?.selectedStaffType) {
+                queryParams.append('applicantTypeId', dataToUseInReport?.selectedStaffType);
+            }
+
+            if (dataToUseInReport?.selectedDepartments) {
+                queryParams.append('departmentSpecialties', dataToUseInReport?.selectedDepartments);
+            }
+
+            const { data: data } = await GET(`application-management-service/report/locumTermExpiration?${queryParams.toString()}`, { signal });
+            setLocumTermExpirationSummary(data);
+        } else {
+            const { data: data } = await GET(`application-management-service/report/myReport/locumTermExpiration?id=${myReportId}`, { signal });
+            setLocumTermExpirationSummary(data);
         }
         setIsLoading(false)
     }
@@ -1881,6 +2130,134 @@ const ReportTypeOverview = () => {
             { type: "text", value: startDate },
         ];
     };
+
+    const headerValuesExpiredDocument = [
+        "No.",
+        "Staff Name",
+        "Expired Documents with Dates",
+        "Department / Specialty",
+        "Staff Type",
+        "Email",
+    ];
+    const colSortValuesExpiredDocument = [false, false, false, false, false, false, false];
+
+    const getExpiredDocumentTableValues = () => {
+        const No = [];
+        const staffName = [];
+        const documentType = [];
+        const departmentSpecialty = [];
+        const email = [];
+        const staffType = [];
+
+        expiredDocumentsSummaryForStaff?.map((data, index) => {
+            No.push(index + 1 + ".")
+            staffName.push(
+                `${formatFirstNameLastName(data?.staff?.applicant?.name?.firstName, data?.staff?.applicant?.name?.lastName)}` || " "
+            );
+
+            documentType.push(data?.expiredDocuments?.map(docData => `${docData?.shortName || ''} ${docData?.expiryDate ? `(${format(new Date(docData?.expiryDate), 'MMM dd, yyyy')})` : ''}`)?.join(', '));
+            departmentSpecialty.push(`${data?.staff?.basicDetailReferences?.department?.name} ${data?.staff?.basicDetailReferences?.specialty?.name ? `- ${data?.staff?.basicDetailReferences?.specialty?.name}` : ''}`);
+            email.push(
+                `${data?.staff?.applicant?.email?.officialEmail || "-"}`
+            );
+            staffType.push(data?.staff?.basicDetailReferences?.applicantType?.serviceProviderType)
+        });
+
+        return [
+            { type: "text", value: No },
+            { type: "text", value: staffName },
+            { type: "text", value: documentType },
+            { type: "text", value: departmentSpecialty },
+            { type: "text", value: staffType },
+            { type: "text", value: email },
+        ];
+    };
+
+    const headerValuesDocumentExpiration = [
+        "No.",
+        "Staff Name",
+        "Expiring Documents with Dates",
+        "Department / Specialty",
+        "Staff Type",
+        "Email",
+    ];
+    const colSortValuesDocumentExpiration = [false, false, false, false, false, false, false];
+
+    const getDocumentExpirationTableValues = () => {
+        const No = [];
+        const staffName = [];
+        const documentType = [];
+        const departmentSpecialty = [];
+        const email = [];
+        const staffType = [];
+
+        staffDocumentsExpiration?.map((data, index) => {
+            No.push(index + 1 + ".")
+            staffName.push(
+                `${formatFirstNameLastName(data?.staff?.applicant?.name?.firstName, data?.staff?.applicant?.name?.lastName)}` || " "
+            );
+
+            documentType.push(data?.documentsExpiringSoon?.map(docData => `${docData?.shortName || ''} ${docData?.expiryDate ? `(${format(new Date(docData?.expiryDate), 'MMM dd, yyyy')})` : ''}`)?.join(', '));
+            departmentSpecialty.push(`${data?.staff?.basicDetailReferences?.department?.name} ${data?.staff?.basicDetailReferences?.specialty?.name ? `- ${data?.staff?.basicDetailReferences?.specialty?.name}` : ''}`);
+            email.push(
+                `${data?.staff?.applicant?.email?.officialEmail || "-"}`
+            );
+            staffType.push(data?.staff?.basicDetailReferences?.applicantType?.serviceProviderType)
+        });
+
+        return [
+            { type: "text", value: No },
+            { type: "text", value: staffName },
+            { type: "text", value: documentType },
+            { type: "text", value: departmentSpecialty },
+            { type: "text", value: staffType },
+            { type: "text", value: email },
+        ];
+    };
+
+    const headerValuesInactiveStaff = [
+        "No.",
+        "Staff Name",
+        "Department / Specialty",
+        "Staff ID",
+        "Staff Type",
+        "Email",
+    ];
+    const colSortValuesInactiveStaff = [false, false, false, false, false, false, false];
+
+    const getInactiveStaffTableValues = () => {
+        const No = [];
+        const staffName = [];
+        const staffId = [];
+        const departmentSpecialty = [];
+        const email = [];
+        const staffType = [];
+
+        inactiveStaffSummary?.map((data, index) => {
+            No.push(index + 1 + ".")
+            staffName.push(
+                `${formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName)}` || " "
+            );
+
+            staffId.push(data?.staffId);
+            departmentSpecialty.push(`${data?.basicDetailReferences?.department?.name} ${data?.basicDetailReferences?.specialty?.name ? `- ${data?.basicDetailReferences?.specialty?.name}` : ''}`);
+            email.push(
+                `${data?.applicant?.email?.officialEmail || "-"}`
+            );
+            staffType.push(data?.basicDetailReferences?.applicantType?.serviceProviderType)
+        });
+
+        return [
+            { type: "text", value: No },
+            { type: "text", value: staffName },
+            { type: "text", value: departmentSpecialty },
+            { type: "text", value: staffId },
+            { type: "text", value: staffType },
+            { type: "text", value: email },
+        ];
+    };
+
+    console.log(locumTermExpirationSummary?.map(data => data?.month ? format(new Date(data?.month), 'MMM yyyy') : ''), locumTermExpirationSummary?.map(data => data?.count), 'locumTermExpirationSummary')
 
     const headerValuesStaffsReappointmentStatusSummary = [
         "No.",
@@ -3123,9 +3500,11 @@ const ReportTypeOverview = () => {
                                                     <div className={`${style.entityNameBolderStyle} ${style.textAlignCenter} ${style.marginTop5} `}>
                                                         {isMyReport ? myReportContent?.title : reportTitleList[reportType]}
                                                     </div>
-                                                    {(dataToUseInReport?.reportingTimePeriod !== "" && reportType !== "staffReappointmentTracker" && reportType !== "privilegedStaffSummary" && reportType !== "locumStaffbyTypes" && reportType !== "staffbyTypes" && reportType !== "currentNotesSummary" && reportType !== "locumStaffRenewalStatusTracker" && reportType !== "staffReappointmentStatusSummary" && reportType !== "ohipBillingNumbersByCareProvider" && reportType !== "currentMedicalDirectives" && reportType !== "retiredMedicalDirectives" && reportType !== "workflow" && reportType !== "attestationOutstanding" && reportType !== "medicalDirectivesTracker" && reportType !== "upcomingForReview" && reportType !== "reappointmentApplicationNotStarted" && reportType !== "locumRenewalOrExtensionApplicationsSummary" && reportType !== "declinedOrNotRenewedStaffSummary") && (
-                                                        <div className={`${style.reportRunByTextStyle} ${style.textAlignCenter} ${style.marginTop5} `}>Reporting Period used for this report : {dataToUseInReport?.reportingTimePeriod} ({dataToUseInReport?.fromToDisplay} to {dataToUseInReport?.toToDisplay}) </div>
-                                                    )}
+                                                    {(dataToUseInReport?.reportingTimePeriod !== "" && reportType !== "staffReappointmentTracker" && reportType !== "privilegedStaffSummary" && reportType !== "locumStaffbyTypes" && reportType !== "staffbyTypes" && reportType !== "currentNotesSummary" && reportType !== "locumStaffRenewalStatusTracker" && reportType !== "staffReappointmentStatusSummary" && reportType !== "ohipBillingNumbersByCareProvider" && reportType !== "currentMedicalDirectives" && reportType !== "retiredMedicalDirectives" && reportType !== "workflow" && reportType !== "attestationOutstanding" && reportType !== "medicalDirectivesTracker" && reportType !== "upcomingForReview" && reportType !== "reappointmentApplicationNotStarted" && reportType !== "locumRenewalOrExtensionApplicationsSummary" && reportType !== "declinedOrNotRenewedStaffSummary"
+                                                        && reportType !== "expiredDocumentsSummaryForStaff" && reportType !== "documentsExpirationSummaryForStaff" && reportType !== "inactiveStaffSummary" && reportType !== "appointmentHistorySummary"
+                                                    ) && (
+                                                            <div className={`${style.reportRunByTextStyle} ${style.textAlignCenter} ${style.marginTop5} `}>Reporting Period used for this report : {dataToUseInReport?.reportingTimePeriod} ({dataToUseInReport?.fromToDisplay} to {dataToUseInReport?.toToDisplay}) </div>
+                                                        )}
                                                     {/* {(reportType === "paymentProcessingStatusTracker") && (
                                                     <div>
                                                         <div className={`${style.reportRunByTextStyle} ${style.textAlignCenter} ${style.marginTop5} `}>Timesheet Interval used for this report : {dataToUseInReport?.selectedTimesheetInterval?.map(data => data.split("%23")?.map(innerData => `${format(new Date(innerData), 'MMM dd yyyy')}`)).join(', ') || 'All Timesheet Intervals'} </div>
@@ -3201,7 +3580,9 @@ const ReportTypeOverview = () => {
                                                     )}
                                                     {(reportType === "staffReappointmentsNotes" || reportType === "staffReappointments" || reportType === "locumRenewalOrExtensionApplicationsSummary" || reportType === "privilegedStaffSummary" ||
                                                         reportType === "submittedApplicationsReviewSummary" || reportType === "staffReappointmentTracker" || reportType === "ohipBillingNumbersByCareProvider" || reportType === "careProviderCareerMilestoneSummary" ||
-                                                        reportType === "declinedOrNotRenewedStaffSummary" || reportType === "reappointmentApplicationNotStarted" || reportType === "currentNotesSummary" || reportType === "staffReappointmentStatusSummary" || reportType === "staffbyTypes" || reportType === "locumStaffRenewalStatusTracker" || reportType === "locumStaffbyTypes" || reportType === "privilegedStaffSummary" || reportType === "careProvidersSummary") ? (
+                                                        reportType === "declinedOrNotRenewedStaffSummary" || reportType === "reappointmentApplicationNotStarted" || reportType === "currentNotesSummary" || reportType === "staffReappointmentStatusSummary" || reportType === "staffbyTypes" || reportType === "locumStaffRenewalStatusTracker" || reportType === "locumStaffbyTypes" || reportType === "privilegedStaffSummary" || reportType === "careProvidersSummary"
+                                                        || reportType === "expiredDocumentsSummaryForStaff" || reportType === "documentsExpirationSummaryForStaff" || reportType === "appointmentHistorySummary" || reportType === "inactiveStaffSummary"
+                                                        || reportType === "newStaffAppointmentsSummary" || reportType === "inactiveStaffSummaryByMonth" || reportType === "staffUploadedDocumentsSummary" || reportType === "locumTermExpirationSummary") ? (
                                                         <div className={`${style.grid4} ${style.marginTop20} `}>
                                                             {/* {reportType === "staffReappointmentsNotes" && (
                                                         <div>
@@ -3213,32 +3594,46 @@ const ReportTypeOverview = () => {
                                                         <div className={`${style.reportRunByParamStyle} ${style.marginTop5} `}>Sites </div>
                                                         <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedSitesToSend?.map(data => data?.siteName?.siteName).join(', ') || 'All Sites'}</div>
                                                     </div> */}
-                                                            <div>
-                                                                <div className={`${style.reportRunByParamStyle} ${style.marginTop5}`}>
-                                                                    {(dataToUseInReport?.selectedDepartmentsToSend?.length === 1 &&
-                                                                        dataToUseInReport?.selectedDepartmentsToSend[0]?.departmentName?.name)
-                                                                        ? 'Department'
-                                                                        : 'Departments'}
+                                                            {(reportType !== "expiredDocumentsSummaryForStaff" && reportType !== "documentsExpirationSummaryForStaff" && reportType !== "inactiveStaffSummary" && reportType !== "inactiveStaffSummaryByMonth") && (
+                                                                <div>
+                                                                    <div className={`${style.reportRunByParamStyle} ${style.marginTop5}`}>
+                                                                        {(dataToUseInReport?.selectedDepartmentsToSend?.length === 1 &&
+                                                                            dataToUseInReport?.selectedDepartmentsToSend[0]?.departmentName?.name)
+                                                                            ? 'Department'
+                                                                            : 'Departments'}
+                                                                    </div>
+                                                                    <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.departmentName?.name).join(', ') || 'All Departments'}</div>
                                                                 </div>
-                                                                <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.departmentName?.name).join(', ') || 'All Departments'}</div>
-                                                            </div>
+                                                            )}
                                                             {/* <div>
                                                             <div className={`${style.reportRunByParamStyle} ${style.marginTop5} `}>DIVISION / SPECIALITY </div>
                                                             <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedContractsToSend?.map(data => data?.contractName?.contractName).join(', ') || 'All'}</div>
                                                         </div> */}
-                                                            <div>
-                                                                <div className={`${style.reportRunByParamStyle} ${style.marginTop5} `}>STAFF TYPE </div>
-                                                                <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedStaffTypeToSend?.map(data => data?.applicantType).join(', ') || 'All Staff Type'}</div>
-                                                            </div>
-                                                            <div>
-                                                                <div className={`${style.reportRunByParamStyle} ${style.marginTop5} `}>PRIVILEGE CATEGORY </div>
-                                                                <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedPrivilegeCategoryToSend?.map(data => data?.category).join(', ') || 'All Categories'}</div>
-                                                            </div>
-                                                            {/* <div>
-                                                            <div className={`${style.reportRunByParamStyle} ${style.marginTop5} `}>POSITION </div>
-                                                            <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedPosition || 'All Positions'}</div>
-                                                        </div> */}
-
+                                                            {(reportType !== "expiredDocumentsSummaryForStaff" && reportType !== "documentsExpirationSummaryForStaff" && reportType !== "inactiveStaffSummary" && reportType !== "inactiveStaffSummaryByMonth") && (
+                                                                <div>
+                                                                    <div className={`${style.reportRunByParamStyle} ${style.marginTop5} `}>STAFF TYPE </div>
+                                                                    <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedStaffTypeToSend?.map(data => data?.applicantType).join(', ') || 'All Staff Type'}</div>
+                                                                </div>
+                                                            )}
+                                                            {(reportType !== "expiredDocumentsSummaryForStaff" && reportType !== "documentsExpirationSummaryForStaff" && reportType !== "inactiveStaffSummary" && reportType !== "newStaffAppointmentsSummary" && reportType !== "appointmentHistorySummary" && reportType !== "inactiveStaffSummaryByMonth" && reportType !== "staffUploadedDocumentsSummary" && reportType !== "locumTermExpirationSummary") && (
+                                                                <div>
+                                                                    <div className={`${style.reportRunByParamStyle} ${style.marginTop5} `}>PRIVILEGE CATEGORY </div>
+                                                                    <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedPrivilegeCategoryToSend?.map(data => data?.category).join(', ') || 'All Categories'}</div>
+                                                                </div>
+                                                            )}
+                                                            {(reportType === "expiredDocumentsSummaryForStaff" || reportType === "documentsExpirationSummaryForStaff" || reportType === "appointmentHistorySummary" || reportType === "inactiveStaffSummary"
+                                                                || reportType === "newStaffAppointmentsSummary" || reportType === "inactiveStaffSummaryByMonth" || reportType === "staffUploadedDocumentsSummary") && (
+                                                                    <div>
+                                                                        <div className={`${style.reportRunByParamStyle} ${style.marginTop5} `}>POSITION </div>
+                                                                        <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedPosition || 'All Positions'}</div>
+                                                                    </div>
+                                                                )}
+                                                            {reportType === "documentsExpirationSummaryForStaff" && (
+                                                                <div>
+                                                                    <div className={`${style.reportRunByParamStyle} ${style.marginTop5} `}>No Of Days </div>
+                                                                    <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.noOfDays || '-'} Days</div>
+                                                                </div>
+                                                            )}
 
                                                             {reportType === "currentNotesSummary" && (
                                                                 <div>
@@ -4214,6 +4609,162 @@ const ReportTypeOverview = () => {
                                                                                 </>
                                                                             ) : (
                                                                                 <ReportNoDataBox heading={'You do not have any Locum Extensions / Renewals'}
+                                                                                    subHeading={''} />
+                                                                            )
+                                                                        ) : reportType === "expiredDocumentsSummaryForStaff" ? (
+                                                                            <div className={style.marginTop20}>
+                                                                                {expiredDocumentsSummaryForStaff?.length !== 0 ? (
+                                                                                    <>
+                                                                                        <TableTwo
+                                                                                            tableHeaderValues={headerValuesExpiredDocument}
+                                                                                            tableDataValues={getExpiredDocumentTableValues()}
+                                                                                            tableData={expiredDocumentsSummaryForStaff}
+                                                                                            gridStyle={style.expiredDocsGrid}
+                                                                                            tableSortValues={colSortValuesExpiredDocument}
+                                                                                            heading={"There are no record to display"}
+                                                                                            className={`${style.tableRow} ${style.reportSection}`}
+                                                                                            hidePagination={true}
+                                                                                        />
+                                                                                    </>
+                                                                                ) : (
+                                                                                    <ReportNoDataBox heading={'Based on the parameters selected and applied, there were NO RECORDS found to include in the report.'}
+                                                                                        subHeading={'Try again by changing some of the parameters on the left. If there are any qualifying records, the report will get displayed.'} />
+                                                                                )}
+
+                                                                            </div>
+                                                                        ) : reportType === "documentsExpirationSummaryForStaff" ? (
+                                                                            <div className={style.marginTop20}>
+                                                                                {staffDocumentsExpiration?.length !== 0 ? (
+                                                                                    <>
+                                                                                        <TableTwo
+                                                                                            tableHeaderValues={headerValuesDocumentExpiration}
+                                                                                            tableDataValues={getDocumentExpirationTableValues()}
+                                                                                            tableData={staffDocumentsExpiration}
+                                                                                            gridStyle={style.expiredDocsGrid}
+                                                                                            tableSortValues={colSortValuesDocumentExpiration}
+                                                                                            heading={"There are no record to display"}
+                                                                                            className={`${style.tableRow} ${style.reportSection}`}
+                                                                                            hidePagination={true}
+                                                                                        />
+                                                                                    </>
+                                                                                ) : (
+                                                                                    <ReportNoDataBox heading={'Based on the parameters selected and applied, there were NO RECORDS found to include in the report.'}
+                                                                                        subHeading={'Try again by changing some of the parameters on the left. If there are any qualifying records, the report will get displayed.'} />
+                                                                                )}
+
+                                                                            </div>
+                                                                        ) : reportType === "inactiveStaffSummary" ? (
+                                                                            <div className={style.marginTop20}>
+                                                                                {inactiveStaffSummary?.length !== 0 ? (
+                                                                                    <>
+                                                                                        <TableTwo
+                                                                                            tableHeaderValues={headerValuesInactiveStaff}
+                                                                                            tableDataValues={getInactiveStaffTableValues()}
+                                                                                            tableData={inactiveStaffSummary}
+                                                                                            gridStyle={style.inactiveStaffGrid}
+                                                                                            tableSortValues={colSortValuesInactiveStaff}
+                                                                                            heading={"There are no record to display"}
+                                                                                            className={`${style.tableRow} ${style.reportSection}`}
+                                                                                            hidePagination={true}
+                                                                                        />
+                                                                                    </>
+                                                                                ) : (
+                                                                                    <ReportNoDataBox heading={'Based on the parameters selected and applied, there were NO RECORDS found to include in the report.'}
+                                                                                        subHeading={'Try again by changing some of the parameters on the left. If there are any qualifying records, the report will get displayed.'} />
+                                                                                )}
+
+                                                                            </div>
+                                                                        ) : (reportType === "appointmentHistorySummary") ? (
+                                                                            (appointmentHistorySummary?.length !== 0) ?
+                                                                                appointmentHistorySummary?.map((data, index) => (
+                                                                                    <div className={`${style.mdReportCard} ${index % 2 === 0 ? style.mdCardAlternateBackground : ''} ${style.marginTop20}`} key={index}>
+                                                                                        <div className={style.spaceBetween}>
+                                                                                            <div className={style.displayInRow}>
+
+                                                                                                <div className={style.mdTitle}><span className={style.mdTitle}>{`${index + 1}. `}</span>{formatFirstNameLastName(data?.staff?.applicant?.name?.firstName, data?.staff?.applicant?.name?.lastName)}</div>
+                                                                                            </div>
+                                                                                            <div className={style.mdId}>{data?.staff?.staffId}</div>
+                                                                                        </div>
+                                                                                        <div className={`${style.mdDesc} ${style.marginTop}`}
+                                                                                            dangerouslySetInnerHTML={{ __html: data?.description || "" }}
+                                                                                        />
+                                                                                        <div className={`${style.grid2} ${style.marginTop}`}>
+                                                                                            <div>
+                                                                                                <div className={style.mdGrid}>
+                                                                                                    <div className={style.mdLabel}>Department:</div>
+                                                                                                    <div className={style.mdValue}>{`${data?.staff?.basicDetailReferences?.department?.name}`}</div>
+                                                                                                </div>
+                                                                                                <div className={`${style.mdGrid} ${style.marginTop}`}>
+                                                                                                    <div className={style.mdLabel}>Staff Type:</div>
+                                                                                                    <div className={style.mdValue}>{data?.staff?.basicDetailReferences?.applicantType?.serviceProviderType}</div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <div>
+                                                                                                <div className={style.mdGrid}>
+                                                                                                    <div className={style.mdLabel}>Division / Speciality:</div>
+                                                                                                    <div className={style.mdValue}>{data?.staff?.basicDetailReferences?.specialty?.name}</div>
+                                                                                                </div>
+                                                                                                <div className={`${style.mdGrid} ${style.marginTop}`}>
+                                                                                                    <div className={style.mdLabel}>Email</div>
+                                                                                                    <div className={style.mdValue}>{data?.staff?.applicant?.email?.officialEmail}</div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                        <div className={style.marginTop}>
+                                                                                            <div className={style.mdLabel}>Appointment History:</div>
+                                                                                            <div className={style.mdValue}>{data?.applications?.map(applicationData => `${applicationData?.cyclePeriod?.from ? format(new Date(applicationData?.cyclePeriod?.from), 'MMM dd yyyy') : ''} - ${applicationData?.cyclePeriod?.to ? format(new Date(applicationData?.cyclePeriod?.to), 'MMM dd yyyy') : ''}`)?.join(', ')}</div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                )) : (
+                                                                                    <ReportNoDataBox heading={'You do not have any Current Medical Directives'}
+                                                                                        subHeading={''} />
+                                                                                )
+                                                                        ) : (reportType === "locumTermExpirationSummary") ? (
+                                                                            (locumTermExpirationSummary?.length > 0) ? (
+                                                                                <div className={`${style.marginTop20}`}>
+                                                                                    <ApexBarChart series={[{
+                                                                                        name: "Locum Term Expiration",
+                                                                                        data: locumTermExpirationSummary?.map(data => data?.count)
+                                                                                    }]} categories={locumTermExpirationSummary?.map(data => data?.month ? format(new Date(data?.month), 'MMM yyyy') : '') || []} reportingPeriod={``} yAxisTitle="Staff Count" xAxisTitle="Locum Term Expiration" />
+                                                                                </div>
+                                                                            ) : (
+                                                                                <ReportNoDataBox heading={'You do not have any Locum Term Expiration for the selected period.'}
+                                                                                    subHeading={''} />
+                                                                            )
+                                                                        ) : (reportType === "newStaffAppointmentsSummary") ? (
+                                                                            (newStaffAppointmentsSummary?.length > 0) ? (
+                                                                                <div className={`${style.marginTop20}`}>
+                                                                                    <ApexBarChart series={[{
+                                                                                        name: "New Staff Appointments",
+                                                                                        data: newStaffAppointmentsSummary?.map(data => data?.count)
+                                                                                    }]} categories={newStaffAppointmentsSummary?.map(data => data?.month ? format(new Date(data?.month), 'MMM yyyy') : '') || []} reportingPeriod={``} yAxisTitle="Staff Count" xAxisTitle="New Staff Appointments" />
+                                                                                </div>
+                                                                            ) : (
+                                                                                <ReportNoDataBox heading={'You do not have any New Staff Appointments for the selected period.'}
+                                                                                    subHeading={''} />
+                                                                            )
+                                                                        ) : (reportType === "inactiveStaffSummaryByMonth") ? (
+                                                                            (inactiveStaffSummaryByMonth?.length > 0) ? (
+                                                                                <div className={`${style.marginTop20}`}>
+                                                                                    <ApexBarChart series={[{
+                                                                                        name: "Inactive Staff Summary",
+                                                                                        data: inactiveStaffSummaryByMonth?.map(data => data?.count)
+                                                                                    }]} categories={inactiveStaffSummaryByMonth?.map(data => data?.month ? format(new Date(data?.month), 'MMM yyyy') : '') || []} reportingPeriod={``} yAxisTitle="Staff Count" xAxisTitle="Inactive Staff Summary" />
+                                                                                </div>
+                                                                            ) : (
+                                                                                <ReportNoDataBox heading={'You do not have any Inactive Staff Summary for the selected period.'}
+                                                                                    subHeading={''} />
+                                                                            )
+                                                                        ) : (reportType === "staffUploadedDocumentsSummary") ? (
+                                                                            (staffUploadedDocumentsSummary?.length > 0) ? (
+                                                                                <div className={`${style.marginTop20}`}>
+                                                                                    <ApexBarChart series={[{
+                                                                                        name: "Staff Uploaded Documents",
+                                                                                        data: staffUploadedDocumentsSummary?.map(data => data?.count)
+                                                                                    }]} categories={staffUploadedDocumentsSummary?.map(data => data?.month ? format(new Date(data?.month), 'MMM yyyy') : '') || []} reportingPeriod={``} yAxisTitle="Document Count" xAxisTitle="Staff Uploaded Documents" />
+                                                                                </div>
+                                                                            ) : (
+                                                                                <ReportNoDataBox heading={'You do not have any Staff Uploaded Documents for the selected period.'}
                                                                                     subHeading={''} />
                                                                             )
                                                                         ) : (reportType === "currentMedicalDirectives") ? (

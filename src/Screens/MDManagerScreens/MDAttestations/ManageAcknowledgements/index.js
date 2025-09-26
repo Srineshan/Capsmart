@@ -438,7 +438,7 @@ const ManageAcknowledgement = () => {
         true,
         true,
         false,
-        false,
+        true,
     ];
 
     const tableHeaderValues = selectedOption === "pending" ? reviewAndAttestHeaderValues : attestedHeaderValues
