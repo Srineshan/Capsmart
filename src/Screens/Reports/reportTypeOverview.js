@@ -4744,12 +4744,12 @@ const ReportTypeOverview = () => {
                                                                                     subHeading={''} />
                                                                             )
                                                                         ) : (reportType === "inactiveStaffSummaryByMonth") ? (
-                                                                            (inactiveStaffSummary?.length > 0) ? (
+                                                                            (inactiveStaffSummaryByMonth?.length > 0) ? (
                                                                                 <div className={`${style.marginTop20}`}>
                                                                                     <ApexBarChart series={[{
                                                                                         name: "Inactive Staff Summary",
-                                                                                        data: inactiveStaffSummary?.map(data => data?.count)
-                                                                                    }]} categories={inactiveStaffSummary?.map(data => data?.month ? format(new Date(data?.month), 'MMM yyyy') : '') || []} reportingPeriod={``} yAxisTitle="Staff Count" xAxisTitle="Inactive Staff Summary" />
+                                                                                        data: inactiveStaffSummaryByMonth?.map(data => data?.count)
+                                                                                    }]} categories={inactiveStaffSummaryByMonth?.map(data => data?.month ? format(new Date(data?.month), 'MMM yyyy') : '') || []} reportingPeriod={``} yAxisTitle="Staff Count" xAxisTitle="Inactive Staff Summary" />
                                                                                 </div>
                                                                             ) : (
                                                                                 <ReportNoDataBox heading={'You do not have any Inactive Staff Summary for the selected period.'}

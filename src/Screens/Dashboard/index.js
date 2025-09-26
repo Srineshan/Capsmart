@@ -292,7 +292,7 @@ const Dashboard = () => {
                                     <div className={style.chartBody}>
                                         <div className={style.chartBodyCount}>{applicationDashboard?.applicationStatus?.totalApplications?.count}</div>
                                         <div className={style.chartBodyText}>Total Applications</div>
-                                        <DonutChart height={200} legendPosition={'bottom'} series={getApplicationStatusSeries()} labels={getApplicationStatusLabels()} />
+                                        <DonutChart height={200} legendPosition={'bottom'} series={getApplicationStatusSeries()} labels={getApplicationStatusLabels()} colors={['#73D035', '#3F8ADF', '#FF6562']} />
                                     </div>
                                 </div>
                                 <div className={style.fullHeight}>
@@ -375,7 +375,7 @@ const Dashboard = () => {
                                     <div className={style.verticalDivider}></div>
                                     <div>
                                         <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Review Status</div>
-                                        <DonutChart height={200} legendPosition={'right'} series={getMSOReviewSeries()} labels={getReviewLabels()} />
+                                        <DonutChart height={200} legendPosition={'right'} series={getMSOReviewSeries()} labels={getReviewLabels()} colors={['#73D035', '#FF6562', '#3F8ADF', '#FFC100', '#FF851C']} />
                                     </div>
                                     <div className={style.verticalDivider}></div>
                                     <div>
@@ -427,7 +427,7 @@ const Dashboard = () => {
                                     <div className={style.verticalDivider}></div>
                                     <div>
                                         <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Review Status</div>
-                                        <DonutChart height={200} legendPosition={'right'} series={getDeptHeadReviewSeries()} labels={getReviewLabels()} />
+                                        <DonutChart height={200} legendPosition={'right'} series={getDeptHeadReviewSeries()} labels={getReviewLabels()} colors={['#73D035', '#FF6562', '#3F8ADF', '#FFC100', '#FF851C']} />
                                     </div>
                                     <div className={style.verticalDivider}></div>
                                     <div>
@@ -479,7 +479,7 @@ const Dashboard = () => {
                                     <div className={style.verticalDivider}></div>
                                     <div>
                                         <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Review Status</div>
-                                        <DonutChart height={200} legendPosition={'right'} series={getCCReviewSeries()} labels={getReviewLabels()} />
+                                        <DonutChart height={200} legendPosition={'right'} series={getCCReviewSeries()} labels={getReviewLabels()} colors={['#73D035', '#FF6562', '#3F8ADF', '#FFC100', '#FF851C']} />
                                     </div>
                                     <div className={style.verticalDivider}></div>
                                     <div>
@@ -531,7 +531,7 @@ const Dashboard = () => {
                                     <div className={style.verticalDivider}></div>
                                     <div>
                                         <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Review Status</div>
-                                        <DonutChart height={200} legendPosition={'right'} series={getMACReviewSeries()} labels={getReviewLabels()} />
+                                        <DonutChart height={200} legendPosition={'right'} series={getMACReviewSeries()} labels={getReviewLabels()} colors={['#73D035', '#FF6562', '#3F8ADF', '#FFC100', '#FF851C']} />
                                     </div>
                                     <div className={style.verticalDivider}></div>
 
@@ -579,7 +579,7 @@ const Dashboard = () => {
                                     <div className={style.verticalDivider}></div>
                                     <div>
                                         <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Review Status</div>
-                                        <DonutChart height={200} legendPosition={'right'} series={getBODReviewSeries()} labels={getReviewLabels()} />
+                                        <DonutChart height={200} legendPosition={'right'} series={getBODReviewSeries()} labels={getReviewLabels()} colors={['#73D035', '#FF6562', '#3F8ADF', '#FFC100', '#FF851C']} />
                                     </div>
                                     <div className={style.verticalDivider}></div>
 
@@ -648,7 +648,7 @@ const Dashboard = () => {
                                     <div className={style.verticalDivider}></div>
                                     <div>
                                         <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Raised With</div>
-                                        <DonutChart height={200} legendPosition={'right'} series={getRequestForClarificationSeries()} labels={getRequestLabels()} />
+                                        <DonutChart height={200} legendPosition={'right'} series={getRequestForClarificationSeries()} labels={getRequestLabels()} colors={['#FF80AC', '#C592ED', '#FFD60C']} />
                                     </div>
 
                                 </div>
@@ -722,7 +722,7 @@ const Dashboard = () => {
                                     <div className={style.verticalDivider}></div>
                                     <div>
                                         <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Raised With</div>
-                                        <DonutChart height={200} legendPosition={'right'} series={getRequestForDocumentsSeries()} labels={getDocumentLabels()} />
+                                        <DonutChart height={200} legendPosition={'right'} series={getRequestForDocumentsSeries()} labels={getDocumentLabels()} colors={['#FF80AC', '#C592ED', '#FFD60C']} />
                                     </div>
 
                                 </div>

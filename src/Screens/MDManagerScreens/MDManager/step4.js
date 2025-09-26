@@ -446,7 +446,7 @@ const MDManagerStep4 = ({ setStep3, setStep4, mdValue, setMdValue, setSelectedMd
                                 />
                                 {showAttestationGroupList && (
                                     <div className={`${style.attestationGroupCard} ${style.padding20}`} tabIndex={0}>
-                                        {groupList?.filter(data => data?.type === "SIGN_OFF")?.map((data, index) => (
+                                        {groupList?.filter(data => data?.type === "SIGN_OFF" && !selectedSignOffGroups?.includes(data?.id))?.map((data, index) => (
                                             <div className={`${style.groupDisplayGrid} ${style.verticalAlignCenter}`}>
                                                 <div className={`${style.labelStyle} ${style.cursorPointer}`} onClick={signOffExists ? () => { } : () => handleGroupSelect(data?.id)}>{data?.name}</div>
                                                 <div className={`${style.attestationDescStyle} ${style.verticalAlignCenter}`}

@@ -409,7 +409,7 @@ const ManageSignOff = () => {
         "MD ID",
         "Type",
         "Sign Off Due Date",
-        "Last Updated",
+        "Last Modified",
         ""
     ];
     const attestedHeaderValues = [
@@ -433,7 +433,7 @@ const ManageSignOff = () => {
         true,
         true,
         false,
-        false,
+        true,
     ];
 
     const tableHeaderValues = selectedOption === "pending" ? reviewAndAttestHeaderValues : attestedHeaderValues

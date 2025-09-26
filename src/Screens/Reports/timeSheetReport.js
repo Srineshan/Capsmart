@@ -69,7 +69,7 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
     const [isExpanded, setIsExpanded] = useState(true);
     const myReportsHeaderValues = ["Report Title", "Schedule", "Saved Parameters", "Last Updated", "Action"];
     const reportingTemplateHeaderValues = ["Report Template Title", "Type", "Last Run By", "Last Run Date / Time", "Last Updated By", "Last Updated", "Action"];
-    const savedReportsHeaderValues = ["Saved Report", "Reporting Period", "Saved On", "Action"];
+    const savedReportsHeaderValues = ["Saved Report", "", "Saved On", "Action"];
     const [sortField, setSortField] = useState("DEFAULT");
     const [sortValue, setSortValue] = useState("DESCENDING");
     const [page, setPage] = useState(1);

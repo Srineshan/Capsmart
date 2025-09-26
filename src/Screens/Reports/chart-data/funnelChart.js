@@ -50,14 +50,14 @@ const FunnelChart = ({ series, total = 0 }) => {
             }
         },
         colors: [
-            '#EBF8E2',
-            '#C3EBA8',
-            '#9BDD6E',
-            '#73D035',
-            '#62B62B',
-            '#539924',
-            '#539924',
-            '#335F16'
+            '#D8FF8A',
+            '#C7F47C',
+            '#B7EB6F',
+            '#A7E162',
+            '#96D854',
+            '#86CE47',
+            '#76C43A',
+            '#66BB2D'
         ],
         dataLabels: {
             enabled: true,

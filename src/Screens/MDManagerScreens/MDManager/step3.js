@@ -321,12 +321,12 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
 
     const handleRemoveForExclude = () => {
         console.log('filterCheck')
-        setSelectedExcludeMembers(staffListForExclude?.filter(data => data !== selectedStaffForMoveForExclusion))
+        setSelectedExcludeMembers(selectedExcludeMembers?.filter(data => data !== selectedStaffForMoveForExclusion))
     }
 
     const handleMoveBulkForExclude = () => {
         console.log('filterCheck')
-        setSelectedExcludeMembers(staffListForExclude?.map(data => data?.id))
+        setSelectedExcludeMembers(uniqueUsers?.map(data => data?.id))
     }
 
     const handleRemoveBulkForExclude = () => {
@@ -462,6 +462,10 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                 acknowledgementData.approvalFlowMap.workflow[1].flowDetails[0].groups = transformedGroups
             }
         } else {
+            acknowledgementData.approvalFlowMap.workflow[1].flowDetails[0].approvalRequirement = 'OPTIONAL';
+            if (workflowStructure?.approvalFlowMap?.workflow[1]?.flowDetails?.[0]?.approvalBy === 'GROUP') {
+                acknowledgementData.approvalFlowMap.workflow[1].flowDetails[0].groups = []
+            }
             if (
                 acknowledgementData?.approvalFlowMap?.workflow &&
                 acknowledgementData.approvalFlowMap.workflow[1]
@@ -1068,7 +1072,7 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                         <div className={style.labelStyle}>Staff Acknowledgement Required?</div>
                         <CommonSwitch label={workFlow1IsMandatory ? 'YES' : 'NO'} checked={workFlow1IsMandatory} onChange={acknowledgementExists ? () => { } : (e) => { setWorkFlow1IsMandatory(e.target.checked); setWorkflowEdited(true) }} labelName={''} />
                         {!workFlow1IsMandatory && (
-                            <div className={style.acknowledgementNote}>
+                            <div className={style.exclusionNote}>
                                 This Medical Directive does not require pre-publication acknowledgement from any department-specific staff. However, the final draft must still be reviewed and approved by the MAC and Leadership Team.
                             </div>
                         )}
@@ -1088,7 +1092,7 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                                     />
                                     {showAttestationGroupList && (
                                         <div className={`${style.attestationGroupCard} ${style.padding20} `} tabIndex={0}>
-                                            {groupList?.filter(data => data?.type === "ACKNOWLEDGEMENT")?.map((data, index) => (
+                                            {groupList?.filter(data => data?.type === "ACKNOWLEDGEMENT" && !selectedAcknowledgementGroups?.includes(data?.id))?.map((data, index) => (
                                                 <div className={`${style.groupDisplayGrid} ${style.verticalAlignCenter} `}>
                                                     <div className={`${style.labelStyle} ${style.cursorPointer} `} onClick={acknowledgementExists ? () => { } : () => handleGroupSelectAcknowledgement(data?.id)}>{data?.name}</div>
                                                     <div className={`${style.attestationDescStyle} ${style.verticalAlignCenter} `}
@@ -1099,7 +1103,7 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                                         </div>
                                     )}
                                 </div>
-                                <div className={` ${style.addNewButton} ${style.textColorWhite} ${style.createGroupButton} ${style.marginLeft20} ${style.cursorPointer} `} onClick={acknowledgementExists ? () => { } : () => handleCreateGroup()}>
+                                <div className={` ${style.addNewButton} ${style.textColorWhite} ${style.createGroupButton} ${style.marginLeft20} ${acknowledgementExists ? '' : style.cursorPointer} `} onClick={acknowledgementExists ? () => { } : () => handleCreateGroup()}>
                                     <AddIcon />
                                     <span> Create New Group</span>
                                 </div>
@@ -1289,7 +1293,7 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                                                 />
                                                 {showAcknowledgementGroupList && (
                                                     <div className={`${style.attestationGroupCard} ${style.padding20} `} tabIndex={0}>
-                                                        {groupList?.filter(data => data?.type === "ATTESTATION")?.map((data, index) => (
+                                                        {groupList?.filter(data => data?.type === "ATTESTATION" && !selectedGroupsToList?.includes(data?.id))?.map((data, index) => (
                                                             <div className={`${style.spaceBetween} ${style.verticalAlignCenter} ${style.marginTop10} `}>
                                                                 <div className={`${style.labelStyle} ${style.cursorPointer} `} onClick={() => handleGroupSelection(data?.id)}>{data?.name}</div>
                                                                 {/* <div className={`${style.attestationDescStyle} ${style.verticalAlignCenter} `}
@@ -1453,16 +1457,16 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                             </div>
                             <div className={style.verticalAlignCenter}>
                                 <div className={`${style.displayInCol} `}>
-                                    <div className={`${style.moveCard} ${style.justifyCenter} ${style.verticalAlignCenter} ${staffListForExclude?.filter(staff => !selectedExcludeMembers?.includes(staff.id))?.length === 0 ? style.disabledView : style.cursorPointer} `} onClick={staffListForExclude?.filter(staff => !selectedExcludeMembers?.includes(staff.id))?.length === 0 ? () => { } : () => handleMoveForExclude()}>
+                                    <div className={`${style.moveCard} ${style.justifyCenter} ${style.verticalAlignCenter} ${uniqueUsers?.filter(staff => !selectedExcludeMembers?.includes(staff.id))?.length === 0 ? style.disabledView : style.cursorPointer} `} onClick={uniqueUsers?.filter(staff => !selectedExcludeMembers?.includes(staff.id))?.length === 0 ? () => { } : () => handleMoveForExclude()}>
                                         <KeyboardArrowRightIcon sx={{ color: '#06617A' }} />
                                     </div>
-                                    <div className={`${style.moveCard} ${style.marginTop10} ${style.justifyCenter} ${style.verticalAlignCenter} ${staffListForExclude?.filter(staff => !selectedExcludeMembers?.includes(staff.id))?.length === 0 ? style.disabledView : style.cursorPointer} `} onClick={staffListForExclude?.filter(staff => !selectedExcludeMembers?.includes(staff.id))?.length === 0 ? () => { } : () => handleMoveBulkForExclude()}>
+                                    <div className={`${style.moveCard} ${style.marginTop10} ${style.justifyCenter} ${style.verticalAlignCenter} ${uniqueUsers?.filter(staff => !selectedExcludeMembers?.includes(staff.id))?.length === 0 ? style.disabledView : style.cursorPointer} `} onClick={uniqueUsers?.filter(staff => !selectedExcludeMembers?.includes(staff.id))?.length === 0 ? () => { } : () => handleMoveBulkForExclude()}>
                                         <KeyboardDoubleArrowRightIcon sx={{ color: '#06617A' }} />
                                     </div>
-                                    <div className={`${style.moveCard} ${style.marginTop20} ${style.justifyCenter} ${style.verticalAlignCenter} ${staffListForExclude?.filter(staff => selectedExcludeMembers?.includes(staff.id))?.length === 0 ? style.disabledView : style.cursorPointer} `} onClick={staffListForExclude?.filter(staff => selectedExcludeMembers?.includes(staff.id))?.length === 0 ? () => { } : () => handleRemoveForExclude()}>
+                                    <div className={`${style.moveCard} ${style.marginTop20} ${style.justifyCenter} ${style.verticalAlignCenter} ${uniqueUsers?.filter(staff => selectedExcludeMembers?.includes(staff.id))?.length === 0 ? style.disabledView : style.cursorPointer} `} onClick={uniqueUsers?.filter(staff => selectedExcludeMembers?.includes(staff.id))?.length === 0 ? () => { } : () => handleRemoveForExclude()}>
                                         <KeyboardArrowLeftIcon sx={{ color: '#06617A' }} />
                                     </div>
-                                    <div className={`${style.moveCard} ${style.marginTop10} ${style.justifyCenter} ${style.verticalAlignCenter} ${staffListForExclude?.filter(staff => selectedExcludeMembers?.includes(staff.id))?.length === 0 ? style.disabledView : style.cursorPointer} `} onClick={staffListForExclude?.filter(staff => selectedExcludeMembers?.includes(staff.id))?.length === 0 ? () => { } : () => handleRemoveBulkForExclude()}>
+                                    <div className={`${style.moveCard} ${style.marginTop10} ${style.justifyCenter} ${style.verticalAlignCenter} ${uniqueUsers?.filter(staff => selectedExcludeMembers?.includes(staff.id))?.length === 0 ? style.disabledView : style.cursorPointer} `} onClick={uniqueUsers?.filter(staff => selectedExcludeMembers?.includes(staff.id))?.length === 0 ? () => { } : () => handleRemoveBulkForExclude()}>
                                         <KeyboardDoubleArrowLeftIcon sx={{ color: '#06617A' }} />
                                     </div>
                                 </div>
