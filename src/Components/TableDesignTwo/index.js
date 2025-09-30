@@ -480,7 +480,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                     }
                 </div>
             </div>
-            <div>
+            <div className={style.tableWrapper}>
                 <div className={`${style.tableHeader} ${gridStyle} ${style.marginTop10}`}>
                     {tableHeaderValues?.map((data, index) => (
                         <div className={` ${style.verticalAlignCenter} ${style.sortingIcon}`} key={index}>

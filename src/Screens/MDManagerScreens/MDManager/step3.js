@@ -370,7 +370,7 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
             let errors = [];
 
             if (workFlow1IsMandatory && selectedAcknowledgementGroups?.length === 0) errors.push("Acknowledgement Group selection is required.");
-            if (targetStaff?.includes('SELECTED_GROUPS') && selectedGroupsWithApplicantTypes?.length === 0) errors.push("Attestation Group Selection is required.");
+            if (targetStaff?.includes('SELECTED_GROUPS') && (selectedGroupsWithApplicantTypes?.length === 0 || selectedGroupsToList?.length === 0)) errors.push("Attestation Group Selection is required.");
             if (!attestationReviewFrequency) errors.push("Frequency of Review for Attestation (if none within the period selected) is required");
             if (errors.length) {
                 errors.forEach(err => ErrorToaster2(err));
