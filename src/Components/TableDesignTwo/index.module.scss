@@ -432,8 +432,13 @@
 }
 
 @media print {
+    .tableWrapper {
+        page-break-inside: avoid;
+        break-inside: avoid;
+    }
+
     .pagebreak {
-        page-break-after: always;
+        page-break-after: auto;
         width: 100%;
         height: auto;
         padding: 20px;

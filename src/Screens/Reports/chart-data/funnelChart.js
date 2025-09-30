@@ -96,11 +96,17 @@ const FunnelChart = ({ series, total = 0 }) => {
             ]
         },
         tooltip: {
-            y: {
-                formatter: function (val, { dataPointIndex, w }) {
-                    const percent = w.config.series[0].data[dataPointIndex].z;
-                    return `${w.globals.labels[dataPointIndex]}: ${val} (${percent}%)`;
-                }
+            enabled: true,
+            custom: function ({ series, seriesIndex, dataPointIndex, w }) {
+                // Access category (e.g., "Sourced") and value (e.g., 138)
+                const category = w.globals.labels[dataPointIndex];
+                const value = series[seriesIndex][dataPointIndex];
+                // Return custom HTML with styled text
+                return `
+                  <div style="padding: 10px; background: #333; color: #fff; font-size: 16px; border-radius: 4px;">
+                    Applications: ${value}
+                  </div>
+                `;
             }
         }
     };
