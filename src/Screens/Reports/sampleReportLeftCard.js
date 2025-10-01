@@ -1492,7 +1492,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                         {(reportType === "expiredDocumentsSummaryForStaff" || reportType === "documentsExpirationSummaryForStaff" || reportType === "appointmentHistorySummary" || reportType === "inactiveStaffSummary"
                             || reportType === "newStaffAppointmentsSummary" || reportType === "inactiveStaffSummaryByMonth" || reportType === "staffUploadedDocumentsSummary") && (
                                 <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                                    <InputLabel id="demo-simple-select-standard-label3">Position</InputLabel>
+                                    <InputLabel id="demo-simple-select-standard-label3">Staff</InputLabel>
                                     <Select
                                         labelId="demo-simple-select-standard-label3"
                                         id="demo-simple-select-standard3"

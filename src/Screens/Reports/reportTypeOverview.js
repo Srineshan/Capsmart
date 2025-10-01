@@ -2155,7 +2155,13 @@ const ReportTypeOverview = () => {
                 `${formatFirstNameLastName(data?.staff?.applicant?.name?.firstName, data?.staff?.applicant?.name?.lastName)}` || " "
             );
 
-            documentType.push(data?.expiredDocuments?.map(docData => `${docData?.shortName || ''} ${docData?.expiryDate ? `(${format(new Date(docData?.expiryDate), 'MMM dd, yyyy')})` : ''}`)?.join(', '));
+            documentType.push(
+                <div className={style.textAlignLeft}>
+                    {data?.expiredDocuments?.map(docData => `${docData?.shortName || ''} ${docData?.expiryDate ? `(${format(new Date(docData?.expiryDate), 'MMM dd, yyyy')})` : ''} `)?.map((data, index) => (
+                        <div>{`${index + 1}. ${data}`} <br /></div>
+                    ))}
+                </div >
+            );
             departmentSpecialty.push(`${data?.staff?.basicDetailReferences?.department?.name} ${data?.staff?.basicDetailReferences?.specialty?.name ? `- ${data?.staff?.basicDetailReferences?.specialty?.name}` : ''}`);
             email.push(
                 `${data?.staff?.applicant?.email?.officialEmail || "-"}`
@@ -2166,7 +2172,7 @@ const ReportTypeOverview = () => {
         return [
             { type: "text", value: No },
             { type: "text", value: staffName },
-            { type: "text", value: documentType },
+            { type: "icon", icon: documentType },
             { type: "text", value: departmentSpecialty },
             { type: "text", value: staffType },
             { type: "text", value: email },
@@ -2196,8 +2202,13 @@ const ReportTypeOverview = () => {
             staffName.push(
                 `${formatFirstNameLastName(data?.staff?.applicant?.name?.firstName, data?.staff?.applicant?.name?.lastName)}` || " "
             );
-
-            documentType.push(data?.documentsExpiringSoon?.map(docData => `${docData?.shortName || ''} ${docData?.expiryDate ? `(${format(new Date(docData?.expiryDate), 'MMM dd, yyyy')})` : ''}`)?.join(', '));
+            documentType.push(
+                <div className={style.textAlignLeft}>
+                    {data?.documentsExpiringSoon?.map(docData => `${docData?.shortName || ''} ${docData?.expiryDate ? `(${format(new Date(docData?.expiryDate), 'MMM dd, yyyy')})` : ''} `)?.map((data, index) => (
+                        <div>{`${index + 1}. ${data}`} <br /></div>
+                    ))}
+                </div >
+            );
             departmentSpecialty.push(`${data?.staff?.basicDetailReferences?.department?.name} ${data?.staff?.basicDetailReferences?.specialty?.name ? `- ${data?.staff?.basicDetailReferences?.specialty?.name}` : ''}`);
             email.push(
                 `${data?.staff?.applicant?.email?.officialEmail || "-"}`
@@ -3624,8 +3635,8 @@ const ReportTypeOverview = () => {
                                                             {(reportType === "expiredDocumentsSummaryForStaff" || reportType === "documentsExpirationSummaryForStaff" || reportType === "appointmentHistorySummary" || reportType === "inactiveStaffSummary"
                                                                 || reportType === "newStaffAppointmentsSummary" || reportType === "inactiveStaffSummaryByMonth" || reportType === "staffUploadedDocumentsSummary") && (
                                                                     <div>
-                                                                        <div className={`${style.reportRunByParamStyle} ${style.marginTop5} `}>POSITION </div>
-                                                                        <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedPosition || 'All Positions'}</div>
+                                                                        <div className={`${style.reportRunByParamStyle} ${style.marginTop5} `}>STAFF </div>
+                                                                        <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedPosition || 'All Staffs'}</div>
                                                                     </div>
                                                                 )}
                                                             {reportType === "documentsExpirationSummaryForStaff" && (

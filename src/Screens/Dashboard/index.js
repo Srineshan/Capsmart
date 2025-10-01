@@ -48,12 +48,12 @@ const Dashboard = () => {
     };
 
     const roleLabels = {
-        applicant: "Application Completion",
-        staffManager: "MSO Verification",
-        departmentHead: "Departmental Recommendation",
-        chiefOfStaff: "Chief Of Staff Recommendation",
-        credentialingCommittee: "Cred Comm Recommendation",
-        advisoryCommittee: "MAC Recommendation",
+        applicant: "Completed Application",
+        staffManager: "MSO Verified",
+        departmentHead: "Departmental Review",
+        chiefOfStaff: "Chief Of Staff Review",
+        credentialingCommittee: "Cred. Comm. Review",
+        advisoryCommittee: "MAC Approval",
         board: "BOD Approval"
     };
 
@@ -88,13 +88,13 @@ const Dashboard = () => {
             name: 'Reappointments',
             data: [
                 { x: 'Permanent Staff Eligible', y: dashboard?.reappointmentMetrics?.eligibleForReappointment?.count, z: dashboard?.reappointmentMetrics?.eligibleForReappointment?.percentage },
-                { x: 'Reappointment Applications with Applicants', y: dashboard?.staffReappointmentStats?.applicationsCreated?.count, z: dashboard?.staffReappointmentStats?.applicationsCreated?.percentage },
-                { x: 'Completed Reappointment Application', y: dashboard?.staffReappointmentStats?.applicationsSubmitted?.count, z: dashboard?.staffReappointmentStats?.applicationsSubmitted?.percentage },
-                { x: 'Verified by MSO', y: dashboard?.staffReappointmentStats?.staffManager?.count, z: dashboard?.staffReappointmentStats?.staffManager?.percentage },
+                { x: 'Reappointment Applications', y: dashboard?.staffReappointmentStats?.applicationsCreated?.count, z: dashboard?.staffReappointmentStats?.applicationsCreated?.percentage },
+                { x: 'Completed Application', y: dashboard?.staffReappointmentStats?.applicationsSubmitted?.count, z: dashboard?.staffReappointmentStats?.applicationsSubmitted?.percentage },
+                { x: 'MSO Verified', y: dashboard?.staffReappointmentStats?.staffManager?.count, z: dashboard?.staffReappointmentStats?.staffManager?.percentage },
                 { x: 'Departmental Review', y: dashboard?.staffReappointmentStats?.departmentHead?.count, z: dashboard?.staffReappointmentStats?.departmentHead?.percentage },
-                { x: 'Cred. Comm.', y: dashboard?.staffReappointmentStats?.credentialingCommittee?.count, z: dashboard?.staffReappointmentStats?.credentialingCommittee?.percentage },
-                { x: 'MAC', y: dashboard?.staffReappointmentStats?.advisoryCommittee?.count, z: dashboard?.staffReappointmentStats?.advisoryCommittee?.percentage },
-                { x: 'BOD', y: dashboard?.staffReappointmentStats?.board?.count, z: dashboard?.staffReappointmentStats?.board?.percentage }
+                { x: 'Cred. Comm. Review', y: dashboard?.staffReappointmentStats?.credentialingCommittee?.count, z: dashboard?.staffReappointmentStats?.credentialingCommittee?.percentage },
+                { x: 'MAC Approval', y: dashboard?.staffReappointmentStats?.advisoryCommittee?.count, z: dashboard?.staffReappointmentStats?.advisoryCommittee?.percentage },
+                { x: 'BOD Approval', y: dashboard?.staffReappointmentStats?.board?.count, z: dashboard?.staffReappointmentStats?.board?.percentage }
             ]
         }]
         let tempStackedBar = Object?.keys(dashboard?.reviewAndVerificationStats || {});
@@ -125,7 +125,7 @@ const Dashboard = () => {
 
     const getApplicationStatusLabels = () => {
         if (applicationDashboard) {
-            return ['Accepted', 'Not Yet Started', 'Declined']
+            return ['Submitted', 'Not Yet Started', 'Declined']
         } else return []
     }
 
@@ -227,7 +227,7 @@ const Dashboard = () => {
                         </div>
                         <div ref={componentRef} className={style.margin20WithoutTop}>
                             <div className={`${style.selectedFilterCard}`}>
-                                <div className={style.selectedFiltersHeadingText}>{`2025 - 2026 Permanent Staff Reappointment Dashboard for ${dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.departmentName?.name).join(', ') || 'All Departments'}`}</div>
+                                <div className={style.selectedFiltersHeadingText}>{`2025 - 2026 Permanent Staff Reappointment Cycle for ${dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.departmentName?.name).join(', ') || 'All Departments'}`}</div>
                                 <div className={`${style.grid4} ${style.marginTop20}`}>
                                     <div className={style.selectedFiltersText}>Current Date: {format(new Date(), 'MMM dd, yyyy')}</div>
                                     <div className={style.selectedFiltersText}>{dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.departmentName?.name).join(', ') || 'All Departments'}</div>
@@ -274,7 +274,7 @@ const Dashboard = () => {
                                 </div>
                                 <div className={style.fullHeight}>
                                     <div className={style.chartHeader}>
-                                        <div className={style.chartHeaderText}>Application Steps</div>
+                                        <div className={style.chartHeaderText}>Reappointment Processing Application steps</div>
                                     </div>
                                     <div className={`${style.chartBody} ${style.fullHeight}`}>
                                         {(stackedSeries?.length > 0 && stackedCategories?.length > 0) && (
@@ -292,7 +292,7 @@ const Dashboard = () => {
                                     <div className={style.chartBody}>
                                         <div className={style.chartBodyCount}>{applicationDashboard?.applicationStatus?.totalApplications?.count}</div>
                                         <div className={style.chartBodyText}>Total Applications</div>
-                                        <DonutChart height={200} legendPosition={'bottom'} series={getApplicationStatusSeries()} labels={getApplicationStatusLabels()} colors={['#73D035', '#3F8ADF', '#FF6562']} />
+                                        <DonutChart height={200} legendPosition={'bottom'} series={getApplicationStatusSeries()} labels={getApplicationStatusLabels()} colors={['#73D035', '#3F8ADF', '#FF6562']} size={'0%'} />
                                     </div>
                                 </div>
                                 <div className={style.fullHeight}>
@@ -375,7 +375,7 @@ const Dashboard = () => {
                                     <div className={style.verticalDivider}></div>
                                     <div>
                                         <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Review Status</div>
-                                        <DonutChart height={200} legendPosition={'right'} series={getMSOReviewSeries()} labels={getReviewLabels()} colors={['#73D035', '#FF6562', '#3F8ADF', '#FFC100', '#FF851C']} />
+                                        <DonutChart height={200} legendPosition={'right'} series={getMSOReviewSeries()} labels={getReviewLabels()} colors={['#73D035', '#FF6562', '#3F8ADF', '#FFC100', '#FF851C']} size={'0%'} />
                                     </div>
                                     <div className={style.verticalDivider}></div>
                                     <div>
@@ -427,7 +427,7 @@ const Dashboard = () => {
                                     <div className={style.verticalDivider}></div>
                                     <div>
                                         <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Review Status</div>
-                                        <DonutChart height={200} legendPosition={'right'} series={getDeptHeadReviewSeries()} labels={getReviewLabels()} colors={['#73D035', '#FF6562', '#3F8ADF', '#FFC100', '#FF851C']} />
+                                        <DonutChart height={200} legendPosition={'right'} series={getDeptHeadReviewSeries()} labels={getReviewLabels()} colors={['#73D035', '#FF6562', '#3F8ADF', '#FFC100', '#FF851C']} size={'0%'} />
                                     </div>
                                     <div className={style.verticalDivider}></div>
                                     <div>
@@ -479,7 +479,7 @@ const Dashboard = () => {
                                     <div className={style.verticalDivider}></div>
                                     <div>
                                         <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Review Status</div>
-                                        <DonutChart height={200} legendPosition={'right'} series={getCCReviewSeries()} labels={getReviewLabels()} colors={['#73D035', '#FF6562', '#3F8ADF', '#FFC100', '#FF851C']} />
+                                        <DonutChart height={200} legendPosition={'right'} series={getCCReviewSeries()} labels={getReviewLabels()} colors={['#73D035', '#FF6562', '#3F8ADF', '#FFC100', '#FF851C']} size={'0%'} />
                                     </div>
                                     <div className={style.verticalDivider}></div>
                                     <div>
@@ -531,7 +531,7 @@ const Dashboard = () => {
                                     <div className={style.verticalDivider}></div>
                                     <div>
                                         <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Review Status</div>
-                                        <DonutChart height={200} legendPosition={'right'} series={getMACReviewSeries()} labels={getReviewLabels()} colors={['#73D035', '#FF6562', '#3F8ADF', '#FFC100', '#FF851C']} />
+                                        <DonutChart height={200} legendPosition={'right'} series={getMACReviewSeries()} labels={getReviewLabels()} colors={['#73D035', '#FF6562', '#3F8ADF', '#FFC100', '#FF851C']} size={'0%'} />
                                     </div>
                                     <div className={style.verticalDivider}></div>
 
@@ -579,7 +579,7 @@ const Dashboard = () => {
                                     <div className={style.verticalDivider}></div>
                                     <div>
                                         <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Review Status</div>
-                                        <DonutChart height={200} legendPosition={'right'} series={getBODReviewSeries()} labels={getReviewLabels()} colors={['#73D035', '#FF6562', '#3F8ADF', '#FFC100', '#FF851C']} />
+                                        <DonutChart height={200} legendPosition={'right'} series={getBODReviewSeries()} labels={getReviewLabels()} colors={['#73D035', '#FF6562', '#3F8ADF', '#FFC100', '#FF851C']} size={'0%'} />
                                     </div>
                                     <div className={style.verticalDivider}></div>
 
@@ -648,7 +648,7 @@ const Dashboard = () => {
                                     <div className={style.verticalDivider}></div>
                                     <div>
                                         <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Raised With</div>
-                                        <DonutChart height={200} legendPosition={'right'} series={getRequestForClarificationSeries()} labels={getRequestLabels()} colors={['#FF80AC', '#C592ED', '#FFD60C']} />
+                                        <DonutChart height={200} legendPosition={'right'} series={getRequestForClarificationSeries()} labels={getRequestLabels()} colors={['#FF80AC', '#C592ED', '#FFD60C']} size={'0%'} />
                                     </div>
 
                                 </div>
@@ -722,7 +722,7 @@ const Dashboard = () => {
                                     <div className={style.verticalDivider}></div>
                                     <div>
                                         <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Raised With</div>
-                                        <DonutChart height={200} legendPosition={'right'} series={getRequestForDocumentsSeries()} labels={getDocumentLabels()} colors={['#FF80AC', '#C592ED', '#FFD60C']} />
+                                        <DonutChart height={200} legendPosition={'right'} series={getRequestForDocumentsSeries()} labels={getDocumentLabels()} colors={['#FF80AC', '#C592ED', '#FFD60C']} size={'0%'} />
                                     </div>
 
                                 </div>
