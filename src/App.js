@@ -712,7 +712,10 @@ const App = ({ props }) => {
           console.log(refreshedSession, 'refreshed session')
           if (refreshedSession) {
             cookie.set('authorization', refreshedSession?.data?.sessionJwt, {
-              path: '/'
+              path: '/',
+              domain: window.location.hostname?.split('.')?.length >= 3 ? window.location.hostname?.split('.')?.slice(-2)?.join('.') : window.location.hostname,
+              secure: true,
+              sameSite: 'none',
             });
             console.log('Session refreshed and cookie updated!', refreshedSession);
           }

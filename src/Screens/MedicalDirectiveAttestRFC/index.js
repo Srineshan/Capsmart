@@ -36,6 +36,9 @@ const MedicalDirectiveAttestRFC = () => {
         else {
             cookie.set('authorization', resp?.data?.sessionJwt, {
                 path: '/',
+                domain: window.location.hostname?.split('.')?.length >= 3 ? window.location.hostname?.split('.')?.slice(-2)?.join('.') : window.location.hostname,
+                secure: true,
+                sameSite: 'none',
             });
             console.log("Successfully verified magic link token", resp)
         }
