@@ -290,10 +290,6 @@ button {
   box-shadow: none !important;
 }*/
 
-body {
-  background-color: var(--secondary-color);
-}
-
 $primarycolor: #06617A;
 $primarycolorHover: #054D61;
 $secondarycolor: #F5F8F8;
@@ -331,3 +327,14 @@ $fontStyle: 'proxima-nova';
   --secondary-color: #{$secondarycolor};
   --font-style: $fontStyle;
 }
+
+::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none !important;
+  background: transparent !important;
+}
+
+/* body {
+  background-color: var(--secondary-color);
+}*/

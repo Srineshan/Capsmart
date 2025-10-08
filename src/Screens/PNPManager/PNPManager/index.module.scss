@@ -1,5 +1,9 @@
 @import "../../../index.scss";
 
+body {
+    background-color: var(--secondary-color);
+}
+
 .smallCardGrid {
     display: grid;
     grid-template-columns: 80px 1fr;
