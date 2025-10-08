@@ -31,23 +31,23 @@
 .saveInProgress {
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #00000029;
-    border: 0.5px solid $primarycolor;
+    border: 0.5px solid var(--primary-color);
     border-radius: 8px;
     text-align: center;
-    font: normal normal bold 15px/30px proxima-nova;
+    font: normal normal bold 15px/30px var(--font-style);
     letter-spacing: 0px;
-    color: $primarycolor;
+    color: var(--primary-color);
     text-transform: uppercase;
     padding: 5px;
     cursor: pointer;
 }
 
 .continue {
-    background: $primarycolor 0% 0% no-repeat padding-box;
+    background: var(--primary-color) 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #00000029;
     border-radius: 8px;
     text-align: center;
-    font: normal normal bold 15px/30px proxima-nova;
+    font: normal normal bold 15px/30px var(--font-style);
     letter-spacing: 0px;
     color: #FFFFFF;
     text-transform: uppercase;
@@ -65,7 +65,7 @@
 
 .titleTextStyle {
     text-align: left;
-    font: normal normal bold $labelvaluetext proxima-nova;
+    font: normal normal bold $labelvaluetext var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: capitalize;
@@ -93,7 +93,7 @@
 
 .documentTextStyle {
     text-align: left;
-    font: normal normal normal 15px/21px proxima-nova;
+    font: normal normal normal 15px/21px var(--font-style);
     letter-spacing: 0px;
     color: #6F7479;
     text-transform: capitalize;

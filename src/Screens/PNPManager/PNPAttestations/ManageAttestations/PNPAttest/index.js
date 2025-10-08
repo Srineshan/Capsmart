@@ -117,7 +117,7 @@ const ManagePNPAttest = () => {
     const getAttestationLog = async () => {
         if (medicalDirectivesId !== undefined) {
             const { data: medicalDirectivesAttestationLog } = await GET(
-                `policy-and-procedure-management-service/attestationLog?medicalDirectiveId=${medicalDirectivesId}&userId=${users?.id}`
+                `policy-and-procedure-management-service/attestationLog?policyAndProcedureId=${medicalDirectivesId}&userId=${users?.id}`
             );
             setMedicalDirectivesAttestationLog(medicalDirectivesAttestationLog)
             console.log(medicalDirectivesAttestationLog, 'medicalDirectivesAttestationLog')
@@ -222,7 +222,7 @@ const ManagePNPAttest = () => {
                                             </div>
                                         </div>
                                         {/* {(!isScrolledToBottom) && (
-                                            <div className={`${style.marginTop10} ${style.attestationRequiredText}`}>You need to scroll to the end of the document before you can certify the Directive</div>
+                                            <div className={`${style.marginTop10} ${style.attestationRequiredText}`}>You need to scroll to the end of the document before you can certify the P&P</div>
                                         )} */}
                                         <Tooltip arrow title={"Click to Submit"}>
                                             <div className={`${style.continue} ${style.marginTop} ${style.disabled}`}>SUBMIT</div></Tooltip>
@@ -254,7 +254,7 @@ const ManagePNPAttest = () => {
                                         </div>
                                     </div>
                                     {/* {(!isScrolledToBottom) && (
-                                        <div className={`${style.marginTop10} ${style.attestationRequiredText}`}>You need to scroll to the end of the document before you can certify the Directive</div>
+                                        <div className={`${style.marginTop10} ${style.attestationRequiredText}`}>You need to scroll to the end of the document before you can certify the P&P</div>
                                     )} */}
                                     <div className={`${style.continue} ${style.marginTop10} ${(isScrolledToBottom && isSigned) ? '' : style.disabled}`} onClick={(isScrolledToBottom && isSigned) ? () => { handleSubmitAttest() } : () => { }}>SUBMIT</div>
                                 </>

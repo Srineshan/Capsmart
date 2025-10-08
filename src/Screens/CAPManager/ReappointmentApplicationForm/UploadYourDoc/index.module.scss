@@ -56,18 +56,18 @@
     opacity: 0;
     pointer-events: none;
     // filter: blur(5px); 
-    // box-shadow: 0 0 10px 5px #06617A;
+    // box-shadow: 0 0 10px 5px var(--primary-color);
 }
 
 .saveInProgress {
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #00000029;
-    border: 0.5px solid $primarycolor;
+    border: 0.5px solid var(--primary-color);
     border-radius: 8px;
     text-align: center;
-    font: normal normal bold 17px/30px proxima-nova;
+    font: normal normal bold 17px/30px var(--font-style);
     letter-spacing: 0px;
-    color: $primarycolor;
+    color: var(--primary-color);
     text-transform: uppercase;
     padding: 5px;
     cursor: pointer;
@@ -83,11 +83,11 @@
 }
 
 .continue {
-    background: $primarycolor 0% 0% no-repeat padding-box;
+    background: var(--primary-color) 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #00000029;
     border-radius: 8px;
     text-align: center;
-    font: normal normal bold 17px/30px proxima-nova;
+    font: normal normal bold 17px/30px var(--font-style);
     letter-spacing: 0px;
     color: #FFFFFF;
     text-transform: uppercase;
@@ -121,19 +121,19 @@
 }
 
 .progressStyleBackground {
-    background: transparent linear-gradient(90deg, $primarycolor 0%, $primarycolor 20%, #E9E9F0 30%, #E9E9F0 100%) 0% 0% no-repeat padding-box;
+    background: transparent linear-gradient(90deg, var(--primary-color) 0%, var(--primary-color) 20%, #E9E9F0 30%, #E9E9F0 100%) 0% 0% no-repeat padding-box;
 }
 
 .titleText {
     text-align: left;
-    font: normal normal bold 17px/26px proxima-nova;
+    font: normal normal bold 17px/26px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
 }
 
 .descriptionText {
     text-align: left;
-    font: normal normal bold 14px/26px proxima-nova;
+    font: normal normal bold 14px/26px var(--font-style);
     letter-spacing: 0px;
     color: #94979A;
 }
@@ -149,29 +149,29 @@
 
 .dragAndDropText {
     text-align: center;
-    font: normal normal 600 18px/36px proxima-nova;
+    font: normal normal 600 18px/36px var(--font-style);
     letter-spacing: 0px;
-    color: $primarycolor;
+    color: var(--primary-color);
     text-transform: capitalize;
 }
 
 .dragAndDropDescriptionText {
     text-align: center;
-    font: normal normal normal 18px/36px proxima-nova;
+    font: normal normal normal 18px/36px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
 }
 
 .tableHeader {
     background: $secondarycolor 0% 0% no-repeat padding-box;
-    border: 0.4000000059604645px solid #06617A;
+    border: 0.4000000059604645px solid var(--primary-color);
     border-radius: 6px;
     padding: 10px 20px;
 }
 
 .tableHeaderText {
     text-align: left;
-    font: normal normal bold 15px/23px proxima-nova;
+    font: normal normal bold 15px/23px var(--font-style);
     letter-spacing: 0.9px;
     color: #2C2C2C;
     text-transform: capitalize;
@@ -192,7 +192,7 @@
 
 .requiredDocumentCard {
     background: #FFFFFF 0% 0% no-repeat padding-box;
-    border: 0.4000000059604645px solid $primarycolor;
+    border: 0.4000000059604645px solid var(--primary-color);
     border-radius: 4px;
     padding: 10px 15px;
 }
@@ -207,7 +207,7 @@
 
 .documentTextStyle {
     text-align: left;
-    font: normal normal normal 15px/21px proxima-nova;
+    font: normal normal normal 15px/21px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
 }
@@ -247,7 +247,7 @@
         position: fixed;
         top: 0;
         left: 0;
-        background-color: $primarycolor;
+        background-color: var(--primary-color);
         color: white;
         padding: 10px 5px;
         border-radius: 0 0 0 12px;
@@ -260,7 +260,7 @@
         position: fixed;
         top: 0;
         left: 0;
-        background-color: $primarycolor;
+        background-color: var(--primary-color);
         padding: 20px;
         border-radius: 0 12px 12px 0;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -300,11 +300,11 @@
         top: 0;
         left: 0;
         width: 100%;
-        background-color: $primarycolor;
+        background-color: var(--primary-color);
         color: white;
         padding: 15px;
         z-index: 1000;
-        font: normal normal bold 18px proxima-nova;
+        font: normal normal bold 18px var(--font-style);
         border-radius: 0 0 12px 12px;
         height: clamp(45px, 8vh, 100px);
     }
@@ -364,8 +364,8 @@
 
 .uploadTextStyle {
     text-align: center;
-    font: normal normal 600 20px/28px proxima-nova;
-    color: $primarycolor;
+    font: normal normal 600 20px/28px var(--font-style);
+    color: var(--primary-color);
     text-transform: capitalize;
 }
 
@@ -387,7 +387,7 @@
 
 .uploadDescriptionText {
     text-align: center;
-    font: normal normal 300 14px/14px proxima-nova;
+    font: normal normal 300 14px/14px var(--font-style);
     color: #2C2C2C;
 }
 
@@ -433,7 +433,7 @@
 
 .collapsableCardText {
     text-align: left;
-    font: normal normal bold 17px/25px proxima-nova;
+    font: normal normal bold 17px/25px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
 }
@@ -460,8 +460,8 @@
 }
 
 .editOrUpdateESign {
-    color: $primarycolor;
-    font: normal normal 600 20px/26px proxima-nova;
+    color: var(--primary-color);
+    font: normal normal 600 20px/26px var(--font-style);
     text-align: right;
 }
 
@@ -471,7 +471,7 @@
 
 .setupCompletedText {
     text-align: center;
-    font: normal normal 600 23px/26px proxima-nova;
+    font: normal normal 600 23px/26px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
 }
@@ -492,7 +492,7 @@
     width: auto;
     object-fit: contain;
     justify-content: center;
-    color: $primarycolor
+    color: var(--primary-color)
 }
 
 .fileLoadingStyle {
@@ -521,9 +521,9 @@
 
 .fileImportingMsg {
     text-align: center;
-    font: normal normal bold 20px/28px proxima-nova;
+    font: normal normal bold 20px/28px var(--font-style);
     letter-spacing: 0px;
-    color: $primarycolor;
+    color: var(--primary-color);
 }
 
 .loadingOverlay {
@@ -551,7 +551,7 @@
 
 .heading {
     text-align: left;
-    font: normal normal bold 20px/28px proxima-nova;
+    font: normal normal bold 20px/28px var(--font-style);
     color: #2C2C2C;
     text-transform: capitalize;
 }
@@ -562,7 +562,7 @@
 
 .description {
     text-align: left;
-    font: normal normal normal $tabledatatext2 proxima-nova;
+    font: normal normal normal $tabledatatext2 var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
 }
@@ -594,11 +594,11 @@
 }
 
 .continueValidation {
-    background: $primarycolor 0% 0% no-repeat padding-box;
+    background: var(--primary-color) 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #00000029;
     border-radius: 8px;
     text-align: center;
-    font: normal normal bold 17px/30px proxima-nova;
+    font: normal normal bold 17px/30px var(--font-style);
     letter-spacing: 0px;
     color: #FFFFFF;
     text-transform: uppercase;
@@ -617,12 +617,12 @@
 .saveInProgressValidation {
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #00000029;
-    border: 0.5px solid $primarycolor;
+    border: 0.5px solid var(--primary-color);
     border-radius: 8px;
     text-align: center;
-    font: normal normal bold 17px/30px proxima-nova;
+    font: normal normal bold 17px/30px var(--font-style);
     letter-spacing: 0px;
-    color: $primarycolor;
+    color: var(--primary-color);
     text-transform: uppercase;
     padding: 5px;
     cursor: pointer;
@@ -639,16 +639,16 @@
 
 .eSignatureOnFileCard {
     background: $secondarycolor 0% 0% no-repeat padding-box;
-    border: 1px dashed $primarycolor;
+    border: 1px dashed var(--primary-color);
     border-radius: 8px;
     padding: 20px 40px;
 }
 
 .eSignatureOnFileTitle {
     text-align: center;
-    font: normal normal 600 23px/26px proxima-nova;
+    font: normal normal 600 23px/26px var(--font-style);
     letter-spacing: 0px;
-    color: $primarycolor;
+    color: var(--primary-color);
 }
 
 .eSignatureOnFileButton {
@@ -662,14 +662,14 @@
 
 .dateTitle {
     text-align: left;
-    font: normal normal bold 17px/26px proxima-nova;
+    font: normal normal bold 17px/26px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
 }
 
 .date {
     text-align: left;
-    font: normal normal normal 17px/26px proxima-nova;
+    font: normal normal normal 17px/26px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
 }

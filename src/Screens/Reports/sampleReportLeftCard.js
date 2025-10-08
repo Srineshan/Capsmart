@@ -40,7 +40,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
     const [activityPerformed, setActivityPerformed] = useState('Half Day Clinic Session');
     const [renewalreportingTimePeriod, setRenewalreportingTimePeriod] = useState(30);
     const [noOfDays, setNoOfDays] = useState(30);
-    const [trackerTabName, setTrackerTabName] = useState('medical_directive_tab');
+    const [trackerTabName, setTrackerTabName] = useState(reportType === "medicalDirectivesTracker" ? 'medical_directive_tab' : 'policy_and_procedure_tab');
     const [contractContinuationPolicy, setContractContinuationPolicy] = useState('ALL');
     const [contractStatus, setContractStatus] = useState('ACTIVE');
     const [podType, setPodType] = useState('Medical Staff Membership & Privileges');
@@ -864,32 +864,34 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                 {(reportType === "staffReappointmentsNotes" || reportType === "staffReappointments" || reportType === "locumRenewalOrExtensionApplicationsSummary" || reportType === "privilegedStaffSummary" ||
                     reportType === "submittedApplicationsReviewSummary" || reportType === "staffReappointmentTracker" || reportType === "ohipBillingNumbersByCareProvider" || reportType === "careProviderCareerMilestoneSummary" ||
                     reportType === "declinedOrNotRenewedStaffSummary" || reportType === "reappointmentApplicationNotStarted" || reportType === "currentNotesSummary" || reportType === "staffReappointmentStatusSummary" || reportType === "staffbyTypes" || reportType === "locumStaffbyTypes" || reportType === "locumStaffRenewalStatusTracker" || reportType === "privilegedStaffSummary" || reportType === "careProvidersSummary"
-                    || reportType === "workflow" || reportType === "currentMedicalDirectives" || reportType === "retiredMedicalDirectives" || reportType === "upcomingForReview" || reportType === "medicalDirectivesTracker") ? (
+                    || reportType === "workflow" || reportType === "currentMedicalDirectives" || reportType === "retiredMedicalDirectives" || reportType === "upcomingForReview" || reportType === "medicalDirectivesTracker"
+                    || reportType === "currentPolicyAndProcedures" || reportType === "retiredPolicyAndProcedures" || reportType === "policyAndProceduresWorkflow" || reportType === "policyAndProceduresUpcomingForReview" || reportType === "policyAndProceduresTracker") ? (
                     <>
-                        {reportType !== "staffReappointmentTracker" && reportType !== "ohipBillingNumbersByCareProvider" && reportType !== "privilegedStaffSummary" && reportType !== "locumStaffbyTypes" && reportType !== "currentNotesSummary" && reportType !== "staffbyTypes" && reportType !== "locumStaffRenewalStatusTracker" && reportType !== 'staffReappointmentStatusSummary' && reportType !== "workflow" && reportType !== "currentMedicalDirectives" && reportType !== "retiredMedicalDirectives" && reportType !== "upcomingForReview" && reportType !== "medicalDirectivesTracker" && reportType !== "reappointmentApplicationNotStarted" && reportType !== "locumRenewalOrExtensionApplicationsSummary" && reportType !== "declinedOrNotRenewedStaffSummary" && (
-                            <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                                <InputLabel id="demo-multiple-name-label1" className={style.headingtextStyle}>Reporting Time Period</InputLabel>
-                                <Select
-                                    labelId="demo-multiple-name-label1"
-                                    id="demo-multiple-name1"
-                                    MenuProps={MenuProps}
-                                    value={reportingTimePeriod}
-                                    onChange={(e) => { setReportingTimePeriod(e.target.value) }}
-                                    disabled={isLoading}
-                                    className={`${style.textAlignLeft} ${style.Font}`}
-                                >
-                                    <MenuItem value={'Current Week'} disabled={isLoading}>Current Week</MenuItem>
-                                    <MenuItem value={'Last Week'} disabled={isLoading}>Last Week</MenuItem>
-                                    <MenuItem value={'Current Month'} disabled={isLoading}>Current Month</MenuItem>
-                                    <MenuItem value={'Last Month'} disabled={isLoading}>Last Month</MenuItem>
-                                    <MenuItem value={'Current Qtr'} disabled={isLoading}>Current Quarter</MenuItem>
-                                    <MenuItem value={'Last Qtr'} disabled={isLoading}>Last Quarter</MenuItem>
-                                    <MenuItem value={'Current Year'} disabled={isLoading}>Current Year</MenuItem>
-                                    <MenuItem value={'Last Year'} disabled={isLoading}>Last Year</MenuItem>
-                                    <MenuItem value={'Custom'} disabled={isLoading}>Custom</MenuItem>
-                                </Select>
-                            </FormControl>
-                        )}
+                        {reportType !== "staffReappointmentTracker" && reportType !== "ohipBillingNumbersByCareProvider" && reportType !== "privilegedStaffSummary" && reportType !== "locumStaffbyTypes" && reportType !== "currentNotesSummary" && reportType !== "staffbyTypes" && reportType !== "locumStaffRenewalStatusTracker" && reportType !== 'staffReappointmentStatusSummary' && reportType !== "workflow" && reportType !== "currentMedicalDirectives" && reportType !== "retiredMedicalDirectives" && reportType !== "upcomingForReview" && reportType !== "medicalDirectivesTracker" && reportType !== "reappointmentApplicationNotStarted" && reportType !== "locumRenewalOrExtensionApplicationsSummary" && reportType !== "declinedOrNotRenewedStaffSummary" && reportType !== "currentPolicyAndProcedures" && reportType !== "retiredPolicyAndProcedures"
+                            && reportType !== "policyAndProceduresWorkflow" && reportType !== "policyAndProceduresUpcomingForReview" && reportType !== "policyAndProceduresTracker" && (
+                                <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                                    <InputLabel id="demo-multiple-name-label1" className={style.headingtextStyle}>Reporting Time Period</InputLabel>
+                                    <Select
+                                        labelId="demo-multiple-name-label1"
+                                        id="demo-multiple-name1"
+                                        MenuProps={MenuProps}
+                                        value={reportingTimePeriod}
+                                        onChange={(e) => { setReportingTimePeriod(e.target.value) }}
+                                        disabled={isLoading}
+                                        className={`${style.textAlignLeft} ${style.Font}`}
+                                    >
+                                        <MenuItem value={'Current Week'} disabled={isLoading}>Current Week</MenuItem>
+                                        <MenuItem value={'Last Week'} disabled={isLoading}>Last Week</MenuItem>
+                                        <MenuItem value={'Current Month'} disabled={isLoading}>Current Month</MenuItem>
+                                        <MenuItem value={'Last Month'} disabled={isLoading}>Last Month</MenuItem>
+                                        <MenuItem value={'Current Qtr'} disabled={isLoading}>Current Quarter</MenuItem>
+                                        <MenuItem value={'Last Qtr'} disabled={isLoading}>Last Quarter</MenuItem>
+                                        <MenuItem value={'Current Year'} disabled={isLoading}>Current Year</MenuItem>
+                                        <MenuItem value={'Last Year'} disabled={isLoading}>Last Year</MenuItem>
+                                        <MenuItem value={'Custom'} disabled={isLoading}>Custom</MenuItem>
+                                    </Select>
+                                </FormControl>
+                            )}
                         {reportingTimePeriod === "Custom" && (
                             <>
                                 <div className={style.marginTop10}>
@@ -934,7 +936,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 </div>
                             </>
                         )}
-                        {reportType !== "medicalDirectivesTracker" && (
+                        {(reportType !== "medicalDirectivesTracker" && reportType !== "policyAndProceduresTracker") && (
                             <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                                 <InputLabel id="demo-multiple-name-label2" className={style.headingtextStyle}>Departments</InputLabel>
                                 <Select
@@ -1005,7 +1007,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 })}
                             </div>
                         )}
-                        {reportType !== "currentMedicalDirectives" && (reportType === "workflow" || reportType === "retiredMedicalDirectives" || reportType === "upcomingForReview") && (
+                        {reportType !== "currentMedicalDirectives" && reportType !== "currentPolicyAndProcedures" && (reportType === "workflow" || reportType === "retiredMedicalDirectives" || reportType === "upcomingForReview" || reportType === "retiredPolicyAndProcedures" || reportType === "policyAndProceduresWorkflow" || reportType === "policyAndProceduresUpcomingForReview") && (
                             <>
                                 <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                                     <InputLabel id="demo-multiple-name-label2" className={style.headingtextStyle}>Groups</InputLabel>
@@ -1207,7 +1209,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 ))}
                             </Select>
                         </FormControl> */}
-                        {reportType !== 'workflow' && reportType !== "currentMedicalDirectives" && reportType !== "retiredMedicalDirectives" && reportType !== "upcomingForReview" && reportType !== "medicalDirectivesTracker" && (
+                        {reportType !== 'workflow' && reportType !== "currentMedicalDirectives" && reportType !== "retiredMedicalDirectives" && reportType !== "upcomingForReview" && reportType !== "medicalDirectivesTracker" && reportType !== "currentPolicyAndProcedures" && reportType !== "retiredPolicyAndProcedures" && reportType !== 'policyAndProceduresWorkflow' && reportType !== "policyAndProceduresUpcomingForReview" && reportType !== "policyAndProceduresTracker" && (
                             <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                                 <InputLabel id="demo-multiple-name-label2" className={style.headingtextStyle}>Staff Type</InputLabel>
                                 <Select
@@ -1273,7 +1275,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 })}
                             </div>
                         )}
-                        {reportType !== 'workflow' && reportType !== "currentMedicalDirectives" && reportType !== "retiredMedicalDirectives" && reportType !== "upcomingForReview" && reportType !== "medicalDirectivesTracker" && (
+                        {reportType !== 'workflow' && reportType !== "currentMedicalDirectives" && reportType !== "retiredMedicalDirectives" && reportType !== "upcomingForReview" && reportType !== "medicalDirectivesTracker" && reportType !== "currentPolicyAndProcedures" && reportType !== "retiredPolicyAndProcedures" && reportType !== 'policyAndProceduresWorkflow' && reportType !== "policyAndProceduresUpcomingForReview" && reportType !== "policyAndProceduresTracker" && (
                             <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                                 <InputLabel id="demo-multiple-name-label2" className={style.headingtextStyle}>Privilege Category</InputLabel>
                                 <Select
@@ -1359,7 +1361,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 })}
                             </div>
                         )}
-                        {reportType === "upcomingForReview" && (
+                        {reportType === "upcomingForReview" && reportType === "policyAndProceduresUpcomingForReview" && (
                             <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                                 <InputLabel id="demo-simple-select-standard-label3">Review In</InputLabel>
                                 <Select
@@ -1427,9 +1429,30 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 </Select>
                             </FormControl>
                         )}
-                        {(reportType === "medicalDirectivesTracker") && (
+                        {(reportType === "policyAndProceduresWorkflow") && (
                             <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                                <InputLabel id="demo-simple-select-standard-label3" className={style.headingtextStyle}>Medical Directive Tracker</InputLabel>
+                                <InputLabel id="demo-simple-select-standard-label3" className={style.headingtextStyle}>Workflow Level</InputLabel>
+                                {/* <InputLabel id="demo-multiple-name-label4" className={style.headingtextStyle}>Application Type</InputLabel> */}
+                                <Select
+                                    labelId="demo-simple-select-standard-label3"
+                                    id="demo-simple-select-standard3"
+                                    // labelId="demo-multiple-name-label4"
+                                    // id="demo-multiple-name4"
+                                    value={workflowLevel}
+                                    onChange={(e) => { setWorkflowLevel(e.target.value) }}
+                                    MenuProps={MenuProps}
+                                    disabled={isLoading}
+                                    className={style.textAlignLeft}
+                                >
+                                    <MenuItem value={'All'} disabled={isLoading}>All</MenuItem>
+                                    <MenuItem value={'1'} disabled={isLoading}>Acknowledgements</MenuItem>
+                                    <MenuItem value={'2'} disabled={isLoading}>Leadership Sign Off</MenuItem>
+                                </Select>
+                            </FormControl>
+                        )}
+                        {(reportType === "medicalDirectivesTracker" || reportType === "policyAndProceduresTracker") && (
+                            <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                                <InputLabel id="demo-simple-select-standard-label3" className={style.headingtextStyle}>{reportType === "medicalDirectivesTracker" ? `Medical Directive Tracker` : `Policy And Procedure Tracker`}</InputLabel>
                                 {/* <InputLabel id="demo-multiple-name-label4" className={style.headingtextStyle}>Application Type</InputLabel> */}
                                 <Select
                                     labelId="demo-simple-select-standard-label3"
@@ -1442,7 +1465,12 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                     disabled={isLoading}
                                     className={style.textAlignLeft}
                                 >
-                                    <MenuItem value={'medical_directive_tab'} disabled={isLoading}>By Medical Directive</MenuItem>
+                                    {reportType === "medicalDirectivesTracker" && (
+                                        <MenuItem value={'medical_directive_tab'} disabled={isLoading}>By Medical Directive</MenuItem>
+                                    )}
+                                    {reportType === "policyAndProceduresTracker" && (
+                                        <MenuItem value={'policy_and_procedure_tab'} disabled={isLoading}>By Policy And Procedure</MenuItem>
+                                    )}
                                     <MenuItem value={'applicant_tab'} disabled={isLoading}>By Applicant</MenuItem>
                                     <MenuItem value={'department_tab'} disabled={isLoading}>By Department</MenuItem>
                                 </Select>

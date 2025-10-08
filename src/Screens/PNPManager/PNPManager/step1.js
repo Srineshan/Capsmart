@@ -58,7 +58,7 @@ const PNPManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValu
             setFileType(mdValue?.file ? getFileTypeFromUrl(mdValue?.file?.fileURL) : '')
             setPreviewUrl(mdValue?.file ? mdValue?.file?.fileURL : '')
             setMdTitle(mdValue?.title)
-            setMdId(mdValue?.mdID)
+            setMdId(mdValue?.pnpID)
             setSelectedDate(mdValue?.publishedDate)
             setMdDescription(mdValue?.description ? mdValue?.description : '')
             setReviewFrequency(mdValue?.reviewFrequency?.value === 1 ? 'EVERY_1_YEAR' : mdValue?.reviewFrequency?.value === 2 ? 'EVERY_2_YEARS' : mdValue?.reviewFrequency?.value === 3 ? 'EVERY_3_YEARS' : '');
@@ -215,10 +215,10 @@ const PNPManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValu
 
         let errors = [];
 
-        if (!mdTitle) errors.push("PNP Title is required");
-        if (!mdId) errors.push("PNP ID is required");
+        if (!mdTitle) errors.push("P&P Title is required");
+        if (!mdId) errors.push("P&P ID is required");
         if (!isSaveInProgress) {
-            if (!selectedDepartment?.length) errors.push("Department Selection is required");
+            // if (!selectedDepartment?.length) errors.push("Department Selection is required");
             if (!reviewFrequency) errors.push("Review Frequency is required");
         }
         if (errors.length) {
@@ -230,7 +230,7 @@ const PNPManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValu
         let data = {
             title: mdTitle,
             description: mdDescription,
-            mdID: mdId,
+            pnpID: mdId,
             sites: [
                 {
                     id: selectedSite,
@@ -355,13 +355,13 @@ const PNPManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValu
                     setStep1(false);
                     setStep2(true);
                 }
-                SuccessToaster2('PNP Updated Successfully');
+                SuccessToaster2('P&P Updated Successfully');
                 console.log(response, 'error')
                 getMD(response?.data);
             }
             catch (error) {
                 console.log(error, 'error')
-                ErrorToaster2('PNP Updated Failed');
+                ErrorToaster2('P&P Updated Failed');
             }
         } else {
             try {
@@ -369,7 +369,7 @@ const PNPManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValu
                 if (response?.response?.status === 409) {
                     ErrorToaster2(response?.response?.data);
                 } else {
-                    SuccessToaster2('PNP Updated Successfully');
+                    SuccessToaster2('P&P Updated Successfully');
                     if (isSaveInProgress) {
                         await PUT(`policy-and-procedure-management-service/policyAndProcedures/${mdValue?.id}/saveInprogress`, 'step1')
                         handleClose()
@@ -383,7 +383,7 @@ const PNPManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValu
             }
             catch (error) {
                 console.log(error, 'error')
-                ErrorToaster2('PNP Upload Failed');
+                ErrorToaster2('P&P Upload Failed');
             }
         }
     }
@@ -456,7 +456,7 @@ const PNPManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValu
                                 value={mdId}
                                 onChange={(e) => setMdId(e.target.value)}
                                 type="text"
-                                placeholder="Enter PNP ID"
+                                placeholder="Enter P&P ID"
                                 readOnly={mdValue?.id ? true : false}
                                 maxLength={20}
                             />
@@ -469,7 +469,7 @@ const PNPManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValu
                                 onChange={(event, editor) => {
                                     const data = editor.getData();
                                     const plainText = data.replace(/<[^>]*>/g, ""); // strip HTML tags
-                                    const maxLength = 200;
+                                    const maxLength = 500;
 
                                     if (plainText.length <= maxLength) {
                                         setMdDescription(data);
@@ -524,19 +524,21 @@ const PNPManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValu
                             />
                         </div> */}
                         <div>
-                            <div className={style.labelStyle}>Department*</div>
-                            <CommonMultiSelectField
-                                value={selectedDepartment}
-                                onChange={(e) => handleDepartmentSelect(e.target.value)}
-                                className={style.fullWidth}
-                                // firstOptionLabel={'All'}
-                                // firstOptionValue={''}
-                                valueList={departmentList?.map(option => option?.id)}
-                                labelList={departmentList?.map(option => `${option?.departmentName?.name}`)}
-                                disabledList={departmentList?.map(() => false)}
-                                required={true}
-                                label={'Department'}
-                            />
+                            <div className={style.labelStyle}>Department</div>
+                            <div className={style.marginTop10}>
+                                <CommonMultiSelectField
+                                    value={selectedDepartment}
+                                    onChange={(e) => handleDepartmentSelect(e.target.value)}
+                                    className={style.fullWidth}
+                                    // firstOptionLabel={'All'}
+                                    // firstOptionValue={''}
+                                    valueList={departmentList?.map(option => option?.id)}
+                                    labelList={departmentList?.map(option => `${option?.departmentName?.name}`)}
+                                    disabledList={departmentList?.map(() => false)}
+                                    required={true}
+                                    label={'Department'}
+                                />
+                            </div>
                             <div>
                                 <div className={`${style.chipsContainer} ${style.marginTop10}`}>
                                     {selectedDepartment?.map(data => {
@@ -544,7 +546,7 @@ const PNPManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValu
                                             <div className={`${style.chips} ${style.displayInRow}`}>
                                                 <div>{departmentList?.filter(deptData => data === deptData?.id)?.[0]?.departmentName?.name}</div> <div className={`${style.verticalAlignCenter} ${style.marginLeft10} ${style.cursorPointer}`}
                                                     onClick={() => setSelectedDepartment(selectedDepartment?.filter(innerData => innerData !== data))}
-                                                ><CancelIcon sx={{ color: '#06617A', fontSize: 20 }} /></div></div>
+                                                ><CancelIcon sx={{ color: '#168E0D', fontSize: 20 }} /></div></div>
                                         )
                                     })}
                                 </div>
@@ -552,18 +554,20 @@ const PNPManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValu
                         </div>
                         <div>
                             <div className={style.labelStyle}>Division / Specialty</div>
-                            <CommonMultiSelectField
-                                value={selectedServiceArea}
-                                onChange={(e) => handleServiceAreaSelect(e.target.value)}
-                                className={style.fullWidth}
-                                // firstOptionLabel={'All'}
-                                // firstOptionValue={''}
-                                valueList={filteredServiceAreas?.map(option => option?.id)}
-                                labelList={filteredServiceAreas?.map(option => `${option?.department?.departmentName?.name} - ${option?.name}`)}
-                                disabledList={filteredServiceAreas?.map(() => false)}
-                                required={true}
-                                label={'Division / Service Area'}
-                            />
+                            <div className={style.marginTop10}>
+                                <CommonMultiSelectField
+                                    value={selectedServiceArea}
+                                    onChange={(e) => handleServiceAreaSelect(e.target.value)}
+                                    className={style.fullWidth}
+                                    // firstOptionLabel={'All'}
+                                    // firstOptionValue={''}
+                                    valueList={filteredServiceAreas?.map(option => option?.id)}
+                                    labelList={filteredServiceAreas?.map(option => `${option?.department?.departmentName?.name} - ${option?.name}`)}
+                                    disabledList={filteredServiceAreas?.map(() => false)}
+                                    required={true}
+                                    label={'Division / Service Area'}
+                                />
+                            </div>
                             <div>
                                 <div className={`${style.chipsContainer} ${style.marginTop10}`}>
                                     {selectedServiceArea?.map(data => {
@@ -571,7 +575,7 @@ const PNPManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValu
                                             <div className={`${style.chips} ${style.displayInRow}`}>
                                                 <div>{`${filteredServiceAreas?.filter(divisionData => data === divisionData?.id)?.[0]?.department?.departmentName?.name} - ${filteredServiceAreas?.filter(divisionData => data === divisionData?.id)?.[0]?.name}`}</div> <div className={`${style.verticalAlignCenter} ${style.marginLeft10} ${style.cursorPointer}`}
                                                     onClick={() => setSelectedServiceArea(selectedServiceArea?.filter(innerData => innerData !== data))}
-                                                ><CancelIcon sx={{ color: '#06617A', fontSize: 20 }} /></div></div>
+                                                ><CancelIcon sx={{ color: '#168E0D', fontSize: 20 }} /></div></div>
                                         )
                                     })}
                                 </div>
@@ -651,7 +655,7 @@ const PNPManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValu
                                             <div className={`${style.chips} ${style.displayInRow}`}>
                                                 <div>{data}</div> <div className={`${style.verticalAlignCenter} ${style.marginLeft10} ${style.cursorPointer}`}
                                                     onClick={() => setKeywordList(keywordList?.filter(innerData => innerData !== data))}
-                                                ><CancelIcon sx={{ color: '#06617A', fontSize: 20 }} /></div></div>
+                                                ><CancelIcon sx={{ color: '#168E0D', fontSize: 20 }} /></div></div>
                                         )
                                     })}
                                 </div>

@@ -321,7 +321,7 @@ const ManageSignOff = () => {
         } else {
             url = `medical-directive-service/medicalDirectives/signOff?tab=level-3&role=${sessionStorage.getItem('workModeType')}&assignedUserIds=${loggedInUser}&status=${selectedOption}&sortBy=${sortValue}&sortByField=${sortField}`
         }
-        const response = await GET(url, { signal });
+        const response = await POST(url, {}, { signal });
         console.log(response.data);
         setAttestationList(response?.data?.medicalDirectivesWithWorkflow)
     }

@@ -2,7 +2,7 @@ import React, { useEffect, createRef, useCallback, useRef, useState } from 'reac
 import CambridgeHospital from './../../../images/cambridgeHospital.png'
 import ClosedFolder from './../../../images/closedFolder.png'
 import OpenedFolder from './../../../images/openedFolder.png'
-import MDManager from './../../../images/MDManager.png'
+import PNPManager from './../../../images/PNPManager.png'
 import style from './index.module.scss';
 import { baseUrl } from '../../../utils/auth';
 import { useNavigate, useParams } from "react-router-dom";
@@ -287,7 +287,7 @@ const PNPLibrary = () => {
         let data = {
             siteDepartmentSpecialties: [selectedDepartmentSpecialities !== "" ? `${selectedSite}#${selectedDepartmentSpecialities}` : `${selectedSite}#${departmentId}`],
             searchText: searchTermForTable,
-            mdID: mdId,
+            pnpID: mdId,
             title: mdTitle,
             groupIds: selectedGroups?.length !== 0 ? selectedGroups : [],
             authorIds: selectedAuthor !== "" ? [selectedAuthor] : [],
@@ -309,7 +309,7 @@ const PNPLibrary = () => {
             data,
             signal,
         });
-        setDashboardData(response?.data?.medicalDirectives)
+        setDashboardData(response?.data?.policyAndProcedures)
         setTotalTableCount(response?.data?.numberOfElements);
         setSearchCount(response?.data?.numberOfElements)
         console.log(response?.data, 'withoutHeaders')
@@ -330,26 +330,26 @@ const PNPLibrary = () => {
 
     let title = [];
     let type = [];
-    let mdID = [];
+    let pnpID = [];
     let lastUpdated = [];
 
 
     const getValues = () => {
         title = [];
         type = [];
-        mdID = [];
+        pnpID = [];
         lastUpdated = [];
 
         dashboardData?.map((data, index) => {
             title.push(data?.title);
             type.push(data?.creationType === "NEW" ? 'New' : 'Revised')
-            mdID.push(data?.mdID);
+            pnpID.push(data?.pnpID);
             lastUpdated.push(data?.lastModifiedDate ? format(new Date(data?.lastModifiedDate), 'MMM dd, yyyy') : '-');
         })
 
         return [
             { "type": "text", "value": title, 'onClickFunction': handleShowMd },
-            { "type": "text", "value": mdID },
+            { "type": "text", "value": pnpID },
             { "type": "text", "value": type },
             { "type": "text", "value": lastUpdated },
         ]
@@ -405,7 +405,7 @@ const PNPLibrary = () => {
     };
     const tableHeaderValues = [
         "Title",
-        "PNP ID",
+        "P&P ID",
         "Type",
         "Last Updated",
     ]
@@ -422,7 +422,7 @@ const PNPLibrary = () => {
                         <div className={`${style.titleText} ${style.verticalAlignCenter} ${style.marginLeft20}`}>{`${departmentList?.filter(data => data?.id === (selectedDepartmentSpecialities !== "" ? selectedDepartmentSpecialities?.split('#')?.[0] : departmentId))?.[0]?.departmentName?.name} ${selectedDepartmentSpecialities?.split('#')?.length > 1 ? `/ ${departmentList?.filter(data => data?.id === (selectedDepartmentSpecialities !== "" ? selectedDepartmentSpecialities?.split('#')?.[0] : departmentId))?.[0]?.serviceAreas?.filter(innerData => innerData?.id === selectedDepartmentSpecialities?.split('#')?.[1])?.[0]?.name}` : ''} Policies & Procedures Library`}</div>
                     )}
                     {showMD && (
-                        <div className={`${style.titleText} ${style.verticalAlignCenter} ${style.marginLeft20}`}>{selectedMD?.title ? `${selectedMD?.mdID} : ${selectedMD?.title}` : ''}</div>
+                        <div className={`${style.titleText} ${style.verticalAlignCenter} ${style.marginLeft20}`}>{selectedMD?.title ? `${selectedMD?.pnpID} : ${selectedMD?.title}` : ''}</div>
                     )}
                 </div>
                 <div className={`${style.verticalAlignCenter} ${style.marginLeft20}`}>
@@ -433,10 +433,10 @@ const PNPLibrary = () => {
                             onClick={closeClick}
                         /> */}
                     <Tooltip title={"Click to Copy Link"} arrow>
-                        <LinkIcon sx={{ fontSize: 40, color: '#06617A', cursor: 'pointer', marginRight: '20px' }} onClick={() => { handleCopy() }} />
+                        <LinkIcon sx={{ fontSize: 40, color: '#168E0D', cursor: 'pointer', marginRight: '20px' }} onClick={() => { handleCopy() }} />
                     </Tooltip>
                     <Tooltip title={"Click to Close"} arrow>
-                        <CloseIcon sx={{ fontSize: 40, color: '#06617A', cursor: 'pointer' }} onClick={() => { showMD ? handleMDClose() : setShowList(false) }} />
+                        <CloseIcon sx={{ fontSize: 40, color: '#168E0D', cursor: 'pointer' }} onClick={() => { showMD ? handleMDClose() : setShowList(false) }} />
                     </Tooltip>
                 </div>
             </div>
@@ -448,7 +448,7 @@ const PNPLibrary = () => {
                             <div className={style.description}>Use the options below to quickly access Policies & Procedures for your Department / Division.</div>
                             {/* <div className={`${style.deptCardGrid} ${style.marginTop}`}>
                                 <div className={`${style.verticalAlignCenter} ${style.cursorPointer}`} onClick={() => scroll('left')}>
-                                    <KeyboardArrowLeftIcon sx={{ fontSize: '30px', color: "#06617A" }} />
+                                    <KeyboardArrowLeftIcon sx={{ fontSize: '30px', color: "#168E0D" }} />
                                 </div>
                                 <div className={`${style.displayInRow} ${style.deptCardList}`} ref={containerRef}>
                                     <div className={style.deptCard}>
@@ -473,14 +473,14 @@ const PNPLibrary = () => {
                                     </div>
                                 </div>
                                 <div className={`${style.verticalAlignCenter} ${style.cursorPointer}`} onClick={() => scroll('right')}>
-                                    <KeyboardArrowRightIcon sx={{ fontSize: '30px', color: "#06617A" }} />
+                                    <KeyboardArrowRightIcon sx={{ fontSize: '30px', color: "#168E0D" }} />
                                 </div>
                             </div> */}
                             <div className={`${style.mdCard} ${style.marginTop} ${style.searchGrid} ${style.cursorPointer}`} onClick={() => setShowList(true)}>
                                 <TextField
                                     size="small"
                                     variant="outlined"
-                                    placeholder={'Search By Policy & Procedure Title OR Key Words OR PNP ID'}
+                                    placeholder={'Search By Policy & Procedure Title OR Key Words OR P&P ID'}
                                     value={''}
                                     onChange={() => { }}
                                     fullWidth
@@ -524,9 +524,9 @@ const PNPLibrary = () => {
                         <div>
                             <div className={`${style.mdlCard} ${style.verticalAlignCenter} ${style.cursorPointer}`} onClick={() => setShowList(true)}>
                                 <div>
-                                    <img src={MDManager} alt="MDL" className={style.mdlLogo} />
+                                    <img src={PNPManager} alt="MDL" className={style.mdlLogo} />
                                 </div>
-                                <div className={style.mdlCardTitle}>
+                                <div className={`${style.mdlCardTitle} ${style.marginLeft10}`}>
                                     Policies & Procedures Library
                                 </div>
                             </div>
@@ -621,7 +621,7 @@ const PNPLibrary = () => {
                                         value={mdId}
                                         onChange={(e) => setMdId(e.target.value)}
                                         type="text"
-                                        placeholder="Enter PNP ID"
+                                        placeholder="Enter P&P ID"
                                     />
                                 </div>
                                 <div className={style.marginTop10}>

@@ -353,7 +353,8 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         staffReappointments: 'Reappointments',
         locumExtensionOrRenewal: 'Locum Extension / Renewal',
         savedReportsArchive: 'Saved Reports Archive',
-        medicalDirectives: 'Medical Directives'
+        medicalDirectives: 'Medical Directives',
+        policiesAndProcedures: 'Policies & Procedures'
     }
 
     const availableCategories = {
@@ -373,7 +374,8 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         locumStaff: 'LOCUM_STAFF',
         permanentStaff: 'PERMANENT_STAFF',
         locumExtensionOrRenewal: 'LOCUM_EXTENSION_OR_RENEWAL',
-        medicalDirectives: 'MEDICAL_DIRECTIVE'
+        medicalDirectives: 'MEDICAL_DIRECTIVE',
+        policiesAndProcedures: 'POLICY_AND_PROCEDURES'
     }
 
     const routeList = {
@@ -416,7 +418,13 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         WORKFLOW: 'workflow',
         RETIRED_MEDICAL_DIRECTIVES: 'retiredMedicalDirectives',
         MEDICAL_DIRECTIVE_TRACKER: 'medicalDirectivesTracker',
-        UPCOMING_FOR_REVIEW: 'upcomingForReview'
+        UPCOMING_FOR_REVIEW: 'upcomingForReview',
+        CURRENT_POLICY_AND_PROCEDURES: 'currentPolicyAndProcedures',
+        RETIRED_POLICY_AND_PROCEDURES: 'retiredPolicyAndProcedures',
+        POLICY_AND_PROCEDURES_WORKFLOW: 'policyAndProceduresWorkflow',
+        POLICY_AND_PROCEDURES_ATTESTATION_OUTSTANDING: 'policyAndProceduresAttestationOutstanding',
+        POLICY_AND_PROCEDURES_TRACKER: 'policyAndProceduresTracker',
+        POLICY_AND_PROCEDURES_UPCOMING_FOR_REVIEW: 'policyAndProceduresUpcomingForReview',
     }
     const descriptionList = {
         ACTIVITES_SERVICES_LOG_SUMMARY: 'Activities/ Services Log Status Summary',
@@ -608,11 +616,14 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
 
     const getMyReports = async () => {
         setIsLoading(true)
-        if (availableCategories[reportType] !== "MEDICAL_DIRECTIVE") {
-            const { data: myReport } = await GET(`application-management-service/report/myReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
+        if (availableCategories[reportType] === "MEDICAL_DIRECTIVE") {
+            const { data: myReport } = await GET(`medical-directive-service/report/myReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
+            setMyReports(myReport);
+        } else if (availableCategories[reportType] === "POLICY_AND_PROCEDURES") {
+            const { data: myReport } = await GET(`policy-and-procedure-management-service/report/myReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
             setMyReports(myReport);
         } else {
-            const { data: myReport } = await GET(`medical-directive-service/report/myReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
+            const { data: myReport } = await GET(`application-management-service/report/myReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
             setMyReports(myReport);
         }
         setIsLoading(false)
@@ -622,11 +633,14 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
 
     const getSavedReports = async () => {
         setIsLoading(true)
-        if (availableCategories[reportType] !== "MEDICAL_DIRECTIVE") {
-            const { data: savedReport } = await GET(`application-management-service/report/savedReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
+        if (availableCategories[reportType] === "MEDICAL_DIRECTIVE") {
+            const { data: savedReport } = await GET(`medical-directive-service/report/savedReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
+            setSavedReports(savedReport);
+        } else if (availableCategories[reportType] === "POLICY_AND_PROCEDURES") {
+            const { data: savedReport } = await GET(`policy-and-procedure-management-service/report/savedReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
             setSavedReports(savedReport);
         } else {
-            const { data: savedReport } = await GET(`medical-directive-service/report/savedReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
+            const { data: savedReport } = await GET(`application-management-service/report/savedReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
             setSavedReports(savedReport);
         }
         setIsLoading(false)
@@ -638,11 +652,14 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
 
     const getStandardTemplates = async () => {
         setIsLoading(true)
-        if (availableCategories[reportType] !== "MEDICAL_DIRECTIVE") {
-            const { data: standardTemplates } = await GET(`application-management-service/report/standardTemplates?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
+        if (availableCategories[reportType] === "MEDICAL_DIRECTIVE") {
+            const { data: standardTemplates } = await GET(`medical-directive-service/report/standardTemplates?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
+            setStandardTemplates(standardTemplates);
+        } else if (availableCategories[reportType] === "POLICY_AND_PROCEDURES") {
+            const { data: standardTemplates } = await GET(`policy-and-procedure-management-service/report/standardTemplates?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
             setStandardTemplates(standardTemplates);
         } else {
-            const { data: standardTemplates } = await GET(`medical-directive-service/report/standardTemplates?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
+            const { data: standardTemplates } = await GET(`application-management-service/report/standardTemplates?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
             setStandardTemplates(standardTemplates);
         }
         setIsLoading(false)

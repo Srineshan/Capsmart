@@ -60,18 +60,18 @@
     opacity: 0;
     pointer-events: none;
     // filter: blur(5px); 
-    // box-shadow: 0 0 10px 5px #06617A;
+    // box-shadow: 0 0 10px 5px var(--primary-color);
 }
 
 .saveInProgress {
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #00000029;
-    border: 0.5px solid $primarycolor;
+    border: 0.5px solid var(--primary-color);
     border-radius: 8px;
     text-align: center;
-    font: normal normal bold 17px/30px proxima-nova;
+    font: normal normal bold 17px/30px var(--font-style);
     letter-spacing: 0px;
-    color: $primarycolor;
+    color: var(--primary-color);
     text-transform: uppercase;
     padding: 5px;
     cursor: pointer;
@@ -87,11 +87,11 @@
 }
 
 .continue {
-    background: $primarycolor 0% 0% no-repeat padding-box;
+    background: var(--primary-color) 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #00000029;
     border-radius: 8px;
     text-align: center;
-    font: normal normal bold 17px/30px proxima-nova;
+    font: normal normal bold 17px/30px var(--font-style);
     letter-spacing: 0px;
     color: #FFFFFF;
     text-transform: uppercase;
@@ -159,7 +159,7 @@
         position: fixed;
         top: 0;
         left: 0;
-        background-color: $primarycolor;
+        background-color: var(--primary-color);
         color: white;
         padding: 10px 5px;
         border-radius: 0 0 0 12px;
@@ -172,7 +172,7 @@
         position: fixed;
         top: 0;
         left: 0;
-        background-color: $primarycolor;
+        background-color: var(--primary-color);
         padding: 20px;
         border-radius: 0 12px 12px 0;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -212,11 +212,11 @@
         top: 0;
         left: 0;
         width: 100%;
-        background-color: $primarycolor;
+        background-color: var(--primary-color);
         color: white;
         padding: 15px;
         z-index: 1000;
-        font: normal normal bold 18px proxima-nova;
+        font: normal normal bold 18px var(--font-style);
         border-radius: 0 0 12px 12px;
         height: clamp(45px, 8vh, 100px);
     }
@@ -335,7 +335,7 @@
 }
 
 .progressStyleBackground {
-    background: transparent linear-gradient(90deg, $primarycolor 0%, $primarycolor 10%, #E9E9F0 20%, #E9E9F0 100%) 0% 0% no-repeat padding-box;
+    background: transparent linear-gradient(90deg, var(--primary-color) 0%, var(--primary-color) 10%, #E9E9F0 20%, #E9E9F0 100%) 0% 0% no-repeat padding-box;
 }
 
 .siteDisplayCard {
@@ -353,20 +353,20 @@
 
 .siteDisplaySiteTextStyle {
     text-align: left;
-    font: normal normal bold 13px/20px proxima-nova;
+    font: normal normal bold 13px/20px var(--font-style);
     color: #2C2C2C;
 }
 
 .siteDisplayDepartmentTextStyle {
     text-align: left;
-    font: normal normal bold 12px/24px proxima-nova;
+    font: normal normal bold 12px/24px var(--font-style);
     letter-spacing: 0px;
     color: #52575D99;
 }
 
 .siteDisplaySurgeryTextStyle {
     text-align: left;
-    font: normal normal bold 10px/24px proxima-nova;
+    font: normal normal bold 10px/24px var(--font-style);
     letter-spacing: 0px;
 }
 
@@ -412,7 +412,7 @@
 
 .cardTitle {
     text-align: left;
-    font: normal normal bold 20px/26px proxima-nova;
+    font: normal normal bold 20px/26px var(--font-style);
     letter-spacing: 0px;
     color: #454747;
     // text-transform: capitalize;
@@ -461,21 +461,21 @@
 
 .uploadButton {
     background: $secondarycolor 0% 0% no-repeat padding-box;
-    border: 0.4000000059604645px solid $primarycolor;
+    border: 0.4000000059604645px solid var(--primary-color);
     border-radius: 4px;
     padding: 5px 10px;
 }
 
 .uploadText {
     text-align: left !important;
-    font: normal normal bold 13px/20px proxima-nova;
+    font: normal normal bold 13px/20px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
 }
 
 .uploadTextButton {
     display: inline-block !important;
-    font: normal normal bold 13px/20px proxima-nova;
+    font: normal normal bold 13px/20px var(--font-style);
     color: #2C2C2C;
     border: 1px solid #2C2C2C;
     border-radius: 4px;
@@ -498,7 +498,7 @@
 
 .cardDescription {
     text-align: left;
-    font: normal normal normal 18px/20px proxima-nova;
+    font: normal normal normal 18px/20px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
     // text-transform: capitalize;
@@ -510,7 +510,7 @@
 
 .bigButtonTextStyle {
     text-align: center;
-    font: normal normal bold 18px/30px proxima-nova;
+    font: normal normal bold 18px/30px var(--font-style);
     letter-spacing: 0px;
     color: #FFFFFF;
     text-transform: uppercase;
@@ -519,26 +519,26 @@
 
 
 .bigButtonStyle {
-    background-color: $primarycolor;
+    background-color: var(--primary-color);
     color: white;
-    border: 1px solid $primarycolor;
+    border: 1px solid var(--primary-color);
     height: 40px;
     width: 500px;
     border-radius: 10px;
     margin-bottom: -20px;
-    box-shadow: 0px 3px 11px $primarycolor;
+    box-shadow: 0px 3px 11px var(--primary-color);
 }
 
 .dateTitle {
     text-align: left;
-    font: normal normal bold 17px/26px proxima-nova;
+    font: normal normal bold 17px/26px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
 }
 
 .date {
     text-align: left;
-    font: normal normal normal 17px/26px proxima-nova;
+    font: normal normal normal 17px/26px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
 }
@@ -546,9 +546,9 @@
 .changePrivilegeText {
     text-align: right;
     text-decoration: underline;
-    font: normal normal bold 20px/26px proxima-nova;
+    font: normal normal bold 20px/26px var(--font-style);
     letter-spacing: 0px;
-    color: $primarycolor;
+    color: var(--primary-color);
 }
 
 .spaceBetween {
@@ -562,7 +562,7 @@
 }
 
 .fileDisplayText {
-    font: normal normal normal $navbartext proxima-nova;
+    font: normal normal normal $navbartext var(--font-style);
     color: #2C2C2C;
 }
 
@@ -597,25 +597,25 @@
 
 .privilegeCategoryChips {
     background: $secondarycolor 0% 0% no-repeat padding-box;
-    font: normal normal normal $labelvaluetext proxima-nova;
-    border: 1px solid $primarycolor;
+    font: normal normal normal $labelvaluetext var(--font-style);
+    border: 1px solid var(--primary-color);
     border-radius: 23px;
     padding: 5px 10px;
-    color: $primarycolor;
+    color: var(--primary-color);
 }
 
 .privilegeCategoryChips:hover {
     background: #DBE8EA 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 12px #00000029;
-    border: 0.5px solid #06617A;
+    border: 0.5px solid var(--primary-color);
     border-radius: 23px;
     padding: 5px 10px;
     opacity: 1;
 }
 
 .privilegeCategoryChipsSelected {
-    background: $primarycolor 0% 0% no-repeat padding-box;
-    border: 1px solid $primarycolor;
+    background: var(--primary-color) 0% 0% no-repeat padding-box;
+    border: 1px solid var(--primary-color);
     color: $secondarycolor;
 }
 
@@ -634,7 +634,7 @@
 }
 
 .primaryColor {
-    color: $primarycolor !important;
+    color: var(--primary-color) !important;
 }
 
 .privilegeContentCard {
@@ -653,14 +653,14 @@
 
 .privilegeHeading {
     text-align: left;
-    font: normal normal medium 18px/24px proxima-nova;
+    font: normal normal medium 18px/24px var(--font-style);
     letter-spacing: 0px;
     color: #1D2437;
 }
 
 .privilegeHeadingWithHover {
     text-align: left;
-    font: normal normal medium 18px/24px proxima-nova;
+    font: normal normal medium 18px/24px var(--font-style);
     letter-spacing: 0px;
     color: #1D2437;
     transition: transform 0.3s ease, color 0.3s ease;
@@ -673,23 +673,23 @@
 
 .privilegeHeadingCurrent {
     text-align: left;
-    font: italic normal bold 12px/17px proxima-nova !important;
+    font: italic normal bold 12px/17px var(--font-style) !important;
     letter-spacing: 0px;
     color: #1D2437;
 }
 
 .privilegeHeadingReappointment {
     text-align: left;
-    font: italic normal bold 12px/17px proxima-nova !important;
+    font: italic normal bold 12px/17px var(--font-style) !important;
     letter-spacing: 0px;
-    color: $primarycolor;
+    color: var(--primary-color);
 }
 
 .privilegeTitleStyle {
     text-align: left;
-    font: normal normal bold 18px/24px proxima-nova;
+    font: normal normal bold 18px/24px var(--font-style);
     letter-spacing: 0px;
-    color: $primarycolor;
+    color: var(--primary-color);
 }
 
 .privilegeTitleStyle:hover {
@@ -705,18 +705,18 @@
 
 .privilegeWarningText {
     text-align: left;
-    font: normal normal medium 20px/32px proxima-nova;
+    font: normal normal medium 20px/32px var(--font-style);
     letter-spacing: 0px;
     color: #1D2437;
 }
 
 .reappointmentButton {
-    background: $primarycolor 0% 0% no-repeat padding-box;
+    background: var(--primary-color) 0% 0% no-repeat padding-box;
     border-radius: 8px;
     padding: 10px 15px;
     color: #fff;
     min-width: 120px !important;
-    font: normal normal bold 15px/15px proxima-nova;
+    font: normal normal bold 15px/15px var(--font-style);
     cursor: pointer;
     text-align: center;
 }
@@ -733,27 +733,27 @@
     border-radius: 8px;
     border: 1px solid $buttonBorder;
     padding: 10px 15px;
-    color: $primarycolor;
+    color: var(--primary-color);
     min-width: 120px;
-    font: normal normal bold 15px/15px proxima-nova;
+    font: normal normal bold 15px/15px var(--font-style);
     cursor: pointer;
 }
 
 .reappointmentButtonOutlined:hover {
     background: #DBE8EA 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 12px #00000029;
-    border: 0.5px solid #06617A;
+    border: 0.5px solid var(--primary-color);
     border-radius: 8px;
     opacity: 1;
 }
 
 .addButton {
-    border: 0.5px solid $primarycolor;
+    border: 0.5px solid var(--primary-color);
     border-radius: 5px;
     width: auto;
-    background: $primarycolor 0% 0% no-repeat padding-box;
+    background: var(--primary-color) 0% 0% no-repeat padding-box;
     color: #FFFFFF;
-    font: normal normal normal 14px/18px proxima-nova;
+    font: normal normal normal 14px/18px var(--font-style);
     cursor: pointer;
 }
 
@@ -793,8 +793,8 @@
 
 .heading {
     text-align: left;
-    font: normal normal bold 20px/28px proxima-nova;
-    color: $primarycolor;
+    font: normal normal bold 20px/28px var(--font-style);
+    color: var(--primary-color);
     text-transform: capitalize;
 }
 
@@ -816,7 +816,7 @@
 
 .lableStyle {
     text-align: left;
-    font: normal normal 500 15px/17px proxima-nova;
+    font: normal normal 500 15px/17px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
     // text-transform: capitalize;
@@ -827,7 +827,7 @@
 
 .markedAsText {
     text-align: left;
-    font: italic normal medium $tabledatatext2 proxima-nova;
+    font: italic normal medium $tabledatatext2 var(--font-style);
     letter-spacing: 0px;
     color: #1D2437;
 }
@@ -837,9 +837,9 @@
     border-radius: 8px;
     border: 1px solid $buttonBorder;
     padding: 10px 15px;
-    color: $primarycolor;
+    color: var(--primary-color);
     min-width: 200px;
-    font: normal normal bold 15px/15px proxima-nova;
+    font: normal normal bold 15px/15px var(--font-style);
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
@@ -847,7 +847,7 @@
 .reappointmentButtonEdit:hover {
     background: #DBE8EA 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 12px #00000029;
-    border: 0.5px solid #06617A;
+    border: 0.5px solid var(--primary-color);
     border-radius: 8px;
     opacity: 1;
 }
@@ -877,18 +877,18 @@
 }
 
 .yesText {
-    font: italic normal bold 18px/24px proxima-nova;
+    font: italic normal bold 18px/24px var(--font-style);
     color: #14B15A;
 }
 
 .noText {
-    font: italic normal bold 18px/24px proxima-nova;
+    font: italic normal bold 18px/24px var(--font-style);
     color: #FF5555;
 }
 
 .signedOnText {
     text-align: left;
-    font: italic normal normal 12px/14px proxima-nova !important;
+    font: italic normal normal 12px/14px var(--font-style) !important;
     letter-spacing: 0px;
     color: #171A1A;
 }
@@ -909,7 +909,7 @@
 
 .descriptionStyle {
     text-align: left;
-    font: normal normal normal 15px/23px proxima-nova;
+    font: normal normal normal 15px/23px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
 }

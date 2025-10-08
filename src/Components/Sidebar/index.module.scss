@@ -55,7 +55,7 @@
 
 .userNameStyle {
     text-align: left;
-    font: normal normal 600 $usernametext proxima-nova;
+    font: normal normal 600 $usernametext var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
     height: 40px;

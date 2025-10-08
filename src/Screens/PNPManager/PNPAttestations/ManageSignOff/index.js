@@ -317,13 +317,13 @@ const ManageSignOff = () => {
     const getAttestationList = async (signal) => {
         let url = '';
         if (selectedOption === 'completed') {
-            url = `policy-and-procedure-management-service/policyAndProcedures/signOff?tab=level-3&role=${sessionStorage.getItem('workModeType')}&assignedUserIds=${loggedInUser}&status=${selectedOption}&noOfDays=${30}&sortBy=${sortValue}&sortByField=${sortField}`
+            url = `policy-and-procedure-management-service/policyAndProcedures/signOff?tab=level-2&role=${sessionStorage.getItem('workModeType')}&assignedUserIds=${loggedInUser}&status=${selectedOption}&noOfDays=${30}&sortBy=${sortValue}&sortByField=${sortField}`
         } else {
-            url = `policy-and-procedure-management-service/policyAndProcedures/signOff?tab=level-3&role=${sessionStorage.getItem('workModeType')}&assignedUserIds=${loggedInUser}&status=${selectedOption}&sortBy=${sortValue}&sortByField=${sortField}`
+            url = `policy-and-procedure-management-service/policyAndProcedures/signOff?tab=level-2&role=${sessionStorage.getItem('workModeType')}&assignedUserIds=${loggedInUser}&status=${selectedOption}&sortBy=${sortValue}&sortByField=${sortField}`
         }
-        const response = await GET(url, { signal });
+        const response = await POST(url, {}, { signal });
         console.log(response.data);
-        setAttestationList(response?.data?.medicalDirectivesWithWorkflow)
+        setAttestationList(response?.data?.policyAndProceduresWithWorkflow)
     }
 
     const getEntity = async () => {
@@ -347,7 +347,7 @@ const ManageSignOff = () => {
         if (checkedIds?.length === attestationList?.length) {
             setCheckedIds([]);
         } else {
-            const allIds = attestationList?.map(data => data?.medicalDirective?.id);
+            const allIds = attestationList?.map(data => data?.policyAndProcedure?.id);
             setCheckedIds(allIds);
         }
     };
@@ -355,9 +355,9 @@ const ManageSignOff = () => {
     const handleCheckboxClick = (id, innerData) => {
         setCheckedIds(prevCheckedIds => {
             // Toggle the ID in the array
-            return prevCheckedIds?.map(data => data?.id)?.includes(innerData?.medicalDirective?.id)
-                ? prevCheckedIds.filter(checkedId => checkedId?.id !== innerData?.medicalDirective?.id)
-                : [...prevCheckedIds, innerData?.medicalDirective?.id];
+            return prevCheckedIds?.map(data => data?.id)?.includes(innerData?.policyAndProcedure?.id)
+                ? prevCheckedIds.filter(checkedId => checkedId?.id !== innerData?.policyAndProcedure?.id)
+                : [...prevCheckedIds, innerData?.policyAndProcedure?.id];
         });
         getAttestationValues()
     };
@@ -406,7 +406,7 @@ const ManageSignOff = () => {
         // />,
         "",
         "Title",
-        "PNP ID",
+        "P&P ID",
         "Type",
         "Sign Off Due Date",
         "Last Updated",
@@ -414,7 +414,7 @@ const ManageSignOff = () => {
     ];
     const attestedHeaderValues = [
         "Title",
-        "PNP ID",
+        "P&P ID",
         "Type",
         "Signed Off Date",
     ];
@@ -467,17 +467,17 @@ const ManageSignOff = () => {
             checkbox.push(
                 <CommonCheckBox
                     size="medium"
-                    checked={checkedIds?.includes(data?.medicalDirective?.id)}
-                    onChange={() => handleCheckboxClick(data?.medicalDirective?.id)}
-                    key={`${data?.medicalDirective?.id}${index}`}
+                    checked={checkedIds?.includes(data?.policyAndProcedure?.id)}
+                    onChange={() => handleCheckboxClick(data?.policyAndProcedure?.id)}
+                    key={`${data?.policyAndProcedure?.id}${index}`}
                 />
             );
-            title.push(data?.medicalDirective?.title);
-            id.push(data?.medicalDirective?.mdID);
-            type.push(data?.medicalDirective?.revisionStatus === "NA" ? 'New' : "Revised");
+            title.push(data?.policyAndProcedure?.title);
+            id.push(data?.policyAndProcedure?.pnpID);
+            type.push(data?.policyAndProcedure?.revisionStatus === "NA" ? 'New' : "Revised");
             dueDate.push(data?.dueDate);
             attestedDate.push(data?.logs?.[0]?.createdDate ? format(new Date(data?.logs?.[0]?.createdDate), 'MMM dd, yyyy') : '-');
-            lastUpdated.push(data?.medicalDirective?.lastModifiedDate ? format(new Date(data?.medicalDirective?.lastModifiedDate), 'MMM dd, yyyy') : '-');
+            lastUpdated.push(data?.policyAndProcedure?.lastModifiedDate ? format(new Date(data?.policyAndProcedure?.lastModifiedDate), 'MMM dd, yyyy') : '-');
             signImg.push(<Tooltip title="Click to Review & Sign Off" arrow><img src={BlueSign} alt="" className={`${style.blueSignImgStyle} ${style.cursorPointer}`} onClick={() => handleEdit(data)} /></Tooltip>);
         });
 
@@ -561,7 +561,7 @@ const ManageSignOff = () => {
     }
 
     const handleEdit = (data) => {
-        navigate(`/pnpManager/manageSignOff/${entityId}/${data?.medicalDirective?.id}`)
+        navigate(`/pnpManager/manageSignOff/${entityId}/${data?.policyAndProcedure?.id}`)
     }
 
     const handleSubmitAttestBulk = async () => {
@@ -571,7 +571,7 @@ const ManageSignOff = () => {
                 name: userData?.name,
                 email: userData?.email
             },
-            medicalDirectiveIds: checkedIds,
+            policyAndProcedureIds: checkedIds,
             esign: {
                 esign: encryptedText,
                 name: `${users?.userName}`,
@@ -606,9 +606,9 @@ const ManageSignOff = () => {
                                         <div className={`${style.advancedSearchText} ${style.verticalAlignCenter}`}>Advanced Search Criteria</div>
                                         <div className={style.verticalAlignCenter}>
                                             {showAdvancedSearch ? (
-                                                <KeyboardArrowDownIcon sx={{ fontSize: '24px', color: '#06617A' }} />
+                                                <KeyboardArrowDownIcon sx={{ fontSize: '24px', color: '#168E0D' }} />
                                             ) : (
-                                                <KeyboardArrowRightIcon sx={{ fontSize: '24px', color: '#06617A' }} />
+                                                <KeyboardArrowRightIcon sx={{ fontSize: '24px', color: '#168E0D' }} />
                                             )}
                                         </div>
                                     </div>
@@ -620,7 +620,7 @@ const ManageSignOff = () => {
                                                     value={mdId}
                                                     onChange={(e) => setMdId(e.target.value)}
                                                     type="text"
-                                                    placeholder="Enter PNP ID"
+                                                    placeholder="Enter P&P ID"
                                                 />
                                             </div>
                                             <div className={style.marginTop10}>
@@ -771,15 +771,15 @@ const ManageSignOff = () => {
                     </div>
                     <div>
                         <div className={`${style.grid2} ${style.marginTop10}`}>
-                            <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Review & Sign Off" bigNumber={attestationMeta?.['level-3']?.pending} smallNum1={attestationMeta?.pending_md?.notPastDueCount} smallNum2={attestationMeta?.pending_md?.pastDueCount} smallText1="Not Done" smallText2="Past Due" currentTile="pending" topText='' smallNum1Color={style.redSmallNumber} smallNum2Color={style.redSmallNumber} smallNum1SelectedColor={style.redSmallNumberSelected} smallNum2SelectedColor={style.redSmallNumberSelected} />
-                            <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Reviewed & Signed Off" bigNumber={attestationMeta?.['level-3']?.completed} smallNum1="" smallNum2="" currentTile="completed" topText='' />
+                            <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Review & Sign Off" bigNumber={attestationMeta?.['level-2']?.pending} smallNum1={attestationMeta?.pending_md?.notPastDueCount} smallNum2={attestationMeta?.pending_md?.pastDueCount} smallText1="Not Done" smallText2="Past Due" currentTile="pending" topText='' smallNum1Color={style.redSmallNumber} smallNum2Color={style.redSmallNumber} smallNum1SelectedColor={style.redSmallNumberSelected} smallNum2SelectedColor={style.redSmallNumberSelected} />
+                            <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Reviewed & Signed Off" bigNumber={attestationMeta?.['level-2']?.completed} smallNum1="" smallNum2="" currentTile="completed" topText='' />
                         </div>
                         <div
                             className={`${style.spaceBetween} ${style.marginLeft30} ${style.marginTop20} `}
                         >
                             <div className={`${style.tabs}`}>
-                                <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Review & Sign Off" tileCount={attestationMeta?.['level-3']?.pending} currentTile="pending" />
-                                <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Reviewed & Signed Off" tileCount={attestationMeta?.['level-3']?.completed} currentTile="completed" />
+                                <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Review & Sign Off" tileCount={attestationMeta?.['level-2']?.pending} currentTile="pending" />
+                                <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Reviewed & Signed Off" tileCount={attestationMeta?.['level-2']?.completed} currentTile="completed" />
                             </div>
                             {/* <div>
                                 <button

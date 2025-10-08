@@ -51,7 +51,7 @@ const ManageAttestation = () => {
     const [feedBackTileData, setFeedBackTileData] = useState([]);
     const [userMetadata, setUserMetadata] = useState([]);
     const [viewAlerts, setViewAlerts] = useState(true);
-    const [selectedOption, setSelectedOption] = useState("pending_md");
+    const [selectedOption, setSelectedOption] = useState("pending_pnp");
     const [isExpanded, setIsExpanded] = useState(true);
     let selectedOptionValue = sessionStorage.getItem("selectedOption");
     const [entityId, setEntityId] = useState("");
@@ -113,7 +113,7 @@ const ManageAttestation = () => {
     }, [selectedOptionValue]);
 
     useEffect(() => {
-        if (selectedOption === "pending_md" && attestationList?.length > 0 && userData) {
+        if (selectedOption === "pending_pnp" && attestationList?.length > 0 && userData) {
             if (!userData?.esignature) {
                 setIsShowESignDialog(true)
             } else {
@@ -275,7 +275,7 @@ const ManageAttestation = () => {
 
     const getAttestationMetaList = async () => {
         const response = await GET(
-            `policy-and-procedure-management-service/attestation/byUser/meta`
+            `policy-and-procedure-management-service/attestation/byUser/meta?noOfDays=365`
         );
         console.log(response.data);
         setAttestationMeta(response?.data)
@@ -371,7 +371,7 @@ const ManageAttestation = () => {
         />,
         "",
         "Title",
-        "PNP ID",
+        "P&P ID",
         "Type",
         "Attestation Due Date",
         "Last Updated",
@@ -379,12 +379,12 @@ const ManageAttestation = () => {
     ];
     const attestedHeaderValues = [
         "Title",
-        "PNP ID",
+        "P&P ID",
         "Type",
         "Last Attestation Date",
     ];
 
-    const tableHeaderValues = selectedOption === "pending_md" ? reviewAndAttestHeaderValues : attestedHeaderValues
+    const tableHeaderValues = selectedOption === "pending_pnp" ? reviewAndAttestHeaderValues : attestedHeaderValues
 
     let pin = [];
     let alert = [];
@@ -429,7 +429,7 @@ const ManageAttestation = () => {
             signImg.push(<img src={BlueSign} alt="" className={`${style.blueSignImgStyle} ${style.cursorPointer}`} onClick={() => handleEdit(data)} />);
         });
 
-        return selectedOption === "pending_md" ? [
+        return selectedOption === "pending_pnp" ? [
             { type: "checkbox", value: checkbox },
             { type: "dot", value: title },
             { type: "text", value: title },
@@ -519,7 +519,7 @@ const ManageAttestation = () => {
                 name: userData?.name,
                 email: userData?.email
             },
-            medicalDirectiveIds: checkedIds,
+            policyAndProcedureIds: checkedIds,
             esign: {
                 esign: encryptedText,
                 name: `${users?.userName}`,
@@ -554,9 +554,9 @@ const ManageAttestation = () => {
                                         <div className={`${style.advancedSearchText} ${style.verticalAlignCenter}`}>Advanced Search Criteria</div>
                                         <div className={style.verticalAlignCenter}>
                                             {showAdvancedSearch ? (
-                                                <KeyboardArrowDownIcon sx={{ fontSize: '24px', color: '#06617A' }} />
+                                                <KeyboardArrowDownIcon sx={{ fontSize: '24px', color: '#168E0D' }} />
                                             ) : (
-                                                <KeyboardArrowRightIcon sx={{ fontSize: '24px', color: '#06617A' }} />
+                                                <KeyboardArrowRightIcon sx={{ fontSize: '24px', color: '#168E0D' }} />
                                             )}
                                         </div>
                                     </div>
@@ -568,7 +568,7 @@ const ManageAttestation = () => {
                                                     value={mdId}
                                                     onChange={(e) => setMdId(e.target.value)}
                                                     type="text"
-                                                    placeholder="Enter PNP ID"
+                                                    placeholder="Enter P&P ID"
                                                 />
                                             </div>
                                             <div className={style.marginTop10}>
@@ -719,15 +719,15 @@ const ManageAttestation = () => {
                     </div>
                     <div>
                         <div className={`${style.grid2} ${style.marginTop10}`}>
-                            <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="REVIEW & ATTEST" bigNumber={attestationMeta?.pending_md?.totalCount} smallNum1={attestationMeta?.pending_md?.notPastDueCount} smallNum2={attestationMeta?.pending_md?.pastDueCount} smallText1="Not Done" smallText2="Past Due" currentTile="pending_md" topText='' smallNum1Color={style.redSmallNumber} smallNum2Color={style.redSmallNumber} smallNum1SelectedColor={style.redSmallNumberSelected} smallNum2SelectedColor={style.redSmallNumberSelected} />
-                            <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="ATTESTED" bigNumber={attestationMeta?.attested_md?.totalCount} smallNum1="" smallNum2="" currentTile="attested_md" topText='IN THE PAST 12 MONTHS' />
+                            <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="REVIEW & ATTEST" bigNumber={attestationMeta?.pending_pnp?.totalCount} smallNum1={attestationMeta?.pending_pnp?.notPastDueCount} smallNum2={attestationMeta?.pending_pnp?.pastDueCount} smallText1="Not Done" smallText2="Past Due" currentTile="pending_pnp" topText='' smallNum1Color={style.redSmallNumber} smallNum2Color={style.redSmallNumber} smallNum1SelectedColor={style.redSmallNumberSelected} smallNum2SelectedColor={style.redSmallNumberSelected} />
+                            <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="ATTESTED" bigNumber={attestationMeta?.attested_pnp?.totalCount} smallNum1="" smallNum2="" currentTile="attested_md" topText='IN THE PAST 12 MONTHS' />
                         </div>
                         <div
                             className={`${style.spaceBetween} ${style.marginLeft30} ${style.marginTop20} `}
                         >
                             <div className={`${style.tabs}`}>
-                                <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Review & Attest" tileCount={attestationMeta?.pending_md?.totalCount} currentTile="pending_md" />
-                                <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Attested" tileCount={attestationMeta?.attested_md?.totalCount} currentTile="attested_md" />
+                                <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Review & Attest" tileCount={attestationMeta?.pending_pnp?.totalCount} currentTile="pending_pnp" />
+                                <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Attested" tileCount={attestationMeta?.attested_pnp?.totalCount} currentTile="attested_md" />
                             </div>
                             <div>
                                 <button
@@ -748,7 +748,7 @@ const ManageAttestation = () => {
                                         tableHeaderValues={tableHeaderValues}
                                         tableDataValues={getAttestationValues()}
                                         tableData={attestationList}
-                                        gridStyle={selectedOption === 'pending_md' ? style.reviewAndAttestGrid : style.attestedGrid}
+                                        gridStyle={selectedOption === 'pending_pnp' ? style.reviewAndAttestGrid : style.attestedGrid}
                                         // actions={actionsData}
                                         // scrollStyle={style.contractScrollStyle}
                                         tableSortValues={[]}

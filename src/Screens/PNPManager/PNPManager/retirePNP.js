@@ -160,7 +160,7 @@ const RetirePNP = () => {
 
     const getDashboard = async (signal) => {
         const { data: dashboardData } = await POST(`policy-and-procedure-management-service/policyAndProcedures/dashboard?offset=${page - 1}&limit=${limit}&isPaginationRequired=${isPaginationRequired}&tab=${"inactive_md"}&role=${sessionStorage.getItem('workModeType')}`, advancedSearch, { signal });
-        setDashboardData(dashboardData?.medicalDirectives);
+        setDashboardData(dashboardData?.policyAndProcedures);
         setTotalTableCount(dashboardData?.numberOfElements);
     }
 
@@ -272,7 +272,7 @@ const RetirePNP = () => {
     const tableHeaderValues = [
         "No.",
         "Title",
-        "PNP ID",
+        "P&P ID",
         "Department / Division",
         "First Published",
         "Last Revision",
@@ -498,9 +498,9 @@ const RetirePNP = () => {
                                     <div className={`${style.advancedSearchText} ${style.verticalAlignCenter}`}>Advanced Search Criteria</div>
                                     <div className={style.verticalAlignCenter}>
                                         {showAdvancedSearch ? (
-                                            <KeyboardArrowDownIcon sx={{ fontSize: '24px', color: '#06617A' }} />
+                                            <KeyboardArrowDownIcon sx={{ fontSize: '24px', color: '#168E0D' }} />
                                         ) : (
-                                            <KeyboardArrowRightIcon sx={{ fontSize: '24px', color: '#06617A' }} />
+                                            <KeyboardArrowRightIcon sx={{ fontSize: '24px', color: '#168E0D' }} />
                                         )}
                                     </div>
                                 </div>
@@ -512,7 +512,7 @@ const RetirePNP = () => {
                       value={mdId}
                       onChange={(e) => setMdId(e.target.value)}
                       type="text"
-                      placeholder="Enter PNP ID"
+                      placeholder="Enter P&P ID"
                     />
                   </div>
                   <div className={style.marginTop10}>

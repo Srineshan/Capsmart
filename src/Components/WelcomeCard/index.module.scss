@@ -3,7 +3,7 @@
 .progressCard {
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 5px 20px #52575D4D;
-    border: 0.4000000059604645px solid #06617A;
+    border: 0.4000000059604645px solid var(--primary-color);
     border-radius: 12px;
     opacity: 1;
     width: 100%;
@@ -16,14 +16,14 @@
 
 .titleTextStyle {
     text-align: left;
-    font: normal normal bold $labelvaluetext proxima-nova;
+    font: normal normal bold $labelvaluetext var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
 }
 
 .descriptionTextStyle {
     text-align: left;
-    font: normal normal medium $labelvaluetext proxima-nova;
+    font: normal normal medium $labelvaluetext var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
 }

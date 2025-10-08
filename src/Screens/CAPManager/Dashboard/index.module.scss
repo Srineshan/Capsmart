@@ -54,7 +54,7 @@
 
 .dashboardTileCount {
     text-align: left;
-    font: normal normal normal 42px/50px proxima-nova;
+    font: normal normal normal 42px/50px var(--font-style);
     color: #054D61;
     display: flex;
     flex-direction: column-reverse;
@@ -62,14 +62,14 @@
 
 .dashboardTileText {
     text-align: left;
-    font: normal normal bold 16px/20px proxima-nova;
+    font: normal normal bold 16px/20px var(--font-style);
     color: #171A1A;
     opacity: 0.8;
 }
 
 .dashboardTilePercentage {
     text-align: center;
-    font: normal normal bold 22px/35px proxima-nova;
+    font: normal normal bold 22px/35px var(--font-style);
     color: #171A1A;
     opacity: 0.6;
     display: flex;
@@ -114,13 +114,13 @@
 
 .selectedFiltersHeadingText {
     text-align: left;
-    font: normal normal bold 20px/22px proxima-nova;
+    font: normal normal bold 20px/22px var(--font-style);
     color: #171A1A;
 }
 
 .selectedFiltersText {
     text-align: left;
-    font: normal normal bold 16px/20px proxima-nova;
+    font: normal normal bold 16px/20px var(--font-style);
     color: #171A1A;
     opacity: 0.6;
 }
@@ -132,7 +132,7 @@
 
 .topPeriodRangeText {
     text-align: left;
-    font: normal normal bold 12px/22px proxima-nova;
+    font: normal normal bold 12px/22px var(--font-style);
     color: #171A1A;
 }
 
@@ -217,7 +217,7 @@
 }
 
 .reporttypeLeftBackGround {
-    background: radial-gradient(100px 150px at 25% -10%, #0BA5D0 2%, $primarycolor 100%);
+    background: radial-gradient(100px 150px at 25% -10%, #0BA5D0 2%, var(--primary-color) 100%);
     border-radius: 8px;
     opacity: 1;
 }
@@ -230,7 +230,7 @@
 
 .reportLeftTextStyle {
     text-align: center;
-    font: normal normal 600 16px/20px proxima-nova;
+    font: normal normal 600 16px/20px var(--font-style);
     letter-spacing: 0px;
     color: #FFFFFF;
     text-transform: capitalize;
@@ -240,7 +240,7 @@
 
 .headingtextStyle {
     text-align: left;
-    font: normal normal 600 20px/21px proxima-nova;
+    font: normal normal 600 20px/21px var(--font-style);
     letter-spacing: 0px;
     color: #253240;
     text-transform: capitalize;
@@ -261,9 +261,9 @@
 
 .filtertextStyle {
     text-align: left;
-    font: italic normal medium 14px/22px proxima-nova;
+    font: italic normal medium 14px/22px var(--font-style);
     letter-spacing: 0px;
-    color: #06617A;
+    color: var(--primary-color);
     opacity: 1;
 }
 
@@ -275,12 +275,12 @@
 
 .chartHeaderText {
     text-align: left;
-    font: normal normal normal 16px/22px proxima-nova;
+    font: normal normal normal 16px/22px var(--font-style);
     color: #FFFFFF;
 }
 
 .chartHeaderRightText {
-    font: normal normal bold 16px/22px proxima-nova;
+    font: normal normal bold 16px/22px var(--font-style);
     color: #171A1A;
     opacity: 0.8;
 }
@@ -295,13 +295,13 @@
 
 .chartBodyCount {
     text-align: left;
-    font: normal normal normal 22px/22px proxima-nova;
+    font: normal normal normal 22px/22px var(--font-style);
     color: #054D61;
 }
 
 .chartBodyText {
     text-align: left;
-    font: normal normal bold 14px/18px proxima-nova;
+    font: normal normal bold 14px/18px var(--font-style);
     color: #171A1A;
 }
 

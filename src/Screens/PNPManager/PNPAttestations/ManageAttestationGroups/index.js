@@ -345,7 +345,7 @@ const ManageAttestationGroups = () => {
     ];
     const attestedHeaderValues = [
         "Title",
-        "PNP ID",
+        "P&P ID",
         "Type",
         "Last Attestation Date",
     ];
@@ -552,14 +552,14 @@ const ManageAttestationGroups = () => {
                                     <CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} isOnClickAvailable={false} onClickFunc={() => { }} placeholder={"Search"} />
                                 </div>
                                 <div className={`${style.searchFieldCard} ${style.marginTop20}`}>
-                                    <div className={style.advancedSearchText}>Advanced PNP Search Criteria</div>
+                                    <div className={style.advancedSearchText}>Advanced P&P Search Criteria</div>
                                     <div className={style.marginTop10}>
                                         <div className={style.labelStyle}>Policy & Procedure ID</div>
                                         <CommonInputField
                                             value={mdId}
                                             onChange={(e) => setMdId(e.target.value)}
                                             type="text"
-                                            placeholder="Enter PNP ID"
+                                            placeholder="Enter P&P ID"
                                         />
                                     </div>
                                     <div className={style.marginTop10}>
@@ -856,16 +856,16 @@ const ManageAttestationGroups = () => {
                                     <div className={style.verticalAlignCenter}>
                                         <div className={`${style.displayInCol}`}>
                                             <div className={`${style.moveCard} ${style.justifyCenter} ${style.verticalAlignCenter} ${staffList?.filter(staff => !selectedStaffs?.includes(staff.id))?.length === 0 ? style.disabledView : style.cursorPointer}`} onClick={staffList?.filter(staff => !selectedStaffs?.includes(staff.id))?.length === 0 ? () => { } : () => handleMove()}>
-                                                <KeyboardArrowRightIcon sx={{ color: '#06617A' }} />
+                                                <KeyboardArrowRightIcon sx={{ color: '#168E0D' }} />
                                             </div>
                                             <div className={`${style.moveCard} ${style.marginTop10} ${style.justifyCenter} ${style.verticalAlignCenter} ${staffList?.filter(staff => !selectedStaffs?.includes(staff.id))?.length === 0 ? style.disabledView : style.cursorPointer}`} onClick={staffList?.filter(staff => !selectedStaffs?.includes(staff.id))?.length === 0 ? () => { } : () => handleMoveBulk()}>
-                                                <KeyboardDoubleArrowRightIcon sx={{ color: '#06617A' }} />
+                                                <KeyboardDoubleArrowRightIcon sx={{ color: '#168E0D' }} />
                                             </div>
                                             <div className={`${style.moveCard} ${style.marginTop20} ${style.justifyCenter} ${style.verticalAlignCenter} ${staffList?.filter(staff => selectedStaffs?.includes(staff.id))?.length === 0 ? style.disabledView : style.cursorPointer}`} onClick={staffList?.filter(staff => selectedStaffs?.includes(staff.id))?.length === 0 ? () => { } : () => handleRemove()}>
-                                                <KeyboardArrowLeftIcon sx={{ color: '#06617A' }} />
+                                                <KeyboardArrowLeftIcon sx={{ color: '#168E0D' }} />
                                             </div>
                                             <div className={`${style.moveCard} ${style.marginTop10} ${style.justifyCenter} ${style.verticalAlignCenter} ${staffList?.filter(staff => selectedStaffs?.includes(staff.id))?.length === 0 ? style.disabledView : style.cursorPointer}`} onClick={staffList?.filter(staff => selectedStaffs?.includes(staff.id))?.length === 0 ? () => { } : () => handleRemoveBulk()}>
-                                                <KeyboardDoubleArrowLeftIcon sx={{ color: '#06617A' }} />
+                                                <KeyboardDoubleArrowLeftIcon sx={{ color: '#168E0D' }} />
                                             </div>
                                         </div>
                                     </div>

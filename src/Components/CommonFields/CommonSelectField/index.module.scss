@@ -1,4 +1,5 @@
 @import "../../../index.scss";
+
 .fullWidth {
     width: 100% !important;
 }
@@ -9,7 +10,7 @@
 
 .lableStyle {
     text-align: left;
-    font: normal normal normal 15px/17px proxima-nova;
+    font: normal normal normal 15px/17px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
     // text-transform: capitalize;
@@ -17,15 +18,15 @@
     margin-top: 5px;
 }
 
-.fontStyle{
-    font: normal normal normal 15px/17px proxima-nova;
+.fontStyle {
+    font: normal normal normal 15px/17px var(--font-style);
     color: #2C2C2C;
     letter-spacing: 0px;
 }
 
 .helperText {
     color: #fff;
-    font: normal normal normal 15px/17px proxima-nova;
+    font: normal normal normal 15px/17px var(--font-style);
     padding: 5px 10px;
     width: 160px;
     float: right;

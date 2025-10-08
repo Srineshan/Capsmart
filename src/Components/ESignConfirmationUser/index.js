@@ -73,7 +73,7 @@ const ESignConfirmationUserDialog = ({ getIsOpen, basicForm, updateFunc, confirm
                         </div>
                     </div>
 
-                    <p className={`${style.description} ${style.marginTop}`}>{window.location.pathname.includes('pnpManager') ? 'PNP Manager' : 'MD Manager'} uses Electronic Signatures for you to sign off on the required Medical Directives.</p>
+                    <p className={`${style.description} ${style.marginTop}`}>{window.location.pathname.includes('pnpManager') ? 'PNP Manager' : 'MD Manager'} uses Electronic Signatures for you to sign off on the required {window.location.pathname.includes('pnpManager') ? 'Policies & Procedures' : 'Medical Directives'}.</p>
                     <div className={style.eSignConfirmationCard}>
                         <div className={style.confimationHeading}>Your e-Signature on file</div>
                         <div><img src={eSignImg?.fileURL} alt="" className={style.eSignImg} /></div>

@@ -16,7 +16,7 @@
   background-color: #bdb8f2;
   height: 5px;
   //   letter-spacing: -1px;
-  font: normal normal bold 12px/20px proxima-nova;
+  font: normal normal bold 12px/20px var(--font-style);
 }
 
 .cancelIcon {
@@ -34,7 +34,7 @@
   margin-bottom: 10px;
   cursor: pointer;
   position: relative;
-  font: normal normal bold 12px/20px proxima-nova;
+  font: normal normal bold 12px/20px var(--font-style);
   color: #52575d;
 }
 
@@ -54,7 +54,7 @@
 .cardTitle {
   margin: 0;
   color: #52575d;
-  font: normal normal bold 18px/20px proxima-nova;
+  font: normal normal bold 18px/20px var(--font-style);
 }
 
 .cardCommonTitleDescription {
@@ -67,7 +67,7 @@
   width: 100%;
   text-align: center;
   color: #52575d;
-  font: normal normal bold 18px/20px proxima-nova;
+  font: normal normal bold 18px/20px var(--font-style);
 }
 
 .cardButton {
@@ -77,19 +77,19 @@
   cursor: pointer;
   margin: 0;
   color: #52575d;
-  font: normal normal bold 12px/20px proxima-nova;
+  font: normal normal bold 12px/20px var(--font-style);
   border-bottom: 4px solid #dbdada;
 }
 
 .cardDescription {
   color: #52575d;
-  font: normal normal 12px/20px proxima-nova;
+  font: normal normal 12px/20px var(--font-style);
 }
 
 .message {
   color: #a59bfc;
   text-align: left;
-  font: normal normal bold 12px/20px proxima-nova;
+  font: normal normal bold 12px/20px var(--font-style);
 
   //   font-weight: 900;
   margin-left: 62px;
@@ -114,7 +114,7 @@
   padding: 5px 10px;
   border-radius: 5px;
   white-space: nowrap;
-  font: normal normal bold 12px/20px proxima-nova;
+  font: normal normal bold 12px/20px var(--font-style);
 }
 
 .card:hover .popupMessage {
@@ -128,7 +128,7 @@
 .applicationConfiguration {
   text-align: left;
   color: #52575d;
-  font: normal normal bold 20px/20px proxima-nova;
+  font: normal normal bold 20px/20px var(--font-style);
 }
 
 .textAlignCenterMargin0 {

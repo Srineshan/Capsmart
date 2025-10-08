@@ -482,7 +482,7 @@ const Navbar = () => {
             )}
           </div>
 
-          {(!window.location.pathname?.includes('mdManager') && !window.location.pathname?.includes('pnpManager') && !window.location.pathname?.includes('medicalDirectives') && !availableMDReports.some(str => window.location.pathname?.includes(str))) ? (
+          {(sessionStorage.getItem('selectedApplication') === "CAP_MANAGER") ? (
             <>
               {workModeType !== "Entity Sys Admin" && (
                 <Link to={"/applications"} onClick={() => sessionStorage.setItem('applicationCreationType', 'REAPPOINTMENT')} className={style.noFontStyle}>
@@ -889,7 +889,7 @@ const Navbar = () => {
             </div>
           </div> */}
             </>
-          ) : !window.location.pathname?.includes('pnpManager') ? (
+          ) : (sessionStorage.getItem('selectedApplication') === "MD_MANAGER") ? (
             <>
               {workModeType === "MD Librarian" ? (
                 <Link to={"/mdManager"} className={style.noFontStyle}>
@@ -1028,7 +1028,7 @@ const Navbar = () => {
                       style.activeMenuColor
                       }`}
                   >
-                    <p>POLICIES & PROCEDURES (PNP)</p>
+                    <p>POLICIES & PROCEDURES (P&P)</p>
                   </div>
                 </Link>
               ) : (
@@ -1073,7 +1073,7 @@ const Navbar = () => {
                   </div>
                 </Link>
               )}
-              <Link to={"/reports/medicalDirectives"} className={style.noFontStyle}>
+              <Link to={"/reports/policiesAndProcedures"} className={style.noFontStyle}>
                 <div
                   className={`${style.menuStyle} ${(window.location.pathname.includes("/reports") ||
                     window.location.pathname.includes("/reportTypeOverview") ||

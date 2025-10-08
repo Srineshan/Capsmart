@@ -24,7 +24,7 @@
 }
 
 .headingForContracts {
-    font: normal normal bolder $navbartext proxima-nova !important;
+    font: normal normal bolder $navbartext var(--font-style) !important;
     letter-spacing: 0px;
     text-align: left;
     color: #2C2C2C;
@@ -32,16 +32,16 @@
     opacity: 1;
 
     @include breakpoint(md) {
-        font: normal normal bold 14px/12px proxima-nova;
+        font: normal normal bold 14px/12px var(--font-style);
     }
 }
 
 .selectedContractBackground {
     background-color: $secondarycolor;
-    border: 2px solid $primarycolor;
+    border: 2px solid var(--primary-color);
     box-shadow: 0px 6px 12px #171A1A1A;
     border-radius: 8px;
-    color: $primarycolor !important;
+    color: var(--primary-color) !important;
 }
 
 .spaceBetween {
@@ -141,37 +141,37 @@
 }
 
 .purple {
-    color: $primarycolor !important;
+    color: var(--primary-color) !important;
 }
 
 .optionsStyle {
     margin: -3px 0px 0 0px;
     text-align: left;
     float: right !important;
-    font: normal normal bold 12px/12px proxima-nova;
+    font: normal normal bold 12px/12px var(--font-style);
     color: #2C2C2C;
 
     span {
         @include breakpoint(md) {
-            font: normal normal bold 10px/12px proxima-nova !important;
+            font: normal normal bold 10px/12px var(--font-style) !important;
         }
     }
 }
 
 .smallTextSelected {
-    color: $primarycolor;
+    color: var(--primary-color);
     line-height: 20px;
 }
 
 .descriptionText {
     text-align: left;
     float: right !important;
-    font: normal normal bold 10px/12px proxima-nova;
+    font: normal normal bold 10px/12px var(--font-style);
     color: #2C2C2C;
 
     span {
         @include breakpoint(md) {
-            font: normal normal bold 10px/12px proxima-nova !important;
+            font: normal normal bold 10px/12px var(--font-style) !important;
         }
     }
 }
@@ -227,12 +227,12 @@
 }
 
 .clickableText {
-    color: $primarycolor;
+    color: var(--primary-color);
     text-decoration: underline;
     cursor: pointer;
 }
 
 .clickableText:hover {
-    color: $primarycolor;
+    color: var(--primary-color);
     text-decoration: underline;
 }

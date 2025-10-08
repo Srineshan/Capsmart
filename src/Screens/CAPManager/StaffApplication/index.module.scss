@@ -113,7 +113,7 @@ body::-webkit-scrollbar {
   // width: 270px;
   background: #FFFFFF 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 6px #00000029;
-  border: 0.5px solid $primarycolor;
+  border: 0.5px solid var(--primary-color);
   border-radius: 8px;
   opacity: 1;
 }
@@ -123,7 +123,7 @@ body::-webkit-scrollbar {
   // width: 270px;
   background: #FFFFFF 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 6px #00000029;
-  // border: 0.5px solid $primarycolor;
+  // border: 0.5px solid var(--primary-color);
   // border-radius: 8px;
   opacity: 1;
 }
@@ -133,7 +133,7 @@ body::-webkit-scrollbar {
   height: 40px;
   background: #FFFFFF 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 6px #00000029;
-  border: 0.5px solid $primarycolor;
+  border: 0.5px solid var(--primary-color);
   border-radius: 8px;
   opacity: 1;
 }
@@ -168,9 +168,9 @@ body::-webkit-scrollbar {
 
   width: 108px;
   height: 35px;
-  background: $primarycolor 0% 0% no-repeat padding-box;
+  background: var(--primary-color) 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 6px #00000029;
-  border: 0.5px solid $primarycolor;
+  border: 0.5px solid var(--primary-color);
   border-radius: 8px;
   opacity: 1;
   justify-self: end;
@@ -181,9 +181,9 @@ body::-webkit-scrollbar {
 
   padding: 10px;
   height: 25px;
-  background: $primarycolor 0% 0% no-repeat padding-box;
+  background: var(--primary-color) 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 6px #00000029;
-  border: 0.5px solid $primarycolor;
+  border: 0.5px solid var(--primary-color);
   border-radius: 8px;
   opacity: 1;
 
@@ -196,7 +196,7 @@ body::-webkit-scrollbar {
   height: 35px;
   background: #FFFFFF 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 6px #00000029;
-  border: 0.5px solid $primarycolor;
+  border: 0.5px solid var(--primary-color);
   border-radius: 8px;
   opacity: 1;
 
@@ -212,16 +212,16 @@ body::-webkit-scrollbar {
 
 .buttonTextStyle {
   text-align: center;
-  font: normal normal bold 16px/25px proxima-nova;
+  font: normal normal bold 16px/25px var(--font-style);
   letter-spacing: 0px;
-  color: $primarycolor;
+  color: var(--primary-color);
   text-transform: uppercase;
   opacity: 1;
 }
 
 .pendingTextStyle {
   text-align: center;
-  font: normal normal bold 16px/25px proxima-nova;
+  font: normal normal bold 16px/25px var(--font-style);
   letter-spacing: 0px;
   color: red;
   // text-transform: uppercase;
@@ -230,7 +230,7 @@ body::-webkit-scrollbar {
 
 .buttonGreyTextStyle {
   text-align: center;
-  font: normal normal bold 18px/26px proxima-nova;
+  font: normal normal bold 18px/26px var(--font-style);
   letter-spacing: 0px;
   color: #FFFFFF;
   text-transform: uppercase;
@@ -239,7 +239,7 @@ body::-webkit-scrollbar {
 
 .docsTitleTextStyle {
   text-align: left;
-  font: normal normal medium 18px/34px proxima-nova;
+  font: normal normal medium 18px/34px var(--font-style);
   letter-spacing: 0px;
   color: #171A1A;
   text-transform: capitalize;
@@ -248,7 +248,7 @@ body::-webkit-scrollbar {
 
 .buttonGreyTextStyleSmall {
   text-align: center;
-  font: normal normal bold 14px/20px proxima-nova;
+  font: normal normal bold 14px/20px var(--font-style);
   letter-spacing: 0px;
   color: #FFFFFF;
   text-transform: uppercase;
@@ -350,7 +350,7 @@ body::-webkit-scrollbar {
 
 /* When the radio button is checked, add a blue background */
 .container input:checked~.checkmark {
-  background-color: $primarycolor;
+  background-color: var(--primary-color);
 }
 
 /* Create the indicator (the dot/circle - hidden when not checked) */
@@ -404,7 +404,7 @@ body::-webkit-scrollbar {
 
 .textStyleProgress {
   text-align: left;
-  font: normal normal bold 14px/18px proxima-nova;
+  font: normal normal bold 14px/18px var(--font-style);
   letter-spacing: 0px;
   color: #2C2C2C;
   text-transform: capitalize;
@@ -412,7 +412,7 @@ body::-webkit-scrollbar {
 }
 
 .statisticsProgress {
-  font: normal normal normal 14px/18px proxima-nova;
+  font: normal normal normal 14px/18px var(--font-style);
   letter-spacing: -0.3px;
   color: #2C2C2C;
   opacity: 1;
@@ -422,7 +422,7 @@ body::-webkit-scrollbar {
 }
 
 .viewStyle {
-  font: normal normal normal 9px/15px proxima-nova;
+  font: normal normal normal 9px/15px var(--font-style);
   letter-spacing: -0.3px;
   color: #2C2C2C;
   opacity: 1;
@@ -508,7 +508,7 @@ body::-webkit-scrollbar {
 }
 
 .multipleOptionsCard {
-  background: $primarycolor 0% 0% no-repeat padding-box;
+  background: var(--primary-color) 0% 0% no-repeat padding-box;
   border: none;
 
 }
@@ -524,7 +524,7 @@ body::-webkit-scrollbar {
 
 .tableHeaderTextStyle {
   text-align: left;
-  font: normal normal bold 16px/22px proxima-nova;
+  font: normal normal bold 16px/22px var(--font-style);
   letter-spacing: 0px;
   color: #2C2C2C;
   opacity: 1;
@@ -533,7 +533,7 @@ body::-webkit-scrollbar {
 
 .tableHeaderTextStyle1 {
   text-align: left;
-  font: normal normal medium 20px/26px proxima-nova;
+  font: normal normal medium 20px/26px var(--font-style);
   letter-spacing: 0px;
   color: #2C2C2C;
   text-transform: capitalize;
@@ -549,7 +549,7 @@ body::-webkit-scrollbar {
 
 .tableHeaderHeadingTextStyle {
   text-align: left;
-  font: normal normal bold 18px/22px proxima-nova;
+  font: normal normal bold 18px/22px var(--font-style);
   letter-spacing: 0px;
   color: #2C2C2C;
   opacity: 1;
@@ -558,9 +558,9 @@ body::-webkit-scrollbar {
 
 .tableHeaderHeadingTextStyle1 {
   text-align: left;
-  font: normal normal normal 18px/23px proxima-nova;
+  font: normal normal normal 18px/23px var(--font-style);
   letter-spacing: 0px;
-  color: #06617A;
+  color: var(--primary-color);
   opacity: 1;
   text-transform: capitalize;
 }
@@ -571,7 +571,7 @@ body::-webkit-scrollbar {
 
 .progressTopText {
   text-align: right;
-  font: normal normal bold 12px/14px proxima-nova;
+  font: normal normal bold 12px/14px var(--font-style);
   letter-spacing: 0px;
   color: #2C2C2C;
   margin-top: 5px;
@@ -579,7 +579,7 @@ body::-webkit-scrollbar {
 
 .progressBottomText {
   text-align: right;
-  font: normal normal normal 10px/9px proxima-nova;
+  font: normal normal normal 10px/9px var(--font-style);
   letter-spacing: 0px;
   color: #382DA5;
   margin-top: 5px;
@@ -587,7 +587,7 @@ body::-webkit-scrollbar {
 
 .staffPragraphStyle {
   text-align: left;
-  font: normal normal normal $tabledatatext2 proxima-nova;
+  font: normal normal normal $tabledatatext2 var(--font-style);
   letter-spacing: 0px;
   color: #2C2C2C;
   text-transform: capitalize;
@@ -599,7 +599,7 @@ body::-webkit-scrollbar {
   border-radius: 2px;
   text-align: right;
   margin-left: 5px;
-  font: normal normal bold 12px/18px proxima-nova;
+  font: normal normal bold 12px/18px var(--font-style);
   letter-spacing: 0px;
   text-transform: capitalize;
   padding: 3px;
@@ -614,7 +614,7 @@ body::-webkit-scrollbar {
 
 .textStyle {
   text-align: left;
-  font: normal normal normal $tabledatatext2 proxima-nova;
+  font: normal normal normal $tabledatatext2 var(--font-style);
   letter-spacing: 0px;
   color: #2C2C2C;
   text-transform: capitalize;
@@ -712,16 +712,16 @@ body::-webkit-scrollbar {
 
 .userNameStyle {
   text-align: left;
-  font: normal normal 600 $usernametext proxima-nova;
+  font: normal normal 600 $usernametext var(--font-style);
   letter-spacing: 0px;
   color: #52575d;
 }
 
 .leftCardHeadingNameStyle {
   text-align: left;
-  font: normal normal 400 15px proxima-nova;
+  font: normal normal 400 15px var(--font-style);
   letter-spacing: 0px;
-  color: $primarycolor;
+  color: var(--primary-color);
   opacity: 1;
 }
 
@@ -1133,7 +1133,7 @@ body::-webkit-scrollbar {
 }
 
 .documentProofTextWidth {
-  font: normal normal bold $tabledatatext proxima-nova;
+  font: normal normal bold $tabledatatext var(--font-style);
   letter-spacing: 0px;
   color: #52575d;
   text-transform: uppercase;
@@ -1143,7 +1143,7 @@ body::-webkit-scrollbar {
 }
 
 .documentProofDataTextWidth {
-  font: normal normal normal $tabledatatext proxima-nova;
+  font: normal normal normal $tabledatatext var(--font-style);
   letter-spacing: 0px;
   color: #52575d;
   opacity: 1;
@@ -1155,9 +1155,9 @@ body::-webkit-scrollbar {
 
 .poweredBy {
   text-align: left;
-  font: normal normal normal 14px/20px proxima-nova;
+  font: normal normal normal 14px/20px var(--font-style);
   letter-spacing: 0px;
-  color: $primarycolor;
+  color: var(--primary-color);
   opacity: 1;
   margin: 5px 0 0 10px;
 }
@@ -1176,23 +1176,23 @@ body::-webkit-scrollbar {
 
 .welcomeStyle {
   text-align: left;
-  font: normal normal bold 26px/22px proxima-nova;
+  font: normal normal bold 26px/22px var(--font-style);
   letter-spacing: 0px;
-  color: $primarycolor;
+  color: var(--primary-color);
 }
 
 .extensionStyle {
   text-align: left;
-  font: normal normal bold $usernametext proxima-nova;
+  font: normal normal bold $usernametext var(--font-style);
   letter-spacing: 0px;
-  color: $primarycolor;
+  color: var(--primary-color);
 }
 
 .extensionStyle1 {
   text-align: left;
-  font: normal normal bold 20px/24px proxima-nova;
+  font: normal normal bold 20px/24px var(--font-style);
   letter-spacing: 0px;
-  color: $primarycolor;
+  color: var(--primary-color);
   text-transform: capitalize;
   opacity: 1;
 }
@@ -1212,7 +1212,7 @@ body::-webkit-scrollbar {
 
 .rejectionHeadingTextStyle {
   text-align: left;
-  font: normal normal bold 16px proxima-nova;
+  font: normal normal bold 16px var(--font-style);
   letter-spacing: 0px;
   color: #2C2C2C;
   text-transform: capitalize;
@@ -1225,7 +1225,7 @@ body::-webkit-scrollbar {
 
 .rejectionSubHeadingTextStyle {
   text-align: left;
-  font: normal normal bold 16px proxima-nova;
+  font: normal normal bold 16px var(--font-style);
   letter-spacing: 0px;
   color: #454747;
   opacity: 1;
@@ -1233,7 +1233,7 @@ body::-webkit-scrollbar {
 
 .rejectionTextStyle {
   text-align: left;
-  font: normal normal medium 18px/34px proxima-nova;
+  font: normal normal medium 18px/34px var(--font-style);
   letter-spacing: 0px;
   color: #2C2C2C;
   text-transform: capitalize;
@@ -1250,7 +1250,7 @@ body::-webkit-scrollbar {
 
 .extensionOptionsStyle {
   text-align: left;
-  font: normal normal medium $usernametext proxima-nova;
+  font: normal normal medium $usernametext var(--font-style);
   letter-spacing: 0px;
   color: #52575d;
   text-transform: uppercase;
@@ -1278,7 +1278,7 @@ body::-webkit-scrollbar {
   // color: rgba(143, 153, 168, 0.5);
   // background-color: #f1f2f3;
   color: white !important;
-  background-color: $primarycolor;
+  background-color: var(--primary-color);
   height: 32px;
   min-width: 130px;
   border: none;
@@ -1318,7 +1318,7 @@ body::-webkit-scrollbar {
 
 .contractId {
   text-align: left;
-  font: normal normal medium $usernametext proxima-nova;
+  font: normal normal medium $usernametext var(--font-style);
   letter-spacing: 0px;
   color: #52575d;
   text-transform: uppercase;
@@ -1339,7 +1339,7 @@ body::-webkit-scrollbar {
 
 .topHeadingTextStyle {
   text-align: left;
-  font: normal normal 600 15px/24px proxima-nova;
+  font: normal normal 600 15px/24px var(--font-style);
   letter-spacing: 1.5px;
   color: #646D82;
   text-transform: uppercase;
@@ -1348,7 +1348,7 @@ body::-webkit-scrollbar {
 .welcomeMessage {
   background: $secondarycolor 0% 0% no-repeat padding-box;
   text-align: left;
-  font: normal normal 300 13px/15px proxima-nova;
+  font: normal normal 300 13px/15px var(--font-style);
   letter-spacing: 0.9px;
   color: #52575d;
   padding: 20px;
@@ -1393,7 +1393,7 @@ body::-webkit-scrollbar {
 
 .extentionLableStyle {
   text-align: left;
-  font: normal normal normal $tabledatatext proxima-nova;
+  font: normal normal normal $tabledatatext var(--font-style);
   letter-spacing: 0px;
   color: #52575d;
   text-transform: capitalize;
@@ -1402,7 +1402,7 @@ body::-webkit-scrollbar {
 }
 
 .biggerFont {
-  font: normal normal normal 15px/19px proxima-nova;
+  font: normal normal normal 15px/19px var(--font-style);
 }
 
 .termPeriodGrid {
@@ -1427,7 +1427,7 @@ body::-webkit-scrollbar {
 }
 
 .extentionBoxStyle {
-  border: 1px solid $primarycolor;
+  border: 1px solid var(--primary-color);
   border-radius: 8px;
   opacity: 1;
   width: 100%;
@@ -1435,7 +1435,7 @@ body::-webkit-scrollbar {
 }
 
 .serviceBoxStyle {
-  border: 1px solid $primarycolor;
+  border: 1px solid var(--primary-color);
   border-radius: 8px;
   opacity: 1;
   height: 60vh;
@@ -1457,13 +1457,13 @@ body::-webkit-scrollbar {
   width: 11px;
   height: 311px;
   /* UI Properties */
-  background: $primarycolor 0% 0% no-repeat padding-box;
+  background: var(--primary-color) 0% 0% no-repeat padding-box;
   border-radius: 6px;
   opacity: 0.4;
 }
 
 .deleteDraftBoxStyle {
-  border: 1px solid $primarycolor;
+  border: 1px solid var(--primary-color);
   border-radius: 8px;
   opacity: 1;
   height: 20vh;
@@ -1473,7 +1473,7 @@ body::-webkit-scrollbar {
 }
 
 .newContractFromCloneBoxStyle {
-  border: 1px solid $primarycolor;
+  border: 1px solid var(--primary-color);
   border-radius: 8px;
   opacity: 1;
   // height: calc(100vh - 160px);
@@ -1485,7 +1485,7 @@ body::-webkit-scrollbar {
 
 .rightAlignTextStyle {
   text-align: right;
-  font: normal normal medium 16px/23px proxima-nova;
+  font: normal normal medium 16px/23px var(--font-style);
   letter-spacing: 0px;
   color: #2C2C2C;
   text-transform: capitalize;
@@ -1494,7 +1494,7 @@ body::-webkit-scrollbar {
 
 .rightAlignTextStyle1 {
   text-align: right;
-  font: normal normal normal 14px proxima-nova;
+  font: normal normal normal 14px var(--font-style);
   letter-spacing: 0px;
   color: #2C2C2C;
   text-transform: capitalize;
@@ -1503,7 +1503,7 @@ body::-webkit-scrollbar {
 
 .leftAlignTextStyle {
   text-align: left;
-  font: normal normal medium 16px/23px proxima-nova;
+  font: normal normal medium 16px/23px var(--font-style);
   letter-spacing: 0px;
   color: $textcolor;
   text-transform: uppercase;
@@ -1553,7 +1553,7 @@ body::-webkit-scrollbar {
 
 .cardTextBoldStyle {
   text-align: left;
-  font: normal normal 600 $tabledatatext1 proxima-nova;
+  font: normal normal 600 $tabledatatext1 var(--font-style);
   letter-spacing: 0px;
   color: $textgrey;
   text-transform: capitalize;
@@ -1562,7 +1562,7 @@ body::-webkit-scrollbar {
 
 .greyDotTextStyle {
   text-align: center;
-  font: normal normal normal 13px/20px proxima-nova;
+  font: normal normal normal 13px/20px var(--font-style);
   letter-spacing: 0px;
   color: #2C2C2C;
   opacity: 1;
@@ -1570,7 +1570,7 @@ body::-webkit-scrollbar {
 
 .greenDotTextStyle {
   text-align: left;
-  font: normal normal normal 13px/20px proxima-nova;
+  font: normal normal normal 13px/20px var(--font-style);
   letter-spacing: 0px;
   color: #4ca457;
   opacity: 1;
@@ -1578,7 +1578,7 @@ body::-webkit-scrollbar {
 
 .yellowDotTextStyle {
   text-align: left;
-  font: normal normal normal 13px/20px proxima-nova;
+  font: normal normal normal 13px/20px var(--font-style);
   letter-spacing: 0px;
   color: #a7ba2b;
   opacity: 1;
@@ -1586,7 +1586,7 @@ body::-webkit-scrollbar {
 
 .emailTextBoldStyle {
   text-align: start;
-  font: normal normal 400 16px/20px proxima-nova;
+  font: normal normal 400 16px/20px var(--font-style);
   letter-spacing: 0px;
   color: #2C2C2C;
   opacity: 1;
@@ -1594,7 +1594,7 @@ body::-webkit-scrollbar {
 
 .cardTextNormalStyle {
   text-align: left;
-  font: normal normal medium 16px/23px proxima-nova;
+  font: normal normal medium 16px/23px var(--font-style);
   letter-spacing: 0px;
   color: black;
   text-transform: capitalize;
@@ -1602,7 +1602,7 @@ body::-webkit-scrollbar {
 }
 
 .switchFontStyle {
-  font: normal normal normal $navbartext proxima-nova;
+  font: normal normal normal $navbartext var(--font-style);
   color: #52575d;
 }
 
@@ -1611,7 +1611,7 @@ body::-webkit-scrollbar {
 }
 
 .crossStyle {
-  color: linear-gradient($primarycolor, $statusred) !important;
+  color: linear-gradient(var(--primary-color), $statusred) !important;
   margin-bottom: 15px;
   cursor: pointer;
 }
@@ -1627,7 +1627,7 @@ body::-webkit-scrollbar {
 }
 
 .newContractCrossStyle {
-  color: linear-gradient($primarycolor, $statusred) !important;
+  color: linear-gradient(var(--primary-color), $statusred) !important;
   cursor: pointer;
   margin-top: -10px;
   margin-right: -20px;
@@ -1672,7 +1672,7 @@ select {
 
 .selectLable {
   text-align: left;
-  font: normal normal normal 17px/20px proxima-nova;
+  font: normal normal normal 17px/20px var(--font-style);
   color: #52575d;
   // margin-top: 15px;
 }
@@ -1696,7 +1696,7 @@ select {
 
 .contractCards:hover {
   background: linear-gradient(white, white) padding-box,
-    linear-gradient(to bottom, $primarycolor, $statusred) border-box;
+    linear-gradient(to bottom, var(--primary-color), $statusred) border-box;
   border-radius: 20px;
   border: 2px solid transparent;
 }
@@ -1716,7 +1716,7 @@ select {
 
 .contractCardData {
   text-align: center;
-  font: normal normal 600 12px/14px proxima-nova;
+  font: normal normal 600 12px/14px var(--font-style);
   letter-spacing: 0px;
   color: #52575d;
   opacity: 1;
@@ -1725,7 +1725,7 @@ select {
 
 .selectedContractCard {
   background: linear-gradient(white, white) padding-box,
-    linear-gradient(to bottom, $primarycolor, $statusred) border-box;
+    linear-gradient(to bottom, var(--primary-color), $statusred) border-box;
   border-radius: 20px;
   border: 2px solid transparent;
 }
@@ -1741,7 +1741,7 @@ select {
 .nextButton {
   border-radius: 12px;
   opacity: 1;
-  background-color: $primarycolor;
+  background-color: var(--primary-color);
   color: white;
   border: none;
   height: 40px;
@@ -1820,19 +1820,19 @@ select {
 
 .outlinedButton {
   background-color: white;
-  color: $primarycolor;
-  border: 1px solid $primarycolor;
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
   height: 40px;
   width: 140px;
   border-radius: 10px;
   margin-bottom: -20px;
-  box-shadow: 0px 3px 11px $primarycolor;
+  box-shadow: 0px 3px 11px var(--primary-color);
 }
 
 .newContractOutlinedButton {
   background-color: white;
-  color: $primarycolor;
-  border: 1px solid $primarycolor;
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
   height: 40px;
   width: 180px;
   border-radius: 10px;
@@ -1841,8 +1841,8 @@ select {
 
 .cloneOutlinedButton {
   background-color: white;
-  color: $primarycolor;
-  border: 1px solid $primarycolor;
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
   height: 30px;
   min-width: 80px;
   padding-left: 40px;
@@ -1851,20 +1851,20 @@ select {
 }
 
 .buttonStyle {
-  background-color: $primarycolor;
+  background-color: var(--primary-color);
   color: white;
-  border: 1px solid $primarycolor;
+  border: 1px solid var(--primary-color);
   height: 40px;
   width: 140px;
   border-radius: 10px;
   margin-bottom: -20px;
-  box-shadow: 0px 3px 11px $primarycolor;
+  box-shadow: 0px 3px 11px var(--primary-color);
 }
 
 .bigButtonStyle {
   height: 70px;
   /* UI Properties */
-  background: $primarycolor 0% 0% no-repeat padding-box;
+  background: var(--primary-color) 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 6px #00000029;
   border-radius: 8px;
   opacity: 1;
@@ -1872,7 +1872,7 @@ select {
 
 .bigButtonTextStyle {
   text-align: center;
-  font: normal normal bold 16px/25px proxima-nova;
+  font: normal normal bold 16px/25px var(--font-style);
   letter-spacing: 0px;
   color: #FFFFFF;
   text-transform: uppercase;
@@ -1881,9 +1881,9 @@ select {
 
 
 .newContractButtonStyle {
-  background-color: $primarycolor;
+  background-color: var(--primary-color);
   color: white;
-  border: 1px solid $primarycolor;
+  border: 1px solid var(--primary-color);
   height: 40px;
   width: 180px;
   border-radius: 10px;
@@ -1891,9 +1891,9 @@ select {
 }
 
 .cloneButtonStyle {
-  background-color: $primarycolor;
+  background-color: var(--primary-color);
   color: white;
-  border: 1px solid $primarycolor;
+  border: 1px solid var(--primary-color);
   height: 30px;
   min-width: 80px;
   padding-left: 40px;
@@ -1911,7 +1911,7 @@ select {
 }
 
 .myActiveContractsButton {
-  background: $primarycolor 0% 0% no-repeat padding-box;
+  background: var(--primary-color) 0% 0% no-repeat padding-box;
   border: 0.4000000059604645px solid $secondarycolor;
   color: #fff;
   border-radius: 6px;
@@ -1921,9 +1921,9 @@ select {
 }
 
 .timesheetNextButtonStyle {
-  background-color: $primarycolor;
+  background-color: var(--primary-color);
   color: white;
-  border: 1px solid $primarycolor;
+  border: 1px solid var(--primary-color);
   height: 35px;
   width: 120px;
   border-radius: 6px;
@@ -1947,7 +1947,7 @@ select {
 
 .cloneContent {
   text-align: left;
-  font: normal normal medium 18px/28px proxima-nova;
+  font: normal normal medium 18px/28px var(--font-style);
   letter-spacing: 0px;
   color: #52575d;
 }
@@ -2078,7 +2078,7 @@ select {
 
 .contractEntityFontStyle {
   text-align: left;
-  font: normal normal normal 17px/21px proxima-nova;
+  font: normal normal normal 17px/21px var(--font-style);
   letter-spacing: 0px;
   color: #52575d;
   width: 80%;
@@ -2091,26 +2091,26 @@ select {
 }
 
 .selectedContractEntityStyle {
-  border: 1px solid $primarycolor;
-  color: $primarycolor;
+  border: 1px solid var(--primary-color);
+  color: var(--primary-color);
 }
 
 .selectedColor {
-  color: $primarycolor;
+  color: var(--primary-color);
 }
 
 .smallHeadingStyle {
   text-align: left;
-  font: normal normal 600 17px/16px proxima-nova;
+  font: normal normal 600 17px/16px var(--font-style);
   letter-spacing: 0px;
   line-height: 20px;
-  color: $primarycolor;
+  color: var(--primary-color);
   opacity: 1;
 }
 
 .descriptionStyle {
   text-align: left;
-  font: normal normal normal 15px/28px proxima-nova;
+  font: normal normal normal 15px/28px var(--font-style);
   letter-spacing: 0px;
   opacity: 1;
   color: #52575d;
@@ -2118,7 +2118,7 @@ select {
 
 .deleteDescriptionStyle {
   text-align: left;
-  font: normal normal normal 13px/23px proxima-nova;
+  font: normal normal normal 13px/23px var(--font-style);
   letter-spacing: 0px;
   opacity: 1;
   color: #52575d;
@@ -2154,7 +2154,7 @@ select {
 }
 
 .blueColor {
-  color: $primarycolor;
+  color: var(--primary-color);
 }
 
 .selectFieldWidth {
@@ -2210,13 +2210,13 @@ select {
 }
 
 .greenBase {
-  font: normal normal medium 20px/27px proxima-nova;
+  font: normal normal medium 20px/27px var(--font-style);
   background-color: #8cf2ba;
   color: #52575d;
 }
 
 .redBase {
-  font: normal normal medium 20px/27px proxima-nova;
+  font: normal normal medium 20px/27px var(--font-style);
   background-color: #fc9c9c;
   color: #52575d;
 }
@@ -2323,7 +2323,7 @@ select {
 
 .plusOneText {
   text-align: left;
-  font: normal normal medium $tabledatatext1 proxima-nova;
+  font: normal normal medium $tabledatatext1 var(--font-style);
   letter-spacing: 0px;
   color: #aeb2b7;
 }
@@ -2379,7 +2379,7 @@ select {
 }
 
 .proofBorder {
-  border: 1px solid $primarycolor;
+  border: 1px solid var(--primary-color);
   border-radius: 8px;
   overflow: scroll;
   margin-top: 10px;
@@ -2421,7 +2421,7 @@ select {
   border: 1px solid #b3b8bd;
   border-radius: 10px;
   height: 100px;
-  font: normal normal normal 13px/15px proxima-nova;
+  font: normal normal normal 13px/15px var(--font-style);
   margin-top: 10px;
   padding: 15px;
 }
@@ -2433,7 +2433,7 @@ select {
   border: 1px solid #b3b8bd;
   border-radius: 10px;
   // height: 140px;
-  font: normal normal normal 13px/15px proxima-nova;
+  font: normal normal normal 13px/15px var(--font-style);
   margin-top: 10px;
   padding: 15px;
 }
@@ -2445,7 +2445,7 @@ select {
   border: 1px solid #b3b8bd;
   border-radius: 10px;
   // height: 100px;
-  font: normal normal normal 13px/15px proxima-nova;
+  font: normal normal normal 13px/15px var(--font-style);
   margin-top: 10px;
   padding: 15px;
 }
@@ -2455,7 +2455,7 @@ select {
   text-align: left;
   border: 1px solid #b3b8bd;
   border-radius: 10px;
-  font: normal normal normal 13px/15px proxima-nova;
+  font: normal normal normal 13px/15px var(--font-style);
   margin-top: 10px;
   padding: 15px;
 }
@@ -2562,16 +2562,16 @@ select {
 
 .privilegeHeadingCurrent {
   text-align: left;
-  font: italic normal bold 12px/17px proxima-nova !important;
+  font: italic normal bold 12px/17px var(--font-style) !important;
   letter-spacing: 0px;
   color: #1D2437;
 }
 
 .privilegeHeadingReappointment {
   text-align: left;
-  font: italic normal bold 12px/17px proxima-nova !important;
+  font: italic normal bold 12px/17px var(--font-style) !important;
   letter-spacing: 0px;
-  color: $primarycolor;
+  color: var(--primary-color);
 }
 
 .privilegeContentChangeCard {
@@ -2671,7 +2671,7 @@ select {
 
 .sendMailConfirmationStyle {
   text-align: center;
-  font: normal normal normal 13px/23px proxima-nova;
+  font: normal normal normal 13px/23px var(--font-style);
   letter-spacing: 0px;
   opacity: 1;
   color: #52575d;
@@ -2697,7 +2697,7 @@ select {
 
 .timesheetButtonStyle {
   background: #ebf2f7 0% 0% no-repeat padding-box;
-  border: 1px solid $primarycolor;
+  border: 1px solid var(--primary-color);
   border-radius: 6px 6px 0px 0px;
   min-width: 180px;
   height: 40px;
@@ -2708,7 +2708,7 @@ select {
 }
 
 .timeSheetBoxStyle {
-  border: 1px solid $primarycolor;
+  border: 1px solid var(--primary-color);
   border-radius: 0px 6px 0px 0px;
   opacity: 1;
   height: calc(100vh - 160px);
@@ -2752,7 +2752,7 @@ input[type="file"] {
   font-size: 14px;
   line-height: 1.25;
   background-color: #f1f2f3;
-  color: $primarycolor;
+  color: var(--primary-color);
   border: none;
   position: relative;
   top: 7px;
@@ -2782,8 +2782,8 @@ input[type="file"] {
 }
 
 .purpleTitle {
-  font: normal $usernametext proxima-nova;
-  color: $primarycolor;
+  font: normal $usernametext var(--font-style);
+  color: var(--primary-color);
   font-size: 15px;
   text-align: left;
   min-width: 100vw;
@@ -2798,8 +2798,8 @@ input[type="file"] {
 }
 
 .popUpHeading {
-  font: bold 18px/15px proxima-nova;
-  color: $primarycolor;
+  font: bold 18px/15px var(--font-style);
+  color: var(--primary-color);
 }
 
 .popUpHeaderBlock {
@@ -2846,7 +2846,7 @@ input[type="file"] {
 }
 
 .addStyle {
-  background: $primarycolor 0% 0% no-repeat padding-box;
+  background: var(--primary-color) 0% 0% no-repeat padding-box;
   box-shadow: 0px 0px 6px #00000029;
   border-radius: 4px;
   height: 33px;
@@ -2854,11 +2854,11 @@ input[type="file"] {
 }
 
 .addStyle:hover {
-  background: $primarycolorHover 0% 0% no-repeat padding-box;
+  background: var(--primary-color-hover) 0% 0% no-repeat padding-box;
 }
 
 .addSmallStyle {
-  background: $primarycolor 0% 0% no-repeat padding-box;
+  background: var(--primary-color) 0% 0% no-repeat padding-box;
   box-shadow: 0px 0px 6px #00000029;
   border-radius: 4px;
   height: 23px;
@@ -2872,10 +2872,10 @@ input[type="file"] {
 }
 
 .addAddonServiceButton {
-  background: $primarycolor 0% 0% no-repeat padding-box;
+  background: var(--primary-color) 0% 0% no-repeat padding-box;
   box-shadow: 0px 0px 6px #00000029;
   border-radius: 6px;
-  font: normal normal medium 20px/27px proxima-nova;
+  font: normal normal medium 20px/27px var(--font-style);
   letter-spacing: 0px;
   color: #ffffff;
   text-transform: uppercase;
@@ -2883,10 +2883,10 @@ input[type="file"] {
 }
 
 .addCptCodeButton {
-  background: $primarycolor 0% 0% no-repeat padding-box;
+  background: var(--primary-color) 0% 0% no-repeat padding-box;
   box-shadow: 0px 0px 6px #00000029;
   border-radius: 6px;
-  font: normal normal bolder 14px/18px proxima-nova;
+  font: normal normal bolder 14px/18px var(--font-style);
   letter-spacing: 0px;
   color: #ffffff;
   text-transform: uppercase;
@@ -2904,8 +2904,8 @@ input[type="file"] {
 }
 
 .addonAddBox {
-  border: 1px solid $primarycolor;
-  box-shadow: 0px 1px 6px $primarycolor;
+  border: 1px solid var(--primary-color);
+  box-shadow: 0px 1px 6px var(--primary-color);
   border-radius: 8px;
   padding: 20px 10px;
 }
@@ -2924,11 +2924,11 @@ input[type="file"] {
 .additionalDetailsSelected {
   background: #dbd8fa 0% 0% no-repeat padding-box;
   box-shadow: 0px 1px 4px #0000001f;
-  border: 0.30000001192092896px solid $primarycolor;
+  border: 0.30000001192092896px solid var(--primary-color);
 }
 
 .additionalDetailsTextStyle {
-  font: normal normal medium 18px/24px proxima-nova;
+  font: normal normal medium 18px/24px var(--font-style);
   letter-spacing: 0px;
   color: #52575d;
   text-transform: capitalize;
@@ -2958,7 +2958,7 @@ input[type="file"] {
 
 .blueChip {
   background: #dbd8fa 0% 0% no-repeat padding-box;
-  color: $primarycolor;
+  color: var(--primary-color);
 }
 
 .redChip {
@@ -2998,9 +2998,9 @@ input[type="file"] {
 //   transform: matrix(0.74, -0.67, 0.67, 0.74, 0, 0);
 //   /* UI Properties */
 //   text-align: left;
-//   // font: normal normal bold 34px/58px proxima-nova;
+//   // font: normal normal bold 34px/58px var(--font-style);
 //   // letter-spacing: 0px;
-//   // color: $primarycolor;
+//   // color: var(--primary-color);
 //   opacity: 0.1;
 // }
 
@@ -3024,7 +3024,7 @@ input[type="file"] {
 
 .dialogAdditionalDetailTextStyle {
   text-align: left;
-  font: normal normal medium 18px/22px proxima-nova;
+  font: normal normal medium 18px/22px var(--font-style);
   letter-spacing: 0px;
   color: #52575d;
 }
@@ -3042,9 +3042,9 @@ input[type="file"] {
 
 .helperText {
   text-align: left;
-  font: normal normal medium 13px/18px proxima-nova;
+  font: normal normal medium 13px/18px var(--font-style);
   letter-spacing: 0px;
-  color: $primarycolor;
+  color: var(--primary-color);
 }
 
 .disabledOpacity {
@@ -3052,7 +3052,7 @@ input[type="file"] {
 }
 
 .actionsCard {
-  background: $primarycolor 0% 0% no-repeat padding-box;
+  background: var(--primary-color) 0% 0% no-repeat padding-box;
   border: none;
   border-radius: 4px;
 }
@@ -3067,8 +3067,8 @@ input[type="file"] {
 
 .specificActionCard:hover {
   background: #f5f9fc 0% 0% no-repeat padding-box;
-  color: $primarycolor;
-  border: 1px solid $primarycolor;
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
   border-radius: 4px;
 }
 
@@ -3086,7 +3086,7 @@ input[type="file"] {
   background: #dbd8fa 0% 0% no-repeat padding-box;
   padding: 10px;
   border-radius: 4px;
-  font: normal normal 300 12px/15px proxima-nova;
+  font: normal normal 300 12px/15px var(--font-style);
   letter-spacing: 0px;
   color: #52575d;
   text-align: left;
@@ -3094,7 +3094,7 @@ input[type="file"] {
 
 .activationDescriptionBoxStyle {
   text-align: left;
-  font: normal normal medium 13px/22px proxima-nova;
+  font: normal normal medium 13px/22px var(--font-style);
   color: #b3b8bd;
   border: 1px solid #c4bef3;
   border-radius: 8px;
@@ -3180,18 +3180,18 @@ input[type="file"] {
 }
 
 .popUpPreImplementationHeading {
-  font: bold 15px/15px proxima-nova;
-  color: $primarycolor;
+  font: bold 15px/15px var(--font-style);
+  color: var(--primary-color);
 }
 
 .popUpPreImplementationSubHeading {
-  font: bold 13px/15px proxima-nova;
+  font: bold 13px/15px var(--font-style);
   color: #52575d;
 }
 
 .popUpPreImplementationTitle {
-  font: bold 13px/15px proxima-nova;
-  color: $primarycolor;
+  font: bold 13px/15px var(--font-style);
+  color: var(--primary-color);
 }
 
 .preImplementationGrid {
@@ -3219,17 +3219,17 @@ input[type="number"] {
 
 .paymentTimesheetDetailsHeading {
   text-align: left;
-  font: normal normal normal 14px/14px proxima-nova;
+  font: normal normal normal 14px/14px var(--font-style);
   letter-spacing: 0px;
-  color: $primarycolor;
+  color: var(--primary-color);
   text-transform: uppercase;
 }
 
 .helperTextPayment {
   text-align: center;
-  font: normal normal normal 12px/12px proxima-nova;
+  font: normal normal normal 12px/12px var(--font-style);
   letter-spacing: 0px;
-  color: $primarycolor;
+  color: var(--primary-color);
   text-transform: capitalize;
 }
 
@@ -3265,19 +3265,19 @@ input[type="number"] {
 }
 
 .contractFiltersHeading {
-  font: normal normal normal 13px/16px proxima-nova;
+  font: normal normal normal 13px/16px var(--font-style);
   color: #525762;
 }
 
 .contractFiltersTextStyle {
   text-align: left;
-  font: normal normal medium 10px/12px proxima-nova;
+  font: normal normal medium 10px/12px var(--font-style);
   color: #52575d;
 }
 
 .siteDeptTextStyle {
   text-align: left;
-  font: normal normal medium 15px/17px proxima-nova;
+  font: normal normal medium 15px/17px var(--font-style);
   letter-spacing: 0px;
   color: #52575d;
 }
@@ -3295,7 +3295,7 @@ input[type="number"] {
 
 .validationHeaderText {
   text-align: left;
-  font: normal normal normal $tabledatatext1 proxima-nova;
+  font: normal normal normal $tabledatatext1 var(--font-style);
   letter-spacing: 0px;
   color: #18191b;
   text-transform: uppercase;
@@ -3317,14 +3317,14 @@ input[type="number"] {
 
 .validationTopicText {
   text-align: left;
-  font: normal normal normal $navbartext proxima-nova;
+  font: normal normal normal $navbartext var(--font-style);
   letter-spacing: 0px;
   color: #94979a;
 }
 
 .statusText {
   text-align: left;
-  font: normal normal normal $navbartext proxima-nova;
+  font: normal normal normal $navbartext var(--font-style);
   letter-spacing: 0px;
   color: #000000;
 }
@@ -3432,7 +3432,7 @@ input[type="number"] {
 
 .addServiceCountStyle {
   background: #ffffff 0% 0% no-repeat padding-box;
-  border: 1px solid $primarycolor;
+  border: 1px solid var(--primary-color);
   height: 15px;
   width: 15px;
   position: absolute;
@@ -3478,7 +3478,7 @@ input[type="number"] {
 }
 
 .tableHeaderFontStyle {
-  font: normal normal bold $tableheadtext proxima-nova;
+  font: normal normal bold $tableheadtext var(--font-style);
   letter-spacing: 0px;
   color: #52575d;
   text-transform: uppercase;
@@ -3514,7 +3514,7 @@ input[type="number"] {
 }
 
 .tableDataFontStyle {
-  font: normal normal normal $tabledatatext proxima-nova;
+  font: normal normal normal $tabledatatext var(--font-style);
   letter-spacing: 0px;
   color: #52575d;
   text-transform: uppercase;
@@ -3522,7 +3522,7 @@ input[type="number"] {
 }
 
 .tableDataFontBoldStyle {
-  font: normal normal bold $tabledatatext proxima-nova;
+  font: normal normal bold $tabledatatext var(--font-style);
   letter-spacing: 0px;
   color: #52575d;
   text-transform: uppercase;
@@ -3530,7 +3530,7 @@ input[type="number"] {
 }
 
 .tableDataFontStyle1 {
-  font: normal normal normal $tabledatatext1 proxima-nova;
+  font: normal normal normal $tabledatatext1 var(--font-style);
   letter-spacing: 0px;
   color: #52575d;
   text-align: left;
@@ -3538,7 +3538,7 @@ input[type="number"] {
 
 .tableDataFontStyle2 {
   text-align: left;
-  font: normal normal 600 $tabledatatext2 proxima-nova;
+  font: normal normal 600 $tabledatatext2 var(--font-style);
   letter-spacing: 0px;
   color: #2C2C2C;
   opacity: 1;
@@ -3571,7 +3571,7 @@ input[type="number"] {
 
 .dayStyle {
   background: #f1f3f4 0% 0% no-repeat padding-box;
-  font: normal normal 600 13px/20px proxima-nova;
+  font: normal normal 600 13px/20px var(--font-style);
   color: #94979a;
   height: 35px;
   width: 35px;
@@ -3580,13 +3580,13 @@ input[type="number"] {
 }
 
 .selectedDay {
-  background: $primarycolor 0% 0% no-repeat padding-box;
+  background: var(--primary-color) 0% 0% no-repeat padding-box;
   color: white;
 }
 
 .dateNotSet {
-  font: normal normal 600 23px/30px proxima-nova;
-  color: $primarycolor;
+  font: normal normal 600 23px/30px var(--font-style);
+  color: var(--primary-color);
 }
 
 /* Hide scrollbar for Chrome, Safari and Opera */
@@ -3604,7 +3604,7 @@ input[type="number"] {
 
 .fileNameTextStyle {
   text-align: left;
-  font: normal normal normal 18px/24px proxima-nova;
+  font: normal normal normal 18px/24px var(--font-style);
   letter-spacing: 1.44px;
   color: #707070;
   opacity: 0.71;
@@ -3626,13 +3626,13 @@ input[type="number"] {
 .moveToDraftHeaderBox {
   height: 80px;
   width: 100%;
-  background-color: $primarycolor;
+  background-color: var(--primary-color);
   border-radius: 6px 6px 0 0;
 }
 
 .moveToDraftHeading {
   text-align: center;
-  font-family: proxima-nova;
+  font-family: var(--font-style);
   font-size: 25px;
   font-weight: bolder;
   letter-spacing: 0px;
@@ -3673,17 +3673,17 @@ input[type="number"] {
 
 .trackServiceProviderName {
   text-align: left;
-  font: normal normal 600 15px/23px proxima-nova;
+  font: normal normal 600 15px/23px var(--font-style);
   letter-spacing: 0px;
-  color: $primarycolor;
+  color: var(--primary-color);
   text-transform: uppercase;
 }
 
 .trackTableContractCountHeading {
   text-align: left;
-  font: normal normal normal 12px/23px proxima-nova;
+  font: normal normal normal 12px/23px var(--font-style);
   letter-spacing: 0px;
-  color: $primarycolor;
+  color: var(--primary-color);
   text-transform: capitalize;
   opacity: 0.88;
 }
@@ -3698,7 +3698,7 @@ input[type="number"] {
 
 .trackTableContractLabel {
   text-align: left;
-  font: normal normal 600 12px/19px proxima-nova;
+  font: normal normal 600 12px/19px var(--font-style);
   letter-spacing: 0px;
   color: #616161;
   text-transform: capitalize;
@@ -3706,7 +3706,7 @@ input[type="number"] {
 
 .trackPeriodCard {
   background: #F1EFFC 0% 0% no-repeat padding-box;
-  border: 1px solid $primarycolor;
+  border: 1px solid var(--primary-color);
   border-radius: 8px;
   height: 60px;
 }
@@ -3714,18 +3714,18 @@ input[type="number"] {
 .trackPeriodOptionsCard {
   background: #F1EFFC 0% 0% no-repeat padding-box;
   height: 40px;
-  border: 1px solid $primarycolor;
+  border: 1px solid var(--primary-color);
   border-top: 0;
   padding-left: 20px;
 }
 
 .trackPeriodOptionsCard:hover {
   background: #F1EFFC 0% 0% no-repeat padding-box;
-  border: 1px solid $primarycolor;
+  border: 1px solid var(--primary-color);
 }
 
 // .intervalPeriodBorder {
-//   border: 1px solid $primarycolor
+//   border: 1px solid var(--primary-color)
 
 
 ;
@@ -3736,18 +3736,18 @@ input[type="number"] {
 
 
 .trackContractOrAgreementCount {
-  font: normal normal medium 14px/14px proxima-nova;
+  font: normal normal medium 14px/14px var(--font-style);
   letter-spacing: 0px;
   color: #94979A;
 }
 
 .trackContractUserAndPeriod {
-  font: normal normal bold 18px/20px proxima-nova;
+  font: normal normal bold 18px/20px var(--font-style);
   color: #2C2C2C;
 }
 
 .timesheetIntervalListText {
-  font: normal normal 600 14px/20px proxima-nova;
+  font: normal normal 600 14px/20px var(--font-style);
   color: #2C2C2C;
 }
 
@@ -3867,7 +3867,7 @@ input[type="number"] {
 
 .paymentTabStyle {
   text-align: center;
-  font: normal normal 600 15px/23px proxima-nova;
+  font: normal normal 600 15px/23px var(--font-style);
   letter-spacing: 0px;
   text-transform: uppercase;
   color: #A4A4A4;
@@ -3877,8 +3877,8 @@ input[type="number"] {
 }
 
 .selectedPaymentTabStyle {
-  color: $primarycolor;
-  border: 1px solid $primarycolor;
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
   background-color: #F1EFFC;
 }
 
@@ -3888,14 +3888,14 @@ input[type="number"] {
 }
 
 .doNotDisturbTextStyle {
-  font: normal normal 600 12px/15px proxima-nova;
+  font: normal normal 600 12px/15px var(--font-style);
   letter-spacing: 2.24px;
   color: #F46044;
   text-transform: capitalize;
 }
 
 .confidentialTextStyle {
-  font: normal normal bold 17px/20px proxima-nova;
+  font: normal normal bold 17px/20px var(--font-style);
   letter-spacing: 1.05px;
   color: #F46044;
 }
@@ -3914,7 +3914,7 @@ input[type="number"] {
 }
 
 .headingForStaffs {
-  font: normal normal 500 15px proxima-nova !important;
+  font: normal normal 500 15px var(--font-style) !important;
   letter-spacing: 0px;
   text-align: left;
   color: #9AAFB5;
@@ -3922,18 +3922,18 @@ input[type="number"] {
   opacity: 1;
 
   @include breakpoint(md) {
-    font: normal normal bold 14px/12px proxima-nova;
+    font: normal normal bold 14px/12px var(--font-style);
   }
 }
 
 .applicationButton {
   /* UI Properties */
   height: 65px;
-  background: transparent $primarycolor 0% 0% no-repeat padding-box;
+  background: transparent var(--primary-color) 0% 0% no-repeat padding-box;
   box-shadow: 0px 10px 20px #130D4B1F;
   border-radius: 16px;
   text-align: left;
-  font: normal normal bold 18px proxima-nova;
+  font: normal normal bold 18px var(--font-style);
   font-weight: 500;
   letter-spacing: 0px;
   color: #F5F9FD;
@@ -3969,9 +3969,9 @@ input[type="number"] {
 }
 
 .applicantionActiveCardStyle {
-  background: $primarycolor 0% 0% no-repeat padding-box;
+  background: var(--primary-color) 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 11px #52575D1A;
-  border: 0.4000000059604645px solid $primarycolor;
+  border: 0.4000000059604645px solid var(--primary-color);
   border-radius: 4px 4px 0px 0px;
 }
 
@@ -4272,14 +4272,14 @@ input[type="number"] {
 
 .documentTextStyle {
   text-align: left;
-  font: normal normal medium 18px/34px proxima-nova;
+  font: normal normal medium 18px/34px var(--font-style);
   letter-spacing: 0px;
   color: #2C2C2C;
 }
 
 .clickToVerify {
   text-align: left;
-  font: normal normal medium 16px/34px proxima-nova;
+  font: normal normal medium 16px/34px var(--font-style);
   letter-spacing: 0px;
   color: #2C2C2C;
 }
@@ -4303,11 +4303,11 @@ input[type="number"] {
 }
 
 .continue {
-  background: $primarycolor 0% 0% no-repeat padding-box;
+  background: var(--primary-color) 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 6px #00000029;
   border-radius: 8px;
   text-align: center;
-  font: normal normal bold 17px/30px proxima-nova;
+  font: normal normal bold 17px/30px var(--font-style);
   letter-spacing: 0px;
   color: #FFFFFF;
   text-transform: uppercase;
@@ -4318,16 +4318,16 @@ input[type="number"] {
 
 .heading {
   text-align: left;
-  font: normal normal bold 20px/28px proxima-nova;
-  color: $primarycolor;
+  font: normal normal bold 20px/28px var(--font-style);
+  color: var(--primary-color);
   text-transform: capitalize;
 }
 
 .heading1 {
   text-align: left;
-  font: normal normal bold 24px proxima-nova;
+  font: normal normal bold 24px var(--font-style);
   letter-spacing: 0px;
-  color: #06617A;
+  color: var(--primary-color);
   text-transform: capitalize;
   opacity: 1;
 
@@ -4357,14 +4357,14 @@ input[type="number"] {
 
 .dateTitle {
   text-align: left;
-  font: normal normal bold 17px/26px proxima-nova;
+  font: normal normal bold 17px/26px var(--font-style);
   letter-spacing: 0px;
   color: #2C2C2C;
 }
 
 .date {
   text-align: left;
-  font: normal normal normal 17px/26px proxima-nova;
+  font: normal normal normal 17px/26px var(--font-style);
   letter-spacing: 0px;
   color: #2C2C2C;
 }
@@ -4413,7 +4413,7 @@ input[type="number"] {
 .tableHeaderTextStyleCred {
   text-align: left;
   margin-left: 20px;
-  font: normal normal bold 16px/22px proxima-nova;
+  font: normal normal bold 16px/22px var(--font-style);
   letter-spacing: 0px;
   color: #2C2C2C;
   opacity: 1;
@@ -4421,8 +4421,8 @@ input[type="number"] {
 }
 
 .tableDataFontStyleCred {
-  // font: normal normal normal $tabledatatext1 proxima-nova;
-  font: normal normal normal 16px/22px proxima-nova;
+  // font: normal normal normal $tabledatatext1 var(--font-style);
+  font: normal normal normal 16px/22px var(--font-style);
   margin-left: 20px;
   letter-spacing: 0px;
   color: #52575d;
@@ -4430,7 +4430,7 @@ input[type="number"] {
 }
 
 .tableDataFontStyleCredReappointment {
-  font: normal normal bold 20px/26px proxima-nova;
+  font: normal normal bold 20px/26px var(--font-style);
   margin-left: 20px;
   letter-spacing: 0px;
   color: #52575d;
@@ -4465,7 +4465,7 @@ input[type="number"] {
 
 .buttonTextStyleCred {
   text-align: center;
-  font: normal normal normal 18px/22px proxima-nova;
+  font: normal normal normal 18px/22px var(--font-style);
   letter-spacing: 0px;
   color: #171338;
   opacity: 1;
@@ -4475,7 +4475,7 @@ input[type="number"] {
 .overallStatus {
   color: var(--unnamed-color-52575d);
   text-align: left;
-  font: normal normal bold 20px proxima-nova;
+  font: normal normal bold 20px var(--font-style);
   letter-spacing: 0px;
   color: #2C2C2C;
   text-transform: capitalize;
@@ -4487,7 +4487,7 @@ input[type="number"] {
 .bigButtonStyle1 {
   height: 50px;
   /* UI Properties */
-  background: $primarycolor 0% 0% no-repeat padding-box;
+  background: var(--primary-color) 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 6px #00000029;
   border-radius: 8px;
   opacity: 1;
@@ -4507,7 +4507,7 @@ input[type="number"] {
 .statusCardTextStyle1 {
   color: var(--unnamed-color-52575d);
   text-align: left;
-  font: normal normal bold 23px/26px proxima-nova;
+  font: normal normal bold 23px/26px var(--font-style);
   letter-spacing: 0px;
   color: #2C2C2C;
   opacity: 1;
@@ -4517,7 +4517,7 @@ input[type="number"] {
 
 .statusStartTextStyle {
   text-align: center;
-  font: normal normal bold 28px/34px proxima-nova;
+  font: normal normal bold 28px/34px var(--font-style);
   letter-spacing: 0px;
   color: #94979A;
   text-transform: capitalize;
@@ -4526,7 +4526,7 @@ input[type="number"] {
 
 .statusRoleTextStyle {
   text-align: center;
-  font: normal normal bold $labelvaluetext proxima-nova;
+  font: normal normal bold $labelvaluetext var(--font-style);
   letter-spacing: 0px;
   color: #2C2C2C;
   text-transform: uppercase;
@@ -4542,7 +4542,7 @@ input[type="number"] {
   width: 90%;
   background: #FFFFFF 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 6px #00000029;
-  border: 0.5px solid $primarycolor;
+  border: 0.5px solid var(--primary-color);
   border-radius: 8px;
   opacity: 1;
   margin: auto;
@@ -4552,7 +4552,7 @@ input[type="number"] {
   height: 50px;
   width: 90%;
   /* UI Properties */
-  background: $primarycolor 0% 0% no-repeat padding-box;
+  background: var(--primary-color) 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 6px #00000029;
   border-radius: 8px;
   opacity: 1;
@@ -4593,7 +4593,7 @@ input[type="number"] {
   border: 1px solid var(---7165e3);
   background: #DBD8FA 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 18px #0F0B3129;
-  border: 1px solid $primarycolor;
+  border: 1px solid var(--primary-color);
   border-radius: 8px;
   opacity: 0.9;
   width: 90%;
@@ -4605,7 +4605,7 @@ input[type="number"] {
 .referenceCardStyleDocs {
   background: #dddddf 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 18px #0F0B3129;
-  border: 1px solid $primarycolor;
+  border: 1px solid var(--primary-color);
   border-radius: 4px;
   opacity: 0.9;
   padding: 3px;
@@ -4613,7 +4613,7 @@ input[type="number"] {
 
 .sideHeadingFontStyle {
   text-align: left;
-  font: normal normal bold 18px/22px proxima-nova;
+  font: normal normal bold 18px/22px var(--font-style);
   letter-spacing: 0px;
   color: #1D2437;
   opacity: 1;
@@ -4622,7 +4622,7 @@ input[type="number"] {
 
 .sideHeadingRefFrontStyle {
   text-align: left;
-  font: italic normal medium 14px/22px proxima-nova;
+  font: italic normal medium 14px/22px var(--font-style);
   letter-spacing: 0px;
   color: #1D2437;
   text-transform: capitalize;
@@ -4655,7 +4655,7 @@ input[type="number"] {
   border: 1px solid var(---7165e3);
   background: #DBD8FA 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 18px #0F0B3129;
-  border: 1px solid $primarycolor;
+  border: 1px solid var(--primary-color);
   border-radius: 8px;
   opacity: 0.5;
   width: 60px;
@@ -4664,7 +4664,7 @@ input[type="number"] {
 .viewTextStyle {
 
   text-align: center;
-  font: normal normal 600 16px/34px proxima-nova;
+  font: normal normal 600 16px/34px var(--font-style);
   letter-spacing: 0px;
   color: #362B9F;
   text-transform: capitalize;
@@ -4703,7 +4703,7 @@ input[type="number"] {
 
 .assessTextStyle {
   text-align: center;
-  font: normal normal bold $labelvaluetext proxima-nova;
+  font: normal normal bold $labelvaluetext var(--font-style);
   letter-spacing: 0px;
   color: $statusred;
   opacity: 1;
@@ -4718,7 +4718,7 @@ input[type="number"] {
 
 .ApprovedTextStyle {
   text-align: center;
-  font: normal normal bold $labelvaluetext proxima-nova;
+  font: normal normal bold $labelvaluetext var(--font-style);
   letter-spacing: 0px;
   color: #14B15A;
   opacity: 1;
@@ -4736,7 +4736,7 @@ input[type="number"] {
   text-align: left;
   font: normal normal normal 20px/24px la-solid-900;
   letter-spacing: 0px;
-  color: $primarycolor;
+  color: var(--primary-color);
   opacity: 1;
 }
 
@@ -4762,7 +4762,7 @@ input[type="number"] {
 .checkListitem {
   // color: var(--unnamed-color-52575d);
   text-align: left;
-  font: italic normal medium $tabledatatext2 proxima-nova;
+  font: italic normal medium $tabledatatext2 var(--font-style);
   letter-spacing: 0px;
   color: #2C2C2C;
   opacity: 0.5;
@@ -4794,14 +4794,14 @@ input[type="number"] {
 
 .uploadTextStyle {
   text-align: center;
-  font: normal normal 600 20px/28px proxima-nova;
-  color: $primarycolor;
+  font: normal normal 600 20px/28px var(--font-style);
+  color: var(--primary-color);
   text-transform: capitalize;
 }
 
 .uploadTextStyle1 {
   text-align: left;
-  font: normal normal normal 18px/26px proxima-nova;
+  font: normal normal normal 18px/26px var(--font-style);
   letter-spacing: 0px;
   color: black;
   opacity: 1;
@@ -4810,7 +4810,7 @@ input[type="number"] {
 
 .uploadDescriptionText {
   text-align: center;
-  font: normal normal normal 14px/18px proxima-nova;
+  font: normal normal normal 14px/18px var(--font-style);
   color: #2C2C2C;
   // padding: 0 80px;
 }
@@ -4894,31 +4894,31 @@ input[type="number"] {
 
 .markedAsText {
   text-align: left;
-  font: italic normal medium $tabledatatext2 proxima-nova;
+  font: italic normal medium $tabledatatext2 var(--font-style);
   letter-spacing: 0px;
   color: #1D2437;
 }
 
 .yesText {
-  font: italic normal bold 18px/24px proxima-nova;
+  font: italic normal bold 18px/24px var(--font-style);
   color: #14B15A;
 }
 
 .noText {
-  font: italic normal bold 18px/24px proxima-nova;
+  font: italic normal bold 18px/24px var(--font-style);
   color: #FF5555;
 }
 
 .cardTitle {
   text-align: left;
-  font: normal normal bold 20px/26px proxima-nova;
+  font: normal normal bold 20px/26px var(--font-style);
   letter-spacing: 0px;
   color: #2C2C2C;
 }
 
 .lableReadOnlyStyleInPOD {
   text-align: left;
-  font: normal normal normal $tabledatatext1 proxima-nova;
+  font: normal normal normal $tabledatatext1 var(--font-style);
   letter-spacing: 0px;
   color: #2C2C2C;
   // text-transform: capitalize;
@@ -4929,7 +4929,7 @@ input[type="number"] {
 
 .warningText {
   text-align: left;
-  font: normal normal medium 20px/28px proxima-nova;
+  font: normal normal medium 20px/28px var(--font-style);
   letter-spacing: 0px;
   color: #1D2437;
 }
@@ -4954,7 +4954,7 @@ input[type="number"] {
 
 .cardDescription {
   text-align: left;
-  font: normal normal normal 18px/20px proxima-nova;
+  font: normal normal normal 18px/20px var(--font-style);
   letter-spacing: 0px;
   color: #2C2C2C;
   // text-transform: capitalize;
@@ -4984,7 +4984,7 @@ input[type="number"] {
 }
 
 .fileDisplayText {
-  font: normal normal normal $navbartext proxima-nova;
+  font: normal normal normal $navbartext var(--font-style);
   color: #2C2C2C;
 }
 
@@ -4995,16 +4995,16 @@ input[type="number"] {
 .privilegeTitleStyle {
   text-align: left;
   text-decoration: underline;
-  font: normal normal bold 18px/24px proxima-nova;
+  font: normal normal bold 18px/24px var(--font-style);
   letter-spacing: 0px;
-  color: $primarycolor;
+  color: var(--primary-color);
 }
 
 .privilegeTitleStyleReappointment {
   text-align: left;
-  font: normal normal bold 18px/24px proxima-nova;
+  font: normal normal bold 18px/24px var(--font-style);
   letter-spacing: 0px;
-  color: $primarycolor;
+  color: var(--primary-color);
 }
 
 .privilegeTitleStyleReappointment:hover {
@@ -5023,7 +5023,7 @@ input[type="number"] {
 
 .privilegeHeading {
   text-align: left;
-  font: normal normal medium 18px/24px proxima-nova;
+  font: normal normal medium 18px/24px var(--font-style);
   letter-spacing: 0px;
   color: #1D2437;
 }
@@ -5035,7 +5035,7 @@ input[type="number"] {
 .commentsNotesHeadingFontStyle {
 
   text-align: left;
-  font: normal normal normal 15px / 17px proxima-nova;
+  font: normal normal normal 15px / 17px var(--font-style);
   letter-spacing: 0px;
   color: #171a1a;
   text-transform: capitalize;
@@ -5099,9 +5099,9 @@ input[type="number"] {
 }
 
 .topLeft {
-  font: normal normal normal 14px 'proxima-nova';
+  font: normal normal normal 14px 'var(--font-style)';
   font-weight: bold;
-  color: #06617A;
+  color: var(--primary-color);
 }
 
 /* Commented as it’s not needed */
@@ -5109,22 +5109,22 @@ input[type="number"] {
 // }
 
 .centerLeft {
-  font: normal normal normal 16px 'proxima-nova';
+  font: normal normal normal 16px 'var(--font-style)';
   font-weight: bold;
 }
 
 .middleRight {
-  font: normal normal normal 12px 'proxima-nova';
+  font: normal normal normal 12px 'var(--font-style)';
   font-weight: normal;
 }
 
 .bottomLeft {
-  font: normal normal normal 14px 'proxima-nova';
+  font: normal normal normal 14px 'var(--font-style)';
   font-weight: normal;
 }
 
 .bottomRight {
-  font: normal normal normal 12px 'proxima-nova';
+  font: normal normal normal 12px 'var(--font-style)';
   font-weight: normal;
 }
 
@@ -5150,7 +5150,7 @@ input[type="number"] {
 
 .verificationTextStyle {
   text-align: left;
-  font: normal normal bold 16px/24px proxima-nova;
+  font: normal normal bold 16px/24px var(--font-style);
   letter-spacing: 0px;
   color: $textcolor;
   opacity: 0.9;
@@ -5158,7 +5158,7 @@ input[type="number"] {
 
 .verificationMethodTextStyle {
   text-align: left;
-  font: normal normal bold 16px/24px proxima-nova;
+  font: normal normal bold 16px/24px var(--font-style);
   letter-spacing: 0px;
   color: #14B15A;
   opacity: 1;
@@ -5166,7 +5166,7 @@ input[type="number"] {
 
 .verificationMethodTextStyle {
   text-align: left;
-  font: normal normal bold 16px/24px proxima-nova;
+  font: normal normal bold 16px/24px var(--font-style);
   letter-spacing: 0px;
   color: #14B15A;
   opacity: 1;
@@ -5174,7 +5174,7 @@ input[type="number"] {
 
 .verificationMethodTextStyle1 {
   text-align: left;
-  font: normal normal bold 16px/24px proxima-nova;
+  font: normal normal bold 16px/24px var(--font-style);
   letter-spacing: 0px;
   color: #FFCA27;
   opacity: 1;
@@ -5182,7 +5182,7 @@ input[type="number"] {
 
 .notesTextStyle {
   text-align: left;
-  font: normal normal normal 14px/22px proxima-nova;
+  font: normal normal normal 14px/22px var(--font-style);
   letter-spacing: 0px;
   color: #52575D;
   opacity: 1;
@@ -5190,7 +5190,7 @@ input[type="number"] {
 
 .DepartmentHeadingTextStyle {
   text-align: left;
-  font: normal normal normal 16px/24px proxima-nova;
+  font: normal normal normal 16px/24px var(--font-style);
   letter-spacing: 0px;
   color: #52575D;
   text-transform: capitalize;
@@ -5224,7 +5224,7 @@ input[type="number"] {
 }
 
 .reviewButton {
-  background-color: $primarycolor;
+  background-color: var(--primary-color);
   color: white;
   font-weight: 600;
   padding: 10px 20px;
@@ -5236,7 +5236,7 @@ input[type="number"] {
 }
 
 .reviewButton:hover {
-  background: $primarycolorHover 0% 0% no-repeat padding-box;
+  background: var(--primary-color-hover) 0% 0% no-repeat padding-box;
 }
 
 .searchContainer {
@@ -5249,7 +5249,7 @@ input[type="number"] {
 }
 
 .searchIcon {
-  color: $primarycolor;
+  color: var(--primary-color);
   margin-right: 10px;
 }
 
@@ -5261,7 +5261,7 @@ input[type="number"] {
 }
 
 .notesIcon {
-  color: $primarycolor
+  color: var(--primary-color)
 }
 
 .verticalAlignCenter {
@@ -5301,7 +5301,7 @@ input[type="number"] {
 .referenceCardStyleDescription {
   // background: #dddddf 0% 0% no-repeat padding-box;
   // box-shadow: 0px 3px 18px #0F0B3129;
-  border: 1px solid $primarycolor;
+  border: 1px solid var(--primary-color);
   border-radius: 4px;
   opacity: 0.9;
   // padding: 3px;
@@ -5309,19 +5309,19 @@ input[type="number"] {
 
 .viewCurrentStatusText {
   text-align: center;
-  font: normal normal bold 12px proxima-nova;
+  font: normal normal bold 12px var(--font-style);
   padding: 5px;
   letter-spacing: 0px;
   color: #F5F8F8;
   text-transform: uppercase;
-  background: $primarycolor 0% 0% no-repeat padding-box;
+  background: var(--primary-color) 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 6px #00000029;
   border-radius: 8px;
   opacity: 1;
 }
 
 .viewCurrentStatusText:hover {
-  background: $primarycolorHover 0% 0% no-repeat padding-box;
+  background: var(--primary-color-hover) 0% 0% no-repeat padding-box;
 }
 
 .searchFieldAlignment {
@@ -5350,9 +5350,9 @@ input[type="number"] {
 
 .filtertextStyle {
   text-align: left;
-  font: italic normal medium 14px/22px proxima-nova;
+  font: italic normal medium 14px/22px var(--font-style);
   letter-spacing: 0px;
-  color: #06617A;
+  color: var(--primary-color);
   opacity: 1;
 }
 
@@ -5366,7 +5366,7 @@ input[type="number"] {
   border-radius: 3px;
   opacity: 1;
   text-align: left;
-  font: italic normal 600 10px/12px proxima-nova;
+  font: italic normal 600 10px/12px var(--font-style);
   letter-spacing: 0px;
   color: #FFB4B2;
   text-transform: capitalize;
@@ -5375,12 +5375,12 @@ input[type="number"] {
 
 .viewCurrentStatusText {
   text-align: center;
-  font: normal normal bold 12px proxima-nova;
+  font: normal normal bold 12px var(--font-style);
   padding: 5px;
   letter-spacing: 0px;
   color: #F5F8F8;
   text-transform: uppercase;
-  background: #06617A 0% 0% no-repeat padding-box;
+  background: var(--primary-color) 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 6px #00000029;
   border-radius: 8px;
   opacity: 1;

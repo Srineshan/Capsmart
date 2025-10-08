@@ -80,9 +80,9 @@ const PNPManagerStep4 = ({ setStep3, setStep4, mdValue, setMdValue, setSelectedM
             `policy-and-procedure-management-service/policyAndProcedures/${mdValue?.id}/workflow`
         );
         setWorkflowStructure(response?.data)
-        console.log(response, response?.data?.approvalFlowMap?.workflow['3']?.flowDetails?.[0]?.groups?.map(data => data?.group?.id) || [])
+        console.log(response, response?.data?.approvalFlowMap?.workflow['2']?.flowDetails?.[0]?.groups?.map(data => data?.group?.id) || [])
         // setWorkFlow2IsMandatory(response?.data?.approvalFlowMap?.workflow['2']?.flowDetails?.[0]?.approvalRequirement === 'MANDATORY' ? true : false)
-        setSelectedSignOffGroups(response?.data?.approvalFlowMap?.workflow['3']?.flowDetails?.[0]?.groups?.map(data => data?.group?.id) || [])
+        setSelectedSignOffGroups(response?.data?.approvalFlowMap?.workflow['2']?.flowDetails?.[0]?.groups?.map(data => data?.group?.id) || [])
         setSignOffExists(mdValue?.workflowStatus === "IN_PROGRESS")
     }
 
@@ -224,10 +224,10 @@ const PNPManagerStep4 = ({ setStep3, setStep4, mdValue, setMdValue, setSelectedM
             );
             await PUT(`policy-and-procedure-management-service/policyAndProcedures/${mdValue?.id}`, formData)
                 .then(response => {
-                    SuccessToaster2('PNP Updateded Successfully');
+                    SuccessToaster2('P&P Updateded Successfully');
                 })
                 .catch(error => {
-                    ErrorToaster2('PNP Upload Failed');
+                    ErrorToaster2('P&P Upload Failed');
                 })
             await PUT(`policy-and-procedure-management-service/policyAndProcedures/${mdValue?.id}/saveInprogress`, 'step4')
             handleClose();
@@ -255,12 +255,12 @@ const PNPManagerStep4 = ({ setStep3, setStep4, mdValue, setMdValue, setSelectedM
             if (workflowEdited) {
                 if (selectedSignOffGroups?.length !== 0) {
                     if (
-                        acknowledgementData?.approvalFlowMap?.workflow?.[3]?.flowDetails?.[0]
+                        acknowledgementData?.approvalFlowMap?.workflow?.[2]?.flowDetails?.[0]
                     ) {
-                        acknowledgementData.approvalFlowMap.workflow[3].flowDetails[0].approvalRequirement = "MANDATORY";
+                        acknowledgementData.approvalFlowMap.workflow[2].flowDetails[0].approvalRequirement = "MANDATORY";
                     }
-                    if (workflowStructure?.approvalFlowMap?.workflow[3]?.flowDetails?.[0]?.approvalBy === 'GROUP') {
-                        acknowledgementData.approvalFlowMap.workflow[3].flowDetails[0].groups = transformedGroups
+                    if (workflowStructure?.approvalFlowMap?.workflow[2]?.flowDetails?.[0]?.approvalBy === 'GROUP') {
+                        acknowledgementData.approvalFlowMap.workflow[2].flowDetails[0].groups = transformedGroups
                     }
                     await PUT(`policy-and-procedure-management-service/policyAndProcedures/${mdValue?.id}/workflow`, acknowledgementData)
                         .then(response => {
@@ -469,7 +469,7 @@ const PNPManagerStep4 = ({ setStep3, setStep4, mdValue, setMdValue, setSelectedM
                                         <div className={`${style.chips} ${style.displayInRow}`}>
                                             <div>{groupList?.filter(groupData => groupData?.id === data)?.[0]?.name}</div> <div className={`${style.verticalAlignCenter} ${style.marginLeft10} ${style.cursorPointer}`}
                                                 onClick={signOffExists ? () => { } : () => { setSelectedSignOffGroups(selectedSignOffGroups?.filter(innerData => innerData !== data)); setWorkflowEdited(true) }}
-                                            ><CancelIcon sx={{ color: '#06617A', fontSize: 20 }} /></div></div>
+                                            ><CancelIcon sx={{ color: '#168E0D', fontSize: 20 }} /></div></div>
                                     )
                                 })}
                             </div>
@@ -581,16 +581,16 @@ const PNPManagerStep4 = ({ setStep3, setStep4, mdValue, setMdValue, setSelectedM
                             <div className={style.verticalAlignCenter}>
                                 <div className={`${style.displayInCol}`}>
                                     <div className={`${style.moveCard} ${style.justifyCenter} ${style.verticalAlignCenter} ${staffList?.filter(staff => !selectedStaffs?.includes(staff.id))?.length === 0 ? style.disabledView : style.cursorPointer}`} onClick={staffList?.filter(staff => !selectedStaffs?.includes(staff.id))?.length === 0 ? () => { } : () => handleMove()}>
-                                        <KeyboardArrowRightIcon sx={{ color: '#06617A' }} />
+                                        <KeyboardArrowRightIcon sx={{ color: '#168E0D' }} />
                                     </div>
                                     <div className={`${style.moveCard} ${style.marginTop10} ${style.justifyCenter} ${style.verticalAlignCenter} ${staffList?.filter(staff => !selectedStaffs?.includes(staff.id))?.length === 0 ? style.disabledView : style.cursorPointer}`} onClick={staffList?.filter(staff => !selectedStaffs?.includes(staff.id))?.length === 0 ? () => { } : () => handleMoveBulk()}>
-                                        <KeyboardDoubleArrowRightIcon sx={{ color: '#06617A' }} />
+                                        <KeyboardDoubleArrowRightIcon sx={{ color: '#168E0D' }} />
                                     </div>
                                     <div className={`${style.moveCard} ${style.marginTop20} ${style.justifyCenter} ${style.verticalAlignCenter} ${staffList?.filter(staff => selectedStaffs?.includes(staff.id))?.length === 0 ? style.disabledView : style.cursorPointer}`} onClick={staffList?.filter(staff => selectedStaffs?.includes(staff.id))?.length === 0 ? () => { } : () => handleRemove()}>
-                                        <KeyboardArrowLeftIcon sx={{ color: '#06617A' }} />
+                                        <KeyboardArrowLeftIcon sx={{ color: '#168E0D' }} />
                                     </div>
                                     <div className={`${style.moveCard} ${style.marginTop10} ${style.justifyCenter} ${style.verticalAlignCenter} ${staffList?.filter(staff => selectedStaffs?.includes(staff.id))?.length === 0 ? style.disabledView : style.cursorPointer}`} onClick={staffList?.filter(staff => selectedStaffs?.includes(staff.id))?.length === 0 ? () => { } : () => handleRemoveBulk()}>
-                                        <KeyboardDoubleArrowLeftIcon sx={{ color: '#06617A' }} />
+                                        <KeyboardDoubleArrowLeftIcon sx={{ color: '#168E0D' }} />
                                     </div>
                                 </div>
                             </div>
@@ -624,7 +624,7 @@ const PNPManagerStep4 = ({ setStep3, setStep4, mdValue, setMdValue, setSelectedM
                         <div className={`${style.attestationDialogTitle} ${style.padding20} `}>Great Job! Your Policy & Procedure Authoring is Complete!</div>
                     </div>
                     <div className={`${style.marginTop10} `}>
-                        <div className={style.labelStyle}>All of the steps required for publishing this Policy & Procedure have been defined. Once you click on "Start Pre-Publication Workflow" this Policy & Procedure will be moved over to "PNP Review & Approvals" list.</div>
+                        <div className={style.labelStyle}>All of the steps required for publishing this Policy & Procedure have been defined. Once you click on "Start Pre-Publication Workflow" this Policy & Procedure will be moved over to "P&P Review & Approvals" list.</div>
                         <div className={`${style.labelStyle} ${style.marginTop20}`}>Please note, from this list you will only be able to assign or reassign members within workflow groups, but not be able modify the meta data or the content of the Policy & Procedure.</div>
                     </div>
 

@@ -37,7 +37,7 @@ const CommonRadio = ({ onChange, className, value, radioValue, label, required, 
                 <Radio
                   sx={{
                     color: "#B3B8BD",
-                    "&.Mui-checked": { color: "#06617A" },
+                    "&.Mui-checked": { color: window.location.pathname.startsWith("/pnpManager") ? "#168E0D" : "#06617A" },
                   }}
                   size="small"
                   disabled={readOnly ? true : false}

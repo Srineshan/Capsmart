@@ -10,8 +10,9 @@
 .cloneDialog {
     height: 40%;
     width: 30% !important;
+
     @media (max-width: 768px) {
-        width: 40% !important; 
+        width: 40% !important;
     }
 }
 
@@ -26,14 +27,14 @@
 
 .extensionStyle {
     text-align: left;
-    font: normal normal bold $usernametext proxima-nova;
+    font: normal normal bold $usernametext var(--font-style);
     letter-spacing: 0px;
-    color: $primarycolor;
+    color: var(--primary-color);
 }
 
 
 .crossStyle {
-    color: linear-gradient($primarycolor, $statusred) !important;
+    color: linear-gradient(var(--primary-color), $statusred) !important;
     margin-bottom: 15px;
     cursor: pointer;
 }
@@ -49,7 +50,7 @@
 
 .deleteDescriptionStyle {
     text-align: left;
-    font: normal normal normal 13px/23px proxima-nova;
+    font: normal normal normal 13px/23px var(--font-style);
     letter-spacing: 0px;
     opacity: 1;
     color: #2C2C2C;
@@ -57,7 +58,7 @@
 }
 
 .blueColor {
-    color: $primarycolor;
+    color: var(--primary-color);
 }
 
 .marginLeft20 {
@@ -71,9 +72,9 @@
 }
 
 .cloneButtonStyle {
-    background-color: $primarycolor;
+    background-color: var(--primary-color);
     color: white;
-    border: 1px solid $primarycolor;
+    border: 1px solid var(--primary-color);
     height: 30px;
     min-width: 80px;
     padding-left: 40px;

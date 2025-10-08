@@ -411,8 +411,10 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
     const setUserDetails = async () => {
         const { data: userData } = await GET(`user-management-service/user/${users?.id}`);
         console.log("userdataaaa" + JSON.stringify(userData))
-        sessionStorage.setItem('user', JSON.stringify(userData))
-        setUserRole(userData?.roles?.map((data) => data?.roleName));
+        if (userData) {
+            sessionStorage.setItem('user', JSON.stringify(userData))
+            setUserRole(userData?.roles?.map((data) => data?.roleName));
+        }
     }
 
     function useOptionsHide(ref) {

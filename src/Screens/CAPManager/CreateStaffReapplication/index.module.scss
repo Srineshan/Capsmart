@@ -79,7 +79,7 @@
 }
 
 .statisticsProgress {
-    font: normal normal normal 10px/11px proxima-nova;
+    font: normal normal normal 10px/11px var(--font-style);
     letter-spacing: -0.3px;
     color: #52575D;
     opacity: 1;
@@ -88,7 +88,7 @@
 }
 
 .viewStyle {
-    font: normal normal normal 9px/15px proxima-nova;
+    font: normal normal normal 9px/15px var(--font-style);
     letter-spacing: -0.3px;
     color: #52575D;
     opacity: 1;
@@ -108,14 +108,14 @@
 
 .filterHeading {
     text-align: left;
-    font: normal normal bold 14px/14px proxima-nova;
-    color: $primarycolor;
+    font: normal normal bold 14px/14px var(--font-style);
+    color: var(--primary-color);
     text-transform: uppercase;
 }
 
 .clearText {
     text-align: left;
-    font: normal normal 600 11px/11px proxima-nova;
+    font: normal normal 600 11px/11px var(--font-style);
     color: #BCBCBC;
     text-transform: capitalize;
     cursor: pointer;
@@ -123,7 +123,7 @@
 
 .labelText {
     text-align: left;
-    font: normal normal 600 10px/10px proxima-nova;
+    font: normal normal 600 10px/10px var(--font-style);
     color: #BCBCBC;
     text-transform: capitalize;
 }
@@ -134,7 +134,7 @@
 
 .filterType {
     text-align: left;
-    font: normal normal 600 18px proxima-nova;
+    font: normal normal 600 18px var(--font-style);
     color: #2C2C2C;
     text-transform: capitalize;
 }
@@ -143,7 +143,7 @@
     border: 1px solid #E8E9E9;
     border-radius: 8px;
     text-align: left;
-    font: normal normal bold 14px/28px proxima-nova;
+    font: normal normal bold 14px/28px var(--font-style);
     letter-spacing: 0px;
     color: #14B15A;
     text-transform: capitalize;
@@ -156,7 +156,7 @@
     border: 1px solid #E8E9E9;
     border-radius: 8px;
     text-align: left;
-    font: normal normal bold 14px/28px proxima-nova;
+    font: normal normal bold 14px/28px var(--font-style);
     letter-spacing: 0px;
     color: #FFFFFF;
     text-transform: capitalize;
@@ -170,7 +170,7 @@
     border: 1px solid #E8E9E9;
     border-radius: 8px;
     text-align: left;
-    font: normal normal bold 14px/28px proxima-nova;
+    font: normal normal bold 14px/28px var(--font-style);
     letter-spacing: 0px;
     color: #737575;
     text-transform: capitalize;
@@ -182,7 +182,7 @@
     border: 1px solid #E8E9E9;
     border-radius: 8px;
     text-align: left;
-    font: normal normal bold 14px/28px proxima-nova;
+    font: normal normal bold 14px/28px var(--font-style);
     letter-spacing: 0px;
     color: #FFFFFF;
     text-transform: capitalize;
@@ -195,7 +195,7 @@
     border: 1px solid #E8E9E9;
     border-radius: 8px;
     text-align: left;
-    font: normal normal bold 14px/28px proxima-nova;
+    font: normal normal bold 14px/28px var(--font-style);
     letter-spacing: 0px;
     color: #FF6562;
     text-transform: capitalize;
@@ -207,7 +207,7 @@
     border: 1px solid #E8E9E9;
     border-radius: 8px;
     text-align: left;
-    font: normal normal bold 14px/28px proxima-nova;
+    font: normal normal bold 14px/28px var(--font-style);
     letter-spacing: 0px;
     color: #FFFFFF;
     text-transform: capitalize;
@@ -220,7 +220,7 @@
     border: 1px solid #E8E9E9;
     border-radius: 8px;
     text-align: left;
-    font: normal normal bold 14px/28px proxima-nova;
+    font: normal normal bold 14px/28px var(--font-style);
     letter-spacing: 0px;
     color: #8ED12B;
     // text-transform: capitalize;
@@ -232,7 +232,7 @@
     border: 1px solid #E8E9E9;
     border-radius: 8px;
     text-align: left;
-    font: normal normal bold 14px/28px proxima-nova;
+    font: normal normal bold 14px/28px var(--font-style);
     letter-spacing: 0px;
     color: #FFFFFF;
     // text-transform: capitalize;
@@ -245,7 +245,7 @@
     border: 1px solid #E8E9E9;
     border-radius: 8px;
     text-align: left;
-    font: normal normal bold 14px/28px proxima-nova;
+    font: normal normal bold 14px/28px var(--font-style);
     letter-spacing: 0px;
     color: #FFC100;
     text-transform: capitalize;
@@ -257,7 +257,7 @@
     border: 1px solid #E8E9E9;
     border-radius: 8px;
     text-align: left;
-    font: normal normal bold 14px/28px proxima-nova;
+    font: normal normal bold 14px/28px var(--font-style);
     letter-spacing: 0px;
     color: #FFFFFF;
     text-transform: capitalize;
@@ -305,7 +305,7 @@
 }
 
 .purpleText {
-    color: $primarycolor;
+    color: var(--primary-color);
 }
 
 .textAlignLeft {
@@ -373,12 +373,12 @@
 .saveInProgress {
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #00000029;
-    border: 0.5px solid $primarycolor;
+    border: 0.5px solid var(--primary-color);
     border-radius: 8px;
     text-align: center;
-    font: normal normal bold 14px/30px proxima-nova;
+    font: normal normal bold 14px/30px var(--font-style);
     letter-spacing: 0px;
-    color: $primarycolor;
+    color: var(--primary-color);
     text-transform: uppercase;
     padding: 5px 80px;
     cursor: pointer;
@@ -389,11 +389,11 @@
 }
 
 .continue {
-    background: $primarycolor 0% 0% no-repeat padding-box;
+    background: var(--primary-color) 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #00000029;
     border-radius: 8px;
     text-align: center;
-    font: normal normal bold 14px/30px proxima-nova;
+    font: normal normal bold 14px/30px var(--font-style);
     letter-spacing: 0px;
     color: #FFFFFF;
     text-transform: uppercase;
@@ -450,11 +450,11 @@
 
 .searchChips {
     background: $secondarycolor 0% 0% no-repeat padding-box;
-    font: italic normal bold 14px/18px proxima-nova;
-    border: 1px solid $primarycolor;
+    font: italic normal bold 14px/18px var(--font-style);
+    border: 1px solid var(--primary-color);
     border-radius: 23px;
     padding: 5px 10px;
-    color: $primarycolor;
+    color: var(--primary-color);
     width: fit-content;
 }
 

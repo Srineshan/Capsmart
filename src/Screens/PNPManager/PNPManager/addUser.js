@@ -784,7 +784,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
                                                             <div className={`${style.chips} ${style.displayInRow}`}>
                                                                 <div>{departmentList?.filter(optionData => optionData?.id === data)?.[0]?.departmentName?.name}</div> <div className={`${style.verticalAlignCenter} ${style.marginLeft} ${style.cursorPointer}`}
                                                                     onClick={() => setSelectedDepartmentsToShow(selectedDepartmentsToShow?.filter(innerData => innerData !== data))}
-                                                                ><CancelIcon sx={{ color: '#06617A', fontSize: 20 }} /></div></div>
+                                                                ><CancelIcon sx={{ color: '#168E0D', fontSize: 20 }} /></div></div>
                                                         )
                                                     })}
                                                 </div>
@@ -856,7 +856,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
                                                             <div className={`${style.chips} ${style.displayInRow}`}>
                                                                 <div>{applicantTypeList?.filter(optionData => optionData?.id === data)?.[0]?.applicantType}</div> <div className={`${style.verticalAlignCenter} ${style.marginLeft} ${style.cursorPointer}`}
                                                                     onClick={() => setSelectedApplicantsToShow(selectedApplicantsToShow?.filter(innerData => innerData !== data))}
-                                                                ><CancelIcon sx={{ color: '#06617A', fontSize: 20 }} /></div></div>
+                                                                ><CancelIcon sx={{ color: '#168E0D', fontSize: 20 }} /></div></div>
                                                         )
                                                     })}
                                                 </div>

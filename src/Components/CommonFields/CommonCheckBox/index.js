@@ -13,7 +13,7 @@ const CommonCheckBox = ({ onChange, label, className, onFocus, value, disabled, 
                 sx={{
                     cursor: cursorDefault ? "default" : "pointer",
                     '&.Mui-checked': {
-                        color: "#06617A",
+                        color: window.location.pathname.startsWith("/pnpManager") ? "#168E0D" : "#06617A",
                     },
                     '&.Mui-disabled': {
                         color: 'rgba(0, 0, 0, 0.26)',

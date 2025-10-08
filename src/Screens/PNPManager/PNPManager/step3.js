@@ -428,12 +428,12 @@ const PNPManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, se
 
         await PUT(`policy-and-procedure-management-service/policyAndProcedures/${mdValue?.id}`, formData)
             .then(response => {
-                SuccessToaster2('PNP Updateded Successfully');
+                SuccessToaster2('P&P Updateded Successfully');
                 console.log(response?.data)
                 getMD(response?.data);
             })
             .catch(error => {
-                ErrorToaster2('PNP Upload Failed');
+                ErrorToaster2('P&P Upload Failed');
             })
         // if (isPublish) {
         //     try {
@@ -1111,7 +1111,7 @@ const PNPManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, se
                                             <div className={`${style.chips} ${style.displayInRow} `}>
                                                 <div>{groupList?.filter(groupData => groupData?.id === data)?.[0]?.name}</div> <div className={`${style.verticalAlignCenter} ${style.marginLeft10} ${style.cursorPointer} `}
                                                     onClick={acknowledgementExists ? () => { } : () => { setSelectedAcknowledgementGroups(selectedAcknowledgementGroups?.filter(innerData => innerData !== data)); setWorkflowEdited(true) }}
-                                                ><CancelIcon sx={{ color: '#06617A', fontSize: 20 }} /></div></div>
+                                                ><CancelIcon sx={{ color: '#168E0D', fontSize: 20 }} /></div></div>
                                         )
                                     })}
                                 </div>
@@ -1308,7 +1308,7 @@ const PNPManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, se
                                                         <div className={`${style.chips} ${style.displayInRow} `}>
                                                             <div>{groupList?.filter(groupData => groupData?.id === data)?.[0]?.name}</div> <div className={`${style.verticalAlignCenter} ${style.marginLeft10} ${style.cursorPointer} `}
                                                                 onClick={() => setSelectedGroupsToList(selectedGroupsToList?.filter(innerData => innerData !== data))}
-                                                            ><CancelIcon sx={{ color: '#06617A', fontSize: 20 }} /></div></div>
+                                                            ><CancelIcon sx={{ color: '#168E0D', fontSize: 20 }} /></div></div>
                                                     )
                                                 })}
                                             </div>
@@ -1377,7 +1377,7 @@ const PNPManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, se
                                             <div className={`${style.chips} ${style.displayInRow} `}>
                                                 <div>{groupList?.filter(groupData => groupData?.id === data)?.[0]?.name}</div> <div className={`${style.verticalAlignCenter} ${style.marginLeft10} ${style.cursorPointer} `}
                                                     onClick={() => setSelectedGroups(selectedGroups?.filter(innerData => innerData !== data))}
-                                                ><CancelIcon sx={{ color: '#06617A', fontSize: 20 }} /></div></div>
+                                                ><CancelIcon sx={{ color: '#168E0D', fontSize: 20 }} /></div></div>
                                         )
                                     })}
                                 </div>
@@ -1454,16 +1454,16 @@ const PNPManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, se
                             <div className={style.verticalAlignCenter}>
                                 <div className={`${style.displayInCol} `}>
                                     <div className={`${style.moveCard} ${style.justifyCenter} ${style.verticalAlignCenter} ${staffListForExclude?.filter(staff => !selectedExcludeMembers?.includes(staff.id))?.length === 0 ? style.disabledView : style.cursorPointer} `} onClick={staffListForExclude?.filter(staff => !selectedExcludeMembers?.includes(staff.id))?.length === 0 ? () => { } : () => handleMoveForExclude()}>
-                                        <KeyboardArrowRightIcon sx={{ color: '#06617A' }} />
+                                        <KeyboardArrowRightIcon sx={{ color: '#168E0D' }} />
                                     </div>
                                     <div className={`${style.moveCard} ${style.marginTop10} ${style.justifyCenter} ${style.verticalAlignCenter} ${staffListForExclude?.filter(staff => !selectedExcludeMembers?.includes(staff.id))?.length === 0 ? style.disabledView : style.cursorPointer} `} onClick={staffListForExclude?.filter(staff => !selectedExcludeMembers?.includes(staff.id))?.length === 0 ? () => { } : () => handleMoveBulkForExclude()}>
-                                        <KeyboardDoubleArrowRightIcon sx={{ color: '#06617A' }} />
+                                        <KeyboardDoubleArrowRightIcon sx={{ color: '#168E0D' }} />
                                     </div>
                                     <div className={`${style.moveCard} ${style.marginTop20} ${style.justifyCenter} ${style.verticalAlignCenter} ${staffListForExclude?.filter(staff => selectedExcludeMembers?.includes(staff.id))?.length === 0 ? style.disabledView : style.cursorPointer} `} onClick={staffListForExclude?.filter(staff => selectedExcludeMembers?.includes(staff.id))?.length === 0 ? () => { } : () => handleRemoveForExclude()}>
-                                        <KeyboardArrowLeftIcon sx={{ color: '#06617A' }} />
+                                        <KeyboardArrowLeftIcon sx={{ color: '#168E0D' }} />
                                     </div>
                                     <div className={`${style.moveCard} ${style.marginTop10} ${style.justifyCenter} ${style.verticalAlignCenter} ${staffListForExclude?.filter(staff => selectedExcludeMembers?.includes(staff.id))?.length === 0 ? style.disabledView : style.cursorPointer} `} onClick={staffListForExclude?.filter(staff => selectedExcludeMembers?.includes(staff.id))?.length === 0 ? () => { } : () => handleRemoveBulkForExclude()}>
-                                        <KeyboardDoubleArrowLeftIcon sx={{ color: '#06617A' }} />
+                                        <KeyboardDoubleArrowLeftIcon sx={{ color: '#168E0D' }} />
                                     </div>
                                 </div>
                             </div>
@@ -1507,7 +1507,7 @@ const PNPManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, se
                         <CommonDivider />
                     </div>
                     <div className={`${style.stepsTitleBar} ${style.verticalAlignCenter} ${style.marginTop20} `}>
-                        <div className={style.stepsTitleText}>Auto-Trigger Rules for Reviews and Attestations</div>
+                        <div className={style.stepsTitleText}>Auto-Trigger Rules for Reviews and Attestations for Temporary Staff</div>
                     </div>
                     <div className={`${style.marginTop20} ${style.twoCol} `}>
                         <div className={style.labelStyle}>Auto trigger reviews and attestations on <strong>Revision / Update</strong> of Policy & Procedure</div>
@@ -1517,12 +1517,12 @@ const PNPManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, se
                         <div className={style.labelStyle}>Auto trigger review and attestations for <strong>New Staff Applicant</strong></div>
                         <CommonSwitch label={autoTriggerForNewAppointment ? 'YES' : 'NO'} checked={autoTriggerForNewAppointment} onChange={(e) => setAutoTriggerForNewAppointment(e.target.checked)} labelName={''} />
                     </div>
-                    <div className={`${style.marginTop20} ${style.twoCol} `}>
+                    {/* <div className={`${style.marginTop20} ${style.twoCol} `}>
                         <div className={style.labelStyle}>Auto trigger review and attestations for <strong>Staff Reappointment</strong></div>
                         <CommonSwitch label={autoTriggerForReappointment ? 'YES' : 'NO'} checked={autoTriggerForReappointment} onChange={(e) => setAutoTriggerForReappointment(e.target.checked)} labelName={''} />
-                    </div>
+                    </div> */}
                     <div className={`${style.marginTop20} ${style.twoCol} `}>
-                        <div className={style.labelStyle}>Auto trigger review and attestations for <strong>Locum Renewal / Extensions</strong></div>
+                        <div className={style.labelStyle}>Auto trigger review and attestations for <strong>Temporary Staffs</strong></div>
                         <CommonSwitch label={autoTriggerForLocum ? 'YES' : 'NO'} checked={autoTriggerForLocum} onChange={(e) => setAutoTriggerForLocum(e.target.checked)} labelName={''} />
                     </div>
                 </div>
@@ -1632,16 +1632,16 @@ const PNPManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, se
                             <div className={style.verticalAlignCenter}>
                                 <div className={`${style.displayInCol} `}>
                                     <div className={`${style.moveCard} ${style.justifyCenter} ${style.verticalAlignCenter} ${staffList?.filter(staff => !selectedStaffs?.includes(staff.id))?.length === 0 ? style.disabledView : style.cursorPointer} `} onClick={staffList?.filter(staff => !selectedStaffs?.includes(staff.id))?.length === 0 ? () => { } : () => handleMove()}>
-                                        <KeyboardArrowRightIcon sx={{ color: '#06617A' }} />
+                                        <KeyboardArrowRightIcon sx={{ color: '#168E0D' }} />
                                     </div>
                                     <div className={`${style.moveCard} ${style.marginTop10} ${style.justifyCenter} ${style.verticalAlignCenter} ${staffList?.filter(staff => !selectedStaffs?.includes(staff.id))?.length === 0 ? style.disabledView : style.cursorPointer} `} onClick={staffList?.filter(staff => !selectedStaffs?.includes(staff.id))?.length === 0 ? () => { } : () => handleMoveBulk()}>
-                                        <KeyboardDoubleArrowRightIcon sx={{ color: '#06617A' }} />
+                                        <KeyboardDoubleArrowRightIcon sx={{ color: '#168E0D' }} />
                                     </div>
                                     <div className={`${style.moveCard} ${style.marginTop20} ${style.justifyCenter} ${style.verticalAlignCenter} ${staffList?.filter(staff => selectedStaffs?.includes(staff.id))?.length === 0 ? style.disabledView : style.cursorPointer} `} onClick={staffList?.filter(staff => selectedStaffs?.includes(staff.id))?.length === 0 ? () => { } : () => handleRemove()}>
-                                        <KeyboardArrowLeftIcon sx={{ color: '#06617A' }} />
+                                        <KeyboardArrowLeftIcon sx={{ color: '#168E0D' }} />
                                     </div>
                                     <div className={`${style.moveCard} ${style.marginTop10} ${style.justifyCenter} ${style.verticalAlignCenter} ${staffList?.filter(staff => selectedStaffs?.includes(staff.id))?.length === 0 ? style.disabledView : style.cursorPointer} `} onClick={staffList?.filter(staff => selectedStaffs?.includes(staff.id))?.length === 0 ? () => { } : () => handleRemoveBulk()}>
-                                        <KeyboardDoubleArrowLeftIcon sx={{ color: '#06617A' }} />
+                                        <KeyboardDoubleArrowLeftIcon sx={{ color: '#168E0D' }} />
                                     </div>
                                 </div>
                             </div>

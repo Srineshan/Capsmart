@@ -1,7 +1,8 @@
 @import "../../../index.scss";
+
 .helperText {
     color: #fff;
-    font: normal normal normal 15px/17px proxima-nova;
+    font: normal normal normal 15px/17px var(--font-style);
     padding: 5px 10px;
     width: 150px;
     float: right;

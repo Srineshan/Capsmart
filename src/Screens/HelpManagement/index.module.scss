@@ -127,14 +127,14 @@ body {
 
 .userNameStyle {
     text-align: left;
-    font: normal normal 600 $usernametext proxima-nova;
+    font: normal normal 600 $usernametext var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
 }
 
 .loginStatus {
     text-align: left;
-    font: normal normal normal 11px/15px proxima-nova;
+    font: normal normal normal 11px/15px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
     max-width: 200px;
@@ -166,7 +166,7 @@ body {
 }
 
 .headingForContracts {
-    font: normal normal bold 17px/15px proxima-nova;
+    font: normal normal bold 17px/15px var(--font-style);
     letter-spacing: 0px;
     text-align: left;
     color: #2C2C2C;
@@ -211,12 +211,12 @@ body {
 }
 
 .blue {
-    color: $primarycolor;
+    color: var(--primary-color);
 }
 
 .last30Style {
     text-align: left;
-    font: normal normal normal 10px/18px proxima-nova;
+    font: normal normal normal 10px/18px var(--font-style);
     color: #2C2C2C;
     opacity: 1;
     margin-top: -30px;
@@ -266,8 +266,8 @@ body {
 }
 
 .registeredButton {
-    background: $primarycolor 0% 0% no-repeat padding-box !important;
-    border: 0.4000000059604645px solid $primarycolor;
+    background: var(--primary-color) 0% 0% no-repeat padding-box !important;
+    border: 0.4000000059604645px solid var(--primary-color);
     border-radius: 6px;
     opacity: 0.75;
     color: white;
@@ -277,7 +277,7 @@ body {
 .normalButton {
     color: #2C2C2C;
     background: $secondarycolor 0% 0% no-repeat padding-box !important;
-    border: 0.4000000059604645px solid $primarycolor;
+    border: 0.4000000059604645px solid var(--primary-color);
     border-radius: 6px;
     opacity: 0.75;
     font-weight: 600;
@@ -293,13 +293,13 @@ body {
 .contractButton {
     width: 124px;
     height: 40px;
-    background: $primarycolor 0% 0% no-repeat padding-box;
-    box-shadow: 0px 3px 5px $primarycolor;
+    background: var(--primary-color) 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 5px var(--primary-color);
     border-radius: 8px;
     opacity: 1;
     border: none;
     color: white;
-    font: normal normal 400 16px/15px proxima-nova;
+    font: normal normal 400 16px/15px var(--font-style);
     margin: 0 25px 0 20px;
     cursor: pointer;
 }
@@ -307,13 +307,13 @@ body {
 .tutorialButton {
     width: 200px;
     height: 40px;
-    background: $primarycolor 0% 0% no-repeat padding-box;
-    box-shadow: 0px 3px 5px $primarycolor;
+    background: var(--primary-color) 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 5px var(--primary-color);
     border-radius: 8px;
     opacity: 1;
     border: none;
     color: white;
-    font: normal normal 400 13px/15px proxima-nova;
+    font: normal normal 400 13px/15px var(--font-style);
     margin: 0 25px 0 20px;
     cursor: pointer;
 }
@@ -482,7 +482,7 @@ body {
 }
 
 .tableHeaderFontStyle {
-    font: normal normal bold $tabledatatext proxima-nova;
+    font: normal normal bold $tabledatatext var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: uppercase;
@@ -492,7 +492,7 @@ body {
 }
 
 .tableDataFontStyle {
-    font: normal normal normal $tabledatatext proxima-nova;
+    font: normal normal normal $tabledatatext var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
     opacity: 1;
@@ -503,7 +503,7 @@ body {
 
 .answerTextStyle {
     text-align: left;
-    font: normal normal medium 13px/18px proxima-nova;
+    font: normal normal medium 13px/18px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
 }
@@ -546,7 +546,7 @@ body {
 }
 
 .accountActivityStyle {
-    font: normal normal normal 15px/22px proxima-nova;
+    font: normal normal normal 15px/22px var(--font-style);
     letter-spacing: 0.66px;
     color: #2C2C2C;
     opacity: 0.38;
@@ -555,7 +555,7 @@ body {
 }
 
 .paginationStyle {
-    font: normal normal 600 12px/15px proxima-nova;
+    font: normal normal 600 12px/15px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
     opacity: 1;
@@ -572,9 +572,9 @@ body {
 
 .poweredBy {
     text-align: left;
-    font: normal normal normal 11px/14px proxima-nova;
+    font: normal normal normal 11px/14px var(--font-style);
     letter-spacing: 0px;
-    color: $primarycolor;
+    color: var(--primary-color);
     opacity: 1;
     margin: 5px 0 0 10px;
 }
@@ -593,14 +593,14 @@ body {
 
 .extensionStyle {
     text-align: left;
-    font: normal normal bold $usernametext proxima-nova;
+    font: normal normal bold $usernametext var(--font-style);
     letter-spacing: 0px;
-    color: $primarycolor;
+    color: var(--primary-color);
 }
 
 .videoSequenceHeadingStyle {
     text-align: left;
-    font: normal normal bold $usernametext proxima-nova;
+    font: normal normal bold $usernametext var(--font-style);
     letter-spacing: 0px;
     color: #E9E9F0;
 }
@@ -617,7 +617,7 @@ body {
 
 .extensionOptionsStyle {
     text-align: left;
-    font: normal normal medium $usernametext proxima-nova;
+    font: normal normal medium $usernametext var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: uppercase;
@@ -663,7 +663,7 @@ body {
 
 .extentionLableStyle {
     text-align: left;
-    font: normal normal normal $tabledatatext proxima-nova;
+    font: normal normal normal $tabledatatext var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: capitalize;
@@ -672,7 +672,7 @@ body {
 }
 
 .extentionBoxStyle {
-    border: 1px solid $primarycolor;
+    border: 1px solid var(--primary-color);
     border-radius: 8px;
     opacity: 1;
     height: 60vh;
@@ -682,7 +682,7 @@ body {
 }
 
 .faqBoxStyle {
-    border: 1px solid $primarycolor;
+    border: 1px solid var(--primary-color);
     border-radius: 8px;
     opacity: 1;
     width: 100%;
@@ -695,7 +695,7 @@ body {
 }
 
 .crossStyle {
-    color: linear-gradient($primarycolor, $statusred) !important;
+    color: linear-gradient(var(--primary-color), $statusred) !important;
     margin-bottom: 15px;
     cursor: pointer;
 }
@@ -753,13 +753,13 @@ select {
 
 .outlinedButton {
     background-color: white;
-    color: $primarycolor;
-    border: 1px solid $primarycolor;
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
     height: 40px;
     width: 140px;
     border-radius: 10px;
     margin-bottom: -20px;
-    box-shadow: 0px 3px 11px $primarycolor;
+    box-shadow: 0px 3px 11px var(--primary-color);
 }
 
 .outlinedTransparentButton {
@@ -783,34 +783,34 @@ select {
 }
 
 .buttonStyle {
-    background-color: $primarycolor;
+    background-color: var(--primary-color);
     color: white;
-    border: 1px solid $primarycolor;
+    border: 1px solid var(--primary-color);
     height: 40px;
     width: 140px;
     border-radius: 10px;
     margin-bottom: -20px;
-    box-shadow: 0px 3px 11px $primarycolor;
+    box-shadow: 0px 3px 11px var(--primary-color);
 }
 
 .videoButtonStyle {
-    background-color: $primarycolor;
+    background-color: var(--primary-color);
     color: white;
-    border: 1px solid $primarycolor;
+    border: 1px solid var(--primary-color);
     height: 40px;
     width: 200px;
     border-radius: 20px;
-    font: normal normal medium 15px/24px proxima-nova;
+    font: normal normal medium 15px/24px var(--font-style);
 }
 
 .videoButtonOutlinedStyle {
-    color: $primarycolor;
+    color: var(--primary-color);
     background-color: white;
-    border: 1px solid $primarycolor;
+    border: 1px solid var(--primary-color);
     height: 40px;
     width: 200px;
     border-radius: 20px;
-    font: normal normal medium 15px/24px proxima-nova;
+    font: normal normal medium 15px/24px var(--font-style);
 }
 
 .floatRight {
@@ -840,7 +840,7 @@ select {
 
 .uploadButtonStyle {
     background-color: #f1f2f3;
-    color: $primarycolor;
+    color: var(--primary-color);
     border: none;
     height: 30px;
     font-size: 12px;
@@ -910,7 +910,7 @@ select {
 
 .feedbackFontStyle {
     text-align: left;
-    font: normal normal normal 15px/21px proxima-nova;
+    font: normal normal normal 15px/21px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
 }
@@ -948,7 +948,7 @@ select {
 .collapseBody {
     border: 1px solid var(--unnamed-color-7165e3);
     background: #EBECED 0% 0% no-repeat padding-box;
-    border: 1px solid $primarycolor;
+    border: 1px solid var(--primary-color);
     min-height: 250px;
     width: 100%;
     border-radius: 4px;
@@ -958,7 +958,7 @@ select {
 
 .collapseBody2 {
     background: #EBECED 0% 0% no-repeat padding-box;
-    border: 1px solid $primarycolor;
+    border: 1px solid var(--primary-color);
     height: 80px;
     width: 100%;
     border-radius: 4px;
@@ -968,7 +968,7 @@ select {
 
 .collapseHeaderText {
     text-align: left;
-    font: normal normal bold 17px/13px proxima-nova;
+    font: normal normal bold 17px/13px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: capitalize;
@@ -997,7 +997,7 @@ select {
 }
 
 .logFileBlueDot {
-    background: $primarycolor 0% 0% no-repeat padding-box;
+    background: var(--primary-color) 0% 0% no-repeat padding-box;
     border: 1px solid #CFCFCF;
     height: 12px;
     width: 12px;
@@ -1019,39 +1019,39 @@ select {
 .sendButton {
     width: 80px;
     height: 30px;
-    background: $primarycolor 0% 0% no-repeat padding-box;
-    box-shadow: 0px 3px 5px $primarycolor;
+    background: var(--primary-color) 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 5px var(--primary-color);
     border-radius: 8px;
     opacity: 1;
     border: none;
     color: white;
-    font: normal normal 400 16px/15px proxima-nova;
+    font: normal normal 400 16px/15px var(--font-style);
     cursor: pointer;
 }
 
 .doneButton {
     width: 120px;
     height: 40px;
-    background: $primarycolor 0% 0% no-repeat padding-box;
-    box-shadow: 0px 3px 5px $primarycolor;
+    background: var(--primary-color) 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 5px var(--primary-color);
     border-radius: 8px;
     opacity: 1;
     border: none;
     color: white;
-    font: normal normal 400 16px/15px proxima-nova;
+    font: normal normal 400 16px/15px var(--font-style);
     cursor: pointer;
 }
 
 .videoPageLabel {
     text-align: left;
-    font: normal normal normal 15px/18px proxima-nova;
+    font: normal normal normal 15px/18px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
 }
 
 .videoPageValue {
     text-align: left;
-    font: normal normal medium 16px/34px proxima-nova;
+    font: normal normal medium 16px/34px var(--font-style);
     letter-spacing: 0px;
     color: #E9E9F0;
 }
@@ -1081,7 +1081,7 @@ select {
 }
 
 .commentButton {
-    background: $primarycolor 0% 0% no-repeat padding-box;
+    background: var(--primary-color) 0% 0% no-repeat padding-box;
     box-shadow: 0px 0px 6px #00000029;
     border: 0.6000000238418579px solid #575757;
     padding: 5px 15px;
@@ -1106,7 +1106,7 @@ select {
 
 .smallGreyText {
     text-align: left;
-    font: normal normal normal 10px/18px proxima-nova;
+    font: normal normal normal 10px/18px var(--font-style);
     color: #2C2C2C;
 }
 
@@ -1137,7 +1137,7 @@ select {
 
 .suggestionWhiteButton {
     background-color: white;
-    color: $primarycolor;
+    color: var(--primary-color);
     width: 80px;
     height: 30px;
     border: none;
@@ -1145,7 +1145,7 @@ select {
 }
 
 .suggestionBlueButton {
-    background-color: $primarycolor;
+    background-color: var(--primary-color);
     color: #fff;
     width: 80px;
     height: 30px;
@@ -1167,7 +1167,7 @@ select {
 }
 
 .blueCircle {
-    background: $primarycolor 0% 0% no-repeat padding-box;
+    background: var(--primary-color) 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #0000004D;
     height: 50px;
     width: 50px;
@@ -1196,7 +1196,7 @@ select {
 
 .blueChatPart {
     height: 30%;
-    background: $primarycolor 0% 0% no-repeat padding-box;
+    background: var(--primary-color) 0% 0% no-repeat padding-box;
     box-shadow: 0px 1px 4px #00000024;
     width: 100%;
     color: white !important;
@@ -1323,21 +1323,21 @@ select {
 
 .postTitle {
     text-align: left;
-    font: normal normal bold 15px/30px proxima-nova;
+    font: normal normal bold 15px/30px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
 }
 
 .postContent {
     text-align: left;
-    font: normal normal normal 12px/20px proxima-nova;
+    font: normal normal normal 12px/20px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
 }
 
 .postDateStyle {
     text-align: left;
-    font: normal normal normal 12px/22px proxima-nova;
+    font: normal normal normal 12px/22px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
 }
@@ -1352,7 +1352,7 @@ select {
 }
 
 .newBadge {
-    background: $primarycolor 0% 0% no-repeat padding-box;
+    background: var(--primary-color) 0% 0% no-repeat padding-box;
     opacity: 0.79;
     color: white;
     height: 20px;
@@ -1368,8 +1368,8 @@ select {
 }
 
 .activeButton {
-    background: $primarycolor 0% 0% no-repeat padding-box !important;
-    border: 0.4000000059604645px solid $primarycolor;
+    background: var(--primary-color) 0% 0% no-repeat padding-box !important;
+    border: 0.4000000059604645px solid var(--primary-color);
     border-radius: 6px;
     opacity: 0.75;
     color: white;

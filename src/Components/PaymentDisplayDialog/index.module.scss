@@ -2,9 +2,9 @@
 
 .heading {
   text-align: left;
-  font: normal normal bold 24px proxima-nova;
+  font: normal normal bold 24px var(--font-style);
   letter-spacing: 0px;
-  color: $primarycolor;
+  color: var(--primary-color);
   text-transform: capitalize;
   opacity: 1;
 }
@@ -73,9 +73,9 @@
 .Headertext {
   color: var(--unnamed-color-06617a);
   text-align: left;
-  font: normal normal bold 24px proxima-nova;
+  font: normal normal bold 24px var(--font-style);
   letter-spacing: 0px;
-  color: #06617A;
+  color: var(--primary-color);
   opacity: 1;
 }
 
@@ -99,7 +99,7 @@
 
 .cardTitle {
   text-align: left;
-  font: normal normal bold 20px/26px proxima-nova;
+  font: normal normal bold 20px/26px var(--font-style);
   letter-spacing: 0px;
   color: #2C2C2C;
 }
@@ -114,15 +114,15 @@
 
 .paidTextStyle {
   text-align: left;
-  font: italic normal bold 20px/26px proxima-nova;
+  font: italic normal bold 20px/26px var(--font-style);
   letter-spacing: 0px;
-  color: $primarycolor;
+  color: var(--primary-color);
   opacity: 1;
 }
 
 .unpaidTextStyle {
   text-align: left;
-  font: italic normal bold 20px/26px proxima-nova;
+  font: italic normal bold 20px/26px var(--font-style);
   letter-spacing: 0px;
   color: $statusred;
   opacity: 1;

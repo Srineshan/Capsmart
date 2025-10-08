@@ -136,7 +136,7 @@ const ManagePNPSignOff = () => {
     const getAttestationLog = async () => {
         if (medicalDirectivesId !== undefined) {
             const { data: medicalDirectivesAttestationLog } = await GET(
-                `policy-and-procedure-management-service/attestationLog?medicalDirectiveId=${medicalDirectivesId}&userId=${users?.id}`
+                `policy-and-procedure-management-service/attestationLog?policyAndProcedureId=${medicalDirectivesId}&userId=${users?.id}`
             );
             setMedicalDirectivesAttestationLog(medicalDirectivesAttestationLog)
             console.log(medicalDirectivesAttestationLog, 'medicalDirectivesAttestationLog')
@@ -289,12 +289,12 @@ const ManagePNPSignOff = () => {
                                                 <Radio
                                                     sx={{
                                                         color: "#52575D",
-                                                        "&.Mui-checked": { color: "#06617A" },
+                                                        "&.Mui-checked": { color: "#168E0D" },
                                                     }}
                                                     size="small"
                                                 />
                                             }
-                                            label={'I approve this Medical directive.'}
+                                            label={'I approve this Policy & Procedure.'}
                                             componentsProps={{ typography: { variant: "subtitle2" } }}
                                         />
                                         {approvalStatus === "APPROVED" && (
@@ -325,7 +325,7 @@ const ManagePNPSignOff = () => {
                                                     <Radio
                                                         sx={{
                                                             color: "#52575D",
-                                                            "&.Mui-checked": { color: "#06617A" },
+                                                            "&.Mui-checked": { color: "#168E0D" },
                                                         }}
                                                         size="small"
                                                     />
@@ -435,7 +435,7 @@ const ManagePNPSignOff = () => {
                     <div className={Classes.DIALOG_BODY}>
                         <div className={style.spaceBetween}>
                             <div className={`${style.heading}`}>
-                                {reviewRequired ? "Flag This Directive For Review Required" : "Send for Sign Off"}
+                                {reviewRequired ? "Flag This P&P For Review Required" : "Send for Sign Off"}
                             </div>
                             <div className={style.displayInRow}>
                                 <Tooltip title="Click to Close" arrow>

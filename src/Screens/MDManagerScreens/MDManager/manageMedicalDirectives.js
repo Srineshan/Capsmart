@@ -603,19 +603,23 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setStep2, setSte
     const handleModify = (data) => {
         setSelectedMdId(data?.id);
         setIsEdit(true);
-        if (data?.lastSavedSection !== '' && data?.lastSavedSection) {
-            if (JSON.parse(data?.lastSavedSection) === 'step1') {
-                setStep1(true)
-            } else if (JSON.parse(data?.lastSavedSection) === 'step2') {
-                setStep2(true)
-            } else if (JSON.parse(data?.lastSavedSection) === 'step3') {
-                setStep3(true)
-            } else if (JSON.parse(data?.lastSavedSection) === 'step4') {
-                setStep4(true)
-            }
-        } else {
-            setStep1(true)
+        let lastStep = data?.lastSavedSection;
+        try {
+            // Try parsing if it's a JSON-like string
+            const parsed = JSON.parse(lastStep);
+            // If parsing gives something meaningful, use it
+            if (parsed && typeof parsed === "string") lastStep = parsed;
+            else if (parsed && parsed.section) lastStep = parsed.section;
+        } catch {
+            // If it’s not JSON, just keep it as-is
         }
+
+        if (lastStep === "step1") setStep1(true);
+        else if (lastStep === "step2") setStep2(true);
+        else if (lastStep === "step3") setStep3(true);
+        else if (lastStep === "step4") setStep4(true);
+        else setStep1(true);
+
     }
 
     const handlePublish = async (data) => {

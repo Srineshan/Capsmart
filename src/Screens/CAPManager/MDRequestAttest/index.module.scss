@@ -74,12 +74,12 @@
 .saveInProgress {
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #00000029;
-    border: 0.5px solid $primarycolor;
+    border: 0.5px solid var(--primary-color);
     border-radius: 8px;
     text-align: center;
-    font: normal normal bold 17px/30px proxima-nova;
+    font: normal normal bold 17px/30px var(--font-style);
     letter-spacing: 0px;
-    color: $primarycolor;
+    color: var(--primary-color);
     text-transform: uppercase;
     padding: 5px;
     cursor: pointer;
@@ -95,11 +95,11 @@
 }
 
 .continue {
-    background: $primarycolor 0% 0% no-repeat padding-box;
+    background: var(--primary-color) 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #00000029;
     border-radius: 8px;
     text-align: center;
-    font: normal normal bold 17px/30px proxima-nova;
+    font: normal normal bold 17px/30px var(--font-style);
     letter-spacing: 0px;
     color: #FFFFFF;
     text-transform: uppercase;
@@ -116,11 +116,11 @@
 }
 
 .sign {
-    background: $primarycolor 0% 0% no-repeat padding-box;
+    background: var(--primary-color) 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #00000029;
     border-radius: 8px;
     text-align: center;
-    font: normal normal bold 12px/15px proxima-nova;
+    font: normal normal bold 12px/15px var(--font-style);
     letter-spacing: 0px;
     color: #FFFFFF;
     text-transform: uppercase;
@@ -156,7 +156,7 @@
         position: fixed;
         top: 0;
         left: 0;
-        background-color: $primarycolor;
+        background-color: var(--primary-color);
         color: white;
         padding: 10px 5px;
         border-radius: 0 0 0 12px;
@@ -169,7 +169,7 @@
         position: fixed;
         top: 0;
         left: 0;
-        background-color: $primarycolor;
+        background-color: var(--primary-color);
         padding: 20px;
         border-radius: 0 12px 12px 0;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -209,11 +209,11 @@
         top: 0;
         left: 0;
         width: 100%;
-        background-color: $primarycolor;
+        background-color: var(--primary-color);
         color: white;
         padding: 15px;
         z-index: 1000;
-        font: normal normal bold 18px proxima-nova;
+        font: normal normal bold 18px var(--font-style);
         border-radius: 0 0 12px 12px;
         height: clamp(45px, 8vh, 100px);
     }
@@ -304,7 +304,7 @@
 }
 
 .progressStyleBackground {
-    background: transparent linear-gradient(90deg, $primarycolor 0%, $primarycolor 70%, #E9E9F0 75%, #E9E9F0 100%) 0% 0% no-repeat padding-box;
+    background: transparent linear-gradient(90deg, var(--primary-color) 0%, var(--primary-color) 70%, #E9E9F0 75%, #E9E9F0 100%) 0% 0% no-repeat padding-box;
 }
 
 .siteDisplayCard {
@@ -322,20 +322,20 @@
 
 .siteDisplaySiteTextStyle {
     text-align: left;
-    font: normal normal bold 13px/20px proxima-nova;
+    font: normal normal bold 13px/20px var(--font-style);
     color: #2C2C2C;
 }
 
 .siteDisplayDepartmentTextStyle {
     text-align: left;
-    font: normal normal bold 12px/24px proxima-nova;
+    font: normal normal bold 12px/24px var(--font-style);
     letter-spacing: 0px;
     color: #52575D99;
 }
 
 .siteDisplaySurgeryTextStyle {
     text-align: left;
-    font: normal normal bold 10px/24px proxima-nova;
+    font: normal normal bold 10px/24px var(--font-style);
     letter-spacing: 0px;
 }
 
@@ -400,30 +400,30 @@
 
 .totalText {
     text-align: center;
-    font: normal normal 600 16px/18px proxima-nova;
+    font: normal normal 600 16px/18px var(--font-style);
     letter-spacing: 0px;
     color: #1D2437;
 }
 
 .hourText {
     text-align: center;
-    font: normal normal normal 24px/49px proxima-nova;
+    font: normal normal normal 24px/49px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
 }
 
 .hourRemainingText {
     text-align: center;
-    font: italic normal medium 12px/14px proxima-nova;
+    font: italic normal medium 12px/14px var(--font-style);
     letter-spacing: 0px;
     color: #FF5555;
 }
 
 .creditsHeading {
     text-align: left;
-    font: normal normal bold 15px/17px proxima-nova;
+    font: normal normal bold 15px/17px var(--font-style);
     letter-spacing: 0px;
-    color: $primarycolor;
+    color: var(--primary-color);
 }
 
 .cmeCreditsGrid {
@@ -434,14 +434,14 @@
 
 .dateTitle {
     text-align: left;
-    font: normal normal bold 17px/26px proxima-nova;
+    font: normal normal bold 17px/26px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
 }
 
 .date {
     text-align: left;
-    font: normal normal normal 17px/26px proxima-nova;
+    font: normal normal normal 17px/26px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
 }
@@ -468,7 +468,7 @@
     border: 0.4000000059604645px solid #26C600;
     border-radius: 8px;
     padding: 20px;
-    font: normal normal bold 23px/26px proxima-nova;
+    font: normal normal bold 23px/26px var(--font-style);
     color: #1C8F00;
     text-align: left;
     transition: color 0.3s ease, text-decoration 0.3s ease;
@@ -480,7 +480,7 @@
     border: 0.4000000059604645px solid #1D243729;
     border-radius: 8px;
     padding: 20px;
-    font: normal normal bold 23px/26px proxima-nova;
+    font: normal normal bold 23px/26px var(--font-style);
     color: #1D2437;
     text-align: left;
     transition: color 0.3s ease, text-decoration 0.3s ease;
@@ -492,7 +492,7 @@
     border: 0.4000000059604645px solid #FFAA00;
     border-radius: 8px;
     padding: 20px;
-    font: normal normal bold 23px/26px proxima-nova;
+    font: normal normal bold 23px/26px var(--font-style);
     color: #1D2437;
     text-align: left;
     transition: color 0.3s ease, text-decoration 0.3s ease;
@@ -504,7 +504,7 @@
     border: 0.4000000059604645px solid #FF5555;
     border-radius: 8px;
     padding: 20px;
-    font: normal normal bold 23px/26px proxima-nova;
+    font: normal normal bold 23px/26px var(--font-style);
     color: #FF5555;
     text-align: left;
     transition: color 0.3s ease, text-decoration 0.3s ease;
@@ -517,7 +517,7 @@
 // }
 
 .textTransform:hover {
-    color: $primarycolor;
+    color: var(--primary-color);
     transform: scale(1.01);
 }
 
@@ -551,17 +551,17 @@
 
 .medicalDirectivesText {
     text-align: left;
-    font: normal normal bold 23px/26px proxima-nova;
+    font: normal normal bold 23px/26px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
 }
 
 .attestButton {
-    background: $primarycolor 0% 0% no-repeat padding-box;
+    background: var(--primary-color) 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #00000029;
     border-radius: 8px;
     text-align: center;
-    font: normal normal bold 14px/30px proxima-nova;
+    font: normal normal bold 14px/30px var(--font-style);
     letter-spacing: 0px;
     color: #FFFFFF;
     text-transform: uppercase;
@@ -624,14 +624,14 @@
 
 .titleTextStyle {
     text-align: left;
-    font: normal normal medium 18px/30px proxima-nova;
+    font: normal normal medium 18px/30px var(--font-style);
     letter-spacing: 0px;
-    color: $primarycolor;
+    color: var(--primary-color);
 }
 
 .description {
     text-align: left;
-    font: normal normal 600 18px/20px proxima-nova;
+    font: normal normal 600 18px/20px var(--font-style);
     letter-spacing: 0px;
     color: #1D2437;
     opacity: 0.7;
@@ -658,7 +658,7 @@
 
 .cardTitle {
     text-align: left;
-    font: normal normal bold 20px/26px proxima-nova;
+    font: normal normal bold 20px/26px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
 }
@@ -695,8 +695,8 @@
 
 .poweredBy {
     text-align: center;
-    font: normal normal normal 14px/20px proxima-nova;
-    color: $primarycolor;
+    font: normal normal normal 14px/20px var(--font-style);
+    color: var(--primary-color);
     margin: 0;
     /* Removes any default margins for alignment */
 }
@@ -729,7 +729,7 @@
     object-fit: cover;
 
     @media (max-width: 768px) {
-        background: $primarycolor;
+        background: var(--primary-color);
     }
 }
 
@@ -741,7 +741,7 @@
 
 .photoText {
     text-align: center;
-    font: normal normal bold 30px proxima-nova;
+    font: normal normal bold 30px var(--font-style);
     height: 100%;
     color: #000;
     opacity: 1 !important;
@@ -750,14 +750,14 @@
 
 .nameStyle {
     text-align: left;
-    font: normal normal bold 17px/21px proxima-nova;
+    font: normal normal bold 17px/21px var(--font-style);
     color: $textgrey;
     text-transform: capitalize;
 }
 
 .applyingFor {
     text-align: left;
-    font: normal normal normal 13px/17px proxima-nova;
+    font: normal normal normal 13px/17px var(--font-style);
     letter-spacing: 0px;
     color: $textgrey;
 }
@@ -765,9 +765,9 @@
 .connectToLinkedIn {
     text-align: left;
     text-decoration: underline;
-    font: normal normal medium 18px/31px proxima-nova;
+    font: normal normal medium 18px/31px var(--font-style);
     letter-spacing: 0px;
-    color: $primarycolor;
+    color: var(--primary-color);
 }
 
 .marginTop10 {
@@ -814,7 +814,7 @@
 
 .contactStyle {
     text-align: left;
-    font: normal normal normal 14px/19px proxima-nova;
+    font: normal normal normal 14px/19px var(--font-style);
     color: $textgrey;
 
     @media (max-width: 768px) {
@@ -823,7 +823,7 @@
 }
 
 .purpleText {
-    color: $primarycolor !important;
+    color: var(--primary-color) !important;
 
     @media (max-width: 768px) {
         color: #FFF !important;
@@ -832,22 +832,22 @@
 
 @media (max-width: 768px) {
     .applicationUserCard {
-        background: $primarycolor 0% 0% no-repeat padding-box;
-        border: $primarycolor;
+        background: var(--primary-color) 0% 0% no-repeat padding-box;
+        border: var(--primary-color);
     }
 
     .nameStyle {
-        font: normal normal bold 15px proxima-nova;
+        font: normal normal bold 15px var(--font-style);
         color: #FFFFFF;
     }
 
     .applyingFor {
-        font: normal normal normal 10px proxima-nova;
+        font: normal normal normal 10px var(--font-style);
         color: #FFFFFF;
     }
 
     .connectToLinkedIn {
-        font: normal normal medium 16px proxima-nova;
+        font: normal normal medium 16px var(--font-style);
         color: #FFFFFF;
     }
 }
@@ -870,17 +870,17 @@
 
 .heading {
     text-align: left;
-    font: normal normal bold 20px/28px proxima-nova;
-    color: $primarycolor;
+    font: normal normal bold 20px/28px var(--font-style);
+    color: var(--primary-color);
     text-transform: capitalize;
 }
 
 .continueValidation {
-    background: $primarycolor 0% 0% no-repeat padding-box;
+    background: var(--primary-color) 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #00000029;
     border-radius: 8px;
     text-align: center;
-    font: normal normal bold 17px/30px proxima-nova;
+    font: normal normal bold 17px/30px var(--font-style);
     letter-spacing: 0px;
     color: #FFFFFF;
     text-transform: uppercase;

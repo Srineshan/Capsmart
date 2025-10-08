@@ -1,4 +1,5 @@
 @import "../../index.scss";
+
 .helpCard {
     background: $secondarycolor 0% 0% no-repeat padding-box;
     box-shadow: 0px 8px 16px #100A4833;
@@ -9,15 +10,15 @@
 
 .titleTextStyle {
     text-align: left;
-    font: normal normal bold 16px/28px proxima-nova;
+    font: normal normal bold 16px/28px var(--font-style);
     letter-spacing: 0px;
-    color: $primarycolor;
+    color: var(--primary-color);
     text-transform: uppercase;
 }
 
 .descriptionTextStyle {
     text-align: left;
-    font: normal normal bold 14px/20px proxima-nova;
+    font: normal normal bold 14px/20px var(--font-style);
     letter-spacing: 0px;
     color: #6c727a;
 }

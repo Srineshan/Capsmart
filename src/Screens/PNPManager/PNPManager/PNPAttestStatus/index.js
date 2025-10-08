@@ -140,7 +140,7 @@ const PNPAttestStatus = () => {
     const getAttestationLog = async () => {
         if (medicalDirectivesId !== undefined) {
             const { data: medicalDirectivesAttestationLog } = await GET(
-                `policy-and-procedure-management-service/attestationLog?medicalDirectiveId=${medicalDirectivesId}&userId=${users?.id}`
+                `policy-and-procedure-management-service/attestationLog?policyAndProcedureId=${medicalDirectivesId}&userId=${users?.id}`
             );
             setMedicalDirectivesAttestationLog(medicalDirectivesAttestationLog)
             console.log(medicalDirectivesAttestationLog, 'medicalDirectivesAttestationLog')
@@ -187,7 +187,7 @@ const PNPAttestStatus = () => {
     return (
         <div className={style.screenBackground}>
             <div className={style.welcomeText}>
-                <ApplicationHeader title={`${policyAndProcedures?.title ? `${policyAndProcedures?.mdID} : ${policyAndProcedures?.title}` : ''}`} close={true} closeClick={handleClose} />
+                <ApplicationHeader title={`${policyAndProcedures?.title ? `${policyAndProcedures?.pnpID} : ${policyAndProcedures?.title}` : ''}`} close={true} closeClick={handleClose} />
             </div>
             <div className={style.headerData}>
                 <span style={{ marginLeft: '20px' }}>Ordering Of Laboratory Investigations - IPAC</span>
@@ -286,7 +286,7 @@ const PNPAttestStatus = () => {
                                         <div className={style.attestationGrid}>
                                             <div className={`${style.marginTop10} ${style.title}`}>{data?.groupName}</div>
                                             <Tooltip title="Click here to see Attestation details">
-                                                <div className={`${style.marginTop10} ${style.groupAttestationDescription} ${style.cursorPointer}`} onClick={() => { setSelectedGroup(data); setShowGroupSignDialog(true) }}>{`- ${data?.attestedCount} / ${data?.members?.length}`}</div>
+                                                <div className={`${style.marginTop10} ${style.groupAttestationDescription} ${style.cursorPointer}`} onClick={() => { setSelectedGroup(data); setShowGroupSignDialog(true) }}>{` ${data?.attestedCount} / ${data?.members?.length}`}</div>
                                             </Tooltip>
                                         </div>
                                     ))}
@@ -331,7 +331,7 @@ const PNPAttestStatus = () => {
                 <div className={style.spaceBetween}>
                     <div className={style.dialogTitle}>{`Atteastations Status For ${selectedGroup?.groupName}`}</div>
                     <span className={style.verticalAlignCenter}>
-                        <CloseIcon sx={{ fontSize: 30, color: '#06617A', cursor: 'pointer', marginLeft: '270px' }} onClick={() => setShowGroupSignDialog(false)} />
+                        <CloseIcon sx={{ fontSize: 30, color: '#168E0D', cursor: 'pointer', marginLeft: '270px' }} onClick={() => setShowGroupSignDialog(false)} />
                     </span>
                 </div>
                 {/* <div className={`${style.dialogDesc} ${style.marginTop}`}>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et</div> */}

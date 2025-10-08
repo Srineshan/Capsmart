@@ -336,9 +336,9 @@ const ManageMDAcknowledgement = React.lazy(() => import("./Screens/MDManagerScre
 const ManageMDSignOff = React.lazy(() => import("./Screens/MDManagerScreens/MDAttestations/ManageSignOff/MedicalDirectivesSignOff"));
 const MedicalDirectivesMECApproval = React.lazy(() => import("./Screens/MDManagerScreens/MDManager/MedicalDirectivesMECApproval"));
 const PNPAttestStatus = React.lazy(() => import("./Screens/MDManagerScreens/MDManager/MedicalDirectivesAttestStatus"));
-const ManagePNPAttest = React.lazy(() => import("./Screens/MDManagerScreens/MDAttestations/ManageAttestations/MedicalDirectivesAttest"));
-const ManageAcknowledgementPNP = React.lazy(() => import("./Screens/MDManagerScreens/MDAttestations/ManageAcknowledgements/MedicalDirectivesAcknowledge"));
-const ManageSignOffPNP = React.lazy(() => import("./Screens/MDManagerScreens/MDAttestations/ManageSignOff/MedicalDirectivesSignOff"));
+const ManagePNPAttest = React.lazy(() => import("./Screens/PNPManager/PNPAttestations/ManageAttestations/PNPAttest"));
+const ManageAcknowledgementPNP = React.lazy(() => import("./Screens/PNPManager/PNPAttestations/ManageAcknowledgements/PNPAcknowledge"));
+const ManageSignOffPNP = React.lazy(() => import("./Screens/PNPManager/PNPAttestations/ManageSignOff/PNPSignOff"));
 const PNPMECApproval = React.lazy(() => import("./Screens/MDManagerScreens/MDManager/MedicalDirectivesMECApproval"));
 let isHapicareUser;
 let organizations;
@@ -376,6 +376,23 @@ const App = ({ props }) => {
   //     document.removeEventListener("visibilitychange", handleVisibilityChange);
   //   };
   // }, []);
+  const path = window.location.pathname;
+
+  useEffect(() => {
+    const root = document.documentElement;
+    console.log(path.startsWith("/pnpManager"), path, 'path')
+    if (sessionStorage.getItem('selectedApplication') === "PNP_MANAGER" && (!path.startsWith('/loginPage') && path !== '' && path !== '/')) {
+      root.style.setProperty("--primary-color", "#168E0D");
+      root.style.setProperty("--primary-color-hover", "#11660A");
+      root.style.setProperty("--secondary-color", "#E8F5E9");
+      root.style.setProperty("--font-style", "century-gothic");
+    } else {
+      root.style.setProperty("--primary-color", "#06617A");
+      root.style.setProperty("--primary-color-hover", "#054D61");
+      root.style.setProperty("--secondary-color", "#F5F8F8");
+      root.style.setProperty("--font-style", "proxima-nova");
+    }
+  }, [path]);
 
   useEffect(() => {
     console.log('entered', (cookie.get("authorization") !== undefined && isAuthenticated), cookie.get("authorization") !== undefined, isAuthenticated)
@@ -805,7 +822,7 @@ const App = ({ props }) => {
         method: "GET",
         headers: {
           "Authorization": `Bearer ${authorization}`,
-          "X-subdomain": 'cmh-hospital',
+          "X-subdomain": 'master',
         },
       };
     console.log(requestHeader, 'requestHeader')
@@ -848,7 +865,7 @@ const App = ({ props }) => {
         "Content-Type": "application/json",
         "X-tenantID": id,
         "Authorization": `Bearer ${authorization}`,
-        "X-subdomain": 'cmh-hospital',
+        "X-subdomain": 'master',
       },
     }
     fetch(`${baseUrl()}/user-management-service/auth/login`, requestOptions)

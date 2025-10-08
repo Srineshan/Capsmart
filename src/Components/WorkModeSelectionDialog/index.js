@@ -15,6 +15,7 @@ import SAimgHover from "../../images/SystemAdminHover.svg";
 import UserLogo4 from "../../images/userLogo4.png";
 import CAPManager from "../../images/CAPManagerSmallLogo.png";
 import MDManager from "../../images/MDManager.png";
+import PNPManager from "../../images/PNPManager.png";
 import Cookie from "universal-cookie";
 import jwt from "jwt-decode";
 import style from "./index.module.scss";
@@ -122,8 +123,10 @@ const WorkModeDialog = ({ getIsOpen }) => {
   useEffect(() => {
     if (userRole?.length === 0 && userMDRole?.length !== 0 && userMDRole && userRole) {
       setSelectedWorkSpace('MD_MANAGER')
+      sessionStorage.setItem('selectedApplication', selectedWorkSpace)
     } else if (userRole?.length !== 0 && userMDRole?.length === 0 && userMDRole && userRole) {
       setSelectedWorkSpace('CAP_MANAGER')
+      sessionStorage.setItem('selectedApplication', selectedWorkSpace)
     }
   }, [userRole, userMDRole])
 
@@ -158,6 +161,14 @@ const WorkModeDialog = ({ getIsOpen }) => {
           window.location.pathname = "/mdManager/manageSignOff";
         } else {
           window.location.pathname = "/mdManager";
+        }
+      } else if (selectedWorkSpace === "PNP_MANAGER") {
+        if (role === "Acknowledger") {
+          window.location.pathname = "/pnpManager/manageAcknowledgement";
+        } else if (role === "Reviewer / Approver") {
+          window.location.pathname = "/pnpManager/manageSignOff";
+        } else {
+          window.location.pathname = "/pnpManager";
         }
       } else {
         window.location.pathname = "/applications";
@@ -289,9 +300,9 @@ const WorkModeDialog = ({ getIsOpen }) => {
               <div className={`${style.workSpaceDesc}  ${selectedWorkSpace !== '' ? style.disabledView : ''}`}>Select the application you want to work in:</div>
               <div className={`${style.threeCol} ${style.padding}`}>
                 {["CAP_MANAGER", "MD_MANAGER", "PNP_MANAGER"]?.map(data => (
-                  <div className={`${style.applicationSelectionCard} ${selectedWorkSpace === data ? style.selectedApplicationCard : ''} ${style.justifyCenter} ${style.verticalAlignCenter} ${style.cursorPointer} ${style.marginRight}`} onClick={() => setSelectedWorkSpace(data)}>
-                    <img src={data === 'CAP_MANAGER' ? CAPManager : data === "MD_MANAGER" ? MDManager : MDManager} alt="" className={style.applicationImage} />
-                    <div className={style.marginLeft10}>{data === 'CAP_MANAGER' ? <div className={style.applicationName}>CAP<span className={style.applicationNamePrimary}>Manager</span></div> : data === 'MD_MANAGER' ? <div className={style.applicationName}>MD<span className={style.applicationNamePrimary}>Manager</span></div> : <div className={style.applicationName}>PNP<span className={style.applicationNamePrimary}>Manager</span></div>}</div>
+                  <div className={`${style.applicationSelectionCard} ${selectedWorkSpace === data ? style.selectedApplicationCard : ''} ${style.justifyCenter} ${style.verticalAlignCenter} ${style.cursorPointer} ${style.marginRight}`} onClick={() => { setSelectedWorkSpace(data); sessionStorage.setItem('selectedApplication', data) }}>
+                    <img src={data === 'CAP_MANAGER' ? CAPManager : data === "MD_MANAGER" ? MDManager : PNPManager} alt="" className={style.applicationImage} />
+                    <div className={style.marginLeft10}>{data === 'CAP_MANAGER' ? <div className={style.applicationName}>CAP<span className={style.applicationNamePrimary}>Manager</span></div> : data === 'MD_MANAGER' ? <div className={style.applicationName}>MD<span className={style.applicationNamePrimary}>Manager</span></div> : <div className={style.applicationName}>P&P<span className={style.applicationNamePrimary}>Manager</span></div>}</div>
                   </div>
                 ))}
               </div>

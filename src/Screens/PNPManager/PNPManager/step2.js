@@ -43,20 +43,20 @@ const PNPManagerStep2 = ({ setStep1, setStep2, setStep3, mdValue, getMD, setMdVa
 
         await PUT(`policy-and-procedure-management-service/policyAndProcedures/${mdValue?.id}`, formData)
             .then(response => {
-                SuccessToaster2('PNP Uploaded Successfully');
+                SuccessToaster2('P&P Uploaded Successfully');
                 console.log(response?.data)
                 setStep3(false)
                 getMD(response?.data);
             })
             .catch(error => {
-                ErrorToaster2('PNP Upload Failed');
+                ErrorToaster2('P&P Upload Failed');
             })
 
     }
     const handleSaveInProgress = async () => {
         await PUT(`policy-and-procedure-management-service/policyAndProcedures/${mdValue?.id}/saveInprogress`, 'step2')
             .then(response => {
-                SuccessToaster2('PNP Saved Successfully');
+                SuccessToaster2('P&P Saved Successfully');
                 console.log(response?.data)
                 setStep2(false)
             })

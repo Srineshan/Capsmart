@@ -143,7 +143,13 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType, setIsL
         'workflow': 'MEDICAL_DIRECTIVE',
         'attestationOutstanding': 'MEDICAL_DIRECTIVE',
         'medicalDirectivesTracker': 'MEDICAL_DIRECTIVE',
-        'upcomingForReview': 'MEDICAL_DIRECTIVE'
+        'upcomingForReview': 'MEDICAL_DIRECTIVE',
+        'currentPolicyAndProcedures': 'POLICY_AND_PROCEDURES',
+        'retiredPolicyAndProcedures': 'POLICY_AND_PROCEDURES',
+        'policyAndProceduresWorkflow': 'POLICY_AND_PROCEDURES',
+        'policyAndProceduresAttestationOutstanding': 'POLICY_AND_PROCEDURES',
+        'policyAndProceduresTracker': 'POLICY_AND_PROCEDURES',
+        'policyAndProceduresUpcomingForReview': 'POLICY_AND_PROCEDURES',
     }
 
     // const type = (reportType === 'activitiesOrServices' ?
@@ -190,7 +196,13 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType, setIsL
         'workflow': 'WORKFLOW',
         'attestationOutstanding': 'ATTESTATION_OUTSTANDING',
         'medicalDirectivesTracker': 'MEDICAL_DIRECTIVE_TRACKER',
-        'upcomingForReview': 'UPCOMING_FOR_REVIEW'
+        'upcomingForReview': 'UPCOMING_FOR_REVIEW',
+        'currentPolicyAndProcedures': 'CURRENT_POLICY_AND_PROCEDURES',
+        'retiredPolicyAndProcedures': 'RETIRED_POLICY_AND_PROCEDURES',
+        'policyAndProceduresWorkflow': 'POLICY_AND_PROCEDURES_WORKFLOW',
+        'policyAndProceduresAttestationOutstandingPNP': 'POLICY_AND_PROCEDURES_ATTESTATION_OUTSTANDING',
+        'policyAndProceduresTracker': 'POLICY_AND_PROCEDURES_TRACKER',
+        'policyAndProceduresUpcomingForReview': 'POLICY_AND_PROCEDURES_UPCOMING_FOR_REVIEW',
     }
 
     const filters = {
@@ -265,7 +277,7 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType, setIsL
                     'endDate': dataToUseInReport?.to,
                     'applicantTypeId': dataToUseInReport?.selectedStaffType?.[0] !== '' ? dataToUseInReport?.selectedStaffType : [],
                     // 'sites': dataToUseInReport?.selectedSites?.[0] !== '' ? dataToUseInReport?.selectedSites : [],
-                    'departmentSpecialties': dataToUseInReport?.selectedDepartments?.[0] !== '' ? availableCategories[reportType] === 'MEDICAL_DIRECTIVE' ? dataToUseInReport?.selectedDepartments?.map(deptId => `${siteId}#${deptId}`) : dataToUseInReport?.selectedDepartments : [],
+                    'departmentSpecialties': dataToUseInReport?.selectedDepartments?.[0] !== '' ? availableCategories[reportType] === 'MEDICAL_DIRECTIVE' ? dataToUseInReport?.selectedDepartments?.map(deptId => `${siteId}#${deptId}`) : availableCategories[reportType] === 'POLICY_AND_PROCEDURES' ? dataToUseInReport?.selectedDepartments?.map(deptId => `${siteId}#${deptId}`) : dataToUseInReport?.selectedDepartments : [],
                     'privilegingCategoryId': dataToUseInReport?.selectedPrivilegeCategory !== '' ? dataToUseInReport?.selectedPrivilegeCategory : '',
                     "positionType": dataToUseInReport?.selectedPosition !== "" ? [dataToUseInReport?.selectedPosition] : [],
                     "applicationCreationType": dataToUseInReport?.selectedApplicationType !== "" ? [dataToUseInReport?.selectedApplicationType] : [],
@@ -301,7 +313,7 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType, setIsL
         }
         console.log(data, 'dataInConsole')
         if (reportName !== '' && reportDescription !== '') {
-            let url = availableCategories[reportType] === "MEDICAL_DIRECTIVE" ? 'medical-directive-service/report/myReport/' : 'application-management-service/report/myReport/'
+            let url = availableCategories[reportType] === "MEDICAL_DIRECTIVE" ? 'medical-directive-service/report/myReport/' : availableCategories[reportType] === "POLICY_AND_PROCEDURES" ? 'policy-and-procedure-management-service/report/myReport/' : 'application-management-service/report/myReport/'
 
             if (myReportContent) {
                 let newData = {
@@ -330,7 +342,7 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType, setIsL
                             'endDate': dataToUseInReport?.to,
                             'applicantTypeId': dataToUseInReport?.selectedStaffType?.[0] !== '' ? dataToUseInReport?.selectedStaffType : [],
                             // 'sites': dataToUseInReport?.selectedSites?.[0] !== '' ? dataToUseInReport?.selectedSites : [],
-                            'departmentSpecialties': dataToUseInReport?.selectedDepartments?.[0] !== '' ? availableCategories[reportType] === 'MEDICAL_DIRECTIVE' ? dataToUseInReport?.selectedDepartments?.map(deptId => `${siteId}#${deptId}`) : dataToUseInReport?.selectedDepartments : [],
+                            'departmentSpecialties': dataToUseInReport?.selectedDepartments?.[0] !== '' ? availableCategories[reportType] === 'MEDICAL_DIRECTIVE' ? dataToUseInReport?.selectedDepartments?.map(deptId => `${siteId}#${deptId}`) : availableCategories[reportType] === 'POLICY_AND_PROCEDURES' ? dataToUseInReport?.selectedDepartments?.map(deptId => `${siteId}#${deptId}`) : dataToUseInReport?.selectedDepartments : [],
                             'privilegingCategoryId': dataToUseInReport?.selectedPrivilegeCategory !== '' ? dataToUseInReport?.selectedPrivilegeCategory : '',
                             "positionType": dataToUseInReport?.selectedPosition !== "" ? [dataToUseInReport?.selectedPosition] : [],
                             "applicationCreationType": dataToUseInReport?.selectedApplicationType !== "" ? [dataToUseInReport?.selectedApplicationType] : [],

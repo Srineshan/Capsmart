@@ -290,6 +290,10 @@ button {
   box-shadow: none !important;
 }*/
 
+body {
+  background-color: var(--secondary-color);
+}
+
 $primarycolor: #06617A;
 $primarycolorHover: #054D61;
 $secondarycolor: #F5F8F8;
@@ -318,3 +322,12 @@ $tabledatatext: 13px/17px;
 $tabledatatext1: 16px/20px;
 $tabledatatext2: 16px/24px;
 $usernametext: 15px/13px;
+
+$fontStyle: 'proxima-nova';
+
+:root {
+  --primary-color: #{$primarycolor};
+  --primary-color-hover: #{$primarycolorHover};
+  --secondary-color: #{$secondarycolor};
+  --font-style: $fontStyle;
+}

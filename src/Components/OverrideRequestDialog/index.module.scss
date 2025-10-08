@@ -2,9 +2,9 @@
 
 .heading {
   text-align: left;
-  font: normal normal bold 24px proxima-nova;
+  font: normal normal bold 24px var(--font-style);
   letter-spacing: 0px;
-  color: $primarycolor;
+  color: var(--primary-color);
   text-transform: capitalize;
   opacity: 1;
 
@@ -90,8 +90,8 @@
 }
 
 .Resend {
-  color: $primarycolor;
-  font: normal normal bold 14px proxima-nova;
+  color: var(--primary-color);
+  font: normal normal bold 14px var(--font-style);
   text-align: right;
   border: none;
   background-color: #ffffff;
@@ -100,20 +100,20 @@
 
 .sentstatus {
   text-align: left;
-  font: normal normal bold 14px proxima-nova;
+  font: normal normal bold 14px var(--font-style);
   letter-spacing: 0px;
   color: #94979A;
   opacity: 1;
 }
 
 .sentto {
-  font: italic normal normal 12px proxima-nova;
+  font: italic normal normal 12px var(--font-style);
   color: #171338;
   opacity: 0.5;
 }
 
 .task {
-  font: normal normal bold 16px proxima-nova;
+  font: normal normal bold 16px var(--font-style);
   opacity: 1;
 }
 
@@ -156,7 +156,7 @@
 
 .date {
   text-align: left;
-  font: italic normal normal 14px proxima-nova;
+  font: italic normal normal 14px var(--font-style);
   letter-spacing: 0px;
   color: #171338;
   opacity: 0.5;
@@ -164,7 +164,7 @@
 
 .fontstyleassociate {
   text-align: left;
-  font: normal normal bold 14px proxima-nova;
+  font: normal normal bold 14px var(--font-style);
   letter-spacing: 0px;
   color: #646D82;
   text-transform: uppercase;
@@ -172,7 +172,7 @@
 
 .referenceFont {
   text-align: left;
-  font: normal normal bold 12px proxima-nova;
+  font: normal normal bold 12px var(--font-style);
   letter-spacing: 0px;
   color: #171338;
   opacity: 0.5;
@@ -187,7 +187,7 @@
   // font-size: normal 10px;
   font: normal normal normal 5px !important;
   letter-spacing: 0.9px;
-  color: $primarycolor;
+  color: var(--primary-color);
   opacity: 1;
   margin-top: 5px;
   margin-left: 5px;
@@ -215,9 +215,9 @@
 .requestForm {
   text-align: left;
   text-decoration: underline;
-  font: normal normal normal 12px proxima-nova;
+  font: normal normal normal 12px var(--font-style);
   cursor: pointer;
-  color: $primarycolor;
+  color: var(--primary-color);
   opacity: 1;
   margin-top: 5px;
 }
@@ -252,7 +252,7 @@
 .fontstyle {
   color: var(--unnamed-color-52575d);
   text-align: left;
-  font: normal normal bold 24px/30px proxima-nova;
+  font: normal normal bold 24px/30px var(--font-style);
   letter-spacing: 0px;
   color: $textgrey;
   opacity: 1;
@@ -260,7 +260,7 @@
 
 .namefontstyle {
   text-align: left;
-  font: normal normal bold 24px/30px proxima-nova;
+  font: normal normal bold 24px/30px var(--font-style);
   letter-spacing: 0px;
   color: $textgrey;
   opacity: 1;
@@ -269,7 +269,7 @@
 
 .displayIdFontStyle {
   text-align: center;
-  font: normal normal bold 14px/18px proxima-nova;
+  font: normal normal bold 14px/18px var(--font-style);
   letter-spacing: 0px;
   color: $textgrey;
   opacity: 0.8;
@@ -277,7 +277,7 @@
 
 .applicantTypeFontStyle {
   text-align: left;
-  font: normal normal medium 20px/24px proxima-nova;
+  font: normal normal medium 20px/24px var(--font-style);
   letter-spacing: 0px;
   color: $textgrey;
   text-transform: uppercase;
@@ -298,7 +298,7 @@
 .rightSideFontStyle {
 
   text-align: left;
-  font: normal normal medium 20px/24px proxima-nova;
+  font: normal normal medium 20px/24px var(--font-style);
   letter-spacing: 0px;
   color: $textgrey;
   text-transform: capitalize;
@@ -309,7 +309,7 @@
 .notesBorderStyle {
   border: 0.4px solid var(---7165e3);
   background: #FFFFFF 0% 0% no-repeat padding-box;
-  border: 0.4000000059604645px solid $primarycolor !important;
+  border: 0.4000000059604645px solid var(--primary-color) !important;
   border-radius: 4px;
   opacity: 1;
   width: 100%;
@@ -319,7 +319,7 @@
 .commentsNotesHeadingFontStyle {
 
   text-align: left;
-  font: normal normal normal 15px / 17px proxima-nova;
+  font: normal normal normal 15px / 17px var(--font-style);
   letter-spacing: 0px;
   color: #171a1a;
   text-transform: capitalize;
@@ -328,7 +328,7 @@
 
 .commentsNotesFontStyle {
   text-align: left;
-  font: normal normal medium 18px/25px proxima-nova;
+  font: normal normal medium 18px/25px var(--font-style);
   letter-spacing: 0px;
   color: $textgrey;
   opacity: 0.7;
@@ -341,7 +341,7 @@
 }
 
 .reviewButtonStyle {
-  background: $primarycolor 0% 0% no-repeat padding-box;
+  background: var(--primary-color) 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 6px #00000029;
   border-radius: 8px;
   opacity: 1;
@@ -356,7 +356,7 @@
 
 .reviewButton {
   text-align: center;
-  font: normal normal bold 18px/30px proxima-nova;
+  font: normal normal bold 18px/30px var(--font-style);
   letter-spacing: 0px;
   color: #FFFFFF;
   text-transform: uppercase;
@@ -364,7 +364,7 @@
 }
 
 // .reviewButton {
-//   background-color: $primarycolor;
+//   background-color: var(--primary-color);
 //   color: white;
 //   font-weight: 600;
 //   padding: 10px 20px;
@@ -378,7 +378,7 @@
 .cancelButton {
   background: #FFFFFF 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 6px #00000029;
-  border: 0.5px solid $primarycolor;
+  border: 0.5px solid var(--primary-color);
   border-radius: 8px;
   opacity: 1;
   padding: 10px 20px;
@@ -386,16 +386,16 @@
 
 .cancelButtonTextStyle {
   text-align: center;
-  font: normal normal bold 18px/30px proxima-nova;
+  font: normal normal bold 18px/30px var(--font-style);
   letter-spacing: 0px;
-  color: $primarycolor;
+  color: var(--primary-color);
   text-transform: uppercase;
   opacity: 1;
 }
 
 .customCheckboxLabel {
   font-size: 16px;
-  color: $primarycolor;
+  color: var(--primary-color);
   font-weight: bold;
   margin-left: 8px;
 }
@@ -414,7 +414,7 @@
 
 .disclaimer {
   text-align: left;
-  font: normal normal bold 22px/34px proxima-nova;
+  font: normal normal bold 22px/34px var(--font-style);
   letter-spacing: 0px;
   color: $textgrey;
   opacity: 1;
@@ -450,7 +450,7 @@
 
 .rejectionHeadingTextStyle {
   text-align: center;
-  font: normal normal bold 15px proxima-nova;
+  font: normal normal bold 15px var(--font-style);
   letter-spacing: 0px;
   color: #2C2C2C;
   text-transform: capitalize;
@@ -459,7 +459,7 @@
 
 .rejectionTextStyle {
   text-align: center;
-  font: normal normal medium 18px/34px proxima-nova;
+  font: normal normal medium 18px/34px var(--font-style);
   letter-spacing: 0px;
   color: #2C2C2C;
   text-transform: capitalize;
@@ -468,7 +468,7 @@
 
 .rejectionSubHeadingTextStyle {
   text-align: left;
-  font: normal normal bold 16px proxima-nova;
+  font: normal normal bold 16px var(--font-style);
   letter-spacing: 0px;
   color: #454747;
   opacity: 1;
@@ -506,7 +506,7 @@
 
 .rejectionTextStyle1 {
   text-align: left;
-  font: normal normal medium 20px/24px proxima-nova;
+  font: normal normal medium 20px/24px var(--font-style);
   letter-spacing: 0px;
   color: #171A1A;
   text-transform: capitalize;
@@ -534,7 +534,7 @@
 
 .uploadTextStyle {
   text-align: left;
-  font: normal normal normal 18px/26px proxima-nova;
+  font: normal normal normal 18px/26px var(--font-style);
   letter-spacing: 0px;
   color: black;
   opacity: 1;
@@ -544,7 +544,7 @@
 .referenceCardStyle {
   background: #dddddf 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 18px #0F0B3129;
-  border: 1px solid $primarycolor;
+  border: 1px solid var(--primary-color);
   border-radius: 4px;
   opacity: 0.9;
   padding: 3px;
@@ -562,7 +562,7 @@
   text-align: left;
   font: normal normal normal 20px/24px la-solid-900;
   letter-spacing: 0px;
-  color: $primarycolor;
+  color: var(--primary-color);
   opacity: 1;
 }
 
@@ -607,7 +607,7 @@
 .referenceCardStyleDescription {
   // background: #dddddf 0% 0% no-repeat padding-box;
   // box-shadow: 0px 3px 18px #0F0B3129;
-  border: 1px solid $primarycolor;
+  border: 1px solid var(--primary-color);
   border-radius: 4px;
   opacity: 0.9;
   // padding: 3px;

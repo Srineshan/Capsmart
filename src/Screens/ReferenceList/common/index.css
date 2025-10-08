@@ -1,7 +1,7 @@
 /* // @font-face {
 //     font-family: "Proxima Nova";
-//     src: url("path/to/proxima-nova.woff2") format("woff2"),
-//         url("path/to/proxima-nova.woff") format("woff");
+//     src: url("path/to/var(--font-style).woff2") format("woff2"),
+//         url("path/to/var(--font-style).woff") format("woff");
 //     font-weight: normal;
 //     font-style: normal;
 // } */
@@ -16,7 +16,7 @@
 }
 
 .ql-editor {
-    font: normal normal normal 23px/26px proxima-nova;
+    font: normal normal normal 23px/26px var(--font-style);
     font-size: 15px;
     line-height: 15px;
 }
@@ -25,16 +25,16 @@
     font-family: "Proxima Nova", sans-serif;
 }
 
-.ql-font-proxima-nova {
+.ql-font-var(--font-style) {
     font-family: "Proxima Nova", sans-serif;
     line-height: 0px;
 }
 
-.ql-font-proxima-nova-size-23 {
+.ql-font-var(--font-style)-size-23 {
     font-size: 23px;
 }
 
-.ql-font-proxima-nova-size-26 {
+.ql-font-var(--font-style)-size-26 {
     font-size: 26px;
 }
 
@@ -161,7 +161,7 @@
     width: 187px;
     height: 52px;
     text-align: left;
-    font: normal normal normal 23px/26px proxima-nova;
+    font: normal normal normal 23px/26px var(--font-style);
     letter-spacing: 0px;
     color: #94979a;
     opacity: 1;
@@ -174,7 +174,7 @@
     height: 52px;
     color: #52575d;
     text-align: left;
-    font: normal normal 600 23px/26px proxima-nova;
+    font: normal normal 600 23px/26px var(--font-style);
     letter-spacing: 0px;
     color: #52575d;
     opacity: 1;
@@ -186,7 +186,7 @@
     width: 1181px;
     height: 54px;
     text-align: left;
-    font: normal normal normal 23px/28px proxima-nova;
+    font: normal normal normal 23px/28px var(--font-style);
     letter-spacing: 0px;
     color: #94979a;
     opacity: 1;

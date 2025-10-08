@@ -2,8 +2,8 @@
 
 .heading {
     text-align: left;
-    font: normal normal bold 20px/28px proxima-nova;
-    color: $primarycolor;
+    font: normal normal bold 20px/28px var(--font-style);
+    color: var(--primary-color);
     text-transform: capitalize;
 }
 
@@ -22,7 +22,7 @@
 
 .description {
     text-align: left;
-    font: normal normal normal $tabledatatext2 proxima-nova;
+    font: normal normal normal $tabledatatext2 var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
 }
@@ -50,7 +50,7 @@
 
 .uploadTextButton {
     display: inline-block !important;
-    font: normal normal bold 13px/20px proxima-nova;
+    font: normal normal bold 13px/20px var(--font-style);
     color: #2C2C2C;
     border: 1px solid #2C2C2C;
     border-radius: 4px;
@@ -81,7 +81,7 @@
 
 .uploadText {
     text-align: left !important;
-    font: normal normal bold 13px/20px proxima-nova;
+    font: normal normal bold 13px/20px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
 }
@@ -100,7 +100,7 @@
 
 .cardTitle {
     text-align: left;
-    font: normal normal bold 18px/26px proxima-nova;
+    font: normal normal bold 18px/26px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
     // text-transform: capitalize;
@@ -114,11 +114,11 @@
 }
 
 .continue {
-    background: $primarycolor 0% 0% no-repeat padding-box;
+    background: var(--primary-color) 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #00000029;
     border-radius: 8px;
     text-align: center;
-    font: normal normal bold 17px/30px proxima-nova;
+    font: normal normal bold 17px/30px var(--font-style);
     letter-spacing: 0px;
     color: #FFFFFF;
     text-transform: uppercase;
@@ -130,12 +130,12 @@
 .saveInProgress {
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #00000029;
-    border: 0.5px solid $primarycolor;
+    border: 0.5px solid var(--primary-color);
     border-radius: 8px;
     text-align: center;
-    font: normal normal bold 17px/30px proxima-nova;
+    font: normal normal bold 17px/30px var(--font-style);
     letter-spacing: 0px;
-    color: $primarycolor;
+    color: var(--primary-color);
     text-transform: uppercase;
     padding: 5px;
     cursor: pointer;
@@ -176,14 +176,14 @@
 
 .dateTitle {
     text-align: left;
-    font: normal normal bold 17px/26px proxima-nova;
+    font: normal normal bold 17px/26px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
 }
 
 .date {
     text-align: left;
-    font: normal normal normal 17px/26px proxima-nova;
+    font: normal normal normal 17px/26px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
 }
@@ -205,7 +205,7 @@
 
 .cardDescription {
     text-align: left;
-    font: normal normal normal 18px/20px proxima-nova;
+    font: normal normal normal 18px/20px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
     // text-transform: capitalize;

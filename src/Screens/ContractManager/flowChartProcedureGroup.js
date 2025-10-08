@@ -62,7 +62,7 @@ const FlowChartProcedureGroup = ({
       <Text
         fontSize={12}
         text="HOLD"
-        fontFamily="proxima-nova"
+        fontFamily="var(--font-style)"
         fill="#FFCA27"
         x={400}
         y={210}
@@ -70,7 +70,7 @@ const FlowChartProcedureGroup = ({
       <Text
         fontSize={12}
         text="REJECT"
-        fontFamily="proxima-nova"
+        fontFamily="var(--font-style)"
         fill="#FF6F3B"
         x={260}
         y={210}
@@ -78,7 +78,7 @@ const FlowChartProcedureGroup = ({
       <Text
         fontSize={12}
         text="YES"
-        fontFamily="proxima-nova"
+        fontFamily="var(--font-style)"
         fill="#14B15A"
         x={320}
         y={280}

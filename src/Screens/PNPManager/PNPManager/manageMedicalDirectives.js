@@ -116,7 +116,7 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
         'NEW': 'New Staff Applicants',
         'REAPPOINTMENT': 'Staff Reappointments'
     }
-    let savedMdOption = sessionStorage.getItem('mdOption');
+    let savedMdOption = sessionStorage.getItem('pnpOption');
     console.log(loggedInUser)
     useEffect(() => {
         getPublicationWorkflow();
@@ -125,7 +125,7 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
     useEffect(() => {
         if (mdIdFromSearch) {
             console.log(mdIdFromSearch)
-            sessionStorage.setItem('mdOption', "Draft Policies & Procedures")
+            sessionStorage.setItem('pnpOption', "Draft Policies & Procedures")
             setSelectedOption("Draft Policies & Procedures")
             setSelectedMdId(mdIdFromSearch);
         }
@@ -222,7 +222,7 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
         if (checkedIds?.length === revisionList?.length) {
             setCheckedIds([]);
         } else {
-            const allIds = revisionList?.map(data => data?.medicalDirective?.id);
+            const allIds = revisionList?.map(data => data?.policyAndProcedure?.id);
             setCheckedIds(allIds);
         }
     };
@@ -261,7 +261,7 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
     const currentTableHeaderValues = [
         "No.",
         "Title",
-        "PNP ID",
+        "P&P ID",
         "Department / Division",
         "First Published",
         "Last Revision",
@@ -270,7 +270,7 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
     const revisionTableHeaderValues = [
         "No.",
         "Title",
-        "PNP ID",
+        "P&P ID",
         "Department / Division",
         "Assigned To",
         selectedSignOffOption === 'level-1' ? "Acknowledged" : "Signed off",
@@ -284,7 +284,7 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
         />,
         "No.",
         "Title",
-        "PNP ID",
+        "P&P ID",
         "Department / Division",
         "Acknowledged",
         "Signed Off",
@@ -304,7 +304,7 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
     const draftTableHeaderValues = [
         "",
         "Title",
-        "PNP ID",
+        "P&P ID",
         "Department / Division",
         "Author",
         "Type",
@@ -314,7 +314,7 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
     ];
 
     const tableHeaderValues = (selectedOption === 'Current Policies & Procedures' || selectedOption === 'Retire Policies & Procedures') ? currentTableHeaderValues : selectedOption === "Draft Policies & Procedures"
-        ? draftTableHeaderValues : selectedOption === "Policies & Procedures Sign Off" ? selectedSignOffOption === "level-2" ? MECSignOffTableHeaderValues : revisionTableHeaderValues
+        ? draftTableHeaderValues : selectedOption === "Policies & Procedures Sign Off" ? revisionTableHeaderValues
             : outstandingTableHeaderValues;
 
     const getUser = async () => {
@@ -350,13 +350,13 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
                 `policy-and-procedure-management-service/policyAndProcedures/dashboard?offset=${page - 1}&limit=${limit}&isPaginationRequired=${isPaginationRequired}&role=${sessionStorage.getItem(
                     "workModeType"
                 )}&tab=${selectedOption === "Current Policies & Procedures"
-                    ? "active_md"
+                    ? "active_pnp"
                     : selectedOption === "Policies & Procedures Sign Off"
-                        ? "md_revisions"
+                        ? "pnp_revisions"
                         : selectedOption === "Draft Policies & Procedures"
-                            ? "draft_md"
+                            ? "draft_pnp"
                             : selectedOption === "Retire Policies & Procedures"
-                                ? "inactive_md"
+                                ? "inactive_pnp"
                                 : ""
                 }&sortBy=${sortValue}&sortByField=${selectedOption === "Draft Policies & Procedures" && sortField === "DEFAULT"
                     ? "WORKFLOW_STATUS"
@@ -366,7 +366,7 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
                 { signal }
             );
 
-            setDashboardData(dashboardData?.medicalDirectives);
+            setDashboardData(dashboardData?.policyAndProcedures);
             setTotalTableCount(dashboardData?.numberOfElements);
         } catch (err) {
             if (err.name === "AbortError") {
@@ -384,15 +384,15 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
     const getDashboardMetadata = async () => {
         const { data: dashboardMetadata } = await GET(`policy-and-procedure-management-service/policyAndProcedures/dashboard/meta?role=${sessionStorage.getItem('workModeType')}`);
         setDashboardMetaData(dashboardMetadata);
-        setInactiveMdCount(dashboardMetadata?.inactive_md?.numberOfElements)
-        setNewMdCount(dashboardMetadata?.active_md?.newDirectivesCount);
-        setUpcomingMdCount(dashboardMetadata?.active_md?.upcomingForReviewCount);
-        setCurrentMdCount(dashboardMetadata?.active_md?.numberOfElements)
+        setInactiveMdCount(dashboardMetadata?.inactive_pnp?.numberOfElements)
+        setNewMdCount(dashboardMetadata?.active_pnp?.newDirectivesCount);
+        setUpcomingMdCount(dashboardMetadata?.active_pnp?.upcomingForReviewCount);
+        setCurrentMdCount(dashboardMetadata?.active_pnp?.numberOfElements)
         setSignOffMdCount(dashboardMetadata?.sign_off?.numberOfElements)
-        setRevisionMdCount(dashboardMetadata?.md_revisions?.numberOfElements)
+        setRevisionMdCount(dashboardMetadata?.pnp_revisions?.numberOfElements)
         setOutstandinNotStartedCount(dashboardMetadata?.attestation_outstanding?.notAttestedCount)
         setOutstandingMdCount(dashboardMetadata?.attestation_outstanding?.totalAttestationCount)
-        setDraftMdCount(dashboardMetadata?.draft_md?.numberOfElements)
+        setDraftMdCount(dashboardMetadata?.draft_pnp?.numberOfElements)
     }
 
     const getAttestationOutstanding = async (signal) => {
@@ -435,7 +435,7 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
 
     const getSelectedOptionLevelTwo = (value) => {
         setSelectedOption(value)
-        sessionStorage.setItem('mdOption', value)
+        sessionStorage.setItem('pnpOption', value)
     }
 
     const getSelectedOptionForSignOff = (value) => {
@@ -529,7 +529,7 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
                 notes: ''
             },
             files: [],
-            medicalDirectiveIds: checkedIds,
+            policyAndProcedureIds: checkedIds,
             esign: {
                 esign: encryptedText,
                 name: users?.userName,
@@ -603,19 +603,22 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
     const handleModify = (data) => {
         setSelectedMdId(data?.id);
         setIsEdit(true);
-        if (data?.lastSavedSection !== '' && data?.lastSavedSection) {
-            if (JSON.parse(data?.lastSavedSection) === 'step1') {
-                setStep1(true)
-            } else if (JSON.parse(data?.lastSavedSection) === 'step2') {
-                setStep2(true)
-            } else if (JSON.parse(data?.lastSavedSection) === 'step3') {
-                setStep3(true)
-            } else if (JSON.parse(data?.lastSavedSection) === 'step4') {
-                setStep4(true)
-            }
-        } else {
-            setStep1(true)
+        let lastStep = data?.lastSavedSection;
+        try {
+            // Try parsing if it's a JSON-like string
+            const parsed = JSON.parse(lastStep);
+            // If parsing gives something meaningful, use it
+            if (parsed && typeof parsed === "string") lastStep = parsed;
+            else if (parsed && parsed.section) lastStep = parsed.section;
+        } catch {
+            // If it’s not JSON, just keep it as-is
         }
+
+        if (lastStep === "step1") setStep1(true);
+        else if (lastStep === "step2") setStep2(true);
+        else if (lastStep === "step3") setStep3(true);
+        else if (lastStep === "step4") setStep4(true);
+        else setStep1(true);
     }
 
     const handlePublish = async (data) => {
@@ -685,7 +688,7 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
         try {
             const revisedMd = await POST(`policy-and-procedure-management-service/policyAndProcedures/${data?.id}/revise`);
             if (revisedMd?.response?.status === 409) {
-                ErrorToaster2('A draft already exists with the same PNP ID. To create a new revision, please delete the existing draft first.');
+                ErrorToaster2('A draft already exists with the same P&P ID. To create a new revision, please delete the existing draft first.');
                 setSelectedMdId(revisedMd?.response?.data?.id);
             } else {
                 SuccessToaster2('Policy & Procedure revised successfully');
@@ -726,12 +729,12 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
 
     const getRevisionList = async () => {
         setIsLoading(true)
-        let url = sessionStorage.getItem('workModeType') === "PNP Librarian" ?
+        let url = sessionStorage.getItem('workModeType') === "P&P Librarian" ?
             `policy-and-procedure-management-service/policyAndProcedures/signOff?tab=${selectedSignOffOption}&role=${sessionStorage.getItem('workModeType')}` :
             `policy-and-procedure-management-service/policyAndProcedures/signOff?tab=${selectedSignOffOption}&role=${sessionStorage.getItem('workModeType')}&assignedUserIds=${loggedInUser?.id}`
-        const response = await GET(url);
-        console.log(response.data?.medicalDirectivesWithWorkflow);
-        setRevisionList(response?.data?.medicalDirectivesWithWorkflow)
+        const response = await POST(url, {});
+        console.log(response.data?.policyAndProceduresWithWorkflow);
+        setRevisionList(response?.data?.policyAndProceduresWithWorkflow)
         setIsLoading(false)
     }
 
@@ -831,23 +834,23 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
                 checkbox.push(
                     <CommonCheckBox
                         size="medium"
-                        checked={checkedIds?.includes(data?.medicalDirective?.id)}
-                        onChange={() => handleCheckboxClick(data?.medicalDirective?.id)}
-                        key={`${data?.medicalDirective?.id}${index}`}
+                        checked={checkedIds?.includes(data?.policyAndProcedure?.id)}
+                        onChange={() => handleCheckboxClick(data?.policyAndProcedure?.id)}
+                        key={`${data?.policyAndProcedure?.id}${index}`}
                     />
                 );
                 // dot.push(data?.activated ? 'green' : 'grey');
                 // dotTooltipValues.push(data?.activated ? 'Activated' : 'Deactivated');
                 no.push((index + 1) + ((page - 1) * limit));
-                title.push(data?.medicalDirective?.title);
-                desc.push(data?.medicalDirective?.title)
-                mdId.push(data?.medicalDirective?.mdID);
-                department.push(data?.medicalDirective?.sites?.[0]?.departments?.length <= 4 ? data?.medicalDirective?.sites?.[0]?.departments?.map(data => data?.name)?.join(', ') : data?.medicalDirective?.sites?.[0]?.departments?.length);
-                departmentHoverText.push(data?.medicalDirective?.sites?.[0]?.departments?.length > 4 ? <div>{data?.medicalDirective?.sites?.[0]?.departments?.map(data => (<div>{data?.name}</div>))}</div> : '')
-                firstPublished.push(data?.medicalDirective?.initialPublishedDate ? format(new Date(data?.medicalDirective?.initialPublishedDate), 'MMM dd, yyyy') : '-');
-                lastRevision.push(data?.medicalDirective?.lastRevisionDate ? format(new Date(data?.medicalDirective?.lastRevisionDate), 'MMM dd, yyyy') : '-');
-                lastUpdated.push(data?.medicalDirective?.lastModifiedDate ? format(new Date(data?.medicalDirective?.lastModifiedDate), 'MMM dd, yyyy') : '-');
-                author.push(data?.medicalDirective?.authors?.length !== 0 ? data?.medicalDirective?.authors?.map(data => `${data?.name?.firstName} ${data?.name?.lastName}`) : '-');
+                title.push(data?.policyAndProcedure?.title);
+                desc.push(data?.policyAndProcedure?.title)
+                mdId.push(data?.policyAndProcedure?.pnpID);
+                department.push(data?.policyAndProcedure?.sites?.[0]?.departments?.length <= 4 ? data?.policyAndProcedure?.sites?.[0]?.departments?.map(data => data?.name)?.join(', ') : data?.policyAndProcedure?.sites?.[0]?.departments?.length);
+                departmentHoverText.push(data?.policyAndProcedure?.sites?.[0]?.departments?.length > 4 ? <div>{data?.policyAndProcedure?.sites?.[0]?.departments?.map(data => (<div>{data?.name}</div>))}</div> : '')
+                firstPublished.push(data?.policyAndProcedure?.initialPublishedDate ? format(new Date(data?.policyAndProcedure?.initialPublishedDate), 'MMM dd, yyyy') : '-');
+                lastRevision.push(data?.policyAndProcedure?.lastRevisionDate ? format(new Date(data?.policyAndProcedure?.lastRevisionDate), 'MMM dd, yyyy') : '-');
+                lastUpdated.push(data?.policyAndProcedure?.lastModifiedDate ? format(new Date(data?.policyAndProcedure?.lastModifiedDate), 'MMM dd, yyyy') : '-');
+                author.push(data?.policyAndProcedure?.authors?.length !== 0 ? data?.policyAndProcedure?.authors?.map(data => `${data?.name?.firstName} ${data?.name?.lastName}`) : '-');
                 dueDate.push('-');
                 attestationCategory.push('-');
                 totalCount.push('-');
@@ -910,7 +913,7 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
                 no.push((index + 1) + ((page - 1) * limit));
                 title.push(data?.title);
                 desc.push(data?.title)
-                mdId.push(data?.mdID);
+                mdId.push(data?.pnpID);
                 department.push(data?.sites?.[0]?.departments?.length <= 4 ? data?.sites?.[0]?.departments?.map(data => data?.name)?.join(', ') : data?.sites?.[0]?.departments?.length);
                 departmentHoverText.push(data?.sites?.[0]?.departments?.length > 4 ? <div>{data?.sites?.[0]?.departments?.map(data => (<div>{data?.name}</div>))}</div> : '')
                 firstPublished.push(data?.initialPublishedDate ? format(new Date(data?.initialPublishedDate), 'MMM dd, yyyy') : '-');
@@ -938,40 +941,40 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
             { "type": "text", "value": lastRevision },
             { "type": "action", "value": action },
         ] : selectedOption === 'Policies & Procedures Sign Off' ? [
-            ...(
-                selectedSignOffOption === "level-2"
-                    ? [{ type: "checkbox", value: checkbox },]
-                    : []
-            ),
+            // ...(
+            //     selectedSignOffOption === "level-2"
+            //         ? [{ type: "checkbox", value: checkbox },]
+            //         : []
+            // ),
             { "type": "text", "value": no },
             { "type": "text", "value": title },
             { "type": "text", "value": mdId },
             { "type": "text", "value": department, tooltipValueText: departmentHoverText },
             ...(
-                selectedSignOffOption !== "level-2"
+                selectedSignOffOption !== "level-3"
                     ? [{ "type": "text", "value": revisionAssignedTo },]
                     : []
             ),
             ...(
-                selectedSignOffOption !== "level-2"
+                selectedSignOffOption !== "level-3"
                     ? [{ "type": "text", "value": acknowledgedOrSignedOff, isAlignCenter: true },]
                     : []
             ),
-            ...(
-                selectedSignOffOption === "level-2"
-                    ? [{ "type": "text", "value": acknowledgedCount, isAlignCenter: true },]
-                    : []
-            ),
-            ...(
-                selectedSignOffOption === "level-2"
-                    ? [{ "type": "text", "value": signedOffCount, isAlignCenter: true },]
-                    : []
-            ),
-            ...(
-                selectedSignOffOption === "level-2"
-                    ? [{ "type": "text", "value": lastUpdatedLog },]
-                    : []
-            ),
+            // ...(
+            //     selectedSignOffOption === "level-2"
+            //         ? [{ "type": "text", "value": acknowledgedCount, isAlignCenter: true },]
+            //         : []
+            // ),
+            // ...(
+            //     selectedSignOffOption === "level-2"
+            //         ? [{ "type": "text", "value": signedOffCount, isAlignCenter: true },]
+            //         : []
+            // ),
+            // ...(
+            //     selectedSignOffOption === "level-2"
+            //         ? [{ "type": "text", "value": lastUpdatedLog },]
+            //         : []
+            // ),
             { "type": "action", "value": action },
         ] : selectedOption === 'Draft Policies & Procedures' ? [
             { "type": "dot", "value": dot, 'tooltipValue': dotTooltipValues },
@@ -1060,7 +1063,7 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
 
     const draftActionsData = [
         {
-            'data': 'Update PNP', 'onClick': handleModify,
+            'data': 'Update P&P', 'onClick': handleModify,
             conditionToShow: `data?.workflowStatus !== 'COMPLETED'`
         },
         {
@@ -1090,7 +1093,7 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
     ]
 
     const actionsData = selectedOption === 'Current Policies & Procedures' ? registeredActionsData : selectedOption === 'Draft Policies & Procedures' ? draftActionsData :
-        selectedOption === 'Policies & Procedures Sign Off' ? selectedSignOffOption === "level-2" ? revisionsActionsData : workflowModifyGroup : selectedOption === "Retire Policies & Procedures" ? retiredActions : inviteActionsData;
+        selectedOption === 'Policies & Procedures Sign Off' ? workflowModifyGroup : selectedOption === "Retire Policies & Procedures" ? retiredActions : inviteActionsData;
 
     const handleDownloadClicked = () => {
         toPDF(".registeredUsers", `RegisteredUsersList_${format(new Date(), 'MM_dd_yy')}`);
@@ -1133,7 +1136,7 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
                 <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Current Policies & Procedures" bigNumber={currentMdCount} smallNum1={newMdCount} smallNum2={upcomingMdCount} smallText1="New Directives" smallText2="Upcoming For Review" currentTile="Current Policies & Procedures" topText='' smallNum1Color={style.greenSmallNumber} smallNum2Color={style.yellowSmallNumber} smallNum1SelectedColor={style.greenSmallNumberSelected} smallNum2SelectedColor={style.yellowSmallNumberSelected} />
                 <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Attestations Outstanding" bigNumber={outstandingMdCount} smallNum1={outstandingNotStartedCount} smallNum2={0} smallText1="Not Started" smallText2="Past Due" currentTile="Attestations Outstanding" topText='' smallNum1Color={style.redSmallNumber} smallNum1SelectedColor={style.redSmallNumberSelected} smallNum2Color={style.redSmallNumber} smallNum2SelectedColor={style.redSmallNumberSelected} />
                 <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="Drafts / Revisions" bigNumber={draftMdCount} smallNum1="" smallNum2="" smallText1="" smallText2="" currentTile="Draft Policies & Procedures" topText='' smallNum1Color={style.greenSmallNumber} smallNum2Color={style.redSmallNumber} smallNum1SelectedColor={style.greenSmallNumberSelected} smallNum2SelectedColor={style.redSmallNumberSelected} />
-                <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="PNP Review & Approvals" bigNumber={signOffMdCount} smallNum1="" smallNum2="" currentTile="Policies & Procedures Sign Off" topText='' />
+                <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="P&P Review & Approvals" bigNumber={signOffMdCount} smallNum1="" smallNum2="" currentTile="Policies & Procedures Sign Off" topText='' />
             </div>
             <div
                 className={`${style.spaceBetween} ${style.marginLeft30} ${style.marginTop20} `}
@@ -1143,29 +1146,29 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
                         {workflowStructure?.approvalFlowMap?.workflow['1'] && (
                             <TileApplication selectedTab={selectedSignOffOption} getSelectedTab={getSelectedOptionForSignOff} tileLabel="Acknowledgement" tileCount={signOffMeta?.['level-1']?.pending} currentTile="level-1" />
                         )}
-                        {workflowStructure?.approvalFlowMap?.workflow['2'] && (
+                        {/* {workflowStructure?.approvalFlowMap?.workflow['2'] && (
                             <TileApplication selectedTab={selectedSignOffOption} getSelectedTab={getSelectedOptionForSignOff} tileLabel="MAC Approval" tileCount={signOffMeta?.['level-2']?.pending} currentTile="level-2" />
-                        )}
-                        {workflowStructure?.approvalFlowMap?.workflow['3'] && (
-                            <TileApplication selectedTab={selectedSignOffOption} getSelectedTab={getSelectedOptionForSignOff} tileLabel="Leadership Sign Off" tileCount={signOffMeta?.['level-3']?.pending} currentTile="level-3" />
+                        )} */}
+                        {workflowStructure?.approvalFlowMap?.workflow['2'] && (
+                            <TileApplication selectedTab={selectedSignOffOption} getSelectedTab={getSelectedOptionForSignOff} tileLabel="Leadership Sign Off" tileCount={signOffMeta?.['level-2']?.pending} currentTile="level-2" />
                         )}
                     </div>
                 ) : (
                     <div></div>
                 )}
                 <div className={style.displayInRow}>
-                    {(selectedSignOffOption === "level-2" && selectedOption === 'Policies & Procedures Sign Off') && (
+                    {/* {(selectedSignOffOption === "level-2" && selectedOption === 'Policies & Procedures Sign Off') && (
                         <div className={`${style.marginRight} ${style.verticalAlignCenter}  ${checkedIds?.length === 0 ? '' : style.cursorPointer} ${checkedIds?.length !== 0 ? '' : style.disabledView}`} onClick={checkedIds?.length !== 0 ? () => setShowUpdateApprovalStatus(true) : () => { }}>
                             <Tooltip title={checkedIds?.length !== 0 ? "Update MAC Approval" : ""} arrow>
                                 <PeopleOutlinedIcon
                                     sx={{
                                         fontSize: 25,
-                                        color: "#06617A",
+                                        color: "#168E0D",
                                     }}
                                 />
                             </Tooltip>
                         </div>
-                    )}
+                    )} */}
                     {/* <button
                         className={`${style.borderNone} ${style.backgroundBlue} ${style.borderRadius5}`}
                         onClick={() => setShowAddNewMedicalDirectives(true)} // Open dialog on button click
@@ -1202,14 +1205,14 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
                     </div>
                     <div className={`${style.displayInRow} ${style.marginTop20} ${style.marginRight30} ${style.cursorPointer}`}>
                         <div className={` ${style.alignCenter} ${style.cursorPointer} ${style.marginLeft20}`} onClick={() => handleDownloadClicked()}>
-                            <DownloadIcon sx={{ fontSize: 30, color: '#06617A' }} />
+                            <DownloadIcon sx={{ fontSize: 30, color: '#168E0D' }} />
                         </div>
                         <div className={`${style.alignCenter} ${style.cursorPointer} ${style.marginLeft20}`} onClick={() => handlePrint()}>
-                            <PrintOutlinedIcon sx={{ fontSize: 30, color: '#06617A' }} />
+                            <PrintOutlinedIcon sx={{ fontSize: 30, color: '#168E0D' }} />
                         </div>
                         {selectedOption === 'Current Policies & Procedures' && (
                             <div className={`${style.alignCenter} ${style.cursorPointer} ${style.marginLeft20}`}>
-                                <AddCircleOutlineIcon sx={{ fontSize: 30, color: '#06617A' }} onClick={() => setShowAddUserDialog(true)} />
+                                <AddCircleOutlineIcon sx={{ fontSize: 30, color: '#168E0D' }} onClick={() => setShowAddUserDialog(true)} />
                             </div>
                         )}
                     </div>
@@ -1233,7 +1236,7 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
                             tableHeaderValues={tableHeaderValues}
                             tableDataValues={getValues()}
                             tableData={selectedOption === "Policies & Procedures Sign Off" ? revisionList : selectedOption === "Attestations Outstanding" ? outstandingList : dashboardData}
-                            gridStyle={selectedOption === 'Attestations Outstanding' ? style.outstandingGrid : selectedOption === 'Current Policies & Procedures' ? style.mdListGrid : selectedOption === 'Draft Policies & Procedures' ? style.draftGrid : selectedOption === 'Retire Policies & Procedures' ? style.mdListGrid : selectedSignOffOption === 'level-2' ? style.level3Grid : style.revisionGrid}
+                            gridStyle={selectedOption === 'Attestations Outstanding' ? style.outstandingGrid : selectedOption === 'Current Policies & Procedures' ? style.mdListGrid : selectedOption === 'Draft Policies & Procedures' ? style.draftGrid : selectedOption === 'Retire Policies & Procedures' ? style.mdListGrid : style.revisionGrid}
                             actions={actionsData}
                             scrollStyle={style.scrollStyle}
                             tableSortValues={selectedOption === 'Attestations Outstanding' ? outstandingSortValues : []}
@@ -1261,7 +1264,7 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
             <Dialog isOpen={showAddNewMedicalDirectives} onClose={() => setShowAddNewMedicalDirectives(false)} className={`${style.addMDDialogBackground} ${style.addNewMDDialog}`}>
                 <div className={Classes.DIALOG_BODY}>
                     <div className={style.dialogTitle}>Adding New Policies & Procedures To Database</div>
-                    <div className={`${style.dialogDesc} ${style.marginTop20}`}>Do you have an existing copy of the medical directive that you want to add to the database?</div>
+                    <div className={`${style.dialogDesc} ${style.marginTop20}`}>Do you have an existing copy of the policy & procedure that you want to add to the database?</div>
                     <input
                         type="file"
                         ref={fileInputRef}
@@ -1270,16 +1273,15 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
                     />
                     <div>
                         <div className={`${style.spaceBetween} ${style.marginTop20}`}>
-                            {/* <button className={`${style.outlinedButton} `} onClick={() => setShowAddNewMedicalDirectives(false)} >NO, AUTHOR NEW</button> */}
-                            <div></div>
-                            <button className={`${style.buttonStyle} `} onClick={() => handleUploadCopy()} >YES, UPLOAD COPY</button>
+                            <button className={`${style.outlinedButtonWithBiggerWidth} `} onClick={() => { }} >Import from ComplyShield Library</button>
+                            <button className={`${style.buttonStyleWithBiggerWidth} `} onClick={() => handleUploadCopy()} >Yes, Upload Copy</button>
                         </div>
                     </div>
                 </div>
             </Dialog >
             <Dialog isOpen={showAttestationSummary} onClose={() => setShowAttestationSummary(false)} className={`${style.addMDDialogBackground} ${style.attestationSummaryDialog}`}>
                 <div className={Classes.DIALOG_BODY}>
-                    <div className={style.dialogTitle}>{`Attestation Summary For ${selectedMedicalDirectiveList?.medicalDirectives?.mdID ? selectedMedicalDirectiveList?.medicalDirectives?.mdID : ''} : ${selectedMedicalDirectiveList?.medicalDirectives?.title ? selectedMedicalDirectiveList?.medicalDirectives?.title : ''}`}</div>
+                    <div className={style.dialogTitle}>{`Attestation Summary For ${selectedMedicalDirectiveList?.medicalDirectives?.pnpID ? selectedMedicalDirectiveList?.medicalDirectives?.pnpID : ''} : ${selectedMedicalDirectiveList?.medicalDirectives?.title ? selectedMedicalDirectiveList?.medicalDirectives?.title : ''}`}</div>
                     <div className={`${style.dialogDesc}`}>{`Current status as of ${format(new Date(), 'MMM dd, yyyy')}`}</div>
                     <TableTwo
                         tableHeaderValues={innerHeaderValues}
@@ -1364,7 +1366,7 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
                     <div className={style.dialogTitle}>{`Update Approval Status`}</div>
                     {revisionList?.filter(item => checkedIds.includes(item?.medicalDirective?.id))?.map(data => (
                         <div className={`${style.medicalDirectivesCard} ${style.marginTop10}`}>
-                            <div className={style.title}>{`${data?.medicalDirective?.title}`} <span className={style.mdIDStyle}>{data?.medicalDirective?.mdID}</span></div>
+                            <div className={style.title}>{`${data?.medicalDirective?.title}`} <span className={style.mdIDStyle}>{data?.medicalDirective?.pnpID}</span></div>
                         </div>
                     ))}
                     <div className={style.marginTop20}>

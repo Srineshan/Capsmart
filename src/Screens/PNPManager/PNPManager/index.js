@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import style from "./index.module.scss";
 import SearchBar from "../../../Components/SearchBar";
 import ManageMedicalDirectives from "./manageMedicalDirectives";
+import PoweredBySureShield from './../../../images/PoweredBySureShield.png'
 import DataUpload from "./dataUpload";
 import FeedbackTicket from "./feedbackTicket";
 import ReferenceList from "./../../ReferenceList";
@@ -380,10 +381,10 @@ const PNPManager = () => {
         className={`${isExpanded ? style.bigCardGrid : style.smallCardGrid} ${style.margin20
           }`}
       >
-        <div>
+        <div className={style.verticalSpaceBetween}>
           <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
             <div>
-              <Tooltip title={"Add New PNP"} arrow>
+              <Tooltip title={"Add New P&P"} arrow>
                 <div
                   className={`${style.addStyle} ${style.displayInRow} ${style.applicationButton} ${style.marginTop10} ${style.alignCenter} ${style.cursorPointer}`}
                 >
@@ -397,7 +398,7 @@ const PNPManager = () => {
                       className={`${style.alignCenter} ${style.marginLeft10}`}
                       onClick={() => { setShowAddNewMedicalDirectives(true) }}
                     >
-                      {'Add New PNP'}
+                      {'Add New P&P'}
                     </div>
 
                   </div>
@@ -409,9 +410,9 @@ const PNPManager = () => {
                   <div className={`${style.advancedSearchText} ${style.verticalAlignCenter}`}>Advanced Search Criteria</div>
                   <div className={style.verticalAlignCenter}>
                     {showAdvancedSearch ? (
-                      <KeyboardArrowDownIcon sx={{ fontSize: '24px', color: '#06617A' }} />
+                      <KeyboardArrowDownIcon sx={{ fontSize: '24px', color: '#168E0D' }} />
                     ) : (
-                      <KeyboardArrowRightIcon sx={{ fontSize: '24px', color: '#06617A' }} />
+                      <KeyboardArrowRightIcon sx={{ fontSize: '24px', color: '#168E0D' }} />
                     )}
                   </div>
                 </div>
@@ -423,7 +424,7 @@ const PNPManager = () => {
                       value={mdId}
                       onChange={(e) => setMdId(e.target.value)}
                       type="text"
-                      placeholder="Enter PNP ID"
+                      placeholder="Enter P&P ID"
                     />
                   </div>
                   <div className={style.marginTop10}>
@@ -571,6 +572,7 @@ const PNPManager = () => {
               </div>
             </div>
           </SideBar>
+          <img src={PoweredBySureShield} alt="" className={style.poweredby} />
         </div>
         <div>
           {selectedOption === "MANAGE MEDICAL DIRECTIVES" ? (
