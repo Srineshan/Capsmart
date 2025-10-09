@@ -4865,7 +4865,7 @@ const ReportTypeOverview = () => {
                                                                                                             tableType={``}
                                                                                                             tableHeader={dataToUseInReport?.tab === "medical_directive_tab" ? ['MD Title', 'MD ID', 'Department / Division', 'Attested Count', 'Not Attested Count'] :
                                                                                                                 dataToUseInReport?.tab === "applicant_tab" ? ['Staff Name', 'Email', 'Department / Division', 'Attested Count', 'Not Attested Count'] :
-                                                                                                                    ['Department Name', 'Divisions', 'Staff Count', 'MD Count', 'Attested Count', 'Not Attested Count']
+                                                                                                                    ['Department Name', 'Divisions', 'Staff Count', 'PNP Count', 'Attested Count', 'Not Attested Count']
                                                                                                             }
                                                                                                             tableValue={policyAndProceduresTracker}
                                                                                                             activitiesServicesValues={getPolicyAndProceduresTrackerValues()}

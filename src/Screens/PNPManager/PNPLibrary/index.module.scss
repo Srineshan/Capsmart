@@ -1,5 +1,9 @@
 @import "../../../index.scss";
 
+body {
+    background-color: var(--secondary-color);
+}
+
 .navbarStyle {
     background: #FFFFFF 0% 0% no-repeat padding-box;
     height: 80px;
@@ -44,7 +48,7 @@
 
 .screenBackground {
     padding: 20px 80px;
-    background: $secondarycolor 0% 0% no-repeat padding-box;
+    background: var(--secondary-color) 0% 0% no-repeat padding-box;
     height: calc(100vh - 60px);
     overflow: scroll;
 }
@@ -57,7 +61,7 @@
 
 .innerScreenBackground {
     padding: 20px 20px;
-    background: $secondarycolor 0% 0% no-repeat padding-box;
+    background: var(--secondary-color) 0% 0% no-repeat padding-box;
     height: calc(100vh - 60px);
     overflow: scroll;
 }
@@ -139,7 +143,7 @@
 }
 
 .mdTypeCard {
-    background: $secondarycolor 0% 0% no-repeat padding-box;
+    background: var(--secondary-color) 0% 0% no-repeat padding-box;
     border-radius: 10px;
     padding: 20px;
 }
@@ -297,7 +301,7 @@
 }
 
 .deptFilterCard {
-    background: $secondarycolor 0% 0% no-repeat padding-box;
+    background: var(--secondary-color) 0% 0% no-repeat padding-box;
     border-radius: 6px;
     text-align: left;
     font: normal normal medium 16px/24px century-gothic;
@@ -308,7 +312,7 @@
 }
 
 .serviceAreaFilterCard {
-    background: $secondarycolor 0% 0% no-repeat padding-box;
+    background: var(--secondary-color) 0% 0% no-repeat padding-box;
     border-radius: 6px;
     text-align: left;
     font: normal normal medium 16px/24px century-gothic;

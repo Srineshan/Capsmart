@@ -159,7 +159,7 @@ const RetirePNP = () => {
     };
 
     const getDashboard = async (signal) => {
-        const { data: dashboardData } = await POST(`policy-and-procedure-management-service/policyAndProcedures/dashboard?offset=${page - 1}&limit=${limit}&isPaginationRequired=${isPaginationRequired}&tab=${"inactive_md"}&role=${sessionStorage.getItem('workModeType')}`, advancedSearch, { signal });
+        const { data: dashboardData } = await POST(`policy-and-procedure-management-service/policyAndProcedures/dashboard?offset=${page - 1}&limit=${limit}&isPaginationRequired=${isPaginationRequired}&tab=${"inactive_pnp"}&role=${sessionStorage.getItem('workModeType')}`, advancedSearch, { signal });
         setDashboardData(dashboardData?.policyAndProcedures);
         setTotalTableCount(dashboardData?.numberOfElements);
     }
@@ -451,7 +451,7 @@ const RetirePNP = () => {
             no.push(index + 1);
             title.push(data?.title);
             desc.push(data?.title)
-            mdID.push(data?.mdID);
+            mdID.push(data?.pnpID);
             department.push(data?.sites?.[0]?.departments?.length <= 4 ? data?.sites?.[0]?.departments?.map(data => data?.name)?.join(', ') : data?.sites?.[0]?.departments?.length);
             departmentHoverText.push(data?.sites?.[0]?.departments?.length > 4 ? <div>{data?.sites?.[0]?.departments?.map(data => (<div>{data?.name}</div>))}</div> : '')
             firstPublished.push(data?.initialPublishedDate ? format(new Date(data?.initialPublishedDate), 'MMM dd, yyyy') : '-');

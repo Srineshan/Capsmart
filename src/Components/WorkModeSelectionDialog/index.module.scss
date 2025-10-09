@@ -21,7 +21,7 @@
 }
 
 .dividerMargin {
-  margin: 0 40px;
+  margin: 10px 40px;
 
 }
 
@@ -77,13 +77,49 @@
   color: #FFFFFF !important;
 }
 
+.applicationSelectionPNPCard {
+  background: #FFFFFF 0% 0% no-repeat padding-box;
+  border: 1px solid #E8E9E9;
+  border-radius: 8px;
+  padding: 10px 40px;
+  width: 100%;
+}
+
+.applicationSelectionPNPCard:hover {
+  background-color: #E8F5E9;
+  color: #FFFFFF !important;
+}
+
+.applicationSelectionPNPWorkspaceCard {
+  background: #FFFFFF 0% 0% no-repeat padding-box;
+  border: 1px solid #E8E9E9;
+  border-radius: 8px;
+  padding: 10px 40px;
+  width: 100%;
+}
+
+.applicationSelectionPNPWorkspaceCard:hover {
+  background-color: #168E0D;
+  color: #FFFFFF !important;
+}
+
 .selectedApplicationCard {
   background-color: rgba(9, 149, 188, 0.1);
+}
+
+.selectedApplicationPNPCard {
+  background-color: #E8F5E9;
 }
 
 .applicationImage {
   height: 60px !important;
   object-fit: contain;
+}
+
+.applicationPNPName {
+  text-align: center;
+  font: normal normal bold 24px/31px var(--font-style);
+  color: #63a100;
 }
 
 .applicationName {
@@ -100,6 +136,12 @@
 
 .applicationNamePrimary:hover {
   color: #FFFFFF;
+}
+
+.pnpNamePrimary {
+  text-align: center;
+  font: normal normal bold 24px/31px var(--font-style);
+  color: #5f1546;
 }
 
 .siteNamePrimary {

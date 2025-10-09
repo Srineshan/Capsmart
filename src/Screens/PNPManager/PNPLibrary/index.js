@@ -285,7 +285,7 @@ const PNPLibrary = () => {
         // setDashboardData(dashboardData?.medicalDirectives);
         // setTotalTableCount(dashboardData?.numberOfElements);
         let data = {
-            siteDepartmentSpecialties: [selectedDepartmentSpecialities !== "" ? `${selectedSite}#${selectedDepartmentSpecialities}` : `${selectedSite}#${departmentId}`],
+            siteDepartmentSpecialties: [selectedDepartmentSpecialities !== "" ? `${selectedSite}#${selectedDepartmentSpecialities}` : departmentId ? `${selectedSite}#${departmentId}` : `${selectedSite}`],
             searchText: searchTermForTable,
             pnpID: mdId,
             title: mdTitle,
@@ -316,7 +316,7 @@ const PNPLibrary = () => {
     }
 
     const getLibraryMeta = async () => {
-        let url = `policy-and-procedure-management-service/policyAndProcedures/library/meta?siteDepartmentSpecialties=${[selectedDepartmentSpecialities !== "" ? `${selectedSite}%23${selectedDepartmentSpecialities?.replace(/#/g, "%23")}` : `${selectedSite}%23${departmentId}`]}`
+        let url = `policy-and-procedure-management-service/policyAndProcedures/library/meta?siteDepartmentSpecialties=${[selectedDepartmentSpecialities !== "" ? `${selectedSite}%23${selectedDepartmentSpecialities?.replace(/#/g, "%23")}` : departmentId ? `${selectedSite}%23${departmentId}` : `${selectedSite}`]}`
         const response = await axios(`${baseUrl()}/${url}`, {
             method: "GET",
             headers: {
@@ -419,7 +419,7 @@ const PNPLibrary = () => {
                         className={style.logo}
                     />
                     {!showMD && (
-                        <div className={`${style.titleText} ${style.verticalAlignCenter} ${style.marginLeft20}`}>{`${departmentList?.filter(data => data?.id === (selectedDepartmentSpecialities !== "" ? selectedDepartmentSpecialities?.split('#')?.[0] : departmentId))?.[0]?.departmentName?.name} ${selectedDepartmentSpecialities?.split('#')?.length > 1 ? `/ ${departmentList?.filter(data => data?.id === (selectedDepartmentSpecialities !== "" ? selectedDepartmentSpecialities?.split('#')?.[0] : departmentId))?.[0]?.serviceAreas?.filter(innerData => innerData?.id === selectedDepartmentSpecialities?.split('#')?.[1])?.[0]?.name}` : ''} Policies & Procedures Library`}</div>
+                        <div className={`${style.titleText} ${style.verticalAlignCenter} ${style.marginLeft20}`}>{`${(selectedDepartmentSpecialities || departmentId) ? departmentList?.filter(data => data?.id === (selectedDepartmentSpecialities !== "" ? selectedDepartmentSpecialities?.split('#')?.[0] : departmentId))?.[0]?.departmentName?.name : ''} ${(selectedDepartmentSpecialities || departmentId) ? selectedDepartmentSpecialities?.split('#')?.length > 1 ? `/ ${departmentList?.filter(data => data?.id === (selectedDepartmentSpecialities !== "" ? selectedDepartmentSpecialities?.split('#')?.[0] : departmentId))?.[0]?.serviceAreas?.filter(innerData => innerData?.id === selectedDepartmentSpecialities?.split('#')?.[1])?.[0]?.name}` : '' : ''} Policies & Procedures Library`}</div>
                     )}
                     {showMD && (
                         <div className={`${style.titleText} ${style.verticalAlignCenter} ${style.marginLeft20}`}>{selectedMD?.title ? `${selectedMD?.pnpID} : ${selectedMD?.title}` : ''}</div>
@@ -508,15 +508,15 @@ const PNPLibrary = () => {
                                 <div className={`${style.marginTop} ${style.mdTypeCardGrid}`}>
                                     <div className={`${style.mdTypeCard} ${style.cursorPointer}`} onClick={() => { setCreationType(''); setShowList(true) }}>
                                         <div className={style.cardTitle}>{`All Policies & Procedures`}</div>
-                                        <div className={`${style.cardCount}`}>{mdLibraryMeta?.totalMedicalDirectives}</div>
+                                        <div className={`${style.cardCount}`}>{mdLibraryMeta?.totalPolicyAndProcedures}</div>
                                     </div>
                                     <div className={`${style.mdTypeCard} ${style.cursorPointer}`} onClick={() => { setCreationType('NEW'); setShowList(true) }}>
                                         <div className={style.cardTitle}>{`New`}</div>
-                                        <div className={`${style.cardCount}`}>{mdLibraryMeta?.newDirectivesCount}</div>
+                                        <div className={`${style.cardCount}`}>{mdLibraryMeta?.newPolicyAndProceduresCount}</div>
                                     </div>
                                     <div className={`${style.mdTypeCard} ${style.cursorPointer}`} onClick={() => { setCreationType('RENEW'); setShowList(true) }}>
                                         <div className={style.cardTitle}>{`Revised`}</div>
-                                        <div className={`${style.cardCount}`}>{mdLibraryMeta?.revisedDirectivesCount}</div>
+                                        <div className={`${style.cardCount}`}>{mdLibraryMeta?.revisedPolicyAndProceduresCount}</div>
                                     </div>
                                 </div>
                             </div>
@@ -560,8 +560,8 @@ const PNPLibrary = () => {
                 <div className={`${style.bigCardGrid} ${style.innerScreenBackground}`}>
                     <div>
                         <div className={`${style.mdInnerCard} ${style.twoCol}`}>
-                            <div className={`${style.typeCard} ${style.typeText} ${creationType === "NEW" ? style.activeTypeCard : ''} ${style.cursorPointer} ${style.verticalAlignCenter} ${style.justifyCenter}`} onClick={() => { setCreationType('NEW') }}>New ({mdLibraryMeta?.newDirectivesCount})</div>
-                            <div className={`${style.typeCard} ${style.typeText} ${creationType === "RENEW" ? style.activeTypeCard : ''} ${style.cursorPointer} ${style.verticalAlignCenter} ${style.justifyCenter} ${style.marginLeft10}`} onClick={() => { setCreationType('RENEW') }}>Revised ({mdLibraryMeta?.revisedDirectivesCount})</div>
+                            <div className={`${style.typeCard} ${style.typeText} ${creationType === "NEW" ? style.activeTypeCard : ''} ${style.cursorPointer} ${style.verticalAlignCenter} ${style.justifyCenter}`} onClick={() => { setCreationType('NEW') }}>New ({mdLibraryMeta?.newPolicyAndProceduresCount})</div>
+                            <div className={`${style.typeCard} ${style.typeText} ${creationType === "RENEW" ? style.activeTypeCard : ''} ${style.cursorPointer} ${style.verticalAlignCenter} ${style.justifyCenter} ${style.marginLeft10}`} onClick={() => { setCreationType('RENEW') }}>Revised ({mdLibraryMeta?.revisedPolicyAndProceduresCount})</div>
                         </div>
                         <div className={`${style.mdInnerCard} ${style.marginTop}`}>
                             <div className={style.allDeptText}>All Departments</div>
@@ -767,7 +767,7 @@ const PNPLibrary = () => {
                             </div>
                         )}
                         <div className={`${style.mdCard} ${style.marginTop}`}>
-                            <div className={style.deptTableHeading}>{`Policies & Procedures For ${departmentList?.filter(data => data?.id === (selectedDepartmentSpecialities !== "" ? selectedDepartmentSpecialities?.split('#')?.[0] : departmentId))?.[0]?.departmentName?.name} ${selectedDepartmentSpecialities?.split('#')?.length > 1 ? `- ${departmentList?.filter(data => data?.id === (selectedDepartmentSpecialities !== "" ? selectedDepartmentSpecialities?.split('#')?.[0] : departmentId))?.[0]?.serviceAreas?.filter(innerData => innerData?.id === selectedDepartmentSpecialities?.split('#')?.[1])?.[0]?.name}` : ''} (${dashboardData?.length})`}</div>
+                            <div className={style.deptTableHeading}>{`Policies & Procedures ${(selectedDepartmentSpecialities || departmentId) ? 'For' : ''} ${(selectedDepartmentSpecialities || departmentId) ? departmentList?.filter(data => data?.id === (selectedDepartmentSpecialities !== "" ? selectedDepartmentSpecialities?.split('#')?.[0] : departmentId))?.[0]?.departmentName?.name : ''} ${(selectedDepartmentSpecialities || departmentId) ? selectedDepartmentSpecialities?.split('#')?.length > 1 ? `- ${departmentList?.filter(data => data?.id === (selectedDepartmentSpecialities !== "" ? selectedDepartmentSpecialities?.split('#')?.[0] : departmentId))?.[0]?.serviceAreas?.filter(innerData => innerData?.id === selectedDepartmentSpecialities?.split('#')?.[1])?.[0]?.name}` : '' : ''} (${dashboardData?.length})`}</div>
                             <div ref={componentRef} className={style.marginTop20}>
                                 <div className={`${style.reduceMarginTop10} registeredUsers`} ref={PDFRef}>
                                     <TableTwo

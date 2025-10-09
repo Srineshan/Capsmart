@@ -5,7 +5,7 @@ import FormControl from '@mui/material/FormControl';
 import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
 import Select from '@mui/material/Select';
-import { GET } from './../dataSaver';
+import { GET, POST } from './../dataSaver';
 import TextField from '@mui/material/TextField';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -300,8 +300,8 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
     }
 
     const getStaffList = async () => {
-        const response = await GET(
-            `user-management-service/user/allStaffs?status=ACTIVE&roles=${"Author / Owner"}`
+        const response = await POST(
+            `user-management-service/user/allStaffs?status=ACTIVE&roles=${"Author / Owner"}`, {}
         );
         console.log(response.data);
         setAuthors(response?.data || [])
@@ -703,10 +703,10 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                 typeof value === 'string' ? authors?.filter(data => value.split(',')?.includes(data?.id))?.map(data => data) : authors?.filter(data => value?.includes(data?.id))?.map(data => data),
             );
         }
-        setSelectedContracts([defaultOption]);
-        setSelectedContractsToSend([]);
-        setSelectedContractedServiceProvider([defaultOption]);
-        setSelectedContractedServiceProviderToSend([]);
+        // setSelectedContracts([defaultOption]);
+        // setSelectedContractsToSend([]);
+        // setSelectedContractedServiceProvider([defaultOption]);
+        // setSelectedContractedServiceProviderToSend([]);
     };
 
     const handleChangeStaffType = (event) => {
@@ -1093,7 +1093,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                             if (selected?.length === 1) {
                                                 const author = authors?.find(auth => auth?.id === selected[0]);
                                                 console.log("")
-                                                return author?.name || 'All';
+                                                return `${author?.name?.firstName} ${author?.name?.lastName}` || 'All';
                                             } else if (selected.length > 1) {
                                                 return `${selected.length} Selected`;
                                             } else {

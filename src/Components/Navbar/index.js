@@ -460,7 +460,7 @@ const Navbar = () => {
           }
           <div>
             <img
-              src={hospitalLogo}
+              src={sessionStorage.getItem('selectedApplication') === "PNP_MANAGER" ? 'https://live-entity-service.s3.amazonaws.com/LOGO/64246d491b70b07241d37aa1/6424714c1b70b07241d37aa3/central_logo.jpeg' : hospitalLogo}
               alt=""
               className={style.sanmateoLogo}
             />
@@ -1021,7 +1021,7 @@ const Navbar = () => {
             </>
           ) : (
             <>
-              {workModeType === "PnP Manager" ? (
+              {workModeType === "P&P Manager" ? (
                 <Link to={"/pnpManager"} className={style.noFontStyle}>
                   <div
                     className={`${style.menuStyle} ${(window.location.pathname.includes("/pnpManager") && window.location.pathname === "/pnpManager") &&

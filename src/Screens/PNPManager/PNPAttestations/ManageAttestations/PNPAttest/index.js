@@ -175,7 +175,7 @@ const ManagePNPAttest = () => {
                 <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
                     <div>
                         <div className={style.medicalDirectivesCard}>
-                            <div className={style.title}>{`${policyAndProcedures?.title}`} <span className={style.mdIDStyle}>{policyAndProcedures?.mdID}</span></div>
+                            <div className={style.title}>{`${policyAndProcedures?.title}`} <span className={style.mdIDStyle}>{policyAndProcedures?.pnpID}</span></div>
                             {(!isScrolledToBottom) && (
                                 <div className={`${style.marginTop10} ${style.description} ${style.attestationRequiredText}`}>You need to scroll to the end of the document before you can certify that it has been viewed by you.</div>
                             )}

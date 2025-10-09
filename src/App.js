@@ -1422,6 +1422,7 @@ const App = ({ props }) => {
                 <Route path="/pnpManager/manageAcknowledgement" element={<ProtectedRoute><ManagePNPAcknowledgement /></ProtectedRoute>} />
                 <Route path="/pnpManager/manageSignOff" element={<ProtectedRoute><ManagePNPSignOff /></ProtectedRoute>} />
                 <Route path="/pnpManager/manageAttestationGroups" element={<ProtectedRoute><ManagePNPAttestationGroups /></ProtectedRoute>} />
+                <Route path="/pnpManager/libraries/:entityId" element={<PNPLibrary />} />
                 <Route path="/pnpManager/libraries/:entityId/:departmentId" element={<PNPLibrary />} />
                 <Route path="/pnpManager/libraries/:entityId/:departmentId/:selectedMDId" element={<PNPLibrary />} />
                 <Route path="/thankyou" element={<ProtectedRoute><Thankyou /></ProtectedRoute>} />

@@ -145,7 +145,7 @@ const ManageAttestation = () => {
         getAttestationList(signal);
 
         return () => controller.abort();
-    }, [selectedOption, advancedSearch]);
+    }, [selectedOption, advancedSearch, limit, page]);
 
     // useEffect(() => {
     //     if (entityId !== "" && entityId !== undefined) {
@@ -286,7 +286,7 @@ const ManageAttestation = () => {
             `policy-and-procedure-management-service/attestation/byUser?offset=${page - 1}&limit=${limit}&isPaginationRequired=${isPaginationRequired}&userId=${users?.id}&tab=${selectedOption}`, advancedSearch, { signal }
         );
         console.log(response.data);
-        setAttestationList(response?.data?.medicalDirectives)
+        setAttestationList(response?.data?.policyAndProcedures)
         setTotalTableCount(response?.data?.numberOfElements)
         setSearchCount(response?.data?.numberOfElements)
     }
@@ -312,7 +312,7 @@ const ManageAttestation = () => {
         if (checkedIds?.length === attestationList?.length) {
             setCheckedIds([]);
         } else {
-            const allIds = attestationList?.map(data => data?.medicalDirective?.id);
+            const allIds = attestationList?.map(data => data?.policyAndProcedure?.id);
             setCheckedIds(allIds);
         }
     };
@@ -320,9 +320,9 @@ const ManageAttestation = () => {
     const handleCheckboxClick = (id, innerData) => {
         setCheckedIds(prevCheckedIds => {
             // Toggle the ID in the array
-            return prevCheckedIds?.map(data => data?.id)?.includes(innerData?.medicalDirective?.id)
-                ? prevCheckedIds.filter(checkedId => checkedId?.id !== innerData?.medicalDirective?.id)
-                : [...prevCheckedIds, innerData?.medicalDirective?.id];
+            return prevCheckedIds?.map(data => data?.id)?.includes(innerData?.policyAndProcedure?.id)
+                ? prevCheckedIds.filter(checkedId => checkedId?.id !== innerData?.policyAndProcedure?.id)
+                : [...prevCheckedIds, innerData?.policyAndProcedure?.id];
         });
         getAttestationValues()
     };
@@ -415,17 +415,17 @@ const ManageAttestation = () => {
             checkbox.push(
                 <CommonCheckBox
                     size="medium"
-                    checked={checkedIds?.includes(data?.medicalDirective?.id)}
-                    onChange={() => handleCheckboxClick(data?.medicalDirective?.id)}
-                    key={`${data?.medicalDirective?.id}${index}`}
+                    checked={checkedIds?.includes(data?.policyAndProcedure?.id)}
+                    onChange={() => handleCheckboxClick(data?.policyAndProcedure?.id)}
+                    key={`${data?.policyAndProcedure?.id}${index}`}
                 />
             );
-            title.push(data?.medicalDirective?.title);
-            id.push(data?.medicalDirective?.mdID);
-            type.push(data?.medicalDirective?.revisionStatus === "NA" ? 'New' : "Revised");
-            dueDate.push(data?.dueDate);
+            title.push(data?.policyAndProcedure?.title);
+            id.push(data?.policyAndProcedure?.pnpID);
+            type.push(data?.policyAndProcedure?.revisionStatus === "NA" ? 'New' : "Revised");
+            dueDate.push(data?.dueDate ? format(new Date(data?.dueDate), 'MMM dd, yyyy') : '-');
             attestedDate.push(data?.attestationLog?.createdDate ? format(new Date(data?.attestationLog?.createdDate), 'MMM dd, yyyy') : '-');
-            lastUpdated.push(data?.medicalDirective?.lastModifiedDate ? format(new Date(data?.medicalDirective?.lastModifiedDate), 'MMM dd, yyyy') : '-');
+            lastUpdated.push(data?.policyAndProcedure?.lastModifiedDate ? format(new Date(data?.policyAndProcedure?.lastModifiedDate), 'MMM dd, yyyy') : '-');
             signImg.push(<img src={BlueSign} alt="" className={`${style.blueSignImgStyle} ${style.cursorPointer}`} onClick={() => handleEdit(data)} />);
         });
 
@@ -509,7 +509,7 @@ const ManageAttestation = () => {
     }
 
     const handleEdit = (data) => {
-        navigate(`/pnpManager/manageAttestation/${entityId}/${data?.medicalDirective?.id}`)
+        navigate(`/pnpManager/manageAttestation/${entityId}/${data?.policyAndProcedure?.id}`)
     }
 
     const handleSubmitAttestBulk = async () => {
@@ -720,14 +720,14 @@ const ManageAttestation = () => {
                     <div>
                         <div className={`${style.grid2} ${style.marginTop10}`}>
                             <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="REVIEW & ATTEST" bigNumber={attestationMeta?.pending_pnp?.totalCount} smallNum1={attestationMeta?.pending_pnp?.notPastDueCount} smallNum2={attestationMeta?.pending_pnp?.pastDueCount} smallText1="Not Done" smallText2="Past Due" currentTile="pending_pnp" topText='' smallNum1Color={style.redSmallNumber} smallNum2Color={style.redSmallNumber} smallNum1SelectedColor={style.redSmallNumberSelected} smallNum2SelectedColor={style.redSmallNumberSelected} />
-                            <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="ATTESTED" bigNumber={attestationMeta?.attested_pnp?.totalCount} smallNum1="" smallNum2="" currentTile="attested_md" topText='IN THE PAST 12 MONTHS' />
+                            <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="ATTESTED" bigNumber={attestationMeta?.attested_pnp?.totalCount} smallNum1="" smallNum2="" currentTile="attested_pnp" topText='IN THE PAST 12 MONTHS' />
                         </div>
                         <div
                             className={`${style.spaceBetween} ${style.marginLeft30} ${style.marginTop20} `}
                         >
                             <div className={`${style.tabs}`}>
                                 <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Review & Attest" tileCount={attestationMeta?.pending_pnp?.totalCount} currentTile="pending_pnp" />
-                                <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Attested" tileCount={attestationMeta?.attested_pnp?.totalCount} currentTile="attested_md" />
+                                <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Attested" tileCount={attestationMeta?.attested_pnp?.totalCount} currentTile="attested_pnp" />
                             </div>
                             <div>
                                 <button

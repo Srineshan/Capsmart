@@ -131,7 +131,7 @@ const PNPAttestStatus = () => {
     const getMDLogs = async () => {
         if (medicalDirectivesId !== undefined) {
             const { data: medicalDirectivesLog } = await GET(
-                `policy-and-procedure-management-service/policyAndProcedures/${medicalDirectivesId}/logs?workflowAction=${policyAndProcedures?.status === "INACTIVE" ? 'RETIRED' : 'REVISED'}`
+                `policy-and-procedure-management-service/policyAndProcedures/${medicalDirectivesId}/logs?workflowAction=${policyAndProcedures?.status === "RETIRED" ? 'RETIRED' : 'REVISED'}`
             );
             setMDLog(medicalDirectivesLog)
         }
@@ -178,7 +178,7 @@ const PNPAttestStatus = () => {
     }
 
     const handleClose = () => {
-        if (policyAndProcedures?.status !== "INACTIVE") {
+        if (policyAndProcedures?.status !== "RETIRED") {
             navigate(`/pnpManager`);
         } else {
             navigate(`/pnpManager/retired`);
@@ -278,7 +278,7 @@ const PNPAttestStatus = () => {
                                 </>
                             )}
                         </div> */}
-                        {policyAndProcedures?.status !== "INACTIVE" ? (
+                        {policyAndProcedures?.status !== "RETIRED" ? (
                             <>
                                 <div className={`${style.medicalDirectivesCard}`}>
                                     <div className={style.title}><strong>{`Attestations Status`} </strong></div>

@@ -1,7 +1,7 @@
 @import "../../../../index.scss";
 
 .screenBackground {
-    background: $secondarycolor 0% 0% no-repeat padding-box;
+    background: var(--secondary-color) 0% 0% no-repeat padding-box;
 }
 
 .marginTop {
@@ -62,7 +62,7 @@
     bottom: 0;
     z-index: 10;
     padding: 20px 20px 20px 20px;
-    background: $secondarycolor 0% 0% no-repeat padding-box;
+    background: var(--secondary-color) 0% 0% no-repeat padding-box;
 }
 
 @media (max-width: 1240px) {
@@ -433,7 +433,7 @@
 }
 
 .uploadBorderStyle {
-    background: $secondarycolor 0% 0% no-repeat padding-box;
+    background: var(--secondary-color) 0% 0% no-repeat padding-box;
     border: 0.800000011920929px dashed #173790;
     border-radius: 4px;
     opacity: 1;

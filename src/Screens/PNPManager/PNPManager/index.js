@@ -17,6 +17,7 @@ import CommonInputField from '../../../Components/CommonFields/CommonInputField'
 import PNPManagerStep1 from "./step1";
 import PNPManagerStep2 from "./step2";
 import PNPManagerStep3 from "./step3";
+import PNPManagerStep4 from "./step4";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import CommonSearchField from "../../../Components/CommonFields/CommonSearchField";
 import CommonDateField from "../../../Components/CommonFields/CommonDateField";
@@ -25,7 +26,7 @@ import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { format } from "date-fns";
 import CommonMultiSelectField from "../../../Components/CommonFields/CommonMultiSelectField";
-import PNPManagerStep4 from "./step4";
+import PNPManagerStep5 from "./step5";
 
 const PNPManager = () => {
   const navigate = useNavigate();
@@ -44,6 +45,7 @@ const PNPManager = () => {
   const [step2, setStep2] = useState(false);
   const [step3, setStep3] = useState(false);
   const [step4, setStep4] = useState(false);
+  const [step5, setStep5] = useState(false);
   const [departmentList, setDepartmentList] = useState([]);
   const [selectedCombinations, setSelectedCombinations] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState([]);
@@ -373,7 +375,9 @@ const PNPManager = () => {
   ) : step3 ? (
     <PNPManagerStep3 setStep2={setStep2} setStep3={setStep3} setStep4={setStep4} mdValue={mdValue} setMdValue={setMdValue} getMD={getMD} setSelectedMdId={setSelectedMdId} />
   ) : step4 ? (
-    <PNPManagerStep4 setStep3={setStep3} setStep4={setStep4} mdValue={mdValue} setMdValue={setMdValue} setSelectedMdId={setSelectedMdId} />
+    <PNPManagerStep4 setStep3={setStep3} setStep4={setStep4} setStep5={setStep5} mdValue={mdValue} setMdValue={setMdValue} getMD={getMD} setSelectedMdId={setSelectedMdId} />
+  ) : step5 ? (
+    <PNPManagerStep5 setStep4={setStep4} setStep5={setStep5} mdValue={mdValue} setMdValue={setMdValue} setSelectedMdId={setSelectedMdId} />
   ) : (
     <Fragment>
       <Navbar />

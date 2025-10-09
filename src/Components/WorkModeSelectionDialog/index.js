@@ -300,9 +300,9 @@ const WorkModeDialog = ({ getIsOpen }) => {
               <div className={`${style.workSpaceDesc}  ${selectedWorkSpace !== '' ? style.disabledView : ''}`}>Select the application you want to work in:</div>
               <div className={`${style.threeCol} ${style.padding}`}>
                 {["CAP_MANAGER", "MD_MANAGER", "PNP_MANAGER"]?.map(data => (
-                  <div className={`${style.applicationSelectionCard} ${selectedWorkSpace === data ? style.selectedApplicationCard : ''} ${style.justifyCenter} ${style.verticalAlignCenter} ${style.cursorPointer} ${style.marginRight}`} onClick={() => { setSelectedWorkSpace(data); sessionStorage.setItem('selectedApplication', data) }}>
+                  <div className={`${data === "PNP_MANAGER" ? style.applicationSelectionPNPCard : style.applicationSelectionCard} ${selectedWorkSpace === data ? data === "PNP_MANAGER" ? style.selectedApplicationPNPCard : style.selectedApplicationCard : ''} ${style.justifyCenter} ${style.verticalAlignCenter} ${style.cursorPointer} ${style.marginRight}`} onClick={() => { setSelectedWorkSpace(data); sessionStorage.setItem('selectedApplication', data) }}>
                     <img src={data === 'CAP_MANAGER' ? CAPManager : data === "MD_MANAGER" ? MDManager : PNPManager} alt="" className={style.applicationImage} />
-                    <div className={style.marginLeft10}>{data === 'CAP_MANAGER' ? <div className={style.applicationName}>CAP<span className={style.applicationNamePrimary}>Manager</span></div> : data === 'MD_MANAGER' ? <div className={style.applicationName}>MD<span className={style.applicationNamePrimary}>Manager</span></div> : <div className={style.applicationName}>P&P<span className={style.applicationNamePrimary}>Manager</span></div>}</div>
+                    <div className={style.marginLeft10}>{data === 'CAP_MANAGER' ? <div className={style.applicationName}>CAP<span className={style.applicationNamePrimary}>Manager</span></div> : data === 'MD_MANAGER' ? <div className={style.applicationName}>MD<span className={style.applicationNamePrimary}>Manager</span></div> : <div className={style.applicationPNPName}>P&P<span className={style.pnpNamePrimary}>Manager</span></div>}</div>
                   </div>
                 ))}
               </div>
@@ -312,7 +312,7 @@ const WorkModeDialog = ({ getIsOpen }) => {
           {selectedWorkSpace !== "" && (
             <div>
               <div>
-                <div className={`${style.heading}  ${style.padding}`}>Select {selectedWorkSpace === "CAP_MANAGER" ? 'CAP Manager' : selectedWorkSpace === "MD_MANAGER" ? 'MD Manager' : 'PNP Manager'} Workspace</div>
+                <div className={`${style.heading}  ${style.padding}`}>Select {selectedWorkSpace === "CAP_MANAGER" ? 'CAP Manager' : selectedWorkSpace === "MD_MANAGER" ? 'MD Manager' : 'P&P Manager'} Workspace</div>
                 <div className={`${style.workSpaceDesc} `}>Your user role allows you to access multiple workspaces, select the workspace you want to work in:</div>
               </div>
               <div className={`${style.threeCol} ${style.padding2}`}>
@@ -333,7 +333,7 @@ const WorkModeDialog = ({ getIsOpen }) => {
                 )}
                 {userRoleToDisplay?.includes("Acknowledger") && (
                   <div
-                    className={`${style.applicationSelectionCard} ${style.verticalAlignCenter} ${style.cursorPointer} ${style.marginRight}`}
+                    className={`${selectedWorkSpace === "PNP_MANAGER" ? style.applicationSelectionPNPWorkspaceCard : style.applicationSelectionCard} ${style.verticalAlignCenter} ${style.cursorPointer} ${style.marginRight}`}
                     onClick={() => handleWorkModeSelection("Acknowledger")}
                     onMouseEnter={() => setHoveredRole("Acknowledger")}
                     onMouseLeave={() => setHoveredRole(null)}
@@ -348,7 +348,7 @@ const WorkModeDialog = ({ getIsOpen }) => {
                 )}
                 {userRoleToDisplay?.includes("Reviewer / Approver") && (
                   <div
-                    className={`${style.applicationSelectionCard} ${style.verticalAlignCenter} ${style.cursorPointer} ${style.marginRight}`}
+                    className={`${selectedWorkSpace === "PNP_MANAGER" ? style.applicationSelectionPNPWorkspaceCard : style.applicationSelectionCard} ${style.verticalAlignCenter} ${style.cursorPointer} ${style.marginRight}`}
                     onClick={() => handleWorkModeSelection("Reviewer / Approver")}
                     onMouseEnter={() => setHoveredRole("Reviewer / Approver")}
                     onMouseLeave={() => setHoveredRole(null)}
@@ -363,7 +363,7 @@ const WorkModeDialog = ({ getIsOpen }) => {
                 )}
                 {userRoleToDisplay?.includes("Author / Owner") && (
                   <div
-                    className={`${style.applicationSelectionCard} ${style.verticalAlignCenter} ${style.cursorPointer} ${style.marginRight}`}
+                    className={`${selectedWorkSpace === "PNP_MANAGER" ? style.applicationSelectionPNPWorkspaceCard : style.applicationSelectionCard} ${style.verticalAlignCenter} ${style.cursorPointer} ${style.marginRight}`}
                     onClick={() => handleWorkModeSelection("Author / Owner")}
                     onMouseEnter={() => setHoveredRole("Author / Owner")}
                     onMouseLeave={() => setHoveredRole(null)}
@@ -376,19 +376,19 @@ const WorkModeDialog = ({ getIsOpen }) => {
                     <p className={`${hoveredRole === "Author / Owner" ? style.roleTitleHover : style.roleTitle} ${style.marginTop10}`}>Author / Owner</p>
                   </div>
                 )}
-                {userRoleToDisplay?.includes("PnP Manager") && (
+                {userRoleToDisplay?.includes("P&P Manager") && (
                   <div
-                    className={`${style.applicationSelectionCard} ${style.verticalAlignCenter} ${style.cursorPointer} ${style.marginRight}`}
-                    onClick={() => handleWorkModeSelection("PnP Manager")}
-                    onMouseEnter={() => setHoveredRole("PnP Manager")}
+                    className={`${style.applicationSelectionPNPWorkspaceCard} ${style.verticalAlignCenter} ${style.cursorPointer} ${style.marginRight}`}
+                    onClick={() => handleWorkModeSelection("P&P Manager")}
+                    onMouseEnter={() => setHoveredRole("P&P Manager")}
                     onMouseLeave={() => setHoveredRole(null)}
                   >
                     <img
-                      src={hoveredRole === "PnP Manager" ? SMimgHover : SMimg}
+                      src={hoveredRole === "P&P Manager" ? SMimgHover : SMimg}
                       alt="P&P Manager"
                       className={` ${style.cursorPointer} ${style.applicationImage} ${style.marginRight}`}
                     />
-                    <p className={`${hoveredRole === "PnP Manager" ? style.roleTitleHover : style.roleTitle} ${style.marginTop10}`}>P&P Manager</p>
+                    <p className={`${hoveredRole === "P&P Manager" ? style.roleTitleHover : style.roleTitle} ${style.marginTop10}`}>P&P Manager</p>
                   </div>
                 )}
                 {userRoleToDisplay?.includes("Staff Manager") && (
