@@ -37,7 +37,7 @@
 
 .heading {
   text-align: center;
-  font: normal normal normal 32px/40px proxima-nova;
+  font: normal normal normal 32px/40px var(--font-style);
   letter-spacing: 0px;
   color: #EDEDF3;
   text-transform: capitalize;
@@ -86,7 +86,7 @@
 .cancelButton {
   background: #FFFFFF 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 6px #00000029;
-  border: 0.5px solid $primarycolor;
+  border: 0.5px solid var(--primary-color);
   border-radius: 8px;
   opacity: 1;
   padding: 10px 20px;
@@ -94,15 +94,15 @@
 
 .cancelButtonTextStyle {
   text-align: center;
-  font: normal normal bold 18px/30px proxima-nova;
+  font: normal normal bold 18px/30px var(--font-style);
   letter-spacing: 0px;
-  color: $primarycolor;
+  color: var(--primary-color);
   text-transform: uppercase;
   opacity: 1;
 }
 
 .reviewButtonStyle {
-  background: $primarycolor 0% 0% no-repeat padding-box;
+  background: var(--primary-color) 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 6px #00000029;
   border-radius: 8px;
   opacity: 1;
@@ -111,7 +111,7 @@
 
 .reviewButton {
   text-align: center;
-  font: normal normal bold 18px/30px proxima-nova;
+  font: normal normal bold 18px/30px var(--font-style);
   letter-spacing: 0px;
   color: #FFFFFF;
   text-transform: uppercase;
@@ -148,7 +148,7 @@
 
 .rejectionHeadingTextStyle {
   text-align: left;
-  font: normal normal bold 16px proxima-nova;
+  font: normal normal bold 16px var(--font-style);
   letter-spacing: 0px;
   color: #2C2C2C;
   text-transform: capitalize;
@@ -157,7 +157,7 @@
 
 .rejectionTextStyle {
   text-align: left;
-  font: normal normal medium 18px/34px proxima-nova;
+  font: normal normal medium 18px/34px var(--font-style);
   letter-spacing: 0px;
   color: #2C2C2C;
   text-transform: capitalize;
@@ -174,7 +174,7 @@
 
 .rejectionSubHeadingTextStyle {
   text-align: left;
-  font: normal normal bold 16px proxima-nova;
+  font: normal normal bold 16px var(--font-style);
   letter-spacing: 0px;
   color: #454747;
   opacity: 1;
@@ -205,7 +205,7 @@
 
 .rejectionTextStyle1 {
   text-align: left;
-  font: normal normal medium 20px/24px proxima-nova;
+  font: normal normal medium 20px/24px var(--font-style);
   letter-spacing: 0px;
   color: #171A1A;
   text-transform: capitalize;
@@ -256,7 +256,7 @@
 
 .uploadTextStyle {
   text-align: left;
-  font: normal normal normal 18px/26px proxima-nova;
+  font: normal normal normal 18px/26px var(--font-style);
   letter-spacing: 0px;
   color: black;
   opacity: 1;
@@ -266,7 +266,7 @@
 .referenceCardStyle {
   background: #dddddf 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 18px #0F0B3129;
-  border: 1px solid $primarycolor;
+  border: 1px solid var(--primary-color);
   border-radius: 4px;
   opacity: 0.9;
   padding: 3px;
@@ -275,7 +275,7 @@
 .referenceCardStyleDescription {
   // background: #dddddf 0% 0% no-repeat padding-box;
   // box-shadow: 0px 3px 18px #0F0B3129;
-  border: 1px solid $primarycolor;
+  border: 1px solid var(--primary-color);
   border-radius: 4px;
   opacity: 0.9;
   // padding: 3px;
@@ -293,7 +293,7 @@
   text-align: left;
   font: normal normal normal 20px/24px la-solid-900;
   letter-spacing: 0px;
-  color: $primarycolor;
+  color: var(--primary-color);
   opacity: 1;
 }
 
@@ -301,21 +301,21 @@
 //   flex: 1;
 //   border: none;
 //   font-size: 14px;
-//   outline: $primarycolor;
+//   outline: var(--primary-color);
 //   padding: 0 5px;
 //   background: transparent;
 // }
 
 .searchInput {
   background: transparent;
-  border: $primarycolor;
+  border: var(--primary-color);
   outline: none;
   width: 100%;
 }
 
 .poweredBy {
   text-align: center;
-  font: normal normal normal 12px/19px proxima-nova;
+  font: normal normal normal 12px/19px var(--font-style);
   letter-spacing: 0px;
   color: #FFFFFF;
   opacity: 0.74;
@@ -323,7 +323,7 @@
 
 .alignText {
   text-align: center;
-  font: normal normal normal 20px proxima-nova;
+  font: normal normal normal 20px var(--font-style);
 }
 
 .justifyItem {
@@ -332,7 +332,7 @@
 
 .roleTitle {
   text-align: center;
-  font: normal normal normal 20px/40px proxima-nova;
+  font: normal normal normal 20px/40px var(--font-style);
   letter-spacing: 0px;
   color: #9AAFB5;
   opacity: 1;
@@ -340,16 +340,16 @@
 
 .roleTitleHover {
   text-align: center;
-  font: normal normal normal 20px/40px proxima-nova;
+  font: normal normal normal 20px/40px var(--font-style);
   letter-spacing: 0px;
   color: #F5F8F8;
   opacity: 1;
 }
 
 .backgroundRoleColor {
-//   background: #1E5666 0% 0% no-repeat padding-box;
-//   box-shadow: 0px 8px 16px #171A1A52;
-//   border-radius: 20px;
+  //   background: #1E5666 0% 0% no-repeat padding-box;
+  //   box-shadow: 0px 8px 16px #171A1A52;
+  //   border-radius: 20px;
   opacity: 1;
   padding-top: 40px;
 }

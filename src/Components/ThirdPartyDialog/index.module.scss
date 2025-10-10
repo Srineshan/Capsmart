@@ -2,8 +2,8 @@
 
 .heading {
   text-align: left;
-  font: normal normal bold 20px/28px proxima-nova;
-  color: $primarycolor;
+  font: normal normal bold 20px/28px var(--font-style);
+  color: var(--primary-color);
   text-transform: capitalize;
 }
 
@@ -59,11 +59,11 @@
 }
 
 .continue {
-  background: $primarycolor 0% 0% no-repeat padding-box;
+  background: var(--primary-color) 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 6px #00000029;
   border-radius: 8px;
   text-align: center;
-  font: normal normal bold 17px/30px proxima-nova;
+  font: normal normal bold 17px/30px var(--font-style);
   letter-spacing: 0px;
   color: #FFFFFF;
   text-transform: uppercase;
@@ -108,14 +108,14 @@
 
 .paymentFailedText {
   text-align: left;
-  font: normal normal bold 15px/25px proxima-nova;
+  font: normal normal bold 15px/25px var(--font-style);
   color: $statusred;
   text-transform: capitalize;
 }
 
 .paymentSuccessText {
   text-align: left;
-  font: normal normal bold 15px/25px proxima-nova;
+  font: normal normal bold 15px/25px var(--font-style);
   color: $statusgreen;
   text-transform: capitalize;
 }
@@ -136,14 +136,14 @@
 /* Header */
 .receiptHeader {
   text-align: center;
-  font: normal normal normal 28px/38px proxima-nova;
+  font: normal normal normal 28px/38px var(--font-style);
   letter-spacing: 0px;
-  color: $primarycolor;
+  color: var(--primary-color);
 }
 
 .receiptNumber {
   text-align: center;
-  font: normal normal bold 14px/16px proxima-nova;
+  font: normal normal bold 14px/16px var(--font-style);
   letter-spacing: 0px;
   color: #454747;
 }
@@ -161,7 +161,7 @@
 
 .receiptDescription {
   text-align: left;
-  font: normal normal normal 14px/20px proxima-nova;
+  font: normal normal normal 14px/20px var(--font-style);
   letter-spacing: 0px;
   color: #171A1A;
 }
@@ -249,14 +249,14 @@
 
 .receiptTo {
   text-align: left;
-  font: normal normal normal 24px/34px proxima-nova;
+  font: normal normal normal 24px/34px var(--font-style);
   letter-spacing: 0px;
-  color: $primarycolor;
+  color: var(--primary-color);
 }
 
 .applicantName {
   text-align: left;
-  font: normal normal bold 22px/30px proxima-nova;
+  font: normal normal bold 22px/30px var(--font-style);
   letter-spacing: 0px;
   color: #171A1A;
   text-transform: capitalize;
@@ -264,7 +264,7 @@
 
 .detailsText {
   text-align: left;
-  font: normal normal normal 16px/20px proxima-nova;
+  font: normal normal normal 16px/20px var(--font-style);
   letter-spacing: 0px;
   color: #171A1A;
   text-transform: capitalize;
@@ -285,7 +285,7 @@
 
 .copyRight {
   text-align: right;
-  font: normal normal 600 12px/20px proxima-nova;
+  font: normal normal 600 12px/20px var(--font-style);
   letter-spacing: 0px;
   color: #454747;
   opacity: 0.6;

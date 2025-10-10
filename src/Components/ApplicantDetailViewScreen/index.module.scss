@@ -74,7 +74,7 @@
 
 .headerTextStyle {
   text-align: left;
-  font: normal normal 600 12px/24px proxima-nova;
+  font: normal normal 600 12px/24px var(--font-style);
   letter-spacing: 1.2px;
   color: #9AAFB5;
   text-transform: uppercase;
@@ -144,7 +144,7 @@
 
 .cardTextBoldStyle {
   text-align: left;
-  font: normal normal 600 $tabledatatext1 proxima-nova;
+  font: normal normal 600 $tabledatatext1 var(--font-style);
   letter-spacing: 0px;
   color: $textgrey;
   text-transform: capitalize;
@@ -153,16 +153,16 @@
 
 .tableHeaderHeadingTextStyle1 {
   text-align: left;
-  font: normal normal normal 18px/23px proxima-nova;
+  font: normal normal normal 18px/23px var(--font-style);
   letter-spacing: 0px;
-  color: #06617A;
+  color: var(--primary-color);
   opacity: 1;
   text-transform: capitalize;
 }
 
 .cardTextNormalStyle {
   text-align: left;
-  font: normal normal medium 16px/23px proxima-nova;
+  font: normal normal medium 16px/23px var(--font-style);
   letter-spacing: 0px;
   color: black;
   text-transform: capitalize;
@@ -178,7 +178,7 @@
 
 .rightAlignTextStyle {
   text-align: right;
-  font: normal normal medium 16px/23px proxima-nova;
+  font: normal normal medium 16px/23px var(--font-style);
   letter-spacing: 0px;
   color: #2C2C2C;
   // text-transform: capitalize;
@@ -187,7 +187,7 @@
 
 .leftAlignTextStyle {
   text-align: left;
-  font: normal normal medium 16px/23px proxima-nova;
+  font: normal normal medium 16px/23px var(--font-style);
   letter-spacing: 0px;
   color: $textcolor;
   text-transform: uppercase;
@@ -196,37 +196,37 @@
 
 .emailTextBoldStyle {
   text-align: start;
-  font: normal normal 400 16px/20px proxima-nova;
+  font: normal normal 400 16px/20px var(--font-style);
   letter-spacing: 0px;
   color: #2C2C2C;
   opacity: 1;
 }
 
 .tableDataFontStyle1 {
-  font: normal normal normal $tabledatatext1 proxima-nova;
+  font: normal normal normal $tabledatatext1 var(--font-style);
   letter-spacing: 0px;
   color: #52575d;
   text-align: left;
 }
 
-.greenTextStyle{
+.greenTextStyle {
   color: $acknowledgmentgreen;
   opacity: 1 !important;
 }
 
 .notesIcon {
-  color: $primarycolor
+  color: var(--primary-color)
 }
 
 // .editInfoIcon {
-//   color: $primarycolor;
+//   color: var(--primary-color);
 //   height: 10px;
 //   width: 10px;
 // }
 
 .documentTextStyle {
   text-align: left;
-  font: normal normal bold 20px/26px proxima-nova;
+  font: normal normal bold 20px/26px var(--font-style);
   letter-spacing: 0px;
   color: #52575D;
   text-transform: capitalize;
@@ -235,7 +235,7 @@
 
 .documentSubHeadingStyle {
   text-align: left;
-  font: italic normal normal 16px/30px proxima-nova;
+  font: italic normal normal 16px/30px var(--font-style);
   letter-spacing: 0px;
   color: #171A1A;
   opacity: 0.6;
@@ -254,36 +254,36 @@
   border-radius: 2px;
   padding: 5px;
   text-align: left;
-  font: italic normal bold 14px/16px proxima-nova;
+  font: italic normal bold 14px/16px var(--font-style);
   letter-spacing: 0px;
-  color: $primarycolor;
+  color: var(--primary-color);
   text-transform: capitalize;
 }
 
 .editInfo {
   text-align: left;
-  font: normal normal bold 16px/31px proxima-nova;
+  font: normal normal bold 16px/31px var(--font-style);
   letter-spacing: 0px;
-  color: $primarycolor;
+  color: var(--primary-color);
   text-transform: capitalize;
   opacity: 1;
 }
 
-.editInfo:hover{
-   text-decoration: underline;
+.editInfo:hover {
+  text-decoration: underline;
 }
 
 // .typeTextStyle{
 //   text-align: left;
 //   font: italic normal bold 14px/16px proxima nova;
 //   letter-spacing: 0px;
-//   color: $primarycolor;
+//   color: var(--primary-color);
 //   text-transform: capitalize;
 //   opacity: 1;
 // }
 
-.colorCode{
-  background-color: $primarycolor;
+.colorCode {
+  background-color: var(--primary-color);
   color: white;
 }
 
@@ -293,7 +293,7 @@
 
 .innerTextDocumentStyle {
   text-align: left;
-  font: normal normal bold 16px/19px proxima-nova;
+  font: normal normal bold 16px/19px var(--font-style);
   letter-spacing: 0px;
   color: #737575;
   text-transform: capitalize;
@@ -302,7 +302,7 @@
 
 .countStyleGrey {
   text-align: left;
-  font: normal normal bold 24px/29px proxima-nova;
+  font: normal normal bold 24px/29px var(--font-style);
   letter-spacing: 0px;
   color: #52575D;
   opacity: 1;
@@ -310,7 +310,7 @@
 
 .countStyleGreen {
   text-align: left;
-  font: normal normal bold 24px/29px proxima-nova;
+  font: normal normal bold 24px/29px var(--font-style);
   letter-spacing: 0px;
   color: $acknowledgmentgreen;
   opacity: 1;
@@ -318,7 +318,7 @@
 
 .countStyleRed {
   text-align: left;
-  font: normal normal bold 24px/29px proxima-nova;
+  font: normal normal bold 24px/29px var(--font-style);
   letter-spacing: 0px;
   color: #FF6562;
   opacity: 1;
@@ -326,7 +326,7 @@
 
 .countStyleYellow {
   text-align: left;
-  font: normal normal bold 24px/29px proxima-nova;
+  font: normal normal bold 24px/29px var(--font-style);
   letter-spacing: 0px;
   color: #FFC100;
   opacity: 1;
@@ -353,15 +353,15 @@
 
 .requiredTextStyle {
   text-align: right;
-  font: normal normal normal 16px/30px proxima-nova;
+  font: normal normal normal 16px/30px var(--font-style);
   letter-spacing: 0px;
   color: #171A1A;
   opacity: 1;
 }
 
 .selectedBackgroundCard {
-    background-color: $secondarycolor;
-    border: 1px solid #d1cefd;
+  background-color: $secondarycolor;
+  border: 1px solid #d1cefd;
 }
 
 .loadingOverlay {
@@ -381,9 +381,9 @@
 
   width: fit-content;
   height: 35px;
-  background: $primarycolor 0% 0% no-repeat padding-box;
+  background: var(--primary-color) 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 6px #00000029;
-  border: 0.5px solid $primarycolor;
+  border: 0.5px solid var(--primary-color);
   border-radius: 8px;
   opacity: 1;
   padding: 5px;
@@ -398,7 +398,7 @@
 
 .buttonTextStyle {
   text-align: center;
-  font: normal normal bold 16px/25px proxima-nova;
+  font: normal normal bold 16px/25px var(--font-style);
   letter-spacing: 0px;
   color: white;
   text-transform: uppercase;
@@ -407,20 +407,20 @@
 
 .dropdownMenu {
   position: absolute;
-  background: $primarycolor;
+  background: var(--primary-color);
   border: 1px solid #ccc;
   border-radius: 4px;
   margin-top: 4px;
   width: 15%;
   z-index: 1000;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .dropdownItem {
   padding: 8px 12px;
   cursor: pointer;
   text-align: left;
-  font: normal normal normal 18px/22px proxima-nova;
+  font: normal normal normal 18px/22px var(--font-style);
   letter-spacing: 0px;
   color: #F5F9FD;
   text-transform: capitalize;
@@ -428,7 +428,7 @@
 }
 
 .dropdownItem:hover {
-  background-color: $primarycolorHover;
+  background-color: var(--primary-color-hover);
 }
 
 .selectedItem {
@@ -436,9 +436,9 @@
   font-weight: bold;
 }
 
-.menuTextStyle{
+.menuTextStyle {
   text-align: left;
-  font: normal normal normal 18px/22px proxima-nova;
+  font: normal normal normal 18px/22px var(--font-style);
   letter-spacing: 0px;
   color: #F5F9FD;
   text-transform: capitalize;

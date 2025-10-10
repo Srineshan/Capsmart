@@ -131,14 +131,14 @@ body {
 
 .userNameStyle {
     text-align: left;
-    font: normal normal 600 15px/17px proxima-nova;
+    font: normal normal 600 15px/17px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
 }
 
 .loginStatus {
     text-align: left;
-    font: normal normal normal 11px/15px proxima-nova;
+    font: normal normal normal 11px/15px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
     max-width: 200px;
@@ -174,7 +174,7 @@ body {
 }
 
 .headingForContracts {
-    font: normal normal bold 17px/15px proxima-nova;
+    font: normal normal bold 17px/15px var(--font-style);
     letter-spacing: 0px;
     text-align: left;
     color: #2C2C2C;
@@ -222,7 +222,7 @@ body {
 }
 
 .blue {
-    color: $primarycolor;
+    color: var(--primary-color);
 }
 
 .activeUserDotColor {
@@ -236,7 +236,7 @@ body {
 
 .last30Style {
     text-align: left;
-    font: normal normal normal 10px/18px proxima-nova;
+    font: normal normal normal 10px/18px var(--font-style);
     color: #2C2C2C;
     opacity: 1;
     margin-top: -30px;
@@ -287,14 +287,14 @@ body {
 }
 
 .viewStyle {
-    font: normal normal normal 10px/15px proxima-nova;
+    font: normal normal normal 10px/15px var(--font-style);
     letter-spacing: -0.3px;
     color: #2C2C2C;
     opacity: 1;
 }
 
 .statisticsProgress {
-    font: normal normal normal 9px/13px proxima-nova;
+    font: normal normal normal 9px/13px var(--font-style);
     letter-spacing: -0.3px;
     color: #2C2C2C;
     opacity: 1;
@@ -335,8 +335,8 @@ body {
 }
 
 .registeredButton {
-    background: $primarycolor 0% 0% no-repeat padding-box !important;
-    border: 0.4000000059604645px solid $primarycolor;
+    background: var(--primary-color) 0% 0% no-repeat padding-box !important;
+    border: 0.4000000059604645px solid var(--primary-color);
     border-radius: 6px;
     opacity: 0.75;
     color: white;
@@ -358,11 +358,11 @@ body {
 }
 
 .unblockButton {
-    border: 1px solid $primarycolor;
+    border: 1px solid var(--primary-color);
     opacity: 1;
     height: 30px;
     width: 100px;
-    color: $primarycolor;
+    color: var(--primary-color);
     border-radius: 6px;
     margin-top: 3px;
 }
@@ -384,13 +384,13 @@ body {
 .contractButton {
     width: 124px;
     height: 40px;
-    background: $primarycolor 0% 0% no-repeat padding-box;
-    box-shadow: 0px 3px 5px $primarycolor;
+    background: var(--primary-color) 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 5px var(--primary-color);
     border-radius: 8px;
     opacity: 1;
     border: none;
     color: white;
-    font: normal normal 400 18px/15px proxima-nova;
+    font: normal normal 400 18px/15px var(--font-style);
     margin: 0 25px 0 20px;
     cursor: pointer;
 }
@@ -442,7 +442,7 @@ body {
 
 .addressTextStyle {
     text-align: left;
-    font: normal normal normal 11px/15px proxima-nova;
+    font: normal normal normal 11px/15px var(--font-style);
     letter-spacing: 0px;
     color: #262626;
     opacity: 0.49;
@@ -510,7 +510,7 @@ body {
 
 .sendMailConfirmationStyle {
     text-align: center;
-    font: normal normal normal 13px/23px proxima-nova;
+    font: normal normal normal 13px/23px var(--font-style);
     letter-spacing: 0px;
     opacity: 1;
     color: #2C2C2C;
@@ -530,7 +530,7 @@ body {
 }
 
 .tableHeaderFontStyle {
-    font: normal normal bold $tabledatatext proxima-nova;
+    font: normal normal bold $tabledatatext var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: uppercase;
@@ -540,7 +540,7 @@ body {
 }
 
 .multipleContractorTextWidth {
-    font: normal normal bold $tabledatatext proxima-nova;
+    font: normal normal bold $tabledatatext var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: uppercase;
@@ -552,7 +552,7 @@ body {
 }
 
 .documentProofTextWidth {
-    font: normal normal bold $tabledatatext proxima-nova;
+    font: normal normal bold $tabledatatext var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: uppercase;
@@ -563,7 +563,7 @@ body {
 }
 
 .tableDataFontStyle {
-    font: normal normal normal $tabledatatext proxima-nova;
+    font: normal normal normal $tabledatatext var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
     opacity: 1;
@@ -573,7 +573,7 @@ body {
 }
 
 .multipleDataTextWidth {
-    font: normal normal normal $tabledatatext proxima-nova;
+    font: normal normal normal $tabledatatext var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: uppercase;
@@ -584,7 +584,7 @@ body {
 }
 
 .documentProofDataTextWidth {
-    font: normal normal normal $tabledatatext proxima-nova;
+    font: normal normal normal $tabledatatext var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
     opacity: 1;
@@ -626,7 +626,7 @@ body {
 }
 
 .accountActivityStyle {
-    font: normal normal normal 15px/22px proxima-nova;
+    font: normal normal normal 15px/22px var(--font-style);
     letter-spacing: 0.66px;
     color: #2C2C2C;
     opacity: 0.38;
@@ -635,7 +635,7 @@ body {
 }
 
 .paginationStyle {
-    font: normal normal 600 12px/15px proxima-nova;
+    font: normal normal 600 12px/15px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
     opacity: 1;
@@ -676,9 +676,9 @@ body {
 
 .poweredBy {
     text-align: left;
-    font: normal normal normal 11px/14px proxima-nova;
+    font: normal normal normal 11px/14px var(--font-style);
     letter-spacing: 0px;
-    color: $primarycolor;
+    color: var(--primary-color);
     opacity: 1;
     margin: 5px 0 0 10px;
 }
@@ -697,16 +697,16 @@ body {
 
 .welcomeStyle {
     text-align: left;
-    font: normal normal bold 20px/18px proxima-nova;
+    font: normal normal bold 20px/18px var(--font-style);
     letter-spacing: 0px;
-    color: $primarycolor;
+    color: var(--primary-color);
 }
 
 .extensionStyle {
     text-align: left;
-    font: normal normal bold $usernametext proxima-nova;
+    font: normal normal bold $usernametext var(--font-style);
     letter-spacing: 0px;
-    color: $primarycolor;
+    color: var(--primary-color);
 }
 
 .extensionBorder {
@@ -716,7 +716,7 @@ body {
 
 .extensionOptionsStyle {
     text-align: left;
-    font: normal normal medium $usernametext proxima-nova;
+    font: normal normal medium $usernametext var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: uppercase;
@@ -761,7 +761,7 @@ body {
 }
 
 .addSymbolStyle {
-    background-color: $primarycolor;
+    background-color: var(--primary-color);
     color: white;
     font-size: 25px;
     box-shadow: 0px 0px 6px #00000029;
@@ -797,7 +797,7 @@ body {
 
 .contractId {
     text-align: left;
-    font: normal normal medium $usernametext proxima-nova;
+    font: normal normal medium $usernametext var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: uppercase;
@@ -813,7 +813,7 @@ body {
     background: $secondarycolor 0% 0% no-repeat padding-box;
     opacity: 0.4;
     text-align: left;
-    font: normal normal 300 13px/15px proxima-nova;
+    font: normal normal 300 13px/15px var(--font-style);
     letter-spacing: 0.9px;
     color: #6F7479;
     padding: 20px;
@@ -859,7 +859,7 @@ body {
 
 .extentionLableStyle {
     text-align: left;
-    font: normal normal normal $tabledatatext proxima-nova;
+    font: normal normal normal $tabledatatext var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: capitalize;
@@ -881,7 +881,7 @@ body {
 }
 
 .extentionBoxStyle {
-    border: 1px solid $primarycolor;
+    border: 1px solid var(--primary-color);
     border-radius: 8px;
     opacity: 1;
     height: 60vh;
@@ -896,7 +896,7 @@ body {
 }
 
 .serviceBoxStyle {
-    border: 1px solid $primarycolor;
+    border: 1px solid var(--primary-color);
     border-radius: 8px;
     opacity: 1;
     height: 60vh;
@@ -907,7 +907,7 @@ body {
 }
 
 .deleteDraftBoxStyle {
-    border: 1px solid $primarycolor;
+    border: 1px solid var(--primary-color);
     border-radius: 8px;
     opacity: 1;
     height: 20vh;
@@ -917,7 +917,7 @@ body {
 }
 
 .newContractFromCloneBoxStyle {
-    border: 1px solid $primarycolor;
+    border: 1px solid var(--primary-color);
     border-radius: 8px;
     opacity: 1;
     height: calc(100vh - 160px);
@@ -946,13 +946,13 @@ body {
 }
 
 .crossStyle {
-    color: linear-gradient($primarycolor, $statusred) !important;
+    color: linear-gradient(var(--primary-color), $statusred) !important;
     margin-bottom: 15px;
     cursor: pointer;
 }
 
 .trashStyle {
-    color: linear-gradient($primarycolor, $statusred) !important;
+    color: linear-gradient(var(--primary-color), $statusred) !important;
     cursor: pointer;
     position: relative;
     bottom: -20px;
@@ -992,7 +992,7 @@ select {
 
 .selectLable {
     text-align: left;
-    font: normal normal normal 17px/16px proxima-nova;
+    font: normal normal normal 17px/16px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
     opacity: 1;
@@ -1020,7 +1020,7 @@ select {
 .contractCards:hover {
     background:
         linear-gradient(white, white) padding-box,
-        linear-gradient(to bottom, $primarycolor, $statusred) border-box;
+        linear-gradient(to bottom, var(--primary-color), $statusred) border-box;
     border-radius: 20px;
     border: 2px solid transparent;
 }
@@ -1041,7 +1041,7 @@ select {
 
 .contractCardData {
     text-align: center;
-    font: normal normal 600 12px/14px proxima-nova;
+    font: normal normal 600 12px/14px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
     opacity: 1;
@@ -1051,7 +1051,7 @@ select {
 .selectedContractCard {
     background:
         linear-gradient(white, white) padding-box,
-        linear-gradient(to bottom, $primarycolor, $statusred) border-box;
+        linear-gradient(to bottom, var(--primary-color), $statusred) border-box;
     border-radius: 20px;
     border: 2px solid transparent;
 }
@@ -1067,7 +1067,7 @@ select {
 .nextButton {
     border-radius: 12px;
     opacity: 1;
-    background-color: $primarycolor;
+    background-color: var(--primary-color);
     color: white;
     border: none;
     height: 40px;
@@ -1112,41 +1112,41 @@ select {
 
 .outlinedButton {
     background-color: white;
-    color: $primarycolor;
-    border: 1px solid $primarycolor;
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
     height: 40px;
     width: 140px;
     border-radius: 10px;
     margin-bottom: -20px;
-    box-shadow: 0px 3px 11px $primarycolor;
+    box-shadow: 0px 3px 11px var(--primary-color);
 }
 
 .cloneOutlinedButton {
     background-color: white;
-    color: $primarycolor;
-    border: 1px solid $primarycolor;
-    box-shadow: 0px 1px 5px $primarycolor;
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+    box-shadow: 0px 1px 5px var(--primary-color);
     height: 30px;
     width: 80px;
     border-radius: 6px;
 }
 
 .buttonStyle {
-    background-color: $primarycolor;
+    background-color: var(--primary-color);
     color: white;
-    border: 1px solid $primarycolor;
+    border: 1px solid var(--primary-color);
     height: 40px;
     width: 140px;
     border-radius: 10px;
     margin-bottom: -20px;
-    box-shadow: 0px 3px 11px $primarycolor;
+    box-shadow: 0px 3px 11px var(--primary-color);
 }
 
 .cloneButtonStyle {
-    background-color: $primarycolor;
+    background-color: var(--primary-color);
     color: white;
-    border: 1px solid $primarycolor;
-    box-shadow: 0px 1px 5px $primarycolor;
+    border: 1px solid var(--primary-color);
+    box-shadow: 0px 1px 5px var(--primary-color);
     height: 30px;
     width: 80px;
     border-radius: 6px;
@@ -1158,7 +1158,7 @@ select {
 
 .cloneContent {
     text-align: left;
-    font: normal normal medium 18px/28px proxima-nova;
+    font: normal normal medium 18px/28px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
 }
@@ -1235,7 +1235,7 @@ select {
 
 .contractEntityFontStyle {
     text-align: left;
-    font: normal normal normal 17px/21px proxima-nova;
+    font: normal normal normal 17px/21px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
     width: 80%;
@@ -1248,26 +1248,26 @@ select {
 }
 
 .selectedContractEntityStyle {
-    border: 1px solid $primarycolor;
-    color: $primarycolor;
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color);
 }
 
 .selectedColor {
-    color: $primarycolor;
+    color: var(--primary-color);
 }
 
 .smallHeadingStyle {
     text-align: left;
-    font: normal normal 600 17px/16px proxima-nova;
+    font: normal normal 600 17px/16px var(--font-style);
     letter-spacing: 0px;
     line-height: 20px;
-    color: $primarycolor;
+    color: var(--primary-color);
     opacity: 1;
 }
 
 .descriptionStyle {
     text-align: left;
-    font: normal normal normal 15px/30px proxima-nova;
+    font: normal normal normal 15px/30px var(--font-style);
     letter-spacing: 0px;
     opacity: 1;
     color: #2C2C2C;
@@ -1275,7 +1275,7 @@ select {
 
 .deleteDescriptionStyle {
     text-align: left;
-    font: normal normal normal 13px/23px proxima-nova;
+    font: normal normal normal 13px/23px var(--font-style);
     letter-spacing: 0px;
     opacity: 1;
     color: #2C2C2C;
@@ -1304,7 +1304,7 @@ select {
 }
 
 .blueColor {
-    color: $primarycolor;
+    color: var(--primary-color);
 }
 
 .selectFieldWidth {
@@ -1323,7 +1323,7 @@ select {
 
 .uploadButtonStyle {
     background-color: #f1f2f3;
-    color: $primarycolor;
+    color: var(--primary-color);
     border: none;
     height: 30px;
     font-size: 12px;
@@ -1332,7 +1332,7 @@ select {
 
 .chooseFileStyle {
     background-color: #f1f2f3;
-    color: $primarycolor;
+    color: var(--primary-color);
     border: none;
     height: 30px;
     font-size: 12px;
@@ -1366,7 +1366,7 @@ select {
 }
 
 .proofBorder {
-    border: 1px solid $primarycolor;
+    border: 1px solid var(--primary-color);
     border-radius: 8px;
     opacity: 1;
     overflow: scroll;
@@ -1389,7 +1389,7 @@ select {
     border: 1px solid #B3B8BD;
     border-radius: 10px;
     height: 100px;
-    font: normal normal normal 13px/15px proxima-nova;
+    font: normal normal normal 13px/15px var(--font-style);
     margin-top: 10px;
     padding: 15px;
 }
@@ -1401,7 +1401,7 @@ select {
     border: 1px solid #B3B8BD;
     border-radius: 10px;
     height: 60px;
-    font: normal normal normal 13px/15px proxima-nova;
+    font: normal normal normal 13px/15px var(--font-style);
     margin-top: 10px;
     padding: 15px;
 }
@@ -1412,7 +1412,7 @@ select {
     border: 1px solid #B3B8BD;
     border-radius: 10px;
     height: 100px;
-    font: normal normal normal 13px/15px proxima-nova;
+    font: normal normal normal 13px/15px var(--font-style);
     margin-top: 10px;
     padding: 15px;
 }

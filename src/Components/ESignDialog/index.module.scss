@@ -3,8 +3,8 @@
 
 .heading {
     text-align: left;
-    font: normal normal bold 20px/28px proxima-nova;
-    color: $primarycolor;
+    font: normal normal bold 20px/28px var(--font-style);
+    color: var(--primary-color);
     text-transform: capitalize;
 }
 
@@ -56,17 +56,17 @@
 
 .description {
     text-align: left;
-    font: normal normal normal $tabledatatext2 proxima-nova;
+    font: normal normal normal $tabledatatext2 var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
 }
 
 .continue {
-    background: $primarycolor 0% 0% no-repeat padding-box;
+    background: var(--primary-color) 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #00000029;
     border-radius: 8px;
     text-align: center;
-    font: normal normal bold 17px/30px proxima-nova;
+    font: normal normal bold 17px/30px var(--font-style);
     letter-spacing: 0px;
     color: #FFFFFF;
     text-transform: uppercase;
@@ -86,12 +86,12 @@
 .saveInProgress {
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #00000029;
-    border: 0.5px solid $primarycolor;
+    border: 0.5px solid var(--primary-color);
     border-radius: 8px;
     text-align: center;
-    font: normal normal bold 17px/30px proxima-nova;
+    font: normal normal bold 17px/30px var(--font-style);
     letter-spacing: 0px;
-    color: $primarycolor;
+    color: var(--primary-color);
     text-transform: uppercase;
     padding: 5px;
     cursor: pointer;
@@ -137,7 +137,7 @@
 
 .dateAndTimeTextStyle {
     text-align: left;
-    font: normal normal normal $tabledatatext2 proxima-nova;
+    font: normal normal normal $tabledatatext2 var(--font-style);
     letter-spacing: 0px;
     color: #94979A;
     text-transform: capitalize;
@@ -145,7 +145,7 @@
 
 .drawOrTypeTextStyle {
     text-align: center;
-    font: normal normal 600 20px/27px proxima-nova;
+    font: normal normal 600 20px/27px var(--font-style);
     letter-spacing: 0px;
     color: #94979A;
     text-transform: uppercase;
@@ -154,7 +154,7 @@
 }
 
 .drawOrTypeUnderline {
-    background: $primarycolor 0% 0% no-repeat padding-box;
+    background: var(--primary-color) 0% 0% no-repeat padding-box;
     border-radius: 6px;
     height: 4px;
     width: 70px;
@@ -171,7 +171,7 @@
     height: 150px;
     width: 100%;
     background: #FFFFFF 0% 0% no-repeat padding-box;
-    border: 1px solid $primarycolor;
+    border: 1px solid var(--primary-color);
     border-radius: 4px;
 }
 

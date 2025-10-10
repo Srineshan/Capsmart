@@ -738,7 +738,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setStep2, setSte
         let url = sessionStorage.getItem('workModeType') === "MD Librarian" ?
             `medical-directive-service/medicalDirectives/signOff?tab=${selectedSignOffOption}&role=${sessionStorage.getItem('workModeType')}` :
             `medical-directive-service/medicalDirectives/signOff?tab=${selectedSignOffOption}&role=${sessionStorage.getItem('workModeType')}&assignedUserIds=${loggedInUser?.id}`
-        const response = await GET(url);
+        const response = await POST(url, {});
         console.log(response.data?.medicalDirectivesWithWorkflow);
         setRevisionList(response?.data?.medicalDirectivesWithWorkflow)
         setIsLoading(false)
@@ -863,17 +863,17 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setStep2, setSte
                 attestedAll.push('-');
                 notAttested.push('-');
                 partiallyAttested.push('-');
-                const totalCompletedCount = data?.groups?.reduce(
+                const totalCompletedCount = data?.groupApprovals?.reduce(
                     (sum, group) => sum + (group?.completedCount || 0),
                     0
                 );
 
-                const totalPendingCount = data?.groups?.reduce(
+                const totalPendingCount = data?.groupApprovals?.reduce(
                     (sum, group) => sum + (group?.pendingCount || 0),
                     0
                 );
                 acknowledgedOrSignedOff.push(`${totalCompletedCount}/${totalPendingCount}`)
-                revisionAssignedTo.push(data?.groups?.map(group => group?.group?.name)?.join(', '));
+                revisionAssignedTo.push(data?.groupApprovals?.map(group => group?.group?.name)?.join(', '));
                 acknowledgedCount.push(data?.workflow?.workflowStatusByLevels?.[0]?.reviewedUsers?.length || '-');
                 signedOffCount.push(data?.workflow?.workflowStatusByLevels?.[1]?.reviewedUsers?.length || '-');
                 lastUpdatedLog.push(data?.workflow?.workflowStatusByLevels?.[1]?.workflowActionDate ? format(new Date(data?.workflow?.workflowStatusByLevels?.[1]?.workflowActionDate), 'MMM dd, yyyy') : '-')

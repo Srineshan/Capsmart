@@ -1,0 +1,390 @@
+@import "../../../index.scss";
+
+body {
+    background-color: var(--secondary-color);
+}
+
+.navbarStyle {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    height: 80px;
+    padding: 0 80px;
+}
+
+.spaceBetween {
+    display: flex;
+    justify-content: space-between;
+}
+
+.justifyCenter {
+    display: flex;
+    justify-content: center;
+}
+
+.marginLeft10 {
+    margin-left: 10px;
+}
+
+.marginLeft20 {
+    margin-left: 20px;
+}
+
+.marginTop {
+    margin-top: 20px;
+}
+
+.marginTop10 {
+    margin-top: 10px;
+}
+
+.logo {
+    position: relative;
+    top: 10px;
+    left: 22px;
+    width: auto;
+    height: 60px;
+    object-fit: contain;
+    margin-right: 40px;
+}
+
+.screenBackground {
+    padding: 20px 80px;
+    background: var(--secondary-color) 0% 0% no-repeat padding-box;
+    height: calc(100vh - 60px);
+    overflow: scroll;
+}
+
+.screenPadding {
+    padding: 20px 80px;
+    height: calc(100vh - 80px);
+    overflow: scroll;
+}
+
+.innerScreenBackground {
+    padding: 20px 20px;
+    background: var(--secondary-color) 0% 0% no-repeat padding-box;
+    height: calc(100vh - 60px);
+    overflow: scroll;
+}
+
+.departmentName {
+    text-align: left;
+    font: normal normal bold 20px/38px century-gothic;
+    color: $textgrey;
+}
+
+.description {
+    text-align: left;
+    font: normal normal normal 14px/18px century-gothic;
+    color: $textgrey;
+}
+
+.mdlGrid {
+    display: grid;
+    grid-template-columns: 70% 25%;
+    gap: 5%;
+}
+
+.displayInRow {
+    display: flex;
+    flex-direction: row;
+}
+
+.verticalAlignCenter {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.deptCardList {
+    width: 100%;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    white-space: nowrap;
+}
+
+.deptCard {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 0px 16px #17133814;
+    border: 0.20000000298023224px solid #9AAFB5;
+    border-radius: 10px;
+    padding: 20px;
+    min-width: 350px;
+}
+
+.mdCard {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 0px 24px #17133838;
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.mdInnerCard {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.mdCardTitle {
+    text-align: left;
+    font: normal normal bold 14px/24px century-gothic;
+    color: $textgrey;
+}
+
+.cardTitle {
+    text-align: left;
+    font: normal normal bold 16px/24px century-gothic;
+    color: $textgrey;
+}
+
+.mdTypeCardGrid {
+    display: grid;
+    grid-template-columns: 32% 32% 32%;
+    gap: 1.5%;
+}
+
+.mdTypeCard {
+    background: var(--secondary-color) 0% 0% no-repeat padding-box;
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.cardCount {
+    text-align: left;
+    font: normal normal bold 34px/41px century-gothic;
+    color: var(--primary-color);
+}
+
+.deptCardGrid {
+    display: grid;
+    grid-template-columns: 3% 91% 3%;
+    gap: 1%;
+}
+
+.mdlCard {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    border: 0.2px solid #9AAFB5;
+    border-radius: 10px;
+    height: 130px;
+    padding: 0px 30px;
+}
+
+.loginCard {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    border: 0.2px solid #9AAFB5;
+    border-radius: 10px;
+    height: 80px;
+    padding: 0px 30px;
+}
+
+.mdlCardTitle {
+    text-align: left;
+    font: normal normal bold 22px/28px century-gothic;
+    color: var(--primary-color);
+}
+
+.mdlCardTitleLogin {
+    text-align: left;
+    font: normal normal bold 16px/25px century-gothic;
+    color: var(--primary-color);
+}
+
+.mdlLogo {
+    width: auto;
+    height: 60px;
+    object-fit: contain;
+}
+
+.loginIconStyle {
+    height: 40px;
+    width: 60px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+}
+
+.mdlButton {
+    background: transparent radial-gradient(closest-side at 50% 50%, #5087D9 0%, #14358F 100%) no-repeat padding-box;
+    border-radius: 20px;
+    text-align: center;
+    font: normal normal bold 35px/45px century-gothic;
+    color: #F0F2F7;
+    height: 125px;
+    padding: 20px;
+}
+
+.button {
+    background: var(--primary-color) 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 6px #1713380F;
+    border-radius: 8px;
+    text-align: center;
+    font: normal normal bold 15px/20px century-gothic;
+    color: #F0F2F7;
+    padding: 5px 10px;
+}
+
+.cursorPointer {
+    cursor: pointer;
+}
+
+.searchGrid {
+    display: grid;
+    grid-template-columns: 80% 18%;
+    gap: 2%;
+}
+
+.advancedSearchGrid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+}
+
+.advancedSearchGrid> :nth-child(1) {
+    grid-column: span 2;
+}
+
+.advancedSearchGrid> :nth-child(2) {
+    grid-column: span 2;
+}
+
+.advancedSearchGrid> :nth-child(3) {
+    grid-column: span 2;
+}
+
+.advancedSearchGrid> :nth-child(4) {
+    grid-column: span 2;
+}
+
+.advancedSearchGrid> :nth-child(5) {
+    grid-column: span 2;
+}
+
+.advancedSearchGrid> :nth-child(6) {
+    grid-column: span 2;
+}
+
+.bigCardGrid {
+    display: grid;
+    grid-template-columns: 23% 76%;
+    grid-gap: 1%;
+}
+
+.twoCol {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.typeCard {
+    background: #14358F0F 0% 0% no-repeat padding-box;
+    border: 0.4000000059604645px solid #F5F7FB;
+    border-radius: 10px;
+    padding: 10px 20px;
+}
+
+.typeText {
+    text-align: center;
+    font: normal normal bold 16px/20px century-gothic;
+    color: $textgrey;
+    opacity: 0.6;
+}
+
+.activeTypeCard {
+    font: normal normal bold 18px/20px century-gothic;
+    font-weight: bold;
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+}
+
+.allDeptText {
+    text-align: left;
+    font: normal normal medium 16px/24px century-gothic;
+    color: $textgrey;
+}
+
+.deptFilterCard {
+    background: var(--secondary-color) 0% 0% no-repeat padding-box;
+    border-radius: 6px;
+    text-align: left;
+    font: normal normal medium 16px/24px century-gothic;
+    color: $textgrey;
+    display: grid;
+    grid-template-columns: 30px 1fr;
+    padding: 5px;
+}
+
+.serviceAreaFilterCard {
+    background: var(--secondary-color) 0% 0% no-repeat padding-box;
+    border-radius: 6px;
+    text-align: left;
+    font: normal normal medium 16px/24px century-gothic;
+    color: $textgrey;
+    padding: 5px;
+}
+
+.deptFilterActiveCard {
+    color: var(--primary-color);
+    font-size: bold;
+    font: normal normal medium 18px/24px century-gothic;
+    border: 1px solid var(--primary-color);
+}
+
+.deptTableHeading {
+    text-align: left;
+    font: normal normal bold 18px/24px century-gothic;
+    letter-spacing: 0px;
+    color: var(--primary-color);
+}
+
+.mdGrid {
+    display: grid;
+    grid-template-columns: 61% 10% 10% 15%;
+    grid-gap: 1%;
+}
+
+.labelStyle {
+    text-align: left;
+    font: normal normal normal 14px/32px century-gothic;
+    color: $textgrey;
+}
+
+.fullWidth {
+    width: 100%;
+}
+
+.folderStyle {
+    height: 20px;
+    width: 20px;
+    object-fit: contain;
+}
+
+.titleText {
+    text-align: center;
+    font: normal normal bold 20px/28px century-gothic;
+    letter-spacing: 0px;
+    color: var(--primary-color);
+    text-transform: capitalize;
+    word-wrap: break-word;
+}
+
+.medicalDirectivesCard {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 5px 20px #52575D4D;
+    border-radius: 8px;
+    border: 0.4000000059604645px solid #e5e6e6;
+    padding: 20px 20px 20px 20px;
+    overflow: scroll;
+}
+
+.title {
+    text-align: left;
+    font: normal normal normal 18px/22px century-gothic;
+    letter-spacing: 0px;
+    color: #2C2C2C;
+}
+
+.mdIDStyle {
+    text-align: left;
+    font: normal normal normal 16px/23px century-gothic;
+    letter-spacing: 0px;
+    color: #2C2C2C;
+    opacity: 0.6;
+}

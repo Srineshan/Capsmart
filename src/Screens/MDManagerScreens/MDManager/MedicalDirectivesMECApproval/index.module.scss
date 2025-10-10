@@ -82,7 +82,7 @@
     opacity: 0;
     pointer-events: none;
     // filter: blur(5px); 
-    // box-shadow: 0 0 10px 5px #06617A;
+    // box-shadow: 0 0 10px 5px var(--primary-color);
 }
 
 .screenPadding {
@@ -93,7 +93,7 @@
 
 .breadcrumbStyle {
     text-align: left;
-    font: normal normal 600 12px/24px proxima-nova;
+    font: normal normal 600 12px/24px var(--font-style);
     letter-spacing: 1.5px;
     color: #646D82;
     text-transform: uppercase;
@@ -105,14 +105,14 @@
 
 .title {
     text-align: left;
-    font: normal normal normal 18px/22px proxima-nova;
+    font: normal normal normal 18px/22px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
 }
 
 .description {
     text-align: left;
-    font: normal normal normal 14px/20px proxima-nova;
+    font: normal normal normal 14px/20px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
 }
@@ -122,14 +122,14 @@
     width: auto;
     word-wrap: break-word;
     text-align: left;
-    font: normal normal normal 14px/20px proxima-nova;
+    font: normal normal normal 14px/20px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
 }
 
 .mdIDStyle {
     text-align: left;
-    font: normal normal normal 16px/23px proxima-nova;
+    font: normal normal normal 16px/23px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
     opacity: 0.6;
@@ -137,7 +137,7 @@
 
 .attestationRequiredText {
     text-align: left;
-    font: normal normal bold 14px/19px proxima-nova;
+    font: normal normal bold 14px/19px var(--font-style);
     letter-spacing: 0px;
     color: #D90B0B;
     opacity: 0.5;
@@ -168,11 +168,11 @@
 // }
 
 .outlinedButton {
-    border: 1px solid $primarycolor;
+    border: 1px solid var(--primary-color);
     border-radius: 8px;
     background-color: transparent;
-    color: $primarycolor;
-    font: normal normal bold 17px/30px proxima-nova;
+    color: var(--primary-color);
+    font: normal normal bold 17px/30px var(--font-style);
     text-transform: uppercase;
     padding: 5px;
     cursor: pointer;
@@ -191,11 +191,11 @@
 
 
 .continue {
-    background: $primarycolor 0% 0% no-repeat padding-box;
+    background: var(--primary-color) 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #00000029;
     border-radius: 8px;
     text-align: center;
-    font: normal normal bold 17px/30px proxima-nova;
+    font: normal normal bold 17px/30px var(--font-style);
     letter-spacing: 0px;
     color: #FFFFFF;
     text-transform: uppercase;
@@ -218,14 +218,14 @@
 
 .dateTitle {
     text-align: left;
-    font: normal normal bold 17px/26px proxima-nova;
+    font: normal normal bold 17px/26px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
 }
 
 .date {
     text-align: left;
-    font: normal normal normal 17px/26px proxima-nova;
+    font: normal normal normal 17px/26px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
 }
@@ -254,7 +254,7 @@
         position: fixed;
         top: 0;
         left: 0;
-        background-color: $primarycolor;
+        background-color: var(--primary-color);
         color: white;
         padding: 10px 5px;
         border-radius: 0 0 0 12px;
@@ -267,7 +267,7 @@
         position: fixed;
         top: 0;
         left: 0;
-        background-color: $primarycolor;
+        background-color: var(--primary-color);
         padding: 20px;
         border-radius: 0 12px 12px 0;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -318,9 +318,9 @@
 
 .welcomeText {
     text-align: left;
-    font: normal normal bold 38px/45px proxima-nova;
+    font: normal normal bold 38px/45px var(--font-style);
     letter-spacing: 0px;
-    color: $primarycolor;
+    color: var(--primary-color);
     display: block;
 
     @media (max-width: 806px) {
@@ -339,11 +339,11 @@
         top: 0;
         left: 0;
         width: 100%;
-        background-color: $primarycolor;
+        background-color: var(--primary-color);
         color: white;
         padding: 15px;
         z-index: 1000;
-        font: normal normal bold 18px proxima-nova;
+        font: normal normal bold 18px var(--font-style);
         border-radius: 0 0 12px 12px;
         height: clamp(45px, 8vh, 100px);
     }
@@ -374,9 +374,9 @@
 
 .heading {
     text-align: left;
-    font: normal normal bold 24px proxima-nova;
+    font: normal normal bold 24px var(--font-style);
     letter-spacing: 0px;
-    color: #06617A;
+    color: var(--primary-color);
     text-transform: capitalize;
     opacity: 1;
 }
@@ -441,7 +441,7 @@
 
 .uploadTextStyle {
     text-align: left;
-    font: normal normal normal 18px/26px proxima-nova;
+    font: normal normal normal 18px/26px var(--font-style);
     letter-spacing: 0px;
     color: black;
     opacity: 1;
@@ -461,7 +461,7 @@
 .cancelButton {
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #00000029;
-    border: 0.5px solid $primarycolor;
+    border: 0.5px solid var(--primary-color);
     border-radius: 8px;
     opacity: 1;
     padding: 10px 20px;
@@ -469,15 +469,15 @@
 
 .cancelButtonTextStyle {
     text-align: center;
-    font: normal normal bold 18px/30px proxima-nova;
+    font: normal normal bold 18px/30px var(--font-style);
     letter-spacing: 0px;
-    color: $primarycolor;
+    color: var(--primary-color);
     text-transform: uppercase;
     opacity: 1;
 }
 
 .reviewButtonStyle {
-    background: $primarycolor 0% 0% no-repeat padding-box;
+    background: var(--primary-color) 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #00000029;
     border-radius: 8px;
     opacity: 1;
@@ -486,7 +486,7 @@
 
 .reviewButton {
     text-align: center;
-    font: normal normal bold 18px/30px proxima-nova;
+    font: normal normal bold 18px/30px var(--font-style);
     letter-spacing: 0px;
     color: #FFFFFF;
     text-transform: uppercase;
@@ -497,7 +497,7 @@
 
 .radioTextStyle {
     text-align: left;
-    font: normal normal normal 14px/19px proxima-nova;
+    font: normal normal normal 14px/19px var(--font-style);
     color: #52575D;
 }
 
@@ -507,14 +507,14 @@
 
 .approvalHeading {
     text-align: left;
-    font: normal normal normal 20px/24px proxima-nova;
-    color: $primarycolor;
+    font: normal normal normal 20px/24px var(--font-style);
+    color: var(--primary-color);
 }
 
 .dialogTitle {
     text-align: left;
-    font: normal normal bold 16px/28px proxima-nova;
-    color: $primarycolor;
+    font: normal normal bold 16px/28px var(--font-style);
+    color: var(--primary-color);
 }
 
 .disabledView {

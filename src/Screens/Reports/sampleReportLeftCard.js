@@ -5,7 +5,7 @@ import FormControl from '@mui/material/FormControl';
 import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
 import Select from '@mui/material/Select';
-import { GET } from './../dataSaver';
+import { GET, POST } from './../dataSaver';
 import TextField from '@mui/material/TextField';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -40,7 +40,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
     const [activityPerformed, setActivityPerformed] = useState('Half Day Clinic Session');
     const [renewalreportingTimePeriod, setRenewalreportingTimePeriod] = useState(30);
     const [noOfDays, setNoOfDays] = useState(30);
-    const [trackerTabName, setTrackerTabName] = useState('medical_directive_tab');
+    const [trackerTabName, setTrackerTabName] = useState(reportType === "medicalDirectivesTracker" ? 'medical_directive_tab' : 'policy_and_procedure_tab');
     const [contractContinuationPolicy, setContractContinuationPolicy] = useState('ALL');
     const [contractStatus, setContractStatus] = useState('ACTIVE');
     const [podType, setPodType] = useState('Medical Staff Membership & Privileges');
@@ -300,8 +300,8 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
     }
 
     const getStaffList = async () => {
-        const response = await GET(
-            `user-management-service/user/allStaffs?status=ACTIVE&roles=${"Author / Owner"}`
+        const response = await POST(
+            `user-management-service/user/allStaffs?status=ACTIVE&roles=${"Author / Owner"}`, {}
         );
         console.log(response.data);
         setAuthors(response?.data || [])
@@ -703,10 +703,10 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                 typeof value === 'string' ? authors?.filter(data => value.split(',')?.includes(data?.id))?.map(data => data) : authors?.filter(data => value?.includes(data?.id))?.map(data => data),
             );
         }
-        setSelectedContracts([defaultOption]);
-        setSelectedContractsToSend([]);
-        setSelectedContractedServiceProvider([defaultOption]);
-        setSelectedContractedServiceProviderToSend([]);
+        // setSelectedContracts([defaultOption]);
+        // setSelectedContractsToSend([]);
+        // setSelectedContractedServiceProvider([defaultOption]);
+        // setSelectedContractedServiceProviderToSend([]);
     };
 
     const handleChangeStaffType = (event) => {
@@ -865,32 +865,34 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                     reportType === "submittedApplicationsReviewSummary" || reportType === "staffReappointmentTracker" || reportType === "ohipBillingNumbersByCareProvider" || reportType === "careProviderCareerMilestoneSummary" ||
                     reportType === "declinedOrNotRenewedStaffSummary" || reportType === "reappointmentApplicationNotStarted" || reportType === "currentNotesSummary" || reportType === "staffReappointmentStatusSummary" || reportType === "staffbyTypes" || reportType === "locumStaffbyTypes" || reportType === "locumStaffRenewalStatusTracker" || reportType === "privilegedStaffSummary" || reportType === "careProvidersSummary"
                     || reportType === "workflow" || reportType === "currentMedicalDirectives" || reportType === "retiredMedicalDirectives" || reportType === "upcomingForReview" || reportType === "medicalDirectivesTracker" || reportType === "expiredDocumentsSummaryForStaff" || reportType === "documentsExpirationSummaryForStaff" || reportType === "appointmentHistorySummary" || reportType === "inactiveStaffSummary"
+                    || reportType === "currentPolicyAndProcedures" || reportType === "retiredPolicyAndProcedures" || reportType === "policyAndProceduresWorkflow" || reportType === "policyAndProceduresUpcomingForReview" || reportType === "policyAndProceduresTracker"
                     || reportType === "newStaffAppointmentsSummary" || reportType === "inactiveStaffSummaryByMonth" || reportType === "staffUploadedDocumentsSummary" || reportType === "locumTermExpirationSummary") ? (
                     <>
-                        {reportType !== "staffReappointmentTracker" && reportType !== "ohipBillingNumbersByCareProvider" && reportType !== "privilegedStaffSummary" && reportType !== "locumStaffbyTypes" && reportType !== "currentNotesSummary" && reportType !== "staffbyTypes" && reportType !== "locumStaffRenewalStatusTracker" && reportType !== 'staffReappointmentStatusSummary' && reportType !== "workflow" && reportType !== "currentMedicalDirectives" && reportType !== "retiredMedicalDirectives" && reportType !== "upcomingForReview" && reportType !== "medicalDirectivesTracker" && reportType !== "reappointmentApplicationNotStarted" && reportType !== "locumRenewalOrExtensionApplicationsSummary" && reportType !== "declinedOrNotRenewedStaffSummary" && reportType !== "expiredDocumentsSummaryForStaff" && reportType !== "documentsExpirationSummaryForStaff" && reportType !== "inactiveStaffSummary" && reportType !== "appointmentHistorySummary" && (
-                            <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                                <InputLabel id="demo-multiple-name-label1" className={style.headingtextStyle}>Reporting Time Period</InputLabel>
-                                <Select
-                                    labelId="demo-multiple-name-label1"
-                                    id="demo-multiple-name1"
-                                    MenuProps={MenuProps}
-                                    value={reportingTimePeriod}
-                                    onChange={(e) => { setReportingTimePeriod(e.target.value) }}
-                                    disabled={isLoading}
-                                    className={`${style.textAlignLeft} ${style.Font}`}
-                                >
-                                    <MenuItem value={'Current Week'} disabled={isLoading}>Current Week</MenuItem>
-                                    <MenuItem value={'Last Week'} disabled={isLoading}>Last Week</MenuItem>
-                                    <MenuItem value={'Current Month'} disabled={isLoading}>Current Month</MenuItem>
-                                    <MenuItem value={'Last Month'} disabled={isLoading}>Last Month</MenuItem>
-                                    <MenuItem value={'Current Qtr'} disabled={isLoading}>Current Quarter</MenuItem>
-                                    <MenuItem value={'Last Qtr'} disabled={isLoading}>Last Quarter</MenuItem>
-                                    <MenuItem value={'Current Year'} disabled={isLoading}>Current Year</MenuItem>
-                                    <MenuItem value={'Last Year'} disabled={isLoading}>Last Year</MenuItem>
-                                    <MenuItem value={'Custom'} disabled={isLoading}>Custom</MenuItem>
-                                </Select>
-                            </FormControl>
-                        )}
+                        {reportType !== "staffReappointmentTracker" && reportType !== "ohipBillingNumbersByCareProvider" && reportType !== "privilegedStaffSummary" && reportType !== "locumStaffbyTypes" && reportType !== "currentNotesSummary" && reportType !== "staffbyTypes" && reportType !== "locumStaffRenewalStatusTracker" && reportType !== 'staffReappointmentStatusSummary' && reportType !== "workflow" && reportType !== "currentMedicalDirectives" && reportType !== "retiredMedicalDirectives" && reportType !== "upcomingForReview" && reportType !== "medicalDirectivesTracker" && reportType !== "reappointmentApplicationNotStarted" && reportType !== "locumRenewalOrExtensionApplicationsSummary" && reportType !== "declinedOrNotRenewedStaffSummary"
+                            && reportType !== "currentPolicyAndProcedures" && reportType !== "retiredPolicyAndProcedures" && reportType !== "policyAndProceduresWorkflow" && reportType !== "policyAndProceduresUpcomingForReview" && reportType !== "policyAndProceduresTracker" && reportType !== "expiredDocumentsSummaryForStaff" && reportType !== "documentsExpirationSummaryForStaff" && reportType !== "inactiveStaffSummary" && reportType !== "appointmentHistorySummary" && (
+                                <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                                    <InputLabel id="demo-multiple-name-label1" className={style.headingtextStyle}>Reporting Time Period</InputLabel>
+                                    <Select
+                                        labelId="demo-multiple-name-label1"
+                                        id="demo-multiple-name1"
+                                        MenuProps={MenuProps}
+                                        value={reportingTimePeriod}
+                                        onChange={(e) => { setReportingTimePeriod(e.target.value) }}
+                                        disabled={isLoading}
+                                        className={`${style.textAlignLeft} ${style.Font}`}
+                                    >
+                                        <MenuItem value={'Current Week'} disabled={isLoading}>Current Week</MenuItem>
+                                        <MenuItem value={'Last Week'} disabled={isLoading}>Last Week</MenuItem>
+                                        <MenuItem value={'Current Month'} disabled={isLoading}>Current Month</MenuItem>
+                                        <MenuItem value={'Last Month'} disabled={isLoading}>Last Month</MenuItem>
+                                        <MenuItem value={'Current Qtr'} disabled={isLoading}>Current Quarter</MenuItem>
+                                        <MenuItem value={'Last Qtr'} disabled={isLoading}>Last Quarter</MenuItem>
+                                        <MenuItem value={'Current Year'} disabled={isLoading}>Current Year</MenuItem>
+                                        <MenuItem value={'Last Year'} disabled={isLoading}>Last Year</MenuItem>
+                                        <MenuItem value={'Custom'} disabled={isLoading}>Custom</MenuItem>
+                                    </Select>
+                                </FormControl>
+                            )}
                         {reportingTimePeriod === "Custom" && (
                             <>
                                 <div className={style.marginTop10}>
@@ -935,7 +937,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 </div>
                             </>
                         )}
-                        {(reportType !== "medicalDirectivesTracker" && reportType !== "expiredDocumentsSummaryForStaff" && reportType !== "documentsExpirationSummaryForStaff" && reportType !== "inactiveStaffSummary" && reportType !== "inactiveStaffSummaryByMonth") && (
+                        {(reportType !== "medicalDirectivesTracker" && reportType !== "expiredDocumentsSummaryForStaff" && reportType !== "documentsExpirationSummaryForStaff" && reportType !== "inactiveStaffSummary" && reportType !== "inactiveStaffSummaryByMonth" && reportType !== "policyAndProceduresTracker") && (
                             <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                                 <InputLabel id="demo-multiple-name-label2" className={style.headingtextStyle}>Departments</InputLabel>
                                 <Select
@@ -973,181 +975,186 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                     ))}
                                 </Select>
                             </FormControl>
-                        )}
-                        {selectedDepartments?.filter(Boolean).length > 0 && (
-                            <div className={`${style.grid2Gap} ${style.marginLeft5}`}>
-                                {selectedDepartments.map((id) => {
-                                    const dept = departments?.find(dep => dep?.id === id);
-                                    return (
-                                        <div key={id} className={`${style.spaceBetween} ${style.marginRight5} ${style.filterBackground}`}>
-                                            <div className={`${style.filtertextStyle}`}>{dept?.departmentName?.name}</div>
-                                            <Tooltip title="Remove Filter" arrow>
-                                                <CancelOutlinedIcon
-                                                    sx={{
-                                                        fontSize: 15,
-                                                        color: "#06617A",
-                                                        marginLeft: "5px",
-                                                    }}
-                                                    className={style.cursorPointer}
-                                                    onClick={() => {
-                                                        const updatedDepartments = selectedDepartments.filter(depId => depId !== id);
-                                                        setSelectedDepartments(updatedDepartments);
+                        )
+                        }
+                        {
+                            selectedDepartments?.filter(Boolean).length > 0 && (
+                                <div className={`${style.grid2Gap} ${style.marginLeft5}`}>
+                                    {selectedDepartments.map((id) => {
+                                        const dept = departments?.find(dep => dep?.id === id);
+                                        return (
+                                            <div key={id} className={`${style.spaceBetween} ${style.marginRight5} ${style.filterBackground}`}>
+                                                <div className={`${style.filtertextStyle}`}>{dept?.departmentName?.name}</div>
+                                                <Tooltip title="Remove Filter" arrow>
+                                                    <CancelOutlinedIcon
+                                                        sx={{
+                                                            fontSize: 15,
+                                                            color: "#06617A",
+                                                            marginLeft: "5px",
+                                                        }}
+                                                        className={style.cursorPointer}
+                                                        onClick={() => {
+                                                            const updatedDepartments = selectedDepartments.filter(depId => depId !== id);
+                                                            setSelectedDepartments(updatedDepartments);
 
-                                                        const updatedDepartmentsToSend = departments
-                                                            ?.filter(data => updatedDepartments.includes(data?.id))
-                                                            ?.map(data => data);
+                                                            const updatedDepartmentsToSend = departments
+                                                                ?.filter(data => updatedDepartments.includes(data?.id))
+                                                                ?.map(data => data);
 
-                                                        setSelectedDepartmentsToSend(updatedDepartmentsToSend);
-                                                    }}
-                                                />
-                                            </Tooltip>
+                                                            setSelectedDepartmentsToSend(updatedDepartmentsToSend);
+                                                        }}
+                                                    />
+                                                </Tooltip>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            )
+                        }
+                        {
+                            reportType !== "currentMedicalDirectives" && reportType !== "currentPolicyAndProcedures" && (reportType === "workflow" || reportType === "retiredMedicalDirectives" || reportType === "upcomingForReview" || reportType === "retiredPolicyAndProcedures" || reportType === "policyAndProceduresWorkflow" || reportType === "policyAndProceduresUpcomingForReview") && (
+                                <>
+                                    <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                                        <InputLabel id="demo-multiple-name-label2" className={style.headingtextStyle}>Groups</InputLabel>
+                                        <Select
+                                            labelId="demo-multiple-name-label2"
+                                            id="demo-multiple-name2"
+                                            multiple
+                                            value={selectedGroups}
+                                            onChange={handleChangeGroups}
+                                            MenuProps={MenuProps}
+                                            disabled={isLoading}
+                                            className={style.textAlignLeft}
+                                            renderValue={(selected) => {
+                                                if (selected?.length === 1) {
+                                                    const group = groups?.find(grp => grp?.id === selected[0]);
+                                                    console.log("")
+                                                    return group?.name || 'All';
+                                                } else if (selected.length > 1) {
+                                                    return `${selected.length} Selected`;
+                                                } else {
+                                                    return '';
+                                                }
+                                            }}
+                                        >
+                                            {groups?.length >= 2 && (
+                                                <MenuItem value={defaultOption} disabled={isLoading}>All</MenuItem>
+                                            )}
+                                            {groups?.map((data) => (
+                                                <MenuItem
+                                                    key={data?.id}
+                                                    value={data?.id}
+                                                    disabled={isLoading}
+                                                >
+                                                    {data?.name}
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                    </FormControl>
+                                    {selectedGroups?.filter(Boolean).length > 0 && (
+                                        <div className={`${style.grid2Gap} ${style.marginLeft5}`}>
+                                            {selectedGroups.map((id) => {
+                                                const group = groups?.find(grp => grp?.id === id);
+                                                return (
+                                                    <div key={id} className={`${style.spaceBetween} ${style.marginRight5} ${style.filterBackground}`}>
+                                                        <div className={`${style.filtertextStyle}`}>{group?.name}</div>
+                                                        <Tooltip title="Remove Filter" arrow>
+                                                            <CancelOutlinedIcon
+                                                                sx={{
+                                                                    fontSize: 15,
+                                                                    color: "#06617A",
+                                                                    marginLeft: "5px",
+                                                                }}
+                                                                className={style.cursorPointer}
+                                                                onClick={() => {
+                                                                    const updatedGroups = selectedGroups?.filter(grpId => grpId !== id);
+                                                                    setSelectedGroups(updatedGroups);
+
+                                                                    const updatedGroupsToSend = groups
+                                                                        ?.filter(data => updatedGroups?.includes(data?.id))
+                                                                        ?.map(data => data);
+
+                                                                    setSelectedGroupsToSend(updatedGroupsToSend);
+                                                                }}
+                                                            />
+                                                        </Tooltip>
+                                                    </div>
+                                                );
+                                            })}
                                         </div>
-                                    );
-                                })}
-                            </div>
-                        )}
-                        {reportType !== "currentMedicalDirectives" && (reportType === "workflow" || reportType === "retiredMedicalDirectives" || reportType === "upcomingForReview") && (
-                            <>
-                                <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                                    <InputLabel id="demo-multiple-name-label2" className={style.headingtextStyle}>Groups</InputLabel>
-                                    <Select
-                                        labelId="demo-multiple-name-label2"
-                                        id="demo-multiple-name2"
-                                        multiple
-                                        value={selectedGroups}
-                                        onChange={handleChangeGroups}
-                                        MenuProps={MenuProps}
-                                        disabled={isLoading}
-                                        className={style.textAlignLeft}
-                                        renderValue={(selected) => {
-                                            if (selected?.length === 1) {
-                                                const group = groups?.find(grp => grp?.id === selected[0]);
-                                                console.log("")
-                                                return group?.name || 'All';
-                                            } else if (selected.length > 1) {
-                                                return `${selected.length} Selected`;
-                                            } else {
-                                                return '';
-                                            }
-                                        }}
-                                    >
-                                        {groups?.length >= 2 && (
-                                            <MenuItem value={defaultOption} disabled={isLoading}>All</MenuItem>
-                                        )}
-                                        {groups?.map((data) => (
-                                            <MenuItem
-                                                key={data?.id}
-                                                value={data?.id}
-                                                disabled={isLoading}
-                                            >
-                                                {data?.name}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                </FormControl>
-                                {selectedGroups?.filter(Boolean).length > 0 && (
-                                    <div className={`${style.grid2Gap} ${style.marginLeft5}`}>
-                                        {selectedGroups.map((id) => {
-                                            const group = groups?.find(grp => grp?.id === id);
-                                            return (
-                                                <div key={id} className={`${style.spaceBetween} ${style.marginRight5} ${style.filterBackground}`}>
-                                                    <div className={`${style.filtertextStyle}`}>{group?.name}</div>
-                                                    <Tooltip title="Remove Filter" arrow>
-                                                        <CancelOutlinedIcon
-                                                            sx={{
-                                                                fontSize: 15,
-                                                                color: "#06617A",
-                                                                marginLeft: "5px",
-                                                            }}
-                                                            className={style.cursorPointer}
-                                                            onClick={() => {
-                                                                const updatedGroups = selectedGroups?.filter(grpId => grpId !== id);
-                                                                setSelectedGroups(updatedGroups);
+                                    )}
+                                    <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                                        <InputLabel id="demo-multiple-name-label2" className={style.headingtextStyle}>Author / Owner</InputLabel>
+                                        <Select
+                                            labelId="demo-multiple-name-label2"
+                                            id="demo-multiple-name2"
+                                            multiple
+                                            value={selectedAuthors}
+                                            onChange={handleChangeAuthors}
+                                            MenuProps={MenuProps}
+                                            disabled={isLoading}
+                                            className={style.textAlignLeft}
+                                            renderValue={(selected) => {
+                                                if (selected?.length === 1) {
+                                                    const author = authors?.find(auth => auth?.id === selected[0]);
+                                                    console.log("")
+                                                    return `${author?.name?.firstName} ${author?.name?.lastName}` || 'All';
+                                                } else if (selected.length > 1) {
+                                                    return `${selected.length} Selected`;
+                                                } else {
+                                                    return '';
+                                                }
+                                            }}
+                                        >
+                                            {authors?.length >= 2 && (
+                                                <MenuItem value={defaultOption} disabled={isLoading}>All</MenuItem>
+                                            )}
+                                            {authors?.map((data) => (
+                                                <MenuItem
+                                                    key={data?.id}
+                                                    value={data?.id}
+                                                    disabled={isLoading}
+                                                >
+                                                    {`${data?.name?.firstName} ${data?.name?.lastName}`}
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                    </FormControl>
+                                    {selectedAuthors?.filter(Boolean).length > 0 && (
+                                        <div className={`${style.grid2Gap} ${style.marginLeft5}`}>
+                                            {selectedAuthors?.map((id) => {
+                                                const author = authors?.find(auth => auth?.id === id);
+                                                return (
+                                                    <div key={id} className={`${style.spaceBetween} ${style.marginRight5} ${style.filterBackground}`}>
+                                                        <div className={`${style.filtertextStyle}`}>{`${author?.name?.firstName} ${author?.name?.lastName}`}</div>
+                                                        <Tooltip title="Remove Filter" arrow>
+                                                            <CancelOutlinedIcon
+                                                                sx={{
+                                                                    fontSize: 15,
+                                                                    color: "#06617A",
+                                                                    marginLeft: "5px",
+                                                                }}
+                                                                className={style.cursorPointer}
+                                                                onClick={() => {
+                                                                    const updatedAuthors = selectedAuthors?.filter(authId => authId !== id);
+                                                                    setSelectedAuthors(updatedAuthors);
 
-                                                                const updatedGroupsToSend = groups
-                                                                    ?.filter(data => updatedGroups?.includes(data?.id))
-                                                                    ?.map(data => data);
+                                                                    const updatedAuthorsToSend = authors
+                                                                        ?.filter(data => updatedAuthors?.includes(data?.id))
+                                                                        ?.map(data => data);
 
-                                                                setSelectedGroupsToSend(updatedGroupsToSend);
-                                                            }}
-                                                        />
-                                                    </Tooltip>
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-                                )}
-                                <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                                    <InputLabel id="demo-multiple-name-label2" className={style.headingtextStyle}>Author / Owner</InputLabel>
-                                    <Select
-                                        labelId="demo-multiple-name-label2"
-                                        id="demo-multiple-name2"
-                                        multiple
-                                        value={selectedAuthors}
-                                        onChange={handleChangeAuthors}
-                                        MenuProps={MenuProps}
-                                        disabled={isLoading}
-                                        className={style.textAlignLeft}
-                                        renderValue={(selected) => {
-                                            if (selected?.length === 1) {
-                                                const author = authors?.find(auth => auth?.id === selected[0]);
-                                                console.log("")
-                                                return author?.name || 'All';
-                                            } else if (selected.length > 1) {
-                                                return `${selected.length} Selected`;
-                                            } else {
-                                                return '';
-                                            }
-                                        }}
-                                    >
-                                        {authors?.length >= 2 && (
-                                            <MenuItem value={defaultOption} disabled={isLoading}>All</MenuItem>
-                                        )}
-                                        {authors?.map((data) => (
-                                            <MenuItem
-                                                key={data?.id}
-                                                value={data?.id}
-                                                disabled={isLoading}
-                                            >
-                                                {`${data?.name?.firstName} ${data?.name?.lastName}`}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                </FormControl>
-                                {selectedAuthors?.filter(Boolean).length > 0 && (
-                                    <div className={`${style.grid2Gap} ${style.marginLeft5}`}>
-                                        {selectedAuthors?.map((id) => {
-                                            const author = authors?.find(auth => auth?.id === id);
-                                            return (
-                                                <div key={id} className={`${style.spaceBetween} ${style.marginRight5} ${style.filterBackground}`}>
-                                                    <div className={`${style.filtertextStyle}`}>{`${author?.name?.firstName} ${author?.name?.lastName}`}</div>
-                                                    <Tooltip title="Remove Filter" arrow>
-                                                        <CancelOutlinedIcon
-                                                            sx={{
-                                                                fontSize: 15,
-                                                                color: "#06617A",
-                                                                marginLeft: "5px",
-                                                            }}
-                                                            className={style.cursorPointer}
-                                                            onClick={() => {
-                                                                const updatedAuthors = selectedAuthors?.filter(authId => authId !== id);
-                                                                setSelectedAuthors(updatedAuthors);
-
-                                                                const updatedAuthorsToSend = authors
-                                                                    ?.filter(data => updatedAuthors?.includes(data?.id))
-                                                                    ?.map(data => data);
-
-                                                                setSelectedAuthorsToSend(updatedAuthorsToSend);
-                                                            }}
-                                                        />
-                                                    </Tooltip>
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-                                )}
-                            </>
-                        )}
+                                                                    setSelectedAuthorsToSend(updatedAuthorsToSend);
+                                                                }}
+                                                            />
+                                                        </Tooltip>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    )}
+                                </>
+                            )
+                        }
                         {/* <div>
                             <InputLabel id="demo-multiple-name-label2" className={style.headingtextStyle}>Departments</InputLabel>
                             <CommonMultiSelectField
@@ -1208,7 +1215,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 ))}
                             </Select>
                         </FormControl> */}
-                        {reportType !== 'workflow' && reportType !== "currentMedicalDirectives" && reportType !== "retiredMedicalDirectives" && reportType !== "upcomingForReview" && reportType !== "medicalDirectivesTracker" && reportType !== "expiredDocumentsSummaryForStaff" && reportType !== "documentsExpirationSummaryForStaff" && reportType !== "inactiveStaffSummary" && reportType !== "inactiveStaffSummaryByMonth" && (
+                        {reportType !== 'workflow' && reportType !== "currentMedicalDirectives" && reportType !== "retiredMedicalDirectives" && reportType !== "upcomingForReview" && reportType !== "medicalDirectivesTracker" && reportType !== "expiredDocumentsSummaryForStaff" && reportType !== "documentsExpirationSummaryForStaff" && reportType !== "inactiveStaffSummary" && reportType !== "inactiveStaffSummaryByMonth" && reportType !== "currentPolicyAndProcedures" && reportType !== "retiredPolicyAndProcedures" && reportType !== 'policyAndProceduresWorkflow' && reportType !== "policyAndProceduresUpcomingForReview" && reportType !== "policyAndProceduresTracker" && (
                             <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                                 <InputLabel id="demo-multiple-name-label2" className={style.headingtextStyle}>Staff Type</InputLabel>
                                 <Select
@@ -1241,40 +1248,43 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                     ))}
                                 </Select>
                             </FormControl>
-                        )}
-                        {selectedStaffType?.filter(Boolean).length > 0 && (
-                            <div className={`${style.grid2Gap} ${style.marginLeft5}`}>
-                                {selectedStaffType.map((id) => {
-                                    const dept = staffType?.find(dep => dep?.id === id);
-                                    return (
-                                        <div key={id} className={`${style.spaceBetween} ${style.marginRight5} ${style.filterBackground}`}>
-                                            <div className={`${style.filtertextStyle}`}>{dept?.applicantType}</div>
-                                            <Tooltip title="Remove Filter" arrow>
-                                                <CancelOutlinedIcon
-                                                    sx={{
-                                                        fontSize: 15,
-                                                        color: "#06617A",
-                                                        marginLeft: "5px",
-                                                    }}
-                                                    className={style.cursorPointer}
-                                                    onClick={() => {
-                                                        const updatedDepartments = selectedStaffType.filter(depId => depId !== id);
-                                                        setSelectedStaffType(updatedDepartments);
+                        )
+                        }
+                        {
+                            selectedStaffType?.filter(Boolean).length > 0 && (
+                                <div className={`${style.grid2Gap} ${style.marginLeft5}`}>
+                                    {selectedStaffType.map((id) => {
+                                        const dept = staffType?.find(dep => dep?.id === id);
+                                        return (
+                                            <div key={id} className={`${style.spaceBetween} ${style.marginRight5} ${style.filterBackground}`}>
+                                                <div className={`${style.filtertextStyle}`}>{dept?.applicantType}</div>
+                                                <Tooltip title="Remove Filter" arrow>
+                                                    <CancelOutlinedIcon
+                                                        sx={{
+                                                            fontSize: 15,
+                                                            color: "#06617A",
+                                                            marginLeft: "5px",
+                                                        }}
+                                                        className={style.cursorPointer}
+                                                        onClick={() => {
+                                                            const updatedDepartments = selectedStaffType.filter(depId => depId !== id);
+                                                            setSelectedStaffType(updatedDepartments);
 
-                                                        const updatedDepartmentsToSend = staffType
-                                                            ?.filter(data => updatedDepartments.includes(data?.id))
-                                                            ?.map(data => data);
+                                                            const updatedDepartmentsToSend = staffType
+                                                                ?.filter(data => updatedDepartments.includes(data?.id))
+                                                                ?.map(data => data);
 
-                                                        setSelectedStaffTypeToSend(updatedDepartmentsToSend);
-                                                    }}
-                                                />
-                                            </Tooltip>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        )}
-                        {reportType !== 'workflow' && reportType !== "currentMedicalDirectives" && reportType !== "retiredMedicalDirectives" && reportType !== "upcomingForReview" && reportType !== "medicalDirectivesTracker" && reportType !== "expiredDocumentsSummaryForStaff" && reportType !== "documentsExpirationSummaryForStaff" && reportType !== "inactiveStaffSummary" && reportType !== "newStaffAppointmentsSummary" && reportType !== "appointmentHistorySummary" && reportType !== "inactiveStaffSummaryByMonth" && reportType !== "staffUploadedDocumentsSummary" && reportType !== "locumTermExpirationSummary" && (
+                                                            setSelectedStaffTypeToSend(updatedDepartmentsToSend);
+                                                        }}
+                                                    />
+                                                </Tooltip>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            )
+                        }
+                        {reportType !== 'workflow' && reportType !== "currentMedicalDirectives" && reportType !== "retiredMedicalDirectives" && reportType !== "upcomingForReview" && reportType !== "medicalDirectivesTracker" && reportType !== "expiredDocumentsSummaryForStaff" && reportType !== "documentsExpirationSummaryForStaff" && reportType !== "inactiveStaffSummary" && reportType !== "newStaffAppointmentsSummary" && reportType !== "appointmentHistorySummary" && reportType !== "inactiveStaffSummaryByMonth" && reportType !== "staffUploadedDocumentsSummary" && reportType !== "locumTermExpirationSummary" && reportType !== "currentPolicyAndProcedures" && reportType !== "retiredPolicyAndProcedures" && reportType !== 'policyAndProceduresWorkflow' && reportType !== "policyAndProceduresUpcomingForReview" && reportType !== "policyAndProceduresTracker" && (
                             <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                                 <InputLabel id="demo-multiple-name-label2" className={style.headingtextStyle}>Privilege Category</InputLabel>
                                 <Select
@@ -1307,190 +1317,234 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                     ))}
                                 </Select>
                             </FormControl>
-                        )}
-                        {selectedPrivilegeCategory?.filter(Boolean).length > 0 && (
-                            <div className={`${style.grid2Gap} ${style.marginLeft5}`}>
-                                {selectedPrivilegeCategory.map((id) => {
-                                    const dept = privilegeCategory?.find(dep => dep?.id === id);
-                                    return (
-                                        <div key={id} className={`${style.spaceBetween} ${style.marginRight5} ${style.filterBackground}`}>
-                                            <div className={`${style.filtertextStyle}`}>{dept?.category}</div>
-                                            <Tooltip title="Remove Filter" arrow>
-                                                <CancelOutlinedIcon
-                                                    sx={{
-                                                        fontSize: 15,
-                                                        color: "#06617A",
-                                                        marginLeft: "5px",
-                                                    }}
-                                                    className={style.cursorPointer}
-                                                    //     onClick={() => {
-                                                    //     const updatedPrivilegeCategory = selectedPrivilegeCategory.filter(depId => depId !== id);
-                                                    //     setSelectedPrivilegeCategory(updatedPrivilegeCategory);
+                        )
+                        }
+                        {
+                            selectedPrivilegeCategory?.filter(Boolean).length > 0 && (
+                                <div className={`${style.grid2Gap} ${style.marginLeft5}`}>
+                                    {selectedPrivilegeCategory.map((id) => {
+                                        const dept = privilegeCategory?.find(dep => dep?.id === id);
+                                        return (
+                                            <div key={id} className={`${style.spaceBetween} ${style.marginRight5} ${style.filterBackground}`}>
+                                                <div className={`${style.filtertextStyle}`}>{dept?.category}</div>
+                                                <Tooltip title="Remove Filter" arrow>
+                                                    <CancelOutlinedIcon
+                                                        sx={{
+                                                            fontSize: 15,
+                                                            color: "#06617A",
+                                                            marginLeft: "5px",
+                                                        }}
+                                                        className={style.cursorPointer}
+                                                        //     onClick={() => {
+                                                        //     const updatedPrivilegeCategory = selectedPrivilegeCategory.filter(depId => depId !== id);
+                                                        //     setSelectedPrivilegeCategory(updatedPrivilegeCategory);
 
-                                                    //     const updatedPrivilegeCategoryToSend = privilegeCategory
-                                                    //         ?.filter(data => updatedPrivilegeCategory.includes(data?.id))
-                                                    //         ?.map(data => data);
+                                                        //     const updatedPrivilegeCategoryToSend = privilegeCategory
+                                                        //         ?.filter(data => updatedPrivilegeCategory.includes(data?.id))
+                                                        //         ?.map(data => data);
 
-                                                    //     setSelectedPrivilegeCategoryToSend(updatedPrivilegeCategoryToSend);
-                                                    // }}
-                                                    onClick={() => {
-                                                        const privilege = privilegeCategory.find(privilege => privilege?.id === id);
-                                                        const categoryName = privilege?.category;
+                                                        //     setSelectedPrivilegeCategoryToSend(updatedPrivilegeCategoryToSend);
+                                                        // }}
+                                                        onClick={() => {
+                                                            const privilege = privilegeCategory.find(privilege => privilege?.id === id);
+                                                            const categoryName = privilege?.category;
 
-                                                        if (!categoryName) return;
+                                                            if (!categoryName) return;
 
-                                                        const matchingIds = privilegeCategory
-                                                            .filter(item => item.category === categoryName)
-                                                            .map(item => item.id);
+                                                            const matchingIds = privilegeCategory
+                                                                .filter(item => item.category === categoryName)
+                                                                .map(item => item.id);
 
-                                                        const updatedSelected = selectedPrivilegeCategory.filter(
-                                                            (id) => !matchingIds.includes(id)
-                                                        );
-                                                        setSelectedPrivilegeCategory(updatedSelected);
+                                                            const updatedSelected = selectedPrivilegeCategory.filter(
+                                                                (id) => !matchingIds.includes(id)
+                                                            );
+                                                            setSelectedPrivilegeCategory(updatedSelected);
 
-                                                        const updatedData = privilegeCategory.filter((item) =>
-                                                            updatedSelected.includes(item.id)
-                                                        );
-                                                        setSelectedPrivilegeCategoryToSend(updatedData);
-                                                    }}
-                                                />
-                                            </Tooltip>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        )}
-                        {(reportType === "upcomingForReview" || reportType === "documentsExpirationSummaryForStaff") && (
-                            <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                                <InputLabel id="demo-simple-select-standard-label3">Review In</InputLabel>
-                                <Select
-                                    labelId="demo-simple-select-standard-label3"
-                                    id="demo-simple-select-standard3"
-                                    value={noOfDays}
-                                    onChange={(e) => { setNoOfDays(e.target.value) }}
-                                    MenuProps={MenuProps}
-                                    disabled={isLoading}
-                                    className={style.textAlignLeft}
-                                >
-                                    <MenuItem value={'30'} disabled={isLoading}>30 Days</MenuItem>
-                                    <MenuItem value={'60'} disabled={isLoading}>60 Days</MenuItem>
-                                    <MenuItem value={'90'} disabled={isLoading}>90 Days</MenuItem>
-                                    <MenuItem value={'120'} disabled={isLoading}>120 Days</MenuItem>
-                                </Select>
-                            </FormControl>
-                        )}
+                                                            const updatedData = privilegeCategory.filter((item) =>
+                                                                updatedSelected.includes(item.id)
+                                                            );
+                                                            setSelectedPrivilegeCategoryToSend(updatedData);
+                                                        }}
+                                                    />
+                                                </Tooltip>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            )
+                        }
+                        {
+                            (reportType === "upcomingForReview" || reportType === "documentsExpirationSummaryForStaff" || reportType === "policyAndProceduresUpcomingForReview") && (
+                                <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                                    <InputLabel id="demo-simple-select-standard-label3">Review In</InputLabel>
+                                    <Select
+                                        labelId="demo-simple-select-standard-label3"
+                                        id="demo-simple-select-standard3"
+                                        value={noOfDays}
+                                        onChange={(e) => { setNoOfDays(e.target.value) }}
+                                        MenuProps={MenuProps}
+                                        disabled={isLoading}
+                                        className={style.textAlignLeft}
+                                    >
+                                        <MenuItem value={'30'} disabled={isLoading}>30 Days</MenuItem>
+                                        <MenuItem value={'60'} disabled={isLoading}>60 Days</MenuItem>
+                                        <MenuItem value={'90'} disabled={isLoading}>90 Days</MenuItem>
+                                        <MenuItem value={'120'} disabled={isLoading}>120 Days</MenuItem>
+                                    </Select>
+                                </FormControl>
+                            )
+                        }
 
-                        {(reportType === "staffbyTypes" || reportType === "locumStaffbyTypes") && (
-                            <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                                <InputLabel id="demo-simple-select-standard-label3">Application Sent Status</InputLabel>
-                                <Select
-                                    labelId="demo-simple-select-standard-label3"
-                                    id="demo-simple-select-standard3"
-                                    value={selectedApplicationSentStatus}
-                                    onChange={(e) => { setSelectedApplicationSentStatus(e.target.value) }}
-                                    MenuProps={MenuProps}
-                                    disabled={isLoading}
-                                    className={style.textAlignLeft}
-                                    renderValue={(selected) => {
-                                        if (selected === 'ALL') return 'All';     // Show "All" for empty
-                                        if (selected === 'SENT') return 'Sent';
-                                        if (selected === 'RE_SENT') return 'Reminder Sent';
-                                        if (selected === 'NOT_SENT') return 'Not Sent';
-                                        return selected;
-                                    }}
-                                >
-                                    <MenuItem value={'ALL'} disabled={isLoading}>All</MenuItem>
-                                    <MenuItem value={'SENT'} disabled={isLoading}>Sent</MenuItem>
-                                    <MenuItem value={'RE_SENT'} disabled={isLoading}>Reminder Sent</MenuItem>
-                                    <MenuItem value={'NOT_SENT'} disabled={isLoading}>Not Sent</MenuItem>
-                                </Select>
-                            </FormControl>
-                        )}
-                        {(reportType === "workflow") && (
-                            <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                                <InputLabel id="demo-simple-select-standard-label3" className={style.headingtextStyle}>Workflow Level</InputLabel>
-                                {/* <InputLabel id="demo-multiple-name-label4" className={style.headingtextStyle}>Application Type</InputLabel> */}
-                                <Select
-                                    labelId="demo-simple-select-standard-label3"
-                                    id="demo-simple-select-standard3"
-                                    // labelId="demo-multiple-name-label4"
-                                    // id="demo-multiple-name4"
-                                    value={workflowLevel}
-                                    onChange={(e) => { setWorkflowLevel(e.target.value) }}
-                                    MenuProps={MenuProps}
-                                    disabled={isLoading}
-                                    className={style.textAlignLeft}
-                                >
-                                    <MenuItem value={'All'} disabled={isLoading}>All</MenuItem>
-                                    <MenuItem value={'1'} disabled={isLoading}>Acknowledgements</MenuItem>
-                                    <MenuItem value={'2'} disabled={isLoading}>MAC Approval</MenuItem>
-                                    <MenuItem value={'3'} disabled={isLoading}>Leadership Sign Off</MenuItem>
-                                </Select>
-                            </FormControl>
-                        )}
-                        {(reportType === "medicalDirectivesTracker") && (
-                            <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                                <InputLabel id="demo-simple-select-standard-label3" className={style.headingtextStyle}>Medical Directive Tracker</InputLabel>
-                                {/* <InputLabel id="demo-multiple-name-label4" className={style.headingtextStyle}>Application Type</InputLabel> */}
-                                <Select
-                                    labelId="demo-simple-select-standard-label3"
-                                    id="demo-simple-select-standard3"
-                                    // labelId="demo-multiple-name-label4"
-                                    // id="demo-multiple-name4"
-                                    value={trackerTabName}
-                                    onChange={(e) => { setTrackerTabName(e.target.value) }}
-                                    MenuProps={MenuProps}
-                                    disabled={isLoading}
-                                    className={style.textAlignLeft}
-                                >
-                                    <MenuItem value={'medical_directive_tab'} disabled={isLoading}>By Medical Directive</MenuItem>
-                                    <MenuItem value={'applicant_tab'} disabled={isLoading}>By Applicant</MenuItem>
-                                    <MenuItem value={'department_tab'} disabled={isLoading}>By Department</MenuItem>
-                                </Select>
-                            </FormControl>
-                        )}
-                        {(reportType === "currentNotesSummary") && (
-                            <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                                <InputLabel id="demo-simple-select-standard-label3" className={style.headingtextStyle}>Application Type</InputLabel>
-                                {/* <InputLabel id="demo-multiple-name-label4" className={style.headingtextStyle}>Application Type</InputLabel> */}
-                                <Select
-                                    labelId="demo-simple-select-standard-label3"
-                                    id="demo-simple-select-standard3"
-                                    // labelId="demo-multiple-name-label4"
-                                    // id="demo-multiple-name4"
-                                    value={selectedApplicationType}
-                                    onChange={(e) => { setSelectedApplicationType(e.target.value) }}
-                                    MenuProps={MenuProps}
-                                    disabled={isLoading}
-                                    className={style.textAlignLeft}
-                                >
-                                    <MenuItem value={defaultOption} disabled={isLoading}>All</MenuItem>
-                                    <MenuItem value={'NEW'} disabled={isLoading}>New Applicants</MenuItem>
-                                    <MenuItem value={'REAPPOINTMENT'} disabled={isLoading}>Staff Reappointments</MenuItem>
-                                    <MenuItem value={'LOCUM_RENEWAL'} disabled={isLoading}>Locum Applications</MenuItem>
-                                </Select>
-                            </FormControl>
-                        )}
-                        {reportType === "declinedOrNotRenewedStaffSummary" && (
-                            <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                                <InputLabel id="demo-simple-select-standard-label3">Locum Application Status</InputLabel>
-                                <Select
-                                    labelId="demo-simple-select-standard-label3"
-                                    id="demo-simple-select-standard3"
-                                    value={selectedReappointmentStatus}
-                                    onChange={(e) => { setSelectedReappointmentStatus(e.target.value) }}
-                                    MenuProps={MenuProps}
-                                    disabled={isLoading}
-                                    className={style.textAlignLeft}
-                                >
-                                    <MenuItem value={''} disabled={isLoading}>All</MenuItem>
-                                    <MenuItem value={'NOT_RENEWED'} disabled={isLoading}>Not Renewed</MenuItem>
-                                    <MenuItem value={'DECLINED'} disabled={isLoading}>Declined</MenuItem>
-                                </Select>
-                            </FormControl>
-                        )}
-                        {(reportType === "expiredDocumentsSummaryForStaff" || reportType === "documentsExpirationSummaryForStaff" || reportType === "appointmentHistorySummary" || reportType === "inactiveStaffSummary"
-                            || reportType === "newStaffAppointmentsSummary" || reportType === "inactiveStaffSummaryByMonth" || reportType === "staffUploadedDocumentsSummary") && (
+                        {
+                            (reportType === "staffbyTypes" || reportType === "locumStaffbyTypes") && (
+                                <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                                    <InputLabel id="demo-simple-select-standard-label3">Application Sent Status</InputLabel>
+                                    <Select
+                                        labelId="demo-simple-select-standard-label3"
+                                        id="demo-simple-select-standard3"
+                                        value={selectedApplicationSentStatus}
+                                        onChange={(e) => { setSelectedApplicationSentStatus(e.target.value) }}
+                                        MenuProps={MenuProps}
+                                        disabled={isLoading}
+                                        className={style.textAlignLeft}
+                                        renderValue={(selected) => {
+                                            if (selected === 'ALL') return 'All';     // Show "All" for empty
+                                            if (selected === 'SENT') return 'Sent';
+                                            if (selected === 'RE_SENT') return 'Reminder Sent';
+                                            if (selected === 'NOT_SENT') return 'Not Sent';
+                                            return selected;
+                                        }}
+                                    >
+                                        <MenuItem value={'ALL'} disabled={isLoading}>All</MenuItem>
+                                        <MenuItem value={'SENT'} disabled={isLoading}>Sent</MenuItem>
+                                        <MenuItem value={'RE_SENT'} disabled={isLoading}>Reminder Sent</MenuItem>
+                                        <MenuItem value={'NOT_SENT'} disabled={isLoading}>Not Sent</MenuItem>
+                                    </Select>
+                                </FormControl>
+                            )
+                        }
+                        {
+                            (reportType === "workflow") && (
+                                <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                                    <InputLabel id="demo-simple-select-standard-label3" className={style.headingtextStyle}>Workflow Level</InputLabel>
+                                    {/* <InputLabel id="demo-multiple-name-label4" className={style.headingtextStyle}>Application Type</InputLabel> */}
+                                    <Select
+                                        labelId="demo-simple-select-standard-label3"
+                                        id="demo-simple-select-standard3"
+                                        // labelId="demo-multiple-name-label4"
+                                        // id="demo-multiple-name4"
+                                        value={workflowLevel}
+                                        onChange={(e) => { setWorkflowLevel(e.target.value) }}
+                                        MenuProps={MenuProps}
+                                        disabled={isLoading}
+                                        className={style.textAlignLeft}
+                                    >
+                                        <MenuItem value={'All'} disabled={isLoading}>All</MenuItem>
+                                        <MenuItem value={'1'} disabled={isLoading}>Acknowledgements</MenuItem>
+                                        <MenuItem value={'2'} disabled={isLoading}>MAC Approval</MenuItem>
+                                        <MenuItem value={'3'} disabled={isLoading}>Leadership Sign Off</MenuItem>
+                                    </Select>
+                                </FormControl>
+                            )
+                        }
+                        {
+                            (reportType === "policyAndProceduresWorkflow") && (
+                                <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                                    <InputLabel id="demo-simple-select-standard-label3" className={style.headingtextStyle}>Workflow Level</InputLabel>
+                                    {/* <InputLabel id="demo-multiple-name-label4" className={style.headingtextStyle}>Application Type</InputLabel> */}
+                                    <Select
+                                        labelId="demo-simple-select-standard-label3"
+                                        id="demo-simple-select-standard3"
+                                        // labelId="demo-multiple-name-label4"
+                                        // id="demo-multiple-name4"
+                                        value={workflowLevel}
+                                        onChange={(e) => { setWorkflowLevel(e.target.value) }}
+                                        MenuProps={MenuProps}
+                                        disabled={isLoading}
+                                        className={style.textAlignLeft}
+                                    >
+                                        <MenuItem value={'All'} disabled={isLoading}>All</MenuItem>
+                                        <MenuItem value={'1'} disabled={isLoading}>Acknowledgements</MenuItem>
+                                        <MenuItem value={'2'} disabled={isLoading}>Leadership Sign Off</MenuItem>
+                                    </Select>
+                                </FormControl>
+                            )
+                        }
+                        {
+                            (reportType === "medicalDirectivesTracker" || reportType === "policyAndProceduresTracker") && (
+                                <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                                    <InputLabel id="demo-simple-select-standard-label3" className={style.headingtextStyle}>{reportType === "medicalDirectivesTracker" ? `Medical Directive Tracker` : `Policy And Procedure Tracker`}</InputLabel>
+                                    {/* <InputLabel id="demo-multiple-name-label4" className={style.headingtextStyle}>Application Type</InputLabel> */}
+                                    <Select
+                                        labelId="demo-simple-select-standard-label3"
+                                        id="demo-simple-select-standard3"
+                                        // labelId="demo-multiple-name-label4"
+                                        // id="demo-multiple-name4"
+                                        value={trackerTabName}
+                                        onChange={(e) => { setTrackerTabName(e.target.value) }}
+                                        MenuProps={MenuProps}
+                                        disabled={isLoading}
+                                        className={style.textAlignLeft}
+                                    >
+                                        {reportType === "medicalDirectivesTracker" && (
+                                            <MenuItem value={'medical_directive_tab'} disabled={isLoading}>By Medical Directive</MenuItem>
+                                        )}
+                                        {reportType === "policyAndProceduresTracker" && (
+                                            <MenuItem value={'policy_and_procedure_tab'} disabled={isLoading}>By Policy And Procedure</MenuItem>
+                                        )}
+                                        <MenuItem value={'applicant_tab'} disabled={isLoading}>By Applicant</MenuItem>
+                                        <MenuItem value={'department_tab'} disabled={isLoading}>By Department</MenuItem>
+                                    </Select>
+                                </FormControl>
+                            )
+                        }
+                        {
+                            (reportType === "currentNotesSummary") && (
+                                <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                                    <InputLabel id="demo-simple-select-standard-label3" className={style.headingtextStyle}>Application Type</InputLabel>
+                                    {/* <InputLabel id="demo-multiple-name-label4" className={style.headingtextStyle}>Application Type</InputLabel> */}
+                                    <Select
+                                        labelId="demo-simple-select-standard-label3"
+                                        id="demo-simple-select-standard3"
+                                        // labelId="demo-multiple-name-label4"
+                                        // id="demo-multiple-name4"
+                                        value={selectedApplicationType}
+                                        onChange={(e) => { setSelectedApplicationType(e.target.value) }}
+                                        MenuProps={MenuProps}
+                                        disabled={isLoading}
+                                        className={style.textAlignLeft}
+                                    >
+                                        <MenuItem value={defaultOption} disabled={isLoading}>All</MenuItem>
+                                        <MenuItem value={'NEW'} disabled={isLoading}>New Applicants</MenuItem>
+                                        <MenuItem value={'REAPPOINTMENT'} disabled={isLoading}>Staff Reappointments</MenuItem>
+                                        <MenuItem value={'LOCUM_RENEWAL'} disabled={isLoading}>Locum Applications</MenuItem>
+                                    </Select>
+                                </FormControl>
+                            )
+                        }
+                        {
+                            reportType === "declinedOrNotRenewedStaffSummary" && (
+                                <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                                    <InputLabel id="demo-simple-select-standard-label3">Locum Application Status</InputLabel>
+                                    <Select
+                                        labelId="demo-simple-select-standard-label3"
+                                        id="demo-simple-select-standard3"
+                                        value={selectedReappointmentStatus}
+                                        onChange={(e) => { setSelectedReappointmentStatus(e.target.value) }}
+                                        MenuProps={MenuProps}
+                                        disabled={isLoading}
+                                        className={style.textAlignLeft}
+                                    >
+                                        <MenuItem value={''} disabled={isLoading}>All</MenuItem>
+                                        <MenuItem value={'NOT_RENEWED'} disabled={isLoading}>Not Renewed</MenuItem>
+                                        <MenuItem value={'DECLINED'} disabled={isLoading}>Declined</MenuItem>
+                                    </Select>
+                                </FormControl>
+                            )
+                        }
+                        {
+                            (reportType === "expiredDocumentsSummaryForStaff" || reportType === "documentsExpirationSummaryForStaff" || reportType === "appointmentHistorySummary" || reportType === "inactiveStaffSummary"
+                                || reportType === "newStaffAppointmentsSummary" || reportType === "inactiveStaffSummaryByMonth" || reportType === "staffUploadedDocumentsSummary") && (
                                 <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                                     <InputLabel id="demo-simple-select-standard-label3">Staff</InputLabel>
                                     <Select
@@ -1506,7 +1560,8 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                         <MenuItem value={'LOCUM'} disabled={isMyReport || isLoading}>Locum</MenuItem>
                                     </Select>
                                 </FormControl>
-                            )}
+                            )
+                        }
                         {/* <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                             <InputLabel id="demo-multiple-name-label5" className={style.headingtextStyle}>Contract</InputLabel>
                             <Select
@@ -1532,41 +1587,14 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 ))}
                             </Select>
                         </FormControl> */}
-                        {(reportType === "contractDocumentsOnFile" || reportType === "currentRemitToAddressForActiveContracts") && (
-                            <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                                <InputLabel id="demo-multiple-name-label5">Contracted Service Provider</InputLabel>
-                                <Select
-                                    labelId="demo-multiple-name-label5"
-                                    id="demo-multiple-name5"
-                                    multiple
-                                    value={selectedContractedServiceProvider}
-                                    onChange={handleChangeContractedServiceProviders}
-                                    MenuProps={MenuProps}
-                                    disabled={isMyReport || isLoading}
-                                    className={style.textAlignLeft}
-                                >
-                                    {contractedServiceProviders?.length >= 2 && (
-                                        <MenuItem value={defaultOption} disabled={isMyReport || isLoading}>All Contracted Service Providers</MenuItem>
-                                    )}
-                                    {contractedServiceProviders?.map((data, index) => (
-                                        <MenuItem
-                                            key={index}
-                                            value={data?.id}
-                                            disabled={isMyReport || isLoading}
-                                        >
-                                            {`${data?.name?.firstName} ${data?.name?.lastName}`}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                            </FormControl>
-                        )}
-                        {reportType === "paymentProcessingStatusTracker" && (
-                            <>
+                        {
+                            (reportType === "contractDocumentsOnFile" || reportType === "currentRemitToAddressForActiveContracts") && (
                                 <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                                     <InputLabel id="demo-multiple-name-label5">Contracted Service Provider</InputLabel>
                                     <Select
                                         labelId="demo-multiple-name-label5"
                                         id="demo-multiple-name5"
+                                        multiple
                                         value={selectedContractedServiceProvider}
                                         onChange={handleChangeContractedServiceProviders}
                                         MenuProps={MenuProps}
@@ -1587,58 +1615,90 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                         ))}
                                     </Select>
                                 </FormControl>
-                                {(selectedContractedServiceProvider?.length === 1 && selectedContractedServiceProvider[0] !== '') ? (
-                                    <FormControl variant="standard" sx={{ width: '250px', marginTop: '20px' }}>
-                                        <InputLabel id="demo-multiple-name-label5">Timesheet Interval</InputLabel>
+                            )
+                        }
+                        {
+                            reportType === "paymentProcessingStatusTracker" && (
+                                <>
+                                    <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                                        <InputLabel id="demo-multiple-name-label5">Contracted Service Provider</InputLabel>
                                         <Select
-                                            labelId="demo-multiple-name-label2"
-                                            id="demo-multiple-name2"
-                                            multiple
-                                            value={selectedTimesheetInterval}
-                                            onChange={handleChangeTimesheetInterval}
-                                            MenuProps={{ MenuProps }}
+                                            labelId="demo-multiple-name-label5"
+                                            id="demo-multiple-name5"
+                                            value={selectedContractedServiceProvider}
+                                            onChange={handleChangeContractedServiceProviders}
+                                            MenuProps={MenuProps}
                                             disabled={isMyReport || isLoading}
                                             className={style.textAlignLeft}
                                         >
-                                            {timesheetIntervals?.map((data) => (
+                                            {contractedServiceProviders?.length >= 2 && (
+                                                <MenuItem value={defaultOption} disabled={isMyReport || isLoading}>All Contracted Service Providers</MenuItem>
+                                            )}
+                                            {contractedServiceProviders?.map((data, index) => (
                                                 <MenuItem
-                                                    key={data?.startDate}
-                                                    value={`${data?.startDate}%23${data?.endDate}`}
+                                                    key={index}
+                                                    value={data?.id}
                                                     disabled={isMyReport || isLoading}
                                                 >
-                                                    {`Timesheets for ${format(new Date(data?.startDate), 'MMMM yyyy')}`}
+                                                    {`${data?.name?.firstName} ${data?.name?.lastName}`}
                                                 </MenuItem>
                                             ))}
                                         </Select>
                                     </FormControl>
-                                ) : (
-                                    <FormControl variant="standard" sx={{ width: '250px', marginTop: '20px' }}>
-                                        <InputLabel id="demo-multiple-name-label5">Timesheet Interval</InputLabel>
-                                        <Select
-                                            labelId="demo-multiple-name-label2"
-                                            id="demo-multiple-name2"
-                                            value={selectedTimesheetInterval}
-                                            onChange={(e) => setSelectedTimesheetInterval([e.target.value])}
-                                            MenuProps={{ MenuProps }}
-                                            disabled={isMyReport || isLoading}
-                                            className={style.textAlignLeft}
-                                        >
-                                            {timesheetIntervals?.map((data) => (
-                                                <MenuItem
-                                                    key={data?.startDate}
-                                                    value={`${data?.startDate}%23${data?.endDate}`}
-                                                    disabled={isMyReport || isLoading}
-                                                >
-                                                    {`Timesheets for ${format(new Date(data?.startDate), 'MMMM yyyy')}`}
-                                                </MenuItem>
-                                            ))}
-                                        </Select>
-                                    </FormControl>
-                                )}
-                            </>
-                        )}
-                        {(reportType === "contractDocumentsOnFile" || reportType === "multiProviderContractsList" ||
-                            reportType === "contractsWithABusinessEntity" || reportType === 'nonCompliant') && (
+                                    {(selectedContractedServiceProvider?.length === 1 && selectedContractedServiceProvider[0] !== '') ? (
+                                        <FormControl variant="standard" sx={{ width: '250px', marginTop: '20px' }}>
+                                            <InputLabel id="demo-multiple-name-label5">Timesheet Interval</InputLabel>
+                                            <Select
+                                                labelId="demo-multiple-name-label2"
+                                                id="demo-multiple-name2"
+                                                multiple
+                                                value={selectedTimesheetInterval}
+                                                onChange={handleChangeTimesheetInterval}
+                                                MenuProps={{ MenuProps }}
+                                                disabled={isMyReport || isLoading}
+                                                className={style.textAlignLeft}
+                                            >
+                                                {timesheetIntervals?.map((data) => (
+                                                    <MenuItem
+                                                        key={data?.startDate}
+                                                        value={`${data?.startDate}%23${data?.endDate}`}
+                                                        disabled={isMyReport || isLoading}
+                                                    >
+                                                        {`Timesheets for ${format(new Date(data?.startDate), 'MMMM yyyy')}`}
+                                                    </MenuItem>
+                                                ))}
+                                            </Select>
+                                        </FormControl>
+                                    ) : (
+                                        <FormControl variant="standard" sx={{ width: '250px', marginTop: '20px' }}>
+                                            <InputLabel id="demo-multiple-name-label5">Timesheet Interval</InputLabel>
+                                            <Select
+                                                labelId="demo-multiple-name-label2"
+                                                id="demo-multiple-name2"
+                                                value={selectedTimesheetInterval}
+                                                onChange={(e) => setSelectedTimesheetInterval([e.target.value])}
+                                                MenuProps={{ MenuProps }}
+                                                disabled={isMyReport || isLoading}
+                                                className={style.textAlignLeft}
+                                            >
+                                                {timesheetIntervals?.map((data) => (
+                                                    <MenuItem
+                                                        key={data?.startDate}
+                                                        value={`${data?.startDate}%23${data?.endDate}`}
+                                                        disabled={isMyReport || isLoading}
+                                                    >
+                                                        {`Timesheets for ${format(new Date(data?.startDate), 'MMMM yyyy')}`}
+                                                    </MenuItem>
+                                                ))}
+                                            </Select>
+                                        </FormControl>
+                                    )}
+                                </>
+                            )
+                        }
+                        {
+                            (reportType === "contractDocumentsOnFile" || reportType === "multiProviderContractsList" ||
+                                reportType === "contractsWithABusinessEntity" || reportType === 'nonCompliant') && (
                                 <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                                     <InputLabel id="demo-simple-select-standard-label3">Contract Status</InputLabel>
                                     <Select
@@ -1657,7 +1717,8 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                         <MenuItem value={'ACTIVATION_READY'} disabled={isMyReport || isLoading}>Ready To Activate</MenuItem>
                                     </Select>
                                 </FormControl>
-                            )}
+                            )
+                        }
                         {/* {reportType === "staffReappointmentsNotes" && (
                             <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                                 <InputLabel id="demo-simple-select-standard-label4">Contract Continuation Policy</InputLabel>
@@ -1678,25 +1739,27 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 </Select>
                             </FormControl>
                         )} */}
-                        {reportType === 'nonCompliant' && (
-                            <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                                <InputLabel id="demo-simple-select-standard-label4">Proof of Documentation</InputLabel>
-                                <Select
-                                    labelId="demo-simple-select-standard-label4"
-                                    id="demo-simple-select-standard4"
-                                    value={podType}
-                                    onChange={(e) => { setPodType(e.target.value) }}
-                                    label="Proof of Documentation"
-                                    MenuProps={MenuProps}
-                                    disabled={isMyReport || isLoading}
-                                    className={style.textAlignLeft}
-                                >
-                                    {podTypes?.map((data, index) => (
-                                        <MenuItem value={data} key={index} disabled={isMyReport || isLoading}>{data}</MenuItem>
-                                    ))}
-                                </Select>
-                            </FormControl>
-                        )}
+                        {
+                            reportType === 'nonCompliant' && (
+                                <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                                    <InputLabel id="demo-simple-select-standard-label4">Proof of Documentation</InputLabel>
+                                    <Select
+                                        labelId="demo-simple-select-standard-label4"
+                                        id="demo-simple-select-standard4"
+                                        value={podType}
+                                        onChange={(e) => { setPodType(e.target.value) }}
+                                        label="Proof of Documentation"
+                                        MenuProps={MenuProps}
+                                        disabled={isMyReport || isLoading}
+                                        className={style.textAlignLeft}
+                                    >
+                                        {podTypes?.map((data, index) => (
+                                            <MenuItem value={data} key={index} disabled={isMyReport || isLoading}>{data}</MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            )
+                        }
                     </>
                 ) : (reportType === "activitiesOrServices" || reportType === "paymentsProcessingSummary" || reportType === "addOnActivities" || reportType === "timesheetProcessingSummary" || reportType === "listingOfTimesheetsNotPaid") ? (
                     <>
@@ -2035,7 +2098,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                     </>
                 )}
                 {/* <button className={`${style.primaryButtonStyle} ${style.marginTop20}`} onClick={()=> setShowSaveReport(true)} >Save Parameter Selection As My Report</button> */}
-            </div>
+            </div >
 
             {
                 showSaveReport && (

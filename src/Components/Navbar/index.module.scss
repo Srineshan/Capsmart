@@ -50,7 +50,7 @@
 .menuStyle {
     margin-top: 12px;
     padding: 0 15px;
-    font: normal normal 500 13px/36px proxima-nova;
+    font: normal normal 500 13px/36px var(--font-style);
     letter-spacing: 1.5px;
     padding-bottom: 0px;
     color: #646D82;
@@ -59,7 +59,7 @@
 
 .menuStyleProfile {
     // padding: 0 15px;
-    font: normal normal 500 13px/18px proxima-nova;
+    font: normal normal 500 13px/18px var(--font-style);
     letter-spacing: 1.5px;
     padding-bottom: 0px;
     color: #646D82;
@@ -70,8 +70,8 @@
 .logoutStyle {
     // margin: 25px 0 0 30px;
     padding: 0 15px;
-    // font: normal normal bold 15px/25px proxima-nova;
-    font: normal normal 600 13px/18px proxima-nova;
+    // font: normal normal bold 15px/25px var(--font-style);
+    font: normal normal 600 13px/18px var(--font-style);
     letter-spacing: 1.5px;
     color: #646D82;
     align-content: center;
@@ -82,10 +82,10 @@
 }
 
 .activeMenuColor {
-    color: $primarycolor;
-    border-bottom: 2px solid $primarycolor;
+    color: var(--primary-color);
+    border-bottom: 2px solid var(--primary-color);
     padding-bottom: 0px;
-    font: normal normal 600 13px/36px proxima-nova;
+    font: normal normal 600 13px/36px var(--font-style);
     margin-top: 12px;
 }
 
@@ -133,7 +133,7 @@
 }
 
 .helpCardStyle {
-    background: #06617A 0% 0% no-repeat padding-box;
+    background: var(--primary-color) 0% 0% no-repeat padding-box;
     box-shadow: 0px 4px 24px #03131712;
     border-radius: 4px;
     opacity: 1;
@@ -141,24 +141,24 @@
 
 .options {
     padding: 10px;
-    font: normal normal 600 12px/15px proxima-nova;
+    font: normal normal 600 12px/15px var(--font-style);
     text-align: left;
 }
 
 .options1 {
     padding: 10px;
-    font: normal normal normal 15px proxima-nova;
+    font: normal normal normal 15px var(--font-style);
     text-align: left;
 }
 
 .options:hover {
     background: #EBF2F7 0% 0% no-repeat padding-box;
-    color: $primarycolor;
+    color: var(--primary-color);
 }
 
 .options1:hover {
     background: #EBF2F7 0% 0% no-repeat padding-box;
-    color: $primarycolor;
+    color: var(--primary-color);
 }
 
 .popoverContent {
@@ -194,17 +194,17 @@
 
 .logoutStyle:hover {
     background-color: #F0F2F5;
-    color: $primarycolor;
+    color: var(--primary-color);
     opacity: 0.7;
 }
 
 // .logOutTextStyle{
-//     font: normal normal 600 18px proxima-nova;
+//     font: normal normal 600 18px var(--font-style);
 // }
 
 // .logOutTextStyle:hover{
-//     font: normal normal 600 18px proxima-nova;
-//     color: $primarycolor;
+//     font: normal normal 600 18px var(--font-style);
+//     color: var(--primary-color);
 //     transition: all 0.3s ease;
 // }
 
@@ -222,14 +222,14 @@
 
 .iconSize1:hover {
     // background-color: #F0F2F5;
-    color: $primarycolor;
+    color: var(--primary-color);
     opacity: 0.7;
 }
 
 .dropdownContainer {
     // width: 200px;
     // height: 85px;
-    background-color: $primarycolor;
+    background-color: var(--primary-color);
     border-radius: 4px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     float: inline-end;
@@ -237,7 +237,7 @@
 
 .dropdownItem {
     text-align: left;
-    font: normal normal bold 14px/30px proxima-nova;
+    font: normal normal bold 14px/30px var(--font-style);
     letter-spacing: 0.45px;
     color: #F5F9FD;
     opacity: 0.8;
@@ -248,7 +248,7 @@
 .dropDownTextStyle {
     text-align: left;
     padding: 8px 16px;
-    font: normal normal normal 14px/18px proxima-nova;
+    font: normal normal normal 14px/18px var(--font-style);
     letter-spacing: 0px;
     color: #F5F9FD;
     text-transform: capitalize;
@@ -290,7 +290,7 @@
 .roleType {
     display: flex;
     //   text-align: left;
-    font: normal normal 600 12px/15px proxima-nova;
+    font: normal normal 600 12px/15px var(--font-style);
     letter-spacing: 0px;
     color: #52575d;
     opacity: 1;
@@ -298,9 +298,9 @@
 
 .workSpaceSwitchTextStyle {
     text-decoration: underline;
-    font: normal normal bold 12px/18px proxima-nova;
+    font: normal normal bold 12px/18px var(--font-style);
     letter-spacing: 0px;
-    color: #06617A;
+    color: var(--primary-color);
     cursor: pointer;
     opacity: 1;
 }
@@ -338,13 +338,13 @@
 .roleIcon {
     width: 32px;
     height: 32px;
-    background-color: $primarycolor;
+    background-color: var(--primary-color);
     border-radius: 4px;
     padding: 5px;
 }
 
 .roleLabel {
-    font: normal normal 600 12px/15px proxima-nova;
+    font: normal normal 600 12px/15px var(--font-style);
     letter-spacing: 0px;
     color: #52575d;
     text-align: justify;
@@ -405,7 +405,7 @@
 
 .nameTextStyle {
     text-align: left;
-    font: normal normal 600 16px/18px proxima-nova;
+    font: normal normal 600 16px/18px var(--font-style);
     letter-spacing: 0px;
     color: #52575D;
     opacity: 1;
@@ -413,7 +413,7 @@
 
 .workModeTextStyle {
     text-align: center;
-    font: normal normal medium 16px/16px proxima-nova;
+    font: normal normal medium 16px/16px var(--font-style);
     letter-spacing: 0px;
     color: #9AAFB5;
     opacity: 1;
@@ -433,9 +433,9 @@
     opacity: 1;
     text-align: center;
     text-decoration: underline;
-    font: normal normal bold 12px/17px proxima-nova;
+    font: normal normal bold 12px/17px var(--font-style);
     letter-spacing: 0px;
-    color: #06617A;
+    color: var(--primary-color);
     padding: 5px;
 }
 

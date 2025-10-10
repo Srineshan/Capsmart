@@ -114,7 +114,13 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
         workflow: 'Medical Directives Workflow',
         attestationOutstanding: 'Medical Directives Attestation Outstanding',
         medicalDirectivesTracker: 'Medical Directives Tracker',
-        upcomingForReview: 'Upcoming For Review'
+        upcomingForReview: 'Upcoming For Review',
+        currentPolicyAndProcedures: 'Current Policy And Procedures',
+        retiredPolicyAndProcedures: 'Retired Policy And Procedures',
+        policyAndProceduresWorkflow: 'Policy and Procedures By Workflow Level',
+        policyAndProceduresAttestationOutstandingPNP: 'Policy and Procedures Attestation Outstanding By Staff Assigned To Attest',
+        policyAndProceduresTracker: 'Policy and Procedures Tracker',
+        policyAndProceduresUpcomingForReview: 'Policy and Procedures Upcoming For Review',
     }
 
     const availableCategories = {
@@ -156,7 +162,13 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
         workflow: 'MEDICAL_DIRECTIVE',
         attestationOutstanding: 'MEDICAL_DIRECTIVE',
         medicalDirectivesTracker: 'MEDICAL_DIRECTIVE',
-        upcomingForReview: 'MEDICAL_DIRECTIVE'
+        upcomingForReview: 'MEDICAL_DIRECTIVE',
+        currentPolicyAndProcedures: 'POLICY_AND_PROCEDURES',
+        retiredPolicyAndProcedures: 'POLICY_AND_PROCEDURES',
+        policyAndProceduresWorkflow: 'POLICY_AND_PROCEDURES',
+        policyAndProceduresAttestationOutstandingPNP: 'POLICY_AND_PROCEDURES',
+        policyAndProceduresTracker: 'POLICY_AND_PROCEDURES',
+        policyAndProceduresUpcomingForReview: 'POLICY_AND_PROCEDURES',
     }
 
     const typeList = {
@@ -205,7 +217,13 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
         'workflow': 'WORKFLOW',
         'attestationOutstanding': 'ATTESTATION_OUTSTANDING',
         'medicalDirectivesTracker': 'MEDICAL_DIRECTIVE_TRACKER',
-        'upcomingForReview': 'UPCOMING_FOR_REVIEW'
+        'upcomingForReview': 'UPCOMING_FOR_REVIEW',
+        'currentPolicyAndProcedures': 'CURRENT_POLICY_AND_PROCEDURES',
+        'retiredPolicyAndProcedures': 'RETIRED_POLICY_AND_PROCEDURES',
+        'policyAndProceduresWorkflow': 'POLICY_AND_PROCEDURES_WORKFLOW',
+        'policyAndProceduresAttestationOutstandingPNP': 'POLICY_AND_PROCEDURES_ATTESTATION_OUTSTANDING',
+        'policyAndProceduresTracker': 'POLICY_AND_PROCEDURES_TRACKER',
+        'policyAndProceduresUpcomingForReview': 'POLICY_AND_PROCEDURES_UPCOMING_FOR_REVIEW',
     }
 
     const availableApplicationTypes = {
@@ -337,7 +355,7 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                 'startDate': dataToUseInReport?.from,
                 'endDate': dataToUseInReport?.to,
                 'applicantTypeId': dataToUseInReport?.selectedStaffType?.[0] !== '' ? dataToUseInReport?.selectedStaffType : [],
-                'departmentSpecialties': dataToUseInReport?.selectedDepartments?.[0] !== '' ? availableCategories[reportType] === 'MEDICAL_DIRECTIVE' ? dataToUseInReport?.selectedDepartments?.map(deptId => `${siteId}#${deptId}`) : dataToUseInReport?.selectedDepartments : [],
+                'departmentSpecialties': dataToUseInReport?.selectedDepartments?.[0] !== '' ? availableCategories[reportType] === 'MEDICAL_DIRECTIVE' ? dataToUseInReport?.selectedDepartments?.map(deptId => `${siteId}#${deptId}`) : availableCategories[reportType] === 'POLICY_AND_PROCEDURES' ? dataToUseInReport?.selectedDepartments?.map(deptId => `${siteId}#${deptId}`) : dataToUseInReport?.selectedDepartments : [],
                 'privilegingCategoryId': dataToUseInReport?.selectedPrivilegeCategory !== '' ? dataToUseInReport?.selectedPrivilegeCategory : '',
                 "positionType": dataToUseInReport?.selectedPosition !== "" ? [dataToUseInReport?.selectedPosition] : [],
                 "applicationCreationType": dataToUseInReport?.selectedApplicationType !== "" ? [dataToUseInReport?.selectedApplicationType] : [],
@@ -373,7 +391,7 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
             formData.append('savedReportFile', blob, uniqueFileName);
 
             try {
-                const response = await POST(availableCategories[reportType] === 'MEDICAL_DIRECTIVE' ? 'medical-directive-service/report/savedReport/' : `application-management-service/report/savedReport/`, formData);
+                const response = await POST(availableCategories[reportType] === 'MEDICAL_DIRECTIVE' ? 'medical-directive-service/report/savedReport/' : availableCategories[reportType] === "POLICY_AND_PROCEDURES" ? 'policy-and-procedure-management-service/report/savedReport/' : `application-management-service/report/savedReport/`, formData);
                 console.log(response?.data);
                 setShowReportSavedDialog(true);
             } catch (error) {
@@ -414,7 +432,7 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
             formData.append('document', blob, uniqueFileName);
             console.log(formData, blob, data, pdfBlob)
             try {
-                const response = await POST(availableCategories[reportType] === 'MEDICAL_DIRECTIVE' ? 'medical-directive-service/report/shareReports/' : `application-management-service/report/shareReports/`, formData);
+                const response = await POST(availableCategories[reportType] === 'MEDICAL_DIRECTIVE' ? 'medical-directive-service/report/shareReports/' : availableCategories[reportType] === "POLICY_AND_PROCEDURES" ? 'policy-and-procedure-management-service/report/shareReports/' : `application-management-service/report/shareReports/`, formData);
                 console.log(response?.data);
                 SuccessToaster2('Report Output Shared Successfully!')
             } catch (error) {
