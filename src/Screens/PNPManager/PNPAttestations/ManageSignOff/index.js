@@ -165,7 +165,7 @@ const ManageSignOff = () => {
             getAttestationList(signal);
         }
         return () => controller.abort();
-    }, [selectedOption, sortField, sortValue, loggedInUser]);
+    }, [selectedOption, sortField, sortValue, loggedInUser, page, limit]);
 
     // useEffect(() => {
     //     if (entityId !== "" && entityId !== undefined) {
@@ -317,9 +317,9 @@ const ManageSignOff = () => {
     const getAttestationList = async (signal) => {
         let url = '';
         if (selectedOption === 'completed') {
-            url = `policy-and-procedure-management-service/policyAndProcedures/signOff?tab=level-2&role=${sessionStorage.getItem('workModeType')}&assignedUserIds=${loggedInUser}&status=${selectedOption}&noOfDays=${30}&sortBy=${sortValue}&sortByField=${sortField}`
+            url = `policy-and-procedure-management-service/policyAndProcedures/signOff?tab=level-2&role=${sessionStorage.getItem('workModeType')}&assignedUserIds=${loggedInUser}&status=${selectedOption}&noOfDays=${30}&sortBy=${sortValue}&sortByField=${sortField}&offset=${page - 1}&limit=${limit}&isPaginationRequired=${isPaginationRequired}`
         } else {
-            url = `policy-and-procedure-management-service/policyAndProcedures/signOff?tab=level-2&role=${sessionStorage.getItem('workModeType')}&assignedUserIds=${loggedInUser}&status=${selectedOption}&sortBy=${sortValue}&sortByField=${sortField}`
+            url = `policy-and-procedure-management-service/policyAndProcedures/signOff?tab=level-2&role=${sessionStorage.getItem('workModeType')}&assignedUserIds=${loggedInUser}&status=${selectedOption}&sortBy=${sortValue}&sortByField=${sortField}&offset=${page - 1}&limit=${limit}&isPaginationRequired=${isPaginationRequired}`
         }
         const response = await POST(url, {}, { signal });
         console.log(response.data);

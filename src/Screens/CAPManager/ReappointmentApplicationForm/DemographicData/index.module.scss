@@ -138,7 +138,7 @@
 }
 
 .continue:hover {
-    background: #044D61 0% 0% no-repeat padding-box;
+    background: var(--primary-color-hover) 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 12px #00000052;
     border-radius: 8px;
     opacity: 1;
@@ -553,7 +553,7 @@
 }
 
 .reappointmentButton:hover {
-    background: #044D61 0% 0% no-repeat padding-box;
+    background: var(--primary-color-hover) 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 12px #00000052;
     border-radius: 8px;
     opacity: 1;

@@ -10,7 +10,7 @@ import TextField from '@mui/material/TextField';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, subMonths, addMonths, subYears, subDays, startOfQuarter, endOfQuarter, startOfYear, endOfYear, add, sub } from 'date-fns';
+import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, subMonths, addMonths, subYears, subDays, startOfQuarter, endOfQuarter, startOfYear, endOfYear, add, sub, addQuarters, addDays, addWeeks } from 'date-fns';
 import SaveReport from './saveReport';
 import { useParams } from 'react-router-dom';
 import { Tooltip } from "@mui/material";
@@ -460,24 +460,37 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         } else if (reportingTimePeriod === 'Last Week') {
             setFrom(subDays(startOfWeek(new Date()), 7));
             setTo(subDays(startOfWeek(new Date()), 1));
+        } else if (reportingTimePeriod === 'Next Week') {
+            setFrom(addDays(startOfWeek(new Date()), 7));
+            setTo(addWeeks(endOfWeek(new Date()), 1));
         } else if (reportingTimePeriod === 'Current Month') {
             setFrom(startOfMonth(new Date()));
             setTo(endOfMonth(new Date()));
         } else if (reportingTimePeriod === 'Last Month') {
             setFrom(new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1));
             setTo(subDays(startOfMonth(new Date()), 1));
+        } else if (reportingTimePeriod === 'Next Month') {
+            setFrom(new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1));
+            setTo(addMonths(endOfMonth(new Date()), 1));
         } else if (reportingTimePeriod === 'Current Qtr') {
             setFrom(startOfQuarter(new Date()));
             setTo(endOfQuarter(new Date()));
         } else if (reportingTimePeriod === 'Last Qtr') {
             setFrom(new Date(new Date().getFullYear(), quarter * 3 - 3, 1));
             setTo(subDays(startOfQuarter(new Date()), 1));
+        } else if (reportingTimePeriod === 'Next Qtr') {
+            setFrom(addQuarters(startOfQuarter(new Date()), 1));
+            setTo(endOfQuarter(addQuarters(startOfQuarter(new Date()), 1)));
         } else if (reportingTimePeriod === 'Current Year') {
             setFrom(startOfYear(new Date()));
             setTo(endOfYear(new Date()));
         } else if (reportingTimePeriod === 'Last Year') {
             setFrom(new Date(new Date(lastyear.getFullYear(), 0, 1)));
             setTo(subDays(startOfYear(new Date()), 1));
+        } else if (reportingTimePeriod === 'Next Year') {
+            const nextYear = new Date().getFullYear() + 1;
+            setFrom(new Date(nextYear, 0, 1));
+            setTo(new Date(nextYear, 11, 31));
         } else {
             return;
         }
@@ -882,13 +895,29 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                         className={`${style.textAlignLeft} ${style.Font}`}
                                     >
                                         <MenuItem value={'Current Week'} disabled={isLoading}>Current Week</MenuItem>
-                                        <MenuItem value={'Last Week'} disabled={isLoading}>Last Week</MenuItem>
+                                        {reportType === "careProviderCareerMilestoneSummary" ? (
+                                            <MenuItem value={'Next Week'} disabled={isLoading}>Next Week</MenuItem>
+                                        ) : (
+                                            <MenuItem value={'Last Week'} disabled={isLoading}>Last Week</MenuItem>
+                                        )}
                                         <MenuItem value={'Current Month'} disabled={isLoading}>Current Month</MenuItem>
-                                        <MenuItem value={'Last Month'} disabled={isLoading}>Last Month</MenuItem>
+                                        {reportType === "careProviderCareerMilestoneSummary" ? (
+                                            <MenuItem value={'Next Month'} disabled={isLoading}>Next Month</MenuItem>
+                                        ) : (
+                                            <MenuItem value={'Last Month'} disabled={isLoading}>Last Month</MenuItem>
+                                        )}
                                         <MenuItem value={'Current Qtr'} disabled={isLoading}>Current Quarter</MenuItem>
-                                        <MenuItem value={'Last Qtr'} disabled={isLoading}>Last Quarter</MenuItem>
+                                        {reportType === "careProviderCareerMilestoneSummary" ? (
+                                            <MenuItem value={'Next Qtr'} disabled={isLoading}>Next Quarter</MenuItem>
+                                        ) : (
+                                            <MenuItem value={'Last Qtr'} disabled={isLoading}>Last Quarter</MenuItem>
+                                        )}
                                         <MenuItem value={'Current Year'} disabled={isLoading}>Current Year</MenuItem>
-                                        <MenuItem value={'Last Year'} disabled={isLoading}>Last Year</MenuItem>
+                                        {reportType === "careProviderCareerMilestoneSummary" ? (
+                                            <MenuItem value={'Next Year'} disabled={isLoading}>Next Year</MenuItem>
+                                        ) : (
+                                            <MenuItem value={'Last Year'} disabled={isLoading}>Last Year</MenuItem>
+                                        )}
                                         <MenuItem value={'Custom'} disabled={isLoading}>Custom</MenuItem>
                                     </Select>
                                 </FormControl>
@@ -1098,7 +1127,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                                 if (selected?.length === 1) {
                                                     const author = authors?.find(auth => auth?.id === selected[0]);
                                                     console.log("")
-                                                    return `${author?.name?.firstName} ${author?.name?.lastName}` || 'All';
+                                                    return author?.name?.firstName ? `${author?.name?.firstName} ${author?.name?.lastName}` : 'All';
                                                 } else if (selected.length > 1) {
                                                     return `${selected.length} Selected`;
                                                 } else {
