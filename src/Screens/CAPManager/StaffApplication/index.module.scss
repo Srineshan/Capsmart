@@ -3929,7 +3929,7 @@ input[type="number"] {
 .applicationButton {
   /* UI Properties */
   height: 65px;
-  background: transparent var(--primary-color) 0% 0% no-repeat padding-box;
+  background: var(--primary-color) 0% 0% no-repeat padding-box;
   box-shadow: 0px 10px 20px #130D4B1F;
   border-radius: 16px;
   text-align: left;
