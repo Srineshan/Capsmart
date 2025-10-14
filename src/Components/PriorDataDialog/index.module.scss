@@ -32,7 +32,7 @@
 .heading {
     font-size: 18px;
     font-weight: bold;
-    color: $primarycolor;
+    color: var(--primary-color);
 }
 
 .crossStyle {
@@ -59,11 +59,11 @@
 
 
 .continue {
-    background: $primarycolor 0% 0% no-repeat padding-box;
+    background: var(--primary-color) 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #00000029;
     border-radius: 8px;
     text-align: center;
-    font: normal normal bold 14px/20px proxima-nova;
+    font: normal normal bold 14px/20px var(--font-style);
     letter-spacing: 0px;
     color: #FFFFFF;
     text-transform: uppercase;
@@ -75,12 +75,12 @@
 .saveInProgress {
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #00000029;
-    border: 0.5px solid $primarycolor;
+    border: 0.5px solid var(--primary-color);
     border-radius: 8px;
     text-align: center;
-    font: normal normal bold 14px/20px proxima-nova;
+    font: normal normal bold 14px/20px var(--font-style);
     letter-spacing: 0px;
-    color: $primarycolor;
+    color: var(--primary-color);
     text-transform: uppercase;
     padding: 10px;
     cursor: pointer;
@@ -98,7 +98,7 @@
 }
 
 .copyButton {
-    background-color: $primarycolor;
+    background-color: var(--primary-color);
     color: white;
 }
 
@@ -109,7 +109,7 @@
 
 .saveButton {
     padding: 10px 15px;
-    background-color: $primarycolor;
+    background-color: var(--primary-color);
     color: white;
     border: none;
     border-radius: 5px;
@@ -132,7 +132,7 @@
     height: 40px;
     width: 100%;
     background: $secondarycolor 0% 0% no-repeat padding-box;
-    border: 0.4000000059604645px solid $primarycolor;
+    border: 0.4000000059604645px solid var(--primary-color);
     border-radius: 4px;
     padding: 0 10px;
 }

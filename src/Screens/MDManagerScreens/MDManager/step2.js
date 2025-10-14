@@ -8,6 +8,7 @@ import { Tooltip } from '@mui/material';
 
 const MDManagerStep2 = ({ setStep1, setStep2, setStep3, mdValue, getMD, setMdValue, setSelectedMdId }) => {
     const fileInputRef = useRef(null);
+    const [isSaveInProgressDialog, setIsSaveInProgressDialog] = useState(false);
     const [isConfirmationDialog, setIsConfirmationDialog] = useState(false);
     const handleReplaceCopy = () => {
         fileInputRef.current.click();
@@ -53,20 +54,7 @@ const MDManagerStep2 = ({ setStep1, setStep2, setStep3, mdValue, getMD, setMdVal
 
     }
     const handleSaveInProgress = async () => {
-        const formData = new FormData();
-        console.log(mdValue)
-        let data = mdValue;
-        data.lastSavedSection = 'step2';
-        formData.append(
-            "metaDataDTO",
-            new Blob([JSON.stringify(data)], {
-                type: "application/json",
-            })
-        );
-
-        console.log(data)
-
-        await PUT(`medical-directive-service/medicalDirectives/${mdValue?.id}`, formData)
+        await PUT(`medical-directive-service/medicalDirectives/${mdValue?.id}/saveInprogress`, 'step2')
             .then(response => {
                 SuccessToaster2('MD Saved Successfully');
                 console.log(response?.data)
@@ -74,7 +62,6 @@ const MDManagerStep2 = ({ setStep1, setStep2, setStep3, mdValue, getMD, setMdVal
             })
             .catch(error => {
             })
-
     }
     const handleClose = () => {
         setMdValue();
@@ -108,7 +95,7 @@ const MDManagerStep2 = ({ setStep1, setStep2, setStep3, mdValue, getMD, setMdVal
                             <button className={`${style.outlinedButtonMd} ${style.marginRight} `} onClick={() => setIsConfirmationDialog(true)} >REPLACE DOCUMENT</button>
                         </Tooltip>
                         <Tooltip arrow title='Click to Save In-Progress'>
-                            <button className={`${style.outlinedButtonMd} ${style.marginRight} `} onClick={() => { handleSaveInProgress() }} >SAVE IN PROGRESS</button>
+                            <button className={`${style.outlinedButtonMd} ${style.marginRight} `} onClick={() => { setIsSaveInProgressDialog(true) }} >SAVE IN PROGRESS</button>
                         </Tooltip>
                         <Tooltip arrow title='Click to Continue'>
                             <button className={`${style.buttonStyleMd} ${style.marginRight} `} onClick={() => { setStep2(false); setStep3(true) }} >CONTINUE</button>
@@ -139,6 +126,23 @@ const MDManagerStep2 = ({ setStep1, setStep2, setStep3, mdValue, getMD, setMdVal
                         <div className={`${style.spaceBetween} ${style.marginTop20} `}>
                             <button className={`${style.outlinedButton} `} onClick={() => setIsConfirmationDialog(false)} >CANCEL</button>
                             <button className={`${style.buttonStyle} ${style.marginLeft10} `} onClick={() => handleConfirmReplace()} >{'YES, UPLOAD'}</button>
+                        </div>
+                    </div>
+                </div>
+            </Dialog >
+            <Dialog isOpen={isSaveInProgressDialog} onClose={() => setIsSaveInProgressDialog(false)} className={`${style.addMDDialogBackground} ${style.confirmationDialog} `}>
+                <div className={Classes.DIALOG_BODY}>
+                    <div className={style.attestationDialogHeaderCard}>
+                        <div className={`${style.attestationDialogTitle} ${style.padding20} `}>Confirm Save In-Progress</div>
+                    </div>
+                    <div className={`${style.marginTop10} `}>
+                        <div className={style.labelStyle}>Your current progress will be saved. You can return and continue from where you left off.</div>
+                    </div>
+
+                    <div>
+                        <div className={`${style.spaceBetween} ${style.marginTop20} `}>
+                            <button className={`${style.outlinedButtonWithBiggerWidth} `} onClick={() => setIsSaveInProgressDialog(false)} >CANCEL</button>
+                            <button className={`${style.buttonStyleWithBiggerWidth} ${style.marginLeft10} `} onClick={() => { handleSaveInProgress() }} >{'SAVE & CONTINUE LATER'}</button>
                         </div>
                     </div>
                 </div>

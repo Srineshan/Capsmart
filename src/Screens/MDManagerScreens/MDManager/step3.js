@@ -9,6 +9,10 @@ import CommonRadio from '../../../Components/CommonFields/CommonRadio';
 import CancelIcon from '@mui/icons-material/Cancel';
 import { GET, POST, PUT } from '../../dataSaver';
 import AddIcon from "@mui/icons-material/Add";
+import InputAdornment from "@mui/material/InputAdornment";
+import SearchIcon from "@mui/icons-material/Search";
+import CloseIcon from "@mui/icons-material/Close";
+import IconButton from "@mui/material/IconButton";
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
@@ -17,14 +21,14 @@ import { ErrorToaster2, SuccessToaster2 } from '../../../utils/toaster';
 import CommonInputField from '../../../Components/CommonFields/CommonInputField';
 import CommonMultiSelectField from '../../../Components/CommonFields/CommonMultiSelectField';
 import CommonDivider from '../../../Components/CommonFields/CommonDivider';
-import { Tooltip } from '@mui/material';
+import { TextField, Tooltip } from '@mui/material';
 import CommonCheckBox from '../../../Components/CommonFields/CommonCheckBox';
 
 const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, setSelectedMdId, getMD }) => {
     const containerRef = useRef(null);
     const containerRef2 = useRef(null);
-    const [targetStaff, setTargetStaff] = useState(['SELECTED_DEPARTMENT_AND_DIVISION']);
-    const [attestationReviewFrequency, setAttestationReviewFrequency] = useState('');
+    const [targetStaff, setTargetStaff] = useState([]);
+    const [attestationReviewFrequency, setAttestationReviewFrequency] = useState('EVERY_1_YEAR');
     const [groupTitle, setGroupTitle] = useState('');
     const [groupType, setGroupType] = useState('');
     const [groupDesc, setGroupDesc] = useState('');
@@ -33,9 +37,9 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
     const [groupList, setGroupList] = useState([]);
     const [groupById, setGroupById] = useState();
     const [autoTriggerOnUpdate, setAutoTriggerOnUpdate] = useState(true);
-    const [autoTriggerForNewAppointment, setAutoTriggerForNewAppointment] = useState(false);
-    const [autoTriggerForReappointment, setAutoTriggerForReappointment] = useState(false);
-    const [autoTriggerForLocum, setAutoTriggerForLocum] = useState(false);
+    const [autoTriggerForNewAppointment, setAutoTriggerForNewAppointment] = useState(true);
+    const [autoTriggerForReappointment, setAutoTriggerForReappointment] = useState(true);
+    const [autoTriggerForLocum, setAutoTriggerForLocum] = useState(true);
     const [showAttestationGroupList, setShowAttestationGroupList] = useState(false);
     const [showAcknowledgementGroupList, setShowAcknowledgementGroupList] = useState(false);
     const [showAttestationGroup, setShowAttestationGroup] = useState(false);
@@ -57,9 +61,14 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
     const [createdWorkflowStructure, setCreatedWorkflowStructure] = useState();
     const [showWorkflowSelection, setShowWorkflowSelection] = useState(false);
     const [roles, setRoles] = useState([]);
+    const [selectedGroupsToList, setSelectedGroupsToList] = useState([]);
     const [isGroupEdited, setIsGroupEdited] = useState(false);
+    const [isSaveInProgressDialog, setIsSaveInProgressDialog] = useState(false);
     const [acknowledgementExists, setAcknowledgementExists] = useState(false);
     const [staffType, setStaffType] = useState([]);
+    const [isFocused, setIsFocused] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
+
     console.log(mdValue, 'mdValue')
     useEffect(() => {
         getGroupList()
@@ -87,6 +96,7 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
             setTargetStaff(mdValue?.updateFor || []);
             setSelectedExcludeMembers(mdValue?.excludedUsers?.map(data => data?.id) || [])
             setSelectedGroupsWithApplicantTypes(mdValue?.groups || [])
+            setSelectedGroupsToList(mdValue?.groups?.map(data => data?.id) || [])
             setAutoTriggerForNewAppointment(mdValue?.triggerForNewAppointment)
             setAutoTriggerForReappointment(mdValue?.triggerForReAppointment)
             setAutoTriggerForLocum(mdValue?.triggerForLocum)
@@ -298,6 +308,11 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
         setIsGroupEdited(true)
     }
 
+    const handleClear = () => {
+        setSearchTerm('');
+        setIsFocused(false);
+    }
+
     const handleMoveForExclude = () => {
         if (!selectedExcludeMembers?.includes(selectedStaffForMoveForExclusion)) {
             setSelectedExcludeMembers(prev => [...prev, selectedStaffForMoveForExclusion]);
@@ -306,12 +321,12 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
 
     const handleRemoveForExclude = () => {
         console.log('filterCheck')
-        setSelectedExcludeMembers(staffListForExclude?.filter(data => data !== selectedStaffForMoveForExclusion))
+        setSelectedExcludeMembers(selectedExcludeMembers?.filter(data => data !== selectedStaffForMoveForExclusion))
     }
 
     const handleMoveBulkForExclude = () => {
         console.log('filterCheck')
-        setSelectedExcludeMembers(staffListForExclude?.map(data => data?.id))
+        setSelectedExcludeMembers(uniqueUsers?.map(data => data?.id))
     }
 
     const handleRemoveBulkForExclude = () => {
@@ -319,11 +334,11 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
         setSelectedExcludeMembers([])
     }
 
-    // const handleGroupSelect = (id) => {
-    //     if (!selectedGroups?.includes(id)) {
-    //         setSelectedGroups(prev => [...prev, id]);
-    //     }
-    // }
+    const handleGroupSelection = (id) => {
+        if (!selectedGroupsToList?.includes(id)) {
+            setSelectedGroupsToList(prev => [...prev, id]);
+        }
+    }
 
     const handleGroupSelectAcknowledgement = (id) => {
         setWorkflowEdited(true)
@@ -355,7 +370,7 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
             let errors = [];
 
             if (workFlow1IsMandatory && selectedAcknowledgementGroups?.length === 0) errors.push("Acknowledgement Group selection is required.");
-            if (targetStaff?.includes('SELECTED_GROUPS') && selectedGroupsWithApplicantTypes?.length === 0) errors.push("Attestation Group Selection is required.");
+            if (targetStaff?.includes('SELECTED_GROUPS') && (selectedGroupsWithApplicantTypes?.length === 0 || selectedGroupsToList?.length === 0)) errors.push("Attestation Group Selection is required.");
             if (!attestationReviewFrequency) errors.push("Frequency of Review for Attestation (if none within the period selected) is required");
             if (errors.length) {
                 errors.forEach(err => ErrorToaster2(err));
@@ -447,6 +462,10 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                 acknowledgementData.approvalFlowMap.workflow[1].flowDetails[0].groups = transformedGroups
             }
         } else {
+            acknowledgementData.approvalFlowMap.workflow[1].flowDetails[0].approvalRequirement = 'OPTIONAL';
+            if (workflowStructure?.approvalFlowMap?.workflow[1]?.flowDetails?.[0]?.approvalBy === 'GROUP') {
+                acknowledgementData.approvalFlowMap.workflow[1].flowDetails[0].groups = []
+            }
             if (
                 acknowledgementData?.approvalFlowMap?.workflow &&
                 acknowledgementData.approvalFlowMap.workflow[1]
@@ -474,6 +493,7 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
             }
         }
         if (isSaveInProgress) {
+            await PUT(`medical-directive-service/medicalDirectives/${mdValue?.id}/saveInprogress`, 'step3')
             handleClose()
         } else {
             setStep3(false)
@@ -918,6 +938,40 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
         });
     };
 
+    const findGroup = (id) => {
+        let group = groupList?.filter(group => selectedGroupsToList?.includes(group.id))?.find(g =>
+            g?.members?.some(member => member?.id === id)
+        );
+        return group?.name
+    }
+
+    const searchStaff = (staffList, query) => {
+        if (!query) return staffList; // if no search, return all
+
+        const lowerQuery = query.toLowerCase();
+
+        return staffList.filter((staff) => {
+            // 1. Full Name (first + middle + last)
+            const fullName = `${staff.name?.firstName || ""} ${staff.name?.middleName || ""} ${staff.name?.lastName || ""}`.toLowerCase();
+
+            // 2. Applicant Type
+            const applicantType = staff.applicantType?.applicantType?.toLowerCase() || "";
+
+            // 3. Departments (flatten all department names for this staff)
+            const departments = staff.sites?.sites
+                ?.flatMap((site) => site.departmentList?.departments || [])
+                ?.map((dept) => dept.departmentName?.name?.toLowerCase() || "")
+                .join(" ") || "";
+
+            // Match if query is in any of the above
+            return (
+                fullName.includes(lowerQuery) ||
+                applicantType.includes(lowerQuery) ||
+                departments.includes(lowerQuery)
+            );
+        });
+    };
+
     // let users = [];
 
     // if (targetStaff?.includes("SELECTED_GROUPS")) {
@@ -1001,7 +1055,7 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                             <button className={`${ style.buttonStyle } ${ style.marginRight } `} onClick={() => handleContinue(true)} >{'PUBLISH'}</button>
                         )} */}
                         <Tooltip arrow title='Click to Save In-Progress'>
-                            <button className={`${style.outlinedButtonMd} ${style.marginRight} `} onClick={() => { handleContinue(true) }} >SAVE IN PROGRESS</button>
+                            <button className={`${style.outlinedButtonMd} ${style.marginRight} `} onClick={() => { setIsSaveInProgressDialog(true) }} >SAVE IN PROGRESS</button>
                         </Tooltip>
                         <Tooltip arrow title='Click to Continue'>
                             <button className={`${style.buttonStyleMd} ${style.marginRight} `} onClick={() => { handleContinue() }} >CONTINUE</button>
@@ -1014,9 +1068,14 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                     <div className={style.stepsTitleText}>Staff Review for Acknowledgement Prior to Publication</div>
                 </div>
                 <div className={`${style.padding40} ${style.marginTop20} `}>
-                    <div className={`${style.marginTop20} ${style.twoCol} ${acknowledgementExists ? style.disabledView : ''} `}>
+                    <div className={`${style.marginTop20} ${style.threeCol} ${acknowledgementExists ? style.disabledView : ''} ${style.verticalAlignCenter}`}>
                         <div className={style.labelStyle}>Staff Acknowledgement Required?</div>
                         <CommonSwitch label={workFlow1IsMandatory ? 'YES' : 'NO'} checked={workFlow1IsMandatory} onChange={acknowledgementExists ? () => { } : (e) => { setWorkFlow1IsMandatory(e.target.checked); setWorkflowEdited(true) }} labelName={''} />
+                        {!workFlow1IsMandatory && (
+                            <div className={style.exclusionNote}>
+                                This Medical Directive does not require pre-publication acknowledgement from any department-specific staff. However, the final draft must still be reviewed and approved by the MAC and Leadership Team.
+                            </div>
+                        )}
                     </div>
                     {workFlow1IsMandatory && (
                         <div className={`${style.padding20} ${acknowledgementExists ? style.disabledView : ''} `}>
@@ -1033,7 +1092,7 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                                     />
                                     {showAttestationGroupList && (
                                         <div className={`${style.attestationGroupCard} ${style.padding20} `} tabIndex={0}>
-                                            {groupList?.filter(data => data?.type === "ACKNOWLEDGEMENT")?.map((data, index) => (
+                                            {groupList?.filter(data => data?.type === "ACKNOWLEDGEMENT" && !selectedAcknowledgementGroups?.includes(data?.id))?.map((data, index) => (
                                                 <div className={`${style.groupDisplayGrid} ${style.verticalAlignCenter} `}>
                                                     <div className={`${style.labelStyle} ${style.cursorPointer} `} onClick={acknowledgementExists ? () => { } : () => handleGroupSelectAcknowledgement(data?.id)}>{data?.name}</div>
                                                     <div className={`${style.attestationDescStyle} ${style.verticalAlignCenter} `}
@@ -1044,7 +1103,7 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                                         </div>
                                     )}
                                 </div>
-                                <div className={` ${style.addNewButton} ${style.textColorWhite} ${style.createGroupButton} ${style.marginLeft20} ${style.cursorPointer} `} onClick={acknowledgementExists ? () => { } : () => handleCreateGroup()}>
+                                <div className={` ${style.addNewButton} ${style.textColorWhite} ${style.createGroupButton} ${style.marginLeft20} ${acknowledgementExists ? '' : style.cursorPointer} `} onClick={acknowledgementExists ? () => { } : () => handleCreateGroup()}>
                                     <AddIcon />
                                     <span> Create New Group</span>
                                 </div>
@@ -1065,13 +1124,14 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                     )}
                 </div>
                 <div className={`${style.stepsTitleBar} ${style.verticalAlignCenter} ${style.marginTop20} `}>
-                    <div className={style.stepsTitleText}>Attestation Rules to apply</div>
+                    <div className={style.stepsTitleText}>Post-Publication Attestation Rules</div>
                 </div>
                 <div className={`${style.padding40} ${style.marginTop20} `}>
                     <div className={`${style.marginTop20}`}>
                         <div className={style.labelStyle}>Target Staff to Include for reviewing and attesting to this Medical Directive</div>
-                        <div className={style.targetStaffGrid}>
+                        <div className={style.twoCol}>
                             <CommonRadio
+                                isRow={false}
                                 value={targetStaff?.find(
                                     data =>
                                         data === 'ALL_STAFFS' ||
@@ -1092,7 +1152,7 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                                     "Department & Division / Speciality Staff Members",
                                 ]}
                             />
-                            <div className={targetStaff?.includes("ALL_STAFFS") ? style.disabledView : ''}>
+                            <div className={`${targetStaff?.includes("ALL_STAFFS") ? style.disabledView : ''} ${style.spaceBetween}`}>
                                 <CommonCheckBox
                                     checked={targetStaff?.includes("SELECTED_GROUPS")}
                                     onChange={(e) => {
@@ -1108,115 +1168,157 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                                     }}
                                     label={`Include Staff Members From Select Custom Attestation Group(s)`}
                                 />
+                                <div className={` ${style.addNewButton} ${style.textColorWhite} ${style.createGroupButton} ${style.cursorPointer} `} onClick={() => handleCreateGroup()}>
+                                    <AddIcon />
+                                    <span> Create New Group</span>
+                                </div>
                             </div>
                         </div>
-                        <div className={style.targetStaffGrid}>
-                            {targetStaff?.includes("SELECTED_DEPARTMENT_AND_DIVISION") && (
-                                <div>
-                                    <div className={style.exclusionNote}>
-                                        Selecting this option will require Staff Members specified below to attest to this Medical Directive.
+                        <div className={style.twoCol}>
+                            <div>
+                                {targetStaff?.includes("SELECTED_DEPARTMENT_AND_DIVISION") && (
+                                    <div>
+                                        <div className={style.exclusionNote}>
+                                            Selecting this option will require Staff Members specified below to attest to this Medical Directive.
+                                        </div>
+                                        {mdValue?.sites?.[0]?.departments?.map((department) => {
+                                            // find the matching dept from attestationSites by id
+                                            const attDept = mdValue?.attestationSites?.[0]?.departments?.find(
+                                                (d) => d.id === department.id
+                                            );
+
+                                            return (
+                                                <div key={department.id} className={style.marginTop20}>
+                                                    {/* Department level checkbox */}
+                                                    <CommonCheckBox
+                                                        checked={!!attDept}
+                                                        onChange={(e) => handleDepartmentToggle(department, e.target.checked)}
+                                                        label={department?.name}
+                                                    />
+
+                                                    {department?.serviceAreas?.length > 0 && (
+                                                        <div className={style.marginLeft20}>
+                                                            {department?.serviceAreas?.map((service) => {
+                                                                const attService = attDept?.serviceAreas?.find(
+                                                                    (s) => s.id === service.id
+                                                                );
+
+                                                                return (
+                                                                    <div key={service.id}>
+                                                                        <CommonCheckBox
+                                                                            checked={!!attService}
+                                                                            onChange={(e) =>
+                                                                                handleServiceAreaToggle(department?.id, service, e.target.checked)
+                                                                            }
+                                                                            label={service?.name}
+                                                                            className={style.reduceMarginTop}
+                                                                        />
+
+                                                                        {staffType?.length > 0 && (
+                                                                            <div className={style.marginLeft50}>
+                                                                                {staffType?.map((type) => (
+                                                                                    <CommonCheckBox
+                                                                                        key={type.id}
+                                                                                        checked={
+                                                                                            attService
+                                                                                                ? attService.applicantTypes?.some(
+                                                                                                    (at) => at.id === type.id
+                                                                                                ) ||
+                                                                                                !attService.applicantTypeSpecific
+                                                                                                : false
+                                                                                        }
+                                                                                        onChange={(e) =>
+                                                                                            handleServiceLevelStaffTypeRemoval(
+                                                                                                department?.id,
+                                                                                                service?.id,
+                                                                                                type?.id,
+                                                                                                e.target.checked
+                                                                                            )
+                                                                                        }
+                                                                                        label={type?.applicantType}
+                                                                                        className={style.reduceMarginTop}
+                                                                                    />
+                                                                                ))}
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+                                                                );
+                                                            })}
+                                                        </div>
+                                                    )}
+
+                                                    {department?.serviceAreas?.length === 0 && staffType?.length > 0 && (
+                                                        <div className={style.marginLeft70}>
+                                                            {staffType?.map((type) => (
+                                                                <CommonCheckBox
+                                                                    key={type.id}
+                                                                    checked={
+                                                                        attDept
+                                                                            ? attDept.applicantTypes?.some((at) => at.id === type.id) ||
+                                                                            !attDept.applicantTypeSpecific
+                                                                            : false
+                                                                    }
+                                                                    onChange={(e) =>
+                                                                        handleDeptLevelStaffTypeRemoval(
+                                                                            department?.id,
+                                                                            type?.id,
+                                                                            e.target.checked
+                                                                        )
+                                                                    }
+                                                                    label={type?.applicantType}
+                                                                    className={style.reduceMarginTop}
+                                                                />
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            );
+                                        })}
                                     </div>
-                                    {mdValue?.sites?.[0]?.departments?.map((department) => {
-                                        // find the matching dept from attestationSites by id
-                                        const attDept = mdValue?.attestationSites?.[0]?.departments?.find(
-                                            (d) => d.id === department.id
-                                        );
-
-                                        return (
-                                            <div key={department.id} className={style.marginTop20}>
-                                                {/* Department level checkbox */}
-                                                <CommonCheckBox
-                                                    checked={!!attDept}
-                                                    onChange={(e) => handleDepartmentToggle(department, e.target.checked)}
-                                                    label={department?.name}
-                                                />
-
-                                                {department?.serviceAreas?.length > 0 && (
-                                                    <div className={style.marginLeft20}>
-                                                        {department?.serviceAreas?.map((service) => {
-                                                            const attService = attDept?.serviceAreas?.find(
-                                                                (s) => s.id === service.id
-                                                            );
-
-                                                            return (
-                                                                <div key={service.id}>
-                                                                    <CommonCheckBox
-                                                                        checked={!!attService}
-                                                                        onChange={(e) =>
-                                                                            handleServiceAreaToggle(department?.id, service, e.target.checked)
-                                                                        }
-                                                                        label={service?.name}
-                                                                        className={style.reduceMarginTop}
-                                                                    />
-
-                                                                    {staffType?.length > 0 && (
-                                                                        <div className={style.marginLeft50}>
-                                                                            {staffType?.map((type) => (
-                                                                                <CommonCheckBox
-                                                                                    key={type.id}
-                                                                                    checked={
-                                                                                        attService
-                                                                                            ? attService.applicantTypes?.some(
-                                                                                                (at) => at.id === type.id
-                                                                                            ) ||
-                                                                                            !attService.applicantTypeSpecific
-                                                                                            : false
-                                                                                    }
-                                                                                    onChange={(e) =>
-                                                                                        handleServiceLevelStaffTypeRemoval(
-                                                                                            department?.id,
-                                                                                            service?.id,
-                                                                                            type?.id,
-                                                                                            e.target.checked
-                                                                                        )
-                                                                                    }
-                                                                                    label={type?.applicantType}
-                                                                                    className={style.reduceMarginTop}
-                                                                                />
-                                                                            ))}
-                                                                        </div>
-                                                                    )}
-                                                                </div>
-                                                            );
-                                                        })}
-                                                    </div>
-                                                )}
-
-                                                {department?.serviceAreas?.length === 0 && staffType?.length > 0 && (
-                                                    <div className={style.marginLeft70}>
-                                                        {staffType?.map((type) => (
-                                                            <CommonCheckBox
-                                                                key={type.id}
-                                                                checked={
-                                                                    attDept
-                                                                        ? attDept.applicantTypes?.some((at) => at.id === type.id) ||
-                                                                        !attDept.applicantTypeSpecific
-                                                                        : false
-                                                                }
-                                                                onChange={(e) =>
-                                                                    handleDeptLevelStaffTypeRemoval(
-                                                                        department?.id,
-                                                                        type?.id,
-                                                                        e.target.checked
-                                                                    )
-                                                                }
-                                                                label={type?.applicantType}
-                                                                className={style.reduceMarginTop}
-                                                            />
-                                                        ))}
-                                                    </div>
-                                                )}
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            )}
+                                )}
+                            </div>
                             {targetStaff?.includes("SELECTED_GROUPS") && (
                                 <div>
                                     <div className={style.exclusionNote}>
                                         This will allow you to include Staff members from specific attestation groups that have been created.
                                     </div>
-                                    {groupList?.filter(data => data?.type === "ATTESTATION")?.map(group => (
+                                    <div className={style.marginTop20}>
+                                        <div className={style.labelStyle}>Select Attestation Group*</div>
+                                        <div>
+                                            <div ref={containerRef2} onFocus={() => setShowAcknowledgementGroupList(true)} onBlur={(e) => handleBlur(e, containerRef2)}
+                                                tabIndex={0}>
+                                                <CommonInputField
+                                                    className={style.fullWidth}
+                                                    type="text"
+                                                />
+                                                {showAcknowledgementGroupList && (
+                                                    <div className={`${style.attestationGroupCard} ${style.padding20} `} tabIndex={0}>
+                                                        {groupList?.filter(data => data?.type === "ATTESTATION" && !selectedGroupsToList?.includes(data?.id))?.map((data, index) => (
+                                                            <div className={`${style.spaceBetween} ${style.verticalAlignCenter} ${style.marginTop10} `}>
+                                                                <div className={`${style.labelStyle} ${style.cursorPointer} `} onClick={() => handleGroupSelection(data?.id)}>{data?.name}</div>
+                                                                {/* <div className={`${style.attestationDescStyle} ${style.verticalAlignCenter} `}
+                                                                    dangerouslySetInnerHTML={{ __html: data?.description }} /> */}
+                                                                <div className={`${style.attestationViewButton} ${style.cursorPointer} `} onClick={() => getGroupListById(data?.id)}>View Group Members</div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div className={`${style.chipsContainer} ${style.marginTop10} `}>
+                                                {selectedGroupsToList?.map(data => {
+                                                    return (
+                                                        <div className={`${style.chips} ${style.displayInRow} `}>
+                                                            <div>{groupList?.filter(groupData => groupData?.id === data)?.[0]?.name}</div> <div className={`${style.verticalAlignCenter} ${style.marginLeft10} ${style.cursorPointer} `}
+                                                                onClick={() => setSelectedGroupsToList(selectedGroupsToList?.filter(innerData => innerData !== data))}
+                                                            ><CancelIcon sx={{ color: '#06617A', fontSize: 20 }} /></div></div>
+                                                    )
+                                                })}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {groupList?.filter(group => selectedGroupsToList?.includes(group.id))?.map(group => (
                                         <div key={group.id} className={style.marginTop20}>
                                             <CommonCheckBox
                                                 checked={selectedGroupsWithApplicantTypes?.map(group => group?.id)?.includes(group?.id)}
@@ -1303,35 +1405,68 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                             />
                         </div>
                     </div> */}
-                    <div className={style.marginTop10}>
+                    <div className={style.marginTop20}>
+                        <CommonDivider />
+                    </div>
+                    <div className={`${style.stepsTitleBar} ${style.verticalAlignCenter} ${style.marginTop20} `}>
+                        <div className={style.stepsTitleText}>Excluded Staff Members for Attestation</div>
+                    </div>
+                    <div className={style.marginTop20}>
                         <div className={style.attestationGroupGrid}>
                             <div>
-                                <div className={style.labelStyle}>Included Staff Members to Exclude from ({uniqueUsers?.filter(staff => !selectedExcludeMembers?.includes(staff.id))?.length})</div>
-
-                                <div className={style.attestationGroupRightCard}>
-                                    {uniqueUsers?.filter(staff => !selectedExcludeMembers?.includes(staff.id))?.map((data, index) => (
-                                        <div className={style.groupGrid} key={index}>
+                                <div className={style.labelStyle}>Included Staff Members For Attestation To Exclude From ({uniqueUsers?.filter(staff => !selectedExcludeMembers?.includes(staff.id))?.length})</div>
+                                <div className={style.marginTop10}>
+                                    <TextField
+                                        size="small"
+                                        variant="outlined"
+                                        placeholder={'Search by Name, Type or Department'}
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                        onFocus={() => setIsFocused(true)}
+                                        onBlur={() => setIsFocused(false)}
+                                        fullWidth
+                                        sx={{ height: "32px" }}
+                                        InputProps={{
+                                            sx: { height: "32px", padding: "0px 5px" },
+                                            startAdornment: (
+                                                <InputAdornment position="start">
+                                                    <SearchIcon />
+                                                </InputAdornment>
+                                            ),
+                                            endAdornment: isFocused && (
+                                                <InputAdornment position="end">
+                                                    <IconButton onClick={() => handleClear()} size="small">
+                                                        <CloseIcon fontSize="small" />
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            ),
+                                        }}
+                                    />
+                                </div>
+                                <div className={`${style.attestationGroupLeftCard} ${style.marginTop10}`}>
+                                    {searchStaff(uniqueUsers, searchTerm)?.filter(staff => !selectedExcludeMembers?.includes(staff.id))?.map((data, index) => (
+                                        <div className={style.groupGrid3Col} key={index}>
                                             <div className={`${style.staffName} ${style.verticalAlignCenter} ${style.cursorPointer} ${selectedStaffForMoveForExclusion === data?.id ? style.selectedStaff : ''} `} onClick={() => setSelectedStaffForMoveForExclusion(data?.id)}>{`${data?.name?.firstName} ${data?.name?.lastName?.toUpperCase()}${data?.serviceProviderType?.contractedServiceProviderType ? `, ${data?.serviceProviderType?.contractedServiceProviderType}` : ''} `}</div>
-                                            {/* <div className={style.staffName}></div> */}
                                             <div className={`${style.labelStyle} ${selectedStaffForMoveForExclusion === data?.id ? style.selectedStaff : ''} `}>{data?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.departmentName?.name ? data?.sites?.sites?.[0]?.departmentList?.departments?.map(
                                                 (dept) => dept?.departmentName?.name
                                             )?.join(', ') : ''} {data?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.serviceAreas?.length > 0 ? ` - ${data?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.serviceAreas?.map(divName => divName?.name)?.join(', ')}` : ''}</div>
+                                            <div className={`${style.labelStyle}  ${selectedStaffForMoveForExclusion === data?.id ? style.selectedStaff : ''} `}>{findGroup(data?.id)}</div>
                                         </div>
                                     ))}
                                 </div>
                             </div>
                             <div className={style.verticalAlignCenter}>
                                 <div className={`${style.displayInCol} `}>
-                                    <div className={`${style.moveCard} ${style.justifyCenter} ${style.verticalAlignCenter} ${staffListForExclude?.filter(staff => !selectedExcludeMembers?.includes(staff.id))?.length === 0 ? style.disabledView : style.cursorPointer} `} onClick={staffListForExclude?.filter(staff => !selectedExcludeMembers?.includes(staff.id))?.length === 0 ? () => { } : () => handleMoveForExclude()}>
+                                    <div className={`${style.moveCard} ${style.justifyCenter} ${style.verticalAlignCenter} ${uniqueUsers?.filter(staff => !selectedExcludeMembers?.includes(staff.id))?.length === 0 ? style.disabledView : style.cursorPointer} `} onClick={uniqueUsers?.filter(staff => !selectedExcludeMembers?.includes(staff.id))?.length === 0 ? () => { } : () => handleMoveForExclude()}>
                                         <KeyboardArrowRightIcon sx={{ color: '#06617A' }} />
                                     </div>
-                                    <div className={`${style.moveCard} ${style.marginTop10} ${style.justifyCenter} ${style.verticalAlignCenter} ${staffListForExclude?.filter(staff => !selectedExcludeMembers?.includes(staff.id))?.length === 0 ? style.disabledView : style.cursorPointer} `} onClick={staffListForExclude?.filter(staff => !selectedExcludeMembers?.includes(staff.id))?.length === 0 ? () => { } : () => handleMoveBulkForExclude()}>
+                                    <div className={`${style.moveCard} ${style.marginTop10} ${style.justifyCenter} ${style.verticalAlignCenter} ${uniqueUsers?.filter(staff => !selectedExcludeMembers?.includes(staff.id))?.length === 0 ? style.disabledView : style.cursorPointer} `} onClick={uniqueUsers?.filter(staff => !selectedExcludeMembers?.includes(staff.id))?.length === 0 ? () => { } : () => handleMoveBulkForExclude()}>
                                         <KeyboardDoubleArrowRightIcon sx={{ color: '#06617A' }} />
                                     </div>
-                                    <div className={`${style.moveCard} ${style.marginTop20} ${style.justifyCenter} ${style.verticalAlignCenter} ${staffListForExclude?.filter(staff => selectedExcludeMembers?.includes(staff.id))?.length === 0 ? style.disabledView : style.cursorPointer} `} onClick={staffListForExclude?.filter(staff => selectedExcludeMembers?.includes(staff.id))?.length === 0 ? () => { } : () => handleRemoveForExclude()}>
+                                    <div className={`${style.moveCard} ${style.marginTop20} ${style.justifyCenter} ${style.verticalAlignCenter} ${uniqueUsers?.filter(staff => selectedExcludeMembers?.includes(staff.id))?.length === 0 ? style.disabledView : style.cursorPointer} `} onClick={uniqueUsers?.filter(staff => selectedExcludeMembers?.includes(staff.id))?.length === 0 ? () => { } : () => handleRemoveForExclude()}>
                                         <KeyboardArrowLeftIcon sx={{ color: '#06617A' }} />
                                     </div>
-                                    <div className={`${style.moveCard} ${style.marginTop10} ${style.justifyCenter} ${style.verticalAlignCenter} ${staffListForExclude?.filter(staff => selectedExcludeMembers?.includes(staff.id))?.length === 0 ? style.disabledView : style.cursorPointer} `} onClick={staffListForExclude?.filter(staff => selectedExcludeMembers?.includes(staff.id))?.length === 0 ? () => { } : () => handleRemoveBulkForExclude()}>
+                                    <div className={`${style.moveCard} ${style.marginTop10} ${style.justifyCenter} ${style.verticalAlignCenter} ${uniqueUsers?.filter(staff => selectedExcludeMembers?.includes(staff.id))?.length === 0 ? style.disabledView : style.cursorPointer} `} onClick={uniqueUsers?.filter(staff => selectedExcludeMembers?.includes(staff.id))?.length === 0 ? () => { } : () => handleRemoveBulkForExclude()}>
                                         <KeyboardDoubleArrowLeftIcon sx={{ color: '#06617A' }} />
                                     </div>
                                 </div>
@@ -1340,17 +1475,23 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                                 <div className={style.labelStyle}>Staff Members To Exclude From This Attestation ({uniqueUsers?.filter(staff => selectedExcludeMembers?.includes(staff.id))?.length})</div>
                                 <div className={style.attestationGroupRightCard}>
                                     {uniqueUsers?.filter(staff => selectedExcludeMembers?.includes(staff.id))?.map((data, index) => (
-                                        <div className={style.groupGrid} key={index}>
+                                        <div className={style.groupGrid3Col} key={index}>
                                             <div className={`${style.staffName} ${style.verticalAlignCenter} ${style.cursorPointer} ${selectedStaffForMove === data?.id ? style.selectedStaff : ''} `} onClick={() => setSelectedStaffForMoveForExclusion(data?.id)}>{`${data?.name?.firstName} ${data?.name?.lastName?.toUpperCase()}${data?.serviceProviderType?.contractedServiceProviderType ? `, ${data?.serviceProviderType?.contractedServiceProviderType}` : ''} `}</div>
-                                            {/* <div className={style.staffName}></div> */}
                                             <div className={`${style.labelStyle} ${selectedStaffForMoveForExclusion === data?.id ? style.selectedStaff : ''} `}>{data?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.departmentName?.name ? data?.sites?.sites?.[0]?.departmentList?.departments?.map(
                                                 (dept) => dept?.departmentName?.name
                                             )?.join(', ') : ''} {data?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.serviceAreas?.length > 0 ? ` - ${data?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.serviceAreas?.map(divName => divName?.name)?.join(', ')}` : ''}</div>
+                                            <div className={`${style.labelStyle}  ${selectedStaffForMoveForExclusion === data?.id ? style.selectedStaff : ''} `}>{findGroup(data?.id)}</div>
                                         </div>
                                     ))}
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    <div className={style.marginTop20}>
+                        <CommonDivider />
+                    </div>
+                    <div className={`${style.stepsTitleBar} ${style.verticalAlignCenter} ${style.marginTop20} `}>
+                        <div className={style.stepsTitleText}>Attestation Frequency for Staff</div>
                     </div>
                     <div className={`${style.marginTop20} ${style.twoCol} `}>
                         <CommonSelectField
@@ -1360,14 +1501,17 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                             //   firstOptionLabel={'Select Category'}
                             //   firstOptionValue={''}
                             valueList={["EVERY_1_YEAR", "EVERY_2_YEARS", "EVERY_3_YEARS"]}
-                            labelList={["Every 1 Year", "Every 2 Years", "Every 3 Years"]}
+                            labelList={["Once Within a year", "Every 2 Years", "Every 3 Years"]}
                             disabledList={false}
                             required={false}
-                            label={"Frequency of Review for Attestation (if none within the period selected)*"}
+                            label={"Frequency For Staff To Attest (if none within the period selected below)*"}
                         />
                     </div>
                     <div className={style.marginTop10}>
                         <CommonDivider />
+                    </div>
+                    <div className={`${style.stepsTitleBar} ${style.verticalAlignCenter} ${style.marginTop20} `}>
+                        <div className={style.stepsTitleText}>Auto-Trigger Rules for Reviews and Attestations</div>
                     </div>
                     <div className={`${style.marginTop20} ${style.twoCol} `}>
                         <div className={style.labelStyle}>Auto trigger reviews and attestations on <strong>Revision / Update</strong> of Medical Directive</div>
@@ -1390,7 +1534,7 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
             <Dialog isOpen={showAttestationGroup} onClose={() => handleGroupDialogClose()} className={`${style.addMDDialogBackground} ${style.attestationDialog} `}>
                 <div className={Classes.DIALOG_BODY}>
                     <div className={style.attestationDialogHeaderCard}>
-                        <div className={`${style.attestationDialogTitle} ${style.padding20} `}>Attestation Group</div>
+                        <div className={`${style.attestationDialogTitle} ${style.padding20} `}>Group</div>
                     </div>
                     <div className={style.marginTop10}>
                         <div className={style.labelStyle}>Group Title*</div>
@@ -1659,6 +1803,23 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                                 <button className={`${style.buttonStyle} `} onClick={() => handleSaveWorkflow('Save_And_Start')} >{'Start Sign Off'}</button>
                                 <button className={`${style.buttonStyle} ${style.marginLeft10} `} onClick={() => handleSaveWorkflow('Save')} >{'Save'}</button>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </Dialog >
+            <Dialog isOpen={isSaveInProgressDialog} onClose={() => setIsSaveInProgressDialog(false)} className={`${style.addMDDialogBackground} ${style.confirmationDialog} `}>
+                <div className={Classes.DIALOG_BODY}>
+                    <div className={style.attestationDialogHeaderCard}>
+                        <div className={`${style.attestationDialogTitle} ${style.padding20} `}>Confirm Save In-Progress</div>
+                    </div>
+                    <div className={`${style.marginTop10} `}>
+                        <div className={style.labelStyle}>Your current progress will be saved. You can return and continue from where you left off.</div>
+                    </div>
+
+                    <div>
+                        <div className={`${style.spaceBetween} ${style.marginTop20} `}>
+                            <button className={`${style.outlinedButtonWithBiggerWidth} `} onClick={() => setIsSaveInProgressDialog(false)} >CANCEL</button>
+                            <button className={`${style.buttonStyleWithBiggerWidth} ${style.marginLeft10} `} onClick={() => { handleContinue(true) }} >{'SAVE & CONTINUE LATER'}</button>
                         </div>
                     </div>
                 </div>

@@ -9,7 +9,7 @@
   justify-content: space-between;
 }
 
-.padding{
+.padding {
   padding: 10px;
 }
 
@@ -25,19 +25,19 @@
   margin-top: 10px !important;
 }
 
-.marginLeft10{
-  margin-left: 10px ;
+.marginLeft10 {
+  margin-left: 10px;
 }
 
-.flex{
+.flex {
   display: flex;
 }
 
-.alignContent{
+.alignContent {
   align-content: center;
 }
 
-.alignItem{
+.alignItem {
   align-items: center;
 }
 
@@ -48,21 +48,21 @@
   align-items: center;
 }
 
-.photoBackground{
+.photoBackground {
   background: rgba(154, 175, 181, 0.1) 0% 0% no-repeat padding-box;
   border-radius: 10px;
   // width: 100px;
   // height: 100px;
 }
 
-.photoText{
+.photoText {
   width: 93px;
   height: 89px;
   transform: matrix(0.74, -0.67, 0.67, 0.74, 0, 0);
   text-align: left;
-  font: normal normal bold 25px proxima-nova;
+  font: normal normal bold 25px var(--font-style);
   letter-spacing: 0px;
-  color: #06617A;
+  color: var(--primary-color);
   opacity: 0.1;
   align-content: center;
   margin-left: 10px;
@@ -90,9 +90,9 @@
 
 .templateHeadertext {
   text-align: left;
-  font: normal normal bold 22px proxima-nova;
+  font: normal normal bold 22px var(--font-style);
   letter-spacing: 0px;
-  color: #06617A;
+  color: var(--primary-color);
   opacity: 1;
 }
 
@@ -106,7 +106,7 @@
 }
 
 .cursorNA {
-    cursor: not-allowed !important;
+  cursor: not-allowed !important;
 }
 
 .actionButtons {
@@ -116,7 +116,7 @@
 }
 
 .reviewButtonStyle {
-  background: $primarycolor 0% 0% no-repeat padding-box;
+  background: var(--primary-color) 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 6px #00000029;
   border-radius: 8px;
   opacity: 1;
@@ -124,12 +124,12 @@
 }
 
 .reviewButtonStyle:hover {
-  background: $primarycolorHover 0% 0% no-repeat padding-box;
+  background: var(--primary-color-hover) 0% 0% no-repeat padding-box;
 }
 
 .reviewButton {
   text-align: center;
-  font: normal normal bold 18px/30px proxima-nova;
+  font: normal normal bold 18px/30px var(--font-style);
   letter-spacing: 0px;
   color: #FFFFFF;
   text-transform: uppercase;
@@ -138,32 +138,32 @@
 
 .datetextFormat {
   text-align: left;
-  font: normal normal bold 16px/23px proxima-nova;
+  font: normal normal bold 16px/23px var(--font-style);
   letter-spacing: 0px;
   color: #52575D;
   text-transform: capitalize;
   opacity: 1;
 }
 
-.grid1{
+.grid1 {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 20px;
 }
 
-.gridPeriod{
+.gridPeriod {
   display: grid;
   grid-template-columns: 4fr 0.5fr 4fr;
   gap: 5px;
 }
 
-.grid2{
+.grid2 {
   display: grid;
   grid-template-columns: 2fr 1fr;
   gap: 20px;
 }
 
-.grid3{
+.grid3 {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 20px;
@@ -175,12 +175,12 @@
 }
 
 .lableStyle {
-    text-align: left;
-    font: normal normal normal 15px/17px proxima-nova;
-    letter-spacing: 0px;
-    color: $textgrey;
-    // text-transform: capitalize;
-    opacity: 1;
+  text-align: left;
+  font: normal normal normal 15px/17px var(--font-style);
+  letter-spacing: 0px;
+  color: $textgrey;
+  // text-transform: capitalize;
+  opacity: 1;
 }
 
 .photoBorderStyle {
@@ -197,19 +197,19 @@
 
 .rightAlignTextStyle {
   text-align: right;
-  font: normal normal medium 16px/23px proxima-nova;
+  font: normal normal medium 16px/23px var(--font-style);
   letter-spacing: 0px;
   color: #2C2C2C;
   // text-transform: capitalize;
   opacity: 0.8;
 }
 
-.addressLabel{
+.addressLabel {
   text-align: left;
-font: normal normal medium 20px/24px proxima-nova;
-letter-spacing: 0px;
-color: #52575D;
-opacity: 0.8;
+  font: normal normal medium 20px/24px var(--font-style);
+  letter-spacing: 0px;
+  color: #52575D;
+  opacity: 0.8;
 }
 
 .loadingOverlay {

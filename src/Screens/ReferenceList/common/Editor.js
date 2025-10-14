@@ -97,7 +97,7 @@ const CustomToolbar = ({
         <option value="sans-serif">Sans Serif</option>
         <option value="serif">Serif</option>
         <option value="monospace">Monospace</option>
-        <option value="proxima-nova">Proxima Nova</option>
+        <option value="var(--font-style)">Proxima Nova</option>
       </select>
 
       <select className="ql-header" defaultValue="">

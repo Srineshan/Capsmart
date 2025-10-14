@@ -23,7 +23,7 @@ import DeleteConfirmation from '../../../Components/DeleteConfirmation';
 import AddUserInCustomerAdmin from './addUser';
 import TileApplication from '../../../Components/TileApplication';
 import TableTwo from '../../../Components/TableDesignTwo';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { formatFirstNameLastName } from '../../../utils/formatting';
 import CommonPdfViewer from '../../../Components/CommonPdfViewer';
 import CommonRadio from '../../../Components/CommonFields/CommonRadio';
@@ -34,9 +34,11 @@ import CommonDateField from '../../../Components/CommonFields/CommonDateField';
 import CommonCheckBox from '../../../Components/CommonFields/CommonCheckBox';
 import LoadingScreen from '../../../Components/LoadingScreen';
 
-const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setStep2, setStep3, setMdFile, advancedSearch, setSelectedMdId, showAddNewMedicalDirectives, setShowAddNewMedicalDirectives }) => {
+const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, setMdFile, advancedSearch, setSelectedMdId, showAddNewMedicalDirectives, setShowAddNewMedicalDirectives }) => {
     const PDFRef = createRef();
     const navigate = useNavigate()
+    const [searchParams] = useSearchParams();
+    const mdIdFromSearch = searchParams.get("mdId");
     const [calendarStart, setCalendarStart] = useState(false);
     const componentRef = useRef(null);
     const [mdList, setMdList] = useState([]);
@@ -106,6 +108,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setStep2, setSte
     const users = jwt(userDetails);
     const [outstandingList, setOutstandingList] = useState();
     const [isLoading, setIsLoading] = useState(false);
+    const [initialized, setInitialized] = useState(false);
     const publicKey = "-----BEGIN PUBLIC KEY-----MIGeMA0GCSqGSIb3DQEBAQUAA4GMADCBiAKBgHA5SDu30/8uQAqqkQE0NuY4ePBptMGufG6AWnC/88YVLXi4thh7M8VU6kElVJkfXL5DwlfVnwPb08+PK1EcaOWWtp2gdQitkohjZLB9zVE+0OtRrzSc33wItf7Iwisi5dHPggHvfOp5fr+QYWFMa/kKYl3SgNo8fryeLbKKalmdAgMBAAE=-----END PUBLIC KEY-----";
     const [encryptedText, setEncryptedText] = useState(CryptoJS.AES.encrypt(users?.userName + dateTime, publicKey).toString());
     const valuesToUse = viewRegistered ? (selectedOption === 'Current Medical Directives' ? registeredUsers : selectedOption === 'Draft Medical Directives' ? contractedServiceProviderUsers : selectedOption === 'Medical Directives Sign Off' ? deactivatedUsers : invitedUsers) : blockedUsers;
@@ -113,10 +116,44 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setStep2, setSte
         'NEW': 'New Staff Applicants',
         'REAPPOINTMENT': 'Staff Reappointments'
     }
+    let savedMdOption = sessionStorage.getItem('mdOption');
     console.log(loggedInUser)
     useEffect(() => {
         getPublicationWorkflow();
     }, [])
+
+    useEffect(() => {
+        if (mdIdFromSearch) {
+            console.log(mdIdFromSearch)
+            sessionStorage.setItem('mdOption', "Draft Medical Directives")
+            setSelectedOption("Draft Medical Directives")
+            setSelectedMdId(mdIdFromSearch);
+        }
+        if (!initialized && mdIdFromSearch && dashboardData?.filter(data => data?.id === mdIdFromSearch)?.length > 0) {
+            setTimeout(() => {
+                let mdTempData = dashboardData?.filter(data => data?.id === mdIdFromSearch)?.[0]
+                let lastStep = mdTempData?.lastSavedSection;
+                try {
+                    // Try parsing if it's a JSON-like string
+                    const parsed = JSON.parse(lastStep);
+                    // If parsing gives something meaningful, use it
+                    if (parsed && typeof parsed === "string") lastStep = parsed;
+                    else if (parsed && parsed.section) lastStep = parsed.section;
+                } catch {
+                    // If it’s not JSON, just keep it as-is
+                }
+
+                console.log(mdTempData, 'mdTempData', dashboardData, mdIdFromSearch, dashboardData?.filter(data => data?.id === mdIdFromSearch), lastStep)
+                if (lastStep === "step1") setStep1(true);
+                else if (lastStep === "step2") setStep2(true);
+                else if (lastStep === "step3") setStep3(true);
+                else if (lastStep === "step4") setStep4(true);
+                else setStep1(true); // default
+                setInitialized(true);
+                navigate(window.location.pathname, { replace: true });
+            }, 2000);
+        }
+    }, [mdIdFromSearch, dashboardData]);
 
     useEffect(() => {
         // getUser();
@@ -163,6 +200,11 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setStep2, setSte
     useEffect(() => {
         setUserDetails();
     }, [users?.id])
+
+    useEffect(() => {
+        if (savedMdOption && savedMdOption !== '' && savedMdOption !== 'undefined')
+            setSelectedOption(savedMdOption)
+    }, [savedMdOption])
 
     const setUserDetails = async () => {
         const { data: userData } = await GET(`user-management-service/user/${users?.id}`);
@@ -399,6 +441,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setStep2, setSte
 
     const getSelectedOptionLevelTwo = (value) => {
         setSelectedOption(value)
+        sessionStorage.setItem('mdOption', value)
     }
 
     const getSelectedOptionForSignOff = (value) => {
@@ -566,17 +609,22 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setStep2, setSte
     const handleModify = (data) => {
         setSelectedMdId(data?.id);
         setIsEdit(true);
-        if (data?.lastSavedSection !== '' && data?.lastSavedSection) {
-            if (data?.lastSavedSection === 'step1') {
-                setStep1(true)
-            } else if (data?.lastSavedSection === 'step2') {
-                setStep2(true)
-            } else if (data?.lastSavedSection === 'step3') {
-                setStep3(true)
-            }
-        } else {
-            setStep1(true)
+        let lastStep = data?.lastSavedSection;
+        try {
+            // Try parsing if it's a JSON-like string
+            const parsed = JSON.parse(lastStep);
+            // If parsing gives something meaningful, use it
+            if (parsed && typeof parsed === "string") lastStep = parsed;
+            else if (parsed && parsed.section) lastStep = parsed.section;
+        } catch {
+            // If it’s not JSON, just keep it as-is
         }
+
+        if (lastStep === "step1") setStep1(true);
+        else if (lastStep === "step2") setStep2(true);
+        else if (lastStep === "step3") setStep3(true);
+        else if (lastStep === "step4") setStep4(true);
+        else setStep1(true);
     }
 
     const handlePublish = async (data) => {
@@ -688,9 +736,9 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setStep2, setSte
     const getRevisionList = async () => {
         setIsLoading(true)
         let url = sessionStorage.getItem('workModeType') === "MD Librarian" ?
-            `medical-directive-service/medicalDirectives/signOff?tab=${selectedSignOffOption}&role=${sessionStorage.getItem('workModeType')}` :
-            `medical-directive-service/medicalDirectives/signOff?tab=${selectedSignOffOption}&role=${sessionStorage.getItem('workModeType')}&assignedUserIds=${loggedInUser?.id}`
-        const response = await GET(url);
+            `medical-directive-service/medicalDirectives/signOff?tab=${selectedSignOffOption}&role=${sessionStorage.getItem('workModeType')}&offset=${page - 1}&limit=${limit}&isPaginationRequired=${isPaginationRequired}` :
+            `medical-directive-service/medicalDirectives/signOff?tab=${selectedSignOffOption}&role=${sessionStorage.getItem('workModeType')}&assignedUserIds=${loggedInUser?.id}&offset=${page - 1}&limit=${limit}&isPaginationRequired=${isPaginationRequired}`
+        const response = await POST(url, {});
         console.log(response.data?.medicalDirectivesWithWorkflow);
         setRevisionList(response?.data?.medicalDirectivesWithWorkflow)
         setIsLoading(false)
@@ -815,17 +863,17 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setStep2, setSte
                 attestedAll.push('-');
                 notAttested.push('-');
                 partiallyAttested.push('-');
-                const totalCompletedCount = data?.groups?.reduce(
+                const totalCompletedCount = data?.groupApprovals?.reduce(
                     (sum, group) => sum + (group?.completedCount || 0),
                     0
                 );
 
-                const totalPendingCount = data?.groups?.reduce(
+                const totalPendingCount = data?.groupApprovals?.reduce(
                     (sum, group) => sum + (group?.pendingCount || 0),
                     0
                 );
                 acknowledgedOrSignedOff.push(`${totalCompletedCount}/${totalPendingCount}`)
-                revisionAssignedTo.push(data?.groups?.map(group => group?.group?.name)?.join(', '));
+                revisionAssignedTo.push(data?.groupApprovals?.map(group => group?.group?.name)?.join(', '));
                 acknowledgedCount.push(data?.workflow?.workflowStatusByLevels?.[0]?.reviewedUsers?.length || '-');
                 signedOffCount.push(data?.workflow?.workflowStatusByLevels?.[1]?.reviewedUsers?.length || '-');
                 lastUpdatedLog.push(data?.workflow?.workflowStatusByLevels?.[1]?.workflowActionDate ? format(new Date(data?.workflow?.workflowStatusByLevels?.[1]?.workflowActionDate), 'MMM dd, yyyy') : '-')
@@ -1008,7 +1056,12 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setStep2, setSte
     };
 
     const registeredActionsData = [{ 'data': 'View Detail', 'onClick': handleView },
-    { 'data': 'Update / Revise Medical Directive', 'onClick': handleReviseMD },
+    {
+        'data': 'Update / Revise Medical Directive',
+        'onClick': handleReviseMD,
+        'conditionToShow': `data?.revisionStatus === "NA"`,
+        'conditionForAlternateText': `data?.revisionStatus !== "NA" ? 'Currently Under Revision' : 'Update / Revise Medical Directive'`
+    },
     { 'data': 'Attestation Summary', 'onClick': handleViewAttestationSummary },
     { 'data': 'Retire Medical Directive', 'onClick': handleShowRetireDialog },
         // {'data': 'Assign Surrogate', 'onClick': togglePin}

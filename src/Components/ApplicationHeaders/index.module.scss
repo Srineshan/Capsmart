@@ -22,9 +22,9 @@
 
 .titleText {
     text-align: center;
-    font: normal normal bold 20px/28px proxima-nova;
+    font: normal normal bold 20px/28px var(--font-style);
     letter-spacing: 0px;
-    color: $primarycolor;
+    color: var(--primary-color);
     text-transform: capitalize;
     word-wrap: break-word;
 }
@@ -32,10 +32,10 @@
 @media (max-width: 768px) {
     .titleText {
         text-align: center;
-        font-size: 18px; 
+        font-size: 18px;
     }
 
-    .headerCard{
+    .headerCard {
         height: auto;
     }
 }

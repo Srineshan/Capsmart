@@ -21,6 +21,7 @@ import { Tooltip } from '@mui/material';
 const MDManagerStep4 = ({ setStep3, setStep4, mdValue, setMdValue, setSelectedMdId }) => {
     const containerRef = useRef(null);
     const [isConfirmationDialog, setIsConfirmationDialog] = useState(false);
+    const [isSaveInProgressDialog, setIsSaveInProgressDialog] = useState(false);
     const [targetStaff, setTargetStaff] = useState('ALL_STAFFS');
     const [attestationReviewFrequency, setAttestationReviewFrequency] = useState('');
     const [groupTitle, setGroupTitle] = useState('');
@@ -209,55 +210,78 @@ const MDManagerStep4 = ({ setStep3, setStep4, mdValue, setMdValue, setSelectedMd
     }
 
 
-    const handleContinue = async () => {
-        let errors = [];
+    const handleContinue = async (isSaveInProgress) => {
+        if (isSaveInProgress) {
+            const formData = new FormData();
 
-        if (selectedSignOffGroups?.length === 0) errors.push("Sign Off Group selection is required.");
-        if (errors.length) {
-            errors.forEach(err => ErrorToaster2(err));
-            return;
-        }
-        let acknowledgementData = workflowStructure;
-        const transformedGroups = selectedSignOffGroups?.map((groupId) => {
-            const group = groupList.find((g) => g.id === groupId);
-
-            return {
-                group: {
-                    id: group?.id,
-                    name: group?.name,
-                },
-                approvalRequirementType: "ANY_MEMBER",
-            };
-        });
-        if (workflowEdited) {
-            if (selectedSignOffGroups?.length !== 0) {
-                if (
-                    acknowledgementData?.approvalFlowMap?.workflow?.[3]?.flowDetails?.[0]
-                ) {
-                    acknowledgementData.approvalFlowMap.workflow[3].flowDetails[0].approvalRequirement = "MANDATORY";
-                }
-                if (workflowStructure?.approvalFlowMap?.workflow[3]?.flowDetails?.[0]?.approvalBy === 'GROUP') {
-                    acknowledgementData.approvalFlowMap.workflow[3].flowDetails[0].groups = transformedGroups
-                }
-                await PUT(`medical-directive-service/medicalDirectives/${mdValue?.id}/workflow`, acknowledgementData)
-                    .then(response => {
-                        SuccessToaster2('Workflow Added Successfully');
-                    })
-                    .catch(error => {
-                        ErrorToaster2('Something Failed. Please Try later!');
-                    })
-            }
-            await PUT(`medical-directive-service/medicalDirectives/${mdValue?.id}/startWorkflow`)
+            let data = mdValue;
+            data.lastSavedSection = 'step4';
+            formData.append(
+                "metaDataDTO",
+                new Blob([JSON.stringify(data)], {
+                    type: "application/json",
+                })
+            );
+            await PUT(`medical-directive-service/medicalDirectives/${mdValue?.id}`, formData)
                 .then(response => {
-                    // SuccessToaster2('Sign Off Started Successfully');
+                    SuccessToaster2('MD Updateded Successfully');
                 })
                 .catch(error => {
-                    // ErrorToaster2('Something Failed. Please Try later!');
+                    ErrorToaster2('MD Upload Failed');
                 })
+            await PUT(`medical-directive-service/medicalDirectives/${mdValue?.id}/saveInprogress`, 'step4')
+            handleClose();
+            setStep4(false);
+        } else {
+            let errors = [];
+
+            if (selectedSignOffGroups?.length === 0) errors.push("Sign Off Group selection is required.");
+            if (errors.length) {
+                errors.forEach(err => ErrorToaster2(err));
+                return;
+            }
+            let acknowledgementData = workflowStructure;
+            const transformedGroups = selectedSignOffGroups?.map((groupId) => {
+                const group = groupList.find((g) => g.id === groupId);
+
+                return {
+                    group: {
+                        id: group?.id,
+                        name: group?.name,
+                    },
+                    approvalRequirementType: "ANY_MEMBER",
+                };
+            });
+            if (workflowEdited) {
+                if (selectedSignOffGroups?.length !== 0) {
+                    if (
+                        acknowledgementData?.approvalFlowMap?.workflow?.[3]?.flowDetails?.[0]
+                    ) {
+                        acknowledgementData.approvalFlowMap.workflow[3].flowDetails[0].approvalRequirement = "MANDATORY";
+                    }
+                    if (workflowStructure?.approvalFlowMap?.workflow[3]?.flowDetails?.[0]?.approvalBy === 'GROUP') {
+                        acknowledgementData.approvalFlowMap.workflow[3].flowDetails[0].groups = transformedGroups
+                    }
+                    await PUT(`medical-directive-service/medicalDirectives/${mdValue?.id}/workflow`, acknowledgementData)
+                        .then(response => {
+                            SuccessToaster2('Workflow Added Successfully');
+                        })
+                        .catch(error => {
+                            ErrorToaster2('Something Failed. Please Try later!');
+                        })
+                }
+                await PUT(`medical-directive-service/medicalDirectives/${mdValue?.id}/startWorkflow`)
+                    .then(response => {
+                        // SuccessToaster2('Sign Off Started Successfully');
+                    })
+                    .catch(error => {
+                        // ErrorToaster2('Something Failed. Please Try later!');
+                    })
+            }
+            setIsConfirmationDialog(false)
+            setStep4(false)
+            // setShowWorkflowSelection(true)
         }
-        setIsConfirmationDialog(false)
-        setStep4(false)
-        // setShowWorkflowSelection(true)
     }
 
     const handleAddGroup = async () => {
@@ -394,7 +418,9 @@ const MDManagerStep4 = ({ setStep3, setStep4, mdValue, setMdValue, setSelectedMd
                         {/* {mdValue?.creationType === "RENEW" && (
                             <button className={`${style.buttonStyle} ${style.marginRight} `} onClick={() => handleContinue(true)} >{'PUBLISH'}</button>
                         )} */}
-                        {/* <button className={`${style.outlinedButtonMd} ${style.marginRight} `} onClick={() => { setStep4(false); handleClose() }} >SAVE IN PROGRESS</button> */}
+                        <Tooltip arrow title='Click to Save In-Progress'>
+                            <button className={`${style.outlinedButtonMd} ${style.marginRight} `} onClick={() => { setIsSaveInProgressDialog(true) }} >SAVE IN PROGRESS</button>
+                        </Tooltip>
                         <Tooltip arrow title='Click to Continue'>
                             <button className={`${style.buttonStyleMd} ${style.marginRight} `} onClick={() => { signOffExists ? setStep4(false) : setIsConfirmationDialog(true) }} >CONTINUE</button>
                         </Tooltip>
@@ -403,11 +429,11 @@ const MDManagerStep4 = ({ setStep3, setStep4, mdValue, setMdValue, setSelectedMd
             </div>
             <div className={`${style.stepContentCard}`}>
                 <div className={`${style.stepsTitleBar} ${style.verticalAlignCenter}`}>
-                    <div className={style.stepsTitleText}>Leadership Sign Off</div>
+                    <div className={style.stepsTitleText}>Leadership Sign Off Prior To Publication Of This Medical Directive Into The Library</div>
                 </div>
                 <div className={`${style.padding40} ${style.marginTop20} ${signOffExists ? style.disabledView : ''}`}>
                     <div className={style.padding20}>
-                        <div className={style.labelStyle}>Select Sign Off Groups*</div>
+                        <div className={style.labelStyle}>Select Leadership Sign Off Group*</div>
                         <div className={style.attestationGrid}>
                             <div ref={containerRef} onFocus={signOffExists ? () => { } : () => setShowAttestationGroupList(true)} onBlur={handleBlur}
                                 tabIndex={0}>
@@ -420,7 +446,7 @@ const MDManagerStep4 = ({ setStep3, setStep4, mdValue, setMdValue, setSelectedMd
                                 />
                                 {showAttestationGroupList && (
                                     <div className={`${style.attestationGroupCard} ${style.padding20}`} tabIndex={0}>
-                                        {groupList?.filter(data => data?.type === "SIGN_OFF")?.map((data, index) => (
+                                        {groupList?.filter(data => data?.type === "SIGN_OFF" && !selectedSignOffGroups?.includes(data?.id))?.map((data, index) => (
                                             <div className={`${style.groupDisplayGrid} ${style.verticalAlignCenter}`}>
                                                 <div className={`${style.labelStyle} ${style.cursorPointer}`} onClick={signOffExists ? () => { } : () => handleGroupSelect(data?.id)}>{data?.name}</div>
                                                 <div className={`${style.attestationDescStyle} ${style.verticalAlignCenter}`}
@@ -454,7 +480,7 @@ const MDManagerStep4 = ({ setStep3, setStep4, mdValue, setMdValue, setSelectedMd
             <Dialog isOpen={showAttestationGroup} onClose={() => handleGroupDialogClose()} className={`${style.addMDDialogBackground} ${style.attestationDialog}`}>
                 <div className={Classes.DIALOG_BODY}>
                     <div className={style.attestationDialogHeaderCard}>
-                        <div className={`${style.attestationDialogTitle} ${style.padding20}`}>Attestation Group</div>
+                        <div className={`${style.attestationDialogTitle} ${style.padding20}`}>Group</div>
                     </div>
                     <div className={style.marginTop10}>
                         <div className={style.labelStyle}>Group Title*</div>
@@ -595,16 +621,34 @@ const MDManagerStep4 = ({ setStep3, setStep4, mdValue, setMdValue, setSelectedMd
             <Dialog isOpen={isConfirmationDialog} onClose={() => setIsConfirmationDialog(false)} className={`${style.addMDDialogBackground} ${style.confirmationDialog} `}>
                 <div className={Classes.DIALOG_BODY}>
                     <div className={style.attestationDialogHeaderCard}>
-                        <div className={`${style.attestationDialogTitle} ${style.padding20} `}>Start Workflow?</div>
+                        <div className={`${style.attestationDialogTitle} ${style.padding20} `}>Great Job! Your Medical Directive Authoring is Complete!</div>
                     </div>
                     <div className={`${style.marginTop10} `}>
-                        <div className={style.labelStyle}>Once you start the Medical Directive workflow, you won’t be able to edit the acknowledgement or leadership sign-off settings.</div>
+                        <div className={style.labelStyle}>All of the steps required for publishing this Medical Directive have been defined. Once you click on "Start Pre-Publication Workflow" this Medical Directive will be moved over to "MD Review & Approvals" list.</div>
+                        <div className={`${style.labelStyle} ${style.marginTop20}`}>Please note, from this list you will only be able to assign or reassign members within workflow groups, but not be able modify the meta data or the content of the Medical Directive.</div>
                     </div>
 
                     <div>
                         <div className={`${style.spaceBetween} ${style.marginTop20} `}>
-                            <button className={`${style.outlinedButton} `} onClick={() => setIsConfirmationDialog(false)} >CANCEL</button>
-                            <button className={`${style.buttonStyle} ${style.marginLeft10} `} onClick={() => handleContinue()} >{'YES, CONTINUE'}</button>
+                            <button className={`${style.outlinedButtonWithBiggerWidth} `} onClick={() => setIsConfirmationDialog(false)} >CANCEL</button>
+                            <button className={`${style.buttonStyleWithBiggerWidth} ${style.marginLeft10} `} onClick={() => handleContinue()} >{'START PRE-PUBLICATION WORKFLOW'}</button>
+                        </div>
+                    </div>
+                </div>
+            </Dialog >
+            <Dialog isOpen={isSaveInProgressDialog} onClose={() => setIsSaveInProgressDialog(false)} className={`${style.addMDDialogBackground} ${style.confirmationDialog} `}>
+                <div className={Classes.DIALOG_BODY}>
+                    <div className={style.attestationDialogHeaderCard}>
+                        <div className={`${style.attestationDialogTitle} ${style.padding20} `}>Confirm Save In-Progress</div>
+                    </div>
+                    <div className={`${style.marginTop10} `}>
+                        <div className={style.labelStyle}>Your current progress will be saved. You can return and continue from where you left off.</div>
+                    </div>
+
+                    <div>
+                        <div className={`${style.spaceBetween} ${style.marginTop20} `}>
+                            <button className={`${style.outlinedButtonWithBiggerWidth} `} onClick={() => setIsSaveInProgressDialog(false)} >CANCEL</button>
+                            <button className={`${style.buttonStyleWithBiggerWidth} ${style.marginLeft10} `} onClick={() => { handleContinue(true) }} >{'SAVE & CONTINUE LATER'}</button>
                         </div>
                     </div>
                 </div>

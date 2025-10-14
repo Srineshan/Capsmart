@@ -24,14 +24,14 @@
 
 .searchName {
     text-align: left;
-    font: normal normal normal 16px/24px proxima-nova;
+    font: normal normal normal 16px/24px var(--font-style);
     letter-spacing: 0px;
     color: #52575D;
 }
 
 .searchDesc {
     text-align: left;
-    font: normal normal bold 12px/24px proxima-nova;
+    font: normal normal bold 12px/24px var(--font-style);
     letter-spacing: 0px;
     color: #52575D;
 }
@@ -41,7 +41,7 @@
 }
 
 .showAllText {
-    color: $primarycolor;
+    color: var(--primary-color);
     padding-bottom: 10px;
 }
 

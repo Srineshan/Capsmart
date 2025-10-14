@@ -2,8 +2,8 @@
 
 .heading {
     text-align: left;
-    font: normal normal bold 20px/28px proxima-nova;
-    color: $primarycolor;
+    font: normal normal bold 20px/28px var(--font-style);
+    color: var(--primary-color);
 }
 
 .marginTop {
@@ -36,7 +36,7 @@
 
 .description {
     text-align: left;
-    font: normal normal normal $tabledatatext2 proxima-nova;
+    font: normal normal normal $tabledatatext2 var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
 }
@@ -79,11 +79,11 @@
 }
 
 .continue {
-    background: $primarycolor 0% 0% no-repeat padding-box;
+    background: var(--primary-color) 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #00000029;
     border-radius: 8px;
     text-align: center;
-    font: normal normal bold 17px/30px proxima-nova;
+    font: normal normal bold 17px/30px var(--font-style);
     letter-spacing: 0px;
     color: #FFFFFF;
     text-transform: uppercase;
@@ -95,12 +95,12 @@
 .saveInProgress {
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #00000029;
-    border: 0.5px solid $primarycolor;
+    border: 0.5px solid var(--primary-color);
     border-radius: 8px;
     text-align: center;
-    font: normal normal bold 17px/30px proxima-nova;
+    font: normal normal bold 17px/30px var(--font-style);
     letter-spacing: 0px;
-    color: $primarycolor;
+    color: var(--primary-color);
     text-transform: uppercase;
     padding: 5px;
     cursor: pointer;
@@ -156,7 +156,7 @@
 
 .textStyle {
     text-align: left;
-    font: normal normal normal 20px/26px proxima-nova;
+    font: normal normal normal 20px/26px var(--font-style);
     letter-spacing: 0px;
     color: #52575D;
     opacity: 1;
@@ -164,9 +164,9 @@
 
 .purpleButtonVerify {
     height: 35px;
-    background: $primarycolor 0% 0% no-repeat padding-box;
+    background: var(--primary-color) 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #00000029;
-    border: 0.5px solid $primarycolor;
+    border: 0.5px solid var(--primary-color);
     border-radius: 8px;
     opacity: 1;
     padding: 0px 15px;
@@ -174,7 +174,7 @@
 }
 
 .purpleButtonVerify:hover {
-  background: $primarycolorHover 0% 0% no-repeat padding-box;
+    background: var(--primary-color-hover) 0% 0% no-repeat padding-box;
 }
 
 
@@ -184,7 +184,7 @@
     height: 35px;
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #00000029;
-    border: 0.5px solid $primarycolor;
+    border: 0.5px solid var(--primary-color);
     border-radius: 8px;
     opacity: 1;
     justify-self: end;
@@ -193,9 +193,9 @@
 
 .closeTextStyle {
     text-align: center;
-    font: normal normal bold 18px/26px proxima-nova;
+    font: normal normal bold 18px/26px var(--font-style);
     letter-spacing: 0px;
-    color: $primarycolor;
+    color: var(--primary-color);
     text-transform: uppercase;
     opacity: 1
 }
@@ -204,9 +204,9 @@
 
     width: 150px;
     height: 35px;
-    background: $primarycolor 0% 0% no-repeat padding-box;
+    background: var(--primary-color) 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #00000029;
-    border: 0.5px solid $primarycolor;
+    border: 0.5px solid var(--primary-color);
     border-radius: 8px;
     opacity: 1;
     justify-self: end;
@@ -222,7 +222,7 @@
 
 .buttonGreyTextStyle {
     text-align: center;
-    font: normal normal bold 18px/26px proxima-nova;
+    font: normal normal bold 18px/26px var(--font-style);
     letter-spacing: 0px;
     color: #FFFFFF;
     text-transform: uppercase;
@@ -239,7 +239,7 @@
 
 .titleTextStyle {
     text-align: left;
-    font: normal normal medium 18px/22px proxima-nova;
+    font: normal normal medium 18px/22px var(--font-style);
     letter-spacing: 0px;
     color: #52575D;
     text-transform: capitalize;
@@ -357,7 +357,7 @@
 
 .lableStyle {
     text-align: left;
-    font: normal normal normal 15px/17px proxima-nova;
+    font: normal normal normal 15px/17px var(--font-style);
     letter-spacing: 0px;
     color: $textgrey;
     // text-transform: capitalize;
@@ -367,7 +367,7 @@
 
 .dateStyle {
     text-align: left;
-    font: normal normal normal 13px/17px proxima-nova;
+    font: normal normal normal 13px/17px var(--font-style);
     letter-spacing: 0px;
     color: $textgrey;
 }

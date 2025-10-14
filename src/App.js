@@ -27,7 +27,7 @@ import LoginDialog from "./Components/LoginDialog";
 import Departments from "./Screens/ReferenceList/department/Department";
 import ApplicantTypesByEntity from "./Screens/ReferenceList/applicantTypeByEntity/applicantTypesByEntity";
 import Speciality from "./Screens/ReferenceList/speciality/Speciality";
-import AcknowledgementReview from "./Screens/ApplicationForm/AcknowledgementReview";
+import AcknowledgementReview from "./Screens/CAPManager/ApplicationForm/AcknowledgementReview";
 import ApplicantProcessingCheckList from "./Screens/ReferenceList/applicantCheckList/ApplicantProcessingCheckList";
 import { PrivilegeListManager } from "./Screens/ReferenceList/privilegeListManager/PrivilegeListManager";
 import PaymentList from "./Screens/ReferenceList/paymentList/paymentList";
@@ -46,17 +46,25 @@ const ManageSignOff = React.lazy(() => import("./Screens/MDManagerScreens/MDAtte
 const ManageAttestationGroups = React.lazy(() => import("./Screens/MDManagerScreens/MDAttestations/ManageAttestationGroups"));
 const MDLibrary = React.lazy(() => import("./Screens/MDManagerScreens/MDLibrary"));
 const MDManagerStep1 = React.lazy(() => import("./Screens/MDManagerScreens/MDManager/step1"));
-const HistoricalData = React.lazy(() => import("./Screens/StaffApplication/fillHistoricalData"));
+const RetirePNPManager = React.lazy(() => import("./Screens/PNPManager/PNPManager/retirePNP"));
+const PNPManager = React.lazy(() => import("./Screens/PNPManager/PNPManager"));
+const ManagePNPAttestation = React.lazy(() => import("./Screens/PNPManager/PNPAttestations/ManageAttestations"));
+const ManagePNPAcknowledgement = React.lazy(() => import("./Screens/PNPManager/PNPAttestations/ManageAcknowledgements"));
+const ManagePNPSignOff = React.lazy(() => import("./Screens/PNPManager/PNPAttestations/ManageSignOff"));
+const ManagePNPAttestationGroups = React.lazy(() => import("./Screens/PNPManager/PNPAttestations/ManageAttestationGroups"));
+const PNPLibrary = React.lazy(() => import("./Screens/PNPManager/PNPLibrary"));
+const HistoricalData = React.lazy(() => import("./Screens/CAPManager/StaffApplication/fillHistoricalData"));
 const ApplicationSubmitted = React.lazy(() => import("./Components/ApplicationSubmitted"));
 const FunctionalTitleForCustomer = React.lazy(() =>
   import("./Screens/ReferenceList/functionalTitleForCustomer")
 );
 const ActiveContracts = React.lazy(() => import("./Screens/ContractManager"));
-const StaffManager = React.lazy(() => import("./Screens/StaffManager"));
-const Applicant = React.lazy(() => import("./Screens/Applicant"));
-const StaffApplication = React.lazy(() => import("./Screens/StaffApplication"));
-const ActiveStaff = React.lazy(() => import("./Screens/ActiveStaff"));
-const LocumStaff = React.lazy(() => import("./Screens/LocumStaff"));
+const StaffManager = React.lazy(() => import("./Screens/CAPManager/StaffManager"));
+const Applicant = React.lazy(() => import("./Screens/CAPManager/Applicant"));
+const StaffApplication = React.lazy(() => import("./Screens/CAPManager/StaffApplication"));
+const ApplicationDashboard = React.lazy(() => import("./Screens/CAPManager/Dashboard"));
+const ActiveStaff = React.lazy(() => import("./Screens/CAPManager/ActiveStaff"));
+const LocumStaff = React.lazy(() => import("./Screens/CAPManager/LocumStaff"));
 const DescopeLoginDialog = React.lazy(() => import("./Components/DescopeLogin"));
 const Welcome = React.lazy(() =>
   import("./Screens/SuperAdminDashboard/welcome")
@@ -251,12 +259,12 @@ const ClientAdminDashboard = React.lazy(() =>
   import("./Screens/ReferenceList/customerAdminDashboard")
 );
 const ApplicationSummary = React.lazy(() =>
-  import("./Screens/ApplicationForm/ApplicationSummary")
+  import("./Screens/CAPManager/ApplicationForm/ApplicationSummary")
 );
 const ApplicationAcknowledgement = React.lazy(() =>
-  import("./Screens/ApplicationForm/ApplicationAcknowledgement")
+  import("./Screens/CAPManager/ApplicationForm/ApplicationAcknowledgement")
 );
-const PODCheck = React.lazy(() => import("./Screens/ApplicationForm/PODCheck"));
+const PODCheck = React.lazy(() => import("./Screens/CAPManager/ApplicationForm/PODCheck"));
 // const ApplicantTypesByEntity = React.lazy(() =>
 //   import("./Screens/ReferenceList//referenceList/contractServiceProviderBySiteType")
 // );
@@ -268,64 +276,70 @@ const PODCheck = React.lazy(() => import("./Screens/ApplicationForm/PODCheck"));
 const Thankyou = React.lazy(() =>
   import("./Screens/SuperAdminDashboard/thankyou")
 );
-const ApplicationForm = React.lazy(() => import("./Screens/ApplicationForm"));
-const ReappointmentApplicationForm = React.lazy(() => import("./Screens/ReappointmentApplicationForm"));
-const LocumApplicationForm = React.lazy(() => import("./Screens/LocumApplicationForm"));
-const MedicalDirectivesAttest = React.lazy(() => import("./Screens/ReappointmentApplicationForm/MedicalDirectives/MedicalDirectivesAttest"));
-const LocumMedicalDirectivesAttest = React.lazy(() => import("./Screens/LocumApplicationForm/MedicalDirectives/MedicalDirectivesAttest"));
+const ApplicationForm = React.lazy(() => import("./Screens/CAPManager/ApplicationForm"));
+const ReappointmentApplicationForm = React.lazy(() => import("./Screens/CAPManager/ReappointmentApplicationForm"));
+const LocumApplicationForm = React.lazy(() => import("./Screens/CAPManager/LocumApplicationForm"));
+const MedicalDirectivesAttest = React.lazy(() => import("./Screens/CAPManager/ReappointmentApplicationForm/MedicalDirectives/MedicalDirectivesAttest"));
+const LocumMedicalDirectivesAttest = React.lazy(() => import("./Screens/CAPManager/LocumApplicationForm/MedicalDirectives/MedicalDirectivesAttest"));
 const ApplicationFormRequirement = React.lazy(() =>
-  import("./Screens/ApplicationForm/ApplicationFormRequirement")
+  import("./Screens/CAPManager/ApplicationForm/ApplicationFormRequirement")
 );
 const ReappointmentApplicationFormRequirement = React.lazy(() =>
-  import("./Screens/ReappointmentApplicationForm/ReappointmentApplicationFormRequirement")
+  import("./Screens/CAPManager/ReappointmentApplicationForm/ReappointmentApplicationFormRequirement")
 );
 const LocumApplicationFormRequirement = React.lazy(() =>
-  import("./Screens/LocumApplicationForm/LocumApplicationFormRequirement")
+  import("./Screens/CAPManager/LocumApplicationForm/LocumApplicationFormRequirement")
 );
 const ApplicationRequest = React.lazy(() =>
-  import("./Screens/ApplicationRequest")
+  import("./Screens/CAPManager/ApplicationRequest")
 );
 const CompleteApplicationRequest = React.lazy(() =>
-  import("./Screens/ApplicationRequest/CompleteApplicationRequest")
+  import("./Screens/CAPManager/ApplicationRequest/CompleteApplicationRequest")
 );
 const CreateStaffMemberApplication = React.lazy(() =>
-  import("./Screens/CreateStaffMemberApplication")
+  import("./Screens/CAPManager/CreateStaffMemberApplication")
 );
 
 const CreateStaffReapplication = React.lazy(() =>
-  import("./Screens/CreateStaffReapplication")
+  import("./Screens/CAPManager/CreateStaffReapplication")
 );
 
 const ApplicantPortalRFC = React.lazy(() =>
-  import("./Screens/ApplicantPortalRFC")
+  import("./Screens/CAPManager/ApplicantPortalRFC")
 );
 
 
 const ApplicantPortalDashboard = React.lazy(() =>
-  import("./Screens/ApplicantDashboard")
+  import("./Screens/CAPManager/ApplicantDashboard")
 );
 
 const ApplicationSetup = React.lazy(() =>
-  import("./Screens/ApplicationSetup/ApplicationConfiguration")
+  import("./Screens/CAPManager/ApplicationSetup/ApplicationConfiguration")
 );
 
 const MedicalDirectivesAttestRFC = React.lazy(() =>
-  import("./Screens/MedicalDirectiveAttestRFC")
+  import("./Screens/CAPManager/MedicalDirectiveAttestRFC")
 );
 
 const MedicalDirectivesAttestDisplay = React.lazy(() =>
-  import("./Screens/MedicalDirectivesAttestDisplay")
+  import("./Screens/CAPManager/MedicalDirectivesAttestDisplay")
 );
 
 const MDRequestAttest = React.lazy(() =>
-  import("./Screens/MDRequestAttest")
+  import("./Screens/CAPManager/MDRequestAttest")
 );
-const MDAttest = React.lazy(() => import("./Screens/MDRequestAttest/MedicalDirectivesAttest"));
+const MDAttest = React.lazy(() => import("./Screens/CAPManager/MDRequestAttest/MedicalDirectivesAttest"));
 const MDAttestStatus = React.lazy(() => import("./Screens/MDManagerScreens/MDManager/MedicalDirectivesAttestStatus"));
+const AttestStatusPNP = React.lazy(() => import("./Screens/PNPManager/PNPManager/PNPAttestStatus"));
 const ManageMDAttest = React.lazy(() => import("./Screens/MDManagerScreens/MDAttestations/ManageAttestations/MedicalDirectivesAttest"));
 const ManageMDAcknowledgement = React.lazy(() => import("./Screens/MDManagerScreens/MDAttestations/ManageAcknowledgements/MedicalDirectivesAcknowledge"));
 const ManageMDSignOff = React.lazy(() => import("./Screens/MDManagerScreens/MDAttestations/ManageSignOff/MedicalDirectivesSignOff"));
 const MedicalDirectivesMECApproval = React.lazy(() => import("./Screens/MDManagerScreens/MDManager/MedicalDirectivesMECApproval"));
+const PNPAttestStatus = React.lazy(() => import("./Screens/MDManagerScreens/MDManager/MedicalDirectivesAttestStatus"));
+const ManagePNPAttest = React.lazy(() => import("./Screens/PNPManager/PNPAttestations/ManageAttestations/PNPAttest"));
+const ManageAcknowledgementPNP = React.lazy(() => import("./Screens/PNPManager/PNPAttestations/ManageAcknowledgements/PNPAcknowledge"));
+const ManageSignOffPNP = React.lazy(() => import("./Screens/PNPManager/PNPAttestations/ManageSignOff/PNPSignOff"));
+const PNPMECApproval = React.lazy(() => import("./Screens/MDManagerScreens/MDManager/MedicalDirectivesMECApproval"));
 let isHapicareUser;
 let organizations;
 const App = ({ props }) => {
@@ -362,6 +376,23 @@ const App = ({ props }) => {
   //     document.removeEventListener("visibilitychange", handleVisibilityChange);
   //   };
   // }, []);
+  const path = window.location.pathname;
+
+  useEffect(() => {
+    const root = document.documentElement;
+    console.log(path.startsWith("/pnpManager"), path, 'path')
+    if (sessionStorage.getItem('selectedApplication') === "PNP_MANAGER" && (!path.startsWith('/loginPage') && path !== '' && path !== '/')) {
+      root.style.setProperty("--primary-color", "#168E0D");
+      root.style.setProperty("--primary-color-hover", "#11660A");
+      root.style.setProperty("--secondary-color", "#E8F5E9");
+      root.style.setProperty("--font-style", "century-gothic");
+    } else {
+      root.style.setProperty("--primary-color", "#06617A");
+      root.style.setProperty("--primary-color-hover", "#054D61");
+      root.style.setProperty("--secondary-color", "#F5F8F8");
+      root.style.setProperty("--font-style", "proxima-nova");
+    }
+  }, [path]);
 
   useEffect(() => {
     console.log('entered', (cookie.get("authorization") !== undefined && isAuthenticated), cookie.get("authorization") !== undefined, isAuthenticated)
@@ -711,7 +742,10 @@ const App = ({ props }) => {
           console.log(refreshedSession, 'refreshed session')
           if (refreshedSession) {
             cookie.set('authorization', refreshedSession?.data?.sessionJwt, {
-              path: '/'
+              path: '/',
+              domain: window.location.hostname?.split('.')?.length >= 3 ? window.location.hostname?.split('.')?.slice(-2)?.join('.') : window.location.hostname,
+              secure: true,
+              sameSite: 'none',
             });
             console.log('Session refreshed and cookie updated!', refreshedSession);
           }
@@ -938,8 +972,10 @@ const App = ({ props }) => {
         console.log('login route', isHapicareUser, organizations)
         const roles = !isHapicareUser ? jwt(Auth())?.roles?.split(",")?.filter(s => s.trim() !== '') : organizations?.[0]?.roles?.map(data => data?.roleName);
         const mdRoles = !isHapicareUser ? jwt(Auth())?.mdRoles?.split(",")?.filter(s => s.trim() !== '') : organizations?.[0]?.mdRoles?.map(data => data?.roleName);
+        const pnpRoles = !isHapicareUser ? jwt(Auth())?.pnpRoles?.split(",")?.filter(s => s.trim() !== '') : organizations?.[0]?.pnpRoles?.map(data => data?.roleName);
         console.log("LoginRole", roles, mdRoles, isHapicareUser, organizations)
-        if (roles?.length > 1 || (roles?.length >= 1 && mdRoles?.length >= 1)) {
+        const count = [roles, mdRoles, pnpRoles]?.filter(arr => arr?.length >= 1).length;
+        if (roles?.length > 1 || mdRoles?.length > 1 || pnpRoles?.length > 1 || (count > 1)) {
           console.log("LoginRole1111", roles)
           console.log('login route', isHapicareUser, organizations)
           // return(
@@ -948,16 +984,22 @@ const App = ({ props }) => {
           if (roles?.length > 1 && (localStorage?.getItem('initialRoute') !== undefined && localStorage?.getItem('initialRoute') !== 'undefined' && localStorage?.getItem('initialRoute') !== null && localStorage?.getItem('initialRoute')?.includes('/applicationById/REAPPOINTMENT') && localStorage?.getItem('initialRoute')?.includes('/applicationById/LOCUM'))) {
             sessionStorage.setItem("workModeType", roles[0]);
             window.location.pathname = localStorage?.getItem('initialRoute');
+          } else if (mdRoles?.length > 1 && (localStorage?.getItem('initialRoute') !== undefined && localStorage?.getItem('initialRoute') !== 'undefined' && localStorage?.getItem('initialRoute') !== null && localStorage?.getItem('initialRoute')?.includes('/applicationById/REAPPOINTMENT') && localStorage?.getItem('initialRoute')?.includes('/applicationById/LOCUM'))) {
+            sessionStorage.setItem("workModeType", mdRoles[0]);
+            window.location.pathname = localStorage?.getItem('initialRoute');
+          } else if (mdRoles?.length > 1 && (localStorage?.getItem('initialRoute') !== undefined && localStorage?.getItem('initialRoute') !== 'undefined' && localStorage?.getItem('initialRoute') !== null && localStorage?.getItem('initialRoute')?.includes('/applicationById/REAPPOINTMENT') && localStorage?.getItem('initialRoute')?.includes('/applicationById/LOCUM'))) {
+            sessionStorage.setItem("workModeType", mdRoles[0]);
+            window.location.pathname = localStorage?.getItem('initialRoute');
           } else {
             setShowDialog(true);
           }
-        } else if ((roles?.length === 1 || mdRoles?.length === 1) && localStorage?.getItem('initialRoute') !== undefined && localStorage?.getItem('initialRoute') !== 'undefined' && localStorage?.getItem('initialRoute') !== null) {
-          sessionStorage.setItem("workModeType", mdRoles?.length === 1 ? mdRoles[0] : roles[0]);
+        } else if ((roles?.length === 1 || mdRoles?.length === 1 || pnpRoles?.length === 1) && localStorage?.getItem('initialRoute') !== undefined && localStorage?.getItem('initialRoute') !== 'undefined' && localStorage?.getItem('initialRoute') !== null) {
+          sessionStorage.setItem("workModeType", mdRoles?.length === 1 ? mdRoles[0] : pnpRoles?.length === 1 ? pnpRoles[0] : roles[0]);
           window.location.href = `${initialRoute}`;
           console.log("initialRoute", initialRoute)
           localStorage?.removeItem('initialRoute')
         }
-        else if (roles?.length === 1 || mdRoles?.length === 1) {
+        else if (roles?.length === 1 || mdRoles?.length === 1 || pnpRoles?.length === 1) {
           if (mdRoles?.length === 1) {
             console.log("LoginRole", roles, mdRoles[0])
             sessionStorage.setItem("workModeType", mdRoles[0]);
@@ -965,6 +1007,14 @@ const App = ({ props }) => {
               window.location.pathname = "/mdManager/manageAttestation";
             } else {
               window.location.pathname = "/mdManager";
+            }
+          } else if (pnpRoles?.length === 1) {
+            console.log("LoginRole", roles, pnpRoles[0])
+            sessionStorage.setItem("workModeType", pnpRoles[0]);
+            if (pnpRoles[0] === "Attester") {
+              window.location.pathname = "/pnpManager/manageAttestation";
+            } else {
+              window.location.pathname = "/pnpManager";
             }
           } else {
             sessionStorage.setItem("workModeType", roles[0]);
@@ -1084,6 +1134,7 @@ const App = ({ props }) => {
                 <Route path="/contracts" element={<ProtectedRoute><ActiveContracts /></ProtectedRoute>} />
                 <Route path="/staffs" element={<ProtectedRoute><StaffManager /></ProtectedRoute>} />
                 <Route path="/applications" element={<ProtectedRoute><StaffApplication /></ProtectedRoute>} />
+                <Route path="/applications/dashboard" element={<ProtectedRoute><ApplicationDashboard /></ProtectedRoute>} />
                 <Route path="/applicationById/:applicationTypeFromUrl/:applicationId" element={<ProtectedRoute><StaffApplication /></ProtectedRoute>} />
                 <Route path="/activeStaff" element={<ProtectedRoute><ActiveStaff /></ProtectedRoute>} />
                 <Route path="/locumStaff" element={<ProtectedRoute><LocumStaff /></ProtectedRoute>} />
@@ -1366,7 +1417,17 @@ const App = ({ props }) => {
                 <Route path="/mdManager/manageSignOff" element={<ProtectedRoute><ManageSignOff /></ProtectedRoute>} />
                 <Route path="/mdManager/manageAttestationGroups" element={<ProtectedRoute><ManageAttestationGroups /></ProtectedRoute>} />
                 <Route path="/mdManager/libraries/:entityId/:departmentId" element={<MDLibrary />} />
+                <Route path="/mdManager/libraries/:entityId/:departmentId/:selectedMDId" element={<MDLibrary />} />
                 <Route path="/mdManager/step1" element={<ProtectedRoute><MDManagerStep1 /></ProtectedRoute>} />
+                <Route path="/pnpManager/retired" element={<ProtectedRoute><RetirePNPManager /></ProtectedRoute>} />
+                <Route path="/pnpManager" element={<ProtectedRoute><PNPManager /></ProtectedRoute>} />
+                <Route path="/pnpManager/manageAttestation" element={<ProtectedRoute><ManagePNPAttestation /></ProtectedRoute>} />
+                <Route path="/pnpManager/manageAcknowledgement" element={<ProtectedRoute><ManagePNPAcknowledgement /></ProtectedRoute>} />
+                <Route path="/pnpManager/manageSignOff" element={<ProtectedRoute><ManagePNPSignOff /></ProtectedRoute>} />
+                <Route path="/pnpManager/manageAttestationGroups" element={<ProtectedRoute><ManagePNPAttestationGroups /></ProtectedRoute>} />
+                <Route path="/pnpManager/libraries/:entityId" element={<PNPLibrary />} />
+                <Route path="/pnpManager/libraries/:entityId/:departmentId" element={<PNPLibrary />} />
+                <Route path="/pnpManager/libraries/:entityId/:departmentId/:selectedMDId" element={<PNPLibrary />} />
                 <Route path="/thankyou" element={<ProtectedRoute><Thankyou /></ProtectedRoute>} />
                 <Route path="/reportType" element={<ProtectedRoute><ReportType /></ProtectedRoute>} />
                 <Route
@@ -1424,6 +1485,26 @@ const App = ({ props }) => {
                 <Route
                   path="/mdManager/mdAttestStatus/:entityId/:medicalDirectivesId"
                   element={<ProtectedRoute><MDAttestStatus /></ProtectedRoute>}
+                />
+                <Route
+                  path="/pnpManager/manageAttestation/:entityId/:medicalDirectivesId"
+                  element={<ProtectedRoute><ManagePNPAttest /></ProtectedRoute>}
+                />
+                <Route
+                  path="/pnpManager/manageAcknowledgement/:entityId/:medicalDirectivesId"
+                  element={<ProtectedRoute><ManageAcknowledgementPNP /></ProtectedRoute>}
+                />
+                <Route
+                  path="/pnpManager/manageSignOff/:entityId/:medicalDirectivesId"
+                  element={<ProtectedRoute><ManageSignOffPNP /></ProtectedRoute>}
+                />
+                <Route
+                  path="/pnpManager/manageMECApproval/:entityId/:medicalDirectivesId"
+                  element={<ProtectedRoute><PNPMECApproval /></ProtectedRoute>}
+                />
+                <Route
+                  path="/pnpManager/mdAttestStatus/:entityId/:medicalDirectivesId"
+                  element={<ProtectedRoute><AttestStatusPNP /></ProtectedRoute>}
                 />
                 <Route
                   path="/locumApplicationForm/:applicationId/:section/:step"

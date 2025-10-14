@@ -164,12 +164,13 @@ const DescopeLoginDialog = ({ getIsOpen, days }) => {
   };
 
   const handleSession = (sessionToken) => {
+    console.log(sessionToken, 'sessionToken')
     if (sessionToken) {
       cookie.set('authorization', sessionToken, {
         path: '/',
-        // domain: window.location.hostname?.split('.')?.length >= 3 ? window.location.hostname?.slice(-2)?.join('.') : window.location.hostname,
-        // secure: true,
-        // sameSite: 'none',
+        domain: window.location.hostname?.split('.')?.length >= 3 ? window.location.hostname?.split('.')?.slice(-2)?.join('.') : window.location.hostname,
+        secure: true,
+        sameSite: 'none',
       });
       navigate('/')
     }

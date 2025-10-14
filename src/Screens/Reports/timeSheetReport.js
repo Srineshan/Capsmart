@@ -69,7 +69,7 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
     const [isExpanded, setIsExpanded] = useState(true);
     const myReportsHeaderValues = ["Report Title", "Schedule", "Saved Parameters", "Last Updated", "Action"];
     const reportingTemplateHeaderValues = ["Report Template Title", "Type", "Last Run By", "Last Run Date / Time", "Last Updated By", "Last Updated", "Action"];
-    const savedReportsHeaderValues = ["Saved Report", "Reporting Period", "Saved On", "Action"];
+    const savedReportsHeaderValues = ["Saved Report", "", "Saved On", "Action"];
     const [sortField, setSortField] = useState("DEFAULT");
     const [sortValue, setSortValue] = useState("DESCENDING");
     const [page, setPage] = useState(1);
@@ -353,7 +353,8 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         staffReappointments: 'Reappointments',
         locumExtensionOrRenewal: 'Locum Extension / Renewal',
         savedReportsArchive: 'Saved Reports Archive',
-        medicalDirectives: 'Medical Directives'
+        medicalDirectives: 'Medical Directives',
+        policiesAndProcedures: 'Policies & Procedures'
     }
 
     const availableCategories = {
@@ -373,7 +374,8 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         locumStaff: 'LOCUM_STAFF',
         permanentStaff: 'PERMANENT_STAFF',
         locumExtensionOrRenewal: 'LOCUM_EXTENSION_OR_RENEWAL',
-        medicalDirectives: 'MEDICAL_DIRECTIVE'
+        medicalDirectives: 'MEDICAL_DIRECTIVE',
+        policiesAndProcedures: 'POLICY_AND_PROCEDURES'
     }
 
     const routeList = {
@@ -411,12 +413,26 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         DECLINED_OR_NOT_RENEWED_STAFF_SUMMARY: 'declinedOrNotRenewedStaffSummary',
         CARE_PROVIDER_CAREER_MILESTONE_SUMMARY: 'careProviderCareerMilestoneSummary',
         CARE_PROVIDERS_SUMMARY: 'careProvidersSummary',
+        EXPIRED_DOCUMENTS_SUMMARY_FOR_STAFF: 'expiredDocumentsSummaryForStaff',
+        DOCUMENTS_EXPIRATION_SUMMARY_FOR_STAFF: 'documentsExpirationSummaryForStaff',
+        INACTIVE_STAFF_SUMMARY: 'inactiveStaffSummary',
+        NEW_STAFF_APPOINTMENTS_SUMMARY: 'newStaffAppointmentsSummary',
+        APPOINTMENT_HISTORY_SUMMARY: 'appointmentHistorySummary',
+        INACTIVE_STAFF_SUMMARY_BY_MONTH: 'inactiveStaffSummaryByMonth',
+        STAFF_UPLOADED_DOCUMENTS_SUMMARY: 'staffUploadedDocumentsSummary',
+        LOCUM_TERM_EXPIRATION_SUMMARY: 'locumTermExpirationSummary',
         CURRENT_MEDICAL_DIRECTIVES: 'currentMedicalDirectives',
         ATTESTATION_OUTSTANDING: 'attestationOutstanding',
         WORKFLOW: 'workflow',
         RETIRED_MEDICAL_DIRECTIVES: 'retiredMedicalDirectives',
         MEDICAL_DIRECTIVE_TRACKER: 'medicalDirectivesTracker',
-        UPCOMING_FOR_REVIEW: 'upcomingForReview'
+        UPCOMING_FOR_REVIEW: 'upcomingForReview',
+        CURRENT_POLICY_AND_PROCEDURES: 'currentPolicyAndProcedures',
+        RETIRED_POLICY_AND_PROCEDURES: 'retiredPolicyAndProcedures',
+        POLICY_AND_PROCEDURES_WORKFLOW: 'policyAndProceduresWorkflow',
+        POLICY_AND_PROCEDURES_ATTESTATION_OUTSTANDING: 'policyAndProceduresAttestationOutstanding',
+        POLICY_AND_PROCEDURES_TRACKER: 'policyAndProceduresTracker',
+        POLICY_AND_PROCEDURES_UPCOMING_FOR_REVIEW: 'policyAndProceduresUpcomingForReview',
     }
     const descriptionList = {
         ACTIVITES_SERVICES_LOG_SUMMARY: 'Activities/ Services Log Status Summary',
@@ -608,11 +624,14 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
 
     const getMyReports = async () => {
         setIsLoading(true)
-        if (availableCategories[reportType] !== "MEDICAL_DIRECTIVE") {
-            const { data: myReport } = await GET(`application-management-service/report/myReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
+        if (availableCategories[reportType] === "MEDICAL_DIRECTIVE") {
+            const { data: myReport } = await GET(`medical-directive-service/report/myReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
+            setMyReports(myReport);
+        } else if (availableCategories[reportType] === "POLICY_AND_PROCEDURES") {
+            const { data: myReport } = await GET(`policy-and-procedure-management-service/report/myReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
             setMyReports(myReport);
         } else {
-            const { data: myReport } = await GET(`medical-directive-service/report/myReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
+            const { data: myReport } = await GET(`application-management-service/report/myReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
             setMyReports(myReport);
         }
         setIsLoading(false)
@@ -622,11 +641,14 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
 
     const getSavedReports = async () => {
         setIsLoading(true)
-        if (availableCategories[reportType] !== "MEDICAL_DIRECTIVE") {
-            const { data: savedReport } = await GET(`application-management-service/report/savedReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
+        if (availableCategories[reportType] === "MEDICAL_DIRECTIVE") {
+            const { data: savedReport } = await GET(`medical-directive-service/report/savedReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
+            setSavedReports(savedReport);
+        } else if (availableCategories[reportType] === "POLICY_AND_PROCEDURES") {
+            const { data: savedReport } = await GET(`policy-and-procedure-management-service/report/savedReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
             setSavedReports(savedReport);
         } else {
-            const { data: savedReport } = await GET(`medical-directive-service/report/savedReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
+            const { data: savedReport } = await GET(`application-management-service/report/savedReport?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
             setSavedReports(savedReport);
         }
         setIsLoading(false)
@@ -638,11 +660,14 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
 
     const getStandardTemplates = async () => {
         setIsLoading(true)
-        if (availableCategories[reportType] !== "MEDICAL_DIRECTIVE") {
-            const { data: standardTemplates } = await GET(`application-management-service/report/standardTemplates?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
+        if (availableCategories[reportType] === "MEDICAL_DIRECTIVE") {
+            const { data: standardTemplates } = await GET(`medical-directive-service/report/standardTemplates?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
+            setStandardTemplates(standardTemplates);
+        } else if (availableCategories[reportType] === "POLICY_AND_PROCEDURES") {
+            const { data: standardTemplates } = await GET(`policy-and-procedure-management-service/report/standardTemplates?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
             setStandardTemplates(standardTemplates);
         } else {
-            const { data: standardTemplates } = await GET(`medical-directive-service/report/standardTemplates?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
+            const { data: standardTemplates } = await GET(`application-management-service/report/standardTemplates?userId=${currentUserDetails?.id}&category=${availableCategories[reportType]}`);
             setStandardTemplates(standardTemplates);
         }
         setIsLoading(false)

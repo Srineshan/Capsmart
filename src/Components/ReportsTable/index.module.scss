@@ -9,13 +9,13 @@
 }
 
 .entityNameHeaderStyle {
-    font: normal normal bold $tableheadtext proxima-nova;
+    font: normal normal bold $tableheadtext var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
 }
 
 .entityNameBolderStyle {
-    font: normal normal bolder 17px/20px proxima-nova;
+    font: normal normal bolder 17px/20px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
 }
@@ -36,13 +36,13 @@
 
 .reportRunByTextStyle {
     text-align: left;
-    font: normal normal bold $tabledatatext proxima-nova;
+    font: normal normal bold $tabledatatext var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
 }
 
 .reportTypeValueTextStyle {
-    font: normal normal medium 12px/24px proxima-nova;
+    font: normal normal medium 12px/24px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
     // word-wrap: break-word !important;

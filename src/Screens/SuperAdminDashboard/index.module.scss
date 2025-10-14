@@ -43,9 +43,9 @@ body {
 }
 
 .headingStyle {
-    font: normal normal bold 20px/25px proxima-nova;
+    font: normal normal bold 20px/25px var(--font-style);
     letter-spacing: 0px;
-    color: $primarycolor;
+    color: var(--primary-color);
     text-transform: capitalize;
 }
 
@@ -99,7 +99,7 @@ body {
 
 .welcomeDescriptionStyle {
     text-align: center;
-    font: normal normal normal $navbartext proxima-nova;
+    font: normal normal normal $navbartext var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
     width: 70%;
@@ -108,7 +108,7 @@ body {
 }
 
 .switchFontStyle {
-    font: normal normal normal $navbartext proxima-nova;
+    font: normal normal normal $navbartext var(--font-style);
     color: #2C2C2C;
 }
 
@@ -120,36 +120,36 @@ body {
 .timeSmartStyle {
     text-align: center;
     letter-spacing: 0px;
-    font: normal normal normal 12px/17px proxima-nova;
-    color: $primarycolor;
+    font: normal normal normal 12px/17px var(--font-style);
+    color: var(--primary-color);
     opacity: 1;
     margin-top: 50px;
 }
 
 .termsStyle {
     text-align: center;
-    font: normal normal normal 11px/13px proxima-nova;
+    font: normal normal normal 11px/13px var(--font-style);
     letter-spacing: 0px;
     color: #DDDDDD;
 }
 
 .loginToStyle {
     text-align: center;
-    font: normal normal normal $navbartext proxima-nova;
+    font: normal normal normal $navbartext var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
 }
 
 .otpTextStyle {
     text-align: center;
-    font: normal normal normal 12px/16px proxima-nova;
+    font: normal normal normal 12px/16px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
 }
 
 .otpHeading {
     text-align: center;
-    font: normal normal normal $navbartext proxima-nova;
+    font: normal normal normal $navbartext var(--font-style);
     letter-spacing: 0px;
     color: #707070;
 }
@@ -167,7 +167,7 @@ body {
 
 .regHeading {
     text-align: left;
-    font: normal normal 600 $navbartext proxima-nova;
+    font: normal normal 600 $navbartext var(--font-style);
     letter-spacing: 0px;
 }
 
@@ -187,9 +187,9 @@ body {
 .loginButton {
     height: 50px;
     width: 100%;
-    background-color: $primarycolor;
+    background-color: var(--primary-color);
     color: white;
-    font: normal normal 600 20px/25px proxima-nova;
+    font: normal normal 600 20px/25px var(--font-style);
     border-radius: 6px;
     border: none;
     cursor: pointer;
@@ -197,9 +197,9 @@ body {
 
 .setPasswordStyle {
     text-align: center;
-    font: normal normal 600 13px/18px proxima-nova;
+    font: normal normal 600 13px/18px var(--font-style);
     letter-spacing: 0px;
-    color: $primarycolor;
+    color: var(--primary-color);
 }
 
 .setPasswordBackground {
@@ -248,7 +248,7 @@ body {
     width: 40%;
     margin-left: 30%;
     height: 47vh;
-    box-shadow: 0px 3px 6px $primarycolor C9;
+    box-shadow: 0px 3px 6px var(--primary-color) C9;
     border-radius: 8px;
     margin-top: 5%;
 }
@@ -269,34 +269,34 @@ body {
 
 .welcomeHeading {
     text-align: center;
-    font: normal normal 600 22px/31px proxima-nova;
+    font: normal normal 600 22px/31px var(--font-style);
     letter-spacing: 0px;
     color: #FFFFFF;
 }
 
 .completedHeading {
     text-align: center;
-    font: normal normal normal 26px/31px proxima-nova;
+    font: normal normal normal 26px/31px var(--font-style);
     letter-spacing: 0px;
     color: #FFFFFF;
 }
 
 .thanksTextStyle {
     text-align: center;
-    font: normal normal 500 22px/31px proxima-nova;
+    font: normal normal 500 22px/31px var(--font-style);
     letter-spacing: 0px;
     color: #FFFFFF;
     margin-top: 30px;
 }
 
 .accountTypeStyle {
-    font: normal normal normal 15px/28px proxima-nova;
+    font: normal normal normal 15px/28px var(--font-style);
     color: white;
 }
 
 .customerSetupText {
-    font: normal normal 600 15px/28px proxima-nova;
-    color: $primarycolor;
+    font: normal normal 600 15px/28px var(--font-style);
+    color: var(--primary-color);
 }
 
 .welcomeAccountImgStyle {
@@ -316,7 +316,7 @@ body {
 
 .managerLabelStyle {
     text-align: left;
-    font: normal normal 600 15px/30px proxima-nova;
+    font: normal normal 600 15px/30px var(--font-style);
     letter-spacing: 0px;
     color: #848484;
     text-transform: uppercase;
@@ -324,9 +324,9 @@ body {
 
 .managerFieldValueStyle {
     text-align: left;
-    font: normal normal 600 15px/30px proxima-nova;
+    font: normal normal 600 15px/30px var(--font-style);
     letter-spacing: 0px;
-    color: $primarycolor;
+    color: var(--primary-color);
 }
 
 .managerFieldGrid {
@@ -347,13 +347,13 @@ body {
 }
 
 .crossStyle {
-    color: linear-gradient($primarycolor, $statusred) !important;
+    color: linear-gradient(var(--primary-color), $statusred) !important;
     margin: 25px;
     cursor: pointer;
 }
 
 .crossStyleWelcomePage {
-    color: linear-gradient($primarycolor, $statusred) !important;
+    color: linear-gradient(var(--primary-color), $statusred) !important;
     margin-bottom: 15px;
     cursor: pointer;
 }
@@ -459,37 +459,37 @@ body {
 }
 
 .activeStepperStyle {
-    background-color: $primarycolor !important;
+    background-color: var(--primary-color) !important;
 }
 
 .completedStepperStyle {
     background-color: white !important;
-    border: 2px solid $primarycolor;
+    border: 2px solid var(--primary-color);
 }
 
 .stepperDivider {
-    background: linear-gradient(to right, $primarycolor 10%, #E9E9F0 10%) !important;
+    background: linear-gradient(to right, var(--primary-color) 10%, #E9E9F0 10%) !important;
     height: 3px;
     width: 100%;
     margin-top: -70px;
 }
 
 .stepperDivider2 {
-    background: linear-gradient(to right, $primarycolor 30%, #E9E9F0 30%) !important;
+    background: linear-gradient(to right, var(--primary-color) 30%, #E9E9F0 30%) !important;
     height: 3px;
     width: 100%;
     margin-top: -70px;
 }
 
 .stepperDivider2grid4 {
-    background: linear-gradient(to right, $primarycolor 35%, #E9E9F0 35%) !important;
+    background: linear-gradient(to right, var(--primary-color) 35%, #E9E9F0 35%) !important;
     height: 3px;
     width: 100%;
     margin-top: -70px;
 }
 
 .stepperDivider3 {
-    background: linear-gradient(to right, $primarycolor 50%, #E9E9F0 50%) !important;
+    background: linear-gradient(to right, var(--primary-color) 50%, #E9E9F0 50%) !important;
     // background: linear-gradient(to right,$primarycolor35%, #E9E9F0 35%) !important;
     height: 3px;
     width: 100%;
@@ -498,14 +498,14 @@ body {
 
 .stepperDivider4grid4 {
     // background: linear-gradient(to right,$primarycolor70%, #E9E9F0 70%) !important;
-    background: linear-gradient(to right, $primarycolor 60%, #E9E9F0 60%) !important;
+    background: linear-gradient(to right, var(--primary-color) 60%, #E9E9F0 60%) !important;
     height: 3px;
     width: 100%;
     margin-top: -70px;
 }
 
 .stepperDivider4 {
-    background: linear-gradient(to right, $primarycolor 70%, #E9E9F0 70%) !important;
+    background: linear-gradient(to right, var(--primary-color) 70%, #E9E9F0 70%) !important;
     // background: linear-gradient(to right,$primarycolor60%, #E9E9F0 60%) !important;
     height: 3px;
     width: 100%;
@@ -513,7 +513,7 @@ body {
 }
 
 .stepperDivider5 {
-    background: linear-gradient(to right, $primarycolor 90%, #E9E9F0 90%) !important;
+    background: linear-gradient(to right, var(--primary-color) 90%, #E9E9F0 90%) !important;
     // background: linear-gradient(to right,$primarycolor85%, #E9E9F0 85%) !important;
     height: 3px;
     width: 100%;
@@ -522,7 +522,7 @@ body {
 
 .stepperDivider5grid4 {
     // background: linear-gradient(to right,$primarycolor90%, #E9E9F0 90%) !important;
-    background: linear-gradient(to right, $primarycolor 85%, #E9E9F0 85%) !important;
+    background: linear-gradient(to right, var(--primary-color) 85%, #E9E9F0 85%) !important;
     height: 3px;
     width: 100%;
     margin-top: -70px;
@@ -553,7 +553,7 @@ body {
 
 .entityTextColor {
     text-align: center;
-    font: normal normal medium 13px/18px proxima-nova;
+    font: normal normal medium 13px/18px var(--font-style);
     letter-spacing: 0.8px;
     color: #CDCECE;
     padding-top: 10px;
@@ -561,21 +561,21 @@ body {
 
 .entityTextColor4grid {
     text-align: center;
-    font: normal normal medium 13px/18px proxima-nova;
+    font: normal normal medium 13px/18px var(--font-style);
     letter-spacing: 0.8px;
     color: #CDCECE;
     padding-top: 10px;
 }
 
 .activeEntityTextColor {
-    color: $primarycolor !important;
+    color: var(--primary-color) !important;
 }
 
 .heading {
     text-align: center;
-    font: normal normal 600 20px/18px proxima-nova;
+    font: normal normal 600 20px/18px var(--font-style);
     letter-spacing: 0px;
-    color: $primarycolor;
+    color: var(--primary-color);
     margin-top: 30px;
 }
 
@@ -589,7 +589,7 @@ body {
 .entityDescription {
     background: $secondarycolor 0% 0% no-repeat padding-box;
     text-align: left;
-    font: normal normal 300 12px/18px proxima-nova;
+    font: normal normal 300 12px/18px var(--font-style);
     letter-spacing: 0.9px;
     color: #2C2C2C;
     width: 90%;
@@ -600,7 +600,7 @@ body {
 }
 
 .newContractFromCloneBoxStyle {
-    border: 1px solid $primarycolor;
+    border: 1px solid var(--primary-color);
     border-radius: 8px;
     opacity: 1;
     overflow: scroll;
@@ -624,7 +624,7 @@ body {
 
 .extentionLableStyle {
     text-align: left;
-    font: normal normal normal $tabledatatext proxima-nova;
+    font: normal normal normal $tabledatatext var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: capitalize;
@@ -652,7 +652,7 @@ body {
 }
 
 .addSymbolStyle {
-    background-color: $primarycolor;
+    background-color: var(--primary-color);
     color: white;
     font-size: 25px;
     box-shadow: 0px 0px 6px #00000029;
@@ -673,8 +673,8 @@ body {
 
 .outlinedButton {
     background-color: white;
-    color: $primarycolor;
-    border: 1px solid $primarycolor;
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
     height: 40px;
     width: 180px;
     border-radius: 10px;
@@ -683,9 +683,9 @@ body {
 }
 
 .buttonStyle {
-    background-color: $primarycolor;
+    background-color: var(--primary-color);
     color: white;
-    border: 1px solid $primarycolor;
+    border: 1px solid var(--primary-color);
     height: 40px;
     width: 180px;
     border-radius: 10px;
@@ -714,7 +714,7 @@ body {
 
 .uploadText {
     text-align: left;
-    font: normal normal normal 15px/17px proxima-nova;
+    font: normal normal normal 15px/17px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
     width: 150px;
@@ -730,7 +730,7 @@ body {
     cursor: pointer;
 
     span {
-        color: $primarycolor;
+        color: var(--primary-color);
         margin-right: 5px;
     }
 }
@@ -779,9 +779,9 @@ body {
 }
 
 .reqButton {
-    background-color: $primarycolor;
+    background-color: var(--primary-color);
     color: white;
-    border: 1px solid $primarycolor;
+    border: 1px solid var(--primary-color);
     height: 32px;
     width: 150px;
     border-radius: 10px;
@@ -796,7 +796,7 @@ body {
 
 .addMoreButton {
     color: white !important;
-    background-color: $primarycolor;
+    background-color: var(--primary-color);
     height: 32px;
     width: 130px;
     border: none;
@@ -814,7 +814,7 @@ body {
 }
 
 .selectedColor {
-    color: $primarycolor;
+    color: var(--primary-color);
 }
 
 .cursorPointer {
@@ -891,7 +891,7 @@ body {
 }
 
 .tableHeaderFontStyle {
-    font: normal normal bold $tabledatatext proxima-nova;
+    font: normal normal bold $tabledatatext var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: uppercase;
@@ -900,7 +900,7 @@ body {
 }
 
 .tableHeaderFontStyleActiveCustomer {
-    font: normal normal bold $tabledatatext proxima-nova;
+    font: normal normal bold $tabledatatext var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: uppercase;
@@ -988,7 +988,7 @@ body {
 }
 
 .tableDataFontStyle {
-    font: normal normal normal $tabledatatext proxima-nova;
+    font: normal normal normal $tabledatatext var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
     opacity: 1;
@@ -998,7 +998,7 @@ body {
 }
 
 .tableDataFontStyleActiveCustomers {
-    font: normal normal normal $tabledatatext proxima-nova;
+    font: normal normal normal $tabledatatext var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
     opacity: 1;
@@ -1015,7 +1015,7 @@ body {
 
 .cloneContent {
     text-align: left;
-    font: normal normal medium 18px/28px proxima-nova;
+    font: normal normal medium 18px/28px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
 }
@@ -1043,7 +1043,7 @@ body {
 
 .uploadTextStyle {
     text-align: center;
-    font: normal normal 600 18px/22px proxima-nova;
+    font: normal normal 600 18px/22px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
 }
@@ -1061,9 +1061,9 @@ body {
 
 .extensionStyle {
     text-align: left;
-    font: normal normal bold $usernametext proxima-nova;
+    font: normal normal bold $usernametext var(--font-style);
     letter-spacing: 0px;
-    color: $primarycolor;
+    color: var(--primary-color);
 }
 
 .extensionBorder {
@@ -1079,19 +1079,19 @@ body {
 
 .cloneOutlinedButton {
     background-color: white;
-    color: $primarycolor;
-    border: 1px solid $primarycolor;
-    box-shadow: 0px 1px 5px $primarycolor;
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+    box-shadow: 0px 1px 5px var(--primary-color);
     height: 30px;
     width: 80px;
     border-radius: 10px;
 }
 
 .cloneButtonStyle {
-    background-color: $primarycolor;
+    background-color: var(--primary-color);
     color: white;
-    border: 1px solid $primarycolor;
-    box-shadow: 0px 1px 5px $primarycolor;
+    border: 1px solid var(--primary-color);
+    box-shadow: 0px 1px 5px var(--primary-color);
     height: 30px;
     width: 80px;
     border-radius: 10px;
@@ -1102,7 +1102,7 @@ body {
 }
 
 .alertCrossStyle {
-    color: linear-gradient($primarycolor, $statusred) !important;
+    color: linear-gradient(var(--primary-color), $statusred) !important;
     margin-bottom: 15px;
     cursor: pointer;
 }
@@ -1132,14 +1132,14 @@ body {
 
 .uploadDescriptionText {
     text-align: left;
-    font: normal normal 300 12px/18px proxima-nova;
+    font: normal normal 300 12px/18px var(--font-style);
     letter-spacing: 0.95px;
     color: #2C2C2C;
 }
 
 .descriptionHeading {
     text-align: left;
-    font: normal normal 600 14px/20px proxima-nova;
+    font: normal normal 600 14px/20px var(--font-style);
     letter-spacing: 1px;
     color: #2C2C2C;
     text-transform: capitalize;
@@ -1148,11 +1148,11 @@ body {
 .downloadBulkButtonStyle {
     background: #E6E6E6 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #00000029;
-    border: 1px solid $primarycolor;
+    border: 1px solid var(--primary-color);
     border-radius: 6px;
     height: 40px;
     width: 100%;
-    color: $primarycolor;
+    color: var(--primary-color);
 }
 
 .downloadImageStyle {
@@ -1165,16 +1165,16 @@ body {
 }
 
 .failedTesxtColor {
-    font: normal normal 600 14px/20px proxima-nova;
+    font: normal normal 600 14px/20px var(--font-style);
     letter-spacing: 0px;
     color: $statusred;
 }
 
 .resetStyle {
     text-decoration: underline;
-    font: normal normal 600 14px/20px proxima-nova;
+    font: normal normal 600 14px/20px var(--font-style);
     letter-spacing: 0px;
-    color: $primarycolor;
+    color: var(--primary-color);
 }
 
 .reduceMarginTop {
@@ -1191,7 +1191,7 @@ body {
 
 .uploadButtonStyle {
     background-color: #f1f2f3;
-    color: $primarycolor;
+    color: var(--primary-color);
     border: none;
     height: 30px;
     font-size: 12px;
@@ -1214,7 +1214,7 @@ body {
     border: 1px solid #B3B8BD;
     border-radius: 10px;
     height: 100px;
-    font: normal normal normal 13px/15px proxima-nova;
+    font: normal normal normal 13px/15px var(--font-style);
     margin-top: 10px;
     padding: 15px;
 }
@@ -1267,7 +1267,7 @@ body {
     text-align: left;
     border: 1px solid #B3B8BD;
     border-radius: 10px;
-    font: normal normal normal 13px/15px proxima-nova;
+    font: normal normal normal 13px/15px var(--font-style);
     margin-top: 10px;
     padding: 15px;
 }
@@ -1407,7 +1407,7 @@ body {
 
 .userNameStyle {
     text-align: left;
-    font: normal normal 600 $usernametext proxima-nova;
+    font: normal normal 600 $usernametext var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
 }
@@ -1468,7 +1468,7 @@ body {
 }
 
 .headingForContracts {
-    font: normal normal bold 17px/15px proxima-nova;
+    font: normal normal bold 17px/15px var(--font-style);
     letter-spacing: 0px;
     text-align: left;
     color: #2C2C2C;
@@ -1477,7 +1477,7 @@ body {
     margin-top: 0px !important;
 
     @include breakpoint(md) {
-        font: normal normal bold 14px/12px proxima-nova;
+        font: normal normal bold 14px/12px var(--font-style);
     }
 }
 
@@ -1513,12 +1513,12 @@ body {
 .optionsStyle {
     margin: -3px 0px 0 0px;
     text-align: left;
-    font: normal normal bold 12px/15px proxima-nova;
+    font: normal normal bold 12px/15px var(--font-style);
     color: #2C2C2C;
 
     span {
         @include breakpoint(md) {
-            font: normal normal bold 10px/12px proxima-nova !important;
+            font: normal normal bold 10px/12px var(--font-style) !important;
         }
     }
 }
@@ -1536,7 +1536,7 @@ body {
 }
 
 .blue {
-    color: $primarycolor;
+    color: var(--primary-color);
 }
 
 .next30Style {
@@ -1580,14 +1580,14 @@ body {
 }
 
 .viewStyle {
-    font: normal normal normal 10px/15px proxima-nova;
+    font: normal normal normal 10px/15px var(--font-style);
     letter-spacing: -0.3px;
     color: #2C2C2C;
     opacity: 1;
 }
 
 .statisticsProgress {
-    font: normal normal normal 9px/13px proxima-nova;
+    font: normal normal normal 9px/13px var(--font-style);
     letter-spacing: -0.3px;
     color: #2C2C2C;
     opacity: 1;
@@ -1660,18 +1660,18 @@ body {
     width: 150px;
     height: 40px;
     box-shadow: 0px 3px 11px var(--unnamed-color-7165e3);
-    background: $primarycolor 0% 0% no-repeat padding-box;
-    box-shadow: 0px 3px 11px $primarycolor;
+    background: var(--primary-color) 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 11px var(--primary-color);
     border-radius: 8px;
     opacity: 1;
     border: none;
     color: white;
-    font: normal normal 600 16px/21px proxima-nova;
+    font: normal normal 600 16px/21px var(--font-style);
     margin: -5px 20px 0 0;
     cursor: pointer;
 
     @include breakpoint(md) {
-        font: normal normal 600 12px/10px proxima-nova;
+        font: normal normal 600 12px/10px var(--font-style);
     }
 }
 
@@ -1772,7 +1772,7 @@ body {
 }
 
 .tableHeaderFontStyleToDo {
-    font: normal normal bold $tabledatatext proxima-nova;
+    font: normal normal bold $tabledatatext var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: uppercase;
@@ -1784,7 +1784,7 @@ body {
 }
 
 .multipleContractorTextWidth {
-    font: normal normal bold $tabledatatext proxima-nova;
+    font: normal normal bold $tabledatatext var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: uppercase;
@@ -1796,7 +1796,7 @@ body {
 }
 
 .documentProofTextWidth {
-    font: normal normal bold $tabledatatext proxima-nova;
+    font: normal normal bold $tabledatatext var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: uppercase;
@@ -1806,7 +1806,7 @@ body {
 }
 
 .tableDataFontStyleToDo {
-    font: normal normal normal $tabledatatext proxima-nova;
+    font: normal normal normal $tabledatatext var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: uppercase;
@@ -1818,7 +1818,7 @@ body {
 }
 
 .tableDataFontStyleAlerts {
-    font: normal normal normal $tabledatatext proxima-nova;
+    font: normal normal normal $tabledatatext var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: uppercase;
@@ -1829,7 +1829,7 @@ body {
 }
 
 .multipleDataTextWidth {
-    font: normal normal normal $tabledatatext proxima-nova;
+    font: normal normal normal $tabledatatext var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: uppercase;
@@ -1840,7 +1840,7 @@ body {
 }
 
 .documentProofDataTextWidth {
-    font: normal normal normal $tabledatatext proxima-nova;
+    font: normal normal normal $tabledatatext var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
     opacity: 1;
@@ -1879,7 +1879,7 @@ body {
     height: 6px;
     width: 6px;
     border-radius: 50%;
-    background-color: $primarycolor;
+    background-color: var(--primary-color);
     margin-top: 8px;
 }
 
@@ -1888,7 +1888,7 @@ body {
 }
 
 .accountActivityStyle {
-    font: normal normal normal 15px/22px proxima-nova;
+    font: normal normal normal 15px/22px var(--font-style);
     letter-spacing: 0.66px;
     color: #2C2C2C;
     opacity: 0.38;
@@ -1897,7 +1897,7 @@ body {
 }
 
 .paginationStyle {
-    font: normal normal 600 12px/15px proxima-nova;
+    font: normal normal 600 12px/15px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
     opacity: 1;
@@ -1934,9 +1934,9 @@ body {
 
 .poweredBy {
     text-align: left;
-    font: normal normal normal 11px/14px proxima-nova;
+    font: normal normal normal 11px/14px var(--font-style);
     letter-spacing: 0px;
-    color: $primarycolor;
+    color: var(--primary-color);
     opacity: 1;
     margin: 5px 0 0 10px;
 }
@@ -1969,8 +1969,8 @@ body {
 }
 
 .activeButton {
-    background: $primarycolor 0% 0% no-repeat padding-box !important;
-    border: 0.4000000059604645px solid $primarycolor;
+    background: var(--primary-color) 0% 0% no-repeat padding-box !important;
+    border: 0.4000000059604645px solid var(--primary-color);
     border-radius: 6px;
     opacity: 0.75;
     color: white;
@@ -1978,8 +1978,8 @@ body {
 }
 
 .registeredButton {
-    background: $primarycolor 0% 0% no-repeat padding-box !important;
-    border: 0.4000000059604645px solid $primarycolor;
+    background: var(--primary-color) 0% 0% no-repeat padding-box !important;
+    border: 0.4000000059604645px solid var(--primary-color);
     border-radius: 6px;
     opacity: 0.75;
     color: white;
@@ -2033,7 +2033,7 @@ body {
 
 .userNameStyle {
     text-align: left;
-    font: normal normal 600 $usernametext proxima-nova;
+    font: normal normal 600 $usernametext var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
     height: 40px;
@@ -2041,7 +2041,7 @@ body {
 
 .loginStatus {
     text-align: left;
-    font: normal normal normal 11px/15px proxima-nova;
+    font: normal normal normal 11px/15px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
     max-width: 200px;
@@ -2069,7 +2069,7 @@ body {
 
 .extensionOptionsStyle {
     text-align: left;
-    font: normal normal medium $usernametext proxima-nova;
+    font: normal normal medium $usernametext var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: uppercase;
@@ -2078,7 +2078,7 @@ body {
 }
 
 .extentionBoxStyle {
-    border: 1px solid $primarycolor;
+    border: 1px solid var(--primary-color);
     border-radius: 8px;
     opacity: 1;
     width: 100%;
@@ -2093,7 +2093,7 @@ body {
 }
 
 .crossStyle2 {
-    color: linear-gradient($primarycolor, $statusred) !important;
+    color: linear-gradient(var(--primary-color), $statusred) !important;
     margin-bottom: 15px;
     cursor: pointer;
 }
@@ -2123,16 +2123,16 @@ body {
 
 .timeTextStyle {
     text-align: left;
-    font: normal normal bold 25px/27px proxima-nova;
+    font: normal normal bold 25px/27px var(--font-style);
     letter-spacing: 0px;
-    color: $primarycolor;
+    color: var(--primary-color);
 }
 
 .smartTextStyle {
     text-align: left;
-    font: normal normal normal 25px/27px proxima-nova;
+    font: normal normal normal 25px/27px var(--font-style);
     letter-spacing: 0px;
-    color: $primarycolor;
+    color: var(--primary-color);
 }
 
 .welcomePadding {
@@ -2142,7 +2142,7 @@ body {
 .welcomeMessage {
     background: $secondarycolor 0% 0% no-repeat padding-box;
     text-align: left;
-    font: normal normal 300 13px/15px proxima-nova;
+    font: normal normal 300 13px/15px var(--font-style);
     letter-spacing: 0.9px;
     color: #2C2C2C;
     padding: 20px;
@@ -2156,9 +2156,9 @@ body {
 
 .welcomeStyle {
     text-align: left;
-    font: normal normal bold 20px/18px proxima-nova;
+    font: normal normal bold 20px/18px var(--font-style);
     letter-spacing: 0px;
-    color: $primarycolor;
+    color: var(--primary-color);
 }
 
 .welcomeBorder {
@@ -2180,7 +2180,7 @@ body {
 .nextButton {
     border-radius: 12px;
     opacity: 1;
-    background-color: $primarycolor;
+    background-color: var(--primary-color);
     color: white;
     border: none;
     height: 40px;
@@ -2206,7 +2206,7 @@ body {
 
 .selectLable {
     text-align: left;
-    font: normal normal normal 17px/16px proxima-nova;
+    font: normal normal normal 17px/16px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
 }
@@ -2276,7 +2276,7 @@ body {
     font-size: 14px;
     line-height: 1.25;
     background-color: #f1f2f3;
-    color: $primarycolor;
+    color: var(--primary-color);
     border: none;
     position: relative;
     top: 7px;
@@ -2349,8 +2349,8 @@ input[type="file"] {
 }
 
 .activateHeaderText {
-    color: $primarycolor;
-    font: normal normal normal 25px/25px proxima-nova;
+    color: var(--primary-color);
+    font: normal normal normal 25px/25px var(--font-style);
     letter-spacing: 0px;
 }
 
@@ -2363,7 +2363,7 @@ input[type="file"] {
 
 .activateAccessAlertText {
     text-align: center;
-    font: normal normal normal 13px/23px proxima-nova;
+    font: normal normal normal 13px/23px var(--font-style);
     letter-spacing: 0px;
     color: #FF0000;
 }
@@ -2375,7 +2375,7 @@ input[type="file"] {
 
 .failureCheckDesc {
     text-align: left;
-    font: normal normal 600 14px/18px proxima-nova;
+    font: normal normal 600 14px/18px var(--font-style);
     letter-spacing: 0px;
     color: #B3B8BD;
     text-transform: capitalize;
@@ -2425,7 +2425,7 @@ input[type="file"] {
 
 
 .purpleSmallNumber {
-    color: #06617A;
+    color: var(--primary-color);
     background-color: $secondarycolor;
 }
 
@@ -2454,13 +2454,13 @@ input[type="file"] {
 .getSSOIdHeaderBox {
     height: 80px;
     width: 100%;
-    background-color: $primarycolor;
+    background-color: var(--primary-color);
     border-radius: 6px 6px 0 0;
 }
 
 .getSSOIdHeading {
     text-align: center;
-    font-family: proxima-nova;
+    font-family: var(--font-style);
     font-size: 20px;
     font-weight: bolder;
     letter-spacing: 0px;
@@ -2469,7 +2469,7 @@ input[type="file"] {
 
 .getSSOIdDesc {
     text-align: left;
-    font-family: proxima-nova;
+    font-family: var(--font-style);
     font-size: 14px;
     font-weight: 400;
     letter-spacing: 0px;
@@ -2483,9 +2483,9 @@ input[type="file"] {
 }
 
 .newContractButtonStyle {
-    background-color: $primarycolor;
+    background-color: var(--primary-color);
     color: white;
-    border: 1px solid $primarycolor;
+    border: 1px solid var(--primary-color);
     height: 40px;
     width: 180px;
     border-radius: 10px;

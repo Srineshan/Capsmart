@@ -5,7 +5,7 @@ import FormGroup from '@mui/material/FormGroup';
 import Checkbox from '@mui/material/Checkbox';
 
 
-const CommonCheckBox = ({ onChange, label, className, onFocus, value, disabled, checked, key, bigCheckbox,cursorDefault }) => {
+const CommonCheckBox = ({ onChange, label, className, onFocus, value, disabled, checked, key, bigCheckbox, cursorDefault }) => {
     const contractStatus = sessionStorage.getItem('Selected Contract Status');
     return (
         <FormGroup className={className}>
@@ -13,7 +13,7 @@ const CommonCheckBox = ({ onChange, label, className, onFocus, value, disabled, 
                 sx={{
                     cursor: cursorDefault ? "default" : "pointer",
                     '&.Mui-checked': {
-                        color: "#06617A",
+                        color: window.location.pathname.startsWith("/pnpManager") ? "#168E0D" : "#06617A",
                     },
                     '&.Mui-disabled': {
                         color: 'rgba(0, 0, 0, 0.26)',
@@ -21,7 +21,7 @@ const CommonCheckBox = ({ onChange, label, className, onFocus, value, disabled, 
                     '& .MuiSvgIcon-root': {
                         fontSize: bigCheckbox ? 48 : 26,  // Adjust the size here
                     },
-                }} />} label={<Typography variant="body2" color="textSecondary">{label}</Typography>} />
+                }} />} label={<Typography variant="body2" color="textSecondary" style={{ textAlign: 'left' }}>{label}</Typography>} />
         </FormGroup>
     )
 }

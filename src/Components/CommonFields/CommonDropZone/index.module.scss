@@ -2,14 +2,16 @@
 
 .uploadTextStyle {
     text-align: center;
-    font: normal normal 600 20px/28px proxima-nova;
-    color: $primarycolor;
+    font: normal normal 600 20px/28px var(--font-style);
+    color: var(--primary-color);
     text-transform: capitalize;
+
     @media (max-width: 940px) {
-        font: normal normal 600 18px/26px proxima-nova;
+        font: normal normal 600 18px/26px var(--font-style);
     }
+
     @media (max-width: 768px) {
-        font: normal normal 600 16px/24px proxima-nova;
+        font: normal normal 600 16px/24px var(--font-style);
     }
 }
 
@@ -25,22 +27,24 @@
 
 .uploadBorderStyle {
     background: #F5F8F8 0% 0% no-repeat padding-box;
-    border: 1px dashed $primarycolor;
+    border: 1px dashed var(--primary-color);
     border-radius: 4px;
     padding: 10px;
 }
 
 .uploadDescriptionText {
     text-align: center;
-    font: normal normal normal 14px/18px proxima-nova;
+    font: normal normal normal 14px/18px var(--font-style);
     color: $textgrey;
     padding: 0 80px;
+
     @media (max-width: 940px) {
-        font: normal normal normal 13px/17px proxima-nova;
+        font: normal normal normal 13px/17px var(--font-style);
         padding: 0 60px;
     }
+
     @media (max-width: 768px) {
-        font: normal normal normal 13px/16px proxima-nova;
+        font: normal normal normal 13px/16px var(--font-style);
         padding: 0 50px;
     }
 }

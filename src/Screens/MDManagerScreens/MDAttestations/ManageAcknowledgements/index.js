@@ -168,7 +168,7 @@ const ManageAcknowledgement = () => {
         }
 
         return () => controller.abort();
-    }, [selectedOption, sortField, sortValue, loggedInUser]);
+    }, [selectedOption, sortField, sortValue, loggedInUser, page, limit, selectedCombinations, selectedGroups, mdId, mdTitle, selectedAuthor, from, to, searchTerm]);
 
     // useEffect(() => {
     //     if (entityId !== "" && entityId !== undefined) {
@@ -320,11 +320,11 @@ const ManageAcknowledgement = () => {
         // );
         let url = '';
         if (selectedOption === 'completed') {
-            url = `medical-directive-service/medicalDirectives/signOff?tab=level-1&role=${sessionStorage.getItem('workModeType')}&assignedUserIds=${loggedInUser}&status=${selectedOption}&noOfDays=${30}&sortBy=${sortValue}&sortByField=${sortField}`
+            url = `medical-directive-service/medicalDirectives/signOff?tab=level-1&role=${sessionStorage.getItem('workModeType')}&assignedUserIds=${loggedInUser}&status=${selectedOption}&noOfDays=${30}&sortBy=${sortValue}&sortByField=${sortField}&offset=${page - 1}&limit=${limit}&isPaginationRequired=${isPaginationRequired}`
         } else {
-            url = `medical-directive-service/medicalDirectives/signOff?tab=level-1&role=${sessionStorage.getItem('workModeType')}&assignedUserIds=${loggedInUser}&status=${selectedOption}&sortBy=${sortValue}&sortByField=${sortField}`
+            url = `medical-directive-service/medicalDirectives/signOff?tab=level-1&role=${sessionStorage.getItem('workModeType')}&assignedUserIds=${loggedInUser}&status=${selectedOption}&sortBy=${sortValue}&sortByField=${sortField}&offset=${page - 1}&limit=${limit}&isPaginationRequired=${isPaginationRequired}`
         }
-        const response = await GET(url, { signal });
+        const response = await POST(url, advancedSearch, { signal });
         console.log(response.data);
         setAttestationList(response?.data?.medicalDirectivesWithWorkflow)
         setTotalTableCount(response?.data?.numberOfElements)
@@ -438,7 +438,7 @@ const ManageAcknowledgement = () => {
         true,
         true,
         false,
-        false,
+        true,
     ];
 
     const tableHeaderValues = selectedOption === "pending" ? reviewAndAttestHeaderValues : attestedHeaderValues

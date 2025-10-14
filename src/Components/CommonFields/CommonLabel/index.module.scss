@@ -2,7 +2,7 @@
 
 .lableStyle {
     text-align: left;
-    font: normal normal normal $tabledatatext proxima-nova;
+    font: normal normal normal $tabledatatext var(--font-style);
     letter-spacing: 0px;
     color: $textgrey;
     text-transform: capitalize;

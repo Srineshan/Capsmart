@@ -7,7 +7,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import style from './index.module.scss';
 
 
-const CommonRadio = ({ onChange, className, value, radioValue, label, required, readOnly }) => {
+const CommonRadio = ({ onChange, className, value, radioValue, label, required, readOnly, isRow }) => {
   const contractStatus = sessionStorage.getItem('Selected Contract Status');
   const warningCheck = (value === '');
   const theme = createTheme({
@@ -24,7 +24,7 @@ const CommonRadio = ({ onChange, className, value, radioValue, label, required, 
     <ThemeProvider theme={theme}>
       <FormControl>
         <RadioGroup
-          row
+          row={isRow !== undefined ? isRow : true}
           className={className}
           value={value}
           onChange={onChange}
@@ -37,7 +37,7 @@ const CommonRadio = ({ onChange, className, value, radioValue, label, required, 
                 <Radio
                   sx={{
                     color: "#B3B8BD",
-                    "&.Mui-checked": { color: "#06617A" },
+                    "&.Mui-checked": { color: window.location.pathname.startsWith("/pnpManager") ? "#168E0D" : "#06617A" },
                   }}
                   size="small"
                   disabled={readOnly ? true : false}

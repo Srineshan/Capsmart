@@ -119,6 +119,8 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         APPLICANT_TYPE: ['Applicant Type', 'Type', 'Staff Type', 'Locum Type'],
         CREATED_DATE: ['created date'],
         LAST_UPDATED: ['Last Updated'],
+        LAST_MODIFIED_DATE: ['Last Modified'],
+        APPROVED_DATE: ['Signed Off Date', 'Acknowledged Date'],
         SUBMITTED_DATE: ['Submitted'],
         APPLICANT_ID: ['Applicant ID'],
         REAPPOINTMENT_STATUS: ['Reappointment', 'Status'],
@@ -127,16 +129,14 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         COMPLETION_PERCENTAGE: ['Completed %'],
         MDID: ['MD ID'],
         TITLE: ['MD Title', 'Title'],
-        NOT_ATTESTED_COUNT: ['Not Attested'],
-        ATTESTED_COUNT: ['Attested'],
+        NOT_ATTESTED_COUNT: ['Not Attested', 'Not Attested To Any'],
+        ATTESTED_COUNT: ['Attested', 'Attested To All'],
         ATTESTATION_STATUS: ['Attestation Status'],
         ATTESTATION_DATE: ['Attestation Date'],
         TENURE_END_DATE: ['Days to Expiration', 'Expiry Date', 'Last End Date', 'Days Since Expired'],
         TENURE_START_DATE: ['Start Date'],
         USER_NAME: ['Name'],
         STAFF_COUNT: ['Total Count'],
-        ATTESTED_COUNT: ['Attestated all'],
-        NOT_ATTESTED_COUNT: ['Not Attestated To Any'],
         PARTIALLY_ATTESTED_COUNT: ['Some Attested'],
         GROUP_NAME: ['Attestation Group']
     }
@@ -155,6 +155,9 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         'Locum Type': 'APPLICANT_TYPE',
         'created date': 'CREATED_DATE',
         'Last Updated': 'LAST_UPDATED',
+        'Last Modified': 'LAST_MODIFIED_DATE',
+        'Signed Off Date': 'APPROVED_DATE',
+        'Acknowledged Date': 'APPROVED_DATE',
         'Submitted': 'SUBMITTED_DATE',
         'Applicant ID': 'APPLICANT_ID',
         'Reappointment': 'REAPPOINTMENT_STATUS',
@@ -168,7 +171,9 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         'MD Title': 'TITLE',
         'Title': 'TITLE',
         'Not Attested': 'NOT_ATTESTED_COUNT',
+        'Not Attested To Any': 'NOT_ATTESTED_COUNT',
         'Attested': 'ATTESTED_COUNT',
+        'Attested To All': 'ATTESTED_COUNT',
         'Attestation Status': 'ATTESTATION_STATUS',
         'Attestation Date': 'ATTESTATION_DATE',
         'Days to Expiration': 'TENURE_END_DATE',
@@ -178,8 +183,6 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         'Days Since Expired': 'TENURE_END_DATE',
         'Name': 'USER_NAME',
         'Total Count': 'STAFF_COUNT',
-        'Attestated all': 'ATTESTED_COUNT',
-        'Not Attestated To Any': 'NOT_ATTESTED_COUNT',
         'Some Attested': 'PARTIALLY_ATTESTED_COUNT',
         'Attestation Group': 'GROUP_NAME'
     }
@@ -411,8 +414,10 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
     const setUserDetails = async () => {
         const { data: userData } = await GET(`user-management-service/user/${users?.id}`);
         console.log("userdataaaa" + JSON.stringify(userData))
-        sessionStorage.setItem('user', JSON.stringify(userData))
-        setUserRole(userData?.roles?.map((data) => data?.roleName));
+        if (userData) {
+            sessionStorage.setItem('user', JSON.stringify(userData))
+            setUserRole(userData?.roles?.map((data) => data?.roleName));
+        }
     }
 
     function useOptionsHide(ref) {
@@ -475,7 +480,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                     }
                 </div>
             </div>
-            <div>
+            <div className={style.tableWrapper}>
                 <div className={`${style.tableHeader} ${gridStyle} ${style.marginTop10}`}>
                     {tableHeaderValues?.map((data, index) => (
                         <div className={` ${style.verticalAlignCenter} ${style.sortingIcon}`} key={index}>

@@ -386,6 +386,7 @@ const MDManager = () => {
               <Tooltip title={"Add New MD"} arrow>
                 <div
                   className={`${style.addStyle} ${style.displayInRow} ${style.applicationButton} ${style.marginTop10} ${style.alignCenter} ${style.cursorPointer}`}
+                  onClick={() => { setShowAddNewMedicalDirectives(true) }}
                 >
                   <div className={`${style.displayInRow} ${style.alignCenter}`}>
                     <AddCircleOutlineIcon
@@ -395,7 +396,6 @@ const MDManager = () => {
 
                     <div
                       className={`${style.alignCenter} ${style.marginLeft10}`}
-                      onClick={() => { setShowAddNewMedicalDirectives(true) }}
                     >
                       {'Add New MD'}
                     </div>
@@ -574,7 +574,7 @@ const MDManager = () => {
         </div>
         <div>
           {selectedOption === "MANAGE MEDICAL DIRECTIVES" ? (
-            <ManageMedicalDirectives getSelectedOption={getSelectedOption} setStep1={setStep1} setStep2={setStep2} setStep3={setStep3} setMdFile={setMdFile} advancedSearch={advancedSearch} setSelectedMdId={setSelectedMdId} showAddNewMedicalDirectives={showAddNewMedicalDirectives} setShowAddNewMedicalDirectives={setShowAddNewMedicalDirectives} />
+            <ManageMedicalDirectives getSelectedOption={getSelectedOption} setStep1={setStep1} setStep2={setStep2} setStep3={setStep3} setStep4={setStep4} setMdFile={setMdFile} advancedSearch={advancedSearch} setSelectedMdId={setSelectedMdId} showAddNewMedicalDirectives={showAddNewMedicalDirectives} setShowAddNewMedicalDirectives={setShowAddNewMedicalDirectives} />
           ) : selectedOption === "OPEN FEEDBACK TICKETS" ? (
             <FeedbackTicket getSelectedOption={getSelectedOption} />
           ) : selectedOption === "DATA UPLOADS" ? (

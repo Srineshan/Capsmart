@@ -4,6 +4,7 @@ import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import CommonInputField from '../../../Components/CommonFields/CommonInputField';
 import CommonDateField from '../../../Components/CommonFields/CommonDateField';
 import { TextField, Tooltip } from '@mui/material';
+import { Classes, Dialog } from '@blueprintjs/core';
 import CancelIcon from '@mui/icons-material/Cancel';
 import style from './index.module.scss';
 import CommonSelectField from '../../../Components/CommonFields/CommonSelectField';
@@ -33,11 +34,15 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
     const [fileType, setFileType] = useState('');
     const [isDataLoading, setIdDataLoading] = useState(false);
     const [selectedDeptValue, setSelectedDeptValue] = useState("");
+    const [staffType, setStaffType] = useState([]);
+    const [selectedStaffType, setSelectedStaffType] = useState([]);
+    const [isSaveInProgressDialog, setIsSaveInProgressDialog] = useState(false);
     const selectedSite = sessionStorage.getItem('selectedSite') || ''
     useEffect(() => {
         getDepartmentList();
         getStaffList()
         getEntitySites()
+        getStaffType()
     }, [])
 
     useEffect(() => {
@@ -57,10 +62,11 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
             setPreviewUrl(mdValue?.file ? mdValue?.file?.fileURL : '')
             setMdTitle(mdValue?.title)
             setMdId(mdValue?.mdID)
-            setSelectedDate(mdValue?.publishedDate)
+            setSelectedDate(mdValue?.initialPublishedDate)
             setMdDescription(mdValue?.description ? mdValue?.description : '')
             setReviewFrequency(mdValue?.reviewFrequency?.value === 1 ? 'EVERY_1_YEAR' : mdValue?.reviewFrequency?.value === 2 ? 'EVERY_2_YEARS' : mdValue?.reviewFrequency?.value === 3 ? 'EVERY_3_YEARS' : '');
             setSelectedStaff(mdValue?.authors ? mdValue?.authors?.map(data => data.id)?.[0] : '')
+            setSelectedStaffType(mdValue?.applicantTypes ? mdValue?.applicantTypes?.map(data => data?.id) : []);
             setSelectedServiceArea(mdValue?.sites?.[0]?.departments?.flatMap(data => data?.serviceAreas?.map(innerData => innerData?.id) || []) || [])
             setTimeout(() => setIdDataLoading(false), 0);
         }
@@ -108,6 +114,13 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
             handleEnter();
         }
     };
+
+    const getStaffType = async () => {
+        const { data: applicant } = await GET(
+            `entity-service/applicantType`
+        );
+        setStaffType(applicant)
+    }
 
     const getFileTypeFromUrl = (url) => {
         const pathname = new URL(url).pathname;
@@ -163,6 +176,16 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
             const newIds = id.filter(item => !selectedDepartment.includes(item));
             if (newIds.length > 0) {
                 setSelectedDepartment(prev => [...prev, ...newIds]);
+            }
+        }
+    }
+
+    const handleStaffTypeSelect = (id) => {
+        console.log(id)
+        if (Array.isArray(id)) {
+            const newIds = id.filter(item => !selectedStaffType.includes(item));
+            if (newIds.length > 0) {
+                setSelectedStaffType(prev => [...prev, ...newIds]);
             }
         }
     }
@@ -267,14 +290,16 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
             file: mdValue?.id ? mdValue?.file : {
                 fileName: mdFile?.name,
             },
-            autoTriggerOnUpdate: false,
-            updateFor: ['SELECTED_DEPARTMENT_AND_DIVISION'],
+            autoTriggerOnUpdate: true,
+            updateFor: [],
             groups: [],
-            triggerForNewAppointment: false,
-            triggerForReAppointment: false,
-            triggerForLocum: false,
+            triggerForNewAppointment: true,
+            triggerForReAppointment: true,
+            triggerForLocum: true,
+            applicantTypes: staffType?.filter(type => selectedStaffType?.includes(type.id))?.map(data => ({ id: data?.id, applicantType: data?.applicantType })),
             siteSpecific: selectedSite !== '' ? true : false,
             attestationSiteSpecific: selectedSite !== '' ? true : false,
+            applicantTypeSpecific: selectedStaffType?.length !== 0 ? true : false
         }
 
         if ((!mdValue?.id || !mdValue?.attestationSites) && selectedDepartment?.length !== 0) {
@@ -347,6 +372,7 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
             try {
                 const response = await PUT(`medical-directive-service/medicalDirectives/${mdValue?.id}`, formData)
                 if (isSaveInProgress) {
+                    await PUT(`medical-directive-service/medicalDirectives/${mdValue?.id}/saveInprogress`, 'step1')
                     handleClose()
                 } else {
                     setStep1(false);
@@ -368,6 +394,7 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
                 } else {
                     SuccessToaster2('MD Updated Successfully');
                     if (isSaveInProgress) {
+                        await PUT(`medical-directive-service/medicalDirectives/${mdValue?.id}/saveInprogress`, 'step1')
                         handleClose()
                     } else {
                         setStep1(false);
@@ -402,7 +429,7 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
                             <button className={`${style.outlinedButtonMd} ${style.marginRight} `} onClick={() => { handleClose() }} >CLOSE</button>
                         </Tooltip>
                         <Tooltip arrow title='Click to Save In-Progress'>
-                            <button className={`${style.outlinedButtonMd} ${style.marginRight} `} onClick={() => { handleContinue(true) }} >SAVE IN PROGRESS</button>
+                            <button className={`${style.outlinedButtonMd} ${style.marginRight} `} onClick={() => { setIsSaveInProgressDialog(true) }} >SAVE IN PROGRESS</button>
                         </Tooltip>
                         <Tooltip arrow title='Click to Continue'>
                             <button className={`${style.buttonStyleMd} ${style.marginRight} `} onClick={() => {
@@ -521,18 +548,20 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
                         </div> */}
                         <div>
                             <div className={style.labelStyle}>Department*</div>
-                            <CommonMultiSelectField
-                                value={selectedDepartment}
-                                onChange={(e) => handleDepartmentSelect(e.target.value)}
-                                className={style.fullWidth}
-                                // firstOptionLabel={'All'}
-                                // firstOptionValue={''}
-                                valueList={departmentList?.map(option => option?.id)}
-                                labelList={departmentList?.map(option => `${option?.departmentName?.name}`)}
-                                disabledList={departmentList?.map(() => false)}
-                                required={true}
-                                label={'Department'}
-                            />
+                            <div className={style.marginTop10}>
+                                <CommonMultiSelectField
+                                    value={selectedDepartment}
+                                    onChange={(e) => handleDepartmentSelect(e.target.value)}
+                                    className={style.fullWidth}
+                                    // firstOptionLabel={'All'}
+                                    // firstOptionValue={''}
+                                    valueList={departmentList?.map(option => option?.id)}
+                                    labelList={departmentList?.map(option => `${option?.departmentName?.name}`)}
+                                    disabledList={departmentList?.map(() => false)}
+                                    required={true}
+                                    label={'Department'}
+                                />
+                            </div>
                             <div>
                                 <div className={`${style.chipsContainer} ${style.marginTop10}`}>
                                     {selectedDepartment?.map(data => {
@@ -548,18 +577,20 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
                         </div>
                         <div>
                             <div className={style.labelStyle}>Division / Specialty</div>
-                            <CommonMultiSelectField
-                                value={selectedServiceArea}
-                                onChange={(e) => handleServiceAreaSelect(e.target.value)}
-                                className={style.fullWidth}
-                                // firstOptionLabel={'All'}
-                                // firstOptionValue={''}
-                                valueList={filteredServiceAreas?.map(option => option?.id)}
-                                labelList={filteredServiceAreas?.map(option => `${option?.department?.departmentName?.name} - ${option?.name}`)}
-                                disabledList={filteredServiceAreas?.map(() => false)}
-                                required={true}
-                                label={'Division / Service Area'}
-                            />
+                            <div className={style.marginTop10}>
+                                <CommonMultiSelectField
+                                    value={selectedServiceArea}
+                                    onChange={(e) => handleServiceAreaSelect(e.target.value)}
+                                    className={style.fullWidth}
+                                    // firstOptionLabel={'All'}
+                                    // firstOptionValue={''}
+                                    valueList={filteredServiceAreas?.map(option => option?.id)}
+                                    labelList={filteredServiceAreas?.map(option => `${option?.department?.departmentName?.name} - ${option?.name}`)}
+                                    disabledList={filteredServiceAreas?.map(() => false)}
+                                    required={true}
+                                    label={'Division / Service Area'}
+                                />
+                            </div>
                             <div>
                                 <div className={`${style.chipsContainer} ${style.marginTop10}`}>
                                     {selectedServiceArea?.map(data => {
@@ -586,6 +617,34 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
                             label={"Review Frequency"}
                         />
                         <div>
+                            <div className={style.labelStyle}>Staff Type</div>
+                            <div className={style.marginTop10}>
+                                <CommonMultiSelectField
+                                    value={selectedStaffType}
+                                    onChange={(e) => handleStaffTypeSelect(e.target.value)}
+                                    className={style.fullWidth}
+                                    // firstOptionLabel={'All'}
+                                    // firstOptionValue={''}
+                                    valueList={staffType?.map(option => option?.id)}
+                                    labelList={staffType?.map(option => `${option?.applicantType}`)}
+                                    disabledList={staffType?.map(() => false)}
+                                    required={true}
+                                />
+                            </div>
+                            <div>
+                                <div className={`${style.chipsContainer} ${style.marginTop10}`}>
+                                    {selectedStaffType?.map(data => {
+                                        return (
+                                            <div className={`${style.chips} ${style.displayInRow}`}>
+                                                <div>{staffType?.filter(staffData => data === staffData?.id)?.[0]?.applicantType}</div> <div className={`${style.verticalAlignCenter} ${style.marginLeft10} ${style.cursorPointer}`}
+                                                    onClick={() => setSelectedStaffType(selectedStaffType?.filter(innerData => innerData !== data))}
+                                                ><CancelIcon sx={{ color: '#06617A', fontSize: 20 }} /></div></div>
+                                        )
+                                    })}
+                                </div>
+                            </div>
+                        </div>
+                        <div>
                             <CommonSelectField
                                 value={selectedStaff}
                                 onChange={(e) => setSelectedStaff(e.target.value)}
@@ -604,7 +663,7 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
                             open={calendarStart}
                             onOpen={() => setCalendarStart(true)}
                             onClose={() => setCalendarStart(false)}
-                            minDate={sub(new Date(), { years: 3 })}
+                            minDate={sub(new Date(), { years: 20 })}
                             maxDate={add(new Date(), { months: 6 })}
                             value={SelectedDate}
                             onChange={(newValue) =>
@@ -656,6 +715,23 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
                     </div>
                 </div>
             </div>
+            <Dialog isOpen={isSaveInProgressDialog} onClose={() => setIsSaveInProgressDialog(false)} className={`${style.addMDDialogBackground} ${style.confirmationDialog} `}>
+                <div className={Classes.DIALOG_BODY}>
+                    <div className={style.attestationDialogHeaderCard}>
+                        <div className={`${style.attestationDialogTitle} ${style.padding20} `}>Confirm Save In-Progress</div>
+                    </div>
+                    <div className={`${style.marginTop10} `}>
+                        <div className={style.labelStyle}>Your current progress will be saved. You can return and continue from where you left off.</div>
+                    </div>
+
+                    <div>
+                        <div className={`${style.spaceBetween} ${style.marginTop20} `}>
+                            <button className={`${style.outlinedButtonWithBiggerWidth} `} onClick={() => setIsSaveInProgressDialog(false)} >CANCEL</button>
+                            <button className={`${style.buttonStyleWithBiggerWidth} ${style.marginLeft10} `} onClick={() => { handleContinue(true) }} >{'SAVE & CONTINUE LATER'}</button>
+                        </div>
+                    </div>
+                </div>
+            </Dialog >
         </div>
     )
 }

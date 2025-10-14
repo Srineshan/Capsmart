@@ -17,12 +17,12 @@
   margin-top: 20px;
 }
 
-.marginLeft20{
-    margin-left: 20px;
+.marginLeft20 {
+  margin-left: 20px;
 }
 
-.flex{
-    display: flex;
+.flex {
+  display: flex;
 }
 
 .templateHeader {
@@ -35,9 +35,9 @@
 
 .templateHeadertext {
   text-align: left;
-  font: normal normal bold 22px proxima-nova;
+  font: normal normal bold 22px var(--font-style);
   letter-spacing: 0px;
-  color: #06617A;
+  color: var(--primary-color);
   opacity: 1;
 }
 
@@ -67,24 +67,24 @@
   justify-content: center;
 }
 
-.summaryCountStyle{
-    text-align: left;
-    font: normal normal bold 24px/30px proxima-nova;
-    letter-spacing: 0px;
-    color: #52575D;
-    opacity: 1;
+.summaryCountStyle {
+  text-align: left;
+  font: normal normal bold 24px/30px var(--font-style);
+  letter-spacing: 0px;
+  color: #52575D;
+  opacity: 1;
 }
 
 .summaryFontStyle {
-    text-align: left;
-    font: normal normal medium 18px/30px proxima-nova !important;
-    letter-spacing: 0px;
-    color: #52575D;
-    opacity: 1;
+  text-align: left;
+  font: normal normal medium 18px/30px var(--font-style) !important;
+  letter-spacing: 0px;
+  color: #52575D;
+  opacity: 1;
 }
 
 .reviewButtonStyle {
-  background: $primarycolor 0% 0% no-repeat padding-box;
+  background: var(--primary-color) 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 6px #00000029;
   border-radius: 8px;
   opacity: 1;
@@ -93,7 +93,7 @@
 
 .reviewButton {
   text-align: center;
-  font: normal normal bold 18px/30px proxima-nova;
+  font: normal normal bold 18px/30px var(--font-style);
   letter-spacing: 0px;
   color: #FFFFFF;
   text-transform: uppercase;

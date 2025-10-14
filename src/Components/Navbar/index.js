@@ -460,7 +460,7 @@ const Navbar = () => {
           }
           <div>
             <img
-              src={hospitalLogo}
+              src={sessionStorage.getItem('selectedApplication') === "PNP_MANAGER" ? 'https://live-entity-service.s3.amazonaws.com/LOGO/64246d491b70b07241d37aa1/6424714c1b70b07241d37aa3/central_logo.jpeg' : hospitalLogo}
               alt=""
               className={style.sanmateoLogo}
             />
@@ -482,12 +482,12 @@ const Navbar = () => {
             )}
           </div>
 
-          {(!window.location.pathname?.includes('mdManager') && !window.location.pathname?.includes('medicalDirectives') && !availableMDReports.some(str => window.location.pathname?.includes(str))) ? (
+          {(sessionStorage.getItem('selectedApplication') === "CAP_MANAGER") ? (
             <>
               {workModeType !== "Entity Sys Admin" && (
                 <Link to={"/applications"} onClick={() => sessionStorage.setItem('applicationCreationType', 'REAPPOINTMENT')} className={style.noFontStyle}>
                   <div
-                    className={`${style.menuStyle} ${window.location.pathname.includes("/applications") &&
+                    className={`${style.menuStyle} ${(window.location.pathname.includes("/applications") && !window.location.pathname.includes("/dashboard")) &&
                       style.activeMenuColor
                       }`}
                   >
@@ -569,7 +569,24 @@ const Navbar = () => {
               >
                 <p>INACTIVE STAFF</p>
               </div>
-
+              <Link to={"/applications/dashboard"} className={style.noFontStyle}>
+                <div
+                  className={`${style.menuStyle} ${window.location.pathname.includes("/dashboard") &&
+                    style.activeMenuColor
+                    }`}
+                >
+                  <p>DASHBOARD</p>
+                </div>
+              </Link>
+              <Link to={`https://lms.indocaribe.com/descope-login/?ssotoken=${cookie.get("authorization")}`} className={style.noFontStyle}>
+                <div
+                  className={`${style.menuStyle} ${window.location.pathname.includes("/lms") &&
+                    style.activeMenuColor
+                    }`}
+                >
+                  <p>LMS</p>
+                </div>
+              </Link>
               {/* {
             isContractManager && (
               <div>
@@ -712,12 +729,12 @@ const Navbar = () => {
                             >
                               <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`}>Permanent Staff</div>
                             </Link>
-                            {/* <Link
+                            <Link
                               to={"/reports/locumStaff"}
                               className={style.noFontStyle}
                             >
                               <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`}>Locum Staff</div>
-                            </Link> */}
+                            </Link>
                           </>
                         )}
                         <div className={style.menuDivider}></div>
@@ -784,7 +801,6 @@ const Navbar = () => {
               </div>
 
               {/* )} */}
-
               {isEntityLevelAdmin && (
                 <div>
                   <div
@@ -882,7 +898,7 @@ const Navbar = () => {
             </div>
           </div> */}
             </>
-          ) : (
+          ) : (sessionStorage.getItem('selectedApplication') === "MD_MANAGER") ? (
             <>
               {workModeType === "MD Librarian" ? (
                 <Link to={"/mdManager"} className={style.noFontStyle}>
@@ -1002,7 +1018,86 @@ const Navbar = () => {
               </Link>
               <Link to={"/mdManager/retired"} className={style.noFontStyle}>
                 <div
-                  className={`${style.menuStyle} ${(window.location.pathname.includes("/retired")) &&
+                  className={`${style.menuStyle} ${(window.location.pathname.includes("/retired") && !(window.location.pathname.includes("/reports") ||
+                    window.location.pathname.includes("/reportTypeOverview") ||
+                    window.location.pathname.includes("/myReport"))) &&
+                    style.activeMenuColor
+                    }`}
+                >
+                  <p>RETIRED</p>
+                </div>
+              </Link>
+            </>
+          ) : (
+            <>
+              {workModeType === "P&P Manager" ? (
+                <Link to={"/pnpManager"} className={style.noFontStyle}>
+                  <div
+                    className={`${style.menuStyle} ${(window.location.pathname.includes("/pnpManager") && window.location.pathname === "/pnpManager") &&
+                      style.activeMenuColor
+                      }`}
+                  >
+                    <p>POLICIES & PROCEDURES (P&P)</p>
+                  </div>
+                </Link>
+              ) : (
+                <Link to={"/pnpManager"} className={style.noFontStyle}>
+                  <div
+                    className={`${style.menuStyle} ${(window.location.pathname.includes("/pnpManager") && window.location.pathname === "/pnpManager") &&
+                      style.activeMenuColor
+                      }`}
+                  >
+                    <p>POLICIES & PROCEDURES LIBRARY</p>
+                  </div>
+                </Link>
+              )}
+              <Link to={"/pnpManager/manageAttestation"} className={style.noFontStyle}>
+                <div
+                  className={`${style.menuStyle} ${(window.location.pathname.includes("/manageAttestation") && !window.location.pathname.includes("/manageAttestationGroups")) &&
+                    style.activeMenuColor
+                    }`}
+                >
+                  <p>ATTESTATIONS</p>
+                </div>
+              </Link>
+              {workModeType === "Acknowledger" && (
+                <Link to={"/pnpManager/manageAcknowledgement"} className={style.noFontStyle}>
+                  <div
+                    className={`${style.menuStyle} ${(window.location.pathname.includes("/manageAcknowledgement")) &&
+                      style.activeMenuColor
+                      }`}
+                  >
+                    <p>ACKNOWLEDGEMENT</p>
+                  </div>
+                </Link>
+              )}
+              {workModeType === "Reviewer / Approver" && (
+                <Link to={"/pnpManager/manageSignOff"} className={style.noFontStyle}>
+                  <div
+                    className={`${style.menuStyle} ${(window.location.pathname.includes("/manageSignOff")) &&
+                      style.activeMenuColor
+                      }`}
+                  >
+                    <p>SIGN OFF</p>
+                  </div>
+                </Link>
+              )}
+              <Link to={"/reports/policiesAndProcedures"} className={style.noFontStyle}>
+                <div
+                  className={`${style.menuStyle} ${(window.location.pathname.includes("/reports") ||
+                    window.location.pathname.includes("/reportTypeOverview") ||
+                    window.location.pathname.includes("/myReport")) &&
+                    style.activeMenuColor
+                    }`}
+                >
+                  <p>REPORTS</p>
+                </div>
+              </Link>
+              <Link to={"/pnpManager/retired"} className={style.noFontStyle}>
+                <div
+                  className={`${style.menuStyle} ${(window.location.pathname.includes("/retired") && !(window.location.pathname.includes("/reports") ||
+                    window.location.pathname.includes("/reportTypeOverview") ||
+                    window.location.pathname.includes("/myReport"))) &&
                     style.activeMenuColor
                     }`}
                 >

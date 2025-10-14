@@ -33,7 +33,7 @@
 
 .podCardTitle {
     text-align: left;
-    font: normal normal bold 14px/18px proxima-nova;
+    font: normal normal bold 14px/18px var(--font-style);
     letter-spacing: 0px;
     color: $textgrey
 }
@@ -41,7 +41,7 @@
 
 .cardTitle {
     text-align: left;
-    font: normal normal bold 20px/26px proxima-nova;
+    font: normal normal bold 20px/26px var(--font-style);
     letter-spacing: 0px;
     color: $textgrey;
     // text-transform: capitalize;
@@ -56,11 +56,11 @@
 }
 
 .addButton {
-    border: 0.5px solid $primarycolor;
+    border: 0.5px solid var(--primary-color);
     border-radius: 12px;
     width: 130px;
-    color: $primarycolor;
-    font: normal normal bold 20px/40px proxima-nova;
+    color: var(--primary-color);
+    font: normal normal bold 20px/40px var(--font-style);
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
@@ -74,18 +74,18 @@
 }
 
 .addMoreButton {
-    background: $primarycolor 0% 0% no-repeat padding-box;
+    background: var(--primary-color) 0% 0% no-repeat padding-box;
     border-radius: 12px;
     padding: 15px;
     color: #fff;
     min-width: 150px !important;
-    font: normal normal bold 15px/15px proxima-nova;
+    font: normal normal bold 15px/15px var(--font-style);
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
 
 .addMoreButton:hover {
-    background: #044D61 0% 0% no-repeat padding-box;
+    background: var(--primary-color-hover) 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 12px #00000052;
     border-radius: 8px;
     opacity: 1;
@@ -94,11 +94,11 @@
 .addMoreButtonOutlined {
     background: #FFFFFF 0% 0% no-repeat padding-box;
     border-radius: 12px;
-    border: 1px solid $primarycolor;
+    border: 1px solid var(--primary-color);
     padding: 15px;
-    color: $primarycolor;
+    color: var(--primary-color);
     min-width: 180px;
-    font: normal normal bold 15px/15px proxima-nova;
+    font: normal normal bold 15px/15px var(--font-style);
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
@@ -106,24 +106,24 @@
 .addMoreButtonOutlined:hover {
     background: #DBE8EA 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 12px #00000029;
-    border: 0.5px solid #06617A;
+    border: 0.5px solid var(--primary-color);
     border-radius: 8px;
     opacity: 1;
 }
 
 .reappointmentButton {
-    background: $primarycolor 0% 0% no-repeat padding-box;
+    background: var(--primary-color) 0% 0% no-repeat padding-box;
     border-radius: 8px;
     padding: 10px 15px;
     color: #fff;
     min-width: 120px !important;
-    font: normal normal bold 15px/15px proxima-nova;
+    font: normal normal bold 15px/15px var(--font-style);
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
 
 .reappointmentButton:hover {
-    background: #044D61 0% 0% no-repeat padding-box;
+    background: var(--primary-color-hover) 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 12px #00000052;
     border-radius: 8px;
     opacity: 1;
@@ -134,9 +134,9 @@
     border-radius: 8px;
     border: 1px solid $buttonBorder;
     padding: 10px 15px;
-    color: $primarycolor;
+    color: var(--primary-color);
     min-width: 120px;
-    font: normal normal bold 15px/15px proxima-nova;
+    font: normal normal bold 15px/15px var(--font-style);
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
@@ -144,7 +144,7 @@
 .reappointmentButtonOutlined:hover {
     background: #DBE8EA 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 12px #00000029;
-    border: 0.5px solid #06617A;
+    border: 0.5px solid var(--primary-color);
     border-radius: 8px;
     opacity: 1;
 }
@@ -161,6 +161,7 @@
     padding: 5px 10px;
     // transition: background-color 0.3s ease;
 }
+
 .uploadButton2 {
     background: $secondarycolor 0% 0% no-repeat padding-box;
     border: 0.4000000059604645px solid $secondarycolor;
@@ -175,13 +176,14 @@
 
 .uploadText {
     text-align: left !important;
-    font: normal normal bold 13px/20px proxima-nova;
+    font: normal normal bold 13px/20px var(--font-style);
     letter-spacing: 0px;
     color: $textgrey;
 }
+
 .uploadText2 {
     text-align: left !important;
-    font: normal normal bold 13px/20px proxima-nova;
+    font: normal normal bold 13px/20px var(--font-style);
     letter-spacing: 0px;
     color: $textgrey;
     margin-left: 28px;
@@ -189,7 +191,7 @@
 
 .uploadTextButton {
     display: inline-block !important;
-    font: normal normal bold 13px/20px proxima-nova;
+    font: normal normal bold 13px/20px var(--font-style);
     color: $textgrey;
     border: 1px solid $textgrey;
     border-radius: 4px;
@@ -202,7 +204,7 @@
 .uploadTextButton:hover {
     background: #DBE8EA 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 12px #00000029;
-    border: 0.5px solid #06617A;
+    border: 0.5px solid var(--primary-color);
     border-radius: 8px;
     opacity: 1;
 }
@@ -251,13 +253,13 @@
 
 .siteDisplaySiteTextStyle {
     text-align: left;
-    font: normal normal bold 14px/30px proxima-nova;
+    font: normal normal bold 14px/30px var(--font-style);
     color: #52575D99;
 }
 
 .siteDisplayDepartmentTextStyle {
     text-align: left;
-    font: normal normal bold 12px/24px proxima-nova;
+    font: normal normal bold 12px/24px var(--font-style);
     letter-spacing: 0px;
     color: $textgrey;
 }
@@ -284,7 +286,7 @@
 
 .addMoreText {
     text-align: left;
-    font: normal normal normal 15px/25px proxima-nova;
+    font: normal normal normal 15px/25px var(--font-style);
     letter-spacing: 0px;
     color: $textgrey;
     max-width: 95%;
@@ -292,14 +294,14 @@
 
 .addMoreDescriptionText {
     text-align: left;
-    font: normal normal normal $navbartext proxima-nova;
+    font: normal normal normal $navbartext var(--font-style);
     letter-spacing: 0px;
     color: $textgrey;
 }
 
 .collapsableCardText {
     text-align: left;
-    font: normal normal bold 17px/25px proxima-nova;
+    font: normal normal bold 17px/25px var(--font-style);
     letter-spacing: 0px;
     color: $textgrey;
 }
@@ -339,7 +341,7 @@
 
 .lableStyle {
     text-align: left;
-    font: normal normal 500 15px/17px proxima-nova;
+    font: normal normal 500 15px/17px var(--font-style);
     letter-spacing: 0px;
     color: $textgrey;
     // text-transform: capitalize;
@@ -350,7 +352,7 @@
 
 .lableStylePOD {
     text-align: left;
-    font: normal normal 500 $tabledatatext1 proxima-nova;
+    font: normal normal 500 $tabledatatext1 var(--font-style);
     letter-spacing: 0px;
     color: $textgrey;
     text-transform: capitalize;
@@ -359,7 +361,7 @@
 
 .lableRadioStyle {
     text-align: left;
-    font: normal normal 500 $navbartext proxima-nova;
+    font: normal normal 500 $navbartext var(--font-style);
     letter-spacing: 0px;
     color: $textgrey;
     // text-transform: capitalize;
@@ -369,7 +371,7 @@
 
 .lableRadioSerialNumberStyle {
     text-align: left;
-    font: normal normal 500 $navbartext proxima-nova;
+    font: normal normal 500 $navbartext var(--font-style);
     color: $textgrey;
     margin-top: 5px;
 }
@@ -385,7 +387,7 @@
 
 .lableReadOnlyStyle {
     text-align: left;
-    font: normal normal 500 17px/20px proxima-nova;
+    font: normal normal 500 17px/20px var(--font-style);
     letter-spacing: 0px;
     color: $textgrey;
     // text-transform: capitalize;
@@ -396,7 +398,7 @@
 
 .lableReadOnlyStyleInPOD {
     text-align: left;
-    font: normal normal normal 14px/20px proxima-nova;
+    font: normal normal normal 14px/20px var(--font-style);
     letter-spacing: 0px;
     color: $textgrey;
     // text-transform: capitalize;
@@ -427,9 +429,9 @@
 
 .viewMyInfoText {
     text-align: left;
-    font: normal normal bold $tabledatatext1 proxima-nova;
+    font: normal normal bold $tabledatatext1 var(--font-style);
     letter-spacing: 0px;
-    color: $primarycolor;
+    color: var(--primary-color);
 }
 
 .disabledButtonLook {
@@ -452,7 +454,7 @@
 .RadiobuttonYesStyle {
     color: var(--unnamed-color-ff6562);
     text-align: center;
-    font: italic normal bold 24px/35px proxima-nova;
+    font: italic normal bold 24px/35px var(--font-style);
     letter-spacing: 0px;
     color: #FF6562;
     opacity: 1;
@@ -460,7 +462,7 @@
 
 .RadiobuttonNoStyle {
     text-align: center;
-    font: italic normal bold 24px/35px proxima-nova;
+    font: italic normal bold 24px/35px var(--font-style);
     letter-spacing: 0px;
     color: #52575D;
     opacity: 1;

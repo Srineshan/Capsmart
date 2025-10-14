@@ -6,19 +6,21 @@
     box-shadow: 0px 5px 20px #52575D4D;
     border-radius: 12px;
     border: 0.4000000059604645px solid #e5e6e6;
+
     @media (max-width: 768px) {
-        background: $primarycolor;
-        border: $primarycolor;
+        background: var(--primary-color);
+        border: var(--primary-color);
     }
-} 
+}
 
 .forAssistance {
     text-align: left;
-    font: normal normal normal 18px/23px proxima-nova;
+    font: normal normal normal 18px/23px var(--font-style);
     letter-spacing: 0px;
     color: $textgrey;
     text-transform: capitalize;
     opacity: 1;
+
     @media (max-width: 768px) {
         color: #FFF;
     }
@@ -26,9 +28,10 @@
 
 .nameStyle {
     text-align: left;
-    font: normal normal bold 17px/22px proxima-nova;
+    font: normal normal bold 17px/22px var(--font-style);
     color: $textgrey;
     text-transform: capitalize;
+
     @media (max-width: 768px) {
         color: #FFF;
     }
@@ -36,8 +39,9 @@
 
 .contactStyle {
     text-align: left;
-    font: normal normal normal 14px/19px proxima-nova;
+    font: normal normal normal 14px/19px var(--font-style);
     color: $textgrey;
+
     @media (max-width: 768px) {
         color: #FFF;
     }
@@ -45,10 +49,11 @@
 
 .designationStyle {
     text-align: left;
-    font: normal normal normal 14px/19px proxima-nova;
+    font: normal normal normal 14px/19px var(--font-style);
     color: $textgrey;
     text-transform: capitalize;
     opacity: 0.6;
+
     @media (max-width: 768px) {
         color: #FFF;
     }
@@ -75,6 +80,7 @@
     height: 19px;
     width: 16px;
     object-fit: contain;
+
     @media (max-width: 768px) {
         background: #FFF;
     }
@@ -88,10 +94,11 @@
 
 .aiAssistanceText {
     text-align: left;
-    font: normal normal normal 10px/20px proxima-nova;
+    font: normal normal normal 10px/20px var(--font-style);
     letter-spacing: 1.92px;
-    color: $primarycolor;
+    color: var(--primary-color);
     text-transform: uppercase;
+
     @media (max-width: 768px) {
         color: #FFF;
     }
@@ -99,10 +106,11 @@
 
 .chatWithStyle {
     text-align: left;
-    font: normal normal normal 17px/28px proxima-nova;
+    font: normal normal normal 17px/28px var(--font-style);
     letter-spacing: 0px;
     color: $textgrey;
     text-transform: capitalize;
+
     @media (max-width: 768px) {
         color: #FFF;
     }
@@ -114,12 +122,13 @@
 }
 
 .phoneIconBackground {
-    background: $primarycolor 0% 0% no-repeat padding-box;
+    background: var(--primary-color) 0% 0% no-repeat padding-box;
     box-shadow: 0px 5px 20px #52575D4D;
     height: 48px !important;
     width: 48px;
     border-radius: 50%;
     text-align: center;
+
     @media (max-width: 768px) {
         color: #FFF;
     }
@@ -146,11 +155,12 @@
 
 .doYouHaveAQuestionStyle {
     text-align: left;
-    font: normal normal normal 12px/24px proxima-nova;
+    font: normal normal normal 12px/24px var(--font-style);
     letter-spacing: 0px;
     color: $textgrey;
     text-transform: capitalize;
     opacity: 0.8;
+
     @media (max-width: 768px) {
         color: #FFF;
     }
@@ -165,7 +175,8 @@
 }
 
 .purpleText {
-    color: $primarycolor !important;
+    color: var(--primary-color) !important;
+
     @media (max-width: 768px) {
         color: #FFF !important;
     }

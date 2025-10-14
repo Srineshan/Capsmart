@@ -165,7 +165,7 @@ const ManageSignOff = () => {
             getAttestationList(signal);
         }
         return () => controller.abort();
-    }, [selectedOption, sortField, sortValue, loggedInUser]);
+    }, [selectedOption, sortField, sortValue, loggedInUser, limit, page, , selectedCombinations, selectedGroups, mdId, mdTitle, selectedAuthor, from, to, searchTerm]);
 
     // useEffect(() => {
     //     if (entityId !== "" && entityId !== undefined) {
@@ -317,11 +317,11 @@ const ManageSignOff = () => {
     const getAttestationList = async (signal) => {
         let url = '';
         if (selectedOption === 'completed') {
-            url = `medical-directive-service/medicalDirectives/signOff?tab=level-3&role=${sessionStorage.getItem('workModeType')}&assignedUserIds=${loggedInUser}&status=${selectedOption}&noOfDays=${30}&sortBy=${sortValue}&sortByField=${sortField}`
+            url = `medical-directive-service/medicalDirectives/signOff?tab=level-3&role=${sessionStorage.getItem('workModeType')}&assignedUserIds=${loggedInUser}&status=${selectedOption}&noOfDays=${30}&sortBy=${sortValue}&sortByField=${sortField}&offset=${page - 1}&limit=${limit}&isPaginationRequired=${isPaginationRequired}`
         } else {
-            url = `medical-directive-service/medicalDirectives/signOff?tab=level-3&role=${sessionStorage.getItem('workModeType')}&assignedUserIds=${loggedInUser}&status=${selectedOption}&sortBy=${sortValue}&sortByField=${sortField}`
+            url = `medical-directive-service/medicalDirectives/signOff?tab=level-3&role=${sessionStorage.getItem('workModeType')}&assignedUserIds=${loggedInUser}&status=${selectedOption}&sortBy=${sortValue}&sortByField=${sortField}&offset=${page - 1}&limit=${limit}&isPaginationRequired=${isPaginationRequired}`
         }
-        const response = await GET(url, { signal });
+        const response = await POST(url, advancedSearch, { signal });
         console.log(response.data);
         setAttestationList(response?.data?.medicalDirectivesWithWorkflow)
     }
@@ -409,7 +409,7 @@ const ManageSignOff = () => {
         "MD ID",
         "Type",
         "Sign Off Due Date",
-        "Last Updated",
+        "Last Modified",
         ""
     ];
     const attestedHeaderValues = [
@@ -433,7 +433,7 @@ const ManageSignOff = () => {
         true,
         true,
         false,
-        false,
+        true,
     ];
 
     const tableHeaderValues = selectedOption === "pending" ? reviewAndAttestHeaderValues : attestedHeaderValues

@@ -2,7 +2,7 @@
 
 .heading {
   text-align: left;
-  font: normal normal 600 22px/20px proxima-nova;
+  font: normal normal 600 22px/20px var(--font-style);
   letter-spacing: 0px;
   color: #171A1A;
   text-transform: capitalize;
@@ -83,7 +83,7 @@
 
 .date {
   text-align: left;
-  font: italic normal normal 14px proxima-nova;
+  font: italic normal normal 14px var(--font-style);
   letter-spacing: 0px;
   color: #171338;
   opacity: 0.5;
@@ -100,7 +100,7 @@
 .notesBorderStyle {
   // border: 0.4px solid var(---7165e3);
   background: #FFFFFF 0% 0% no-repeat padding-box;
-  // border: 0.4000000059604645px solid $primarycolor !important;
+  // border: 0.4000000059604645px solid var(--primary-color) !important;
   border-radius: 4px;
   opacity: 1;
   width: 100%;
@@ -110,7 +110,7 @@
 .commentsNotesHeadingFontStyle {
 
   text-align: left;
-  font: normal normal bold 14px/30px proxima-nova;
+  font: normal normal bold 14px/30px var(--font-style);
   letter-spacing: 0px;
   color: #737575;
   opacity: 1;
@@ -118,7 +118,7 @@
 
 .commentsNotesFontStyle {
   text-align: left;
-  font: normal normal medium 18px/25px proxima-nova;
+  font: normal normal medium 18px/25px var(--font-style);
   letter-spacing: 0px;
   color: #52575D;
   opacity: 0.7;
@@ -127,7 +127,7 @@
 }
 
 .reviewButtonStyle {
-  background: $primarycolor 0% 0% no-repeat padding-box;
+  background: var(--primary-color) 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 6px #00000029;
   border-radius: 8px;
   opacity: 1;
@@ -139,7 +139,7 @@
 
 .reviewButton {
   text-align: center;
-  font: normal normal bold 18px/30px proxima-nova;
+  font: normal normal bold 18px/30px var(--font-style);
   letter-spacing: 0px;
   color: #FFFFFF;
   text-transform: uppercase;
@@ -211,7 +211,7 @@
 
 .lableStyle {
   text-align: left;
-  font: normal normal normal 15px/17px proxima-nova;
+  font: normal normal normal 15px/17px var(--font-style);
   letter-spacing: 0px;
   color: $textgrey;
   // text-transform: capitalize;

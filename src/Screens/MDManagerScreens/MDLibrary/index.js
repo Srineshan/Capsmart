@@ -10,6 +10,7 @@ import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
 import SearchIcon from "@mui/icons-material/Search";
 import CloseIcon from "@mui/icons-material/Close";
+import LinkIcon from '@mui/icons-material/Link';
 import { useReactToPrint } from "react-to-print";
 import CommonMultiSelectField from "../../../Components/CommonFields/CommonMultiSelectField";
 import CommonSelectField from '../../../Components/CommonFields/CommonSelectField';
@@ -31,7 +32,7 @@ const MDLibrary = () => {
     const navigate = useNavigate();
     const PDFRef = createRef();
     const containerRef = useRef(null);
-    const { entityId, departmentId } = useParams()
+    const { entityId, departmentId, selectedMDId } = useParams()
     const scrollAmount = 200;
     const [showList, setShowList] = useState(false);
     const [showMD, setShowMD] = useState(false);
@@ -72,6 +73,14 @@ const MDLibrary = () => {
         setCanScrollLeft(el.scrollLeft > 0);
         setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth);
     };
+
+    useEffect(() => {
+        if (selectedMDId) {
+            setShowList(true);
+            setShowMD(true);
+            setSelectedMD(dashboardData?.filter(data => data?.id === selectedMDId)?.[0]);
+        }
+    }, [selectedMDId, dashboardData])
 
     // useEffect(() => {
     //     if (window.AdobeDC && selectedMD?.file?.fileURL) {
@@ -135,7 +144,7 @@ const MDLibrary = () => {
         getDashboard(signal);
 
         return () => controller.abort();
-    }, [limit, page, searchTermForTable, creationType, departmentId, mdId, mdTitle, selectedGroups, selectedAuthor, from, to, selectedDepartmentSpecialities]);
+    }, [limit, page, searchTermForTable, creationType, departmentId, mdId, mdTitle, selectedGroups, selectedAuthor, from, to, selectedDepartmentSpecialities, selectedMDId]);
 
     const handlePrint = useReactToPrint({
         content: reactToPrintContent,
@@ -217,8 +226,9 @@ const MDLibrary = () => {
     }
 
     const handleShowMd = (data) => {
-        setShowMD(true);
-        setSelectedMD(data);
+        // setShowMD(true);
+        // setSelectedMD(data);
+        navigate(`${window.location.pathname}/${data?.id}`)
     }
 
     const handleChange = (e) => {
@@ -373,7 +383,26 @@ const MDLibrary = () => {
         setTo(null);
     }
 
+    const handleMDClose = () => {
+        setShowMD(false);
+        const newPath = window.location.pathname.split("/").slice(0, -1).join("/");
+        navigate(newPath);
+    }
 
+    const handleDept = (id) => {
+        const newPath = window.location.pathname.split("/").slice(0, -1).join("/");
+        navigate(`${newPath}/${id}`);
+    }
+
+    const handleCopy = () => {
+        navigator.clipboard.writeText(window.location.href)
+            .then(() => {
+                alert("URL copied to clipboard!");
+            })
+            .catch((err) => {
+                console.error("Failed to copy: ", err);
+            });
+    };
     const tableHeaderValues = [
         "Title",
         "MD ID",
@@ -403,8 +432,11 @@ const MDLibrary = () => {
                             className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft20}`}
                             onClick={closeClick}
                         /> */}
+                    <Tooltip title={"Click to Copy Link"} arrow>
+                        <LinkIcon sx={{ fontSize: 40, color: '#06617A', cursor: 'pointer', marginRight: '20px' }} onClick={() => { handleCopy() }} />
+                    </Tooltip>
                     <Tooltip title={"Click to Close"} arrow>
-                        <CloseIcon sx={{ fontSize: 40, color: '#06617A', cursor: 'pointer' }} onClick={() => { showMD ? setShowMD(false) : setShowList(false) }} />
+                        <CloseIcon sx={{ fontSize: 40, color: '#06617A', cursor: 'pointer' }} onClick={() => { showMD ? handleMDClose() : setShowList(false) }} />
                     </Tooltip>
                 </div>
             </div>
@@ -535,7 +567,7 @@ const MDLibrary = () => {
                             <div className={style.allDeptText}>All Departments</div>
                             {departmentList?.map((data, index) => (
                                 <div>
-                                    <div className={`${style.deptFilterCard} ${(data?.id === (selectedDepartmentSpecialities !== '' ? selectedDepartmentSpecialities?.split('#')?.[0] : departmentId)) ? style.deptFilterActiveCard : ''} ${style.marginTop10} ${style.displayInRow} ${style.cursorPointer}`} key={index} onClick={() => setSelectedDepartmentSpecialities(data?.id)}>
+                                    <div className={`${style.deptFilterCard} ${(data?.id === (selectedDepartmentSpecialities !== '' ? selectedDepartmentSpecialities?.split('#')?.[0] : departmentId)) ? style.deptFilterActiveCard : ''} ${style.marginTop10} ${style.displayInRow} ${style.cursorPointer}`} key={index} onClick={() => { setSelectedDepartmentSpecialities(data?.id); handleDept(data?.id) }}>
                                         <div className={style.verticalAlignCenter}>
                                             {data?.serviceAreas?.length !== 0 && (
                                                 <img src={(data?.id === (selectedDepartmentSpecialities !== '' ? selectedDepartmentSpecialities?.split('#')?.[0] : departmentId)) ? OpenedFolder : ClosedFolder} alt="" className={style.folderStyle} />
@@ -545,7 +577,7 @@ const MDLibrary = () => {
                                     </div>
                                     {(data?.id === (selectedDepartmentSpecialities !== '' ? selectedDepartmentSpecialities?.split('#')?.[0] : departmentId)) &&
                                         data?.serviceAreas?.map((innerData, innerIndex) => (
-                                            <div className={`${style.serviceAreaFilterCard} ${style.marginLeft20} ${(`${data?.id}#${innerData?.id}` === selectedDepartmentSpecialities) ? style.deptFilterActiveCard : ''} ${style.marginTop10} ${style.displayInRow} ${style.cursorPointer}`} key={innerIndex} onClick={() => setSelectedDepartmentSpecialities(`${data?.id}#${innerData?.id}`)}>
+                                            <div className={`${style.serviceAreaFilterCard} ${style.marginLeft20} ${(`${data?.id}#${innerData?.id}` === selectedDepartmentSpecialities) ? style.deptFilterActiveCard : ''} ${style.marginTop10} ${style.displayInRow} ${style.cursorPointer}`} key={innerIndex} onClick={() => { setSelectedDepartmentSpecialities(`${data?.id}#${innerData?.id}`); handleDept(data?.id) }}>
                                                 <div>{innerData?.name}</div>
                                             </div>
                                         ))}

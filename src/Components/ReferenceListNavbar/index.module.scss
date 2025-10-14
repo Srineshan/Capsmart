@@ -26,7 +26,7 @@
 .menuStyle {
     margin-top: 30px;
     padding: 0 15px;
-    font: normal normal bold 14px/20px proxima-nova;
+    font: normal normal bold 14px/20px var(--font-style);
     letter-spacing: 1.5px;
     color: #646D82;
 }
@@ -34,16 +34,16 @@
 .logoutStyle {
     margin: 25px 0 0 30px;
     padding: 0 15px;
-    font: normal normal bold 15px/25px proxima-nova;
+    font: normal normal bold 15px/25px var(--font-style);
     letter-spacing: 1.5px;
     color: #646D82;
 }
 
 .activeMenuColor {
-    color: $primarycolor;
-    border-bottom: 5px solid $primarycolor;
+    color: var(--primary-color);
+    border-bottom: 5px solid var(--primary-color);
     padding-bottom: 3px;
-    font: normal normal 600 15px/25px proxima-nova;
+    font: normal normal 600 15px/25px var(--font-style);
     margin-top: 27px;
 }
 
@@ -95,7 +95,7 @@
 
 .options:hover {
     background: #EBF2F7 0% 0% no-repeat padding-box;
-    color: $primarycolor;
+    color: var(--primary-color);
 }
 
 .noFontStyle {
