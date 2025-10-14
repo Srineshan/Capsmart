@@ -553,7 +553,7 @@ const ManageAttestationGroups = () => {
                                 </div>
                                 <div className={`${style.searchFieldCard} ${style.marginTop20}`}>
                                     <div className={style.advancedSearchText}>Advanced P&P Search Criteria</div>
-                                    <div className={style.marginTop10}>
+                                    {/* <div className={style.marginTop10}>
                                         <div className={style.labelStyle}>Policy & Procedure ID</div>
                                         <CommonInputField
                                             value={mdId}
@@ -604,7 +604,7 @@ const ManageAttestationGroups = () => {
                                             required={true}
                                             label={'Department / Division'}
                                         />
-                                    </div>
+                                    </div> */}
                                     <div className={style.marginTop10}>
                                         <div className={style.labelStyle}>Group Type</div>
                                         <CommonMultiSelectField
@@ -621,7 +621,7 @@ const ManageAttestationGroups = () => {
                                             label={'Attestation Groups'}
                                         />
                                     </div>
-                                    <div className={style.marginTop10}>
+                                    {/* <div className={style.marginTop10}>
                                         <CommonSelectField
                                             value={selectedAuthor}
                                             onChange={(e) => setSelectedAuthor(e.target.value)}
@@ -701,7 +701,7 @@ const ManageAttestationGroups = () => {
                                                 )}
                                             />
                                         </div>
-                                    </div>
+                                    </div> */}
                                 </div>
                             </div>
                         </SideBar>

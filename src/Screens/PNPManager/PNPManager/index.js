@@ -391,11 +391,11 @@ const PNPManager = () => {
               <Tooltip title={"Add New P&P"} arrow>
                 <div
                   className={`${style.addStyle} ${style.displayInRow} ${style.applicationButton} ${style.marginTop10} ${style.alignCenter} ${style.cursorPointer}`}
+                  onClick={() => { setShowAddNewMedicalDirectives(true) }}
                 >
                   <div className={`${style.displayInRow} ${style.alignCenter}`}>
                     <AddCircleOutlineIcon
                       sx={{ fontSize: 20, color: "white" }}
-                      onClick={() => { setShowAddNewMedicalDirectives(true) }}
                     />
 
                     <div
