@@ -748,6 +748,7 @@ const ActiveStaffList = ({
       data: "View",
       requiredValue: "boolean",
       onClick: onClickViewAndVerifyFunction,
+      conditionToShow: `data?.currentApplication?.id`
     },
     // { 'data': 'Send for Committee Review', 'requiredValue': 'boolean', "onClick": '' },
     // { 'data': 'Send Reminder for Required Documents', 'requiredValue': 'boolean', "onClick": '' },
@@ -775,6 +776,7 @@ const ActiveStaffList = ({
       data: "View",
       requiredValue: "boolean",
       onClick: onClickViewAndVerifyFunction,
+      conditionToShow: `data?.currentApplication?.id`
     },
     // { 'data': 'Send for Committee Review', 'requiredValue': 'boolean', "onClick": '' },
     // { 'data': 'Send Reminder for Required Documents', 'requiredValue': 'boolean', "onClick": '' },
