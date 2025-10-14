@@ -62,7 +62,7 @@ const MDManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue
             setPreviewUrl(mdValue?.file ? mdValue?.file?.fileURL : '')
             setMdTitle(mdValue?.title)
             setMdId(mdValue?.mdID)
-            setSelectedDate(mdValue?.publishedDate)
+            setSelectedDate(mdValue?.initialPublishedDate)
             setMdDescription(mdValue?.description ? mdValue?.description : '')
             setReviewFrequency(mdValue?.reviewFrequency?.value === 1 ? 'EVERY_1_YEAR' : mdValue?.reviewFrequency?.value === 2 ? 'EVERY_2_YEARS' : mdValue?.reviewFrequency?.value === 3 ? 'EVERY_3_YEARS' : '');
             setSelectedStaff(mdValue?.authors ? mdValue?.authors?.map(data => data.id)?.[0] : '')

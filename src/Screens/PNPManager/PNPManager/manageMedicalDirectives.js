@@ -730,8 +730,8 @@ const ManagePNP = ({ getSelectedOption, setStep1, setStep2, setStep3, setStep4, 
     const getRevisionList = async () => {
         setIsLoading(true)
         let url = sessionStorage.getItem('workModeType') === "P&P Librarian" ?
-            `policy-and-procedure-management-service/policyAndProcedures/signOff?tab=${selectedSignOffOption}&role=${sessionStorage.getItem('workModeType')}` :
-            `policy-and-procedure-management-service/policyAndProcedures/signOff?tab=${selectedSignOffOption}&role=${sessionStorage.getItem('workModeType')}&assignedUserIds=${loggedInUser?.id}`
+            `policy-and-procedure-management-service/policyAndProcedures/signOff?tab=${selectedSignOffOption}&role=${sessionStorage.getItem('workModeType')}&offset=${page - 1}&limit=${limit}&isPaginationRequired=${isPaginationRequired}` :
+            `policy-and-procedure-management-service/policyAndProcedures/signOff?tab=${selectedSignOffOption}&role=${sessionStorage.getItem('workModeType')}&assignedUserIds=${loggedInUser?.id}&offset=${page - 1}&limit=${limit}&isPaginationRequired=${isPaginationRequired}`
         const response = await POST(url, {});
         console.log(response.data?.policyAndProceduresWithWorkflow);
         setRevisionList(response?.data?.policyAndProceduresWithWorkflow)

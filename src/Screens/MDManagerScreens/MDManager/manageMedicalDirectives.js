@@ -736,8 +736,8 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setStep2, setSte
     const getRevisionList = async () => {
         setIsLoading(true)
         let url = sessionStorage.getItem('workModeType') === "MD Librarian" ?
-            `medical-directive-service/medicalDirectives/signOff?tab=${selectedSignOffOption}&role=${sessionStorage.getItem('workModeType')}` :
-            `medical-directive-service/medicalDirectives/signOff?tab=${selectedSignOffOption}&role=${sessionStorage.getItem('workModeType')}&assignedUserIds=${loggedInUser?.id}`
+            `medical-directive-service/medicalDirectives/signOff?tab=${selectedSignOffOption}&role=${sessionStorage.getItem('workModeType')}&offset=${page - 1}&limit=${limit}&isPaginationRequired=${isPaginationRequired}` :
+            `medical-directive-service/medicalDirectives/signOff?tab=${selectedSignOffOption}&role=${sessionStorage.getItem('workModeType')}&assignedUserIds=${loggedInUser?.id}&offset=${page - 1}&limit=${limit}&isPaginationRequired=${isPaginationRequired}`
         const response = await POST(url, {});
         console.log(response.data?.medicalDirectivesWithWorkflow);
         setRevisionList(response?.data?.medicalDirectivesWithWorkflow)

@@ -292,7 +292,7 @@ const ManageMDAcknowledgement = () => {
                                                     size="small"
                                                 />
                                             }
-                                            label={'I certify that I have read the Medical Directive assigned to me and Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et'}
+                                            label={'I hereby confirm that by signing, I agree to the delegation and implementation of the Medical Directives and Delegated Acts used within the Cambridge Memorial Hospital.'}
                                             componentsProps={{ typography: { variant: "subtitle2" } }}
                                         />
                                         {approvalStatus === "APPROVED" && (

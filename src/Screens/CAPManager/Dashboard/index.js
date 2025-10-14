@@ -30,12 +30,7 @@ const Dashboard = () => {
     const [funnelSeriesPercentage, setFunnelSeriesPercentage] = useState([])
     const [stackedSeries, setStackedSeries] = useState([]);
     const [stackedCategories, setStackedCategories] = useState([]);
-    const [barChartSeries, setBarChartSeries] = useState([
-        {
-            name: "Completed",
-            data: [1, 2, 4, 6, 10, 15, 20, 22, 24, 25, 26, 27, 28, 29, 30, 31, 33, 35]
-        }
-    ]
+    const [barChartSeries, setBarChartSeries] = useState([]
     );
     const [barChartCategories, setBarChartCategories] = useState(['']);
     const mapping = {
@@ -99,7 +94,7 @@ const Dashboard = () => {
         let tempStackedBar = Object?.keys(dashboard?.reviewAndVerificationStats || {});
 
         tempStackedBar?.forEach(data => {
-            const roleData = dashboard?.reviewAndVerificationStats[data];
+            const roleData = dashboard?.reviewAndVerificationStats[data]?.countByStatus;
 
             Object?.entries(mapping).forEach(([key, label]) => {
                 const series = transformed.find(s => s.name === label);
@@ -113,6 +108,11 @@ const Dashboard = () => {
         console.log(tempStackedBar, transformed)
         setStackedSeries(transformed)
         setStackedCategories(categories)
+        let barTemp = {
+            name: "Completed",
+            data: dashboard?.workingDaysPerSubmittedApplications?.workingDaysPerSubmittedApplication?.map(data => data?.workingDays)
+        }
+        setBarChartSeries([barTemp])
         setIsLoading(false);
     }
 
@@ -130,31 +130,31 @@ const Dashboard = () => {
 
     const getMSOReviewSeries = () => {
         if (applicationDashboard) {
-            return [applicationDashboard?.reviewAndVerificationStats?.staffManager?.completed?.count || 0, applicationDashboard?.reviewAndVerificationStats?.staffManager?.rejected?.count || 0, applicationDashboard?.reviewAndVerificationStats?.staffManager?.notYetStarted?.count || 0, applicationDashboard?.reviewAndVerificationStats?.staffManager?.inProgress?.count || 0, applicationDashboard?.reviewAndVerificationStats?.staffManager?.pastDue?.count || 0]
+            return [applicationDashboard?.reviewAndVerificationStats?.staffManager?.countByStatus?.completed?.count || 0, applicationDashboard?.reviewAndVerificationStats?.staffManager?.countByStatus?.rejected?.count || 0, applicationDashboard?.reviewAndVerificationStats?.staffManager?.countByStatus?.notYetStarted?.count || 0, applicationDashboard?.reviewAndVerificationStats?.staffManager?.countByStatus?.inProgress?.count || 0, applicationDashboard?.reviewAndVerificationStats?.staffManager?.countByStatus?.pastDue?.count || 0]
         } else return []
     }
 
     const getDeptHeadReviewSeries = () => {
         if (applicationDashboard) {
-            return [applicationDashboard?.reviewAndVerificationStats?.departmentHead?.completed?.count || 0, applicationDashboard?.reviewAndVerificationStats?.departmentHead?.rejected?.count || 0, applicationDashboard?.reviewAndVerificationStats?.departmentHead?.notYetStarted?.count || 0, applicationDashboard?.reviewAndVerificationStats?.departmentHead?.inProgress?.count || 0, applicationDashboard?.reviewAndVerificationStats?.departmentHead?.pastDue?.count || 0]
+            return [applicationDashboard?.reviewAndVerificationStats?.departmentHead?.countByStatus?.completed?.count || 0, applicationDashboard?.reviewAndVerificationStats?.departmentHead?.countByStatus?.rejected?.count || 0, applicationDashboard?.reviewAndVerificationStats?.departmentHead?.countByStatus?.notYetStarted?.count || 0, applicationDashboard?.reviewAndVerificationStats?.departmentHead?.countByStatus?.inProgress?.count || 0, applicationDashboard?.reviewAndVerificationStats?.departmentHead?.countByStatus?.pastDue?.count || 0]
         } else return []
     }
 
     const getCCReviewSeries = () => {
         if (applicationDashboard) {
-            return [applicationDashboard?.reviewAndVerificationStats?.credentialingCommittee?.completed?.count || 0, applicationDashboard?.reviewAndVerificationStats?.credentialingCommittee?.rejected?.count || 0, applicationDashboard?.reviewAndVerificationStats?.credentialingCommittee?.notYetStarted?.count || 0, applicationDashboard?.reviewAndVerificationStats?.credentialingCommittee?.inProgress?.count || 0, applicationDashboard?.reviewAndVerificationStats?.credentialingCommittee?.pastDue?.count || 0]
+            return [applicationDashboard?.reviewAndVerificationStats?.credentialingCommittee?.countByStatus?.completed?.count || 0, applicationDashboard?.reviewAndVerificationStats?.credentialingCommittee?.countByStatus?.rejected?.count || 0, applicationDashboard?.reviewAndVerificationStats?.credentialingCommittee?.countByStatus?.notYetStarted?.count || 0, applicationDashboard?.reviewAndVerificationStats?.credentialingCommittee?.countByStatus?.inProgress?.count || 0, applicationDashboard?.reviewAndVerificationStats?.credentialingCommittee?.countByStatus?.pastDue?.count || 0]
         } else return []
     }
 
     const getMACReviewSeries = () => {
         if (applicationDashboard) {
-            return [applicationDashboard?.reviewAndVerificationStats?.advisoryCommittee?.completed?.count || 0, applicationDashboard?.reviewAndVerificationStats?.advisoryCommittee?.rejected?.count || 0, applicationDashboard?.reviewAndVerificationStats?.advisoryCommittee?.notYetStarted?.count || 0, applicationDashboard?.reviewAndVerificationStats?.advisoryCommittee?.inProgress?.count || 0, applicationDashboard?.reviewAndVerificationStats?.advisoryCommittee?.pastDue?.count || 0]
+            return [applicationDashboard?.reviewAndVerificationStats?.advisoryCommittee?.countByStatus?.completed?.count || 0, applicationDashboard?.reviewAndVerificationStats?.advisoryCommittee?.countByStatus?.rejected?.count || 0, applicationDashboard?.reviewAndVerificationStats?.advisoryCommittee?.countByStatus?.notYetStarted?.count || 0, applicationDashboard?.reviewAndVerificationStats?.advisoryCommittee?.countByStatus?.inProgress?.count || 0, applicationDashboard?.reviewAndVerificationStats?.advisoryCommittee?.countByStatus?.pastDue?.count || 0]
         } else return []
     }
 
     const getBODReviewSeries = () => {
         if (applicationDashboard) {
-            return [applicationDashboard?.reviewAndVerificationStats?.board?.completed?.count || 0, applicationDashboard?.reviewAndVerificationStats?.board?.rejected?.count || 0, applicationDashboard?.reviewAndVerificationStats?.board?.notYetStarted?.count || 0, applicationDashboard?.reviewAndVerificationStats?.board?.inProgress?.count || 0, applicationDashboard?.reviewAndVerificationStats?.board?.pastDue?.count || 0]
+            return [applicationDashboard?.reviewAndVerificationStats?.board?.countByStatus?.completed?.count || 0, applicationDashboard?.reviewAndVerificationStats?.board?.countByStatus?.rejected?.count || 0, applicationDashboard?.reviewAndVerificationStats?.board?.countByStatus?.notYetStarted?.count || 0, applicationDashboard?.reviewAndVerificationStats?.board?.countByStatus?.inProgress?.count || 0, applicationDashboard?.reviewAndVerificationStats?.board?.countByStatus?.pastDue?.count || 0]
         } else return []
     }
 
@@ -297,7 +297,7 @@ const Dashboard = () => {
                                 <div className={style.fullHeight}>
                                     <div className={`${style.chartHeader} ${style.spaceBetween}`}>
                                         <div className={style.chartHeaderText}>Working Days Per Submitted Application</div>
-                                        <div className={style.chartHeaderText}>Average days: <span className={style.chartHeaderRightText}>20.5</span></div>
+                                        <div className={style.chartHeaderText}>Average days: <span className={style.chartHeaderRightText}>{applicationDashboard?.workingDaysPerSubmittedApplications?.averageWorkingDays}</span></div>
                                     </div>
                                     <div className={`${style.chartBody} ${style.fullHeight}`}>
                                         <ApexBarChart series={barChartSeries} categories={barChartCategories} reportingPeriod={``} yAxisTitle="DAYS" xAxisTitle="Submitted Applications" fullWidth={true} />
@@ -305,7 +305,7 @@ const Dashboard = () => {
                                 </div>
                             </div>
 
-                            <div className={style.marginTop20}>
+                            {/* <div className={style.marginTop20}>
                                 <div className={style.chartHeader}>
                                     <div className={style.chartHeaderText}>Time Spent to Complete the Reappointment Application by Applicants</div>
                                 </div>
@@ -331,7 +331,7 @@ const Dashboard = () => {
                                         <SpeedometerChart value={12} minValue={0} maxValue={20} width={200} startColor="#9BDD6E" endColor="#73D035" segments={10} labelFontSize={'0px'} ringWidth={10} needleColor={'#2D2D2D99'} textColor={"#171A1A"} valueTextFontSize={'0px'} />
                                     </div>
                                 </div>
-                            </div>
+                            </div> */}
 
                             <div className={style.marginTop20}>
                                 <div className={style.chartHeader}>
@@ -366,7 +366,7 @@ const Dashboard = () => {
                                                     marginTop: "10px"
                                                 }}
                                             >
-                                                {3}
+                                                {applicationDashboard?.reviewAndVerificationStats?.staffManager?.averageWorkingDays || 0}
                                             </span>
                                         </div>
                                         <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Days</div>
@@ -376,12 +376,12 @@ const Dashboard = () => {
                                         <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Review Status</div>
                                         <DonutChart height={200} legendPosition={'right'} series={getMSOReviewSeries()} labels={getReviewLabels()} colors={['#73D035', '#FF6562', '#3F8ADF', '#FFC100', '#FF851C']} size={'0%'} />
                                     </div>
-                                    <div className={style.verticalDivider}></div>
+                                    {/* <div className={style.verticalDivider}></div>
                                     <div>
                                         <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Actual Time Spent on Application</div>
                                         <SpeedometerChart value={16} minValue={0} maxValue={20} width={200} startColor="#9BDD6E" endColor="#73D035" segments={10} labelFontSize={'0px'} ringWidth={10} needleColor={'#2D2D2D99'} textColor={"#171A1A"} valueTextFontSize={'0px'} />
                                         <div className={`${style.chartBodyCount} ${style.textAlignCenter}`}>16 Mins</div>
-                                    </div>
+                                    </div> */}
                                 </div>
                             </div>
 
@@ -418,7 +418,7 @@ const Dashboard = () => {
                                                     marginTop: "10px"
                                                 }}
                                             >
-                                                {3}
+                                                {applicationDashboard?.reviewAndVerificationStats?.departmentHead?.averageWorkingDays || 0}
                                             </span>
                                         </div>
                                         <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Days</div>
@@ -428,12 +428,12 @@ const Dashboard = () => {
                                         <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Review Status</div>
                                         <DonutChart height={200} legendPosition={'right'} series={getDeptHeadReviewSeries()} labels={getReviewLabels()} colors={['#73D035', '#FF6562', '#3F8ADF', '#FFC100', '#FF851C']} size={'0%'} />
                                     </div>
-                                    <div className={style.verticalDivider}></div>
+                                    {/* <div className={style.verticalDivider}></div>
                                     <div>
                                         <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Actual Time Spent on Application</div>
                                         <SpeedometerChart value={16} minValue={0} maxValue={20} width={200} startColor="#9BDD6E" endColor="#73D035" segments={10} labelFontSize={'0px'} ringWidth={10} needleColor={'#2D2D2D99'} textColor={"#171A1A"} valueTextFontSize={'0px'} />
                                         <div className={`${style.chartBodyCount} ${style.textAlignCenter}`}>16 Mins</div>
-                                    </div>
+                                    </div> */}
                                 </div>
                             </div>
 
@@ -470,7 +470,7 @@ const Dashboard = () => {
                                                     marginTop: "10px"
                                                 }}
                                             >
-                                                {3}
+                                                {applicationDashboard?.reviewAndVerificationStats?.credentialingCommittee?.averageWorkingDays || 0}
                                             </span>
                                         </div>
                                         <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Days</div>
@@ -480,12 +480,12 @@ const Dashboard = () => {
                                         <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Review Status</div>
                                         <DonutChart height={200} legendPosition={'right'} series={getCCReviewSeries()} labels={getReviewLabels()} colors={['#73D035', '#FF6562', '#3F8ADF', '#FFC100', '#FF851C']} size={'0%'} />
                                     </div>
-                                    <div className={style.verticalDivider}></div>
+                                    {/* <div className={style.verticalDivider}></div>
                                     <div>
                                         <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Actual Time Spent on Application</div>
                                         <SpeedometerChart value={16} minValue={0} maxValue={20} width={200} startColor="#9BDD6E" endColor="#73D035" segments={10} labelFontSize={'0px'} ringWidth={10} needleColor={'#2D2D2D99'} textColor={"#171A1A"} valueTextFontSize={'0px'} />
                                         <div className={`${style.chartBodyCount} ${style.textAlignCenter}`}>16 Mins</div>
-                                    </div>
+                                    </div> */}
                                 </div>
                             </div>
 
@@ -522,7 +522,7 @@ const Dashboard = () => {
                                                     marginTop: "10px"
                                                 }}
                                             >
-                                                {3}
+                                                {applicationDashboard?.reviewAndVerificationStats?.advisoryCommittee?.averageWorkingDays || 0}
                                             </span>
                                         </div>
                                         <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Days</div>
@@ -532,7 +532,7 @@ const Dashboard = () => {
                                         <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Review Status</div>
                                         <DonutChart height={200} legendPosition={'right'} series={getMACReviewSeries()} labels={getReviewLabels()} colors={['#73D035', '#FF6562', '#3F8ADF', '#FFC100', '#FF851C']} size={'0%'} />
                                     </div>
-                                    <div className={style.verticalDivider}></div>
+                                    {/* <div className={style.verticalDivider}></div> */}
 
                                 </div>
                             </div>
@@ -570,7 +570,7 @@ const Dashboard = () => {
                                                     marginTop: "10px"
                                                 }}
                                             >
-                                                {3}
+                                                {applicationDashboard?.reviewAndVerificationStats?.board?.averageWorkingDays || 0}
                                             </span>
                                         </div>
                                         <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Days</div>
@@ -580,7 +580,7 @@ const Dashboard = () => {
                                         <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Review Status</div>
                                         <DonutChart height={200} legendPosition={'right'} series={getBODReviewSeries()} labels={getReviewLabels()} colors={['#73D035', '#FF6562', '#3F8ADF', '#FFC100', '#FF851C']} size={'0%'} />
                                     </div>
-                                    <div className={style.verticalDivider}></div>
+                                    {/* <div className={style.verticalDivider}></div> */}
 
                                 </div>
                             </div>
@@ -639,7 +639,7 @@ const Dashboard = () => {
                                                     marginTop: "10px"
                                                 }}
                                             >
-                                                {3}
+                                                {applicationDashboard?.requestForClarificationStats?.averageWorkingDays || 0}
                                             </span>
                                         </div>
                                         <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Days</div>
@@ -713,7 +713,7 @@ const Dashboard = () => {
                                                     marginTop: "10px"
                                                 }}
                                             >
-                                                {12}
+                                                {applicationDashboard?.requestForDocumentStats?.averageWorkingDays || 0}
                                             </span>
                                         </div>
                                         <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Days</div>
