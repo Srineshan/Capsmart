@@ -73,12 +73,15 @@ const Navbar = () => {
   const [anchorElTools, setAnchorElTools] = useState(null);
   const [anchorElGuide, setAnchorElGuide] = useState(null);
   const [openPrivileged, setOpenPrivileged] = useState(null);
+  const [openDashboardOptions, setOpenDashboardOptions] = useState(null);
   const [anchorElSettings, setAnchorElSettings] = useState(null);
   const openTools = Boolean(anchorElTools);
   const openGuide = Boolean(anchorElGuide);
   const openStaff = Boolean(openPrivileged);
+  const openDashboard = Boolean(openDashboardOptions);
   const openSettings = Boolean(anchorElSettings);
   const popoverAnchorStaff = useRef(null);
+  const popoverAnchorDashboard = useRef(null);
   const popoverAnchorTools = useRef(null);
   const popoverAnchorGuide = useRef(null);
   const popoverAnchorSettings = useRef(null);
@@ -286,6 +289,10 @@ const Navbar = () => {
     setOpenPrivileged(event.currentTarget);
   };
 
+  const handleClickDashboard = (event) => {
+    setOpenDashboardOptions(event.currentTarget);
+  };
+
   const handleClickSettings = (event) => {
     setAnchorElSettings(event.currentTarget);
   };
@@ -300,6 +307,10 @@ const Navbar = () => {
 
   const handleCloseStaff = () => {
     setOpenPrivileged(null);
+  };
+
+  const handleCloseDashboard = () => {
+    setOpenDashboardOptions(null);
   };
 
   const handleCloseSettings = () => {
@@ -569,15 +580,62 @@ const Navbar = () => {
               >
                 <p>INACTIVE STAFF</p>
               </div>
-              <Link to={"/applications/dashboard"} className={style.noFontStyle}>
-                <div
-                  className={`${style.menuStyle} ${window.location.pathname.includes("/dashboard") &&
-                    style.activeMenuColor
-                    }`}
-                >
+              <div
+                ref={popoverAnchorDashboard}
+                onMouseEnter={(e) => handleClickDashboard(e)}
+                onMouseLeave={() => handleCloseDashboard()}
+                aria-owns={openDashboard ? "mouse-over-popover" : undefined}
+                aria-haspopup="true"
+              >
+                <div className={`${style.menuStyle} ${style?.cursorPointer} ${(window.location.pathname.includes("/locumDashboard") || window.location.pathname.includes("/dashboard")) &&
+                  style.activeMenuColor
+                  }`}>
                   <p>DASHBOARD</p>
                 </div>
-              </Link>
+                <Popover
+                  id={"mouse-over-popover"}
+                  open={openDashboard}
+                  anchorEl={popoverAnchorDashboard.current}
+                  onClose={handleCloseDashboard}
+                  anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "center",
+                  }}
+                  transformOrigin={{
+                    vertical: "top",
+                    horizontal: "center",
+                  }}
+                  classes={{
+                    paper: classes.popoverContent,
+                  }}
+                  PaperProps={{
+                    style: { width: "200px" },
+                    onMouseEnter: handleClickDashboard,
+                    onMouseLeave: handleCloseDashboard,
+                  }}
+                >
+                  <div className={style.helpCardStyle}>
+                    {/* {workModeType === "Department Head" || workModeType === "Credentialing Committee" ? ( */}
+                    <Link
+                      className={style.noFontStyle1}
+                      to={"/applications/dashboard"}
+                    >
+                      <div className={`${style.options1} ${style.cursorPointer} ${window.location.pathname.includes("/dashboard")
+                        }`}
+                      >
+                        Reappointment</div>
+                    </Link>
+
+                    {/* ) : ""} */}
+                    <Link
+                      className={style.noFontStyle1}
+                      to={"/applications/locumDashboard"}
+                    >
+                      <div className={`${style.options1} ${style.cursorPointer} ${window.location.pathname.includes("/locumDashboard")}`}>Locum</div>
+                    </Link>
+                  </div>
+                </Popover>
+              </div>
               <Link to={`https://lms.indocaribe.com/descope-login/?ssotoken=${cookie.get("authorization")}`} className={style.noFontStyle}>
                 <div
                   className={`${style.menuStyle} ${window.location.pathname.includes("/lms") &&
@@ -1005,6 +1063,15 @@ const Navbar = () => {
                   </div>
                 </Link>
               )}
+              <Link to={"/mdManager/dashboard"} className={style.noFontStyle}>
+                <div
+                  className={`${style.menuStyle} ${window.location.pathname.includes("/dashboard") &&
+                    style.activeMenuColor
+                    }`}
+                >
+                  <p>DASHBOARD</p>
+                </div>
+              </Link>
               <Link to={"/reports/medicalDirectives"} className={style.noFontStyle}>
                 <div
                   className={`${style.menuStyle} ${(window.location.pathname.includes("/reports") ||
