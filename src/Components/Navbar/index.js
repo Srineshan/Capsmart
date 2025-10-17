@@ -493,7 +493,7 @@ const Navbar = () => {
             )}
           </div>
 
-          {(sessionStorage.getItem('selectedApplication') === "CAP_MANAGER") ? (
+          {(sessionStorage.getItem('selectedApplication') === "CAP_MANAGER" || !sessionStorage.getItem('selectedApplication')) ? (
             <>
               {workModeType !== "Entity Sys Admin" && (
                 <Link to={"/applications"} onClick={() => sessionStorage.setItem('applicationCreationType', 'REAPPOINTMENT')} className={style.noFontStyle}>
