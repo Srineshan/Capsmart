@@ -146,11 +146,11 @@ const WorkModeDialog = ({ getIsOpen }) => {
     setUserPNPRole(tempUserPNPRole)
     // }
     let tempApplications = [];
-    if (tempUserRole?.length > 1) tempApplications.push("CAP_MANAGER");
-    if (tempUserMDRole?.length > 1) tempApplications.push("MD_MANAGER");
-    if (tempUserPNPRole?.length > 1) tempApplications.push("PNP_MANAGER");
+    if (tempUserRole?.length >= 1) tempApplications.push("CAP_MANAGER");
+    if (tempUserMDRole?.length >= 1) tempApplications.push("MD_MANAGER");
+    if (tempUserPNPRole?.length >= 1) tempApplications.push("PNP_MANAGER");
     setApplications(tempApplications);
-    console.log("userRoletimes", userRole, applications)
+    console.log("userRoletimes", userRole, tempApplications, userData, isHapicareUser)
   };
 
   const handleWorkModeSelection = (role) => {
