@@ -47,6 +47,7 @@ const WorkModeDialog = ({ getIsOpen }) => {
   const [userData, setUserData] = useState();
   const [entitySiteList, setEntitySiteList] = useState([]);
   const isHapicareUser = isMasterEntity;
+  const [applications, setApplications] = useState([]);
 
   useEffect(() => {
     sessionStorage.setItem("fromSummary", false);
@@ -137,11 +138,19 @@ const WorkModeDialog = ({ getIsOpen }) => {
     // if (userData?.organizations?.length > 1 && selectedEntity === '') {
     //   setShowEntitySelection(true)
     // } else {
-    setUserRole(!isHapicareUser ? userData?.roles?.map((data) => data?.roleName) || [] : userData?.organizations?.[0]?.roles?.map((data) => data?.roleName) || []);
-    setUserMDRole(!isHapicareUser ? userData?.mdRoles?.map((data) => data?.roleName) || [] : userData?.organizations?.[0]?.mdRoles?.map((data) => data?.roleName) || [])
-    setUserPNPRole(!isHapicareUser ? userData?.pnpRoles?.map((data) => data?.roleName) || [] : userData?.organizations?.[0]?.pnpRoles?.map((data) => data?.roleName) || [])
+    let tempUserRole = !isHapicareUser ? userData?.roles?.map((data) => data?.roleName) || [] : userData?.organizations?.[0]?.roles?.map((data) => data?.roleName) || [];
+    let tempUserMDRole = !isHapicareUser ? userData?.mdRoles?.map((data) => data?.roleName) || [] : userData?.organizations?.[0]?.mdRoles?.map((data) => data?.roleName) || [];
+    let tempUserPNPRole = !isHapicareUser ? userData?.pnpRoles?.map((data) => data?.roleName) || [] : userData?.organizations?.[0]?.pnpRoles?.map((data) => data?.roleName) || [];
+    setUserRole(tempUserRole);
+    setUserMDRole(tempUserMDRole)
+    setUserPNPRole(tempUserPNPRole)
     // }
-    console.log("userRoletimes", userRole)
+    let tempApplications = [];
+    if (tempUserRole?.length > 1) tempApplications.push("CAP_MANAGER");
+    if (tempUserMDRole?.length > 1) tempApplications.push("MD_MANAGER");
+    if (tempUserPNPRole?.length > 1) tempApplications.push("PNP_MANAGER");
+    setApplications(tempApplications);
+    console.log("userRoletimes", userRole, applications)
   };
 
   const handleWorkModeSelection = (role) => {
@@ -300,7 +309,7 @@ const WorkModeDialog = ({ getIsOpen }) => {
               <div className={`${style.workSpaceDesc}  ${selectedWorkSpace !== '' ? style.disabledView : ''}`}>Select the application you want to work in:</div>
               <div className={`${style.threeCol} ${style.padding}`}>
                 {/* {["CAP_MANAGER", "MD_MANAGER", "PNP_MANAGER"]?.map(data => ( */}
-                {["CAP_MANAGER", "MD_MANAGER"]?.map(data => (
+                {applications?.map(data => (
                   <div className={`${data === "PNP_MANAGER" ? style.applicationSelectionPNPCard : style.applicationSelectionCard} ${selectedWorkSpace === data ? data === "PNP_MANAGER" ? style.selectedApplicationPNPCard : style.selectedApplicationCard : ''} ${style.justifyCenter} ${style.verticalAlignCenter} ${style.cursorPointer} ${style.marginRight}`} onClick={() => { setSelectedWorkSpace(data); sessionStorage.setItem('selectedApplication', data) }}>
                     <img src={data === 'CAP_MANAGER' ? CAPManager : data === "MD_MANAGER" ? MDManager : PNPManager} alt="" className={style.applicationImage} />
                     <div className={style.marginLeft10}>{data === 'CAP_MANAGER' ? <div className={style.applicationName}>CAP<span className={style.applicationNamePrimary}>Manager</span></div> : data === 'MD_MANAGER' ? <div className={style.applicationName}>MD<span className={style.applicationNamePrimary}>Manager</span></div> : <div className={style.applicationPNPName}>P&P<span className={style.pnpNamePrimary}>Manager</span></div>}</div>
