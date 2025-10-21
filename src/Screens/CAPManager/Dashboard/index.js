@@ -249,9 +249,9 @@ const Dashboard = () => {
                                 <div className={`${style.dashboardTile}`}>
                                     <div className={style.displayInRow}>
                                         <div className={style.dashboardTileCount}>{applicationDashboard?.reappointmentMetrics?.underReview?.count}</div>
-                                        <ArrowDropUpIcon sx={{ color: '#73D035', marginRight: '5px' }} />
-                                        <div className={`${style.countChangeGreen} ${style.marginLeftReduce10}`}>10</div>
-                                        <div className={`${style.topPeriodRangeText} ${style.marginLeft10}`}>From Last week</div>
+                                        {/* <ArrowDropUpIcon sx={{ color: '#73D035', marginRight: '5px' }} />
+                                        <div className={`${style.countChangeGreen} ${style.marginLeftReduce10}`}>0</div>
+                                        <div className={`${style.topPeriodRangeText} ${style.marginLeft10}`}>From Last week</div> */}
                                     </div>
                                     <div className={style.dashboardTileText}>Review for Recommendation / Approval</div>
                                 </div>
@@ -300,7 +300,9 @@ const Dashboard = () => {
                                         <div className={style.chartHeaderText}>Average days: <span className={style.chartHeaderRightText}>{applicationDashboard?.workingDaysPerSubmittedApplications?.averageWorkingDays}</span></div>
                                     </div>
                                     <div className={`${style.chartBody} ${style.fullHeight}`}>
-                                        <ApexBarChart series={barChartSeries} categories={barChartCategories} reportingPeriod={``} yAxisTitle="DAYS" xAxisTitle="Submitted Applications" fullWidth={true} />
+                                        {barChartSeries?.length > 0 && (
+                                            <ApexBarChart series={barChartSeries} categories={barChartCategories} reportingPeriod={``} yAxisTitle="DAYS" xAxisTitle="Submitted Applications" fullWidth={true} />
+                                        )}
                                     </div>
                                 </div>
                             </div>

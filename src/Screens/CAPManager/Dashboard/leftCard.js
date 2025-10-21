@@ -857,7 +857,7 @@ const LeftCard = ({ getDataToUseInReport, isLoading }) => {
             <div className={`${style.leftCard} ${style.leftCardDisplay} ${style.marginTop20} ${style.bigCalendarLeftCardWidth}`}>
 
                 <>
-                    <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                    {/* <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                         <InputLabel id="demo-multiple-name-label1" className={style.headingtextStyle}>Reporting Time Period</InputLabel>
                         <Select
                             labelId="demo-multiple-name-label1"
@@ -922,7 +922,7 @@ const LeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 </LocalizationProvider>
                             </div>
                         </>
-                    )}
+                    )} */}
                     <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                         <InputLabel id="demo-multiple-name-label2" className={style.headingtextStyle}>Departments</InputLabel>
                         <Select
