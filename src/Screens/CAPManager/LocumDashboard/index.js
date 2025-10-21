@@ -18,9 +18,10 @@ import SpeedometerChart from '../../Reports/chart-data/speedometerChart';
 import { Tooltip } from '@mui/material';
 import { useReactToPrint } from 'react-to-print';
 import { dataLoadingGIF } from '../../../utils/formatting';
+import AreaChart from '../../Reports/chart-data/areaChart';
 
 
-const Dashboard = () => {
+const LocumDashboard = () => {
     const componentRef = useRef(null);
     const [isExpanded, setIsExpanded] = useState(true);
     const [dataToUseInReport, setDataToUseInReport] = useState({});
@@ -226,7 +227,7 @@ const Dashboard = () => {
                         </div>
                         <div ref={componentRef} className={style.margin20WithoutTop}>
                             <div className={`${style.selectedFilterCard}`}>
-                                <div className={style.selectedFiltersHeadingText}>{`2025 - 2026 Permanent Staff Reappointment Cycle for ${dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.departmentName?.name).join(', ') || 'All Departments'}`}</div>
+                                <div className={style.selectedFiltersHeadingText}>{`2025 - 2026 Active Locum Staff Dashboard for ${dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.departmentName?.name).join(', ') || 'All Departments'}`}</div>
                                 <div className={`${style.grid4} ${style.marginTop20}`}>
                                     <div className={style.selectedFiltersText}>Current Date: {format(new Date(), 'MMM dd, yyyy')}</div>
                                     <div className={style.selectedFiltersText}>{dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.departmentName?.name).join(', ') || 'All Departments'}</div>
@@ -236,34 +237,34 @@ const Dashboard = () => {
                             </div>
                             <div className={`${style.grid4} ${style.marginTop20}`}>
                                 <div className={`${style.dashboardTile}`}>
+                                    <div className={style.dashboardTileText}>Total Active Locum Staff</div>
                                     <div className={style.dashboardTileCount}>{applicationDashboard?.reappointmentMetrics?.eligibleForReappointment?.count}</div>
-                                    <div className={style.dashboardTileText}>Eligible Staff for Reappointment</div>
                                 </div>
                                 <div className={`${style.dashboardTile}`}>
+                                    <div className={style.dashboardTileText}>{`{Extension} Applications Sent out`}</div>
                                     <div className={`${style.displayInRow}`}>
                                         <div className={style.dashboardTileCount}>{applicationDashboard?.reappointmentMetrics?.applicationsSentOut?.count}</div>
                                         <div className={`${style.dashboardTilePercentage} ${style.marginLeft10}`}>{`${applicationDashboard?.reappointmentMetrics?.applicationsSentOut?.percentage || 0}%`}</div>
                                     </div>
-                                    <div className={style.dashboardTileText}>Applications Sent out</div>
                                 </div>
                                 <div className={`${style.dashboardTile}`}>
+                                    <div className={style.dashboardTileText}>For Recommendation / Approval</div>
                                     <div className={style.displayInRow}>
                                         <div className={style.dashboardTileCount}>{applicationDashboard?.reappointmentMetrics?.underReview?.count}</div>
-                                        {/* <ArrowDropUpIcon sx={{ color: '#73D035', marginRight: '5px' }} />
-                                        <div className={`${style.countChangeGreen} ${style.marginLeftReduce10}`}>0</div>
-                                        <div className={`${style.topPeriodRangeText} ${style.marginLeft10}`}>From Last week</div> */}
+                                        <ArrowDropUpIcon sx={{ color: '#73D035', marginRight: '5px' }} />
+                                        <div className={`${style.countChangeGreen} ${style.marginLeftReduce10}`}>10</div>
+                                        <div className={`${style.topPeriodRangeText} ${style.marginLeft10}`}>From Last week</div>
                                     </div>
-                                    <div className={style.dashboardTileText}>Review for Recommendation / Approval</div>
                                 </div>
                                 <div className={`${style.dashboardTile}`}>
-                                    <div className={style.dashboardTileCount}>{applicationDashboard?.reappointmentMetrics?.applicationReviewed?.count}</div>
                                     <div className={style.dashboardTileText}>Applications Reviewed</div>
+                                    <div className={style.dashboardTileCount}>{applicationDashboard?.reappointmentMetrics?.applicationReviewed?.count}</div>
                                 </div>
                             </div>
                             <div className={`${style.grid2} ${style.marginTop20}`}>
                                 <div>
                                     <div className={style.chartHeader}>
-                                        <div className={style.chartHeaderText}>2025 - 2026 Permanent Staff Reappointment</div>
+                                        <div className={style.chartHeaderText}>{`2025 - 2026 Locum Staff {Extension}s`}</div>
                                     </div>
                                     <div className={style.chartBody}>
                                         {funnelSeries?.length > 0 && (
@@ -273,7 +274,7 @@ const Dashboard = () => {
                                 </div>
                                 <div className={style.fullHeight}>
                                     <div className={style.chartHeader}>
-                                        <div className={style.chartHeaderText}>Reappointment Processing Application steps</div>
+                                        <div className={style.chartHeaderText}>Application Steps</div>
                                     </div>
                                     <div className={`${style.chartBody} ${style.fullHeight}`}>
                                         {(stackedSeries?.length > 0 && stackedCategories?.length > 0) && (
@@ -283,6 +284,7 @@ const Dashboard = () => {
                                 </div>
                             </div>
 
+                            <div className={`${style.selectedFiltersHeadingText} ${style.marginTop20}`}>Step Completion Metrics</div>
                             <div className={`${style.grid12} ${style.marginTop20}`}>
                                 <div>
                                     <div className={style.chartHeader}>
@@ -300,44 +302,14 @@ const Dashboard = () => {
                                         <div className={style.chartHeaderText}>Average days: <span className={style.chartHeaderRightText}>{applicationDashboard?.workingDaysPerSubmittedApplications?.averageWorkingDays}</span></div>
                                     </div>
                                     <div className={`${style.chartBody} ${style.fullHeight}`}>
-                                        {barChartSeries?.length > 0 && (
-                                            <ApexBarChart series={barChartSeries} categories={barChartCategories} reportingPeriod={``} yAxisTitle="DAYS" xAxisTitle="Submitted Applications" fullWidth={true} />
-                                        )}
+                                        <ApexBarChart series={barChartSeries} categories={barChartCategories} reportingPeriod={``} yAxisTitle="DAYS" xAxisTitle="Submitted Applications" fullWidth={true} />
                                     </div>
                                 </div>
                             </div>
 
-                            {/* <div className={style.marginTop20}>
-                                <div className={style.chartHeader}>
-                                    <div className={style.chartHeaderText}>Time Spent to Complete the Reappointment Application by Applicants</div>
-                                </div>
-                                <div className={`${style.chartBody} ${style.grid4}`}>
-                                    <div>
-                                        <div className={`${style.chartBodyCount} ${style.textAlignCenter}`}>16 Mins</div>
-                                        <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>All</div>
-                                        <SpeedometerChart value={16} minValue={0} maxValue={20} width={200} startColor="#9BDD6E" endColor="#73D035" segments={10} labelFontSize={'0px'} ringWidth={10} needleColor={'#2D2D2D99'} textColor={"#171A1A"} valueTextFontSize={'0px'} />
-                                    </div>
-                                    <div>
-                                        <div className={`${style.chartBodyCount} ${style.textAlignCenter}`}>16 Mins</div>
-                                        <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Physicians</div>
-                                        <SpeedometerChart value={16} minValue={0} maxValue={20} width={200} startColor="#9BDD6E" endColor="#73D035" segments={10} labelFontSize={'0px'} ringWidth={10} needleColor={'#2D2D2D99'} textColor={"#171A1A"} valueTextFontSize={'0px'} />
-                                    </div>
-                                    <div>
-                                        <div className={`${style.chartBodyCount} ${style.textAlignCenter}`}>8 Mins</div>
-                                        <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Dentists</div>
-                                        <SpeedometerChart value={8} minValue={0} maxValue={20} width={200} startColor="#9BDD6E" endColor="#73D035" segments={10} labelFontSize={'0px'} ringWidth={10} needleColor={'#2D2D2D99'} textColor={"#171A1A"} valueTextFontSize={'0px'} />
-                                    </div>
-                                    <div>
-                                        <div className={`${style.chartBodyCount} ${style.textAlignCenter}`}>12 Mins</div>
-                                        <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Midwifes</div>
-                                        <SpeedometerChart value={12} minValue={0} maxValue={20} width={200} startColor="#9BDD6E" endColor="#73D035" segments={10} labelFontSize={'0px'} ringWidth={10} needleColor={'#2D2D2D99'} textColor={"#171A1A"} valueTextFontSize={'0px'} />
-                                    </div>
-                                </div>
-                            </div> */}
-
                             <div className={style.marginTop20}>
                                 <div className={style.chartHeader}>
-                                    <div className={style.chartHeaderText}>MSO Review & Verification of Submitted Applications</div>
+                                    <div className={style.chartHeaderText}>{`Completion Time and Volume of {Extension} Applications by Locum Staff`}</div>
                                 </div>
                                 <div className={`${style.chartBody} ${style.reviewGrid}`}>
                                     <div>
@@ -373,23 +345,20 @@ const Dashboard = () => {
                                         </div>
                                         <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Days</div>
                                     </div>
-                                    <div className={style.verticalDivider}></div>
                                     <div>
-                                        <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Review Status</div>
+                                        <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Avg. Working Days by Staff Type</div>
+                                        <ApexBarChart series={barChartSeries} categories={barChartCategories} reportingPeriod={``} yAxisTitle="DAYS" xAxisTitle="Submitted Applications" fullWidth={true} />
+                                    </div>
+                                    <div>
+                                        <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>{`{Extension} Application Completed By Staff Type`}</div>
                                         <DonutChart height={200} legendPosition={'right'} series={getMSOReviewSeries()} labels={getReviewLabels()} colors={['#73D035', '#FF6562', '#3F8ADF', '#FFC100', '#FF851C']} size={'0%'} />
                                     </div>
-                                    {/* <div className={style.verticalDivider}></div>
-                                    <div>
-                                        <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Actual Time Spent on Application</div>
-                                        <SpeedometerChart value={16} minValue={0} maxValue={20} width={200} startColor="#9BDD6E" endColor="#73D035" segments={10} labelFontSize={'0px'} ringWidth={10} needleColor={'#2D2D2D99'} textColor={"#171A1A"} valueTextFontSize={'0px'} />
-                                        <div className={`${style.chartBodyCount} ${style.textAlignCenter}`}>16 Mins</div>
-                                    </div> */}
                                 </div>
                             </div>
 
                             <div className={style.marginTop20}>
                                 <div className={style.chartHeader}>
-                                    <div className={style.chartHeaderText}>Departmental Review & Verification of Submitted Applications</div>
+                                    <div className={style.chartHeaderText}>{`MSO Review & Verification of Submitted {Extension} Applications`}</div>
                                 </div>
                                 <div className={`${style.chartBody} ${style.reviewGrid}`}>
                                     <div>
@@ -425,10 +394,59 @@ const Dashboard = () => {
                                         </div>
                                         <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Days</div>
                                     </div>
-                                    <div className={style.verticalDivider}></div>
+                                    <div>
+                                        <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Avg. Working Days by Staff Type</div>
+                                        <AreaChart />
+                                    </div>
                                     <div>
                                         <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Review Status</div>
                                         <DonutChart height={200} legendPosition={'right'} series={getDeptHeadReviewSeries()} labels={getReviewLabels()} colors={['#73D035', '#FF6562', '#3F8ADF', '#FFC100', '#FF851C']} size={'0%'} />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className={style.marginTop20}>
+                                <div className={style.chartHeader}>
+                                    <div className={style.chartHeaderText}>{`Chief of Staff Review & Verification of Submitted {Extension} Applications`}</div>
+                                </div>
+                                <div className={`${style.chartBody} ${style.reviewGrid2}`}>
+                                    <div>
+                                        <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Avg. Working Days</div>
+                                        <div
+                                            style={{
+                                                display: "flex",
+                                                justifyContent: "center",
+                                                alignItems: "center",
+                                                position: "relative",
+                                                width: "100px",
+                                                height: "100px",
+                                                margin: "20px auto" // ensures it stays centered even on print
+                                            }}
+                                            className={style.marginTop20}
+                                        >
+                                            <img src={CalendarIcon} alt="calendar" width="100" />
+
+                                            <span
+                                                style={{
+                                                    position: "absolute",
+                                                    top: "55%",
+                                                    left: "50%",
+                                                    transform: "translate(-50%, -50%)",
+                                                    fontSize: "40px",
+                                                    fontWeight: "bold",
+                                                    color: "black",
+                                                    marginTop: "10px"
+                                                }}
+                                            >
+                                                {applicationDashboard?.reviewAndVerificationStats?.credentialingCommittee?.averageWorkingDays || 0}
+                                            </span>
+                                        </div>
+                                        <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Days</div>
+                                    </div>
+                                    <div className={style.verticalDivider}></div>
+                                    <div>
+                                        <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Review Status</div>
+                                        <DonutChart height={200} legendPosition={'right'} series={getCCReviewSeries()} labels={getReviewLabels()} colors={['#73D035', '#FF6562', '#3F8ADF', '#FFC100', '#FF851C']} size={'0%'} />
                                     </div>
                                     {/* <div className={style.verticalDivider}></div>
                                     <div>
@@ -441,9 +459,9 @@ const Dashboard = () => {
 
                             <div className={style.marginTop20}>
                                 <div className={style.chartHeader}>
-                                    <div className={style.chartHeaderText}>Credentialing Committee Review & Verification of Submitted Applications</div>
+                                    <div className={style.chartHeaderText}>{`Credentialing Committee Review & Verification of Submitted Extension Applications`}</div>
                                 </div>
-                                <div className={`${style.chartBody} ${style.reviewGrid}`}>
+                                <div className={`${style.chartBody} ${style.reviewGrid2}`}>
                                     <div>
                                         <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Avg. Working Days</div>
                                         <div
@@ -495,7 +513,7 @@ const Dashboard = () => {
                                 <div className={style.chartHeader}>
                                     <div className={style.chartHeaderText}>MAC Review & Verification of Submitted Applications</div>
                                 </div>
-                                <div className={`${style.chartBody} ${style.reviewGrid}`}>
+                                <div className={`${style.chartBody} ${style.reviewGrid2}`}>
                                     <div>
                                         <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Avg. Working Days</div>
                                         <div
@@ -543,7 +561,7 @@ const Dashboard = () => {
                                 <div className={style.chartHeader}>
                                     <div className={style.chartHeaderText}>BOD Review & Verification of Submitted Applications</div>
                                 </div>
-                                <div className={`${style.chartBody} ${style.reviewGrid}`}>
+                                <div className={`${style.chartBody} ${style.reviewGrid2}`}>
                                     <div>
                                         <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Avg. Working Days</div>
                                         <div
@@ -586,6 +604,8 @@ const Dashboard = () => {
 
                                 </div>
                             </div>
+
+                            <div className={`${style.selectedFiltersHeadingText} ${style.marginTop20}`}>Requests</div>
 
                             <div className={style.marginTop20}>
                                 <div className={style.chartHeader}>
@@ -732,8 +752,8 @@ const Dashboard = () => {
                     </div>
                 </div >
             </Fragment >
-        </div>
+        </div >
     )
 }
 
-export default Dashboard;
+export default LocumDashboard;

@@ -5060,7 +5060,21 @@ const ReportTypeOverview = () => {
                                                                                         </div>
                                                                                         <div className={style.marginTop}>
                                                                                             <div className={style.mdLabel}>Appointment History:</div>
-                                                                                            <div className={style.mdValue}>{data?.applications?.map(applicationData => `${applicationData?.cyclePeriod?.from ? format(new Date(applicationData?.cyclePeriod?.from), 'MMM dd yyyy') : ''} - ${applicationData?.cyclePeriod?.to ? format(new Date(applicationData?.cyclePeriod?.to), 'MMM dd yyyy') : ''}`)?.join(', ')}</div>
+                                                                                            <div className={style.mdValue}>
+                                                                                                {data?.applications?.map((applicationData, index) => {
+                                                                                                    const from = applicationData?.cyclePeriod?.from
+                                                                                                        ? format(new Date(applicationData.cyclePeriod.from), 'MMM dd yyyy')
+                                                                                                        : '';
+                                                                                                    const to = applicationData?.cyclePeriod?.to
+                                                                                                        ? format(new Date(applicationData.cyclePeriod.to), 'MMM dd yyyy')
+                                                                                                        : '';
+                                                                                                    return (
+                                                                                                        <div key={index} className={style.marginTop10}>
+                                                                                                            {index + 1}. {from} - {to}
+                                                                                                        </div>
+                                                                                                    );
+                                                                                                })}
+                                                                                            </div>
                                                                                         </div>
                                                                                     </div>
                                                                                 )) : (

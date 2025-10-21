@@ -63,6 +63,8 @@ const StaffManager = React.lazy(() => import("./Screens/CAPManager/StaffManager"
 const Applicant = React.lazy(() => import("./Screens/CAPManager/Applicant"));
 const StaffApplication = React.lazy(() => import("./Screens/CAPManager/StaffApplication"));
 const ApplicationDashboard = React.lazy(() => import("./Screens/CAPManager/Dashboard"));
+const LocumDashboard = React.lazy(() => import("./Screens/CAPManager/LocumDashboard"));
+const MDDashboard = React.lazy(() => import("./Screens/MDManagerScreens/Dashboard"));
 const ActiveStaff = React.lazy(() => import("./Screens/CAPManager/ActiveStaff"));
 const LocumStaff = React.lazy(() => import("./Screens/CAPManager/LocumStaff"));
 const DescopeLoginDialog = React.lazy(() => import("./Components/DescopeLogin"));
@@ -825,7 +827,7 @@ const App = ({ props }) => {
         method: "GET",
         headers: {
           "Authorization": `Bearer ${authorization}`,
-          "X-subdomain": 'master',
+          "X-subdomain": 'cmh-hospital',
         },
       };
     console.log(requestHeader, 'requestHeader')
@@ -868,7 +870,7 @@ const App = ({ props }) => {
         "Content-Type": "application/json",
         "X-tenantID": id,
         "Authorization": `Bearer ${authorization}`,
-        "X-subdomain": 'master',
+        "X-subdomain": 'cmh-hospital',
       },
     }
     fetch(`${baseUrl()}/user-management-service/auth/login`, requestOptions)
@@ -1135,6 +1137,7 @@ const App = ({ props }) => {
                 <Route path="/staffs" element={<ProtectedRoute><StaffManager /></ProtectedRoute>} />
                 <Route path="/applications" element={<ProtectedRoute><StaffApplication /></ProtectedRoute>} />
                 <Route path="/applications/dashboard" element={<ProtectedRoute><ApplicationDashboard /></ProtectedRoute>} />
+                <Route path="/applications/locumDashboard" element={<ProtectedRoute><LocumDashboard /></ProtectedRoute>} />
                 <Route path="/applicationById/:applicationTypeFromUrl/:applicationId" element={<ProtectedRoute><StaffApplication /></ProtectedRoute>} />
                 <Route path="/activeStaff" element={<ProtectedRoute><ActiveStaff /></ProtectedRoute>} />
                 <Route path="/locumStaff" element={<ProtectedRoute><LocumStaff /></ProtectedRoute>} />
@@ -1470,6 +1473,7 @@ const App = ({ props }) => {
                   path="/mdManager/manageAttestation/:entityId/:medicalDirectivesId"
                   element={<ProtectedRoute><ManageMDAttest /></ProtectedRoute>}
                 />
+                <Route path="/mdManager/dashboard" element={<ProtectedRoute><MDDashboard /></ProtectedRoute>} />
                 <Route
                   path="/mdManager/manageAcknowledgement/:entityId/:medicalDirectivesId"
                   element={<ProtectedRoute><ManageMDAcknowledgement /></ProtectedRoute>}

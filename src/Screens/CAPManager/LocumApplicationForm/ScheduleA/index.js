@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import ApplicationUserCard from '../../../../Components/ApplicationUserCard';
 import ApplicationAssistanceCard from '../../../../Components/ApplicationAssistanceCard';
 import CommonDivider from '../../../../Components/CommonFields/CommonDivider';
-import logo from "../../../../images/cambridgeHospital.png";
+// import logo from "../../../../images/cambridgeHospital.png";
 import JourneyStep10 from './../../../../images/journeyStep10.png';
 import { GET, PUT, POST } from '../../../dataSaver';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -22,10 +22,12 @@ import SaveInProgressDialog from '../../../../Components/SaveInProgressDialog';
 import { dataLoadingGIF } from '../../../../utils/formatting';
 import LocumProgressCard from '../../../../Components/LocumProgressCard';
 import { Tooltip } from '@mui/material';
+import Cookies from 'universal-cookie';
 
 const ScheduleA = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApplication }) => {
     const [isChecked, setIsChecked] = useState(false);
     const navigate = useNavigate()
+    let cookie = new Cookies();
     const targetRef = useRef();
     const [isSigned, setIsSigned] = useState(false);
     const publicKey = "-----BEGIN PUBLIC KEY-----MIGeMA0GCSqGSIb3DQEBAQUAA4GMADCBiAKBgHA5SDu30/8uQAqqkQE0NuY4ePBptMGufG6AWnC/88YVLXi4thh7M8VU6kElVJkfXL5DwlfVnwPb08+PK1EcaOWWtp2gdQitkohjZLB9zVE+0OtRrzSc33wItf7Iwisi5dHPggHvfOp5fr+QYWFMa/kKYl3SgNo8fryeLbKKalmdAgMBAAE=-----END PUBLIC KEY-----";
@@ -44,6 +46,23 @@ const ScheduleA = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
     const [isLoading, setIsLoading] = useState(false);
     const [navigateURL, setNavigateURL] = useState();
     const [navigateBackURL, setNavigateBackURL] = useState();
+    const [logo, setLogo] = useState(null);
+    useEffect(() => {
+        const getLogo = async () => {
+            try {
+                const { data } = await GET(`entity-service/entity/${cookie.get('entityId')}`);
+                if (data && data.logo?.file?.fileURL) {
+                    setLogo(data.logo.file.fileURL);
+                }
+            } catch (error) {
+                console.error("Error fetching logo:", error);
+            }
+        };
+
+        if (cookie.get('entityId')) {
+            getLogo();
+        }
+    }, [cookie.get('entityId')]);
     useEffect(() => {
         if (basicForm && !formSchema) {
             getFormSchema()
@@ -247,7 +266,9 @@ const ScheduleA = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
                     <LocumProgressCard step={'STEP 1'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={32} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} basicForm={basicForm} />
                     <div className={`${style.applicationCardStyle} ${style.applicationCardScrollStyle} ${style.marginTop}`} ref={targetRef}>
                         <div className={`${style.marginTop} ${style.justifyCenter}`}>
-                            <img src={logo} alt="Hospital Logo" className={`${style.logo}`} />
+                            {logo && (
+                                <img src={logo} alt="Hospital Logo" className={`${style.logo}`} />
+                            )}
                         </div>
                         <CommonDivider />
                         <div className={`${style.cardTitle} ${style.marginTop}  ${style.justifyCenter}`}>{formSchema?.title}</div>

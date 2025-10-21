@@ -73,12 +73,15 @@ const Navbar = () => {
   const [anchorElTools, setAnchorElTools] = useState(null);
   const [anchorElGuide, setAnchorElGuide] = useState(null);
   const [openPrivileged, setOpenPrivileged] = useState(null);
+  const [openDashboardOptions, setOpenDashboardOptions] = useState(null);
   const [anchorElSettings, setAnchorElSettings] = useState(null);
   const openTools = Boolean(anchorElTools);
   const openGuide = Boolean(anchorElGuide);
   const openStaff = Boolean(openPrivileged);
+  const openDashboard = Boolean(openDashboardOptions);
   const openSettings = Boolean(anchorElSettings);
   const popoverAnchorStaff = useRef(null);
+  const popoverAnchorDashboard = useRef(null);
   const popoverAnchorTools = useRef(null);
   const popoverAnchorGuide = useRef(null);
   const popoverAnchorSettings = useRef(null);
@@ -286,6 +289,10 @@ const Navbar = () => {
     setOpenPrivileged(event.currentTarget);
   };
 
+  const handleClickDashboard = (event) => {
+    setOpenDashboardOptions(event.currentTarget);
+  };
+
   const handleClickSettings = (event) => {
     setAnchorElSettings(event.currentTarget);
   };
@@ -300,6 +307,10 @@ const Navbar = () => {
 
   const handleCloseStaff = () => {
     setOpenPrivileged(null);
+  };
+
+  const handleCloseDashboard = () => {
+    setOpenDashboardOptions(null);
   };
 
   const handleCloseSettings = () => {
@@ -482,7 +493,7 @@ const Navbar = () => {
             )}
           </div>
 
-          {(sessionStorage.getItem('selectedApplication') === "CAP_MANAGER") ? (
+          {(sessionStorage.getItem('selectedApplication') === "CAP_MANAGER" || !sessionStorage.getItem('selectedApplication')) ? (
             <>
               {workModeType !== "Entity Sys Admin" && (
                 <Link to={"/applications"} onClick={() => sessionStorage.setItem('applicationCreationType', 'REAPPOINTMENT')} className={style.noFontStyle}>
@@ -569,12 +580,13 @@ const Navbar = () => {
               >
                 <p>INACTIVE STAFF</p>
               </div>
-              <Link to={"/applications/dashboard"} className={style.noFontStyle}>
-                <div
-                  className={`${style.menuStyle} ${window.location.pathname.includes("/dashboard") &&
-                    style.activeMenuColor
-                    }`}
-                >
+              <Link
+                className={style.noFontStyle1}
+                to={"/applications/dashboard"}
+              >
+                <div className={`${style.menuStyle} ${style?.cursorPointer} ${(window.location.pathname.includes("/locumDashboard") || window.location.pathname.includes("/dashboard")) &&
+                  style.activeMenuColor
+                  }`}>
                   <p>DASHBOARD</p>
                 </div>
               </Link>
@@ -1005,6 +1017,15 @@ const Navbar = () => {
                   </div>
                 </Link>
               )}
+              <Link to={"/mdManager/dashboard"} className={style.noFontStyle}>
+                <div
+                  className={`${style.menuStyle} ${window.location.pathname.includes("/dashboard") &&
+                    style.activeMenuColor
+                    }`}
+                >
+                  <p>DASHBOARD</p>
+                </div>
+              </Link>
               <Link to={"/reports/medicalDirectives"} className={style.noFontStyle}>
                 <div
                   className={`${style.menuStyle} ${(window.location.pathname.includes("/reports") ||
