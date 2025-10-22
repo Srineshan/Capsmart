@@ -2,7 +2,7 @@
 
 .heading {
   text-align: left;
-  font: normal normal 600 22px/20px proxima-nova;
+  font: normal normal 600 22px/20px var(--font-style);
   letter-spacing: 0px;
   color: #171A1A;
   text-transform: capitalize;
@@ -190,7 +190,7 @@
 
 .HeadingFontStyle {
   text-align: left;
-  font: normal normal bold 16px/30px proxima-nova;
+  font: normal normal bold 16px/30px var(--font-style);
   letter-spacing: 0px;
   color: #737575;
   opacity: 1;
@@ -198,7 +198,7 @@
 
 .HeadingFontStyleGreen {
   text-align: left;
-  font: normal normal bold 16px/20px proxima-nova;
+  font: normal normal bold 16px/20px var(--font-style);
   letter-spacing: 0px;
   color: #14B15A;
   opacity: 1;
@@ -211,7 +211,7 @@
 
 .dateOfSubmissionTextStyle {
   text-align: left;
-  font: normal normal 600 10px/18px proxima-nova;
+  font: normal normal 600 10px/18px var(--font-style);
   letter-spacing: 1px;
   color: #737575;
   text-transform: uppercase;
@@ -220,7 +220,7 @@
 
 .NotesTextStyle {
   text-align: left;
-  font: italic normal normal 14px/20px proxima-nova;
+  font: italic normal normal 14px/20px var(--font-style);
   letter-spacing: 0px;
   color: #171A1A;
   opacity: 1;

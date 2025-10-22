@@ -29,7 +29,7 @@
 }
 
 .headingForContracts {
-    font: normal normal bolder $navbartext proxima-nova !important;
+    font: normal normal bolder $navbartext var(--font-style) !important;
     letter-spacing: 0px;
     text-align: left;
     color: #2C2C2C;
@@ -37,7 +37,7 @@
     opacity: 1;
 
     @include breakpoint(md) {
-        font: normal normal bold 14px/12px proxima-nova;
+        font: normal normal bold 14px/12px var(--font-style);
     }
 }
 
@@ -138,36 +138,36 @@
 }
 
 .purple {
-    color: $primarycolor !important;
+    color: var(--primary-color) !important;
 }
 
 .optionsStyle {
     margin: -3px 0px 0 0px;
     text-align: left;
     float: right !important;
-    font: normal normal bold 12px/12px proxima-nova;
+    font: normal normal bold 12px/12px var(--font-style);
     color: #2C2C2C;
 
     span {
         @include breakpoint(md) {
-            font: normal normal bold 10px/12px proxima-nova !important;
+            font: normal normal bold 10px/12px var(--font-style) !important;
         }
     }
 }
 
 .smallTextSelected {
-    color: $primarycolor;
+    color: var(--primary-color);
 }
 
 .descriptionText {
     text-align: left;
     float: right !important;
-    font: normal normal bold 10px/12px proxima-nova;
+    font: normal normal bold 10px/12px var(--font-style);
     color: #2C2C2C;
 
     span {
         @include breakpoint(md) {
-            font: normal normal bold 10px/12px proxima-nova !important;
+            font: normal normal bold 10px/12px var(--font-style) !important;
         }
     }
 }

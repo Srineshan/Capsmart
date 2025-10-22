@@ -15,6 +15,7 @@ import SAimgHover from "../../images/SystemAdminHover.svg";
 import UserLogo4 from "../../images/userLogo4.png";
 import CAPManager from "../../images/CAPManagerSmallLogo.png";
 import MDManager from "../../images/MDManager.png";
+import PNPManager from "../../images/PNPManager.png";
 import Cookie from "universal-cookie";
 import jwt from "jwt-decode";
 import style from "./index.module.scss";
@@ -33,6 +34,7 @@ const WorkModeDialog = ({ getIsOpen }) => {
   const [userRoleToDisplay, setUserRoleToDisplay] = useState([]);
   const [userRole, setUserRole] = useState([]);
   const [userMDRole, setUserMDRole] = useState([]);
+  const [userPNPRole, setUserPNPRole] = useState([]);
   const [selectedWorkSpace, setSelectedWorkSpace] = useState('');
   const [selectedEntity, setSelectedEntity] = useState('');
   const [showEntitySelection, setShowEntitySelection] = useState(false);
@@ -45,6 +47,7 @@ const WorkModeDialog = ({ getIsOpen }) => {
   const [userData, setUserData] = useState();
   const [entitySiteList, setEntitySiteList] = useState([]);
   const isHapicareUser = isMasterEntity;
+  const [applications, setApplications] = useState([]);
 
   useEffect(() => {
     sessionStorage.setItem("fromSummary", false);
@@ -59,7 +62,7 @@ const WorkModeDialog = ({ getIsOpen }) => {
 
   useEffect(() => {
     if ((userRole?.length >= 1 && userMDRole?.length >= 1) && selectedWorkSpace !== '') {
-      setUserRoleToDisplay(selectedWorkSpace === 'CAP_MANAGER' ? userRole : userMDRole);
+      setUserRoleToDisplay(selectedWorkSpace === 'CAP_MANAGER' ? userRole : selectedWorkSpace === 'MD_MANAGER' ? userMDRole : userPNPRole);
       const initialRoute = localStorage.getItem("initialRoute");
       if (selectedWorkSpace === 'CAP_MANAGER') {
         if (userRole?.length === 1 && localStorage?.getItem('initialRoute') !== undefined && localStorage?.getItem('initialRoute') !== 'undefined' && localStorage?.getItem('initialRoute') !== null) {
@@ -93,6 +96,25 @@ const WorkModeDialog = ({ getIsOpen }) => {
             }
           }
         }
+      } else if (selectedWorkSpace === 'PNP_MANAGER') {
+        if (userPNPRole?.length === 1 && localStorage?.getItem('initialRoute') !== undefined && localStorage?.getItem('initialRoute') !== 'undefined' && localStorage?.getItem('initialRoute') !== null) {
+          sessionStorage.setItem("workModeType", userPNPRole?.[0]);
+          window.location.href = `${initialRoute}`;
+          localStorage?.removeItem('initialRoute')
+        } else if (userPNPRole?.length === 1) {
+          sessionStorage.setItem("workModeType", userPNPRole?.[0]);
+          if (isHapicareUser) {
+            window.location.pathname = "/pnpManager/manageAttestation";
+          } else {
+            if (userPNPRole?.[0] === "Acknowledger") {
+              window.location.pathname = "/pnpManager/manageAcknowledgement";
+            } else if (userPNPRole?.[0] === "Reviewer / Approver") {
+              window.location.pathname = "/pnpManager/manageSignOff";
+            } else {
+              window.location.pathname = "/pnpManager";
+            }
+          }
+        }
       }
     } else {
       setUserRoleToDisplay(userRole);
@@ -102,8 +124,10 @@ const WorkModeDialog = ({ getIsOpen }) => {
   useEffect(() => {
     if (userRole?.length === 0 && userMDRole?.length !== 0 && userMDRole && userRole) {
       setSelectedWorkSpace('MD_MANAGER')
+      sessionStorage.setItem('selectedApplication', selectedWorkSpace)
     } else if (userRole?.length !== 0 && userMDRole?.length === 0 && userMDRole && userRole) {
       setSelectedWorkSpace('CAP_MANAGER')
+      sessionStorage.setItem('selectedApplication', selectedWorkSpace)
     }
   }, [userRole, userMDRole])
 
@@ -114,10 +138,19 @@ const WorkModeDialog = ({ getIsOpen }) => {
     // if (userData?.organizations?.length > 1 && selectedEntity === '') {
     //   setShowEntitySelection(true)
     // } else {
-    setUserRole(!isHapicareUser ? userData?.roles?.map((data) => data?.roleName) || [] : userData?.organizations?.[0]?.roles?.map((data) => data?.roleName) || []);
-    setUserMDRole(!isHapicareUser ? userData?.mdRoles?.map((data) => data?.roleName) || [] : userData?.organizations?.[0]?.mdRoles?.map((data) => data?.roleName) || [])
+    let tempUserRole = !isHapicareUser ? userData?.roles?.map((data) => data?.roleName) || [] : userData?.organizations?.[0]?.roles?.map((data) => data?.roleName) || [];
+    let tempUserMDRole = !isHapicareUser ? userData?.mdRoles?.map((data) => data?.roleName) || [] : userData?.organizations?.[0]?.mdRoles?.map((data) => data?.roleName) || [];
+    let tempUserPNPRole = !isHapicareUser ? userData?.pnpRoles?.map((data) => data?.roleName) || [] : userData?.organizations?.[0]?.pnpRoles?.map((data) => data?.roleName) || [];
+    setUserRole(tempUserRole);
+    setUserMDRole(tempUserMDRole)
+    setUserPNPRole(tempUserPNPRole)
     // }
-    console.log("userRoletimes", userRole)
+    let tempApplications = [];
+    if (tempUserRole?.length >= 1) tempApplications.push("CAP_MANAGER");
+    if (tempUserMDRole?.length >= 1) tempApplications.push("MD_MANAGER");
+    if (tempUserPNPRole?.length >= 1) tempApplications.push("PNP_MANAGER");
+    setApplications(tempApplications);
+    console.log("userRoletimes", userRole, tempApplications, userData, isHapicareUser)
   };
 
   const handleWorkModeSelection = (role) => {
@@ -137,6 +170,14 @@ const WorkModeDialog = ({ getIsOpen }) => {
           window.location.pathname = "/mdManager/manageSignOff";
         } else {
           window.location.pathname = "/mdManager";
+        }
+      } else if (selectedWorkSpace === "PNP_MANAGER") {
+        if (role === "Acknowledger") {
+          window.location.pathname = "/pnpManager/manageAcknowledgement";
+        } else if (role === "Reviewer / Approver") {
+          window.location.pathname = "/pnpManager/manageSignOff";
+        } else {
+          window.location.pathname = "/pnpManager";
         }
       } else {
         window.location.pathname = "/applications";
@@ -166,6 +207,7 @@ const WorkModeDialog = ({ getIsOpen }) => {
     setShowEntitySelection(false);
     setUserRole(userData?.organizations?.filter(data => data?.tenant?.tenantId === value)?.[0]?.roles?.map((data) => data?.roleName) || []);
     setUserMDRole(userData?.organizations?.filter(data => data?.tenant?.tenantId === value)?.[0]?.mdRoles?.map((data) => data?.roleName) || [])
+    setUserPNPRole(userData?.organizations?.filter(data => data?.tenant?.tenantId === value)?.[0]?.pnpRoles?.map((data) => data?.roleName) || [])
   }
 
   const getEntitySites = async () => {
@@ -266,10 +308,10 @@ const WorkModeDialog = ({ getIsOpen }) => {
               <div className={`${style.heading}  ${style.padding} ${selectedWorkSpace !== '' ? style.disabledView : ''}`}>{selectedWorkSpace === '' ? 'Select Application' : 'Selected Application'}</div>
               <div className={`${style.workSpaceDesc}  ${selectedWorkSpace !== '' ? style.disabledView : ''}`}>Select the application you want to work in:</div>
               <div className={`${style.threeCol} ${style.padding}`}>
-                {["CAP_MANAGER", "MD_MANAGER"]?.map(data => (
-                  <div className={`${style.applicationSelectionCard} ${selectedWorkSpace === data ? style.selectedApplicationCard : ''} ${style.justifyCenter} ${style.verticalAlignCenter} ${style.cursorPointer} ${style.marginRight}`} onClick={() => setSelectedWorkSpace(data)}>
-                    <img src={data === 'CAP_MANAGER' ? CAPManager : MDManager} alt="" className={style.applicationImage} />
-                    <div className={style.marginLeft10}>{data === 'CAP_MANAGER' ? <div className={style.applicationName}>CAP<span className={style.applicationNamePrimary}>Manager</span></div> : <div className={style.applicationName}>MD<span className={style.applicationNamePrimary}>Manager</span></div>}</div>
+                {applications?.map(data => (
+                  <div className={`${data === "PNP_MANAGER" ? style.applicationSelectionPNPCard : style.applicationSelectionCard} ${selectedWorkSpace === data ? data === "PNP_MANAGER" ? style.selectedApplicationPNPCard : style.selectedApplicationCard : ''} ${style.justifyCenter} ${style.verticalAlignCenter} ${style.cursorPointer} ${style.marginRight}`} onClick={() => { setSelectedWorkSpace(data); sessionStorage.setItem('selectedApplication', data) }}>
+                    <img src={data === 'CAP_MANAGER' ? CAPManager : data === "MD_MANAGER" ? MDManager : PNPManager} alt="" className={style.applicationImage} />
+                    <div className={style.marginLeft10}>{data === 'CAP_MANAGER' ? <div className={style.applicationName}>CAP<span className={style.applicationNamePrimary}>Manager</span></div> : data === 'MD_MANAGER' ? <div className={style.applicationName}>MD<span className={style.applicationNamePrimary}>Manager</span></div> : <div className={style.applicationPNPName}>P&P<span className={style.pnpNamePrimary}>Manager</span></div>}</div>
                   </div>
                 ))}
               </div>
@@ -279,7 +321,7 @@ const WorkModeDialog = ({ getIsOpen }) => {
           {selectedWorkSpace !== "" && (
             <div>
               <div>
-                <div className={`${style.heading}  ${style.padding}`}>Select {selectedWorkSpace === "CAP_MANAGER" ? 'CAP Manager' : 'MD Manager'} Workspace</div>
+                <div className={`${style.heading}  ${style.padding}`}>Select {selectedWorkSpace === "CAP_MANAGER" ? 'CAP Manager' : selectedWorkSpace === "MD_MANAGER" ? 'MD Manager' : 'P&P Manager'} Workspace</div>
                 <div className={`${style.workSpaceDesc} `}>Your user role allows you to access multiple workspaces, select the workspace you want to work in:</div>
               </div>
               <div className={`${style.threeCol} ${style.padding2}`}>
@@ -300,7 +342,7 @@ const WorkModeDialog = ({ getIsOpen }) => {
                 )}
                 {userRoleToDisplay?.includes("Acknowledger") && (
                   <div
-                    className={`${style.applicationSelectionCard} ${style.verticalAlignCenter} ${style.cursorPointer} ${style.marginRight}`}
+                    className={`${selectedWorkSpace === "PNP_MANAGER" ? style.applicationSelectionPNPWorkspaceCard : style.applicationSelectionCard} ${style.verticalAlignCenter} ${style.cursorPointer} ${style.marginRight}`}
                     onClick={() => handleWorkModeSelection("Acknowledger")}
                     onMouseEnter={() => setHoveredRole("Acknowledger")}
                     onMouseLeave={() => setHoveredRole(null)}
@@ -315,7 +357,7 @@ const WorkModeDialog = ({ getIsOpen }) => {
                 )}
                 {userRoleToDisplay?.includes("Reviewer / Approver") && (
                   <div
-                    className={`${style.applicationSelectionCard} ${style.verticalAlignCenter} ${style.cursorPointer} ${style.marginRight}`}
+                    className={`${selectedWorkSpace === "PNP_MANAGER" ? style.applicationSelectionPNPWorkspaceCard : style.applicationSelectionCard} ${style.verticalAlignCenter} ${style.cursorPointer} ${style.marginRight}`}
                     onClick={() => handleWorkModeSelection("Reviewer / Approver")}
                     onMouseEnter={() => setHoveredRole("Reviewer / Approver")}
                     onMouseLeave={() => setHoveredRole(null)}
@@ -330,7 +372,7 @@ const WorkModeDialog = ({ getIsOpen }) => {
                 )}
                 {userRoleToDisplay?.includes("Author / Owner") && (
                   <div
-                    className={`${style.applicationSelectionCard} ${style.verticalAlignCenter} ${style.cursorPointer} ${style.marginRight}`}
+                    className={`${selectedWorkSpace === "PNP_MANAGER" ? style.applicationSelectionPNPWorkspaceCard : style.applicationSelectionCard} ${style.verticalAlignCenter} ${style.cursorPointer} ${style.marginRight}`}
                     onClick={() => handleWorkModeSelection("Author / Owner")}
                     onMouseEnter={() => setHoveredRole("Author / Owner")}
                     onMouseLeave={() => setHoveredRole(null)}
@@ -341,6 +383,21 @@ const WorkModeDialog = ({ getIsOpen }) => {
                       className={` ${style.applicationImage} ${style.cursorPointer} ${style.marginRight}`}
                     />
                     <p className={`${hoveredRole === "Author / Owner" ? style.roleTitleHover : style.roleTitle} ${style.marginTop10}`}>Author / Owner</p>
+                  </div>
+                )}
+                {userRoleToDisplay?.includes("P&P Manager") && (
+                  <div
+                    className={`${style.applicationSelectionPNPWorkspaceCard} ${style.verticalAlignCenter} ${style.cursorPointer} ${style.marginRight}`}
+                    onClick={() => handleWorkModeSelection("P&P Manager")}
+                    onMouseEnter={() => setHoveredRole("P&P Manager")}
+                    onMouseLeave={() => setHoveredRole(null)}
+                  >
+                    <img
+                      src={hoveredRole === "P&P Manager" ? SMimgHover : SMimg}
+                      alt="P&P Manager"
+                      className={` ${style.cursorPointer} ${style.applicationImage} ${style.marginRight}`}
+                    />
+                    <p className={`${hoveredRole === "P&P Manager" ? style.roleTitleHover : style.roleTitle} ${style.marginTop10}`}>P&P Manager</p>
                   </div>
                 )}
                 {userRoleToDisplay?.includes("Staff Manager") && (

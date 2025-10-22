@@ -1,7 +1,7 @@
 import React from 'react';
 import Chart from 'react-apexcharts';
 
-const DonutChart = ({ height, legendPosition, series = [], labels = [], colors }) => {
+const DonutChart = ({ height, legendPosition, series = [], labels = [], colors, size }) => {
     // const series = [280, 200, 140, 100, 50]; // Raw counts for each stage
     const options = {
         chart: {
@@ -24,7 +24,7 @@ const DonutChart = ({ height, legendPosition, series = [], labels = [], colors }
         dataLabels: {
             enabled: true,
             formatter: function (val, opts) {
-                return `(${val?.toFixed(0)}%)`;
+                return `${val?.toFixed(0)}%`;
             },
             style: {
                 colors: ['#000'],
@@ -54,7 +54,7 @@ const DonutChart = ({ height, legendPosition, series = [], labels = [], colors }
         plotOptions: {
             pie: {
                 donut: {
-                    size: '60%', // Hole size as per requirement
+                    size: size ? size : '60%', // Hole size as per requirement
                     labels: {
                         show: true,
                         name: {

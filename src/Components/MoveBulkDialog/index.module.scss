@@ -2,9 +2,9 @@
 
 .heading {
   text-align: left;
-  font: normal normal bold 24px proxima-nova;
+  font: normal normal bold 24px var(--font-style);
   letter-spacing: 0px;
-  color: $primarycolor;
+  color: var(--primary-color);
   text-transform: capitalize;
   opacity: 1;
 }
@@ -70,9 +70,9 @@
 
 .templateHeadertext {
   text-align: left;
-  font: normal normal bold 22px proxima-nova;
+  font: normal normal bold 22px var(--font-style);
   letter-spacing: 0px;
-  color: #06617A;
+  color: var(--primary-color);
   opacity: 1;
 }
 
@@ -92,7 +92,7 @@
 }
 
 .reviewButtonStyle {
-  background: $primarycolor 0% 0% no-repeat padding-box;
+  background: var(--primary-color) 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 6px #00000029;
   border-radius: 8px;
   opacity: 1;
@@ -100,12 +100,12 @@
 }
 
 .reviewButtonStyle:hover {
-  background: $primarycolorHover 0% 0% no-repeat padding-box;
+  background: var(--primary-color-hover) 0% 0% no-repeat padding-box;
 }
 
 .reviewButton {
   text-align: center;
-  font: normal normal bold 18px/30px proxima-nova;
+  font: normal normal bold 18px/30px var(--font-style);
   letter-spacing: 0px;
   color: #FFFFFF;
   text-transform: uppercase;
@@ -130,7 +130,7 @@
 
 .rejectionHeadingTextStyle {
   text-align: center;
-  font: normal normal bold 15px proxima-nova;
+  font: normal normal bold 15px var(--font-style);
   letter-spacing: 0px;
   color: #2C2C2C;
   text-transform: capitalize;
@@ -139,7 +139,7 @@
 
 .rejectionTextStyle {
   text-align: center;
-  font: normal normal medium 18px/34px proxima-nova;
+  font: normal normal medium 18px/34px var(--font-style);
   letter-spacing: 0px;
   color: #2C2C2C;
   text-transform: capitalize;
@@ -148,7 +148,7 @@
 
 .rejectionTextStyle1 {
   text-align: left;
-  font: normal normal medium 20px/24px proxima-nova;
+  font: normal normal medium 20px/24px var(--font-style);
   letter-spacing: 0px;
   color: #171A1A;
   text-transform: capitalize;
@@ -157,7 +157,7 @@
 
 .rejectionSubHeadingTextStyle {
   text-align: left;
-  font: normal normal bold 16px proxima-nova;
+  font: normal normal bold 16px var(--font-style);
   letter-spacing: 0px;
   color: #454747;
   opacity: 1;
@@ -193,9 +193,10 @@
   justify-items: center;
   margin-left: 30px;
 }
+
 .commentsNotesHeadingFontStyle {
   text-align: left;
-  font: normal normal normal 15px / 17px proxima-nova;
+  font: normal normal normal 15px / 17px var(--font-style);
   letter-spacing: 0px;
   color: #171a1a;
   text-transform: capitalize;
@@ -212,7 +213,7 @@
 
 .uploadTextStyle {
   text-align: left;
-  font: normal normal normal 18px/26px proxima-nova;
+  font: normal normal normal 18px/26px var(--font-style);
   letter-spacing: 0px;
   color: black;
   opacity: 1;
@@ -262,7 +263,7 @@
 .referenceCardStyle {
   background: #dddddf 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 18px #0F0B3129;
-  border: 1px solid $primarycolor;
+  border: 1px solid var(--primary-color);
   border-radius: 4px;
   opacity: 0.9;
   padding: 3px;
@@ -272,14 +273,14 @@
   text-align: left;
   font: normal normal normal 20px/24px la-solid-900;
   letter-spacing: 0px;
-  color: $primarycolor;
+  color: var(--primary-color);
   opacity: 1;
 }
 
 .referenceCardStyleDescription {
   // background: #dddddf 0% 0% no-repeat padding-box;
   // box-shadow: 0px 3px 18px #0F0B3129;
-  border: 1px solid $primarycolor;
+  border: 1px solid var(--primary-color);
   border-radius: 4px;
   opacity: 0.9;
   // padding: 3px;

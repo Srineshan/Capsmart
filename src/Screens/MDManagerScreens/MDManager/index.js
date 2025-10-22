@@ -386,6 +386,7 @@ const MDManager = () => {
               <Tooltip title={"Add New MD"} arrow>
                 <div
                   className={`${style.addStyle} ${style.displayInRow} ${style.applicationButton} ${style.marginTop10} ${style.alignCenter} ${style.cursorPointer}`}
+                  onClick={() => { setShowAddNewMedicalDirectives(true) }}
                 >
                   <div className={`${style.displayInRow} ${style.alignCenter}`}>
                     <AddCircleOutlineIcon
@@ -395,7 +396,6 @@ const MDManager = () => {
 
                     <div
                       className={`${style.alignCenter} ${style.marginLeft10}`}
-                      onClick={() => { setShowAddNewMedicalDirectives(true) }}
                     >
                       {'Add New MD'}
                     </div>

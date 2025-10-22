@@ -70,7 +70,7 @@ const FunnelChart = ({ series, total = 0 }) => {
             },
             formatter: function (val, opts) {
                 const percent = opts.w.config.series[0].data[opts.dataPointIndex].z;
-                return `${opts.w.globals.labels[opts.dataPointIndex]} (${percent}%)`;
+                return `${opts.w.globals.labels[opts.dataPointIndex]} ${val} (${percent}%)`;
             },
         },
         // colors: ['#73D035'], // One color per stage

@@ -56,6 +56,7 @@ const ApexBarChart = ({ series, categories, reportingPeriod, yAxisTitle, xAxisTi
                 },
             },
             yaxis: {
+                forceNiceScale: true,
                 title: {
                     text: yAxisTitle,
                     style: {

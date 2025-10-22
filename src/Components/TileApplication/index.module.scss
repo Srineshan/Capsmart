@@ -39,15 +39,15 @@
 }
 
 .selectedContractBackground {
-    background-color: $primarycolor;
-    border: 0.4px solid $primarycolor;
+    background-color: var(--primary-color);
+    border: 0.4px solid var(--primary-color);
     border-radius: 0.4px;
     border-radius: 4px 4px 0px 0px;
 }
 
 .selectedApplicationText {
     text-align: left;
-    font: normal normal bold 16px proxima-nova;
+    font: normal normal bold 16px var(--font-style);
     letter-spacing: 0px;
     color: #F5F9FD;
     // align-items: center;
@@ -55,14 +55,14 @@
 
 .selectedApplicationText1 {
     text-align: left;
-    font: normal normal bold 16px proxima-nova;
+    font: normal normal bold 16px var(--font-style);
     letter-spacing: 0px;
-    color: #06617A;
+    color: var(--primary-color);
     // align-items: center;
 }
 
 .headingForContracts {
-    font: normal normal normal 16px proxima-nova !important;
+    font: normal normal normal 16px var(--font-style) !important;
     letter-spacing: 0px;
     text-align: left;
     color: $textgrey;
@@ -70,7 +70,7 @@
     // align-items: center;
 
     @include breakpoint(md) {
-        font: normal normal bold 14px/12px proxima-nova;
+        font: normal normal bold 14px/12px var(--font-style);
     }
 }
 
@@ -92,15 +92,15 @@
 }
 
 .selectedApplicantBackground {
-    background: $primarycolor 0% 0% no-repeat padding-box;
+    background: var(--primary-color) 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 11px #52575D1A;
-    border: 0.4000000059604645px solid $primarycolor;
+    border: 0.4000000059604645px solid var(--primary-color);
     border-radius: 4px 4px 0px 0px;
     opacity: 1;
 }
 
 .selectedApplicantBackground1 {
-    background: $primarycolor 0% 0% no-repeat padding-box;
+    background: var(--primary-color) 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 11px #9AAFB5;
     border: 0.4000000059604645px solid #9AAFB5;
     border-radius: 4px 4px 0px 0px;
@@ -187,36 +187,36 @@
 }
 
 .purple {
-    color: $primarycolor !important;
+    color: var(--primary-color) !important;
 }
 
 .optionsStyle {
     margin: -3px 0px 0 0px;
     text-align: left;
     float: right !important;
-    font: normal normal bold 12px/12px proxima-nova;
+    font: normal normal bold 12px/12px var(--font-style);
     color: #2C2C2C;
 
     span {
         @include breakpoint(md) {
-            font: normal normal bold 10px/12px proxima-nova !important;
+            font: normal normal bold 10px/12px var(--font-style) !important;
         }
     }
 }
 
 .smallTextSelected {
-    color: $primarycolor;
+    color: var(--primary-color);
 }
 
 .descriptionText {
     text-align: left;
     float: right !important;
-    font: normal normal bold 10px/12px proxima-nova;
+    font: normal normal bold 10px/12px var(--font-style);
     color: #2C2C2C;
 
     span {
         @include breakpoint(md) {
-            font: normal normal bold 10px/12px proxima-nova !important;
+            font: normal normal bold 10px/12px var(--font-style) !important;
         }
     }
 }
@@ -352,9 +352,9 @@
 }
 
 .selectedNewApplicantBackground {
-    background: $primarycolor 0% 0% no-repeat padding-box;
+    background: var(--primary-color) 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 11px #52575D1A;
-    border: 0.4000000059604645px solid $primarycolor;
+    border: 0.4000000059604645px solid var(--primary-color);
     border-radius: 4px 4px 0px 0px;
     opacity: 1;
 }

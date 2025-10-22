@@ -54,7 +54,7 @@
 }
 
 .profileImgStyle {
-    border: 2px solid $primarycolor;
+    border: 2px solid var(--primary-color);
     height: 100px;
     width: 100px;
     border-radius: 50%;
@@ -62,8 +62,8 @@
 
 .headingStyle {
     text-align: left;
-    font: normal normal 600 16px/16px proxima-nova;
-    color: $primarycolor;
+    font: normal normal 600 16px/16px var(--font-style);
+    color: var(--primary-color);
     text-transform: capitalize;
 }
 
@@ -74,7 +74,7 @@
 
 .extentionLableStyle {
     text-align: left;
-    font: normal normal normal 13px/20px proxima-nova;
+    font: normal normal normal 13px/20px var(--font-style);
     color: #2C2C2C;
     text-transform: capitalize;
     opacity: 1;
@@ -94,35 +94,35 @@
 
 .infoTextStyle {
     text-align: left;
-    font: normal normal normal 12px/20px proxima-nova;
+    font: normal normal normal 12px/20px var(--font-style);
     color: #2C2C2C;
     text-transform: capitalize;
 }
 
 .helpText {
     text-align: left;
-    font: normal normal normal 12px/14px proxima-nova;
+    font: normal normal normal 12px/14px var(--font-style);
     color: #B3B8BD;
 }
 
 .outlinedButton {
-    border: 1px solid $primarycolor;
+    border: 1px solid var(--primary-color);
     border-radius: 4px;
     max-height: 35px;
     width: 160px;
     background-color: transparent;
-    color: $primarycolor;
-    font: normal normal normal 12px/14px proxima-nova;
+    color: var(--primary-color);
+    font: normal normal normal 12px/14px var(--font-style);
 }
 
 .normalButton {
-    background: $primarycolor 0% 0% no-repeat padding-box;
+    background: var(--primary-color) 0% 0% no-repeat padding-box;
     border-radius: 4px;
     border: none;
     color: white;
     max-height: 35px;
     width: 160px;
-    font: normal normal normal 12px/14px proxima-nova;
+    font: normal normal normal 12px/14px var(--font-style);
 }
 
 .alignCenter {
@@ -156,18 +156,18 @@
 
 .uploadHelpText {
     text-align: center;
-    font: normal normal normal 12px/12px proxima-nova;
+    font: normal normal normal 12px/12px var(--font-style);
     color: #C9C9C9;
 }
 
 .uploadTextStyle {
     text-align: center;
-    font: normal normal medium 16px/22px proxima-nova;
+    font: normal normal medium 16px/22px var(--font-style);
     color: #606060;
 }
 
 .blueText {
-    color: $primarycolor;
+    color: var(--primary-color);
 }
 
 .uploadBox {

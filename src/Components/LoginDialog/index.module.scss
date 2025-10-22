@@ -11,7 +11,7 @@
 }
 
 .loginDialogBackground {
-    background: $primarycolor 0% 0% no-repeat padding-box !important;
+    background: var(--primary-color) 0% 0% no-repeat padding-box !important;
     padding: 20px 40px 0px 40px;
     border-radius: 20px !important;
 }
@@ -36,9 +36,9 @@
 
 .loginHeaderText {
     text-align: left;
-    font: normal normal normal 25px/40px proxima-nova;
+    font: normal normal normal 25px/40px var(--font-style);
     letter-spacing: 0px;
-    color: $primarycolor;
+    color: var(--primary-color);
 }
 
 .bold {
@@ -83,14 +83,14 @@
 
 .welcomeText {
     text-align: center;
-    font: normal normal bold 40px/62px proxima-nova;
+    font: normal normal bold 40px/62px var(--font-style);
     letter-spacing: 0px;
-    color: $primarycolor;
+    color: var(--primary-color);
 }
 
 .descriptionStyle {
     text-align: center;
-    font: normal normal normal 19px/26px proxima-nova;
+    font: normal normal normal 19px/26px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
     padding: 0 60px;
@@ -98,7 +98,7 @@
 
 .loginDescription {
     text-align: left;
-    font: normal normal medium 20px/36px proxima-nova;
+    font: normal normal medium 20px/36px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: capitalize;
@@ -118,7 +118,7 @@
 }
 
 .daysToCompleteCard {
-    // background: $primarycolor 0% 0% no-repeat padding-box;
+    // background: var(--primary-color) 0% 0% no-repeat padding-box;
     // box-shadow: 0px 5px 20px #52575D4D;
     // border-radius: 12px;
     // margin: 0 -40px;
@@ -128,7 +128,7 @@
 
 .daysCountStyle {
     text-align: center;
-    font: normal normal bold 44px/50px proxima-nova;
+    font: normal normal bold 44px/50px var(--font-style);
     letter-spacing: 8.8px;
     color: #FFFFFF;
     text-transform: uppercase;
@@ -137,7 +137,7 @@
 
 .textStyle {
     text-align: center;
-    font: normal normal medium 24px/32px proxima-nova;
+    font: normal normal medium 24px/32px var(--font-style);
     letter-spacing: 2.4px;
     color: #FFFFFF;
     text-transform: uppercase;
@@ -147,17 +147,17 @@
 .linkStyle {
     text-align: center;
     text-decoration: underline;
-    font: normal normal bold 14px/30px proxima-nova;
+    font: normal normal bold 14px/30px var(--font-style);
     letter-spacing: 0px;
-    color: $primarycolor;
+    color: var(--primary-color);
 }
 
 .continue {
-    background: $primarycolor 0% 0% no-repeat padding-box;
+    background: var(--primary-color) 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #00000029;
     border-radius: 8px;
     text-align: center;
-    font: normal normal bold 17px/30px proxima-nova;
+    font: normal normal bold 17px/30px var(--font-style);
     letter-spacing: 0px;
     color: #FFFFFF;
     text-transform: uppercase;
@@ -192,7 +192,7 @@
 
 .helpText {
     text-align: center;
-    font: normal normal medium 20px/24px proxima-nova;
+    font: normal normal medium 20px/24px var(--font-style);
     letter-spacing: 0px;
     color: #121212;
     opacity: 0.47;
@@ -205,7 +205,7 @@
 
 .heading {
     text-align: center;
-    font: normal normal bold 22px/39px proxima-nova;
+    font: normal normal bold 22px/39px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
     line-height: 1.4;
@@ -213,14 +213,14 @@
 }
 
 .alertHeading {
-    font: normal normal bold 18px/30px proxima-nova;
+    font: normal normal bold 18px/30px var(--font-style);
     color: #2C2C2C;
     letter-spacing: 0px;
 }
 
 .createAccountHelpText {
     text-align: left;
-    font: normal normal 600 15px/28px proxima-nova;
+    font: normal normal 600 15px/28px var(--font-style);
     letter-spacing: 0px;
     color: #121212;
     opacity: 0.47;
@@ -236,7 +236,7 @@
 
 .extentionLableStyle {
     text-align: left;
-    font: normal normal normal 13px/20px proxima-nova;
+    font: normal normal normal 13px/20px var(--font-style);
     color: #2C2C2C;
     text-transform: capitalize;
     font-weight: 600;
@@ -283,7 +283,7 @@
     width: 40%;
     max-width: 700px !important;
     margin: 0 auto;
-    box-shadow: 0 20px 0px $primarycolor !important;
+    box-shadow: 0 20px 0px var(--primary-color) !important;
     border-radius: 15px !important;
 }
 

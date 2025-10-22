@@ -1,6 +1,7 @@
 @import "../../index.scss";
+
 .daysToCompleteCard {
-    background: $primarycolor 0% 0% no-repeat padding-box;
+    background: var(--primary-color) 0% 0% no-repeat padding-box;
     box-shadow: 0px 5px 20px #52575D4D;
     border-radius: 12px;
     padding: 20px;
@@ -8,7 +9,7 @@
 
 .daysCountStyle {
     text-align: center;
-    font: normal normal bold 44px/50px proxima-nova;
+    font: normal normal bold 44px/50px var(--font-style);
     letter-spacing: 8.8px;
     color: #FFFFFF;
     text-transform: uppercase;
@@ -16,7 +17,7 @@
 
 .textStyle {
     text-align: center;
-    font: normal normal medium 24px/32px proxima-nova;
+    font: normal normal medium 24px/32px var(--font-style);
     letter-spacing: 2.4px;
     color: #FFFFFF;
     text-transform: uppercase;

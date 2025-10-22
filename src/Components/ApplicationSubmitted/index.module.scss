@@ -24,24 +24,24 @@
 
 .heading {
     text-align: center;
-    font: normal normal bold 38px/48px proxima-nova;
-    color: $primarycolor;
+    font: normal normal bold 38px/48px var(--font-style);
+    color: var(--primary-color);
     text-transform: capitalize;
 }
 
 .heading2 {
     text-align: center;
-    font: normal normal bold 30px/48px proxima-nova;
-    color: $primarycolor;
+    font: normal normal bold 30px/48px var(--font-style);
+    color: var(--primary-color);
     text-transform: capitalize;
 }
 
 .continue {
-    background: $primarycolor 0% 0% no-repeat padding-box;
+    background: var(--primary-color) 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #00000029;
     border-radius: 8px;
     text-align: center;
-    font: normal normal bold 17px/30px proxima-nova;
+    font: normal normal bold 17px/30px var(--font-style);
     letter-spacing: 0px;
     color: #FFFFFF;
     text-transform: uppercase;
@@ -51,7 +51,7 @@
 }
 
 .continue:hover {
-    background: #044D61 0% 0% no-repeat padding-box;
+    background: var(--primary-color-hover) 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 12px #00000052;
     border-radius: 8px;
     opacity: 1;

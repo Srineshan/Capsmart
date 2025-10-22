@@ -24,7 +24,7 @@
     object-fit: cover;
 
     @media (max-width: 768px) {
-        background: $primarycolor;
+        background: var(--primary-color);
     }
 }
 
@@ -36,7 +36,7 @@
 
 .photoText {
     text-align: center;
-    font: normal normal bold 30px proxima-nova;
+    font: normal normal bold 30px var(--font-style);
     height: 100%;
     color: #000;
     opacity: 1 !important;
@@ -51,14 +51,14 @@
 
 .nameStyle {
     text-align: left;
-    font: normal normal bold 17px/21px proxima-nova;
+    font: normal normal bold 17px/21px var(--font-style);
     color: $textgrey;
     text-transform: capitalize;
 }
 
 .applyingFor {
     text-align: left;
-    font: normal normal normal 13px/17px proxima-nova;
+    font: normal normal normal 13px/17px var(--font-style);
     letter-spacing: 0px;
     color: $textgrey;
 }
@@ -66,9 +66,9 @@
 .connectToLinkedIn {
     text-align: left;
     text-decoration: underline;
-    font: normal normal medium 18px/31px proxima-nova;
+    font: normal normal medium 18px/31px var(--font-style);
     letter-spacing: 0px;
-    color: $primarycolor;
+    color: var(--primary-color);
 }
 
 .marginTop10 {
@@ -115,7 +115,7 @@
 
 .contactStyle {
     text-align: left;
-    font: normal normal normal 14px/19px proxima-nova;
+    font: normal normal normal 14px/19px var(--font-style);
     color: $textgrey;
 
     @media (max-width: 768px) {
@@ -124,7 +124,7 @@
 }
 
 .purpleText {
-    color: $primarycolor !important;
+    color: var(--primary-color) !important;
 
     @media (max-width: 768px) {
         color: #FFF !important;
@@ -133,22 +133,22 @@
 
 @media (max-width: 768px) {
     .applicationUserCard {
-        background: $primarycolor 0% 0% no-repeat padding-box;
-        border: $primarycolor;
+        background: var(--primary-color) 0% 0% no-repeat padding-box;
+        border: var(--primary-color);
     }
 
     .nameStyle {
-        font: normal normal bold 15px proxima-nova;
+        font: normal normal bold 15px var(--font-style);
         color: #FFFFFF;
     }
 
     .applyingFor {
-        font: normal normal normal 10px proxima-nova;
+        font: normal normal normal 10px var(--font-style);
         color: #FFFFFF;
     }
 
     .connectToLinkedIn {
-        font: normal normal medium 16px proxima-nova;
+        font: normal normal medium 16px var(--font-style);
         color: #FFFFFF;
     }
 }

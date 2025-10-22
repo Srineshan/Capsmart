@@ -485,7 +485,7 @@ const ToolBar = () => {
         <Text
           fontSize={12}
           text="GROUP 1"
-          fontFamily="proxima-nova"
+          fontFamily="var(--font-style)"
           fill="black"
           strokeWidth={1}
           stroke="black"
@@ -521,7 +521,7 @@ const ToolBar = () => {
         <Text
           fontSize={12}
           text="GROUP 2"
-          fontFamily="proxima-nova"
+          fontFamily="var(--font-style)"
           fill="black"
           strokeWidth={1}
           stroke="black"
@@ -587,7 +587,7 @@ const ToolBar = () => {
         <Text
           fontSize={12}
           text="YES"
-          fontFamily="proxima-nova"
+          fontFamily="var(--font-style)"
           fill="#14B15A"
           x={27}
           y={120}
@@ -595,7 +595,7 @@ const ToolBar = () => {
         <Text
           fontSize={12}
           text="YES"
-          fontFamily="proxima-nova"
+          fontFamily="var(--font-style)"
           fill="#14B15A"
           x={27}
           y={120}
@@ -634,7 +634,7 @@ const ToolBar = () => {
         <Text
           fontSize={12}
           text="HOLD"
-          fontFamily="proxima-nova"
+          fontFamily="var(--font-style)"
           fill="#FFCA27"
           x={23}
           y={155}
@@ -642,7 +642,7 @@ const ToolBar = () => {
         <Text
           fontSize={12}
           text="HOLD"
-          fontFamily="proxima-nova"
+          fontFamily="var(--font-style)"
           fill="#FFCA27"
           x={23}
           y={155}
@@ -681,7 +681,7 @@ const ToolBar = () => {
         <Text
           fontSize={12}
           text="REJECT"
-          fontFamily="proxima-nova"
+          fontFamily="var(--font-style)"
           fill="#FF6F3B"
           x={18}
           y={190}
@@ -689,7 +689,7 @@ const ToolBar = () => {
         <Text
           fontSize={12}
           text="REJECT"
-          fontFamily="proxima-nova"
+          fontFamily="var(--font-style)"
           fill="red"
           x={18}
           y={190}

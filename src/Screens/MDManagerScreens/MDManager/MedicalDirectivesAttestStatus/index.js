@@ -286,7 +286,7 @@ const MDAttestStatus = () => {
                                         <div className={style.attestationGrid}>
                                             <div className={`${style.marginTop10} ${style.title}`}>{data?.groupName}</div>
                                             <Tooltip title="Click here to see Attestation details">
-                                                <div className={`${style.marginTop10} ${style.groupAttestationDescription} ${style.cursorPointer}`} onClick={() => { setSelectedGroup(data); setShowGroupSignDialog(true) }}>{`- ${data?.attestedCount} / ${data?.members?.length}`}</div>
+                                                <div className={`${style.marginTop10} ${style.groupAttestationDescription} ${style.cursorPointer}`} onClick={() => { setSelectedGroup(data); setShowGroupSignDialog(true) }}>{` ${data?.attestedCount} / ${data?.members?.length}`}</div>
                                             </Tooltip>
                                         </div>
                                     ))}

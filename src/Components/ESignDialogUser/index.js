@@ -229,7 +229,7 @@ const ESignDialogUser = ({ getIsOpen, tempValue, baseKey, applicationId, basicFo
                         </div>
                     </div>
 
-                    <p className={`${style.description} ${style.marginTop}`}>MD Manager uses Electronic Signatures for you to sign off on the required Medical Directives. Draw or type your signature below to set it up for use:</p>
+                    <p className={`${style.description} ${style.marginTop}`}>{window.location.pathname.includes('pnpManager') ? 'PNP Manager' : 'MD Manager'} uses Electronic Signatures for you to sign off on the required Medical Directives. Draw or type your signature below to set it up for use:</p>
                     <div className={`${style.displayInRow} ${style.marginTop}`}>
                         <div>
                             <div className={`${style.drawOrTypeTextStyle}`} onClick={() => { setSelectedESignFormat('DRAW') }}> DRAW</div>

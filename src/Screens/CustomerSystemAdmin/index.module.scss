@@ -166,8 +166,8 @@
 }
 
 .activeButton {
-    background: $primarycolor 0% 0% no-repeat padding-box !important;
-    border: 0.4000000059604645px solid $primarycolor;
+    background: var(--primary-color) 0% 0% no-repeat padding-box !important;
+    border: 0.4000000059604645px solid var(--primary-color);
     border-radius: 6px;
     opacity: 0.75;
     color: white;
@@ -198,13 +198,13 @@
 
 .extensionStyle {
     text-align: left;
-    font: normal normal bold 16px/17px proxima-nova;
+    font: normal normal bold 16px/17px var(--font-style);
     letter-spacing: 0px;
-    color: $primarycolor;
+    color: var(--primary-color);
 }
 
 .crossStyle {
-    color: linear-gradient($primarycolor, $statusred) !important;
+    color: linear-gradient(var(--primary-color), $statusred) !important;
     margin-bottom: 15px;
     cursor: pointer;
 }
@@ -215,7 +215,7 @@
 }
 
 .proofBorder {
-    border: 1px solid #06617A;
+    border: 1px solid var(--primary-color);
     border-radius: 8px;
     opacity: 1;
     overflow: scroll;
@@ -234,7 +234,7 @@
 
 .extentionLableStyle {
     text-align: left;
-    font: normal normal normal $tabledatatext proxima-nova;
+    font: normal normal normal $tabledatatext var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: capitalize;
@@ -269,9 +269,9 @@
 }
 
 .buttonStyle {
-    background-color: $primarycolor;
+    background-color: var(--primary-color);
     color: white;
-    border: 1px solid $primarycolor;
+    border: 1px solid var(--primary-color);
     height: 40px;
     width: 140px;
     border-radius: 10px;
@@ -288,7 +288,7 @@
     height: 40px;
     width: 140px;
     font-weight: bold;
-    color: $primarycolor;
+    color: var(--primary-color);
     cursor: pointer;
 }
 
@@ -406,9 +406,9 @@
 
 .chips {
     background: $secondarycolor 0% 0% no-repeat padding-box;
-    font: normal normal normal 16px/18px proxima-nova;
-    border: 1px solid $primarycolor;
+    font: normal normal normal 16px/18px var(--font-style);
+    border: 1px solid var(--primary-color);
     border-radius: 23px;
     padding: 5px 10px;
-    color: $primarycolor;
+    color: var(--primary-color);
 }
