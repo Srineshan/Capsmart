@@ -356,16 +356,16 @@ const PNPManagerStep5 = ({ setStep4, setStep5, mdValue, setMdValue, setSelectedM
             data.approvalFlowMap.workflow[1].flowDetails[0].roles = transformedRoles
         }
         if (workFlow2IsMandatory) {
-            data.approvalFlowMap.workflow[3].flowDetails[0].approvalRequirement = 'MANDATORY';
-            if (workflowStructure?.approvalFlowMap?.workflow[3]?.flowDetails?.[0]?.approvalBy === 'GROUP') {
-                data.approvalFlowMap.workflow[3].flowDetails[0].groups = transformedGroups
+            data.approvalFlowMap.workflow[2].flowDetails[0].approvalRequirement = 'MANDATORY';
+            if (workflowStructure?.approvalFlowMap?.workflow[2]?.flowDetails?.[0]?.approvalBy === 'GROUP') {
+                data.approvalFlowMap.workflow[2].flowDetails[0].groups = transformedGroups
             }
         } else {
-            if (data?.approvalFlowMap?.workflow?.[3]) {
-                delete data.approvalFlowMap.workflow["3"]
+            if (data?.approvalFlowMap?.workflow?.[2]) {
+                delete data.approvalFlowMap.workflow["2"]
             }
         }
-        console.log(workflowStructure?.approvalFlowMap?.workflow[3]?.flowDetails?.[0]?.approvalBy === 'GROUP', data)
+        console.log(workflowStructure?.approvalFlowMap?.workflow[2]?.flowDetails?.[0]?.approvalBy === 'GROUP', data)
         await POST(`policy-and-procedure-management-service/policyAndProcedures/${mdValue?.id}/workflow`, data)
             .then(response => {
                 SuccessToaster2('Workflow Added Successfully');

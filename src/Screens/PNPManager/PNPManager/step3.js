@@ -4,12 +4,17 @@ import { PUT } from '../../dataSaver';
 import { Classes, Dialog } from '@blueprintjs/core';
 import CommonPdfViewer from '../../../Components/CommonPdfViewer';
 import { ErrorToaster2, SuccessToaster2 } from '../../../utils/toaster';
+import CancelIcon from '@mui/icons-material/Cancel';
+import CommonMultiSelectField from '../../../Components/CommonFields/CommonMultiSelectField';
 import { Tooltip } from '@mui/material';
 
 const PNPManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, getMD, setMdValue, setSelectedMdId }) => {
     const fileInputRef = useRef(null);
     const [isSaveInProgressDialog, setIsSaveInProgressDialog] = useState(false);
     const [isConfirmationDialog, setIsConfirmationDialog] = useState(false);
+    const [selectedFramework, setSelectedFramework] = useState([]);
+    const [selectedControlls, setSelectedControlls] = useState([]);
+    const [frameworkList, setFrameworkList] = useState([]);
     const handleReplaceCopy = () => {
         fileInputRef.current.click();
     }
@@ -72,6 +77,26 @@ const PNPManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, getMD, setMdVa
         setIsConfirmationDialog(false);
         handleReplaceCopy();
     }
+
+    const handleFrameworkSelect = (id) => {
+        console.log(id)
+        if (Array.isArray(id)) {
+            const newIds = id.filter(item => !selectedFramework?.includes(item));
+            if (newIds?.length > 0) {
+                setSelectedFramework(prev => [...prev, ...newIds]);
+            }
+        }
+    }
+
+    const handleControllsSelect = (id) => {
+        console.log(id)
+        if (Array.isArray(id)) {
+            const newIds = id.filter(item => !selectedControlls?.includes(item));
+            if (newIds?.length > 0) {
+                setSelectedControlls(prev => [...prev, ...newIds]);
+            }
+        }
+    }
     console.log(mdValue)
     return (
         <div className={style.stepsBackground}>
@@ -104,10 +129,65 @@ const PNPManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, getMD, setMdVa
                 <div className={`${style.stepsTitleBar} ${style.verticalAlignCenter}`}>
                     <div className={style.stepsTitleText}>Link Compliance Framework Controlls to your P&P</div>
                 </div>
-                <div className={style.marginTop20}>
-                    <iframe src={`${mdValue?.file?.fileURL}#toolbar=1&view=fitH`}
-                        style={{ height: "calc(100vh - 200px)", width: "100%", border: "none" }}></iframe>
-                    {/* <CommonPdfViewer pdfurl={mdValue?.file?.fileURL} /> */}
+                <div className={`${style.margin20}`}>
+                    <div>
+                        <div className={style.labelStyle}>Framework*</div>
+                        <div className={style.marginTop10}>
+                            <CommonMultiSelectField
+                                value={selectedFramework}
+                                onChange={(e) => handleFrameworkSelect(e.target.value)}
+                                className={style.fullWidth}
+                                // firstOptionLabel={'All'}
+                                // firstOptionValue={''}
+                                valueList={[]}
+                                labelList={[]}
+                                disabledList={[]}
+                                required={true}
+                                label={'Department'}
+                            />
+                        </div>
+                        <div>
+                            <div className={`${style.chipsContainer} ${style.marginTop10}`}>
+                                {selectedFramework?.map(data => {
+                                    return (
+                                        <div className={`${style.chips} ${style.displayInRow}`}>
+                                            <div>{frameworkList?.filter(deptData => data === deptData?.id)?.[0]?.departmentName?.name}</div> <div className={`${style.verticalAlignCenter} ${style.marginLeft10} ${style.cursorPointer}`}
+                                                onClick={() => setSelectedFramework(selectedFramework?.filter(innerData => innerData !== data))}
+                                            ><CancelIcon sx={{ color: '#168E0D', fontSize: 20 }} /></div></div>
+                                    )
+                                })}
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div className={style.labelStyle}>Controlls*</div>
+                        <div className={style.marginTop10}>
+                            <CommonMultiSelectField
+                                value={selectedControlls}
+                                onChange={(e) => handleControllsSelect(e.target.value)}
+                                className={style.fullWidth}
+                                // firstOptionLabel={'All'}
+                                // firstOptionValue={''}
+                                valueList={[]}
+                                labelList={[]}
+                                disabledList={[]}
+                                required={true}
+                                label={'Division / Service Area'}
+                            />
+                        </div>
+                        <div>
+                            <div className={`${style.chipsContainer} ${style.marginTop10}`}>
+                                {selectedControlls?.map(data => {
+                                    return (
+                                        <div className={`${style.chips} ${style.displayInRow}`}>
+                                            <div>{`${selectedControlls?.filter(divisionData => data === divisionData?.id)?.[0]?.department?.departmentName?.name} - ${selectedControlls?.filter(divisionData => data === divisionData?.id)?.[0]?.name}`}</div> <div className={`${style.verticalAlignCenter} ${style.marginLeft10} ${style.cursorPointer}`}
+                                                onClick={() => setSelectedControlls(selectedControlls?.filter(innerData => innerData !== data))}
+                                            ><CancelIcon sx={{ color: '#168E0D', fontSize: 20 }} /></div></div>
+                                    )
+                                })}
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <Dialog isOpen={isConfirmationDialog} onClose={() => setIsConfirmationDialog(false)} className={`${style.addMDDialogBackground} ${style.confirmationDialog} `}>
