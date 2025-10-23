@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import style from "./index.module.scss";
 import SearchBar from "../../../Components/SearchBar";
 import ManageMedicalDirectives from "./manageMedicalDirectives";
-import PoweredBySureShield from './../../../images/PoweredBySureShield.png'
+import PoweredByHapicareForSureShield from './../../../images/poweredByHapicareForSureshield.png'
 import DataUpload from "./dataUpload";
 import FeedbackTicket from "./feedbackTicket";
 import ReferenceList from "./../../ReferenceList";
@@ -576,7 +576,7 @@ const PNPManager = () => {
               </div>
             </div>
           </SideBar>
-          <img src={PoweredBySureShield} alt="" className={style.poweredby} />
+          <img src={PoweredByHapicareForSureShield} alt="" className={style.poweredby} />
         </div>
         <div>
           {selectedOption === "MANAGE MEDICAL DIRECTIVES" ? (

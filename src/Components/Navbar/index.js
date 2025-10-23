@@ -1240,7 +1240,7 @@ const Navbar = () => {
                 <div className={style.helpCardStyle}>
                   <Link
                     className={style.noFontStyle1}
-                    to={"/mdManager/manageAttestationGroups"}
+                    to={sessionStorage.getItem('selectedApplication') === "MD_MANAGER" ? "/mdManager/manageAttestationGroups" : "/pnpManager/manageAttestationGroups"}
                   >
                     <div className={`${style.options1} ${style.cursorPointer} ${window.location.pathname.includes("/activeStaff")
                       }`} onClick={() => sessionStorage.setItem('groupType', 'ATTESTATION')}
@@ -1249,7 +1249,7 @@ const Navbar = () => {
                   </Link>
                   <Link
                     className={style.noFontStyle1}
-                    to={"/mdManager/manageAttestationGroups"}
+                    to={sessionStorage.getItem('selectedApplication') === "MD_MANAGER" ? "/mdManager/manageAttestationGroups" : "/pnpManager/manageAttestationGroups"}
                   >
                     <div className={`${style.options1} ${style.cursorPointer} ${window.location.pathname.includes("/activeStaff")
                       }`} onClick={() => sessionStorage.setItem('groupType', 'ACKNOWLEDGEMENT')}
@@ -1258,7 +1258,7 @@ const Navbar = () => {
                   </Link>
                   <Link
                     className={style.noFontStyle1}
-                    to={"/mdManager/manageAttestationGroups"}
+                    to={sessionStorage.getItem('selectedApplication') === "MD_MANAGER" ? "/mdManager/manageAttestationGroups" : "/pnpManager/manageAttestationGroups"}
                   >
                     <div className={`${style.options1} ${style.cursorPointer} ${window.location.pathname.includes("/activeStaff")
                       }`} onClick={() => sessionStorage.setItem('groupType', 'SIGN_OFF')}
