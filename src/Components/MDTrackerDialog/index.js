@@ -812,17 +812,27 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
       applicantName.push(`${formatFirstNameLastName(data?.user?.name?.firstName, data?.user?.name?.lastName)}`);
       // dept.push(`${data?.application?.basicDetailReferences?.department?.name} ${data?.application?.basicDetailReferences?.specialty?.name ? `- ${data?.application?.basicDetailReferences?.specialty?.name}` : ''}`)
       dept.push(
-        ...(data?.user?.sites?.sites ?? []).map(site =>
-          (site?.departmentList?.departments ?? [])
-            .map(dept =>
-              `${dept?.departmentName?.name ?? '-'}${dept?.serviceAreas?.length
-                ? ` / ${dept.serviceAreas.map(sa => sa?.name ?? '').join(', ')}`
-                : ''
-              }`
-            )
-            .join(', ')
+        ...(
+          (data?.user?.sites?.sites?.length
+            ? data.user.sites.sites
+            : ['']
+          ).map(site => {
+            if (site === '') return '';
+
+            const departments = site?.departmentList?.departments ?? [];
+            if (departments.length === 0) return '';
+            return departments
+              .map(dept =>
+                `${dept?.departmentName?.name ?? '-'}${dept?.serviceAreas?.length
+                  ? ` / ${dept.serviceAreas.map(sa => sa?.name ?? '').join(', ')}`
+                  : ''
+                }`
+              )
+              .join(', ');
+          })
         )
       );
+      // console.log(dept, 'dept')
       // type.push(data?.application?.basicDetailReferences?.applicantType?.serviceProviderType)
       type.push('-')
       attestationDate.push(data?.attestationLog?.esign?.signedDate ? result.parsedDate ? format(result.parsedDate, dateFormat) : '-' : '-');

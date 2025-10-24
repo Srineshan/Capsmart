@@ -118,7 +118,7 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
         currentPolicyAndProcedures: 'Current Policy And Procedures',
         retiredPolicyAndProcedures: 'Retired Policy And Procedures',
         policyAndProceduresWorkflow: 'Policy and Procedures By Workflow Level',
-        policyAndProceduresAttestationOutstandingPNP: 'Policy and Procedures Attestation Outstanding By Staff Assigned To Attest',
+        policyAndProceduresAttestationOutstanding: 'Policy and Procedures Attestation Outstanding By Staff Assigned To Attest',
         policyAndProceduresTracker: 'Policy and Procedures Tracker',
         policyAndProceduresUpcomingForReview: 'Policy and Procedures Upcoming For Review',
     }
@@ -166,7 +166,7 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
         currentPolicyAndProcedures: 'POLICY_AND_PROCEDURES',
         retiredPolicyAndProcedures: 'POLICY_AND_PROCEDURES',
         policyAndProceduresWorkflow: 'POLICY_AND_PROCEDURES',
-        policyAndProceduresAttestationOutstandingPNP: 'POLICY_AND_PROCEDURES',
+        policyAndProceduresAttestationOutstanding: 'POLICY_AND_PROCEDURES',
         policyAndProceduresTracker: 'POLICY_AND_PROCEDURES',
         policyAndProceduresUpcomingForReview: 'POLICY_AND_PROCEDURES',
     }
@@ -221,7 +221,7 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
         'currentPolicyAndProcedures': 'CURRENT_POLICY_AND_PROCEDURES',
         'retiredPolicyAndProcedures': 'RETIRED_POLICY_AND_PROCEDURES',
         'policyAndProceduresWorkflow': 'POLICY_AND_PROCEDURES_WORKFLOW',
-        'policyAndProceduresAttestationOutstandingPNP': 'POLICY_AND_PROCEDURES_ATTESTATION_OUTSTANDING',
+        'policyAndProceduresAttestationOutstanding': 'POLICY_AND_PROCEDURES_ATTESTATION_OUTSTANDING',
         'policyAndProceduresTracker': 'POLICY_AND_PROCEDURES_TRACKER',
         'policyAndProceduresUpcomingForReview': 'POLICY_AND_PROCEDURES_UPCOMING_FOR_REVIEW',
     }

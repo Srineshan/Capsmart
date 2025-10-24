@@ -173,10 +173,13 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setStep2, setSte
     }, [selectedOption, sortField, sortValue, advancedSearch]);
 
     useEffect(() => {
+        const controller = new AbortController();
+        const signal = controller.signal;
         if (selectedOption === "Medical Directives Sign Off") {
-            getRevisionList();
+            getRevisionList(signal);
         }
-    }, [selectedSignOffOption, selectedOption])
+        return () => controller.abort();
+    }, [selectedSignOffOption, selectedOption, sortField, sortValue, advancedSearch])
 
     useEffect(() => {
         const controller = new AbortController();
@@ -268,20 +271,22 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setStep2, setSte
         "No.",
         "Title",
         "MD ID",
-        "Department / Division",
+        "Dept / Division",
         "First Published",
         "Last Revision",
         "Action",
     ];
+    const colSortValuesByCurrentTable = [false, true, true, true, false, false, false];
     const revisionTableHeaderValues = [
         "No.",
         "Title",
         "MD ID",
-        "Department / Division",
+        "Dept / Division",
         "Assigned To",
         selectedSignOffOption === 'level-1' ? "Acknowledged" : "Signed off",
         "Action",
     ];
+    const colSortValuesByRevisionTable = [false, true, true, true, false, false, false, false, true];
     const MECSignOffTableHeaderValues = [
         <CommonCheckBox
             size="medium"
@@ -291,12 +296,13 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setStep2, setSte
         "No.",
         "Title",
         "MD ID",
-        "Department / Division",
+        "Dept / Division",
         "Acknowledged",
         "Signed Off",
-        "Last Updated",
+        "Last Modified",
         "Action",
     ];
+    const colSortValuesByMECSignOff = [false, false, true, true, true, false, false, true, false];
     const outstandingSortValues = [true, true, true, true, true, false]
     const outstandingTableHeaderValues = [
         "Attestation Group",
@@ -311,17 +317,22 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setStep2, setSte
         "",
         "Title",
         "MD ID",
-        "Department / Division",
+        "Dept / Division",
         "Author",
         "Type",
         "Version",
-        "Last Updated",
+        "Last Modified",
         "Action",
     ];
+    const colSortValuesByDraftTable = [false, true, true, true, false, false, false, true];
 
     const tableHeaderValues = (selectedOption === 'Current Medical Directives' || selectedOption === 'Retire Medical Directives') ? currentTableHeaderValues : selectedOption === "Draft Medical Directives"
         ? draftTableHeaderValues : selectedOption === "Medical Directives Sign Off" ? selectedSignOffOption === "level-2" ? MECSignOffTableHeaderValues : revisionTableHeaderValues
             : outstandingTableHeaderValues;
+
+    const tableSortValues = (selectedOption === 'Current Medical Directives' || selectedOption === 'Retire Medical Directives') ? colSortValuesByCurrentTable : selectedOption === "Draft Medical Directives"
+        ? colSortValuesByDraftTable : selectedOption === "Medical Directives Sign Off" ? selectedSignOffOption === "level-2" ? colSortValuesByMECSignOff : colSortValuesByRevisionTable
+            : outstandingSortValues;
 
     const getUser = async () => {
         if (selectedOption === 'Current Medical Directives') {
@@ -733,12 +744,12 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setStep2, setSte
         return departmentCountList;
     }
 
-    const getRevisionList = async () => {
+    const getRevisionList = async (signal) => {
         setIsLoading(true)
         let url = sessionStorage.getItem('workModeType') === "MD Librarian" ?
-            `medical-directive-service/medicalDirectives/signOff?tab=${selectedSignOffOption}&role=${sessionStorage.getItem('workModeType')}&offset=${page - 1}&limit=${limit}&isPaginationRequired=${isPaginationRequired}` :
-            `medical-directive-service/medicalDirectives/signOff?tab=${selectedSignOffOption}&role=${sessionStorage.getItem('workModeType')}&assignedUserIds=${loggedInUser?.id}&offset=${page - 1}&limit=${limit}&isPaginationRequired=${isPaginationRequired}`
-        const response = await POST(url, {});
+            `medical-directive-service/medicalDirectives/signOff?tab=${selectedSignOffOption}&role=${sessionStorage.getItem('workModeType')}&offset=${page - 1}&limit=${limit}&isPaginationRequired=${isPaginationRequired}&sortBy=${sortValue}&sortByField=${sortField}` :
+            `medical-directive-service/medicalDirectives/signOff?tab=${selectedSignOffOption}&role=${sessionStorage.getItem('workModeType')}&assignedUserIds=${loggedInUser?.id}&offset=${page - 1}&limit=${limit}&isPaginationRequired=${isPaginationRequired}&sortBy=${sortValue}&sortByField=${sortField}`
+        const response = await POST(url, advancedSearch, { signal });
         console.log(response.data?.medicalDirectivesWithWorkflow);
         setRevisionList(response?.data?.medicalDirectivesWithWorkflow)
         setIsLoading(false)
@@ -1245,7 +1256,7 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setStep2, setSte
                             gridStyle={selectedOption === 'Attestations Outstanding' ? style.outstandingGrid : selectedOption === 'Current Medical Directives' ? style.mdListGrid : selectedOption === 'Draft Medical Directives' ? style.draftGrid : selectedOption === 'Retire Medical Directives' ? style.mdListGrid : selectedSignOffOption === 'level-2' ? style.level3Grid : style.revisionGrid}
                             actions={actionsData}
                             scrollStyle={style.scrollStyle}
-                            tableSortValues={selectedOption === 'Attestations Outstanding' ? outstandingSortValues : []}
+                            tableSortValues={tableSortValues}
                             heading={"There are no Records to display"}
                             getHandleSort={getHandleSort}
                             sortValue={{ sortBy: sortValue, sortByField: sortField }}
