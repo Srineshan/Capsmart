@@ -6,6 +6,7 @@ import jwt from 'jwt-decode';
 import { corsUrl, siteTimeZone, timeZoneAbbreviation } from '../../utils/formatting';
 import CommonDivider from '../../Components/CommonFields/CommonDivider';
 import style from './index.module.scss';
+import { format } from 'date-fns';
 
 const ReportHeader = () => {
     let cookie = new Cookie();
@@ -15,7 +16,7 @@ const ReportHeader = () => {
 
     const [logo, setLogo] = useState({ logo: sessionStorage?.getItem('logo'), title: sessionStorage.getItem('title') });
     const [corsedLogo, setCorsedLogo] = useState('');
-    const [currentTime, setCurrentTime] = useState(`${formatInTimeZone(new Date(), siteTimeZone(), 'MMM d yyyy, H:mm ')} ${timeZoneAbbreviation()}`);
+    const [currentTime, setCurrentTime] = useState((siteTimeZone() !== "null" && siteTimeZone() !== "undefined" && siteTimeZone()) ? `${formatInTimeZone(new Date(), siteTimeZone(), 'MMM d yyyy, H:mm ')} ${timeZoneAbbreviation()}` : format(new Date(), 'MMM d yyyy, H:mm '));
     const [addressLine1, setAddressLine1] = useState('');
     const [addressLine2, setAddressLine2] = useState('');
 

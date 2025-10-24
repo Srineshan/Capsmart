@@ -26,11 +26,15 @@ const MDDashboard = () => {
     const [isExpanded, setIsExpanded] = useState(true);
     const [dataToUseInReport, setDataToUseInReport] = useState({});
     const [isLoading, setIsLoading] = useState(false);
-    const [applicationDashboard, setApplicationDashboard] = useState();
+    const [mdDashboard, setMDDashboard] = useState();
     const [funnelSeries, setFunnelSeries] = useState([])
     const [funnelSeriesPercentage, setFunnelSeriesPercentage] = useState([])
     const [stackedSeries, setStackedSeries] = useState([]);
     const [stackedCategories, setStackedCategories] = useState([]);
+    const [stackedDraftSeries, setStackedDraftSeries] = useState([]);
+    const [stackedDraftCategories, setStackedDraftCategories] = useState([]);
+    const [stackedDeptSeries, setStackedDeptSeries] = useState([]);
+    const [stackedDeptCategories, setStackedDeptCategories] = useState([]);
     const [barChartSeries, setBarChartSeries] = useState([]
     );
     const [barChartCategories, setBarChartCategories] = useState(['']);
@@ -78,113 +82,135 @@ const MDDashboard = () => {
 
     const getDashboard = async (signal) => {
         setIsLoading(true);
-        const { data: dashboard } = await GET(`application-management-service/report/staffReappointment/dashboard?applicantTypeId=${dataToUseInReport?.selectedStaffType}&privilegingCategoryId=${dataToUseInReport?.selectedPrivilegeCategory}&departmentSpecialties=${dataToUseInReport?.selectedDepartments}`, { signal });
-        let tempFunnel = [{
-            name: 'Reappointments',
-            data: [
-                { x: 'Permanent Staff Eligible', y: dashboard?.reappointmentMetrics?.eligibleForReappointment?.count, z: dashboard?.reappointmentMetrics?.eligibleForReappointment?.percentage },
-                { x: 'Reappointment Applications', y: dashboard?.staffReappointmentStats?.applicationsCreated?.count, z: dashboard?.staffReappointmentStats?.applicationsCreated?.percentage },
-                { x: 'Completed Application', y: dashboard?.staffReappointmentStats?.applicationsSubmitted?.count, z: dashboard?.staffReappointmentStats?.applicationsSubmitted?.percentage },
-                { x: 'MSO Verified', y: dashboard?.staffReappointmentStats?.staffManager?.count, z: dashboard?.staffReappointmentStats?.staffManager?.percentage },
-                { x: 'Departmental Review', y: dashboard?.staffReappointmentStats?.departmentHead?.count, z: dashboard?.staffReappointmentStats?.departmentHead?.percentage },
-                { x: 'Cred. Comm. Review', y: dashboard?.staffReappointmentStats?.credentialingCommittee?.count, z: dashboard?.staffReappointmentStats?.credentialingCommittee?.percentage },
-                { x: 'MAC Approval', y: dashboard?.staffReappointmentStats?.advisoryCommittee?.count, z: dashboard?.staffReappointmentStats?.advisoryCommittee?.percentage },
-                { x: 'BOD Approval', y: dashboard?.staffReappointmentStats?.board?.count, z: dashboard?.staffReappointmentStats?.board?.percentage }
+        const { data: dashboard } = await GET(`medical-directive-service/report/dashboard?departmentSpecialties=${dataToUseInReport?.selectedDepartments}`, { signal });
+        if (dashboard) {
+            let temp = [
+                {
+                    name: "Ready To Publish",
+                    data: [
+                        dashboard?.draftMedicalDirectiveStats?.newMedicalDirectives?.readyToPublish,
+                        dashboard?.draftMedicalDirectiveStats?.renewedMedicalDirectives?.readyToPublish,
+                    ],
+                },
+                {
+                    name: "In Review",
+                    data: [
+                        dashboard?.draftMedicalDirectiveStats?.newMedicalDirectives?.underReview,
+                        dashboard?.draftMedicalDirectiveStats?.renewedMedicalDirectives?.underReview,
+                    ],
+                },
+                {
+                    name: "Under Sign Off",
+                    data: [
+                        dashboard?.draftMedicalDirectiveStats?.newMedicalDirectives?.underWorkflow,
+                        dashboard?.draftMedicalDirectiveStats?.renewedMedicalDirectives?.underWorkflow,
+                    ],
+                },
             ]
-        }]
-        let tempStackedBar = Object?.keys(dashboard?.reviewAndVerificationStats || {});
 
-        tempStackedBar?.forEach(data => {
-            const roleData = dashboard?.reviewAndVerificationStats[data]?.countByStatus;
-
-            Object?.entries(mapping).forEach(([key, label]) => {
-                const series = transformed.find(s => s.name === label);
-                const value = roleData?.[key]?.count ?? 0; // fallback to 0 if null
-                series.data.push(value);
-            });
-        });
-        const categories = tempStackedBar?.map(data => roleLabels[data] || data);
-        setFunnelSeries(tempFunnel);
-        setApplicationDashboard(dashboard)
-        console.log(tempStackedBar, transformed)
-        setStackedSeries(transformed)
-        setStackedCategories(categories)
-        let barTemp = {
-            name: "Completed",
-            data: dashboard?.workingDaysPerSubmittedApplications?.workingDaysPerSubmittedApplication?.map(data => data?.workingDays)
+            let tempDeptSeries = [
+                {
+                    name: 'Fully Attested',
+                    data: dashboard?.statsByDepartment?.departmentAttestationCountStats?.map(dept => dept?.stats?.attestedCount)
+                },
+                {
+                    name: 'Partially Attested',
+                    data: dashboard?.statsByDepartment?.departmentAttestationCountStats?.map(dept => dept?.stats?.notAttestedCount),
+                },
+                {
+                    name: 'Not Attested',
+                    data: dashboard?.statsByDepartment?.departmentAttestationCountStats?.map(dept => dept?.stats?.partiallyAttestedCount)
+                }
+            ]
+            setMDDashboard(dashboard)
+            setStackedDraftSeries(temp)
+            setStackedDraftCategories(['New', 'Updates'])
+            setStackedDeptSeries(tempDeptSeries)
+            setStackedDeptCategories(dashboard?.statsByDepartment?.departmentAttestationCountStats?.map(dept => dept?.name))
+            let barTemp = {
+                name: "Completed",
+                data: dashboard?.workingDaysStats?.workingDaysByMedicalDirective?.map(data => data?.workingDays)
+            }
+            setBarChartSeries([barTemp])
         }
-        setBarChartSeries([barTemp])
         setIsLoading(false);
+        console.log(transformed, dashboard, 'mdDashboard')
     }
 
     const getApplicationStatusSeries = () => {
-        if (applicationDashboard) {
-            return [applicationDashboard?.applicationStatus?.accepted?.count || 0, applicationDashboard?.applicationStatus?.notYetStarted?.count || 0, applicationDashboard?.applicationStatus?.declined?.count || 0]
+        if (mdDashboard) {
+            return [mdDashboard?.applicationStatus?.accepted?.count || 0, mdDashboard?.applicationStatus?.notYetStarted?.count || 0, mdDashboard?.applicationStatus?.declined?.count || 0]
         } else return []
     }
 
     const getApplicationStatusLabels = () => {
-        if (applicationDashboard) {
+        if (mdDashboard) {
             return ['Submitted', 'Not Yet Started', 'Declined']
         } else return []
     }
 
+    const getMDByStaffTypeSeries = () => {
+        if (mdDashboard) {
+            return Object.keys(mdDashboard?.statsByApplicantType?.fullyAttestedDirectiveStats)?.map(data => mdDashboard?.statsByApplicantType?.fullyAttestedDirectiveStats[data]?.percentage)
+        } else return []
+    }
+
     const getMSOReviewSeries = () => {
-        if (applicationDashboard) {
-            return [applicationDashboard?.reviewAndVerificationStats?.staffManager?.countByStatus?.completed?.count || 0, applicationDashboard?.reviewAndVerificationStats?.staffManager?.countByStatus?.rejected?.count || 0, applicationDashboard?.reviewAndVerificationStats?.staffManager?.countByStatus?.notYetStarted?.count || 0, applicationDashboard?.reviewAndVerificationStats?.staffManager?.countByStatus?.inProgress?.count || 0, applicationDashboard?.reviewAndVerificationStats?.staffManager?.countByStatus?.pastDue?.count || 0]
+        if (mdDashboard) {
+            return [mdDashboard?.reviewAndVerificationStats?.staffManager?.countByStatus?.completed?.count || 0, mdDashboard?.reviewAndVerificationStats?.staffManager?.countByStatus?.rejected?.count || 0, mdDashboard?.reviewAndVerificationStats?.staffManager?.countByStatus?.notYetStarted?.count || 0, mdDashboard?.reviewAndVerificationStats?.staffManager?.countByStatus?.inProgress?.count || 0, mdDashboard?.reviewAndVerificationStats?.staffManager?.countByStatus?.pastDue?.count || 0]
         } else return []
     }
 
     const getDeptHeadReviewSeries = () => {
-        if (applicationDashboard) {
-            return [applicationDashboard?.reviewAndVerificationStats?.departmentHead?.countByStatus?.completed?.count || 0, applicationDashboard?.reviewAndVerificationStats?.departmentHead?.countByStatus?.rejected?.count || 0, applicationDashboard?.reviewAndVerificationStats?.departmentHead?.countByStatus?.notYetStarted?.count || 0, applicationDashboard?.reviewAndVerificationStats?.departmentHead?.countByStatus?.inProgress?.count || 0, applicationDashboard?.reviewAndVerificationStats?.departmentHead?.countByStatus?.pastDue?.count || 0]
+        if (mdDashboard) {
+            return [mdDashboard?.reviewAndVerificationStats?.departmentHead?.countByStatus?.completed?.count || 0, mdDashboard?.reviewAndVerificationStats?.departmentHead?.countByStatus?.rejected?.count || 0, mdDashboard?.reviewAndVerificationStats?.departmentHead?.countByStatus?.notYetStarted?.count || 0, mdDashboard?.reviewAndVerificationStats?.departmentHead?.countByStatus?.inProgress?.count || 0, mdDashboard?.reviewAndVerificationStats?.departmentHead?.countByStatus?.pastDue?.count || 0]
         } else return []
     }
 
     const getCCReviewSeries = () => {
-        if (applicationDashboard) {
-            return [applicationDashboard?.reviewAndVerificationStats?.credentialingCommittee?.countByStatus?.completed?.count || 0, applicationDashboard?.reviewAndVerificationStats?.credentialingCommittee?.countByStatus?.rejected?.count || 0, applicationDashboard?.reviewAndVerificationStats?.credentialingCommittee?.countByStatus?.notYetStarted?.count || 0, applicationDashboard?.reviewAndVerificationStats?.credentialingCommittee?.countByStatus?.inProgress?.count || 0, applicationDashboard?.reviewAndVerificationStats?.credentialingCommittee?.countByStatus?.pastDue?.count || 0]
+        if (mdDashboard) {
+            return [mdDashboard?.reviewAndVerificationStats?.credentialingCommittee?.countByStatus?.completed?.count || 0, mdDashboard?.reviewAndVerificationStats?.credentialingCommittee?.countByStatus?.rejected?.count || 0, mdDashboard?.reviewAndVerificationStats?.credentialingCommittee?.countByStatus?.notYetStarted?.count || 0, mdDashboard?.reviewAndVerificationStats?.credentialingCommittee?.countByStatus?.inProgress?.count || 0, mdDashboard?.reviewAndVerificationStats?.credentialingCommittee?.countByStatus?.pastDue?.count || 0]
         } else return []
     }
 
     const getMACReviewSeries = () => {
-        if (applicationDashboard) {
-            return [applicationDashboard?.reviewAndVerificationStats?.advisoryCommittee?.countByStatus?.completed?.count || 0, applicationDashboard?.reviewAndVerificationStats?.advisoryCommittee?.countByStatus?.rejected?.count || 0, applicationDashboard?.reviewAndVerificationStats?.advisoryCommittee?.countByStatus?.notYetStarted?.count || 0, applicationDashboard?.reviewAndVerificationStats?.advisoryCommittee?.countByStatus?.inProgress?.count || 0, applicationDashboard?.reviewAndVerificationStats?.advisoryCommittee?.countByStatus?.pastDue?.count || 0]
+        if (mdDashboard) {
+            return [mdDashboard?.reviewAndVerificationStats?.advisoryCommittee?.countByStatus?.completed?.count || 0, mdDashboard?.reviewAndVerificationStats?.advisoryCommittee?.countByStatus?.rejected?.count || 0, mdDashboard?.reviewAndVerificationStats?.advisoryCommittee?.countByStatus?.notYetStarted?.count || 0, mdDashboard?.reviewAndVerificationStats?.advisoryCommittee?.countByStatus?.inProgress?.count || 0, mdDashboard?.reviewAndVerificationStats?.advisoryCommittee?.countByStatus?.pastDue?.count || 0]
         } else return []
     }
 
     const getBODReviewSeries = () => {
-        if (applicationDashboard) {
-            return [applicationDashboard?.reviewAndVerificationStats?.board?.countByStatus?.completed?.count || 0, applicationDashboard?.reviewAndVerificationStats?.board?.countByStatus?.rejected?.count || 0, applicationDashboard?.reviewAndVerificationStats?.board?.countByStatus?.notYetStarted?.count || 0, applicationDashboard?.reviewAndVerificationStats?.board?.countByStatus?.inProgress?.count || 0, applicationDashboard?.reviewAndVerificationStats?.board?.countByStatus?.pastDue?.count || 0]
+        if (mdDashboard) {
+            return [mdDashboard?.reviewAndVerificationStats?.board?.countByStatus?.completed?.count || 0, mdDashboard?.reviewAndVerificationStats?.board?.countByStatus?.rejected?.count || 0, mdDashboard?.reviewAndVerificationStats?.board?.countByStatus?.notYetStarted?.count || 0, mdDashboard?.reviewAndVerificationStats?.board?.countByStatus?.inProgress?.count || 0, mdDashboard?.reviewAndVerificationStats?.board?.countByStatus?.pastDue?.count || 0]
         } else return []
     }
 
     const getReviewLabels = () => {
-        if (applicationDashboard) {
-            return ['Completed', 'Rejected', 'Not Yet Started', 'In-Progress', 'Past Due']
+        if (mdDashboard) {
+            return Object.keys(mdDashboard?.statsByApplicantType?.fullyAttestedDirectiveStats) || []
         } else return []
     }
 
     const getRequestForClarificationSeries = () => {
-        if (applicationDashboard) {
-            return [applicationDashboard?.requestForClarificationStats?.summary?.applicant?.count || 0, 0, 0]
+        if (mdDashboard) {
+            return [mdDashboard?.requestForClarificationStats?.summary?.applicant?.count || 0, 0, 0]
         } else return []
     }
 
     const getRequestLabels = () => {
-        if (applicationDashboard) {
+        if (mdDashboard) {
             return ['Applicants', 'Institutes', 'Staffs']
         } else return []
     }
 
     const getRequestForDocumentsSeries = () => {
-        if (applicationDashboard) {
-            return [applicationDashboard?.requestForDocumentStats?.summary?.applicant?.count || 0, 0, 0]
+        if (mdDashboard) {
+            return [mdDashboard?.requestForDocumentStats?.summary?.applicant?.count || 0, 0, 0]
         } else return []
     }
 
     const getDocumentLabels = () => {
-        if (applicationDashboard) {
+        if (mdDashboard) {
             return ['Applicants', 'Institutes', 'Staffs']
         } else return []
     }
@@ -238,33 +264,33 @@ const MDDashboard = () => {
                             <div className={`${style.grid4} ${style.marginTop20}`}>
                                 <div className={`${style.dashboardTile}`}>
                                     <div className={style.dashboardTileText}>Active Medical Directives</div>
-                                    <div className={style.dashboardTileCount}>{applicationDashboard?.reappointmentMetrics?.eligibleForReappointment?.count}</div>
+                                    <div className={style.dashboardTileCount}>{mdDashboard?.statusCount?.active}</div>
                                 </div>
                                 <div className={`${style.dashboardTile} ${style.grid2}`}>
                                     <div>
                                         <div className={style.dashboardTileText}>New</div>
                                         <div className={style.topPeriodRangeText}>In Last 30 Days</div>
-                                        <div className={`${style.dashboardTileCount}`}>{`${applicationDashboard?.reappointmentMetrics?.applicationsSentOut?.percentage || 0}`}</div>
+                                        <div className={`${style.dashboardTileCount}`}>{`${mdDashboard?.statsByCreationType?.newMedicalDirectives || 0}`}</div>
                                     </div>
                                     <div>
                                         <div className={style.dashboardTileText}>Updates</div>
                                         <div className={style.topPeriodRangeText}>In Last 30 Days</div>
-                                        <div className={`${style.dashboardTileCount} `}>{`${applicationDashboard?.reappointmentMetrics?.applicationsSentOut?.percentage || 0}`}</div>
+                                        <div className={`${style.dashboardTileCount} `}>{`${mdDashboard?.statsByCreationType?.renewedMedicalDirectives || 0}`}</div>
                                     </div>
                                 </div>
                                 <div className={`${style.dashboardTile}`}>
                                     <div className={style.dashboardTileText}>Medical Directive Update Status</div>
                                     <div className={style.grid3}>
                                         <div>
-                                            <div className={`${style.dashboardTileCount}`}>{`${applicationDashboard?.reappointmentMetrics?.applicationsSentOut?.percentage || 0}`}</div>
+                                            <div className={`${style.dashboardTileCount}`}>{`${mdDashboard?.updateStats?.authoredDirective || 0}`}</div>
                                             <div className={style.topPeriodRangeText}>Authoring</div>
                                         </div>
                                         <div>
-                                            <div className={`${style.dashboardTileCount} `}>{`${applicationDashboard?.reappointmentMetrics?.applicationsSentOut?.percentage || 0}`}</div>
+                                            <div className={`${style.dashboardTileCount} `}>{`${mdDashboard?.updateStats?.underAcknowledgement || 0}`}</div>
                                             <div className={style.topPeriodRangeText}>Acknowledgement</div>
                                         </div>
                                         <div>
-                                            <div className={`${style.dashboardTileCount} `}>{`${applicationDashboard?.reappointmentMetrics?.applicationsSentOut?.percentage || 0}`}</div>
+                                            <div className={`${style.dashboardTileCount} `}>{`${mdDashboard?.updateStats?.underReview || 0}`}</div>
                                             <div className={style.topPeriodRangeText}>In Review</div>
                                         </div>
                                     </div>
@@ -272,8 +298,8 @@ const MDDashboard = () => {
                                 <div className={`${style.dashboardTile}`}>
                                     <div className={style.dashboardTileText}>Medical Directives Fully Attested</div>
                                     <div className={style.displayInRow}>
-                                        <div className={style.dashboardTileCount}>{applicationDashboard?.reappointmentMetrics?.underReview?.count}</div>
-                                        <div className={`${style.dashboardTilePercentage} ${style.marginLeft10}`}>{`${applicationDashboard?.reappointmentMetrics?.applicationsSentOut?.percentage || 0}%`}</div>
+                                        <div className={style.dashboardTileCount}>{mdDashboard?.attestationCountStats?.completelyAttestedCount}</div>
+                                        <div className={`${style.dashboardTilePercentage} ${style.marginLeft10}`}>{`${mdDashboard?.reappointmentMetrics?.applicationsSentOut?.percentage || 0}%`}</div>
                                         <ArrowDropDownIcon sx={{ color: '#FF6562', marginRight: '5px' }} />
                                         <div className={`${style.countChangeRed} ${style.marginLeftReduce10}`}>10</div>
                                         <div className={`${style.topPeriodRangeText} ${style.marginLeft10}`}>From Last week</div>
@@ -286,18 +312,20 @@ const MDDashboard = () => {
                                         <div className={style.chartHeaderText}>Medical Directive Authoring Status</div>
                                     </div>
                                     <div className={`${style.chartBody} ${style.fullHeight}`}>
-                                        {(stackedSeries?.length > 0 && stackedCategories?.length > 0) && (
-                                            <ApexStackedBarChart stackedSeries={stackedSeries} stackedCategories={stackedCategories} horizontal={true} />
+                                        {(stackedDraftSeries?.length > 0 && stackedDraftCategories?.length > 0) && (
+                                            <ApexStackedBarChart stackedSeries={stackedDraftSeries} stackedCategories={stackedDraftCategories} horizontal={true} />
                                         )}
                                     </div>
                                 </div>
                                 <div className={style.fullHeight}>
                                     <div className={`${style.chartHeader} ${style.spaceBetween}`}>
                                         <div className={style.chartHeaderText}>Working Days Per Medical Directive Creation / Authoring</div>
-                                        <div className={style.chartHeaderText}>Average days: <span className={style.chartHeaderRightText}>{applicationDashboard?.workingDaysPerSubmittedApplications?.averageWorkingDays}</span></div>
+                                        <div className={style.chartHeaderText}>Average days: <span className={style.chartHeaderRightText}>{mdDashboard?.workingDaysStats?.averageWorkingDays}</span></div>
                                     </div>
                                     <div className={`${style.chartBody} ${style.fullHeight}`}>
-                                        <ApexBarChart series={barChartSeries} categories={barChartCategories} reportingPeriod={``} yAxisTitle="DAYS" xAxisTitle="Submitted Applications" fullWidth={true} />
+                                        {(barChartSeries?.length > 0 && barChartCategories?.length > 0) && (
+                                            <ApexBarChart series={barChartSeries} categories={barChartCategories} reportingPeriod={``} yAxisTitle="DAYS" xAxisTitle="Submitted Applications" fullWidth={true} />
+                                        )}
                                     </div>
                                 </div>
                             </div>
@@ -336,18 +364,20 @@ const MDDashboard = () => {
                                                     marginTop: "10px"
                                                 }}
                                             >
-                                                {applicationDashboard?.reviewAndVerificationStats?.staffManager?.averageWorkingDays || 0}
+                                                {mdDashboard?.reviewAndVerificationStats?.staffManager?.averageWorkingDays || 0}
                                             </span>
                                         </div>
                                         <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Days</div>
                                     </div>
                                     <div>
                                         <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Avg. Working Days by Staff Type</div>
-                                        <ApexBarChart series={barChartSeries} categories={barChartCategories} reportingPeriod={``} yAxisTitle="DAYS" xAxisTitle="Submitted Applications" fullWidth={true} />
+                                        {/* {(barChartSeries?.length > 0 && barChartCategories?.length > 0) && (
+                                            <ApexBarChart series={barChartSeries} categories={barChartCategories} reportingPeriod={``} yAxisTitle="DAYS" xAxisTitle="Submitted Applications" fullWidth={true} />
+                                        )} */}
                                     </div>
                                     <div>
                                         <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Medical Directive Fully Attested By Staff Type</div>
-                                        <DonutChart height={200} legendPosition={'right'} series={getMSOReviewSeries()} labels={getReviewLabels()} colors={['#73D035', '#FF6562', '#3F8ADF', '#FFC100', '#FF851C']} size={'0%'} />
+                                        <DonutChart height={200} legendPosition={'right'} series={getMDByStaffTypeSeries()} labels={getReviewLabels()} colors={['#73D035', '#FF6562', '#3F8ADF', '#FFC100', '#FF851C']} size={'0%'} />
                                     </div>
                                 </div>
                             </div>
@@ -358,7 +388,9 @@ const MDDashboard = () => {
                                 </div>
                                 <div className={`${style.chartBody}`}>
                                     <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Avg. Working Days by Department</div>
-                                    <ApexBarChart series={barChartSeries} categories={barChartCategories} reportingPeriod={``} yAxisTitle="DAYS" xAxisTitle="Submitted Applications" fullWidth={true} />
+                                    {/* {(barChartSeries?.length > 0 && barChartCategories?.length > 0) && (
+                                        <ApexBarChart series={barChartSeries} categories={barChartCategories} reportingPeriod={``} yAxisTitle="DAYS" xAxisTitle="Submitted Applications" fullWidth={true} />
+                                    )} */}
                                 </div>
                             </div>
 
@@ -368,8 +400,8 @@ const MDDashboard = () => {
                                 </div>
                                 <div className={`${style.chartBody}`}>
                                     <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Attestation Status by Department</div>
-                                    {(stackedSeries?.length > 0 && stackedCategories?.length > 0) && (
-                                        <ApexStackedBarChart stackedSeries={stackedSeries} stackedCategories={stackedCategories} horizontal={false} />
+                                    {(stackedDeptSeries?.length > 0 && stackedDeptCategories?.length > 0) && (
+                                        <ApexStackedBarChart stackedSeries={stackedDeptSeries} stackedCategories={stackedDeptCategories} horizontal={false} />
                                     )}
                                 </div>
                             </div>
