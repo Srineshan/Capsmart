@@ -6,7 +6,9 @@ const NoDataBox = ({ heading, subHeading, subHeading2, onClickText, onClickFunct
     return (
         <div className={`${style.noContractsBox} ${style.alignCenter}`}>
             <div>
-                <div className={style.noContractsFontStyle}>{heading}</div>
+                {heading && (
+                    <div className={style.noContractsFontStyle}>{heading}</div>
+                )}
                 {subHeading !== '' && (
                     <div className={` ${style.marginTop20} ${style.displayInRow} ${style.justifyCenter} ${style.alignCenter}`}>
                         <div>

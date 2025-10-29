@@ -675,7 +675,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
           //     ? form?.basicDetailReferences?.applicantType?.serviceProviderType
           //     : "{Applicant Type}"
           // }`}
-          title={"Credentialing & Privileging Locum Staff Details"}
+          title={`Credentialing & Privileging ${form?.basicDetailReferences?.credentialingAndPrivilegingCategory?.type === "LOCUM" ? 'Locum' : 'Permanent'} Staff Details`}
           close={true}
           closeClick={onClose}
         />

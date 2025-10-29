@@ -35,6 +35,7 @@ const WorkModeDialog = ({ getIsOpen }) => {
   const [userRole, setUserRole] = useState([]);
   const [userMDRole, setUserMDRole] = useState([]);
   const [userPNPRole, setUserPNPRole] = useState([]);
+  const [userLMSRole, setUserLMSRole] = useState([]);
   const [selectedWorkSpace, setSelectedWorkSpace] = useState('');
   const [selectedEntity, setSelectedEntity] = useState('');
   const [showEntitySelection, setShowEntitySelection] = useState(false);
@@ -141,14 +142,17 @@ const WorkModeDialog = ({ getIsOpen }) => {
     let tempUserRole = !isHapicareUser ? userData?.roles?.map((data) => data?.roleName) || [] : userData?.organizations?.[0]?.roles?.map((data) => data?.roleName) || [];
     let tempUserMDRole = !isHapicareUser ? userData?.mdRoles?.map((data) => data?.roleName) || [] : userData?.organizations?.[0]?.mdRoles?.map((data) => data?.roleName) || [];
     let tempUserPNPRole = !isHapicareUser ? userData?.pnpRoles?.map((data) => data?.roleName) || [] : userData?.organizations?.[0]?.pnpRoles?.map((data) => data?.roleName) || [];
+    let tempUserLMSRole = !isHapicareUser ? userData?.lmsRoles?.map((data) => data?.roleName) || [] : userData?.organizations?.[0]?.lmsRoles?.map((data) => data?.roleName) || [];
     setUserRole(tempUserRole);
     setUserMDRole(tempUserMDRole)
     setUserPNPRole(tempUserPNPRole)
+    setUserLMSRole(tempUserLMSRole)
     // }
     let tempApplications = [];
     if (tempUserRole?.length >= 1) tempApplications.push("CAP_MANAGER");
     if (tempUserMDRole?.length >= 1) tempApplications.push("MD_MANAGER");
     if (tempUserPNPRole?.length >= 1) tempApplications.push("PNP_MANAGER");
+    if (tempUserLMSRole?.length >= 1) tempApplications.push("LMS_MANAGER");
     setApplications(tempApplications);
     console.log("userRoletimes", userRole, tempApplications, userData, isHapicareUser)
   };
@@ -240,6 +244,10 @@ const WorkModeDialog = ({ getIsOpen }) => {
     window.location.pathname = `/mdManager/libraries/${entityId}/${entitySiteList?.[0]?.sites?.[0]?.departmentList?.departments?.[0]?.id}`;
   }
 
+  const handleLMSRoute = () => {
+    window.location.href = `https://lms.indocaribe.com/descope-login/?ssotoken=${cookie.get("authorization")}`;
+  }
+
   return (
     <>
       {/* <Dialog
@@ -309,9 +317,9 @@ const WorkModeDialog = ({ getIsOpen }) => {
               <div className={`${style.workSpaceDesc}  ${selectedWorkSpace !== '' ? style.disabledView : ''}`}>Select the application you want to work in:</div>
               <div className={`${style.threeCol} ${style.padding}`}>
                 {applications?.map(data => (
-                  <div className={`${data === "PNP_MANAGER" ? style.applicationSelectionPNPCard : style.applicationSelectionCard} ${selectedWorkSpace === data ? data === "PNP_MANAGER" ? style.selectedApplicationPNPCard : style.selectedApplicationCard : ''} ${style.justifyCenter} ${style.verticalAlignCenter} ${style.cursorPointer} ${style.marginRight}`} onClick={() => { setSelectedWorkSpace(data); sessionStorage.setItem('selectedApplication', data) }}>
-                    <img src={data === 'CAP_MANAGER' ? CAPManager : data === "MD_MANAGER" ? MDManager : PNPManager} alt="" className={style.applicationImage} />
-                    <div className={style.marginLeft10}>{data === 'CAP_MANAGER' ? <div className={style.applicationName}>CAP<span className={style.applicationNamePrimary}>Manager</span></div> : data === 'MD_MANAGER' ? <div className={style.applicationName}>MD<span className={style.applicationNamePrimary}>Manager</span></div> : <div className={style.applicationPNPName}>P&P<span className={style.pnpNamePrimary}>Manager</span></div>}</div>
+                  <div className={`${data === "PNP_MANAGER" ? style.applicationSelectionPNPCard : style.applicationSelectionCard} ${selectedWorkSpace === data ? data === "PNP_MANAGER" ? style.selectedApplicationPNPCard : style.selectedApplicationCard : ''} ${style.justifyCenter} ${style.verticalAlignCenter} ${style.cursorPointer} ${style.marginRight}`} onClick={data === "LMS_MANAGER" ? () => handleLMSRoute() : () => { setSelectedWorkSpace(data); sessionStorage.setItem('selectedApplication', data) }}>
+                    <img src={data === 'CAP_MANAGER' ? CAPManager : data === "MD_MANAGER" ? MDManager : data === "LMS_MANAGER" ? MDManager : PNPManager} alt="" className={style.applicationImage} />
+                    <div className={style.marginLeft10}>{data === 'CAP_MANAGER' ? <div className={style.applicationName}>CAP<span className={style.applicationNamePrimary}>Manager</span></div> : data === 'MD_MANAGER' ? <div className={style.applicationName}>MD<span className={style.applicationNamePrimary}>Manager</span></div> : data === 'LMS_MANAGER' ? <div className={style.applicationName}>LMS<span className={style.applicationNamePrimary}>Manager</span></div> : <div className={style.applicationPNPName}>P&P<span className={style.pnpNamePrimary}>Manager</span></div>}</div>
                   </div>
                 ))}
               </div>
