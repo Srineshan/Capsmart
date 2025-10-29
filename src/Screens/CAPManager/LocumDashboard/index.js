@@ -31,8 +31,9 @@ const LocumDashboard = () => {
     const [funnelSeriesPercentage, setFunnelSeriesPercentage] = useState([])
     const [stackedSeries, setStackedSeries] = useState([]);
     const [stackedCategories, setStackedCategories] = useState([]);
-    const [barChartSeries, setBarChartSeries] = useState([]
-    );
+    const [barChartByStaffTypeSeries, setBarChartByStaffTypeSeries] = useState([]);
+    const [barChartByStaffTypeCategories, setBarChartByStaffTypeCategories] = useState(['Physician', 'Midwife', 'Dentist']);
+    const [barChartSeries, setBarChartSeries] = useState([]);
     const [barChartCategories, setBarChartCategories] = useState(['']);
     const mapping = {
         completed: "Completed",
@@ -78,7 +79,7 @@ const LocumDashboard = () => {
 
     const getDashboard = async (signal) => {
         setIsLoading(true);
-        const { data: dashboard } = await GET(`application-management-service/report/staffReappointment/dashboard?applicantTypeId=${dataToUseInReport?.selectedStaffType}&privilegingCategoryId=${dataToUseInReport?.selectedPrivilegeCategory}&departmentSpecialties=${dataToUseInReport?.selectedDepartments}`, { signal });
+        const { data: dashboard } = await GET(`application-management-service/report/staffReappointment/dashboard?applicantTypeId=${dataToUseInReport?.selectedStaffType}&privilegingCategoryId=${dataToUseInReport?.selectedPrivilegeCategory}&departmentSpecialties=${dataToUseInReport?.selectedDepartments}&creationType=LOCUM_RENEWAL`, { signal });
         let tempFunnel = [{
             name: 'Reappointments',
             data: [
@@ -114,6 +115,11 @@ const LocumDashboard = () => {
             data: dashboard?.workingDaysPerSubmittedApplications?.workingDaysPerSubmittedApplication?.map(data => data?.workingDays)
         }
         setBarChartSeries([barTemp])
+        let barByStaffTypeTemp = {
+            name: "Count",
+            data: [dashboard?.staffApplicationCompletionStats?.avgDaysToCompleteByStaffType?.physician || 0, dashboard?.staffApplicationCompletionStats?.avgDaysToCompleteByStaffType?.midwife || 0, dashboard?.staffApplicationCompletionStats?.avgDaysToCompleteByStaffType?.dentist || 0]
+        }
+        setBarChartByStaffTypeSeries([barByStaffTypeTemp])
         setIsLoading(false);
     }
 
@@ -126,6 +132,18 @@ const LocumDashboard = () => {
     const getApplicationStatusLabels = () => {
         if (applicationDashboard) {
             return ['Submitted', 'Not Yet Started', 'Declined']
+        } else return []
+    }
+
+    const getApplicationCompletedByStaffTypeLabels = () => {
+        if (applicationDashboard) {
+            return ['Physician', 'Midwives', 'Dentists']
+        } else return []
+    }
+
+    const getApplicationCompletedByStaffTypeSeries = () => {
+        if (applicationDashboard) {
+            return [applicationDashboard?.staffApplicationCompletionStats?.applicationsSubmittedByStaffType?.physician?.count || 0, applicationDashboard?.staffApplicationCompletionStats?.applicationsSubmittedByStaffType?.midwife?.count || 0, applicationDashboard?.staffApplicationCompletionStats?.applicationsSubmittedByStaffType?.dentist?.count || 0]
         } else return []
     }
 
@@ -288,7 +306,7 @@ const LocumDashboard = () => {
                             <div className={`${style.grid12} ${style.marginTop20}`}>
                                 <div>
                                     <div className={style.chartHeader}>
-                                        <div className={style.chartHeaderText}>Reappointment Application Status</div>
+                                        <div className={style.chartHeaderText}>{` {Extension} Application Status`}</div>
                                     </div>
                                     <div className={style.chartBody}>
                                         <div className={style.chartBodyCount}>{applicationDashboard?.applicationStatus?.totalApplications?.count}</div>
@@ -302,7 +320,9 @@ const LocumDashboard = () => {
                                         <div className={style.chartHeaderText}>Average days: <span className={style.chartHeaderRightText}>{applicationDashboard?.workingDaysPerSubmittedApplications?.averageWorkingDays}</span></div>
                                     </div>
                                     <div className={`${style.chartBody} ${style.fullHeight}`}>
-                                        <ApexBarChart series={barChartSeries} categories={barChartCategories} reportingPeriod={``} yAxisTitle="DAYS" xAxisTitle="Submitted Applications" fullWidth={true} />
+                                        {barChartSeries?.length > 0 && (
+                                            <ApexBarChart series={barChartSeries} categories={barChartCategories} reportingPeriod={``} yAxisTitle="DAYS" xAxisTitle="Submitted Applications" fullWidth={true} />
+                                        )}
                                     </div>
                                 </div>
                             </div>
@@ -340,18 +360,20 @@ const LocumDashboard = () => {
                                                     marginTop: "10px"
                                                 }}
                                             >
-                                                {applicationDashboard?.reviewAndVerificationStats?.staffManager?.averageWorkingDays || 0}
+                                                {applicationDashboard?.staffApplicationCompletionStats?.averageWorkingDays || 0}
                                             </span>
                                         </div>
                                         <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Days</div>
                                     </div>
                                     <div>
                                         <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Avg. Working Days by Staff Type</div>
-                                        <ApexBarChart series={barChartSeries} categories={barChartCategories} reportingPeriod={``} yAxisTitle="DAYS" xAxisTitle="Submitted Applications" fullWidth={true} />
+                                        {barChartByStaffTypeSeries?.length > 0 && (
+                                            <ApexBarChart series={barChartByStaffTypeSeries} categories={barChartByStaffTypeCategories} reportingPeriod={``} yAxisTitle="DAYS" xAxisTitle="Submitted Applications" fullWidth={true} />
+                                        )}
                                     </div>
                                     <div>
                                         <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>{`{Extension} Application Completed By Staff Type`}</div>
-                                        <DonutChart height={200} legendPosition={'right'} series={getMSOReviewSeries()} labels={getReviewLabels()} colors={['#73D035', '#FF6562', '#3F8ADF', '#FFC100', '#FF851C']} size={'0%'} />
+                                        <DonutChart height={200} legendPosition={'right'} series={getApplicationCompletedByStaffTypeSeries()} labels={getApplicationCompletedByStaffTypeLabels()} colors={['#C592ED', '#FFD60C', '#FF80AC', '#FFC100', '#FF851C']} size={'0%'} />
                                     </div>
                                 </div>
                             </div>

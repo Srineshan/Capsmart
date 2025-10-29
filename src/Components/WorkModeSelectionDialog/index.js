@@ -49,7 +49,15 @@ const WorkModeDialog = ({ getIsOpen }) => {
   const [entitySiteList, setEntitySiteList] = useState([]);
   const isHapicareUser = isMasterEntity;
   const [applications, setApplications] = useState([]);
-
+  const roles = [userRole, userMDRole, userPNPRole, userLMSRole];
+  const activeRoles = roles.filter(role => role?.length >= 1);
+  const rolesCheck = [
+    { key: 'CAP_MANAGER', value: userRole },
+    { key: 'MD_MANAGER', value: userMDRole },
+    { key: 'PNP_MANAGER', value: userPNPRole },
+    { key: 'LMS_MANAGER', value: userLMSRole }
+  ];
+  const activeRolesCheck = roles.filter(role => role.value?.length > 0);
   useEffect(() => {
     sessionStorage.setItem("fromSummary", false);
     setUserDetails();
@@ -62,7 +70,7 @@ const WorkModeDialog = ({ getIsOpen }) => {
   }, [userData, isHapicareUser, entityId])
 
   useEffect(() => {
-    if ((userRole?.length >= 1 && userMDRole?.length >= 1) && selectedWorkSpace !== '') {
+    if ((activeRoles?.length >= 2) && selectedWorkSpace !== '') {
       setUserRoleToDisplay(selectedWorkSpace === 'CAP_MANAGER' ? userRole : selectedWorkSpace === 'MD_MANAGER' ? userMDRole : userPNPRole);
       const initialRoute = localStorage.getItem("initialRoute");
       if (selectedWorkSpace === 'CAP_MANAGER') {
@@ -123,14 +131,12 @@ const WorkModeDialog = ({ getIsOpen }) => {
   }, [selectedWorkSpace]);
 
   useEffect(() => {
-    if (userRole?.length === 0 && userMDRole?.length !== 0 && userMDRole && userRole) {
-      setSelectedWorkSpace('MD_MANAGER')
-      sessionStorage.setItem('selectedApplication', selectedWorkSpace)
-    } else if (userRole?.length !== 0 && userMDRole?.length === 0 && userMDRole && userRole) {
-      setSelectedWorkSpace('CAP_MANAGER')
-      sessionStorage.setItem('selectedApplication', selectedWorkSpace)
+    if (activeRoles.length === 1) {
+      const selected = activeRoles[0].key;
+      setSelectedWorkSpace(selected);
+      sessionStorage.setItem('selectedApplication', selected);
     }
-  }, [userRole, userMDRole])
+  }, [userRole, userMDRole, userPNPRole, userLMSRole])
 
   const setUserDetails = async () => {
     const { data: userData } = await GET(`user-management-service/user/${users?.id}`);
@@ -212,6 +218,7 @@ const WorkModeDialog = ({ getIsOpen }) => {
     setUserRole(userData?.organizations?.filter(data => data?.tenant?.tenantId === value)?.[0]?.roles?.map((data) => data?.roleName) || []);
     setUserMDRole(userData?.organizations?.filter(data => data?.tenant?.tenantId === value)?.[0]?.mdRoles?.map((data) => data?.roleName) || [])
     setUserPNPRole(userData?.organizations?.filter(data => data?.tenant?.tenantId === value)?.[0]?.pnpRoles?.map((data) => data?.roleName) || [])
+    setUserLMSRole(userData?.organizations?.filter(data => data?.tenant?.tenantId === value)?.[0]?.lmsRoles?.map((data) => data?.roleName) || [])
   }
 
   const getEntitySites = async () => {
@@ -311,7 +318,7 @@ const WorkModeDialog = ({ getIsOpen }) => {
               <CommonDivider className={style.dividerMargin} />
             </div>
           )}
-          {((entitySiteList?.length > 1 || entitySiteList?.[0]?.sites?.length > 1) ? (userRole?.length >= 1 && userMDRole?.length >= 1 && selectedSite !== '') : (userRole?.length >= 1 && userMDRole?.length >= 1)) && (
+          {((entitySiteList?.length > 1 || entitySiteList?.[0]?.sites?.length > 1) ? (activeRoles?.length >= 2 && selectedSite !== '') : (activeRoles?.length >= 2)) && (
             <div>
               <div className={`${style.heading}  ${style.padding} ${selectedWorkSpace !== '' ? style.disabledView : ''}`}>{selectedWorkSpace === '' ? 'Select Application' : 'Selected Application'}</div>
               <div className={`${style.workSpaceDesc}  ${selectedWorkSpace !== '' ? style.disabledView : ''}`}>Select the application you want to work in:</div>
