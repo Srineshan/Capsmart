@@ -20,11 +20,113 @@ const PNPManagerStep2 = ({ setStep1, setStep2, setStep3, mdValue, getMD, setMdVa
     const [isSaveInProgressDialog, setIsSaveInProgressDialog] = useState(false);
     const [isConfirmationDialog, setIsConfirmationDialog] = useState(false);
 
+    // Build a map of placeholder tokens to system values
+    const getSystemVariableMap = useCallback(() => {
+        try {
+            const user = JSON.parse(sessionStorage.getItem('user') || '{}');
+            const workMode = sessionStorage.getItem('workModeType') || '';
+            const selectedSite = sessionStorage.getItem('selectedSite') || '';
+            const today = new Date().toLocaleDateString();
+
+            const userName = (user?.name?.firstName && user?.name?.lastName)
+                ? `${user?.name?.firstName} ${user?.name?.lastName}`
+                : (user?.email?.officialEmail || '');
+
+            return {
+                '{{USER_NAME}}': userName,
+                '{{WORK_MODE}}': workMode,
+                '{{SITE_ID}}': selectedSite,
+                '{{TODAY}}': today,
+            };
+        } catch (e) {
+            return {
+                '{{USER_NAME}}': '',
+                '{{WORK_MODE}}': '',
+                '{{SITE_ID}}': '',
+                '{{TODAY}}': new Date().toLocaleDateString(),
+            };
+        }
+    }, []);
+
+    const replaceSystemVariables = useCallback(() => {
+        const docEditor = editorRef.current?.documentEditorInternal;
+        if (!docEditor) return false;
+
+        console.log("🟡 Starting system variable replacement...");
+        const vars = getSystemVariableMap();
+        console.log("📄 System variables map:", vars);
+
+        const sfdt = JSON.parse(docEditor.serialize());
+        console.log("🔍 Raw SFDT data (before parse):", sfdt);
+
+        let modified = false;
+
+        const replaceInText = (text) => {
+            let newText = text;
+            Object.entries(vars).forEach(([token, value]) => {
+                const safeToken = token.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+                const regex = new RegExp(safeToken, "g");
+                if (regex.test(newText)) {
+                    console.log(`🪄 Replacing "${token}" → "${value}"`);
+                    newText = newText.replace(regex, value);
+                    modified = true;
+                }
+            });
+            return newText;
+        };
+
+        const walkInlines = (inlines) => {
+            if (!Array.isArray(inlines)) return;
+            inlines.forEach((inline) => {
+                if (inline.tlp) {
+                    const newText = replaceInText(inline.tlp);
+                    if (newText !== inline.tlp) {
+                        inline.tlp = newText;
+                    }
+                }
+                if (inline.text) {
+                    const newText = replaceInText(inline.text);
+                    if (newText !== inline.text) {
+                        inline.text = newText;
+                    }
+                }
+            });
+        };
+
+        const walkBlocks = (blocks) => {
+            if (!Array.isArray(blocks)) return;
+            blocks.forEach((block) => {
+                if (block.i) walkInlines(block.i);
+                if (Array.isArray(block.b)) walkBlocks(block.b);
+            });
+        };
+
+        // ✅ Adjust for "sec" instead of "sections"
+        const sections = sfdt.sections || sfdt.sec;
+        if (Array.isArray(sections)) {
+            sections.forEach((section) => {
+                if (Array.isArray(section.b)) walkBlocks(section.b);
+            });
+        } else {
+            console.warn("⚠️ No sections found in SFDT. Check property names:", Object.keys(sfdt));
+        }
+
+        if (modified) {
+            docEditor.open(JSON.stringify(sfdt));
+            console.log("✅ Variables replaced successfully");
+            return true;
+        } else {
+            console.log("ℹ️ No variables found to replace");
+            return false;
+        }
+    }, [getSystemVariableMap]);
+
+
     const handleEditorCreated = useCallback(() => {
         console.log('=== handleEditorCreated CALLED ===');
 
         // Use requestAnimationFrame to ensure this runs after the current render cycle
-        requestAnimationFrame(() => {
+        requestAnimationFrame(async () => {
             console.log('Document editor created and ready');
             console.log('mdValue file URL:', mdValue?.file?.fileURL);
             console.log('Editor ref:', editorRef.current);
@@ -34,27 +136,91 @@ const PNPManagerStep2 = ({ setStep1, setStep2, setStep3, mdValue, getMD, setMdVa
             const docEditor = editorRef.current?.documentEditorInternal;
 
             if (docEditor) {
-                // Initialize with empty document first - call synchronously
                 try {
-                    // Call openBlank immediately to initialize the document structure
-                    docEditor.openBlank();
-                    console.log('Called openBlank() synchronously');
+                    const fileURL = mdValue?.file?.fileURL;
 
-                    // Use setTimeout(0) to let the current call stack complete
-                    setTimeout(() => {
-                        console.log('Editor initialized with blank document');
-                        console.log('Editor initialized successfully');
-                    }, 0);
+                    if (fileURL) {
+                        // Load existing document from URL
+                        console.log('Loading document from URL:', fileURL);
+                        try {
+                            // Fetch the file
+                            const response = await fetch(fileURL);
+                            const arrayBuffer = await response.arrayBuffer();
+                            const blob = new Blob([arrayBuffer], {
+                                type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+                            });
+
+                            // Convert blob to base64 or use import method
+                            // Try using the openUrl method or import with proper format
+                            const reader = new FileReader();
+                            reader.onload = async (e) => {
+                                try {
+                                    // Try importing as DOCX
+                                    const base64 = e.target.result.split(',')[1];
+                                    // Use the import method for DOCX files
+                                    docEditor.import(base64, 'Docx');
+                                    console.log('Document imported successfully via base64');
+
+                                    // Wait longer for document to fully load and be ready for operations
+                                    setTimeout(() => {
+                                        console.log('Replacing variables after document load');
+                                        // Try replacement multiple times to ensure it works
+                                        const attemptReplacement = () => {
+                                            const success = replaceSystemVariables();
+                                            if (!success) {
+                                                console.log('First attempt failed, retrying in 500ms...');
+                                                setTimeout(() => {
+                                                    replaceSystemVariables();
+                                                }, 500);
+                                            }
+                                        };
+                                        attemptReplacement();
+                                    }, 2000);
+                                } catch (importError) {
+                                    console.error('Error importing document:', importError);
+                                    // Try alternative method - open with array buffer
+                                    try {
+                                        // Some versions use open() with array buffer
+                                        docEditor.open(arrayBuffer);
+                                        setTimeout(() => {
+                                            replaceSystemVariables();
+                                        }, 500);
+                                    } catch (openError) {
+                                        console.error('Error with open method:', openError);
+                                        // Fallback to blank
+                                        docEditor.openBlank();
+                                        setTimeout(() => {
+                                            replaceSystemVariables();
+                                        }, 100);
+                                    }
+                                }
+                            };
+                            reader.readAsDataURL(blob);
+                        } catch (error) {
+                            console.error('Error loading document from URL:', error);
+                            // Fallback to blank document
+                            docEditor.openBlank();
+                            setTimeout(() => {
+                                replaceSystemVariables();
+                            }, 100);
+                        }
+                    } else {
+                        // No existing document, open blank
+                        docEditor.openBlank();
+                        console.log('Opened blank document');
+
+                        setTimeout(() => {
+                            replaceSystemVariables();
+                        }, 100);
+                    }
                 } catch (error) {
-                    console.error('Error initializing blank document:', error);
-                    // Error handled
+                    console.error('Error initializing document:', error);
                 }
             } else {
-                // If editor not available yet, polling will handle it
-                console.log('Editor not yet available in onCreated, polling will handle');
+                console.log('Editor not yet available in onCreated');
             }
         });
-    }, []);
+    }, [replaceSystemVariables, mdValue]);
 
     // Debug: Log mdValue changes
     useEffect(() => {
@@ -69,6 +235,20 @@ const PNPManagerStep2 = ({ setStep1, setStep2, setStep3, mdValue, getMD, setMdVa
         if (editorRef.current && docEditor) {
             try {
                 const documentEditor = docEditor;
+                // Ensure placeholders are resolved before export
+                console.log('Replacing variables before save...');
+                const replacementSuccess = replaceSystemVariables();
+
+                if (!replacementSuccess) {
+                    console.log('First replacement attempt failed, retrying...');
+                    // Wait a bit and try again
+                    await new Promise(resolve => setTimeout(resolve, 300));
+                    replaceSystemVariables();
+                }
+
+                // Wait a moment for replacements to complete before exporting
+                await new Promise(resolve => setTimeout(resolve, 500));
+
                 // Export as DOCX format
                 const exportOptions = {
                     formatType: 'Docx',

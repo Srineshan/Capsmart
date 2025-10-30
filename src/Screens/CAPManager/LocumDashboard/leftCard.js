@@ -77,6 +77,7 @@ const LeftCard = ({ getDataToUseInReport, isLoading }) => {
     const [user, setUsers] = useState([]);
     const [from, setFrom] = useState(startOfMonth(new Date()));
     const [to, setTo] = useState(endOfMonth(new Date()));
+    const [locumStatus, setLocumStatus] = useState('');
     const [selectedCombinations, setSelectedCombinations] = useState([]);
     const [selectedDepartment, setSelectedDepartment] = useState([]);
     const [selectedServiceArea, setSelectedServiceArea] = useState([]);
@@ -1118,7 +1119,18 @@ const LeftCard = ({ getDataToUseInReport, isLoading }) => {
                             })}
                         </div>
                     )}
-
+                    {/* <CommonSelectField
+                        value={locumStatus}
+                        onChange={(e) => setLocumStatus(e.target.value)}
+                        className={style.fullWidth1}
+                        // firstOptionLabel={'Select Category'}
+                        // firstOptionValue={''}
+                        valueList={["ACTIVE", "EXPIRED"]}
+                        labelList={["Active", "Expired"]}
+                        disabledList={false}
+                        required={false}
+                        label={"Locum Status*"}
+                    /> */}
                 </>
             </div>
 

@@ -79,7 +79,7 @@ const LocumDashboard = () => {
 
     const getDashboard = async (signal) => {
         setIsLoading(true);
-        const { data: dashboard } = await GET(`application-management-service/report/staffReappointment/dashboard?applicantTypeId=${dataToUseInReport?.selectedStaffType}&privilegingCategoryId=${dataToUseInReport?.selectedPrivilegeCategory}&departmentSpecialties=${dataToUseInReport?.selectedDepartments}&creationType=LOCUM_RENEWAL`, { signal });
+        const { data: dashboard } = await GET(`application-management-service/report/staffReappointment/dashboard?applicantTypeId=${dataToUseInReport?.selectedStaffType}&privilegingCategoryId=${dataToUseInReport?.selectedPrivilegeCategory}&departmentSpecialties=${dataToUseInReport?.selectedDepartments}&creationType=REAPPOINTMENT&type=LOCUM`, { signal });
         let tempFunnel = [{
             name: 'Reappointments',
             data: [
@@ -87,7 +87,7 @@ const LocumDashboard = () => {
                 { x: 'Reappointment Applications', y: dashboard?.staffReappointmentStats?.applicationsCreated?.count, z: dashboard?.staffReappointmentStats?.applicationsCreated?.percentage },
                 { x: 'Completed Application', y: dashboard?.staffReappointmentStats?.applicationsSubmitted?.count, z: dashboard?.staffReappointmentStats?.applicationsSubmitted?.percentage },
                 { x: 'MSO Verified', y: dashboard?.staffReappointmentStats?.staffManager?.count, z: dashboard?.staffReappointmentStats?.staffManager?.percentage },
-                { x: 'Departmental Review', y: dashboard?.staffReappointmentStats?.departmentHead?.count, z: dashboard?.staffReappointmentStats?.departmentHead?.percentage },
+                // { x: 'Departmental Review', y: dashboard?.staffReappointmentStats?.departmentHead?.count, z: dashboard?.staffReappointmentStats?.departmentHead?.percentage },
                 { x: 'Cred. Comm. Review', y: dashboard?.staffReappointmentStats?.credentialingCommittee?.count, z: dashboard?.staffReappointmentStats?.credentialingCommittee?.percentage },
                 { x: 'MAC Approval', y: dashboard?.staffReappointmentStats?.advisoryCommittee?.count, z: dashboard?.staffReappointmentStats?.advisoryCommittee?.percentage },
                 { x: 'BOD Approval', y: dashboard?.staffReappointmentStats?.board?.count, z: dashboard?.staffReappointmentStats?.board?.percentage }
@@ -411,7 +411,7 @@ const LocumDashboard = () => {
                                                     marginTop: "10px"
                                                 }}
                                             >
-                                                {applicationDashboard?.reviewAndVerificationStats?.departmentHead?.averageWorkingDays || 0}
+                                                {applicationDashboard?.reviewAndVerificationStats?.staffManager?.averageWorkingDays || 0}
                                             </span>
                                         </div>
                                         <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Days</div>
@@ -422,12 +422,12 @@ const LocumDashboard = () => {
                                     </div>
                                     <div>
                                         <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Review Status</div>
-                                        <DonutChart height={200} legendPosition={'right'} series={getDeptHeadReviewSeries()} labels={getReviewLabels()} colors={['#73D035', '#FF6562', '#3F8ADF', '#FFC100', '#FF851C']} size={'0%'} />
+                                        <DonutChart height={200} legendPosition={'right'} series={getMSOReviewSeries()} labels={getReviewLabels()} colors={['#73D035', '#FF6562', '#3F8ADF', '#FFC100', '#FF851C']} size={'0%'} />
                                     </div>
                                 </div>
                             </div>
 
-                            <div className={style.marginTop20}>
+                            {/* <div className={style.marginTop20}>
                                 <div className={style.chartHeader}>
                                     <div className={style.chartHeaderText}>{`Chief of Staff Review & Verification of Submitted {Extension} Applications`}</div>
                                 </div>
@@ -470,14 +470,8 @@ const LocumDashboard = () => {
                                         <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Review Status</div>
                                         <DonutChart height={200} legendPosition={'right'} series={getCCReviewSeries()} labels={getReviewLabels()} colors={['#73D035', '#FF6562', '#3F8ADF', '#FFC100', '#FF851C']} size={'0%'} />
                                     </div>
-                                    {/* <div className={style.verticalDivider}></div>
-                                    <div>
-                                        <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Actual Time Spent on Application</div>
-                                        <SpeedometerChart value={16} minValue={0} maxValue={20} width={200} startColor="#9BDD6E" endColor="#73D035" segments={10} labelFontSize={'0px'} ringWidth={10} needleColor={'#2D2D2D99'} textColor={"#171A1A"} valueTextFontSize={'0px'} />
-                                        <div className={`${style.chartBodyCount} ${style.textAlignCenter}`}>16 Mins</div>
-                                    </div> */}
                                 </div>
-                            </div>
+                            </div> */}
 
                             <div className={style.marginTop20}>
                                 <div className={style.chartHeader}>
