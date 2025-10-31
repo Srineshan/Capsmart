@@ -26,8 +26,10 @@ const MenuProps = {
     PaperProps: {
         style: {
             maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-            // width: 250,
-            // width: 250,
+            overflowY: 'auto', // ✅ enables scrolling
+            // Optional for better look:
+            scrollbarWidth: 'thin',
+            overscrollBehavior: 'contain',
         },
     },
 };
@@ -1956,7 +1958,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 className={style.textAlignLeft}
                             >
                                 {contracts?.length >= 2 && (
-                                    <MenuItem value={defaultOption} disabled={isMyReport || isScheduledReport|| isLoading}>All Contracts</MenuItem>
+                                    <MenuItem value={defaultOption} disabled={isMyReport || isScheduledReport || isLoading}>All Contracts</MenuItem>
                                 )}
                                 {contracts?.map((data) => (
                                     <MenuItem

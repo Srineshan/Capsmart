@@ -259,7 +259,7 @@ const LocumDashboard = () => {
                                     <div className={style.dashboardTileCount}>{applicationDashboard?.reappointmentMetrics?.eligibleForReappointment?.count}</div>
                                 </div>
                                 <div className={`${style.dashboardTile}`}>
-                                    <div className={style.dashboardTileText}>{`{Extension} Applications Sent out`}</div>
+                                    <div className={style.dashboardTileText}>{`${dataToUseInReport?.locumStatus === "ACTIVE" ? 'Extension' : 'Renewal'} Applications Sent out`}</div>
                                     <div className={`${style.displayInRow}`}>
                                         <div className={style.dashboardTileCount}>{applicationDashboard?.reappointmentMetrics?.applicationsSentOut?.count}</div>
                                         <div className={`${style.dashboardTilePercentage} ${style.marginLeft10}`}>{`${applicationDashboard?.reappointmentMetrics?.applicationsSentOut?.percentage || 0}%`}</div>
@@ -270,7 +270,7 @@ const LocumDashboard = () => {
                                     <div className={style.displayInRow}>
                                         <div className={style.dashboardTileCount}>{applicationDashboard?.reappointmentMetrics?.underReview?.count}</div>
                                         <ArrowDropUpIcon sx={{ color: '#73D035', marginRight: '5px' }} />
-                                        <div className={`${style.countChangeGreen} ${style.marginLeftReduce10}`}>10</div>
+                                        <div className={`${style.countChangeGreen} ${style.marginLeftReduce10}`}>0</div>
                                         <div className={`${style.topPeriodRangeText} ${style.marginLeft10}`}>From Last week</div>
                                     </div>
                                 </div>
@@ -282,7 +282,7 @@ const LocumDashboard = () => {
                             <div className={`${style.grid2} ${style.marginTop20}`}>
                                 <div>
                                     <div className={style.chartHeader}>
-                                        <div className={style.chartHeaderText}>{`2025 - 2026 Locum Staff {Extension}s`}</div>
+                                        <div className={style.chartHeaderText}>{`2025 - 2026 Locum Staff ${dataToUseInReport?.locumStatus === "ACTIVE" ? 'Extension' : 'Renewal'}s`}</div>
                                     </div>
                                     <div className={style.chartBody}>
                                         {funnelSeries?.length > 0 && (
@@ -306,7 +306,7 @@ const LocumDashboard = () => {
                             <div className={`${style.grid12} ${style.marginTop20}`}>
                                 <div>
                                     <div className={style.chartHeader}>
-                                        <div className={style.chartHeaderText}>{` {Extension} Application Status`}</div>
+                                        <div className={style.chartHeaderText}>{` ${dataToUseInReport?.locumStatus === "ACTIVE" ? 'Extension' : 'Renewal'} Application Status`}</div>
                                     </div>
                                     <div className={style.chartBody}>
                                         <div className={style.chartBodyCount}>{applicationDashboard?.applicationStatus?.totalApplications?.count}</div>
@@ -329,7 +329,7 @@ const LocumDashboard = () => {
 
                             <div className={style.marginTop20}>
                                 <div className={style.chartHeader}>
-                                    <div className={style.chartHeaderText}>{`Completion Time and Volume of {Extension} Applications by Locum Staff`}</div>
+                                    <div className={style.chartHeaderText}>{`Completion Time and Volume of ${dataToUseInReport?.locumStatus === "ACTIVE" ? 'Extension' : 'Renewal'} Applications by Locum Staff`}</div>
                                 </div>
                                 <div className={`${style.chartBody} ${style.reviewGrid}`}>
                                     <div>
@@ -372,7 +372,7 @@ const LocumDashboard = () => {
                                         )}
                                     </div>
                                     <div>
-                                        <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>{`{Extension} Application Completed By Staff Type`}</div>
+                                        <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>{`${dataToUseInReport?.locumStatus === "ACTIVE" ? 'Extension' : 'Renewal'} Application Completed By Staff Type`}</div>
                                         <DonutChart height={200} legendPosition={'right'} series={getApplicationCompletedByStaffTypeSeries()} labels={getApplicationCompletedByStaffTypeLabels()} colors={['#C592ED', '#FFD60C', '#FF80AC', '#FFC100', '#FF851C']} size={'0%'} />
                                     </div>
                                 </div>
@@ -380,7 +380,7 @@ const LocumDashboard = () => {
 
                             <div className={style.marginTop20}>
                                 <div className={style.chartHeader}>
-                                    <div className={style.chartHeaderText}>{`MSO Review & Verification of Submitted {Extension} Applications`}</div>
+                                    <div className={style.chartHeaderText}>{`MSO Review & Verification of Submitted ${dataToUseInReport?.locumStatus === "ACTIVE" ? 'Extension' : 'Renewal'} Applications`}</div>
                                 </div>
                                 <div className={`${style.chartBody} ${style.reviewGrid}`}>
                                     <div>
@@ -429,7 +429,7 @@ const LocumDashboard = () => {
 
                             {/* <div className={style.marginTop20}>
                                 <div className={style.chartHeader}>
-                                    <div className={style.chartHeaderText}>{`Chief of Staff Review & Verification of Submitted {Extension} Applications`}</div>
+                                    <div className={style.chartHeaderText}>{`Chief of Staff Review & Verification of Submitted ${dataToUseInReport?.locumStatus === "ACTIVE" ? 'Extension' : 'Renewal'} Applications`}</div>
                                 </div>
                                 <div className={`${style.chartBody} ${style.reviewGrid2}`}>
                                     <div>
@@ -475,7 +475,7 @@ const LocumDashboard = () => {
 
                             <div className={style.marginTop20}>
                                 <div className={style.chartHeader}>
-                                    <div className={style.chartHeaderText}>{`Credentialing Committee Review & Verification of Submitted Extension Applications`}</div>
+                                    <div className={style.chartHeaderText}>{`Credentialing Committee Review & Verification of Submitted ${dataToUseInReport?.locumStatus === "ACTIVE" ? 'Extension' : 'Renewal'} Applications`}</div>
                                 </div>
                                 <div className={`${style.chartBody} ${style.reviewGrid2}`}>
                                     <div>
