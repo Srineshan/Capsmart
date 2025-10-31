@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import CommonInputField from '../../../Components/CommonFields/CommonInputField';
@@ -13,8 +13,10 @@ import { GET, POST, PUT, TenantID } from '../../dataSaver';
 import { ErrorToaster2, SuccessToaster2 } from '../../../utils/toaster';
 import CommonMultiSelectField from '../../../Components/CommonFields/CommonMultiSelectField';
 import { area } from 'd3';
+import { renderAsync } from 'docx-preview';
 
 const PNPManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValue, setSelectedMdId }) => {
+    const docxPreviewRef = useRef(null);
     const [calendarStart, setCalendarStart] = useState(false);
     const [SelectedDate, setSelectedDate] = useState(null);
     const [keywordList, setKeywordList] = useState([]);
@@ -35,6 +37,7 @@ const PNPManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValu
     const [isDataLoading, setIdDataLoading] = useState(false);
     const [selectedDeptValue, setSelectedDeptValue] = useState("");
     const [isSaveInProgressDialog, setIsSaveInProgressDialog] = useState(false);
+    const [docxLoaded, setDocxLoaded] = useState(false);
     const selectedSite = sessionStorage.getItem('selectedSite') || ''
     useEffect(() => {
         getDepartmentList();
@@ -75,6 +78,59 @@ const PNPManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValu
             }
         };
     }, [previewUrl]);
+
+    // Render DOCX preview
+    useEffect(() => {
+        const loadDocxPreview = async () => {
+            if (!docxPreviewRef.current) return;
+
+            const isDocxFile = fileType === 'word' ||
+                mdFile?.name?.toLowerCase().endsWith('.docx') ||
+                mdFile?.name?.toLowerCase().endsWith('.doc') ||
+                mdValue?.file?.fileName?.toLowerCase().endsWith('.docx') ||
+                mdValue?.file?.fileName?.toLowerCase().endsWith('.doc');
+
+            if (!isDocxFile || !previewUrl) {
+                setDocxLoaded(false);
+                return;
+            }
+
+            try {
+                const response = await fetch(previewUrl);
+                const arrayBuffer = await response.arrayBuffer();
+
+                // Clear previous content
+                docxPreviewRef.current.innerHTML = '';
+
+                // Render DOCX
+                await renderAsync(arrayBuffer, docxPreviewRef.current, undefined, {
+                    className: 'docx',
+                    inWrapper: true,
+                    ignoreWidth: false,
+                    ignoreHeight: false,
+                    ignoreFonts: false,
+                    breakPages: false,
+                    ignoreLastRenderedPageBreak: true,
+                    experimental: false,
+                    trimXmlDeclaration: true,
+                    useBase64URL: false,
+                    useMathMLPolyfill: true,
+                    showChanges: false,
+                    showComments: false,
+                    showInserted: true,
+                    showDeleted: false,
+                    showFormatting: false,
+                });
+
+                setDocxLoaded(true);
+            } catch (error) {
+                console.error('Error rendering DOCX:', error);
+                setDocxLoaded(false);
+            }
+        };
+
+        loadDocxPreview();
+    }, [previewUrl, fileType, mdFile, mdValue]);
 
     const filteredServiceAreas = useMemo(() => {
         const areas = departmentList
@@ -428,8 +484,46 @@ const PNPManagerStep1 = ({ setStep1, setStep2, mdFile, getMD, mdValue, setMdValu
                         {previewUrl && fileType.startsWith('image/') && (
                             <img src={previewUrl} alt="Preview" width={192} height={192} />
                         )}
+                        {(fileType === 'word' || previewUrl?.includes('.docx') || previewUrl?.includes('.doc') || mdFile?.name?.toLowerCase().endsWith('.docx') || mdFile?.name?.toLowerCase().endsWith('.doc') || mdValue?.file?.fileName?.toLowerCase().endsWith('.docx') || mdValue?.file?.fileName?.toLowerCase().endsWith('.doc')) && (
+                            <div style={{
+                                width: '192px',
+                                height: '192px',
+                                backgroundColor: '#f5f5f5',
+                                border: '1px solid #ddd',
+                                borderRadius: '4px',
+                                overflow: 'hidden',
+                                position: 'relative'
+                            }}>
+                                <div
+                                    ref={docxPreviewRef}
+                                    style={{
+                                        width: '400%',
+                                        height: '400%',
+                                        overflow: 'hidden',
+                                        transform: 'scale(0.25)',
+                                        transformOrigin: 'top left'
+                                    }}
+                                />
+                                {!docxLoaded && (
+                                    <div style={{
+                                        position: 'absolute',
+                                        top: '50%',
+                                        left: '50%',
+                                        transform: 'translate(-50%, -50%)',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'center'
+                                    }}>
+                                        <svg width="64" height="64" viewBox="0 0 24 24" fill="#168E0D">
+                                            <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
+                                        </svg>
+                                        <div style={{ marginTop: '8px', fontSize: '12px', color: '#666' }}>DOCX</div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </div>
-                    <div className={`${style.pdfFileText} ${style.margin20}`}>{mdFile?.name}</div>
+                    <div className={`${style.pdfFileText} ${style.margin20}`}>{mdFile?.name || mdValue?.file?.fileName}</div>
                     <div className={`${style.step1Grid} ${style.margin20}`}>
                         {/* <div>
                             <div className={style.labelStyle}>File Name</div>

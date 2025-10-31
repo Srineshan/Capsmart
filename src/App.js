@@ -975,9 +975,10 @@ const App = ({ props }) => {
         const roles = !isHapicareUser ? jwt(Auth())?.roles?.split(",")?.filter(s => s.trim() !== '') : organizations?.[0]?.roles?.map(data => data?.roleName);
         const mdRoles = !isHapicareUser ? jwt(Auth())?.mdRoles?.split(",")?.filter(s => s.trim() !== '') : organizations?.[0]?.mdRoles?.map(data => data?.roleName);
         const pnpRoles = !isHapicareUser ? jwt(Auth())?.pnpRoles?.split(",")?.filter(s => s.trim() !== '') : organizations?.[0]?.pnpRoles?.map(data => data?.roleName);
+        const lmsRoles = !isHapicareUser ? jwt(Auth())?.lmsRoles?.split(",")?.filter(s => s.trim() !== '') : organizations?.[0]?.lmsRoles?.map(data => data?.roleName);
         console.log("LoginRole", roles, mdRoles, isHapicareUser, organizations)
-        const count = [roles, mdRoles, pnpRoles]?.filter(arr => arr?.length >= 1).length;
-        if (roles?.length > 1 || mdRoles?.length > 1 || pnpRoles?.length > 1 || (count > 1)) {
+        const count = [roles, mdRoles, pnpRoles, lmsRoles]?.filter(arr => arr?.length >= 1).length;
+        if (roles?.length > 1 || mdRoles?.length > 1 || pnpRoles?.length > 1 || lmsRoles?.length > 1 || (count > 1)) {
           console.log("LoginRole1111", roles)
           console.log('login route', isHapicareUser, organizations)
           // return(
@@ -989,19 +990,22 @@ const App = ({ props }) => {
           } else if (mdRoles?.length > 1 && (localStorage?.getItem('initialRoute') !== undefined && localStorage?.getItem('initialRoute') !== 'undefined' && localStorage?.getItem('initialRoute') !== null && localStorage?.getItem('initialRoute')?.includes('/applicationById/REAPPOINTMENT') && localStorage?.getItem('initialRoute')?.includes('/applicationById/LOCUM'))) {
             sessionStorage.setItem("workModeType", mdRoles[0]);
             window.location.pathname = localStorage?.getItem('initialRoute');
-          } else if (mdRoles?.length > 1 && (localStorage?.getItem('initialRoute') !== undefined && localStorage?.getItem('initialRoute') !== 'undefined' && localStorage?.getItem('initialRoute') !== null && localStorage?.getItem('initialRoute')?.includes('/applicationById/REAPPOINTMENT') && localStorage?.getItem('initialRoute')?.includes('/applicationById/LOCUM'))) {
-            sessionStorage.setItem("workModeType", mdRoles[0]);
+          } else if (pnpRoles?.length > 1 && (localStorage?.getItem('initialRoute') !== undefined && localStorage?.getItem('initialRoute') !== 'undefined' && localStorage?.getItem('initialRoute') !== null && localStorage?.getItem('initialRoute')?.includes('/applicationById/REAPPOINTMENT') && localStorage?.getItem('initialRoute')?.includes('/applicationById/LOCUM'))) {
+            sessionStorage.setItem("workModeType", pnpRoles[0]);
+            window.location.pathname = localStorage?.getItem('initialRoute');
+          } else if (lmsRoles?.length > 1 && (localStorage?.getItem('initialRoute') !== undefined && localStorage?.getItem('initialRoute') !== 'undefined' && localStorage?.getItem('initialRoute') !== null && localStorage?.getItem('initialRoute')?.includes('/applicationById/REAPPOINTMENT') && localStorage?.getItem('initialRoute')?.includes('/applicationById/LOCUM'))) {
+            sessionStorage.setItem("workModeType", lmsRoles[0]);
             window.location.pathname = localStorage?.getItem('initialRoute');
           } else {
             setShowDialog(true);
           }
-        } else if ((roles?.length === 1 || mdRoles?.length === 1 || pnpRoles?.length === 1) && localStorage?.getItem('initialRoute') !== undefined && localStorage?.getItem('initialRoute') !== 'undefined' && localStorage?.getItem('initialRoute') !== null) {
-          sessionStorage.setItem("workModeType", mdRoles?.length === 1 ? mdRoles[0] : pnpRoles?.length === 1 ? pnpRoles[0] : roles[0]);
+        } else if ((roles?.length === 1 || mdRoles?.length === 1 || pnpRoles?.length === 1 || lmsRoles?.length === 1) && localStorage?.getItem('initialRoute') !== undefined && localStorage?.getItem('initialRoute') !== 'undefined' && localStorage?.getItem('initialRoute') !== null) {
+          sessionStorage.setItem("workModeType", mdRoles?.length === 1 ? mdRoles[0] : pnpRoles?.length === 1 ? pnpRoles[0] : lmsRoles?.length === 1 ? lmsRoles[0] : roles[0]);
           window.location.href = `${initialRoute}`;
           console.log("initialRoute", initialRoute)
           localStorage?.removeItem('initialRoute')
         }
-        else if (roles?.length === 1 || mdRoles?.length === 1 || pnpRoles?.length === 1) {
+        else if (roles?.length === 1 || mdRoles?.length === 1 || pnpRoles?.length === 1 || lmsRoles?.length === 1) {
           if (mdRoles?.length === 1) {
             console.log("LoginRole", roles, mdRoles[0])
             sessionStorage.setItem("workModeType", mdRoles[0]);
@@ -1018,6 +1022,10 @@ const App = ({ props }) => {
             } else {
               window.location.pathname = "/pnpManager";
             }
+          } else if (lmsRoles?.length === 1) {
+            console.log("LoginRole", roles, lmsRoles[0])
+            sessionStorage.setItem("workModeType", lmsRoles[0]);
+            window.location.href = `https://lms.indocaribe.com/descope-login/?ssotoken=${cookie.get("authorization")}`;
           } else {
             sessionStorage.setItem("workModeType", roles[0]);
             let isAppUser =
@@ -1443,6 +1451,10 @@ const App = ({ props }) => {
                 />
                 <Route
                   path="/myReport/:reportType/:myReportIdFromUrl"
+                  element={<ProtectedRoute><ReportTypeOverview /></ProtectedRoute>}
+                />
+                <Route
+                  path="/scheduledReport/:reportType/:scheduleId"
                   element={<ProtectedRoute><ReportTypeOverview /></ProtectedRoute>}
                 />
                 <Route

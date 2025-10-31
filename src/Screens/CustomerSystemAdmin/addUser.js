@@ -197,7 +197,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
                 lastName: user?.name?.lastName,
                 email: user?.email?.officialEmail,
                 phone: user?.communication?.mobileNumber,
-                roles: user?.roles,
+                roles: [...user?.roles, ...user?.lmsRoles],
                 sites: { sites: user?.sites?.sites },
                 title: user?.title,
                 userType: user?.userType,
@@ -219,6 +219,9 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
             setSuffix(user?.name?.suffix);
             let rolesToShow = [];
             user?.roles?.map(data => {
+                rolesToShow.push(data?.id)
+            })
+            user?.lmsRoles?.map(data => {
                 rolesToShow.push(data?.id)
             })
             setSelectedRolesToShow(rolesToShow);
@@ -328,7 +331,8 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
             },
             "accessLevel": (selectedAccessLevelToShow === null || selectedAccessLevelToShow === "") ? "USER" : selectedAccessLevelToShow,
             "executiveAccessLevelNeeded": accessLevelNeeded,
-            "roles": addUser?.roles,
+            "roles": addUser?.roles?.filter(data => data?.category !== "LMS"),
+            "lmsRoles": addUser?.roles?.filter(data => data?.category === "LMS"),
             ...(isEdit && { "address": userDataById?.address }),
             "tenant": {
                 "tenantId": TenantID
@@ -346,7 +350,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
             ...(isEdit && { "serviceProviderType": userDataById?.serviceProviderType }),
             ...(isEdit && { "npin": userDataById?.npin }),
         }
-        console.log('is edit', isEdit);
+        console.log('is edit', isEdit, user);
         if (isEdit) {
             console.log('is edit', isEdit);
 

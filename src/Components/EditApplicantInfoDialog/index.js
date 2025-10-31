@@ -741,6 +741,7 @@ const EditInfoDialog = ({ checkedIds, getIsOpen, onClose, applicationId, selecte
                     placeholder="Entity Email"
                     label="Email Address"
                     required
+                    readOnly={true}
                   />
                 </div>
                 <div>

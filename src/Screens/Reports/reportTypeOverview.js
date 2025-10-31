@@ -50,8 +50,9 @@ const ReportTypeOverview = () => {
     const tableData = location.state?.tableData || [];
     const currentUserDetails = currentUser();
     console.log("tables:", tableData);
-    const { reportType, myReportIdFromUrl } = useParams();
+    const { reportType, scheduleId } = useParams();
     const isMyReport = window.location.pathname.includes("/myReport");
+    const isScheduledReport = window.location.pathname.includes("/scheduledReport");
     const myReportId = sessionStorage.getItem('myReportId')
     const myReportContent = (sessionStorage.getItem('myReportContent') && sessionStorage.getItem('myReportContent') !== 'undefined') ? JSON.parse(sessionStorage.getItem('myReportContent')) : {};
     const entityName = sessionStorage.getItem('title');
@@ -140,6 +141,7 @@ const ReportTypeOverview = () => {
     const [applicationType, setApplicationType] = useState(() =>
         sessionStorage.getItem('applicationCreationType') || 'NEW'
     );
+    const [scheduledTime, setScheduledTime] = useState();
     const [siteId, setSiteId] = useState(() =>
         sessionStorage.getItem('selectedSite') || ''
     );
@@ -292,6 +294,12 @@ const ReportTypeOverview = () => {
             getUpdatedValuesWithParams(signal);
             return () => controller.abort();
         }
+        if (isScheduledReport) {
+            const controller = new AbortController(); // Create an AbortController instance
+            const signal = controller.signal;
+            getUpdatedValuesWithParams(signal);
+            return () => controller.abort();
+        }
         console.log(dataToUseInReport, 'dataToUseInReport', (dataToUseInReport?.initialValueSet && ((dataToUseInReport?.selectedDepartments?.length !== 1 ? !dataToUseInReport?.selectedDepartments.includes('') : true) && (dataToUseInReport?.selectedStaffType?.length !== 1 ? !dataToUseInReport?.selectedStaffType.includes('') : true) && (dataToUseInReport?.selectedPrivilegeCategory?.length !== 1 ? !dataToUseInReport?.selectedPrivilegeCategory.includes('') : true))))
     }, [dataToUseInReport?.from, dataToUseInReport?.to, dataToUseInReport?.selectedPrivilegeCategory, dataToUseInReport?.selectedStaffType, dataToUseInReport?.selectedSites, dataToUseInReport?.selectedDepartments, dataToUseInReport?.selectedGroups, dataToUseInReport?.selectedAuthors, dataToUseInReport?.renewalreportingTimePeriod, dataToUseInReport?.selectedPosition, dataToUseInReport?.selectedApplicationType, dataToUseInReport?.initialValueSet, dataToUseInReport?.selectedTimesheetInterval, dataToUseInReport?.selectedReappointmentStatus, dataToUseInReport?.selectedApplicationSentStatus, dataToUseInReport?.selectedWorkflowLevel, dataToUseInReport?.noOfDays, dataToUseInReport?.tab]);
 
@@ -435,11 +443,11 @@ const ReportTypeOverview = () => {
         setMultipleContract(staffReappointments?.filter(data => data?.contractType === "MULTIPLE")?.map(data => data));
     }, [staffReappointments]);
 
-    useEffect(() => {
-        if (reportType === 'nonCompliant' && isNonCompliantReportTileClicked) {
-            getNonCompliantContractReport();
-        }
-    }, [isNonCompliantReportTileClicked]);
+    // useEffect(() => {
+    //     if (reportType === 'nonCompliant' && isNonCompliantReportTileClicked) {
+    //         getNonCompliantContractReport();
+    //     }
+    // }, [isNonCompliantReportTileClicked]);
 
     useEffect(() => {
         setIsNoData((paymentsReportLog?.paymentContracts?.length === 0 && paymentsReportLog?.rejected?.length === 0 && paymentsReportLog?.paymentPastDue?.length === 0 && paymentsReportLog?.paymentNotDone?.length === 0 && paymentsReportLog?.paymentDelayed?.length === 0 && paymentsReportLog?.paidOnTime?.length === 0) ? true : false);
@@ -770,16 +778,22 @@ const ReportTypeOverview = () => {
 
     const getPayments = async () => {
         let chartData;
-        if (!isMyReport) {
+        if (!isMyReport && !isScheduledReport) {
             if (dataToUseInReport?.from !== undefined && dataToUseInReport?.to !== undefined && dataToUseInReport?.selectedContracts !== undefined && dataToUseInReport?.selectedContractedServiceProvider !== undefined && dataToUseInReport?.selectedSites !== undefined && dataToUseInReport?.selectedDepartments !== undefined) {
                 setIsLoading(true)
                 const { data: chartDataValues } = await GET(`timesheet-management-service/report/paymentProcessingSummary?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&contracts=${dataToUseInReport?.selectedContracts || []}&users=${dataToUseInReport?.selectedContractedServiceProvider || []}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
                 chartData = chartDataValues;
             }
-        } else {
+        } else if (isMyReport && !isScheduledReport) {
             setIsLoading(true)
             const { data: chartDataValues } = await GET(`timesheet-management-service/report/myReport/paymentProcessingSummary?id=${myReportId}`);
             chartData = chartDataValues;
+        } else {
+            setIsLoading(true)
+            const { data: chartDataValues } = await GET(`timesheet-management-service/report/scheduledReport/${scheduleId}`);
+            chartData = chartDataValues;
+            setScheduledTime(chartDataValues?.[0]?.createdDate);
+            sessionStorage.setItem("reportFilter", JSON.stringify(chartDataValues?.[0]?.filter));
         }
         setIsLoading(false)
         setPaymentsReportLog(chartData);
@@ -1335,7 +1349,7 @@ const ReportTypeOverview = () => {
 
     const getCurrentMedicalDirective = async (signal) => {
         setIsLoading(true)
-        if (!isMyReport) {
+        if (!isMyReport && !isScheduledReport) {
             const queryParams = new URLSearchParams({
             });
 
@@ -1346,16 +1360,21 @@ const ReportTypeOverview = () => {
             }
             const { data: data } = await GET(`medical-directive-service/report/currentMedicalDirectives?${queryParams.toString()}`, { signal });
             setCurrentMedicalDirectives(data);
-        } else {
+        } else if (!isScheduledReport && isMyReport) {
             const { data: data } = await GET(`medical-directive-service/report/myReport/currentMedicalDirectives?id=${myReportId}`, { signal });
             setCurrentMedicalDirectives(data);
+        } else {
+            const { data: data } = await GET(`medical-directive-service/report/scheduledReports/${scheduleId}`, { signal });
+            setUpcomingForReview(data?.reportJson);
+            setScheduledTime(data?.createdDate);
+            sessionStorage.setItem("reportFilter", JSON.stringify(data?.filter));
         }
         setIsLoading(false)
     }
 
     const getRetiredMedicalDirective = async (signal) => {
         setIsLoading(true)
-        if (!isMyReport) {
+        if (!isMyReport && !isScheduledReport) {
             const queryParams = new URLSearchParams({
             });
 
@@ -1372,16 +1391,21 @@ const ReportTypeOverview = () => {
             }
             const { data: data } = await GET(`medical-directive-service/report/retiredMedicalDirectives?${queryParams.toString()}`, { signal });
             setRetiredMedicalDirectives(data);
-        } else {
+        } else if (!isScheduledReport && isMyReport) {
             const { data: data } = await GET(`medical-directive-service/report/myReport/retiredMedicalDirectives?id=${myReportId}`, { signal });
             setRetiredMedicalDirectives(data);
+        } else {
+            const { data: data } = await GET(`medical-directive-service/report/scheduledReports/${scheduleId}`, { signal });
+            setUpcomingForReview(data?.reportJson);
+            setScheduledTime(data?.createdDate);
+            sessionStorage.setItem("reportFilter", JSON.stringify(data?.filter));
         }
         setIsLoading(false)
     }
 
     const getCurrentPolicyAndProcedure = async (signal) => {
         setIsLoading(true)
-        if (!isMyReport) {
+        if (!isMyReport && !isScheduledReport) {
             const queryParams = new URLSearchParams({
             });
 
@@ -1392,16 +1416,21 @@ const ReportTypeOverview = () => {
             }
             const { data: data } = await GET(`policy-and-procedure-management-service/report/currentPolicyAndProcedures?${queryParams.toString()}`, { signal });
             setCurrentPolicyAndProcedures(data);
-        } else {
+        } else if (!isScheduledReport && isMyReport) {
             const { data: data } = await GET(`policy-and-procedure-management-service/report/myReport/currentPolicyAndProcedures?id=${myReportId}`, { signal });
             setCurrentPolicyAndProcedures(data);
+        } else {
+            const { data: data } = await GET(`policy-and-procedure-management-service/report/scheduledReports/${scheduleId}`, { signal });
+            setCurrentPolicyAndProcedures(data?.reportJson);
+            setScheduledTime(data?.createdDate);
+            sessionStorage.setItem("reportFilter", JSON.stringify(data?.filter));
         }
         setIsLoading(false)
     }
 
     const getRetiredPolicyAndProcedure = async (signal) => {
         setIsLoading(true)
-        if (!isMyReport) {
+        if (!isMyReport && !isScheduledReport) {
             const queryParams = new URLSearchParams({
             });
 
@@ -1418,16 +1447,21 @@ const ReportTypeOverview = () => {
             }
             const { data: data } = await GET(`policy-and-procedure-management-service/report/retiredPolicyAndProcedures?${queryParams.toString()}`, { signal });
             setRetiredPolicyAndProcedures(data);
-        } else {
+        } else if (!isScheduledReport && isMyReport) {
             const { data: data } = await GET(`policy-and-procedure-management-service/report/myReport/retiredPolicyAndProcedures?id=${myReportId}`, { signal });
             setRetiredPolicyAndProcedures(data);
+        } else {
+            const { data: data } = await GET(`policy-and-procedure-management-service/report/scheduledReports/${scheduleId}`, { signal });
+            setRetiredPolicyAndProcedures(data?.reportJson);
+            setScheduledTime(data?.createdDate);
+            sessionStorage.setItem("reportFilter", JSON.stringify(data?.filter));
         }
         setIsLoading(false)
     }
 
     const getMedicalDirectivesWorkflow = async (signal) => {
         setIsLoading(true)
-        if (!isMyReport) {
+        if (!isMyReport && !isScheduledReport) {
             const queryParams = new URLSearchParams({
             });
 
@@ -1447,16 +1481,21 @@ const ReportTypeOverview = () => {
             }
             const { data: data } = await GET(`medical-directive-service/report/workflow?${queryParams.toString()}`, { signal });
             setMedicalDirectivesWorkflow(data);
-        } else {
+        } else if (!isScheduledReport && isMyReport) {
             const { data: data } = await GET(`medical-directive-service/report/myReport/workflow?id=${myReportId}`, { signal });
             setMedicalDirectivesWorkflow(data);
+        } else {
+            const { data: data } = await GET(`medical-directive-service/report/scheduledReports/${scheduleId}`, { signal });
+            setUpcomingForReview(data?.reportJson);
+            setScheduledTime(data?.createdDate);
+            sessionStorage.setItem("reportFilter", JSON.stringify(data?.filter));
         }
         setIsLoading(false)
     }
 
     const getUpcomingForReview = async (signal) => {
         setIsLoading(true)
-        if (!isMyReport) {
+        if (!isMyReport && !isScheduledReport) {
             const queryParams = new URLSearchParams({
             });
 
@@ -1476,16 +1515,21 @@ const ReportTypeOverview = () => {
             }
             const { data: data } = await GET(`medical-directive-service/report/upcomingForReview?${queryParams.toString()}`, { signal });
             setUpcomingForReview(data);
-        } else {
+        } else if (!isScheduledReport && isMyReport) {
             const { data: data } = await GET(`medical-directive-service/report/myReport/upcomingForReview?id=${myReportId}`, { signal });
             setUpcomingForReview(data);
+        } else {
+            const { data: data } = await GET(`medical-directive-service/report/scheduledReports/${scheduleId}`, { signal });
+            setUpcomingForReview(data?.reportJson);
+            setScheduledTime(data?.createdDate);
+            sessionStorage.setItem("reportFilter", JSON.stringify(data?.filter));
         }
         setIsLoading(false)
     }
 
     const getExpiredDocumentsSummaryForStaff = async (signal) => {
         setIsLoading(true)
-        if (!isMyReport) {
+        if (!isMyReport && !isScheduledReport) {
             const queryParams = new URLSearchParams({
             });
 
@@ -1495,16 +1539,21 @@ const ReportTypeOverview = () => {
 
             const { data: data } = await GET(`application-management-service/report/staffExpiredDocuments?${queryParams.toString()}`, { signal });
             setExpiredDocumentsSummaryForStaff(data);
-        } else {
+        } else if (!isScheduledReport && isMyReport) {
             const { data: data } = await GET(`application-management-service/report/myReport/staffExpiredDocuments?id=${myReportId}`, { signal });
             setExpiredDocumentsSummaryForStaff(data);
+        } else {
+            const { data: data } = await GET(`application-management-service/report/scheduledReports/${scheduleId}`, { signal });
+            setExpiredDocumentsSummaryForStaff(data?.reportJson);
+            setScheduledTime(data?.createdDate);
+            sessionStorage.setItem("reportFilter", JSON.stringify(data?.filter));
         }
         setIsLoading(false)
     }
 
     const getDocumentsExpirationSummaryForStaff = async (signal) => {
         setIsLoading(true)
-        if (!isMyReport) {
+        if (!isMyReport && !isScheduledReport) {
             const queryParams = new URLSearchParams({
             });
 
@@ -1518,16 +1567,21 @@ const ReportTypeOverview = () => {
 
             const { data: data } = await GET(`application-management-service/report/staffDocumentsExpiration?${queryParams.toString()}`, { signal });
             setStaffDocumentsExpiration(data);
-        } else {
+        } else if (!isScheduledReport && isMyReport) {
             const { data: data } = await GET(`application-management-service/report/myReport/staffDocumentsExpiration?id=${myReportId}`, { signal });
             setStaffDocumentsExpiration(data);
+        } else {
+            const { data: data } = await GET(`application-management-service/report/scheduledReports/${scheduleId}`, { signal });
+            setStaffDocumentsExpiration(data?.reportJson);
+            setScheduledTime(data?.createdDate);
+            sessionStorage.setItem("reportFilter", JSON.stringify(data?.filter));
         }
         setIsLoading(false)
     }
 
     const getInactiveStaffSummary = async (signal) => {
         setIsLoading(true)
-        if (!isMyReport) {
+        if (!isMyReport && !isScheduledReport) {
             const queryParams = new URLSearchParams({
             });
 
@@ -1537,16 +1591,21 @@ const ReportTypeOverview = () => {
 
             const { data: data } = await GET(`application-management-service/report/inactiveStaffs?${queryParams.toString()}`, { signal });
             setInactiveStaffSummary(data);
-        } else {
+        } else if (!isScheduledReport && isMyReport) {
             const { data: data } = await GET(`application-management-service/report/myReport/inactiveStaffs?id=${myReportId}`, { signal });
             setInactiveStaffSummary(data);
+        } else {
+            const { data: data } = await GET(`application-management-service/report/scheduledReports/${scheduleId}`, { signal });
+            setInactiveStaffSummary(data?.reportJson);
+            setScheduledTime(data?.createdDate);
+            sessionStorage.setItem("reportFilter", JSON.stringify(data?.filter));
         }
         setIsLoading(false)
     }
 
     const getNewStaffAppointmentsSummary = async (signal) => {
         setIsLoading(true)
-        if (!isMyReport) {
+        if (!isMyReport && !isScheduledReport) {
             const queryParams = new URLSearchParams({
             });
             if (dataToUseInReport?.selectedStaffType) {
@@ -1570,16 +1629,21 @@ const ReportTypeOverview = () => {
 
             const { data: data } = await GET(`application-management-service/report/newStaffAppointments?${queryParams.toString()}`, { signal });
             setNewStaffAppointmentsSummary(data);
-        } else {
+        } else if (!isScheduledReport && isMyReport) {
             const { data: data } = await GET(`application-management-service/report/myReport/newStaffAppointments?id=${myReportId}`, { signal });
             setNewStaffAppointmentsSummary(data);
+        } else {
+            const { data: data } = await GET(`application-management-service/report/scheduledReports/${scheduleId}`, { signal });
+            setNewStaffAppointmentsSummary(data?.reportJson);
+            setScheduledTime(data?.createdDate);
+            sessionStorage.setItem("reportFilter", JSON.stringify(data?.filter));
         }
         setIsLoading(false)
     }
 
     const getAppointmentHistorySummary = async (signal) => {
         setIsLoading(true)
-        if (!isMyReport) {
+        if (!isMyReport && !isScheduledReport) {
             const queryParams = new URLSearchParams({
             });
             if (dataToUseInReport?.selectedStaffType) {
@@ -1595,16 +1659,21 @@ const ReportTypeOverview = () => {
 
             const { data: data } = await GET(`application-management-service/report/appointmentHistory?${queryParams.toString()}`, { signal });
             setAppointmentHistorySummary(data);
-        } else {
+        } else if (!isScheduledReport && isMyReport) {
             const { data: data } = await GET(`application-management-service/report/myReport/appointmentHistory?id=${myReportId}`, { signal });
             setAppointmentHistorySummary(data);
+        } else {
+            const { data: data } = await GET(`application-management-service/report/scheduledReports/${scheduleId}`, { signal });
+            setAppointmentHistorySummary(data?.reportJson);
+            setScheduledTime(data?.createdDate);
+            sessionStorage.setItem("reportFilter", JSON.stringify(data?.filter));
         }
         setIsLoading(false)
     }
 
     const getInactiveStaffSummaryByMonth = async (signal) => {
         setIsLoading(true)
-        if (!isMyReport) {
+        if (!isMyReport && !isScheduledReport) {
             const queryParams = new URLSearchParams({
             });
             if (dataToUseInReport?.from) {
@@ -1621,16 +1690,21 @@ const ReportTypeOverview = () => {
 
             const { data: data } = await GET(`application-management-service/report/inactiveStaffsByMonth?${queryParams.toString()}`, { signal });
             setInactiveStaffSummaryByMonth(data);
-        } else {
+        } else if (!isScheduledReport && isMyReport) {
             const { data: data } = await GET(`application-management-service/report/myReport/inactiveStaffsByMonth?id=${myReportId}`, { signal });
             setInactiveStaffSummaryByMonth(data);
+        } else {
+            const { data: data } = await GET(`application-management-service/report/scheduledReports/${scheduleId}`, { signal });
+            setInactiveStaffSummaryByMonth(data?.reportJson);
+            setScheduledTime(data?.createdDate);
+            sessionStorage.setItem("reportFilter", JSON.stringify(data?.filter));
         }
         setIsLoading(false)
     }
 
     const getStaffUploadedDocumentsSummary = async (signal) => {
         setIsLoading(true)
-        if (!isMyReport) {
+        if (!isMyReport && !isScheduledReport) {
             const queryParams = new URLSearchParams({
             });
             if (dataToUseInReport?.from) {
@@ -1655,16 +1729,21 @@ const ReportTypeOverview = () => {
 
             const { data: data } = await GET(`application-management-service/report/staffUploadedDocuments?${queryParams.toString()}`, { signal });
             setStaffUploadedDocumentsSummary(data);
-        } else {
+        } else if (!isScheduledReport && isMyReport) {
             const { data: data } = await GET(`application-management-service/report/myReport/staffUploadedDocuments?id=${myReportId}`, { signal });
             setStaffUploadedDocumentsSummary(data);
+        } else {
+            const { data: data } = await GET(`application-management-service/report/scheduledReports/${scheduleId}`, { signal });
+            setStaffUploadedDocumentsSummary(data?.reportJson);
+            setScheduledTime(data?.createdDate);
+            sessionStorage.setItem("reportFilter", JSON.stringify(data?.filter));
         }
         setIsLoading(false)
     }
 
     const getLocumTermExpirationSummary = async (signal) => {
         setIsLoading(true)
-        if (!isMyReport) {
+        if (!isMyReport && !isScheduledReport) {
             const queryParams = new URLSearchParams({
             });
             if (dataToUseInReport?.from) {
@@ -1685,44 +1764,68 @@ const ReportTypeOverview = () => {
 
             const { data: data } = await GET(`application-management-service/report/locumTermExpiration?${queryParams.toString()}`, { signal });
             setLocumTermExpirationSummary(data);
-        } else {
+        } else if (!isScheduledReport && isMyReport) {
             const { data: data } = await GET(`application-management-service/report/myReport/locumTermExpiration?id=${myReportId}`, { signal });
             setLocumTermExpirationSummary(data);
+        } else {
+            const { data: data } = await GET(`application-management-service/report/scheduledReports/${scheduleId}`, { signal });
+            setLocumTermExpirationSummary(data?.reportJson);
+            setScheduledTime(data?.createdDate);
+            sessionStorage.setItem("reportFilter", JSON.stringify(data?.filter));
         }
         setIsLoading(false)
     }
 
     const getMedicalDirectivesTracker = async (signal) => {
         setIsLoading(true)
-        if (!isMyReport) {
+        if (!isMyReport && !isScheduledReport) {
             const { data: data } = await GET(`medical-directive-service/report/tracker?tab=${dataToUseInReport?.tab}`, { signal });
             setMedicalDirectivesTracker(dataToUseInReport?.tab === "medical_directive_tab" ?
                 data?.medicalDirectivesWithAttestationLogsList :
                 dataToUseInReport?.tab === "applicant_tab" ?
                     data?.users :
                     data?.attestationCountBySite?.[0]?.attestationCountByDepartment);
-        } else {
+        } else if (!isScheduledReport && isMyReport) {
             const { data: data } = await GET(`medical-directive-service/report/myReport/tracker?id=${myReportId}`, { signal });
-            setMedicalDirectivesTracker(data);
+            setMedicalDirectivesTracker(dataToUseInReport?.tab === "medical_directive_tab" ?
+                data?.medicalDirectivesWithAttestationLogsList :
+                dataToUseInReport?.tab === "applicant_tab" ?
+                    data?.users :
+                    data?.attestationCountBySite?.[0]?.attestationCountByDepartment);
+        } else {
+            const { data: data } = await GET(`medical-directive-service/report/scheduledReports/${scheduleId}`, { signal });
+            setMedicalDirectivesTracker(dataToUseInReport?.tab === "medical_directive_tab" ?
+                data?.reportJson?.medicalDirectivesWithAttestationLogsList :
+                dataToUseInReport?.tab === "applicant_tab" ?
+                    data?.reportJson?.users :
+                    data?.reportJson?.attestationCountBySite?.[0]?.attestationCountByDepartment);
+            setScheduledTime(data?.createdDate);
+            sessionStorage.setItem("reportFilter", JSON.stringify(data?.filter));
+            console.log(data, 'reportFilter')
         }
         setIsLoading(false)
     }
 
     const getAttestationOutstanding = async (signal) => {
         setIsLoading(true)
-        if (!isMyReport) {
+        if (!isMyReport && !isScheduledReport) {
             const { data: data } = await GET(`medical-directive-service/report/attestationOutstanding?siteIds?=${siteId}`, { signal });
             setAttestationOutstanding(data);
-        } else {
+        } else if (!isScheduledReport && isMyReport) {
             const { data: data } = await GET(`medical-directive-service/report/myReport/attestationOutstanding?id=${myReportId}`, { signal });
             setAttestationOutstanding(data);
+        } else {
+            const { data: data } = await GET(`medical-directive-service/report/scheduledReports/${scheduleId}`, { signal });
+            setAttestationOutstanding(data?.reportJson);
+            setScheduledTime(data?.createdDate);
+            sessionStorage.setItem("reportFilter", JSON.stringify(data?.filter));
         }
         setIsLoading(false)
     }
 
     const getPolicyAndProceduresWorkflow = async (signal) => {
         setIsLoading(true)
-        if (!isMyReport) {
+        if (!isMyReport && !isScheduledReport) {
             const queryParams = new URLSearchParams({
             });
 
@@ -1742,16 +1845,21 @@ const ReportTypeOverview = () => {
             }
             const { data: data } = await GET(`policy-and-procedure-management-service/report/workflow?${queryParams.toString()}`, { signal });
             setPolicyAndProceduresWorkflow(data);
-        } else {
+        } else if (!isScheduledReport && isMyReport) {
             const { data: data } = await GET(`policy-and-procedure-management-service/report/myReport/workflow?id=${myReportId}`, { signal });
             setPolicyAndProceduresWorkflow(data);
+        } else {
+            const { data: data } = await GET(`policy-and-procedure-management-service/report/scheduledReports/${scheduleId}`, { signal });
+            setPolicyAndProceduresWorkflow(data?.reportJson);
+            setScheduledTime(data?.createdDate);
+            sessionStorage.setItem("reportFilter", JSON.stringify(data?.filter));
         }
         setIsLoading(false)
     }
 
     const getPolicyAndProceduresUpcomingForReview = async (signal) => {
         setIsLoading(true)
-        if (!isMyReport) {
+        if (!isMyReport && !isScheduledReport) {
             const queryParams = new URLSearchParams({
             });
 
@@ -1771,37 +1879,52 @@ const ReportTypeOverview = () => {
             }
             const { data: data } = await GET(`policy-and-procedure-management-service/report/upcomingForReview?${queryParams.toString()}`, { signal });
             setPolicyAndProceduresUpcomingForReview(data);
-        } else {
+        } else if (!isScheduledReport && isMyReport) {
             const { data: data } = await GET(`policy-and-procedure-management-service/report/myReport/upcomingForReview?id=${myReportId}`, { signal });
             setPolicyAndProceduresUpcomingForReview(data);
+        } else {
+            const { data: data } = await GET(`policy-and-procedure-management-service/report/scheduledReports/${scheduleId}`, { signal });
+            setPolicyAndProceduresUpcomingForReview(data?.reportJson);
+            setScheduledTime(data?.createdDate);
+            sessionStorage.setItem("reportFilter", JSON.stringify(data?.filter));
         }
         setIsLoading(false)
     }
 
     const getPolicyAndProceduresTracker = async (signal) => {
         setIsLoading(true)
-        if (!isMyReport) {
+        if (!isMyReport && !isScheduledReport) {
             const { data: data } = await GET(`policy-and-procedure-management-service/report/tracker?tab=${dataToUseInReport?.tab}`, { signal });
             setPolicyAndProceduresTracker(dataToUseInReport?.tab === "policy_and_procedure_tab" ?
                 data?.policyAndProceduresWithAttestationLogsList :
                 dataToUseInReport?.tab === "applicant_tab" ?
                     data?.users :
                     data?.attestationCountBySite?.[0]?.attestationCountByDepartment);
-        } else {
+        } else if (!isScheduledReport && isMyReport) {
             const { data: data } = await GET(`policy-and-procedure-management-service/report/myReport/tracker?id=${myReportId}`, { signal });
             setPolicyAndProceduresTracker(data);
+        } else {
+            const { data: data } = await GET(`policy-and-procedure-management-service/report/scheduledReports/${scheduleId}`, { signal });
+            setPolicyAndProceduresTracker(data?.reportJson);
+            setScheduledTime(data?.createdDate);
+            sessionStorage.setItem("reportFilter", JSON.stringify(data?.filter));
         }
         setIsLoading(false)
     }
 
     const getPolicyAndProceduresAttestationOutstanding = async (signal) => {
         setIsLoading(true)
-        if (!isMyReport) {
+        if (!isMyReport && !isScheduledReport) {
             const { data: data } = await GET(`policy-and-procedure-management-service/report/attestationOutstanding?siteIds?=${siteId}`, { signal });
             setPolicyAndProceduresAttestationOutstanding(data);
-        } else {
+        } else if (!isScheduledReport && isMyReport) {
             const { data: data } = await GET(`policy-and-procedure-management-service/report/myReport/attestationOutstanding?id=${myReportId}`, { signal });
             setPolicyAndProceduresAttestationOutstanding(data);
+        } else {
+            const { data: data } = await GET(`policy-and-procedure-management-service/report/scheduledReports/${scheduleId}`, { signal });
+            setPolicyAndProceduresAttestationOutstanding(data?.reportJson);
+            setScheduledTime(data?.createdDate);
+            sessionStorage.setItem("reportFilter", JSON.stringify(data?.filter));
         }
         setIsLoading(false)
     }
@@ -3826,12 +3949,14 @@ const ReportTypeOverview = () => {
             )}
             <Fragment>
                 <Navbar />
-                <div className={`${isExpanded ? style.bigCardGrid : style.smallCardGrid} ${style.margin20WithoutTop} `}>
-                    <div>
-                        <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
-                            <SampleReportLeftCard getDataToUseInReport={getDataToUseInReport} isLoading={isLoading} />
-                        </SideBar>
-                    </div>
+                <div className={`${isScheduledReport ? '' : isExpanded ? style.bigCardGrid : style.smallCardGrid} ${style.margin20WithoutTop} `}>
+                    {!isScheduledReport && (
+                        <div>
+                            <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
+                                <SampleReportLeftCard getDataToUseInReport={getDataToUseInReport} isLoading={isLoading} />
+                            </SideBar>
+                        </div>
+                    )}
                     <div>
                         <ReportPerformanceAndOptions handle={handle} handlePrint={handlePrint} dataToUseInReport={dataToUseInReport} refToUse={PDFRef} getIsDownloadClicked={getIsDownloadClicked} isNoData={isNoData} setIsFullScreenLoading={setIsFullScreenLoading} />
                         <FullScreen handle={handle} className={handle.active ? style.scroll : ''}>

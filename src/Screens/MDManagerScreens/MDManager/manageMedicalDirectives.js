@@ -1038,16 +1038,27 @@ const ManageMedicalDirectives = ({ getSelectedOption, setStep1, setStep2, setSte
             dotTooltipValues.push(data?.attestationLog ? "Attested" : 'Not Attested')
             no.push(index + 1 + ".")
             applicantName.push(`${formatFirstNameLastName(data?.user?.name?.firstName, data?.user?.name?.lastName)}`);
-            dept.push(...(data?.user?.sites?.sites ?? []).map(site =>
-                (site?.departmentList?.departments ?? [])
-                    .map(dept =>
-                        `${dept?.departmentName?.name ?? '-'}${dept?.serviceAreas?.length
-                            ? ` / ${dept.serviceAreas.map(sa => sa?.name ?? '').join(', ')}`
-                            : ''
-                        }`
-                    )
-                    .join(', ')
-            ))
+            dept.push(
+                ...(
+                    (data?.user?.sites?.sites?.length
+                        ? data.user.sites.sites
+                        : ['']
+                    ).map(site => {
+                        if (site === '') return '';
+
+                        const departments = site?.departmentList?.departments ?? [];
+                        if (departments.length === 0) return '';
+                        return departments
+                            .map(dept =>
+                                `${dept?.departmentName?.name ?? '-'}${dept?.serviceAreas?.length
+                                    ? ` / ${dept.serviceAreas.map(sa => sa?.name ?? '').join(', ')}`
+                                    : ''
+                                }`
+                            )
+                            .join(', ');
+                    })
+                )
+            );
             type.push(`-`)
             attestationDate.push(data?.attestationLog?.esign?.signedDate ? result.parsedDate ? format(result.parsedDate, dateFormat) : '-' : '-');
             // actionItem.push(
