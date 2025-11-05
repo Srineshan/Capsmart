@@ -192,7 +192,7 @@ const BasicInformation = ({ basicForm, setBasicForm, applicationId, getPreApplic
         if (sessionStorage.getItem("fromSummary") === "true") {
           navigate(-1);
         } else {
-          navigate(`/applicationForm/${applicationId}/${data?.forms[0]?.formCategory}/${data?.forms[0]?.schemaCategory}`)
+          navigate(`/applicationForm/${applicationId}/${data?.forms[0]?.formCategory}/${btoa(data?.forms[0]?.schemaCategory)}`)
         }
       })
       .catch((error) => {

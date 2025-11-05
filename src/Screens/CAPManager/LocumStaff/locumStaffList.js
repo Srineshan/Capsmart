@@ -770,10 +770,10 @@ const LocumStaffList = ({
 
     tableData?.map((data) => {
       const startDateFormat = data?.tenure?.from
-        ? new Date(data?.tenure?.from).toISOString().split('T')[0] + 'T00:00'
+        ? new Date(data?.tenure?.from + 'T00:00')
         : null;
       const endDateFormat = data?.tenure?.to
-        ? new Date(data?.tenure?.to).toISOString().split('T')[0] + 'T00:00'
+        ? new Date(data?.tenure?.to + 'T00:00')
         : null;
       console.log(data, 'dataCheck', `${startDateFormat ? format(new Date(startDateFormat), dateFormat) : "-"} - ${endDateFormat ? format(new Date(endDateFormat), dateFormat) : ''}`)
 
@@ -1146,10 +1146,10 @@ const LocumStaffList = ({
 
     tableData?.map((data) => {
       const startDateFormat = data?.tenure?.from
-        ? new Date(data?.tenure?.from).toISOString().split('T')[0] + 'T00:00'
+        ? new Date(data?.tenure?.from + 'T00:00')
         : null;
       const endDateFormat = data?.tenure?.to
-        ? new Date(data?.tenure?.to).toISOString().split('T')[0] + 'T00:00'
+        ? new Date(data?.tenure?.to + 'T00:00')
         : null;
       let reappointValue = "";
       let sentOutStatus = "";
@@ -1456,10 +1456,10 @@ const LocumStaffList = ({
 
     tableData?.map((data) => {
       const startDateFormat = data?.tenure?.from
-        ? new Date(data?.tenure?.from).toISOString().split('T')[0] + 'T00:00'
+        ? new Date(data?.tenure?.from + 'T00:00')
         : null;
       const endDateFormat = data?.tenure?.to
-        ? new Date(data?.tenure?.to).toISOString().split('T')[0] + 'T00:00'
+        ? new Date(data?.tenure?.to + 'T00:00')
         : null;
       let reappointValue = "";
       let sentOutStatus = "";
@@ -1965,7 +1965,7 @@ const LocumStaffList = ({
       //     : "-"
       // );
       const endDateFormat = data?.staff?.tenure?.to
-        ? new Date(data?.staff?.tenure?.to).toISOString().split('T')[0] + 'T00:00'
+        ? new Date(data?.staff?.tenure?.to + 'T00:00')
         : null;
       endDate.push(
         endDateFormat ? format(new Date(endDateFormat), dateFormat) : "-"

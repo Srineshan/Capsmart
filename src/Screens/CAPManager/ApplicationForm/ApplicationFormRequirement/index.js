@@ -102,7 +102,7 @@ const ApplicationFormRequirement = () => {
         await PUT(`application-management-service/application/${applicationId}`, basicForm)
             .then(response => {
                 console.log(response)
-                navigate(`/applicationForm/${applicationId}/Form/BasicInformation`)
+                navigate(`/applicationForm/${applicationId}/Form/${btoa('BasicInformation')}`)
                 SuccessToaster("Application Updated Successfully");
             })
             .catch((error) => {
@@ -154,7 +154,7 @@ const ApplicationFormRequirement = () => {
                                                     <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.document?.name}</div>
                                                     <InfoOutlinedIcon sx={{ fontSize: 14, marginLeft: '10px' }} className={style.info} />
                                                 </div>
-                                                <div className={style.documentTextStyle}>{data?.required ? 'Required' : 'Recommended'}</div>
+                                                <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.required ? 'Required' : 'Recommended'}</div>
                                                 <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.instruction}</div>
                                             </div>
                                         </div>

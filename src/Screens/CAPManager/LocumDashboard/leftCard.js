@@ -77,7 +77,7 @@ const LeftCard = ({ getDataToUseInReport, isLoading }) => {
     const [user, setUsers] = useState([]);
     const [from, setFrom] = useState(startOfMonth(new Date()));
     const [to, setTo] = useState(endOfMonth(new Date()));
-    const [locumStatus, setLocumStatus] = useState('ACTIVE');
+    const [locumStatus, setLocumStatus] = useState('EXTENSION');
     const [selectedCombinations, setSelectedCombinations] = useState([]);
     const [selectedDepartment, setSelectedDepartment] = useState([]);
     const [selectedServiceArea, setSelectedServiceArea] = useState([]);
@@ -1143,8 +1143,8 @@ const LeftCard = ({ getDataToUseInReport, isLoading }) => {
                             disabled={isLoading}
                             className={style.textAlignLeft}
                         >
-                            <MenuItem value={'ACTIVE'} disabled={isLoading}>Active</MenuItem>
-                            <MenuItem value={'EXPIRED'} disabled={isLoading}>Expired</MenuItem>
+                            <MenuItem value={'EXTENSION'} disabled={isLoading}>Active</MenuItem>
+                            <MenuItem value={'RENEWAL'} disabled={isLoading}>Expired</MenuItem>
                         </Select>
                     </FormControl>
                 </>

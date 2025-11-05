@@ -62,12 +62,12 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
       getFormSchema()
     }
     if (basicForm !== undefined && formIndex !== undefined) {
-      setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form')?.length === (formIndex + 1)) ? `/applicationForm/${applicationId}/Form/PODCheck` : `/applicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${basicForm?.forms[formIndex + 1]?.schemaCategory}`)
+      setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form')?.length === (formIndex + 1)) ? `/applicationForm/${applicationId}/Form/${btoa('PODCheck')}` : `/applicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
     }
   }, [basicForm, formIndex])
 
   useEffect(() => {
-    setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === step))
+    setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === atob(step)))
   }, [basicForm, step])
 
   useEffect(() => {

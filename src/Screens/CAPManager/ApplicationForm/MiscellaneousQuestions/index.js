@@ -48,12 +48,12 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
             setUpdatedDateSuboxone(basicForm?.forms?.[formIndex]?.data?.suboxone?.updatedDate !== undefined ? basicForm?.forms?.[formIndex]?.data?.suboxone?.updatedDate : '');
             setYesOrNoMRP(basicForm?.forms?.[formIndex]?.data?.mrp?.yesOrNo !== undefined ? basicForm?.forms?.[formIndex]?.data?.mrp?.yesOrNo : '');
             setUpdatedDateMRP(basicForm?.forms?.[formIndex]?.data?.mrp?.updatedDate !== undefined ? basicForm?.forms?.[formIndex]?.data?.mrp?.updatedDate : '');
-            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form')?.length === (formIndex + 1)) ? `/applicationForm/${applicationId}/Form/PODCheck` : `/applicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${basicForm?.forms[formIndex + 1]?.schemaCategory}`)
+            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form')?.length === (formIndex + 1)) ? `/applicationForm/${applicationId}/Form/${btoa('PODCheck')}` : `/applicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
         }
     }, [basicForm, formIndex])
 
     useEffect(() => {
-        setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === step))
+        setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === atob(step)))
     }, [basicForm, step])
 
 
@@ -176,14 +176,14 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
     return (
         <div>
             <div className={style.applicationScreenGrid}>
-                <ReappointmentProgressCard step={'STEP 11'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={22} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} basicForm={basicForm} />
+                <ProgressCard step={'STEP 11'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={22} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} basicForm={basicForm} />
                 <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
             </div>
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
                 <div>
                     <div className={`${style.applicationCardStyle}`}>
                         <div className={style.cardTitle}>
-                            {formSchema?.properties?.isModulesForReAppointmentCompleted?.label}
+                            {formSchema?.properties?.isModulesForReAppointmentCompleted?.properties?.response?.label}
                         </div>
                         {yesOrNoLMS === '' ? (
                             <div
@@ -220,7 +220,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                     </div>
                     <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
                         <div className={style.cardTitle}>
-                            {formSchema?.properties?.doYouPrescribeSuboxone?.label}
+                            {formSchema?.properties?.doYouPrescribeSuboxone?.properties?.response?.label}
                         </div>
                         {yesOrNoSuboxone === '' ? (
                             <div
@@ -257,7 +257,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                     </div>
                     <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
                         <div className={style.cardTitle}>
-                            {formSchema?.properties?.wishToBeMRP?.label}
+                            {formSchema?.properties?.wishToBeMRP?.properties?.response?.label}
                         </div>
                         {yesOrNoMRP === '' ? (
                             <div
