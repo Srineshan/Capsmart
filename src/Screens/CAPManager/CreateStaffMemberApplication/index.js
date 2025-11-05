@@ -28,7 +28,7 @@ const CreateStaffMemberApplication = () => {
   const [isShowMailSendDialog, setIsShowMailSendDialog] = useState(false);
   const [applicationId, setApplicationId] = useState("");
   const [basicFormForDocuments, setBasicFormForDocuments] = useState();
-  const [requiredDocumentList, setRequiredDocumentList] = useState();
+  const [requiredDocumentList, setRequiredDocumentList] = useState([]);
   const [metadata, setMetadata] = useState([]);
   const [labels, setLabels] = useState([]);
   const [warningFields, setWarningFields] = useState([]);
@@ -84,9 +84,9 @@ const CreateStaffMemberApplication = () => {
         department: "",
         specialty: "",
       },
-      regionalCallResponsibilities: {
-        regionalCallResponsibilities: "",
-      },
+      // regionalCallResponsibilities: {
+      //   regionalCallResponsibilities: "",
+      // },
       billingNumber: {
         billingNumber: "",
         specialityBillingCode: "",
@@ -466,8 +466,8 @@ const CreateStaffMemberApplication = () => {
                   />
                 )}
               {/* {form !== undefined && 'regionalCallResponsibilities' in form?.properties && (
-                                <ApplicationFieldCard object={form?.properties?.regionalCallResponsibilities} gridStyle={style.regionalCallGrid} baseKey={'regionalCallResponsibilities'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
-                            )} */}
+                <ApplicationFieldCard object={form?.properties?.regionalCallResponsibilities} gridStyle={style.regionalCallGrid} baseKey={'regionalCallResponsibilities'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
+              )} */}
               <div className={style.spaceBetween}>
                 <div></div>
                 <div className={style.displayInRow}>

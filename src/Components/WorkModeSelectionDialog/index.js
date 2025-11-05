@@ -57,7 +57,7 @@ const WorkModeDialog = ({ getIsOpen }) => {
     { key: 'PNP_MANAGER', value: userPNPRole },
     { key: 'LMS_MANAGER', value: userLMSRole }
   ];
-  const activeRolesCheck = roles.filter(role => role.value?.length > 0);
+  const activeRolesCheck = rolesCheck.filter(role => role.value?.length > 0);
   useEffect(() => {
     sessionStorage.setItem("fromSummary", false);
     setUserDetails();
@@ -131,8 +131,9 @@ const WorkModeDialog = ({ getIsOpen }) => {
   }, [selectedWorkSpace]);
 
   useEffect(() => {
-    if (activeRoles.length === 1) {
-      const selected = activeRoles[0].key;
+    console.log(activeRolesCheck, 'rolesCheck')
+    if (activeRolesCheck?.length === 1) {
+      const selected = activeRolesCheck[0].key;
       setSelectedWorkSpace(selected);
       sessionStorage.setItem('selectedApplication', selected);
     }

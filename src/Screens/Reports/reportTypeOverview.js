@@ -1533,6 +1533,26 @@ const ReportTypeOverview = () => {
             const queryParams = new URLSearchParams({
             });
 
+            if (dataToUseInReport?.selectedStaffType) {
+                queryParams.append('applicantTypeId', dataToUseInReport?.selectedStaffType);
+            }
+
+            if (dataToUseInReport?.selectedPrivilegeCategory) {
+                queryParams.append('privilegingCategoryId', dataToUseInReport?.selectedPrivilegeCategory);
+            }
+
+            if (dataToUseInReport?.from) {
+                queryParams.append('startDate', dataToUseInReport?.from);
+            }
+
+            if (dataToUseInReport?.to) {
+                queryParams.append('endDate', dataToUseInReport?.to);
+            }
+
+            if (dataToUseInReport?.selectedDepartments) {
+                queryParams.append('departmentSpecialties', dataToUseInReport?.selectedDepartments);
+            }
+
             if (dataToUseInReport?.selectedPosition) {
                 queryParams.append('positionType', dataToUseInReport?.selectedPosition);
             }
@@ -1565,6 +1585,26 @@ const ReportTypeOverview = () => {
                 queryParams.append('noOfDays', dataToUseInReport?.noOfDays);
             }
 
+            if (dataToUseInReport?.selectedStaffType) {
+                queryParams.append('applicantTypeId', dataToUseInReport?.selectedStaffType);
+            }
+
+            if (dataToUseInReport?.selectedPrivilegeCategory) {
+                queryParams.append('privilegingCategoryId', dataToUseInReport?.selectedPrivilegeCategory);
+            }
+
+            if (dataToUseInReport?.from) {
+                queryParams.append('startDate', dataToUseInReport?.from);
+            }
+
+            if (dataToUseInReport?.to) {
+                queryParams.append('endDate', dataToUseInReport?.to);
+            }
+
+            if (dataToUseInReport?.selectedDepartments) {
+                queryParams.append('departmentSpecialties', dataToUseInReport?.selectedDepartments);
+            }
+
             const { data: data } = await GET(`application-management-service/report/staffDocumentsExpiration?${queryParams.toString()}`, { signal });
             setStaffDocumentsExpiration(data);
         } else if (!isScheduledReport && isMyReport) {
@@ -1587,6 +1627,26 @@ const ReportTypeOverview = () => {
 
             if (dataToUseInReport?.selectedPosition) {
                 queryParams.append('positionType', dataToUseInReport?.selectedPosition);
+            }
+
+            if (dataToUseInReport?.selectedStaffType) {
+                queryParams.append('applicantTypeId', dataToUseInReport?.selectedStaffType);
+            }
+
+            if (dataToUseInReport?.selectedPrivilegeCategory) {
+                queryParams.append('privilegingCategoryId', dataToUseInReport?.selectedPrivilegeCategory);
+            }
+
+            if (dataToUseInReport?.from) {
+                queryParams.append('startDate', dataToUseInReport?.from);
+            }
+
+            if (dataToUseInReport?.to) {
+                queryParams.append('endDate', dataToUseInReport?.to);
+            }
+
+            if (dataToUseInReport?.selectedDepartments) {
+                queryParams.append('departmentSpecialties', dataToUseInReport?.selectedDepartments);
             }
 
             const { data: data } = await GET(`application-management-service/report/inactiveStaffs?${queryParams.toString()}`, { signal });
@@ -1614,6 +1674,10 @@ const ReportTypeOverview = () => {
 
             if (dataToUseInReport?.from) {
                 queryParams.append('startDate', dataToUseInReport?.from);
+            }
+
+            if (dataToUseInReport?.selectedPrivilegeCategory) {
+                queryParams.append('privilegingCategoryId', dataToUseInReport?.selectedPrivilegeCategory);
             }
 
             if (dataToUseInReport?.to) {
@@ -1650,6 +1714,10 @@ const ReportTypeOverview = () => {
                 queryParams.append('applicantTypeId', dataToUseInReport?.selectedStaffType);
             }
 
+            if (dataToUseInReport?.selectedPrivilegeCategory) {
+                queryParams.append('privilegingCategoryId', dataToUseInReport?.selectedPrivilegeCategory);
+            }
+
             if (dataToUseInReport?.selectedDepartments) {
                 queryParams.append('departmentSpecialties', dataToUseInReport?.selectedDepartments);
             }
@@ -1682,6 +1750,18 @@ const ReportTypeOverview = () => {
 
             if (dataToUseInReport?.to) {
                 queryParams.append('endDate', dataToUseInReport?.to);
+            }
+
+            if (dataToUseInReport?.selectedStaffType) {
+                queryParams.append('applicantTypeId', dataToUseInReport?.selectedStaffType);
+            }
+
+            if (dataToUseInReport?.selectedPrivilegeCategory) {
+                queryParams.append('privilegingCategoryId', dataToUseInReport?.selectedPrivilegeCategory);
+            }
+
+            if (dataToUseInReport?.selectedDepartments) {
+                queryParams.append('departmentSpecialties', dataToUseInReport?.selectedDepartments);
             }
 
             if (dataToUseInReport?.selectedPosition) {
@@ -1717,6 +1797,10 @@ const ReportTypeOverview = () => {
 
             if (dataToUseInReport?.selectedStaffType) {
                 queryParams.append('applicantTypeId', dataToUseInReport?.selectedStaffType);
+            }
+
+            if (dataToUseInReport?.selectedPrivilegeCategory) {
+                queryParams.append('privilegingCategoryId', dataToUseInReport?.selectedPrivilegeCategory);
             }
 
             if (dataToUseInReport?.selectedDepartments) {
@@ -3974,7 +4058,7 @@ const ReportTypeOverview = () => {
                                                         {isMyReport ? myReportContent?.title : reportTitleList[reportType]}
                                                     </div>
                                                     {(dataToUseInReport?.reportingTimePeriod !== "" && reportType !== "staffReappointmentTracker" && reportType !== "privilegedStaffSummary" && reportType !== "locumStaffbyTypes" && reportType !== "staffbyTypes" && reportType !== "currentNotesSummary" && reportType !== "locumStaffRenewalStatusTracker" && reportType !== "staffReappointmentStatusSummary" && reportType !== "ohipBillingNumbersByCareProvider" && reportType !== "currentMedicalDirectives" && reportType !== "retiredMedicalDirectives" && reportType !== "workflow" && reportType !== "attestationOutstanding" && reportType !== "medicalDirectivesTracker" && reportType !== "upcomingForReview" && reportType !== "reappointmentApplicationNotStarted" && reportType !== "locumRenewalOrExtensionApplicationsSummary" && reportType !== "declinedOrNotRenewedStaffSummary"
-                                                        && reportType !== "expiredDocumentsSummaryForStaff" && reportType !== "documentsExpirationSummaryForStaff" && reportType !== "inactiveStaffSummary" && reportType !== "appointmentHistorySummary" && reportType !== "currentPolicyAndProcedures" && reportType !== "retiredPolicyAndProcedures" && reportType !== "policyAndProceduresWorkflow" && reportType !== "policyAndProceduresAttestationOutstanding" && reportType !== "policyAndProceduresTracker" && reportType !== "policyAndProceduresUpcomingForReview"
+                                                        && reportType !== "appointmentHistorySummary" && reportType !== "inactiveStaffSummary" && reportType !== "currentPolicyAndProcedures" && reportType !== "retiredPolicyAndProcedures" && reportType !== "policyAndProceduresWorkflow" && reportType !== "policyAndProceduresAttestationOutstanding" && reportType !== "policyAndProceduresTracker" && reportType !== "policyAndProceduresUpcomingForReview"
                                                     ) && (
                                                             <div className={`${style.reportRunByTextStyle} ${style.textAlignCenter} ${style.marginTop5} `}>Reporting Period used for this report : {dataToUseInReport?.reportingTimePeriod} ({dataToUseInReport?.fromToDisplay} to {dataToUseInReport?.toToDisplay}) </div>
                                                         )}
@@ -4067,28 +4151,24 @@ const ReportTypeOverview = () => {
                                                         <div className={`${style.reportRunByParamStyle} ${style.marginTop5} `}>Sites </div>
                                                         <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedSitesToSend?.map(data => data?.siteName?.siteName).join(', ') || 'All Sites'}</div>
                                                     </div> */}
-                                                            {(reportType !== "expiredDocumentsSummaryForStaff" && reportType !== "documentsExpirationSummaryForStaff" && reportType !== "inactiveStaffSummary" && reportType !== "inactiveStaffSummaryByMonth") && (
-                                                                <div>
-                                                                    <div className={`${style.reportRunByParamStyle} ${style.marginTop5}`}>
-                                                                        {(dataToUseInReport?.selectedDepartmentsToSend?.length === 1 &&
-                                                                            dataToUseInReport?.selectedDepartmentsToSend[0]?.departmentName?.name)
-                                                                            ? 'Department'
-                                                                            : 'Departments'}
-                                                                    </div>
-                                                                    <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.departmentName?.name).join(', ') || 'All Departments'}</div>
+                                                            <div>
+                                                                <div className={`${style.reportRunByParamStyle} ${style.marginTop5}`}>
+                                                                    {(dataToUseInReport?.selectedDepartmentsToSend?.length === 1 &&
+                                                                        dataToUseInReport?.selectedDepartmentsToSend[0]?.departmentName?.name)
+                                                                        ? 'Department'
+                                                                        : 'Departments'}
                                                                 </div>
-                                                            )}
+                                                                <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.departmentName?.name).join(', ') || 'All Departments'}</div>
+                                                            </div>
                                                             {/* <div>
                                                             <div className={`${style.reportRunByParamStyle} ${style.marginTop5} `}>DIVISION / SPECIALITY </div>
                                                             <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedContractsToSend?.map(data => data?.contractName?.contractName).join(', ') || 'All'}</div>
                                                         </div> */}
-                                                            {(reportType !== "expiredDocumentsSummaryForStaff" && reportType !== "documentsExpirationSummaryForStaff" && reportType !== "inactiveStaffSummary" && reportType !== "inactiveStaffSummaryByMonth") && (
-                                                                <div>
-                                                                    <div className={`${style.reportRunByParamStyle} ${style.marginTop5} `}>STAFF TYPE </div>
-                                                                    <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedStaffTypeToSend?.map(data => data?.applicantType).join(', ') || 'All Staff Type'}</div>
-                                                                </div>
-                                                            )}
-                                                            {(reportType !== "expiredDocumentsSummaryForStaff" && reportType !== "documentsExpirationSummaryForStaff" && reportType !== "inactiveStaffSummary" && reportType !== "newStaffAppointmentsSummary" && reportType !== "appointmentHistorySummary" && reportType !== "inactiveStaffSummaryByMonth" && reportType !== "staffUploadedDocumentsSummary" && reportType !== "locumTermExpirationSummary") && (
+                                                            <div>
+                                                                <div className={`${style.reportRunByParamStyle} ${style.marginTop5} `}>STAFF TYPE </div>
+                                                                <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedStaffTypeToSend?.map(data => data?.applicantType).join(', ') || 'All Staff Type'}</div>
+                                                            </div>
+                                                            {(reportType !== "locumTermExpirationSummary") && (
                                                                 <div>
                                                                     <div className={`${style.reportRunByParamStyle} ${style.marginTop5} `}>PRIVILEGE CATEGORY </div>
                                                                     <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedPrivilegeCategoryToSend?.map(data => data?.category).join(', ') || 'All Categories'}</div>

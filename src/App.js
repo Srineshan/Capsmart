@@ -341,6 +341,7 @@ const PNPAttestStatus = React.lazy(() => import("./Screens/MDManagerScreens/MDMa
 const ManagePNPAttest = React.lazy(() => import("./Screens/PNPManager/PNPAttestations/ManageAttestations/PNPAttest"));
 const ManageAcknowledgementPNP = React.lazy(() => import("./Screens/PNPManager/PNPAttestations/ManageAcknowledgements/PNPAcknowledge"));
 const ManageSignOffPNP = React.lazy(() => import("./Screens/PNPManager/PNPAttestations/ManageSignOff/PNPSignOff"));
+const PNPDashboard = React.lazy(() => import("./Screens/PNPManager/Dashboard"));
 const PNPMECApproval = React.lazy(() => import("./Screens/MDManagerScreens/MDManager/MedicalDirectivesMECApproval"));
 let isHapicareUser;
 let organizations;
@@ -1427,6 +1428,7 @@ const App = ({ props }) => {
                 <Route path="/mdManager/manageAcknowledgement" element={<ProtectedRoute><ManageAcknowledgement /></ProtectedRoute>} />
                 <Route path="/mdManager/manageSignOff" element={<ProtectedRoute><ManageSignOff /></ProtectedRoute>} />
                 <Route path="/mdManager/manageAttestationGroups" element={<ProtectedRoute><ManageAttestationGroups /></ProtectedRoute>} />
+                <Route path="/mdManager/libraries/:entityId" element={<MDLibrary />} />
                 <Route path="/mdManager/libraries/:entityId/:departmentId" element={<MDLibrary />} />
                 <Route path="/mdManager/libraries/:entityId/:departmentId/:selectedMDId" element={<MDLibrary />} />
                 <Route path="/mdManager/step1" element={<ProtectedRoute><MDManagerStep1 /></ProtectedRoute>} />
@@ -1522,6 +1524,7 @@ const App = ({ props }) => {
                   path="/pnpManager/mdAttestStatus/:entityId/:medicalDirectivesId"
                   element={<ProtectedRoute><AttestStatusPNP /></ProtectedRoute>}
                 />
+                <Route path="/pnpManager/dashboard" element={<ProtectedRoute><PNPDashboard /></ProtectedRoute>} />
                 <Route
                   path="/locumApplicationForm/:applicationId/:section/:step"
                   element={<ProtectedRoute><LocumApplicationForm /></ProtectedRoute>}

@@ -47,7 +47,7 @@ const PODCheck = ({ basicForm, setBasicForm, applicationId }) => {
   }
 
   const handleContinue = () => {
-    navigate(`/applicationForm/${applicationId}/${basicForm?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[0]?.formCategory}/${basicForm?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[0]?.schemaCategory}`);
+    navigate(`/applicationForm/${applicationId}/${basicForm?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[0]?.formCategory}/${btoa(basicForm?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[0]?.schemaCategory)}`);
   }
 
   const getIsSaveInProgressOpen = (value) => {
@@ -111,7 +111,7 @@ const PODCheck = ({ basicForm, setBasicForm, applicationId }) => {
             </div>
             <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
               <div className={`${style.tableDataFontStyle1}`}> Applicant Profile Information</div>
-              <img src={Pencil} alt="" className={`${style.pencilImgStyle} ${style.justifyCenter} ${style.cursorPointer}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/applicationForm/${applicationId}/Form/BasicInformation`); }} />
+              <img src={Pencil} alt="" className={`${style.pencilImgStyle} ${style.justifyCenter} ${style.cursorPointer}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/applicationForm/${applicationId}/Form/${btoa('BasicInformation')}`); }} />
             </div>
             <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
               <div className={`${style.greenDotStyle} `}></div>
@@ -129,12 +129,12 @@ const PODCheck = ({ basicForm, setBasicForm, applicationId }) => {
                 <div className={`${style.tableDataStyle} ${style.marginTop5} ${style.tableValueGridStyle} `}>
                   <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
                     {index !== 0 && (
-                      <div className={`${style.marginLeft5} ${style.tableDataFontDisabledStyle1}`}>{data?.title || ''}</div>
+                      <div className={`${style.marginLeft5} ${style.tableDataFontDisabledStyle1}`}>{data?.description || ''}</div>
                     )}
                   </div>
                   <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                    <div className={`${style.tableDataFontStyle1}`}>{data?.description}</div>
-                    <img src={Pencil} alt="" className={`${style.pencilImgStyle} ${style.justifyCenter} ${style.cursorPointer}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/applicationForm/${applicationId}/${data?.formCategory}/${data?.schemaCategory}`) }} />
+                    <div className={`${style.tableDataFontStyle1}`}>{data?.title}</div>
+                    <img src={Pencil} alt="" className={`${style.pencilImgStyle} ${style.justifyCenter} ${style.cursorPointer}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/applicationForm/${applicationId}/${data?.formCategory}/${btoa(data?.schemaCategory)}`) }} />
                   </div>
                   <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
                     {/* <div className={`${style.greyDotStyle} `}></div> */}
