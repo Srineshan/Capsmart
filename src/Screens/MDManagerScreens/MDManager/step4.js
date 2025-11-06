@@ -39,6 +39,7 @@ const MDManagerStep4 = ({ setStep3, setStep4, mdValue, setMdValue, setSelectedMd
     const [selectedGroups, setSelectedGroups] = useState([]);
     const [workFlow1IsMandatory, setWorkFlow1IsMandatory] = useState(false);
     const [workFlow2IsMandatory, setWorkFlow2IsMandatory] = useState(false);
+    const [workFlowMACIsMandatory, setWorkFlowMACIsMandatory] = useState(false);
     const [selectedSignOffGroups, setSelectedSignOffGroups] = useState([]);
     const [selectedRolesWorkflow1, setSelectedRolesWorkflow1] = useState([]);
     const [selectedRolesWorkflow, setSelectedRolesWorkflow] = useState([]);
@@ -222,6 +223,63 @@ const MDManagerStep4 = ({ setStep3, setStep4, mdValue, setMdValue, setSelectedMd
                     type: "application/json",
                 })
             );
+            let acknowledgementData = workflowStructure;
+            const transformedGroups = selectedSignOffGroups?.map((groupId) => {
+                const group = groupList.find((g) => g.id === groupId);
+
+                return {
+                    group: {
+                        id: group?.id,
+                        name: group?.name,
+                    },
+                    approvalRequirementType: "ANY_MEMBER",
+                };
+            });
+            if (workflowEdited) {
+                if (workFlowMACIsMandatory) {
+                    if (acknowledgementData?.approvalFlowMap?.workflow?.[2]?.flowDetails?.[0]) {
+                        acknowledgementData.approvalFlowMap.workflow[2].flowDetails[0].approvalRequirement = "MANDATORY";
+                    }
+                    if (workflowStructure?.approvalFlowMap?.workflow[2]?.flowDetails?.[0]?.approvalBy === 'GROUP') {
+                        acknowledgementData.approvalFlowMap.workflow[2].flowDetails[0].groups = transformedGroups
+                    }
+                } else {
+                    if (acknowledgementData?.approvalFlowMap?.workflow?.[2]?.flowDetails?.[0]) {
+                        acknowledgementData.approvalFlowMap.workflow[2].flowDetails[0].approvalRequirement = "OPTIONAL";
+                    }
+                    if (workflowStructure?.approvalFlowMap?.workflow[2]?.flowDetails?.[0]?.approvalBy === 'GROUP') {
+                        acknowledgementData.approvalFlowMap.workflow[2].flowDetails[0].groups = []
+                    }
+                    if (acknowledgementData?.approvalFlowMap?.workflow && acknowledgementData.approvalFlowMap.workflow[2]) {
+                        acknowledgementData.approvalFlowMap.workflow[2].required = false;
+                    }
+                }
+                if (workFlow2IsMandatory && selectedSignOffGroups?.length !== 0) {
+                    if (acknowledgementData?.approvalFlowMap?.workflow?.[3]?.flowDetails?.[0]) {
+                        acknowledgementData.approvalFlowMap.workflow[3].flowDetails[0].approvalRequirement = "MANDATORY";
+                    }
+                    if (workflowStructure?.approvalFlowMap?.workflow[3]?.flowDetails?.[0]?.approvalBy === 'GROUP') {
+                        acknowledgementData.approvalFlowMap.workflow[3].flowDetails[0].groups = transformedGroups
+                    }
+                } else {
+                    if (acknowledgementData?.approvalFlowMap?.workflow?.[3]?.flowDetails?.[0]) {
+                        acknowledgementData.approvalFlowMap.workflow[3].flowDetails[0].approvalRequirement = "OPTIONAL";
+                    }
+                    if (workflowStructure?.approvalFlowMap?.workflow[3]?.flowDetails?.[0]?.approvalBy === 'GROUP') {
+                        acknowledgementData.approvalFlowMap.workflow[3].flowDetails[0].groups = []
+                    }
+                    if (acknowledgementData?.approvalFlowMap?.workflow && acknowledgementData.approvalFlowMap.workflow[3]) {
+                        acknowledgementData.approvalFlowMap.workflow[3].required = false;
+                    }
+                }
+                await PUT(`medical-directive-service/medicalDirectives/${mdValue?.id}/workflow`, acknowledgementData)
+                    .then(response => {
+                        SuccessToaster2('Workflow Added Successfully');
+                    })
+                    .catch(error => {
+                        ErrorToaster2('Something Failed. Please Try later!');
+                    })
+            }
             await PUT(`medical-directive-service/medicalDirectives/${mdValue?.id}`, formData)
                 .then(response => {
                     SuccessToaster2('MD Updateded Successfully');
@@ -235,7 +293,7 @@ const MDManagerStep4 = ({ setStep3, setStep4, mdValue, setMdValue, setSelectedMd
         } else {
             let errors = [];
 
-            if (selectedSignOffGroups?.length === 0) errors.push("Sign Off Group selection is required.");
+            if (workFlow2IsMandatory && selectedSignOffGroups?.length === 0) errors.push("Sign Off Group selection is required.");
             if (errors.length) {
                 errors.forEach(err => ErrorToaster2(err));
                 return;
@@ -253,23 +311,56 @@ const MDManagerStep4 = ({ setStep3, setStep4, mdValue, setMdValue, setSelectedMd
                 };
             });
             if (workflowEdited) {
-                if (selectedSignOffGroups?.length !== 0) {
-                    if (
-                        acknowledgementData?.approvalFlowMap?.workflow?.[3]?.flowDetails?.[0]
-                    ) {
+                if (workFlowMACIsMandatory) {
+                    if (acknowledgementData?.approvalFlowMap?.workflow?.[2]?.flowDetails?.[0]) {
+                        acknowledgementData.approvalFlowMap.workflow[2].flowDetails[0].approvalRequirement = "MANDATORY";
+                    }
+                    if (workflowStructure?.approvalFlowMap?.workflow[2]?.flowDetails?.[0]?.approvalBy === 'GROUP') {
+                        acknowledgementData.approvalFlowMap.workflow[2].flowDetails[0].groups = transformedGroups
+                    }
+                    if (acknowledgementData?.approvalFlowMap?.workflow && acknowledgementData.approvalFlowMap.workflow[2]) {
+                        acknowledgementData.approvalFlowMap.workflow[2].required = true;
+                    }
+                } else {
+                    if (acknowledgementData?.approvalFlowMap?.workflow?.[2]?.flowDetails?.[0]) {
+                        acknowledgementData.approvalFlowMap.workflow[2].flowDetails[0].approvalRequirement = "OPTIONAL";
+                    }
+                    if (workflowStructure?.approvalFlowMap?.workflow[2]?.flowDetails?.[0]?.approvalBy === 'GROUP') {
+                        acknowledgementData.approvalFlowMap.workflow[2].flowDetails[0].groups = []
+                    }
+                    if (acknowledgementData?.approvalFlowMap?.workflow && acknowledgementData.approvalFlowMap.workflow[2]) {
+                        acknowledgementData.approvalFlowMap.workflow[2].required = false;
+                    }
+                }
+                if (workFlow2IsMandatory) {
+                    if (acknowledgementData?.approvalFlowMap?.workflow?.[3]?.flowDetails?.[0]) {
                         acknowledgementData.approvalFlowMap.workflow[3].flowDetails[0].approvalRequirement = "MANDATORY";
                     }
                     if (workflowStructure?.approvalFlowMap?.workflow[3]?.flowDetails?.[0]?.approvalBy === 'GROUP') {
                         acknowledgementData.approvalFlowMap.workflow[3].flowDetails[0].groups = transformedGroups
                     }
-                    await PUT(`medical-directive-service/medicalDirectives/${mdValue?.id}/workflow`, acknowledgementData)
-                        .then(response => {
-                            SuccessToaster2('Workflow Added Successfully');
-                        })
-                        .catch(error => {
-                            ErrorToaster2('Something Failed. Please Try later!');
-                        })
+                    if (acknowledgementData?.approvalFlowMap?.workflow && acknowledgementData.approvalFlowMap.workflow[3]) {
+                        acknowledgementData.approvalFlowMap.workflow[3].required = true;
+                    }
+                } else {
+                    if (acknowledgementData?.approvalFlowMap?.workflow?.[3]?.flowDetails?.[0]) {
+                        acknowledgementData.approvalFlowMap.workflow[3].flowDetails[0].approvalRequirement = "OPTIONAL";
+                    }
+                    if (workflowStructure?.approvalFlowMap?.workflow[3]?.flowDetails?.[0]?.approvalBy === 'GROUP') {
+                        acknowledgementData.approvalFlowMap.workflow[3].flowDetails[0].groups = []
+                    }
+                    if (acknowledgementData?.approvalFlowMap?.workflow && acknowledgementData.approvalFlowMap.workflow[3]) {
+                        acknowledgementData.approvalFlowMap.workflow[3].required = false;
+                    }
                 }
+                console.log(acknowledgementData, 'acknowledgementData')
+                await PUT(`medical-directive-service/medicalDirectives/${mdValue?.id}/workflow`, acknowledgementData)
+                    .then(response => {
+                        SuccessToaster2('Workflow Added Successfully');
+                    })
+                    .catch(error => {
+                        ErrorToaster2('Something Failed. Please Try later!');
+                    })
                 await PUT(`medical-directive-service/medicalDirectives/${mdValue?.id}/startWorkflow`)
                     .then(response => {
                         // SuccessToaster2('Sign Off Started Successfully');
@@ -280,7 +371,6 @@ const MDManagerStep4 = ({ setStep3, setStep4, mdValue, setMdValue, setSelectedMd
             }
             setIsConfirmationDialog(false)
             setStep4(false)
-            // setShowWorkflowSelection(true)
         }
     }
 
@@ -429,53 +519,80 @@ const MDManagerStep4 = ({ setStep3, setStep4, mdValue, setMdValue, setSelectedMd
             </div>
             <div className={`${style.stepContentCard}`}>
                 <div className={`${style.stepsTitleBar} ${style.verticalAlignCenter}`}>
+                    <div className={style.stepsTitleText}>MAC Approval Prior To Publication Of This Medical Directive Into The Library</div>
+                </div>
+                <div className={`${style.padding40} ${style.marginTop20} `}>
+                    <div className={`${style.marginTop20} ${style.threeCol} ${signOffExists ? style.disabledView : ''} ${style.verticalAlignCenter}`}>
+                        <div className={style.labelStyle}>MAC Approval Required?</div>
+                        <CommonSwitch label={workFlowMACIsMandatory ? 'YES' : 'NO'} checked={workFlowMACIsMandatory} onChange={signOffExists ? () => { } : (e) => { setWorkFlowMACIsMandatory(e.target.checked); setWorkflowEdited(true) }} labelName={''} />
+                        {!workFlowMACIsMandatory && (
+                            <div className={style.exclusionNote}>
+                                This Medical Directive does not require pre-publication MAC Approval from any department-specific staff. However, the final draft must still be reviewed and approved by the Leadership Team.
+                            </div>
+                        )}
+                    </div>
+                </div>
+                <div className={`${style.stepsTitleBar} ${style.verticalAlignCenter} ${style.marginTop20}`}>
                     <div className={style.stepsTitleText}>Leadership Sign Off Prior To Publication Of This Medical Directive Into The Library</div>
                 </div>
-                <div className={`${style.padding40} ${style.marginTop20} ${signOffExists ? style.disabledView : ''}`}>
-                    <div className={style.padding20}>
-                        <div className={style.labelStyle}>Select Leadership Sign Off Group*</div>
-                        <div className={style.attestationGrid}>
-                            <div ref={containerRef} onFocus={signOffExists ? () => { } : () => setShowAttestationGroupList(true)} onBlur={handleBlur}
-                                tabIndex={0}>
-                                <CommonInputField
-                                    className={style.fullWidth}
-                                    // value={keyword}
-                                    // onChange={(e) => setKeyword(e.target.value)}
-                                    type="text"
-                                // placeholder="Enter Keywords / Tags"
-                                />
-                                {showAttestationGroupList && (
-                                    <div className={`${style.attestationGroupCard} ${style.padding20}`} tabIndex={0}>
-                                        {groupList?.filter(data => data?.type === "SIGN_OFF" && !selectedSignOffGroups?.includes(data?.id))?.map((data, index) => (
-                                            <div className={`${style.groupDisplayGrid} ${style.verticalAlignCenter}`}>
-                                                <div className={`${style.labelStyle} ${style.cursorPointer}`} onClick={signOffExists ? () => { } : () => handleGroupSelect(data?.id)}>{data?.name}</div>
-                                                <div className={`${style.attestationDescStyle} ${style.verticalAlignCenter}`}
-                                                    dangerouslySetInnerHTML={{ __html: data?.description }} />
-                                                <div className={`${style.attestationViewButton} ${style.cursorPointer}`} onClick={signOffExists ? () => { } : () => getGroupListById(data?.id)}>View Group Members</div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
+                <div className={`${style.padding40} ${style.marginTop20} `}>
+                    <div className={`${style.marginTop20} ${style.threeCol} ${signOffExists ? style.disabledView : ''} ${style.verticalAlignCenter}`}>
+                        <div className={style.labelStyle}>Leadership Sign Off Required?</div>
+                        <CommonSwitch label={workFlow2IsMandatory ? 'YES' : 'NO'} checked={workFlow2IsMandatory} onChange={signOffExists ? () => { } : (e) => { setWorkFlow2IsMandatory(e.target.checked); setWorkflowEdited(true) }} labelName={''} />
+                        {!workFlow2IsMandatory && (
+                            <div className={style.exclusionNote}>
+                                This Medical Directive does not require pre-publication leadership sign off from any department-specific staff. However, the final draft must still be reviewed and approved by the MAC and Leadership Team.
                             </div>
-                            <div className={` ${style.addNewButton} ${style.textColorWhite} ${style.createGroupButton} ${style.marginLeft20} ${style.cursorPointer}`} onClick={signOffExists ? () => { } : () => handleCreateGroup()}>
-                                <AddIcon />
-                                <span> Create New Group</span>
+                        )}
+                    </div>
+                </div>
+                {workFlow2IsMandatory && (
+                    <div className={`${style.padding40} ${style.marginTop20} ${signOffExists ? style.disabledView : ''}`}>
+                        <div className={style.padding20}>
+                            <div className={style.labelStyle}>Select Leadership Sign Off Group*</div>
+                            <div className={style.attestationGrid}>
+                                <div ref={containerRef} onFocus={signOffExists ? () => { } : () => setShowAttestationGroupList(true)} onBlur={handleBlur}
+                                    tabIndex={0}>
+                                    <CommonInputField
+                                        className={style.fullWidth}
+                                        // value={keyword}
+                                        // onChange={(e) => setKeyword(e.target.value)}
+                                        type="text"
+                                    // placeholder="Enter Keywords / Tags"
+                                    />
+                                    {showAttestationGroupList && (
+                                        <div className={`${style.attestationGroupCard} ${style.padding20}`} tabIndex={0}>
+                                            {groupList?.filter(data => data?.type === "SIGN_OFF" && !selectedSignOffGroups?.includes(data?.id))?.map((data, index) => (
+                                                <div className={`${style.groupDisplayGrid} ${style.verticalAlignCenter}`}>
+                                                    <div className={`${style.labelStyle} ${style.cursorPointer}`} onClick={signOffExists ? () => { } : () => handleGroupSelect(data?.id)}>{data?.name}</div>
+                                                    <div className={`${style.attestationDescStyle} ${style.verticalAlignCenter}`}
+                                                        dangerouslySetInnerHTML={{ __html: data?.description }} />
+                                                    <div className={`${style.attestationViewButton} ${style.cursorPointer}`} onClick={signOffExists ? () => { } : () => getGroupListById(data?.id)}>View Group Members</div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                                <div className={` ${style.addNewButton} ${style.textColorWhite} ${style.createGroupButton} ${style.marginLeft20} ${style.cursorPointer}`} onClick={signOffExists ? () => { } : () => handleCreateGroup()}>
+                                    <AddIcon />
+                                    <span> Create New Group</span>
+                                </div>
                             </div>
-                        </div>
-                        <div>
-                            <div className={`${style.chipsContainer} ${style.marginTop10}`}>
-                                {selectedSignOffGroups?.map(data => {
-                                    return (
-                                        <div className={`${style.chips} ${style.displayInRow}`}>
-                                            <div>{groupList?.filter(groupData => groupData?.id === data)?.[0]?.name}</div> <div className={`${style.verticalAlignCenter} ${style.marginLeft10} ${style.cursorPointer}`}
-                                                onClick={signOffExists ? () => { } : () => { setSelectedSignOffGroups(selectedSignOffGroups?.filter(innerData => innerData !== data)); setWorkflowEdited(true) }}
-                                            ><CancelIcon sx={{ color: '#06617A', fontSize: 20 }} /></div></div>
-                                    )
-                                })}
+                            <div>
+                                <div className={`${style.chipsContainer} ${style.marginTop10}`}>
+                                    {selectedSignOffGroups?.map(data => {
+                                        return (
+                                            <div className={`${style.chips} ${style.displayInRow}`}>
+                                                <div>{groupList?.filter(groupData => groupData?.id === data)?.[0]?.name}</div> <div className={`${style.verticalAlignCenter} ${style.marginLeft10} ${style.cursorPointer}`}
+                                                    onClick={signOffExists ? () => { } : () => { setSelectedSignOffGroups(selectedSignOffGroups?.filter(innerData => innerData !== data)); setWorkflowEdited(true) }}
+                                                ><CancelIcon sx={{ color: '#06617A', fontSize: 20 }} /></div></div>
+                                        )
+                                    })}
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                )}
             </div>
             <Dialog isOpen={showAttestationGroup} onClose={() => handleGroupDialogClose()} className={`${style.addMDDialogBackground} ${style.attestationDialog}`}>
                 <div className={Classes.DIALOG_BODY}>

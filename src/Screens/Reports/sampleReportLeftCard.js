@@ -19,6 +19,7 @@ import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
 
 import style from './index.module.scss';
 import CommonMultiSelectField from '../../Components/CommonFields/CommonMultiSelectField';
+import CommonSearchField from '../../Components/CommonFields/CommonSearchField';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -84,6 +85,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
     const [selectedCombinations, setSelectedCombinations] = useState([]);
     const [selectedDepartment, setSelectedDepartment] = useState([]);
     const [selectedServiceArea, setSelectedServiceArea] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
     // const selectedDepartmentName = departments?.find(data => data?.id === selectedDepartments)?.departmentName?.name;
     const selectedDepartmentNames = departments
         ?.filter(dep => selectedDepartments.includes(dep.id))
@@ -168,7 +170,8 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         selectedApplicationSentStatus: selectedApplicationSentStatus,
         selectedWorkflowLevel: workflowLevel,
         noOfDays: noOfDays,
-        tab: trackerTabName
+        tab: trackerTabName,
+        search: searchTerm
     };
 
     useEffect(() => {
@@ -423,7 +426,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         getDataToUseInReport(dataToUseInReport);
     }, [renewalreportingTimePeriod, selectedSites, selectedDepartments, selectedPrivilegeCategory, selectedStaffType,
         podType, contractStatus, reportingTimePeriod, selectedApplicationType, selectedReappointmentStatus,
-        selectedPosition, from, to, initialValueSet, selectedTimesheetInterval, selectedApplicationSentStatus, workflowLevel, selectedAuthors, selectedGroups, noOfDays, trackerTabName]);
+        selectedPosition, from, to, initialValueSet, selectedTimesheetInterval, selectedApplicationSentStatus, workflowLevel, selectedAuthors, selectedGroups, noOfDays, trackerTabName, searchTerm]);
 
     useEffect(() => {
         let tempDept = [];
@@ -878,6 +881,11 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                         <div className={`${style.reportLeftTextStyle} ${style.cursorPointer}`} onClick={() => setShowSaveReport(true)}>{!isMyReport ? 'Save Parameter Selection' : "Update Parameter Selection"}</div>
                     </div>
                 </Tooltip>
+                <div className={style.marginTop20}>
+                    {(reportType === "locumTermExpirationSummary" && !isMyReport && !isScheduledReport) && (
+                        <CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={(e) => setSearchTerm(e.target.value)} searchData={[]} handleShowForSearch={() => { }} isOnClickAvailable={false} placeholder={'Search'} />
+                    )}
+                </div>
                 {(reportType === "staffReappointmentsNotes" || reportType === "staffReappointments" || reportType === "locumRenewalOrExtensionApplicationsSummary" || reportType === "privilegedStaffSummary" ||
                     reportType === "submittedApplicationsReviewSummary" || reportType === "staffReappointmentTracker" || reportType === "ohipBillingNumbersByCareProvider" || reportType === "careProviderCareerMilestoneSummary" ||
                     reportType === "declinedOrNotRenewedStaffSummary" || reportType === "reappointmentApplicationNotStarted" || reportType === "currentNotesSummary" || reportType === "staffReappointmentStatusSummary" || reportType === "staffbyTypes" || reportType === "locumStaffbyTypes" || reportType === "locumStaffRenewalStatusTracker" || reportType === "privilegedStaffSummary" || reportType === "careProvidersSummary"
