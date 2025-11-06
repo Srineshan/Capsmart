@@ -235,51 +235,51 @@ const MDManagerStep4 = ({ setStep3, setStep4, mdValue, setMdValue, setSelectedMd
                     approvalRequirementType: "ANY_MEMBER",
                 };
             });
-            if (workflowEdited) {
-                if (workFlowMACIsMandatory) {
-                    if (acknowledgementData?.approvalFlowMap?.workflow?.[2]?.flowDetails?.[0]) {
-                        acknowledgementData.approvalFlowMap.workflow[2].flowDetails[0].approvalRequirement = "MANDATORY";
-                    }
-                    if (workflowStructure?.approvalFlowMap?.workflow[2]?.flowDetails?.[0]?.approvalBy === 'GROUP') {
-                        acknowledgementData.approvalFlowMap.workflow[2].flowDetails[0].groups = transformedGroups
-                    }
-                } else {
-                    if (acknowledgementData?.approvalFlowMap?.workflow?.[2]?.flowDetails?.[0]) {
-                        acknowledgementData.approvalFlowMap.workflow[2].flowDetails[0].approvalRequirement = "OPTIONAL";
-                    }
-                    if (workflowStructure?.approvalFlowMap?.workflow[2]?.flowDetails?.[0]?.approvalBy === 'GROUP') {
-                        acknowledgementData.approvalFlowMap.workflow[2].flowDetails[0].groups = []
-                    }
-                    if (acknowledgementData?.approvalFlowMap?.workflow && acknowledgementData.approvalFlowMap.workflow[2]) {
-                        acknowledgementData.approvalFlowMap.workflow[2].required = false;
-                    }
+            // if (workflowEdited) {
+            if (workFlowMACIsMandatory) {
+                if (acknowledgementData?.approvalFlowMap?.workflow?.[2]?.flowDetails?.[0]) {
+                    acknowledgementData.approvalFlowMap.workflow[2].flowDetails[0].approvalRequirement = "MANDATORY";
                 }
-                if (workFlow2IsMandatory && selectedSignOffGroups?.length !== 0) {
-                    if (acknowledgementData?.approvalFlowMap?.workflow?.[3]?.flowDetails?.[0]) {
-                        acknowledgementData.approvalFlowMap.workflow[3].flowDetails[0].approvalRequirement = "MANDATORY";
-                    }
-                    if (workflowStructure?.approvalFlowMap?.workflow[3]?.flowDetails?.[0]?.approvalBy === 'GROUP') {
-                        acknowledgementData.approvalFlowMap.workflow[3].flowDetails[0].groups = transformedGroups
-                    }
-                } else {
-                    if (acknowledgementData?.approvalFlowMap?.workflow?.[3]?.flowDetails?.[0]) {
-                        acknowledgementData.approvalFlowMap.workflow[3].flowDetails[0].approvalRequirement = "OPTIONAL";
-                    }
-                    if (workflowStructure?.approvalFlowMap?.workflow[3]?.flowDetails?.[0]?.approvalBy === 'GROUP') {
-                        acknowledgementData.approvalFlowMap.workflow[3].flowDetails[0].groups = []
-                    }
-                    if (acknowledgementData?.approvalFlowMap?.workflow && acknowledgementData.approvalFlowMap.workflow[3]) {
-                        acknowledgementData.approvalFlowMap.workflow[3].required = false;
-                    }
+                if (acknowledgementData?.approvalFlowMap?.workflow && acknowledgementData.approvalFlowMap.workflow[2]) {
+                    acknowledgementData.approvalFlowMap.workflow[2].required = true;
                 }
-                await PUT(`medical-directive-service/medicalDirectives/${mdValue?.id}/workflow`, acknowledgementData)
-                    .then(response => {
-                        SuccessToaster2('Workflow Added Successfully');
-                    })
-                    .catch(error => {
-                        ErrorToaster2('Something Failed. Please Try later!');
-                    })
+            } else {
+                if (acknowledgementData?.approvalFlowMap?.workflow?.[2]?.flowDetails?.[0]) {
+                    acknowledgementData.approvalFlowMap.workflow[2].flowDetails[0].approvalRequirement = "OPTIONAL";
+                }
+                if (acknowledgementData?.approvalFlowMap?.workflow && acknowledgementData.approvalFlowMap.workflow[2]) {
+                    acknowledgementData.approvalFlowMap.workflow[2].required = false;
+                }
             }
+            if (workFlow2IsMandatory && selectedSignOffGroups?.length !== 0) {
+                if (acknowledgementData?.approvalFlowMap?.workflow?.[3]?.flowDetails?.[0]) {
+                    acknowledgementData.approvalFlowMap.workflow[3].flowDetails[0].approvalRequirement = "MANDATORY";
+                }
+                if (workflowStructure?.approvalFlowMap?.workflow[3]?.flowDetails?.[0]?.approvalBy === 'GROUP') {
+                    acknowledgementData.approvalFlowMap.workflow[3].flowDetails[0].groups = transformedGroups
+                }
+                if (acknowledgementData?.approvalFlowMap?.workflow && acknowledgementData.approvalFlowMap.workflow[3]) {
+                    acknowledgementData.approvalFlowMap.workflow[3].required = true;
+                }
+            } else {
+                if (acknowledgementData?.approvalFlowMap?.workflow?.[3]?.flowDetails?.[0]) {
+                    acknowledgementData.approvalFlowMap.workflow[3].flowDetails[0].approvalRequirement = "OPTIONAL";
+                }
+                if (workflowStructure?.approvalFlowMap?.workflow[3]?.flowDetails?.[0]?.approvalBy === 'GROUP') {
+                    acknowledgementData.approvalFlowMap.workflow[3].flowDetails[0].groups = []
+                }
+                if (acknowledgementData?.approvalFlowMap?.workflow && acknowledgementData.approvalFlowMap.workflow[3]) {
+                    acknowledgementData.approvalFlowMap.workflow[3].required = false;
+                }
+            }
+            await PUT(`medical-directive-service/medicalDirectives/${mdValue?.id}/workflow`, acknowledgementData)
+                .then(response => {
+                    SuccessToaster2('Workflow Added Successfully');
+                })
+                .catch(error => {
+                    ErrorToaster2('Something Failed. Please Try later!');
+                })
+            // }
             await PUT(`medical-directive-service/medicalDirectives/${mdValue?.id}`, formData)
                 .then(response => {
                     SuccessToaster2('MD Updateded Successfully');
@@ -310,65 +310,59 @@ const MDManagerStep4 = ({ setStep3, setStep4, mdValue, setMdValue, setSelectedMd
                     approvalRequirementType: "ANY_MEMBER",
                 };
             });
-            if (workflowEdited) {
-                if (workFlowMACIsMandatory) {
-                    if (acknowledgementData?.approvalFlowMap?.workflow?.[2]?.flowDetails?.[0]) {
-                        acknowledgementData.approvalFlowMap.workflow[2].flowDetails[0].approvalRequirement = "MANDATORY";
-                    }
-                    if (workflowStructure?.approvalFlowMap?.workflow[2]?.flowDetails?.[0]?.approvalBy === 'GROUP') {
-                        acknowledgementData.approvalFlowMap.workflow[2].flowDetails[0].groups = transformedGroups
-                    }
-                    if (acknowledgementData?.approvalFlowMap?.workflow && acknowledgementData.approvalFlowMap.workflow[2]) {
-                        acknowledgementData.approvalFlowMap.workflow[2].required = true;
-                    }
-                } else {
-                    if (acknowledgementData?.approvalFlowMap?.workflow?.[2]?.flowDetails?.[0]) {
-                        acknowledgementData.approvalFlowMap.workflow[2].flowDetails[0].approvalRequirement = "OPTIONAL";
-                    }
-                    if (workflowStructure?.approvalFlowMap?.workflow[2]?.flowDetails?.[0]?.approvalBy === 'GROUP') {
-                        acknowledgementData.approvalFlowMap.workflow[2].flowDetails[0].groups = []
-                    }
-                    if (acknowledgementData?.approvalFlowMap?.workflow && acknowledgementData.approvalFlowMap.workflow[2]) {
-                        acknowledgementData.approvalFlowMap.workflow[2].required = false;
-                    }
+            // if (workflowEdited) {
+            if (workFlowMACIsMandatory) {
+                if (acknowledgementData?.approvalFlowMap?.workflow?.[2]?.flowDetails?.[0]) {
+                    acknowledgementData.approvalFlowMap.workflow[2].flowDetails[0].approvalRequirement = "MANDATORY";
                 }
-                if (workFlow2IsMandatory) {
-                    if (acknowledgementData?.approvalFlowMap?.workflow?.[3]?.flowDetails?.[0]) {
-                        acknowledgementData.approvalFlowMap.workflow[3].flowDetails[0].approvalRequirement = "MANDATORY";
-                    }
-                    if (workflowStructure?.approvalFlowMap?.workflow[3]?.flowDetails?.[0]?.approvalBy === 'GROUP') {
-                        acknowledgementData.approvalFlowMap.workflow[3].flowDetails[0].groups = transformedGroups
-                    }
-                    if (acknowledgementData?.approvalFlowMap?.workflow && acknowledgementData.approvalFlowMap.workflow[3]) {
-                        acknowledgementData.approvalFlowMap.workflow[3].required = true;
-                    }
-                } else {
-                    if (acknowledgementData?.approvalFlowMap?.workflow?.[3]?.flowDetails?.[0]) {
-                        acknowledgementData.approvalFlowMap.workflow[3].flowDetails[0].approvalRequirement = "OPTIONAL";
-                    }
-                    if (workflowStructure?.approvalFlowMap?.workflow[3]?.flowDetails?.[0]?.approvalBy === 'GROUP') {
-                        acknowledgementData.approvalFlowMap.workflow[3].flowDetails[0].groups = []
-                    }
-                    if (acknowledgementData?.approvalFlowMap?.workflow && acknowledgementData.approvalFlowMap.workflow[3]) {
-                        acknowledgementData.approvalFlowMap.workflow[3].required = false;
-                    }
+                if (acknowledgementData?.approvalFlowMap?.workflow && acknowledgementData.approvalFlowMap.workflow[2]) {
+                    acknowledgementData.approvalFlowMap.workflow[2].required = true;
                 }
-                console.log(acknowledgementData, 'acknowledgementData')
-                await PUT(`medical-directive-service/medicalDirectives/${mdValue?.id}/workflow`, acknowledgementData)
-                    .then(response => {
-                        SuccessToaster2('Workflow Added Successfully');
-                    })
-                    .catch(error => {
-                        ErrorToaster2('Something Failed. Please Try later!');
-                    })
-                await PUT(`medical-directive-service/medicalDirectives/${mdValue?.id}/startWorkflow`)
-                    .then(response => {
-                        // SuccessToaster2('Sign Off Started Successfully');
-                    })
-                    .catch(error => {
-                        // ErrorToaster2('Something Failed. Please Try later!');
-                    })
+            } else {
+                if (acknowledgementData?.approvalFlowMap?.workflow?.[2]?.flowDetails?.[0]) {
+                    acknowledgementData.approvalFlowMap.workflow[2].flowDetails[0].approvalRequirement = "OPTIONAL";
+                }
+                if (acknowledgementData?.approvalFlowMap?.workflow && acknowledgementData.approvalFlowMap.workflow[2]) {
+                    acknowledgementData.approvalFlowMap.workflow[2].required = false;
+                }
             }
+            if (workFlow2IsMandatory) {
+                if (acknowledgementData?.approvalFlowMap?.workflow?.[3]?.flowDetails?.[0]) {
+                    acknowledgementData.approvalFlowMap.workflow[3].flowDetails[0].approvalRequirement = "MANDATORY";
+                }
+                if (workflowStructure?.approvalFlowMap?.workflow[3]?.flowDetails?.[0]?.approvalBy === 'GROUP') {
+                    acknowledgementData.approvalFlowMap.workflow[3].flowDetails[0].groups = transformedGroups
+                }
+                if (acknowledgementData?.approvalFlowMap?.workflow && acknowledgementData.approvalFlowMap.workflow[3]) {
+                    acknowledgementData.approvalFlowMap.workflow[3].required = true;
+                }
+            } else {
+                if (acknowledgementData?.approvalFlowMap?.workflow?.[3]?.flowDetails?.[0]) {
+                    acknowledgementData.approvalFlowMap.workflow[3].flowDetails[0].approvalRequirement = "OPTIONAL";
+                }
+                if (workflowStructure?.approvalFlowMap?.workflow[3]?.flowDetails?.[0]?.approvalBy === 'GROUP') {
+                    acknowledgementData.approvalFlowMap.workflow[3].flowDetails[0].groups = []
+                }
+                if (acknowledgementData?.approvalFlowMap?.workflow && acknowledgementData.approvalFlowMap.workflow[3]) {
+                    acknowledgementData.approvalFlowMap.workflow[3].required = false;
+                }
+            }
+            console.log(acknowledgementData, 'acknowledgementData')
+            await PUT(`medical-directive-service/medicalDirectives/${mdValue?.id}/workflow`, acknowledgementData)
+                .then(response => {
+                    SuccessToaster2('Workflow Added Successfully');
+                })
+                .catch(error => {
+                    ErrorToaster2('Something Failed. Please Try later!');
+                })
+            await PUT(`medical-directive-service/medicalDirectives/${mdValue?.id}/startWorkflow`)
+                .then(response => {
+                    // SuccessToaster2('Sign Off Started Successfully');
+                })
+                .catch(error => {
+                    // ErrorToaster2('Something Failed. Please Try later!');
+                })
+            // }
             setIsConfirmationDialog(false)
             setStep4(false)
         }
