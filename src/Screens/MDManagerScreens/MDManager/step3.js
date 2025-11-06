@@ -461,6 +461,9 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
             if (workflowStructure?.approvalFlowMap?.workflow[1]?.flowDetails?.[0]?.approvalBy === 'GROUP') {
                 acknowledgementData.approvalFlowMap.workflow[1].flowDetails[0].groups = transformedGroups
             }
+            if (acknowledgementData?.approvalFlowMap?.workflow && acknowledgementData.approvalFlowMap.workflow[1]) {
+                acknowledgementData.approvalFlowMap.workflow[1].required = true;
+            }
         } else {
             acknowledgementData.approvalFlowMap.workflow[1].flowDetails[0].approvalRequirement = 'OPTIONAL';
             if (workflowStructure?.approvalFlowMap?.workflow[1]?.flowDetails?.[0]?.approvalBy === 'GROUP') {

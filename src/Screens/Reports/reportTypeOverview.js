@@ -174,6 +174,21 @@ const ReportTypeOverview = () => {
         paid: 'Payment Made'
     }
 
+    const applicationStatus = {
+        CREATED: 'Application Created',
+        SUBMITTED: 'Application Submitted',
+        APPROVED: 'Application Approved',
+        REJECTED: 'Application Rejected',
+        COMPLETED: 'Application Completed',
+        REVIEW_INPROGRESS: 'Review In-Progress',
+        DECLINED: 'Application Denied'
+    }
+
+    const applicationSubStatus = {
+        STARTED: 'Application In-Progress',
+        NOT_STARTED: 'Application not yet started',
+    }
+
     const getContractStatusValue = {
         ACTIVE: 'Active',
         DRAFT: 'Draft',
@@ -301,7 +316,7 @@ const ReportTypeOverview = () => {
             return () => controller.abort();
         }
         console.log(dataToUseInReport, 'dataToUseInReport', (dataToUseInReport?.initialValueSet && ((dataToUseInReport?.selectedDepartments?.length !== 1 ? !dataToUseInReport?.selectedDepartments.includes('') : true) && (dataToUseInReport?.selectedStaffType?.length !== 1 ? !dataToUseInReport?.selectedStaffType.includes('') : true) && (dataToUseInReport?.selectedPrivilegeCategory?.length !== 1 ? !dataToUseInReport?.selectedPrivilegeCategory.includes('') : true))))
-    }, [dataToUseInReport?.from, dataToUseInReport?.to, dataToUseInReport?.selectedPrivilegeCategory, dataToUseInReport?.selectedStaffType, dataToUseInReport?.selectedSites, dataToUseInReport?.selectedDepartments, dataToUseInReport?.selectedGroups, dataToUseInReport?.selectedAuthors, dataToUseInReport?.renewalreportingTimePeriod, dataToUseInReport?.selectedPosition, dataToUseInReport?.selectedApplicationType, dataToUseInReport?.initialValueSet, dataToUseInReport?.selectedTimesheetInterval, dataToUseInReport?.selectedReappointmentStatus, dataToUseInReport?.selectedApplicationSentStatus, dataToUseInReport?.selectedWorkflowLevel, dataToUseInReport?.noOfDays, dataToUseInReport?.tab]);
+    }, [dataToUseInReport?.from, dataToUseInReport?.to, dataToUseInReport?.selectedPrivilegeCategory, dataToUseInReport?.selectedStaffType, dataToUseInReport?.selectedSites, dataToUseInReport?.selectedDepartments, dataToUseInReport?.selectedGroups, dataToUseInReport?.selectedAuthors, dataToUseInReport?.renewalreportingTimePeriod, dataToUseInReport?.selectedPosition, dataToUseInReport?.selectedApplicationType, dataToUseInReport?.initialValueSet, dataToUseInReport?.selectedTimesheetInterval, dataToUseInReport?.selectedReappointmentStatus, dataToUseInReport?.selectedApplicationSentStatus, dataToUseInReport?.selectedWorkflowLevel, dataToUseInReport?.noOfDays, dataToUseInReport?.tab, dataToUseInReport?.search]);
 
     useEffect(() => {
         setApexStackedBarChartDisplay(<ApexStackedBarChart stackedSeries={stackedSeries} stackedCategories={stackedCategories} />);
@@ -1846,6 +1861,10 @@ const ReportTypeOverview = () => {
                 queryParams.append('departmentSpecialties', dataToUseInReport?.selectedDepartments);
             }
 
+            if (dataToUseInReport?.search) {
+                queryParams.append('searchText', dataToUseInReport?.search);
+            }
+
             const { data: data } = await GET(`application-management-service/report/locumTermExpiration?${queryParams.toString()}`, { signal });
             setLocumTermExpirationSummary(data);
         } else if (!isScheduledReport && isMyReport) {
@@ -2640,6 +2659,50 @@ const ReportTypeOverview = () => {
             { type: "text", value: staffId },
             { type: "text", value: staffType },
             { type: "text", value: email },
+        ];
+    };
+
+    const headerValuesLocumTermExpiration = [
+        "No.",
+        "Staff Name",
+        "Department / Specialty",
+        "End Date",
+        "Status",
+        "Current End Date",
+    ];
+    const colSortValuesLocumTermExpiration = [false, false, false, false, false, false, false];
+
+    const getLocumTermExpirationTableValues = (data) => {
+        const No = [];
+        const staffName = [];
+        const endDate = [];
+        const departmentSpecialty = [];
+        const email = [];
+        const status = [];
+        const priorEndDate = [];
+
+        data?.map((innerData, index) => {
+            No.push(index + 1 + ".")
+            staffName.push(
+                `${formatFirstNameLastName(innerData?.applicant?.name?.firstName, innerData?.applicant?.name?.lastName)}` || " "
+            );
+
+            endDate.push(innerData?.tenure?.to ? format(new Date(innerData?.tenure?.to), 'MMM dd, yyyy') : '-');
+            priorEndDate.push(innerData?.onGoingApplication?.cyclePeriod?.to ? format(new Date(innerData?.onGoingApplication?.cyclePeriod?.to), 'MMM dd, yyyy') : '-')
+            departmentSpecialty.push(`${innerData?.basicDetailReferences?.department?.name} ${innerData?.basicDetailReferences?.specialty?.name ? `- ${innerData?.basicDetailReferences?.specialty?.name}` : ''}`);
+            email.push(
+                `${innerData?.applicant?.email?.officialEmail || "-"}`
+            );
+            status.push(`${innerData?.onGoingApplication?.status ? innerData?.onGoingApplication?.status === "CREATED" ? applicationSubStatus[innerData?.onGoingApplication?.subStatus] : applicationStatus[innerData?.onGoingApplication?.status] : '-'}`)
+        });
+
+        return [
+            { type: "text", value: No },
+            { type: "text", value: staffName, tooltipValueText: email },
+            { type: "text", value: departmentSpecialty },
+            { type: "text", value: priorEndDate },
+            { type: "text", value: status },
+            { type: "text", value: endDate },
         ];
     };
 
@@ -5293,6 +5356,21 @@ const ReportTypeOverview = () => {
                                                                                         name: "Locum Term Expiration",
                                                                                         data: locumTermExpirationSummary?.map(data => data?.count)
                                                                                     }]} categories={locumTermExpirationSummary?.map(data => data?.month ? format(new Date(data?.month), 'MMM yyyy') : '') || []} reportingPeriod={``} yAxisTitle="Staff Count" xAxisTitle="Locum Term Expiration" />
+                                                                                    {locumTermExpirationSummary?.map(data => (
+                                                                                        <>
+                                                                                            <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} `}>{format(new Date(data?.month), 'MMMM, yyyy')}</div>
+                                                                                            <TableTwo
+                                                                                                tableHeaderValues={headerValuesLocumTermExpiration}
+                                                                                                tableDataValues={getLocumTermExpirationTableValues(data?.staffs)}
+                                                                                                tableData={data?.staffs}
+                                                                                                gridStyle={style.locumTermExpirationGrid}
+                                                                                                tableSortValues={colSortValuesLocumTermExpiration}
+                                                                                                heading={"There are no record to display"}
+                                                                                                className={`${style.tableRow} ${style.reportSection}`}
+                                                                                                hidePagination={true}
+                                                                                            />
+                                                                                        </>
+                                                                                    ))}
                                                                                 </div>
                                                                             ) : (
                                                                                 <ReportNoDataBox heading={'You do not have any Locum Term Expiration for the selected period.'}
