@@ -882,7 +882,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                     </div>
                 </Tooltip>
                 <div className={style.marginTop20}>
-                    {(reportType === "locumTermExpirationSummary" && !isMyReport && !isScheduledReport) && (
+                    {(!isMyReport && !isScheduledReport) && (
                         <CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={(e) => setSearchTerm(e.target.value)} searchData={[]} handleShowForSearch={() => { }} isOnClickAvailable={false} placeholder={'Search'} />
                     )}
                 </div>
