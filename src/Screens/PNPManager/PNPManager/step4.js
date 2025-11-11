@@ -1144,7 +1144,7 @@ const PNPManagerStep4 = ({ setStep3, setStep4, setStep5, mdValue, setMdValue, se
                                 }}
                                 radioValue={["ALL_STAFFS", "SELECTED_DEPARTMENT_AND_DIVISION"]}
                                 label={[
-                                    "All Facility Staff Members",
+                                    "All Staff Members",
                                     "Department & Division / Speciality Staff Members",
                                 ]}
                             />
@@ -1405,7 +1405,7 @@ const PNPManagerStep4 = ({ setStep3, setStep4, setStep5, mdValue, setMdValue, se
                         <CommonDivider />
                     </div>
                     <div className={`${style.stepsTitleBar} ${style.verticalAlignCenter} ${style.marginTop20} `}>
-                        <div className={style.stepsTitleText}>Excluded Staff Members for Attestation</div>
+                        <div className={style.stepsTitleText}>Exclude Staff Members for Attestation</div>
                     </div>
                     <div className={style.marginTop20}>
                         <div className={style.attestationGroupGrid}>
@@ -1510,11 +1510,11 @@ const PNPManagerStep4 = ({ setStep3, setStep4, setStep5, mdValue, setMdValue, se
                         <div className={style.stepsTitleText}>Auto-Trigger Rules for Reviews and Attestations for Temporary Staff</div>
                     </div>
                     <div className={`${style.marginTop20} ${style.twoCol} `}>
-                        <div className={style.labelStyle}>Auto trigger reviews and attestations on <strong>Revision / Update</strong> of Policy & Procedure</div>
+                        <div className={style.labelStyle}>Auto-trigger reviews and attestations on <strong>Revision / Update</strong> of Policy & Procedure</div>
                         <CommonSwitch label={autoTriggerOnUpdate ? 'YES' : 'NO'} checked={autoTriggerOnUpdate} onChange={(e) => setAutoTriggerOnUpdate(e.target.checked)} labelName={''} />
                     </div>
                     <div className={`${style.marginTop20} ${style.twoCol} `}>
-                        <div className={style.labelStyle}>Auto trigger review and attestations for <strong>New Staff Applicant</strong></div>
+                        <div className={style.labelStyle}>Auto-trigger reviews and attestations for <strong>New Staff</strong></div>
                         <CommonSwitch label={autoTriggerForNewAppointment ? 'YES' : 'NO'} checked={autoTriggerForNewAppointment} onChange={(e) => setAutoTriggerForNewAppointment(e.target.checked)} labelName={''} />
                     </div>
                     {/* <div className={`${style.marginTop20} ${style.twoCol} `}>
@@ -1522,7 +1522,7 @@ const PNPManagerStep4 = ({ setStep3, setStep4, setStep5, mdValue, setMdValue, se
                         <CommonSwitch label={autoTriggerForReappointment ? 'YES' : 'NO'} checked={autoTriggerForReappointment} onChange={(e) => setAutoTriggerForReappointment(e.target.checked)} labelName={''} />
                     </div> */}
                     <div className={`${style.marginTop20} ${style.twoCol} `}>
-                        <div className={style.labelStyle}>Auto trigger review and attestations for <strong>Temporary Staffs</strong></div>
+                        <div className={style.labelStyle}>Auto-trigger reviews and attestations for <strong>Temporary Staff</strong></div>
                         <CommonSwitch label={autoTriggerForLocum ? 'YES' : 'NO'} checked={autoTriggerForLocum} onChange={(e) => setAutoTriggerForLocum(e.target.checked)} labelName={''} />
                     </div>
                 </div>

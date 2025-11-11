@@ -2718,9 +2718,9 @@ const ReportTypeOverview = () => {
         "No.",
         "Staff Name",
         "Department / Specialty",
-        "End Date",
+        "Last Locum Period End Date",
         "Status",
-        "Current End Date",
+        "Extension End Date",
     ];
     const colSortValuesLocumTermExpiration = [false, false, false, false, false, false, false];
 
@@ -2745,16 +2745,16 @@ const ReportTypeOverview = () => {
             email.push(
                 `${innerData?.applicant?.email?.officialEmail || "-"}`
             );
-            status.push(`${innerData?.onGoingApplication?.status ? innerData?.onGoingApplication?.status === "CREATED" ? applicationSubStatus[innerData?.onGoingApplication?.subStatus] : applicationStatus[innerData?.onGoingApplication?.status] : '-'}`)
+            status.push(`${innerData?.onGoingApplication?.status ? innerData?.onGoingApplication?.status === "CREATED" ? applicationSubStatus[innerData?.onGoingApplication?.subStatus] : applicationStatus[innerData?.onGoingApplication?.status] : 'Application Not Sent'}`)
         });
 
         return [
             { type: "text", value: No },
             { type: "text", value: staffName, tooltipValueText: email },
             { type: "text", value: departmentSpecialty },
-            { type: "text", value: priorEndDate },
-            { type: "text", value: status },
             { type: "text", value: endDate },
+            { type: "text", value: status },
+            { type: "text", value: priorEndDate },
         ];
     };
 

@@ -535,7 +535,7 @@ const MDManagerStep4 = ({ setStep3, setStep4, mdValue, setMdValue, setSelectedMd
                         <CommonSwitch label={workFlow2IsMandatory ? 'YES' : 'NO'} checked={workFlow2IsMandatory} onChange={signOffExists ? () => { } : (e) => { setWorkFlow2IsMandatory(e.target.checked); setWorkflowEdited(true) }} labelName={''} />
                         {!workFlow2IsMandatory && (
                             <div className={style.exclusionNote}>
-                                This Medical Directive does not require pre-publication leadership sign off from any department-specific staff. However, the final draft must still be reviewed and approved by the MAC and Leadership Team.
+                                This Medical Directive does not require pre-publication leadership sign off from any department-specific staff. However, the final draft must still be reviewed and approved by the MAC and the Acknowledgement Team, as per the selection.
                             </div>
                         )}
                     </div>

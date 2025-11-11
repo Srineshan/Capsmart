@@ -197,7 +197,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
                 lastName: user?.name?.lastName,
                 email: user?.email?.officialEmail,
                 phone: user?.communication?.mobileNumber,
-                roles: [...user?.roles, ...user?.lmsRoles],
+                roles: [...user?.roles || [], ...user?.lmsRoles || []],
                 sites: { sites: user?.sites?.sites },
                 title: user?.title,
                 userType: user?.userType,
