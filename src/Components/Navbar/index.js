@@ -590,15 +590,6 @@ const Navbar = () => {
                   <p>DASHBOARD</p>
                 </div>
               </Link>
-              {/* <Link to={`https://lms.indocaribe.com/descope-login/?ssotoken=${cookie.get("authorization")}`} className={style.noFontStyle}>
-                <div
-                  className={`${style.menuStyle} ${window.location.pathname.includes("/lms") &&
-                    style.activeMenuColor
-                    }`}
-                >
-                  <p>LMS</p>
-                </div>
-              </Link> */}
               {/* {
             isContractManager && (
               <div>

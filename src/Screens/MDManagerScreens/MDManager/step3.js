@@ -1076,7 +1076,7 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                         <CommonSwitch label={workFlow1IsMandatory ? 'YES' : 'NO'} checked={workFlow1IsMandatory} onChange={acknowledgementExists ? () => { } : (e) => { setWorkFlow1IsMandatory(e.target.checked); setWorkflowEdited(true) }} labelName={''} />
                         {!workFlow1IsMandatory && (
                             <div className={style.exclusionNote}>
-                                This Medical Directive does not require pre-publication acknowledgement from any department-specific staff. However, the final draft must still be reviewed and approved by the MAC and Leadership Team.
+                                This Medical Directive does not require pre-publication acknowledgement from any department-specific staff. However, the final draft must still be reviewed and approved by the MAC and Leadership Team, as per the selection.
                             </div>
                         )}
                     </div>
@@ -1517,19 +1517,19 @@ const MDManagerStep3 = ({ setStep2, setStep3, setStep4, mdValue, setMdValue, set
                         <div className={style.stepsTitleText}>Auto-Trigger Rules for Reviews and Attestations</div>
                     </div>
                     <div className={`${style.marginTop20} ${style.twoCol} `}>
-                        <div className={style.labelStyle}>Auto trigger reviews and attestations on <strong>Revision / Update</strong> of Medical Directive</div>
+                        <div className={style.labelStyle}>Auto-trigger reviews and attestations on <strong>Revision / Update</strong> of Medical Directive</div>
                         <CommonSwitch label={autoTriggerOnUpdate ? 'YES' : 'NO'} checked={autoTriggerOnUpdate} onChange={(e) => setAutoTriggerOnUpdate(e.target.checked)} labelName={''} />
                     </div>
                     <div className={`${style.marginTop20} ${style.twoCol} `}>
-                        <div className={style.labelStyle}>Auto trigger review and attestations for <strong>New Staff Applicant</strong></div>
+                        <div className={style.labelStyle}>Auto-trigger reviews and attestations for <strong>New Staff Applicant</strong></div>
                         <CommonSwitch label={autoTriggerForNewAppointment ? 'YES' : 'NO'} checked={autoTriggerForNewAppointment} onChange={(e) => setAutoTriggerForNewAppointment(e.target.checked)} labelName={''} />
                     </div>
                     <div className={`${style.marginTop20} ${style.twoCol} `}>
-                        <div className={style.labelStyle}>Auto trigger review and attestations for <strong>Staff Reappointment</strong></div>
+                        <div className={style.labelStyle}>Auto-trigger reviews and attestations for <strong>Staff Reappointment</strong></div>
                         <CommonSwitch label={autoTriggerForReappointment ? 'YES' : 'NO'} checked={autoTriggerForReappointment} onChange={(e) => setAutoTriggerForReappointment(e.target.checked)} labelName={''} />
                     </div>
                     <div className={`${style.marginTop20} ${style.twoCol} `}>
-                        <div className={style.labelStyle}>Auto trigger review and attestations for <strong>Locum Renewal / Extensions</strong></div>
+                        <div className={style.labelStyle}>Auto-trigger reviews and attestations for <strong>Locum Renewal / Extensions</strong></div>
                         <CommonSwitch label={autoTriggerForLocum ? 'YES' : 'NO'} checked={autoTriggerForLocum} onChange={(e) => setAutoTriggerForLocum(e.target.checked)} labelName={''} />
                     </div>
                 </div>

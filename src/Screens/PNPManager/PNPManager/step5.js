@@ -429,7 +429,7 @@ const PNPManagerStep5 = ({ setStep4, setStep5, mdValue, setMdValue, setSelectedM
             </div>
             <div className={`${style.stepContentCard}`}>
                 <div className={`${style.stepsTitleBar} ${style.verticalAlignCenter}`}>
-                    <div className={style.stepsTitleText}>Leadership Sign Off Prior To Publication Of This Policy & Procedure Into The Library</div>
+                    <div className={style.stepsTitleText}>Leadership Sign Off Prior To Establishment Of This Policy & Procedure Into The Library</div>
                 </div>
                 <div className={`${style.padding40} ${style.marginTop20} ${signOffExists ? style.disabledView : ''}`}>
                     <div className={style.padding20}>

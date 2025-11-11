@@ -510,6 +510,7 @@ const StaffApplicationTopTiles = (searchTermForTable, totalCount, showBulkApprov
   useEffect(() => {
     getTitleCountsLocum("LOCUM");
     getTitleCounts("REAPPOINTMENT");
+    getTitleCounts("NEW");
   }, [searchTermForTable?.searchTermForTable, showBulkMoveDialog, showBulkApproveDialog])
 
   useEffect(() => {
@@ -522,6 +523,7 @@ const StaffApplicationTopTiles = (searchTermForTable, totalCount, showBulkApprov
     if (recordUpdate) {
       getTitleCounts("REAPPOINTMENT");
       getTitleCountsLocum();
+      getTitleCounts("NEW");
     }
   }, [recordUpdate]);
 
@@ -559,20 +561,17 @@ const StaffApplicationTopTiles = (searchTermForTable, totalCount, showBulkApprov
       const response = await GET(
         `application-management-service/application/workflowUser/meta?applicationCreationType=${type === "LOCUM" ? "REAPPOINTMENT" : type}&role=${role}&searchText=${searchTermForTable?.searchTermForTable}&positionType=PERMANENT`
       );
-      setReappointmentCounts(response.data);
+      console.log("setLocumCounts", response.data, type)
+      if (type === 'NEW') {
+        setNewCounts(response.data);
+      } else {
+        setReappointmentCounts(response.data);
+      }
       if (response?.data) {
         if (type === 'NEW') {
           setNewCounts(response.data);
           console.log("setLocumCounts", response.data)
         }
-        // else if (type === 'REAPPOINTMENT') {
-        //   setReappointmentCounts(response.data);
-        //   console.log("setLocumCounts", response.data)
-        // } 
-        // else if (type === 'LOCUM') {
-        //   setLocumCounts(response.data);
-        //   console.log("setLocumCounts1111", response.data)
-        // }
       }
     } catch (error) {
       console.error('Error fetching counts:', error);
@@ -678,6 +677,7 @@ const StaffApplicationTopTiles = (searchTermForTable, totalCount, showBulkApprov
   }, [userDetails])
 
   const calculateVisibleCounts = (countsObj, workModeType, applicationType) => {
+    console.log(countsObj, 'countsObj', applicationType)
     if (!countsObj) return 0;
 
     // Add clarifications

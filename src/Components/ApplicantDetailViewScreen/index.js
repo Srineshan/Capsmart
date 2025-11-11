@@ -19,6 +19,7 @@ import CrossPink from "./../../images/crossPink.png";
 import ToBeVerified from "./../../images/toBeVerifiedImage.png";
 import DeleteIcon from "./../../images/deleteHcRow.png";
 import Tooltip from "@mui/material/Tooltip";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import { DELETE, TenantID, GET, PUT, POST } from "../../Screens/dataSaver";
 import { ErrorToaster, SuccessToaster } from "./../../utils/toaster";
 import { formatFirstNameLastName } from "./../../utils/formatting";
@@ -66,14 +67,18 @@ import CreateOutlinedIcon from '@mui/icons-material/CreateOutlined';
 import LoadingScreen from "../LoadingScreen";
 import FileVerifyDialog from "../../Components/fileVerifyDialog";
 import FileDisplayDialog from "../../Components/fileDisplayDialog";
+import FileWithFieldsForStaff from "./fileWithFields";
 
 const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, getActiveApplicationView }) => {
   let cookie = new Cookie();
   let userDetails = cookie.get('user');
   const users = jwt(userDetails);
+  const fileInputRef = useRef(null);
+  const fileInputRefForNew = useRef(null);
   const [form, setForm] = useState();
   const [documentDetails, setDocumentDetails] = useState();
   const [selectedFile, setselectedFile] = useState(false);
+  const [selectedFileId, setselectedFileId] = useState('');
   const [selectedDocsFilter, setSelectedDocsFilter] = useState(null);
   const [currentDocumentCount, setCurrentDocumentCount] = useState();
   const [renewedDocumentRequired, setRenewedDocumentRequired] = useState();
@@ -108,8 +113,10 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
   const [selectedFileIndex, setSelectedFileIndex] = useState(0);
   const [showFileVerifyDialog, setShowFileVerifyDialog] = useState(false);
   const [showFileDisplayDialog, setShowFileDisplayDialog] = useState(false);
+  const [showFileWithFieldsDisplayDialog, setShowFileWithFieldsDisplayDialog] = useState(false);
   const [showViewOnly, setShowViewOnly] = useState(false);
   const [hasReviewInProgress, setHasReviewInProgress] = useState(false);
+  const [replaceFileIndex, setReplaceFileIndex] = useState();
   const documentHeaderValues = ["", "Document Type", "Document Name", "Requirement", "Expiration Date", "Last Updated", "Action"];
   const documentColSortValues = [false, false, false, false, false, false, , false];
   const appointmentHeaderValues = ["Appointment Cycle", <img src={CAPManagerSmallLogo} alt="img" className={style.LogoIcon} />, "Privilege Category", "Approved Privileges", "Notes", "Docs", "Approval Date", "Action"];
@@ -133,6 +140,12 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
     setselectedFile(data?.file)
   };
 
+  const onClickEditDocDialog = (data) => {
+    setShowFileWithFieldsDisplayDialog(true);
+    setselectedFile(data?.file)
+    setselectedFileId(data?.rowId);
+  };
+
   const onclickViewAndVerifyFunction = (id) => () => {
     getActiveApplicationView(true);
     sessionStorage.setItem("applicationId", id);
@@ -143,6 +156,18 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
     sessionStorage.setItem("applicationId", data?.id);
   };
 
+  const handleReplace = (data) => {
+    // let index = tempValue?.table?.findIndex(fileData => fileData?.documentType === data?.documentType);
+    // setReplaceFileIndex(index);
+    // console.log(data)
+    setselectedFileId(data?.rowId);
+    fileInputRef.current.click();
+  }
+
+  const handleAddNewDoc = (data) => {
+    fileInputRefForNew.current.click();
+  }
+
   const documentActionsData = [
     {
       data: "View",
@@ -152,6 +177,12 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
     // {
     //   data: "EditDocs",
     //   requiredValue: "boolean",
+    //   onClick: onClickEditDocDialog,
+    // },
+    // {
+    //   data: "Replace",
+    //   requiredValue: "boolean",
+    //   onClick: handleReplace,
     // },
   ];
 
@@ -311,8 +342,8 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
           })()
         ) : null
       );
-      documentType.push(`${data?.documentType}` || "Dentist");
-      documentName.push(data?.shortName || "dd")
+      documentType.push(data?.documentType || data?.file?.fileName);
+      documentName.push(data?.shortName || "-")
       requirementType.push(data?.required)
       expireDate.push(
         expiryDateFormat ? format(new Date(expiryDateFormat), dateFormat) : "-"
@@ -614,6 +645,68 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
     }
   };
 
+  const handleFileChange = async (event) => {
+    setIsLoadingImage(true)
+    const file = event.target.files[0];
+
+    let fileName = {
+      "file": { fileName: file?.name }
+    };
+    const formData = new FormData();
+    formData.append('documentDetail', new Blob([JSON.stringify(fileName)], {
+      type: "application/json"
+    }));
+    formData.append('document', file);
+    if (file) {
+      let url = `application-management-service/staff/${applicationId}/documents/${selectedFileId}/replace`;
+      await PUT(url, formData)
+        .then(response => {
+          setIsLoadingImage(false)
+          console.log(response)
+          getPreApplication()
+          getPreApplicationDocuments()
+        })
+        .catch((error) => {
+          setIsLoadingImage(false)
+          console.log(error)
+        })
+    } else {
+      setIsLoadingImage(false)
+    }
+    console.log(file, file?.name, 'Test')
+  };
+
+  const handleFileUpload = async (event) => {
+    setIsLoadingImage(true)
+    const file = event.target.files[0];
+
+    let fileName = {
+      "file": { fileName: file?.name }
+    };
+    const formData = new FormData();
+    formData.append('documentDetail', new Blob([JSON.stringify(fileName)], {
+      type: "application/json"
+    }));
+    formData.append('document', file);
+    if (file) {
+      let url = `application-management-service/staff/${applicationId}/documents`;
+      await PUT(url, formData)
+        .then(response => {
+          setIsLoadingImage(false)
+          console.log(response)
+          getPreApplication()
+          getPreApplicationDocuments()
+        })
+        .catch((error) => {
+          setIsLoadingImage(false)
+          console.log(error)
+        })
+    } else {
+      setIsLoadingImage(false)
+    }
+    console.log(file, file?.name, 'Test')
+  };
+
   const onClose = () => {
     getApplicantDetailsViewScreen(false);
   };
@@ -898,6 +991,14 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
                         </span>
                       </div>
                       <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
+                        {/* {expandStates.section1 && (
+                          <Tooltip title={"Click to Upload New Document"} arrow>
+                            <AddCircleOutlineIcon
+                              sx={{ fontSize: 20, color: "#94979A", cursor: "pointer" }}
+                              onClick={() => { handleAddNewDoc() }}
+                            />
+                          </Tooltip>
+                        )} */}
                         <div
                           className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
                           onClick={() => toggleExpand("section1")}
@@ -1225,6 +1326,30 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
           file={selectedFile}
         />
       )}
+
+      {/* {showFileWithFieldsDisplayDialog && (
+        <FileWithFieldsForStaff
+          getIsOpen={setShowFileWithFieldsDisplayDialog}
+          file={selectedFile}
+          rowId={selectedFileId}
+          staffId={users?.id}
+          // fields={fields} metadata={metaData}
+          // applicationDocumentId={file?.rowId} getPreApplication={getPreApplication} 
+          applicationIdFromEdit={applicationId}
+        />
+      )} */}
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleFileChange}
+        style={{ display: "none" }} // Hide the actual file input
+      />
+      <input
+        type="file"
+        ref={fileInputRefForNew}
+        onChange={handleFileUpload}
+        style={{ display: "none" }} // Hide the actual file input
+      />
       {/* {
             showViewAndVerifyScreen && (
             <ViewandVerifyScreen
