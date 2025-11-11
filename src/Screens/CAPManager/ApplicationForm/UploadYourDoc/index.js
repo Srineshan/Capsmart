@@ -716,18 +716,18 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
               BACK
             </div>
             <div
-              className={`${style.continue} ${style.marginTop10} ${(basicForm?.forms?.[formIndex]?.data !== null &&
+              className={`${style.continue} ${style.marginTop10} ${((basicForm?.forms?.[formIndex]?.data !== null &&
                 showRedBorderForESign) ||
                 (basicForm?.forms?.[formIndex]?.data !== null &&
-                  getMissingDocs()?.length !== 0)
+                  getMissingDocs()?.length !== 0))
                 ? style.disabledButton
                 : ""
                 }`}
               onClick={
-                (basicForm?.forms?.[formIndex]?.data !== null &&
+                ((basicForm?.forms?.[formIndex]?.data !== null &&
                   showRedBorderForESign) ||
                   (basicForm?.forms?.[formIndex]?.data !== null && basicForm?.forms?.[formIndex]?.data?.table !== undefined &&
-                    getMissingDocs()?.length !== 0)
+                    getMissingDocs()?.length !== 0))
                   ? () => { }
                   : () => handleContinue()
               }
