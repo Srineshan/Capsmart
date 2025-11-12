@@ -236,12 +236,13 @@ const MDDashboard = () => {
             )}
             <Fragment>
                 <Navbar />
-                <div className={`${isExpanded ? style.bigCardGrid : style.smallCardGrid} ${style.margin20WithoutTop} `}>
-                    <div>
+                {/* <div className={`${isExpanded ? style.bigCardGrid : style.smallCardGrid} ${style.margin20WithoutTop} `}></div> */}
+                <div className={`${style.margin20WithoutTop} `}>
+                    {/* <div>
                         <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
                             <LeftCard getDataToUseInReport={getDataToUseInReport} isLoading={isLoading} />
                         </SideBar>
-                    </div>
+                    </div> */}
                     <div className={`${style.marginTop20} `}>
                         <div className={style.spaceBetween}>
                             <div></div>
@@ -252,7 +253,7 @@ const MDDashboard = () => {
                             </Tooltip>
                         </div>
                         <div ref={componentRef} className={style.margin20WithoutTop}>
-                            <div className={`${style.selectedFilterCard}`}>
+                            {/* <div className={`${style.selectedFilterCard}`}>
                                 <div className={style.selectedFiltersHeadingText}>{`Medical Directives Dashboard for ${dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.departmentName?.name).join(', ') || 'All Departments'}`}</div>
                                 <div className={`${style.grid4} ${style.marginTop20}`}>
                                     <div className={style.selectedFiltersText}>Current Date: {format(new Date(), 'MMM dd, yyyy')}</div>
@@ -260,8 +261,9 @@ const MDDashboard = () => {
                                     <div className={style.selectedFiltersText}>{dataToUseInReport?.selectedStaffTypeToSend?.map(data => data?.applicantType).join(', ') || 'All Staff Types'}</div>
                                     <div className={style.selectedFiltersText}>{dataToUseInReport?.selectedPrivilegeCategoryToSend?.map(data => data?.category).join(', ') || 'All Privilege Categories'}</div>
                                 </div>
-                            </div>
-                            <div className={`${style.grid4} ${style.marginTop20}`}>
+                            </div> */}
+                            {/* <div className={`${style.grid4} ${style.marginTop20}`}> */}
+                            <div className={`${style.grid4}`}>
                                 <div className={`${style.dashboardTile}`}>
                                     <div className={style.dashboardTileText}>Active Medical Directives</div>
                                     <div className={style.dashboardTileCount}>{mdDashboard?.statusCount?.active}</div>
