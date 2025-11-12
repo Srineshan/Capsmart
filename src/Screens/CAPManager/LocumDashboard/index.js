@@ -131,7 +131,7 @@ const LocumDashboard = () => {
 
     const getApplicationStatusLabels = () => {
         if (applicationDashboard) {
-            return ['Submitted', 'Not Yet Started', 'Declined']
+            return ['Accepted', 'Not Yet Started', 'Declined']
         } else return []
     }
 
