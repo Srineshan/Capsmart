@@ -721,8 +721,14 @@ body::-webkit-scrollbar {
 
 .activeLocumStaffGrid {
   display: grid;
-  grid-template-columns: 13% 3% 11% 15% 6% 11% 11% 12% 9%;
-  grid-gap: 10px;
+  grid-template-columns: 13% 3% 3% 11% 15% 6% 11% 11% 12% 5%;
+  grid-gap: 1%;
+}
+
+.allLocumStaffGrid {
+  display: grid;
+  grid-template-columns: 13% 3% 3% 11% 15% 11% 11% 12% 12%;
+  grid-gap: 1%;
 }
 
 .tempPrivilegesLocumStaffGrid {

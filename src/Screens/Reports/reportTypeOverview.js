@@ -138,6 +138,7 @@ const ReportTypeOverview = () => {
     const [inactiveStaffSummaryByMonth, setInactiveStaffSummaryByMonth] = useState([]);
     const [staffUploadedDocumentsSummary, setStaffUploadedDocumentsSummary] = useState([]);
     const [locumTermExpirationSummary, setLocumTermExpirationSummary] = useState([]);
+    const [renewedLocumStaff, setRenewedLocumStaff] = useState([]);
     const [applicationType, setApplicationType] = useState(() =>
         sessionStorage.getItem('applicationCreationType') || 'NEW'
     );
@@ -424,6 +425,9 @@ const ReportTypeOverview = () => {
             case 'locumTermExpirationSummary':
                 getLocumTermExpirationSummary(signal)
                 break;
+            case 'renewedLocumStaff':
+                getRenewedLocumStaff(signal)
+                break;
             case 'currentPolicyAndProcedures':
                 getCurrentPolicyAndProcedure();
                 break;
@@ -539,7 +543,8 @@ const ReportTypeOverview = () => {
         appointmentHistorySummary: 'Appointment History',
         inactiveStaffSummaryByMonth: 'Inactive Staff Summary By Month',
         staffUploadedDocumentsSummary: 'Staff Uploaded Documents',
-        locumTermExpirationSummary: 'Locum Term Expiration',
+        locumTermExpirationSummary: 'Expired Locum Staff That Were Not Renewed',
+        renewedLocumStaff: 'Renewed Locum Staff',
         currentMedicalDirectives: 'Current Medical Directives',
         retiredMedicalDirectives: 'Retired Medical Directives',
         workflow: 'Medical Directives Workflow',
@@ -1925,6 +1930,45 @@ const ReportTypeOverview = () => {
         setIsLoading(false)
     }
 
+    const getRenewedLocumStaff = async (signal) => {
+        setIsLoading(true)
+        if (!isMyReport && !isScheduledReport) {
+            const queryParams = new URLSearchParams({
+            });
+            if (dataToUseInReport?.from) {
+                queryParams.append('startDate', dataToUseInReport?.from);
+            }
+
+            if (dataToUseInReport?.to) {
+                queryParams.append('endDate', dataToUseInReport?.to);
+            }
+
+            if (dataToUseInReport?.selectedStaffType) {
+                queryParams.append('applicantTypeId', dataToUseInReport?.selectedStaffType);
+            }
+
+            if (dataToUseInReport?.selectedDepartments) {
+                queryParams.append('departmentSpecialties', dataToUseInReport?.selectedDepartments);
+            }
+
+            if (dataToUseInReport?.search) {
+                queryParams.append('searchText', dataToUseInReport?.search);
+            }
+
+            const { data: data } = await GET(`application-management-service/report/renewedLocumStaffs?${queryParams.toString()}`, { signal });
+            setRenewedLocumStaff(data);
+        } else if (!isScheduledReport && isMyReport) {
+            const { data: data } = await GET(`application-management-service/report/myReport/renewedLocumStaffs?id=${myReportId}`, { signal });
+            setRenewedLocumStaff(data);
+        } else {
+            const { data: data } = await GET(`application-management-service/report/scheduledReports/${scheduleId}`, { signal });
+            setRenewedLocumStaff(data?.reportJson);
+            setScheduledTime(data?.createdDate);
+            sessionStorage.setItem("reportFilter", JSON.stringify(data?.filter));
+        }
+        setIsLoading(false)
+    }
+
     const getMedicalDirectivesTracker = async (signal) => {
         setIsLoading(true)
         if (!isMyReport && !isScheduledReport) {
@@ -2719,12 +2763,55 @@ const ReportTypeOverview = () => {
         "Staff Name",
         "Department / Specialty",
         "Last Locum Period End Date",
-        "Status",
-        "Extension End Date",
+        "E-mail"
     ];
     const colSortValuesLocumTermExpiration = [false, false, false, false, false, false, false];
 
     const getLocumTermExpirationTableValues = (data) => {
+        const No = [];
+        const staffName = [];
+        const endDate = [];
+        const departmentSpecialty = [];
+        const email = [];
+        const status = [];
+        const priorEndDate = [];
+
+        data?.map((innerData, index) => {
+            No.push(index + 1 + ".")
+            staffName.push(
+                `${formatFirstNameLastName(innerData?.applicant?.name?.firstName, innerData?.applicant?.name?.lastName)}` || " "
+            );
+
+            endDate.push(innerData?.tenure?.to ? format(new Date(innerData?.tenure?.to), 'MMM dd, yyyy') : '-');
+            priorEndDate.push(innerData?.onGoingApplication?.cyclePeriod?.to ? format(new Date(innerData?.onGoingApplication?.cyclePeriod?.to), 'MMM dd, yyyy') : '-')
+            departmentSpecialty.push(`${innerData?.basicDetailReferences?.department?.name} ${innerData?.basicDetailReferences?.specialty?.name ? `- ${innerData?.basicDetailReferences?.specialty?.name}` : ''}`);
+            email.push(
+                `${innerData?.applicant?.email?.officialEmail || "-"}`
+            );
+            status.push(`${innerData?.onGoingApplication?.status ? innerData?.onGoingApplication?.status === "CREATED" ? applicationSubStatus[innerData?.onGoingApplication?.subStatus] : applicationStatus[innerData?.onGoingApplication?.status] : 'Application Not Sent'}`)
+        });
+
+        return [
+            { type: "text", value: No },
+            { type: "text", value: staffName },
+            { type: "text", value: departmentSpecialty },
+            { type: "text", value: endDate },
+            { type: "text", value: email },
+            // { type: "text", value: priorEndDate },
+        ];
+    };
+
+    const headerValuesRenewedLocumStaff = [
+        "No.",
+        "Staff Name",
+        "Department / Specialty",
+        "Last Locum Period End Date",
+        "Status",
+        "Extension End Date",
+    ];
+    const colSortValuesRenewedLocumStaff = [false, false, false, false, false, false, false];
+
+    const getRenewedLocumStaffTableValues = (data) => {
         const No = [];
         const staffName = [];
         const endDate = [];
@@ -4338,7 +4425,7 @@ const ReportTypeOverview = () => {
                                                         reportType === "submittedApplicationsReviewSummary" || reportType === "staffReappointmentTracker" || reportType === "ohipBillingNumbersByCareProvider" || reportType === "careProviderCareerMilestoneSummary" ||
                                                         reportType === "declinedOrNotRenewedStaffSummary" || reportType === "reappointmentApplicationNotStarted" || reportType === "currentNotesSummary" || reportType === "staffReappointmentStatusSummary" || reportType === "staffbyTypes" || reportType === "locumStaffRenewalStatusTracker" || reportType === "locumStaffbyTypes" || reportType === "privilegedStaffSummary" || reportType === "careProvidersSummary"
                                                         || reportType === "expiredDocumentsSummaryForStaff" || reportType === "documentsExpirationSummaryForStaff" || reportType === "appointmentHistorySummary" || reportType === "inactiveStaffSummary"
-                                                        || reportType === "newStaffAppointmentsSummary" || reportType === "inactiveStaffSummaryByMonth" || reportType === "staffUploadedDocumentsSummary" || reportType === "locumTermExpirationSummary") ? (
+                                                        || reportType === "newStaffAppointmentsSummary" || reportType === "inactiveStaffSummaryByMonth" || reportType === "staffUploadedDocumentsSummary" || reportType === "locumTermExpirationSummary" || reportType === "renewedLocumStaff") ? (
                                                         <div className={`${style.grid4} ${style.marginTop20} `}>
                                                             {/* {reportType === "staffReappointmentsNotes" && (
                                                         <div>
@@ -4367,7 +4454,7 @@ const ReportTypeOverview = () => {
                                                                 <div className={`${style.reportRunByParamStyle} ${style.marginTop5} `}>STAFF TYPE </div>
                                                                 <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedStaffTypeToSend?.map(data => data?.applicantType).join(', ') || 'All Staff Type'}</div>
                                                             </div>
-                                                            {(reportType !== "locumTermExpirationSummary") && (
+                                                            {(reportType !== "locumTermExpirationSummary" && reportType !== "renewedLocumStaff") && (
                                                                 <div>
                                                                     <div className={`${style.reportRunByParamStyle} ${style.marginTop5} `}>PRIVILEGE CATEGORY </div>
                                                                     <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedPrivilegeCategoryToSend?.map(data => data?.category).join(', ') || 'All Categories'}</div>
@@ -5489,9 +5576,9 @@ const ReportTypeOverview = () => {
                                                                             (locumTermExpirationSummary?.length > 0) ? (
                                                                                 <div className={`${style.marginTop20}`}>
                                                                                     <ApexBarChart series={[{
-                                                                                        name: "Locum Term Expiration",
+                                                                                        name: "Expired Locum Staff That Were Not Renewed",
                                                                                         data: locumTermExpirationSummary?.map(data => data?.count)
-                                                                                    }]} categories={locumTermExpirationSummary?.map(data => data?.month ? format(new Date(data?.month), 'MMM yyyy') : '') || []} reportingPeriod={``} yAxisTitle="Staff Count" xAxisTitle="Locum Term Expiration" />
+                                                                                    }]} categories={locumTermExpirationSummary?.map(data => data?.month ? format(new Date(data?.month), 'MMM yyyy') : '') || []} reportingPeriod={``} yAxisTitle="Staff Count" xAxisTitle="Expired Locum Staff That Were Not Renewed" />
                                                                                     {locumTermExpirationSummary?.map(data => (
                                                                                         <>
                                                                                             <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} `}>{format(new Date(data?.month), 'MMMM, yyyy')}</div>
@@ -5509,7 +5596,34 @@ const ReportTypeOverview = () => {
                                                                                     ))}
                                                                                 </div>
                                                                             ) : (
-                                                                                <ReportNoDataBox heading={'You do not have any Locum Term Expiration for the selected period.'}
+                                                                                <ReportNoDataBox heading={'You do not have any Expired Locum Staff That Were Not Renewed for the selected period.'}
+                                                                                    subHeading={''} />
+                                                                            )
+                                                                        ) : (reportType === "renewedLocumStaff") ? (
+                                                                            (renewedLocumStaff?.length > 0) ? (
+                                                                                <div className={`${style.marginTop20}`}>
+                                                                                    <ApexBarChart series={[{
+                                                                                        name: "Renewed Locum Staff",
+                                                                                        data: renewedLocumStaff?.map(data => data?.count)
+                                                                                    }]} categories={renewedLocumStaff?.map(data => data?.month ? format(new Date(data?.month), 'MMM yyyy') : '') || []} reportingPeriod={``} yAxisTitle="Staff Count" xAxisTitle="Renewed Locum Staff" />
+                                                                                    {renewedLocumStaff?.map(data => (
+                                                                                        <>
+                                                                                            <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} `}>{format(new Date(data?.month), 'MMMM, yyyy')}</div>
+                                                                                            <TableTwo
+                                                                                                tableHeaderValues={headerValuesRenewedLocumStaff}
+                                                                                                tableDataValues={getRenewedLocumStaffTableValues(data?.staffs)}
+                                                                                                tableData={data?.staffs}
+                                                                                                gridStyle={style.renewedLocumStaffGrid}
+                                                                                                tableSortValues={colSortValuesRenewedLocumStaff}
+                                                                                                heading={"There are no record to display"}
+                                                                                                className={`${style.tableRow} ${style.reportSection}`}
+                                                                                                hidePagination={true}
+                                                                                            />
+                                                                                        </>
+                                                                                    ))}
+                                                                                </div>
+                                                                            ) : (
+                                                                                <ReportNoDataBox heading={'You do not have any Renewed Locum Staff for the selected period.'}
                                                                                     subHeading={''} />
                                                                             )
                                                                         ) : (reportType === "newStaffAppointmentsSummary") ? (
