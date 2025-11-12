@@ -580,16 +580,62 @@ const Navbar = () => {
               >
                 <p>INACTIVE STAFF</p>
               </div>
-              <Link
-                className={style.noFontStyle1}
-                to={"/applications/dashboard"}
+              <div
+                ref={popoverAnchorDashboard}
+                onMouseEnter={(e) => handleClickDashboard(e)}
+                onMouseLeave={() => handleCloseDashboard()}
+                aria-owns={openDashboard ? "mouse-over-popover" : undefined}
+                aria-haspopup="true"
               >
                 <div className={`${style.menuStyle} ${style?.cursorPointer} ${(window.location.pathname.includes("/locumDashboard") || window.location.pathname.includes("/dashboard")) &&
                   style.activeMenuColor
                   }`}>
                   <p>DASHBOARD</p>
                 </div>
-              </Link>
+                <Popover
+                  id={"mouse-over-popover"}
+                  open={openDashboard}
+                  anchorEl={popoverAnchorDashboard.current}
+                  onClose={handleCloseDashboard}
+                  anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "center",
+                  }}
+                  transformOrigin={{
+                    vertical: "top",
+                    horizontal: "center",
+                  }}
+                  classes={{
+                    paper: classes.popoverContent,
+                  }}
+                  PaperProps={{
+                    style: { width: "200px" },
+                    onMouseEnter: handleClickDashboard,
+                    onMouseLeave: handleCloseDashboard,
+                  }}
+                >
+                  <div className={style.helpCardStyle}>
+                    {/* {workModeType === "Department Head" || workModeType === "Credentialing Committee" ? ( */}
+                    <Link
+                      className={style.noFontStyle1}
+                      to={"/applications/dashboard"}
+                    >
+                      <div className={`${style.options1} ${style.cursorPointer} ${window.location.pathname.includes("/dashboard")
+                        }`}
+                      >
+                        Reappointment</div>
+                    </Link>
+
+                    {/* ) : ""} */}
+                    <Link
+                      className={style.noFontStyle1}
+                      to={"/applications/locumDashboard"}
+                    >
+                      <div className={`${style.options1} ${style.cursorPointer} ${window.location.pathname.includes("/locumDashboard")}`}>Locum</div>
+                    </Link>
+                  </div>
+                </Popover>
+              </div>
               {/* {
             isContractManager && (
               <div>
