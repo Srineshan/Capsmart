@@ -382,7 +382,7 @@ const LocumDashboard = () => {
                                 <div className={style.chartHeader}>
                                     <div className={style.chartHeaderText}>{`MSO Review & Verification of Submitted ${dataToUseInReport?.locumStatus === "EXTENSION" ? 'Extension' : 'Renewal'} Applications`}</div>
                                 </div>
-                                <div className={`${style.chartBody} ${style.reviewGrid}`}>
+                                <div className={`${style.chartBody} ${style.reviewGrid2}`}>
                                     <div>
                                         <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Avg. Working Days</div>
                                         <div
@@ -416,10 +416,11 @@ const LocumDashboard = () => {
                                         </div>
                                         <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Days</div>
                                     </div>
-                                    <div>
+                                    <div className={style.verticalDivider}></div>
+                                    {/* <div>
                                         <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Avg. Working Days by Staff Type</div>
                                         <AreaChart />
-                                    </div>
+                                    </div> */}
                                     <div>
                                         <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Review Status</div>
                                         <DonutChart height={200} legendPosition={'right'} series={getMSOReviewSeries()} labels={getReviewLabels()} colors={['#73D035', '#FF6562', '#3F8ADF', '#FFC100', '#FF851C']} size={'0%'} />

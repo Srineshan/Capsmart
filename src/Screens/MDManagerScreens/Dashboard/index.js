@@ -151,7 +151,7 @@ const MDDashboard = () => {
 
     const getMDByStaffTypeSeries = () => {
         if (mdDashboard) {
-            return Object.keys(mdDashboard?.statsByApplicantType?.fullyAttestedDirectiveStats)?.map(data => mdDashboard?.statsByApplicantType?.fullyAttestedDirectiveStats[data]?.percentage)
+            return Object.keys(mdDashboard?.statsByApplicantType?.fullyAttestedDirectiveStats)?.map(data => mdDashboard?.statsByApplicantType?.fullyAttestedDirectiveStats[data]?.count)
         } else return []
     }
 
@@ -301,12 +301,13 @@ const MDDashboard = () => {
                                         <div className={style.dashboardTileCount}>{mdDashboard?.attestationCountStats?.completelyAttestedCount}</div>
                                         <div className={`${style.dashboardTilePercentage} ${style.marginLeft10}`}>{`${mdDashboard?.reappointmentMetrics?.applicationsSentOut?.percentage || 0}%`}</div>
                                         <ArrowDropDownIcon sx={{ color: '#FF6562', marginRight: '5px' }} />
-                                        <div className={`${style.countChangeRed} ${style.marginLeftReduce10}`}>10</div>
+                                        <div className={`${style.countChangeRed} ${style.marginLeftReduce10}`}>0</div>
                                         <div className={`${style.topPeriodRangeText} ${style.marginLeft10}`}>From Last week</div>
                                     </div>
                                 </div>
                             </div>
-                            <div className={`${style.grid2} ${style.marginTop20}`}>
+                            {/* <div className={`${style.grid2} ${style.marginTop20}`}> */}
+                            <div className={` ${style.marginTop20}`}>
                                 <div className={style.fullHeight}>
                                     <div className={style.chartHeader}>
                                         <div className={style.chartHeaderText}>Medical Directive Authoring Status</div>
@@ -317,7 +318,7 @@ const MDDashboard = () => {
                                         )}
                                     </div>
                                 </div>
-                                <div className={style.fullHeight}>
+                                {/* <div className={style.fullHeight}>
                                     <div className={`${style.chartHeader} ${style.spaceBetween}`}>
                                         <div className={style.chartHeaderText}>Working Days Per Medical Directive Creation / Authoring</div>
                                         <div className={style.chartHeaderText}>Average days: <span className={style.chartHeaderRightText}>{mdDashboard?.workingDaysStats?.averageWorkingDays}</span></div>
@@ -327,7 +328,7 @@ const MDDashboard = () => {
                                             <ApexBarChart series={barChartSeries} categories={barChartCategories} reportingPeriod={``} yAxisTitle="DAYS" xAxisTitle="Submitted Applications" fullWidth={true} />
                                         )}
                                     </div>
-                                </div>
+                                </div> */}
                             </div>
                             <div className={`${style.dashboardTileText} ${style.marginTop20}`}>Medical Directive Attestation</div>
 
@@ -336,7 +337,7 @@ const MDDashboard = () => {
                                     <div className={style.chartHeaderText}>Time & Number of Attestations by Staff Type </div>
                                 </div>
                                 <div className={`${style.chartBody} ${style.reviewGrid}`}>
-                                    <div>
+                                    {/* <div>
                                         <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Avg. Time To Attestation</div>
                                         <div
                                             style={{
@@ -371,10 +372,10 @@ const MDDashboard = () => {
                                     </div>
                                     <div>
                                         <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Avg. Working Days by Staff Type</div>
-                                        {/* {(barChartSeries?.length > 0 && barChartCategories?.length > 0) && (
+                                        {(barChartSeries?.length > 0 && barChartCategories?.length > 0) && (
                                             <ApexBarChart series={barChartSeries} categories={barChartCategories} reportingPeriod={``} yAxisTitle="DAYS" xAxisTitle="Submitted Applications" fullWidth={true} />
-                                        )} */}
-                                    </div>
+                                        )}
+                                    </div> */}
                                     <div>
                                         <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Medical Directive Fully Attested By Staff Type</div>
                                         <DonutChart height={200} legendPosition={'right'} series={getMDByStaffTypeSeries()} labels={getReviewLabels()} colors={['#73D035', '#FF6562', '#3F8ADF', '#FFC100', '#FF851C']} size={'0%'} />
@@ -382,17 +383,17 @@ const MDDashboard = () => {
                                 </div>
                             </div>
 
-                            <div className={style.marginTop20}>
+                            {/* <div className={style.marginTop20}>
                                 <div className={style.chartHeader}>
                                     <div className={style.chartHeaderText}>Time to Attestation by Department</div>
                                 </div>
                                 <div className={`${style.chartBody}`}>
                                     <div className={`${style.chartBodyText} ${style.textAlignCenter}`}>Avg. Working Days by Department</div>
-                                    {/* {(barChartSeries?.length > 0 && barChartCategories?.length > 0) && (
+                                    {(barChartSeries?.length > 0 && barChartCategories?.length > 0) && (
                                         <ApexBarChart series={barChartSeries} categories={barChartCategories} reportingPeriod={``} yAxisTitle="DAYS" xAxisTitle="Submitted Applications" fullWidth={true} />
-                                    )} */}
+                                    )}
                                 </div>
-                            </div>
+                            </div> */}
 
                             <div className={style.marginTop20}>
                                 <div className={style.chartHeader}>
