@@ -62,13 +62,13 @@ const MDDashboard = () => {
     }));
 
     useEffect(() => {
-        setIsLoading(true)
-        if (dataToUseInReport?.initialValueSet && ((dataToUseInReport?.selectedDepartments?.length !== 1 ? !dataToUseInReport?.selectedDepartments?.includes('') : true) && (dataToUseInReport?.selectedStaffType?.length !== 1 ? !dataToUseInReport?.selectedStaffType?.includes('') : true) && (dataToUseInReport?.selectedPrivilegeCategory?.length !== 1 ? !dataToUseInReport?.selectedPrivilegeCategory?.includes('') : true))) {
-            const controller = new AbortController(); // Create an AbortController instance
-            const signal = controller.signal;
-            getDashboard(signal);
-            return () => controller.abort();
-        }
+        // setIsLoading(true)
+        // if (dataToUseInReport?.initialValueSet && ((dataToUseInReport?.selectedDepartments?.length !== 1 ? !dataToUseInReport?.selectedDepartments?.includes('') : true) && (dataToUseInReport?.selectedStaffType?.length !== 1 ? !dataToUseInReport?.selectedStaffType?.includes('') : true) && (dataToUseInReport?.selectedPrivilegeCategory?.length !== 1 ? !dataToUseInReport?.selectedPrivilegeCategory?.includes('') : true))) {
+        const controller = new AbortController(); // Create an AbortController instance
+        const signal = controller.signal;
+        getDashboard(signal);
+        return () => controller.abort();
+        // }
     }, [dataToUseInReport?.selectedPrivilegeCategory, dataToUseInReport?.selectedStaffType, dataToUseInReport?.selectedDepartments, dataToUseInReport?.initialValueSet])
 
 
