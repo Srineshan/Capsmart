@@ -41,6 +41,7 @@ const MedicalDirectivesAttestDisplay = () => {
     const [formIndex, setFormIndex] = useState();
     const [userData, setUserData] = useState();
     const [logDetails, setLogDetails] = useState([]);
+    const title = sessionStorage.getItem('title')
     const lastSubmittedLog = logDetails?.logs?.find((log) => log.workflowStatus === "SUBMITTED");
     const lastSubmittedDate = lastSubmittedLog ? lastSubmittedLog.lastModifiedDate : null;
     const formattedSubmissionDate = lastSubmittedDate ? format(new Date(lastSubmittedDate), "MM/dd/yyyy") : "-";
@@ -321,7 +322,7 @@ const MedicalDirectivesAttestDisplay = () => {
                                 <Tooltip title="Scroll to the end of the document" arrow>
                                     <div>
                                         <div className={` ${style.marginTop10} ${style.leftAlign} ${style.disabled}`}>
-                                            <CommonCheckBox checked={medicalDirectivesAttestation} label={'I hereby confirm that by signing, I agree to the delegation and implementation of the Medical Directives and Delegated Acts used within the Cambridge Memorial Hospital.'} />
+                                            <CommonCheckBox checked={medicalDirectivesAttestation} label={`I hereby confirm that by signing, I agree to the delegation and implementation of the Medical Directives and Delegated Acts used within the ${title !== 'HapiCare' ? title : ''}.`} />
                                         </div>
                                         <div className={style.disabled}>
                                             <div
@@ -351,7 +352,7 @@ const MedicalDirectivesAttestDisplay = () => {
                             ) : (
                                 <>
                                     <div className={` ${style.marginTop10} ${style.leftAlign} ${style.disabled}`}>
-                                        <CommonCheckBox checked={medicalDirectivesAttestation} label={'I hereby confirm that by signing, I agree to the delegation and implementation of the Medical Directives and Delegated Acts used within the Cambridge Memorial Hospital.'} />
+                                        <CommonCheckBox checked={medicalDirectivesAttestation} label={`I hereby confirm that by signing, I agree to the delegation and implementation of the Medical Directives and Delegated Acts used within the ${title !== 'HapiCare' ? title : ''}.`} />
                                     </div>
                                     <div className={style.disabled}>
                                         <div
