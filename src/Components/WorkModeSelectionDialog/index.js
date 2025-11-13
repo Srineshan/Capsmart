@@ -14,6 +14,7 @@ import SAimg from "../../images/SystemAdmin.svg";
 import SAimgHover from "../../images/SystemAdminHover.svg";
 import UserLogo4 from "../../images/userLogo4.png";
 import CAPManager from "../../images/CAPManagerSmallLogo.png";
+import EDUSmart from "../../images/EDUSmart.png"
 import MDManager from "../../images/MDManager.png";
 import PNPManager from "../../images/PNPManager.png";
 import Cookie from "universal-cookie";
@@ -325,10 +326,12 @@ const WorkModeDialog = ({ getIsOpen }) => {
               <div className={`${style.workSpaceDesc}  ${selectedWorkSpace !== '' ? style.disabledView : ''}`}>Select the application you want to work in:</div>
               <div className={`${style.threeCol} ${style.padding}`}>
                 {applications?.map(data => (
-                  <div className={`${data === "PNP_MANAGER" ? style.applicationSelectionPNPCard : style.applicationSelectionCard} ${selectedWorkSpace === data ? data === "PNP_MANAGER" ? style.selectedApplicationPNPCard : style.selectedApplicationCard : ''} ${style.justifyCenter} ${style.verticalAlignCenter} ${style.cursorPointer} ${style.marginRight}`} onClick={data === "LMS_MANAGER" ? () => handleLMSRoute() : () => { setSelectedWorkSpace(data); sessionStorage.setItem('selectedApplication', data) }}>
-                    <img src={data === 'CAP_MANAGER' ? CAPManager : data === "MD_MANAGER" ? MDManager : data === "LMS_MANAGER" ? MDManager : PNPManager} alt="" className={style.applicationImage} />
-                    <div className={style.marginLeft10}>{data === 'CAP_MANAGER' ? <div className={style.applicationName}>CAP<span className={style.applicationNamePrimary}>Manager</span></div> : data === 'MD_MANAGER' ? <div className={style.applicationName}>MD<span className={style.applicationNamePrimary}>Manager</span></div> : data === 'LMS_MANAGER' ? <div className={style.applicationName}>LMS<span className={style.applicationNamePrimary}>Manager</span></div> : <div className={style.applicationPNPName}>P&P<span className={style.pnpNamePrimary}>Manager</span></div>}</div>
-                  </div>
+                  <Tooltip title={`Click here to launch ${data === 'CAP_MANAGER' ? 'CAPManager' : data === "MD_MANAGER" ? 'MDManager' : data === "LMS_MANAGER" ? 'EDUSmart' : 'PNPManager'}`} arrow>
+                    <div className={`${data === "PNP_MANAGER" ? style.applicationSelectionPNPCard : style.applicationSelectionCard} ${selectedWorkSpace === data ? data === "PNP_MANAGER" ? style.selectedApplicationPNPCard : style.selectedApplicationCard : ''} ${style.justifyCenter} ${style.verticalAlignCenter} ${style.cursorPointer} ${style.marginRight}`} onClick={data === "LMS_MANAGER" ? () => handleLMSRoute() : () => { setSelectedWorkSpace(data); sessionStorage.setItem('selectedApplication', data) }}>
+                      <img src={data === 'CAP_MANAGER' ? CAPManager : data === "MD_MANAGER" ? MDManager : data === "LMS_MANAGER" ? EDUSmart : PNPManager} alt="" className={style.applicationImage} />
+                      <div className={style.marginLeft10}>{data === 'CAP_MANAGER' ? <div className={style.applicationName}>CAP<span className={style.applicationNamePrimary}>Manager</span></div> : data === 'MD_MANAGER' ? <div className={style.applicationName}>MD<span className={style.applicationNamePrimary}>Manager</span></div> : data === 'LMS_MANAGER' ? <div className={style.applicationName}>EDU<span className={style.applicationNamePrimary}>Smart</span></div> : <div className={style.applicationPNPName}>P&P<span className={style.pnpNamePrimary}>Manager</span></div>}</div>
+                    </div>
+                  </Tooltip>
                 ))}
               </div>
               <CommonDivider className={style.dividerMargin} />

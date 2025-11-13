@@ -42,6 +42,7 @@ const PNPAttestStatus = () => {
     let cookie = new Cookie();
     let userDetails = cookie.get('user');
     const users = jwt(userDetails);
+    const title = sessionStorage.getItem('title')
     const [encryptedText, setEncryptedText] = useState(CryptoJS.AES.encrypt(users?.userName + dateTime, publicKey).toString());
 
     useEffect(() => {

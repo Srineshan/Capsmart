@@ -253,7 +253,7 @@ const HistoricalData = () => {
     if (!homeProvince || !homeProvince.trim()) newErrors.homeProvince = "Province - Required";
     if (!contactNo || !contactNo.trim()) newErrors.contactNo = "Phone Number - Required";
     else if (!phoneRegex.test(contactNo)) newErrors.contactNo = "Phone Number - Invalid Phone Number format";
-    if (!phoneRegex.test(preferredPhone)) newErrors.preferredPhone = "CMH Phone - Invalid Phone Number format";
+    if (!phoneRegex.test(preferredPhone)) newErrors.preferredPhone = "Phone - Invalid Phone Number format";
     if (!applicantType || !applicantType.trim()) newErrors.applicantType = "Applicant Type - Required";
     if (!privilege || !privilege.trim()) newErrors.privilege = "Privilege Category - Required";
     if (!department || !department.trim()) newErrors.department = "Department - Required";
@@ -1661,10 +1661,10 @@ const HistoricalData = () => {
                   </div>
                   <div className={style.inputGroup}>
                     <CommonTextField
-                      label="CMH Phone"
+                      label="Phone"
                       value={preferredPhone}
                       onChange={(e) => handlePhoneChange(e, setPreferredPhone)}
-                      placeholder="Enter CMH Phone"
+                      placeholder="Enter Phone"
                       required
                       className={`${style.fullwidth} ${errors["preferredPhone"] ? style.errorField : ""}`}
                       type="tel"

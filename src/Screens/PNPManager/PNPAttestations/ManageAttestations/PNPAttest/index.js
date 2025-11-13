@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import style from './index.module.scss';
 import ApplicationHeader from '../../../../../Components/ApplicationHeaders';
@@ -14,8 +14,10 @@ import jwt from 'jwt-decode';
 import CloseIcon from '@mui/icons-material/Close';
 // import PdfViewer from '../../../../ReappointmentApplicationForm/pdfViewer';
 import CommonPdfViewer from '../../../../../Components/CommonPdfViewer';
+import { useReactToPrint } from 'react-to-print';
 
 const ManagePNPAttest = () => {
+    const componentRef = useRef(null);
     const { entityId, medicalDirectivesId } = useParams();
     const [policyAndProcedures, setPolicyAndProcedures] = useState()
     const [medicalDirectivesAttestationLog, setMedicalDirectivesAttestationLog] = useState()
@@ -37,6 +39,7 @@ const ManagePNPAttest = () => {
     let cookie = new Cookie();
     let userDetails = cookie.get('user');
     const users = jwt(userDetails);
+    const title = sessionStorage.getItem('title')
     const [encryptedText, setEncryptedText] = useState(CryptoJS.AES.encrypt(users?.userName + dateTime, publicKey).toString());
 
     useEffect(() => {
@@ -157,10 +160,24 @@ const ManagePNPAttest = () => {
     const handleClose = () => {
         navigate(`/pnpManager/manageAttestation`);
     }
+
+    const reactToPrintContent = useCallback(() => {
+        return componentRef.current;
+    }, [componentRef.current]);
+
+    const handlePrintClick = useReactToPrint({
+        content: reactToPrintContent,
+        documentTitle: "Policy & Procedure",
+        removeAfterPrint: true,
+        pageStyle: `
+            @page {
+            margin: 30px;
+            }`
+    });
     return (
         <div className={style.screenBackground}>
             <div className={style.welcomeText}>
-                <ApplicationHeader title={`${policyAndProcedures?.title}`} close={true} closeClick={handleClose} />
+                <ApplicationHeader title={`${policyAndProcedures?.title}`} close={true} closeClick={handleClose} print={true} printPage={handlePrintClick} />
             </div>
             <div className={style.headerData}>
                 <span style={{ marginLeft: '20px' }}>Ordering Of Laboratory Investigations - IPAC</span>
@@ -180,7 +197,7 @@ const ManagePNPAttest = () => {
                                 <div className={`${style.marginTop10} ${style.description} ${style.attestationRequiredText}`}>You need to scroll to the end of the document before you can certify that it has been viewed by you.</div>
                             )}
                         </div>
-                        <div className={`${style.medicalDirectivesCard} ${style.marginTop}`}>
+                        <div ref={componentRef} className={`${style.medicalDirectivesCard} ${style.marginTop}`}>
                             <CommonPdfViewer pdfurl={policyAndProcedures?.file?.fileURL} setIsScrolledToBottom={setIsScrolledToBottom} />
 
                             {/* <iframe src={`${policyAndProcedures?.file?.fileURL}`} className={style.pdfDisplay} ref={iframeRef} /> */}
@@ -199,7 +216,7 @@ const ManagePNPAttest = () => {
                                 <Tooltip title="Scroll to the end of the document" arrow>
                                     <div>
                                         <div className={` ${style.marginTop10} ${style.leftAlign} ${style.disabled}`}>
-                                            <CommonCheckBox checked={medicalDirectivesAttestation} label={'I hereby confirm that by signing, I agree to the delegation and implementation of the Policies & Procedures and Delegated Acts used within the Cambridge Memorial Hospital.'} />
+                                            <CommonCheckBox checked={medicalDirectivesAttestation} label={`I hereby confirm that by signing, I agree to the delegation and implementation of the Policy & Procedures and Delegated Acts used within the ${title !== 'HapiCare' ? title : ''}.`} />
                                         </div>
                                         <div className={style.disabled}>
                                             <div
@@ -231,7 +248,7 @@ const ManagePNPAttest = () => {
                             ) : (
                                 <>
                                     <div className={` ${style.marginTop10} ${style.leftAlign} ${isScrolledToBottom ? '' : style.disabled}`}>
-                                        <CommonCheckBox checked={medicalDirectivesAttestation} label={'I hereby confirm that by signing, I agree to the delegation and implementation of the Policies & Procedures and Delegated Acts used within the Cambridge Memorial Hospital.'} onChange={(e) => { setMedicalDirectivesAttestation(e.target.checked) }} />
+                                        <CommonCheckBox checked={medicalDirectivesAttestation} label={`I hereby confirm that by signing, I agree to the delegation and implementation of the Policy & Procedures and Delegated Acts used within the ${title !== 'HapiCare' ? title : ''}.`} onChange={(e) => { setMedicalDirectivesAttestation(e.target.checked) }} />
                                     </div>
                                     <div>
                                         <div onClick={medicalDirectivesAttestation ? () => { setIsSigned(!isSigned); } : () => { }}
