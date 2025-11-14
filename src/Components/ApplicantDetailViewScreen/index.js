@@ -174,16 +174,16 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
       requiredValue: "boolean",
       onClick: onClickViewDocDialog,
     },
-    // {
-    //   data: "EditDocs",
-    //   requiredValue: "boolean",
-    //   onClick: onClickEditDocDialog,
-    // },
-    // {
-    //   data: "Replace",
-    //   requiredValue: "boolean",
-    //   onClick: handleReplace,
-    // },
+    {
+      data: "Edit",
+      requiredValue: "boolean",
+      onClick: onClickEditDocDialog,
+    },
+    {
+      data: "Replace",
+      requiredValue: "boolean",
+      onClick: handleReplace,
+    },
   ];
 
   const appointmentActionsData = [
@@ -991,14 +991,14 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
                         </span>
                       </div>
                       <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
-                        {/* {expandStates.section1 && (
+                        {expandStates.section1 && (
                           <Tooltip title={"Click to Upload New Document"} arrow>
                             <AddCircleOutlineIcon
                               sx={{ fontSize: 20, color: "#94979A", cursor: "pointer" }}
                               onClick={() => { handleAddNewDoc() }}
                             />
                           </Tooltip>
-                        )} */}
+                        )}
                         <div
                           className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
                           onClick={() => toggleExpand("section1")}
@@ -1327,17 +1327,18 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
         />
       )}
 
-      {/* {showFileWithFieldsDisplayDialog && (
+      {showFileWithFieldsDisplayDialog && (
         <FileWithFieldsForStaff
           getIsOpen={setShowFileWithFieldsDisplayDialog}
           file={selectedFile}
           rowId={selectedFileId}
           staffId={users?.id}
           // fields={fields} metadata={metaData}
-          // applicationDocumentId={file?.rowId} getPreApplication={getPreApplication} 
+          // applicationDocumentId={file?.rowId} 
+          getPreApplication={getPreApplicationDocuments}
           applicationIdFromEdit={applicationId}
         />
-      )} */}
+      )}
       <input
         type="file"
         ref={fileInputRef}

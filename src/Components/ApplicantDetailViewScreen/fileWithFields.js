@@ -15,8 +15,9 @@ import { TextField, Tooltip } from '@mui/material';
 import { PUT, GET } from '../../Screens/dataSaver';
 import { useParams } from 'react-router-dom';
 import { format, isValid, parseISO } from 'date-fns';
+import { ErrorToaster2 } from '../../utils/toaster';
 
-const FileWithFieldsForStaff = ({ fields, metadata, file, getIsOpen, schemaId, applicationDocumentId, getPreApplication, applicationIdFromEdit, rowId, staffId }) => {
+const FileWithFieldsForStaff = ({ getIsOpen, schemaId, getPreApplication, applicationIdFromEdit, rowId, staffId }) => {
     const [isContinue, setIsContinue] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
     const [isPrintClicked, setIsPrintClicked] = useState(false);
@@ -28,6 +29,11 @@ const FileWithFieldsForStaff = ({ fields, metadata, file, getIsOpen, schemaId, a
     const [isEdited, setIsEdited] = useState(false);
     const [editNotes, setEditNotes] = useState('');
     const [documentDetails, setDocumentDetails] = useState();
+    const [fields, setFields] = useState();
+    const [file, setFile] = useState();
+    const [applicationDocumentId, setApplicationDocumentId] = useState();
+    const [metadata, setMetadata] = useState();
+    const [isLoadingDocs, setIsLoadingDocs] = useState(false);
     useEffect(() => {
         console.log("filesssssssssssssssss", file);
         // getPreApplicationTask();
@@ -39,8 +45,21 @@ const FileWithFieldsForStaff = ({ fields, metadata, file, getIsOpen, schemaId, a
 
     useEffect(() => {
         if (rowId)
-            getDocumentDetails()
+            getDocument()
     }, [rowId])
+
+    const getDocument = async () => {
+        const { data: response } = await GET(
+            `document-management-service/document/${rowId}`
+        );
+        console.log(response);
+        setFields(response?.fields);
+        setFile(response?.file);
+        setMetadata(response?.metaData);
+        setApplicationDocumentId(response?.id);
+        setIsLoadingDocs(false);
+        console.log("fields", fields)
+    }
 
     const toggleExpand = () => {
         setIsExpanded(!isExpanded);
@@ -202,6 +221,10 @@ const FileWithFieldsForStaff = ({ fields, metadata, file, getIsOpen, schemaId, a
     }
 
     const handleContinue = async () => {
+        if (editNotes === "") {
+            ErrorToaster2("Enter Edit Notes.")
+            return
+        }
         if (isEdited || changedData === null || window.location.pathname.includes('Q01F')) {
             let updateData = {
                 data: changedData,
@@ -209,8 +232,7 @@ const FileWithFieldsForStaff = ({ fields, metadata, file, getIsOpen, schemaId, a
                     notes: editNotes
                 }
             }
-            let baseUrl = `application-management-service/application/${applicationId ?? applicationIdFromEdit}/updateDocumentData?applicationDocumentId=${applicationDocumentId}&manuallyUpdated=${true}`;
-            let url = window.location.pathname.includes("reappointmentApplicationForm") ? atob(step) !== "UploadYourDoc" ? `${baseUrl}&schemaId=${schemaId}` : baseUrl : baseUrl;
+            let url = `application-management-service/staff/${applicationIdFromEdit}/documents/${rowId}/data`;
             await PUT(url, changedData !== null ? updateData : {})
                 .then(response => {
                     console.log(response)
