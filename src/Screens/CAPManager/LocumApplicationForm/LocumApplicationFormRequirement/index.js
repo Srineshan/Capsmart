@@ -79,6 +79,7 @@ const LocumApplicationFormRequirement = () => {
     );
     const [indexForSign, setIndexForSign] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
+    const title = sessionStorage.getItem('title')
     // const applicationId = '66d1cae19354e9022ad82027';
     sessionStorage.setItem('applicationId', applicationId)
 
@@ -665,7 +666,7 @@ const LocumApplicationFormRequirement = () => {
             return (
                 <>
                     <div className={style.marginTop}>
-                        <div className={style.cardTitle}>{`CAMBRIDGE MEMORIAL HOSPITAL ${privilegeData?.privilegeSetTitle?.toUpperCase()}`}</div>
+                        <div className={style.cardTitle}>{`${title !== 'HapiCare' ? title : ''} ${privilegeData?.privilegeSetTitle?.toUpperCase()}`}</div>
 
                         {privilegeData?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ?
                             (

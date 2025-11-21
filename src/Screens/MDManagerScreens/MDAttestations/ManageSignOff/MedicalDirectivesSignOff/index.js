@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Classes, Dialog } from '@blueprintjs/core';
 import style from './index.module.scss';
 import ApplicationHeader from '../../../../../Components/ApplicationHeaders';
@@ -19,6 +19,7 @@ import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 // import PdfViewer from '../../../../ReappointmentApplicationForm/pdfViewer';
 import CommonPdfViewer from '../../../../../Components/CommonPdfViewer';
 import Dropzone from 'react-dropzone';
+import { useReactToPrint } from 'react-to-print';
 
 const dropzoneStyle = {
     width: "100%",
@@ -30,6 +31,7 @@ const dropzoneStyle = {
 };
 
 const ManageMDSignOff = () => {
+    const componentRef = useRef(null);
     const { entityId, medicalDirectivesId } = useParams();
     const [medicalDirectives, setMedicalDirectives] = useState()
     const [medicalDirectivesAttestationLog, setMedicalDirectivesAttestationLog] = useState()
@@ -242,10 +244,24 @@ const ManageMDSignOff = () => {
         }
     }
 
+    const reactToPrintContent = useCallback(() => {
+        return componentRef.current;
+    }, [componentRef.current]);
+
+    const handlePrintClick = useReactToPrint({
+        content: reactToPrintContent,
+        documentTitle: "Medical Directives",
+        removeAfterPrint: true,
+        pageStyle: `
+            @page {
+            margin: 30px;
+            }`
+    });
+
     return (
         <div className={style.screenBackground}>
             <div className={style.welcomeText}>
-                <ApplicationHeader title={`${medicalDirectives?.title}`} close={true} closeClick={handleClose} />
+                <ApplicationHeader title={`${medicalDirectives?.title}`} close={true} closeClick={handleClose} print={true} printPage={handlePrintClick} />
             </div>
             <div className={style.headerData}>
                 <span style={{ marginLeft: '20px' }}>Ordering Of Laboratory Investigations - IPAC</span>
@@ -265,7 +281,7 @@ const ManageMDSignOff = () => {
                                 <div className={`${style.marginTop10} ${style.description} ${style.attestationRequiredText}`}>You need to scroll to the end of the document before you can certify that it has been viewed by you.</div>
                             )}
                         </div>
-                        <div className={`${style.medicalDirectivesCard} ${style.marginTop}`}>
+                        <div ref={componentRef} className={`${style.medicalDirectivesCard} ${style.marginTop}`}>
                             <CommonPdfViewer pdfurl={medicalDirectives?.file?.fileURL} setIsScrolledToBottom={setIsScrolledToBottom} />
 
                             {/* <iframe src={`${medicalDirectives?.file?.fileURL}`} className={style.pdfDisplay} ref={iframeRef} /> */}

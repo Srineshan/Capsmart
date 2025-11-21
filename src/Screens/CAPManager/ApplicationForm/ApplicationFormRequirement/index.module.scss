@@ -71,8 +71,8 @@
 }
 
 .requiredDocumentCard {
-    background: $secondarycolor 0% 0% no-repeat padding-box;
-    border: 0.4000000059604645px solid $secondarycolor;
+    background: $tableRow1 0% 0% no-repeat padding-box;
+    border: 0.4000000059604645px solid var(--primary-color);
     border-radius: 4px;
     padding: 10px 15px;
 }
@@ -82,7 +82,7 @@
 }
 
 .requiredDocumentCard:hover {
-    background: #f0f0f5 0% 0% no-repeat padding-box;
+    background: $tableRowAlternative 0% 0% no-repeat padding-box;
 
     .info {
         visibility: visible;
@@ -136,5 +136,5 @@
 }
 
 .requiredDocumentCardAlternativeColor {
-    background: #f0f0f5 0% 0% no-repeat padding-box;
+    background: $tableRowAlternative 0% 0% no-repeat padding-box;
 }

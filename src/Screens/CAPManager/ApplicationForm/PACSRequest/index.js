@@ -12,7 +12,7 @@ import { PDFDocument } from "pdf-lib";
 import CryptoJS from 'crypto-js';
 import { format } from 'date-fns';
 
-const ApplicationAcknowledgementStep9 = ({
+const PACSRequest = ({
   basicForm,
   getPreApplication,
   applicationId,
@@ -63,12 +63,12 @@ const ApplicationAcknowledgementStep9 = ({
     setSignText(basicForm?.forms?.[formIndex]?.acknowledged ? basicForm?.forms?.[formIndex]?.esign?.esign : '');
     setIsSigned((basicForm?.forms?.[formIndex]?.esign?.esign !== undefined && basicForm?.forms?.[formIndex]?.acknowledged) ? true : false);
     if (basicForm !== undefined && formIndex !== undefined) {
-      setNavigateURL((basicForm?.forms?.length === (formIndex + 1)) ? `/applicationForm/${applicationId}/Acknowledgement/AcknowledgementCheck` : `/applicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${basicForm?.forms[formIndex + 1]?.schemaCategory}`)
+      setNavigateURL((basicForm?.forms?.length === (formIndex + 1)) ? `/applicationForm/${applicationId}/Acknowledgement/${btoa('AcknowledgementCheck')}` : `/applicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
     }
   }, [basicForm, formIndex]);
 
   useEffect(() => {
-    setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === step))
+    setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === atob(step)))
   }, [basicForm, step]);
 
   useEffect(() => {
@@ -210,9 +210,9 @@ const ApplicationAcknowledgementStep9 = ({
       let uploadedFile = {};
       try {
         const response = await POST(`application-management-service/application/${applicationId}/files`, formData);
-        uploadedFile = response?.data;
+        uploadedFile = response?.data?.file;
         console.log(response?.data)
-        setPdfUrl(uploadedFile.fileURL)
+        setPdfUrl(uploadedFile?.fileURL)
       } catch (error) {
         console.error(error);
         return null;
@@ -320,4 +320,4 @@ const ApplicationAcknowledgementStep9 = ({
   );
 };
 
-export default ApplicationAcknowledgementStep9;
+export default PACSRequest;

@@ -50,7 +50,7 @@ const ApplicationUserCard = ({ user, applyingFor }) => {
     <div className={`${style.applicationUserCard} ${style.profileGrid} ${style.rowSpaceBetween}`}>
       {basicForm?.applicant?.name?.firstName !== undefined && (
         <>
-          {profilePic !== "" ? (
+          {(profilePic !== "" && profilePic) ? (
             <div >
               <img
                 src={profilePic}

@@ -50,8 +50,9 @@ const ReportTypeOverview = () => {
     const tableData = location.state?.tableData || [];
     const currentUserDetails = currentUser();
     console.log("tables:", tableData);
-    const { reportType, myReportIdFromUrl } = useParams();
+    const { reportType, scheduleId } = useParams();
     const isMyReport = window.location.pathname.includes("/myReport");
+    const isScheduledReport = window.location.pathname.includes("/scheduledReport");
     const myReportId = sessionStorage.getItem('myReportId')
     const myReportContent = (sessionStorage.getItem('myReportContent') && sessionStorage.getItem('myReportContent') !== 'undefined') ? JSON.parse(sessionStorage.getItem('myReportContent')) : {};
     const entityName = sessionStorage.getItem('title');
@@ -137,9 +138,11 @@ const ReportTypeOverview = () => {
     const [inactiveStaffSummaryByMonth, setInactiveStaffSummaryByMonth] = useState([]);
     const [staffUploadedDocumentsSummary, setStaffUploadedDocumentsSummary] = useState([]);
     const [locumTermExpirationSummary, setLocumTermExpirationSummary] = useState([]);
+    const [renewedLocumStaff, setRenewedLocumStaff] = useState([]);
     const [applicationType, setApplicationType] = useState(() =>
         sessionStorage.getItem('applicationCreationType') || 'NEW'
     );
+    const [scheduledTime, setScheduledTime] = useState();
     const [siteId, setSiteId] = useState(() =>
         sessionStorage.getItem('selectedSite') || ''
     );
@@ -170,6 +173,21 @@ const ReportTypeOverview = () => {
         approvalCompleted: 'Approval Completed/ Payment In Progress',
         unpaid: 'Not Paid',
         paid: 'Payment Made'
+    }
+
+    const applicationStatus = {
+        CREATED: 'Application Created',
+        SUBMITTED: 'Application Submitted',
+        APPROVED: 'Application Approved',
+        REJECTED: 'Application Rejected',
+        COMPLETED: 'Application Completed',
+        REVIEW_INPROGRESS: 'Review In-Progress',
+        DECLINED: 'Application Denied'
+    }
+
+    const applicationSubStatus = {
+        STARTED: 'Application In-Progress',
+        NOT_STARTED: 'Application not yet started',
     }
 
     const getContractStatusValue = {
@@ -292,8 +310,14 @@ const ReportTypeOverview = () => {
             getUpdatedValuesWithParams(signal);
             return () => controller.abort();
         }
+        if (isScheduledReport) {
+            const controller = new AbortController(); // Create an AbortController instance
+            const signal = controller.signal;
+            getUpdatedValuesWithParams(signal);
+            return () => controller.abort();
+        }
         console.log(dataToUseInReport, 'dataToUseInReport', (dataToUseInReport?.initialValueSet && ((dataToUseInReport?.selectedDepartments?.length !== 1 ? !dataToUseInReport?.selectedDepartments.includes('') : true) && (dataToUseInReport?.selectedStaffType?.length !== 1 ? !dataToUseInReport?.selectedStaffType.includes('') : true) && (dataToUseInReport?.selectedPrivilegeCategory?.length !== 1 ? !dataToUseInReport?.selectedPrivilegeCategory.includes('') : true))))
-    }, [dataToUseInReport?.from, dataToUseInReport?.to, dataToUseInReport?.selectedPrivilegeCategory, dataToUseInReport?.selectedStaffType, dataToUseInReport?.selectedSites, dataToUseInReport?.selectedDepartments, dataToUseInReport?.selectedGroups, dataToUseInReport?.selectedAuthors, dataToUseInReport?.renewalreportingTimePeriod, dataToUseInReport?.selectedPosition, dataToUseInReport?.selectedApplicationType, dataToUseInReport?.initialValueSet, dataToUseInReport?.selectedTimesheetInterval, dataToUseInReport?.selectedReappointmentStatus, dataToUseInReport?.selectedApplicationSentStatus, dataToUseInReport?.selectedWorkflowLevel, dataToUseInReport?.noOfDays, dataToUseInReport?.tab]);
+    }, [dataToUseInReport?.from, dataToUseInReport?.to, dataToUseInReport?.selectedPrivilegeCategory, dataToUseInReport?.selectedStaffType, dataToUseInReport?.selectedSites, dataToUseInReport?.selectedDepartments, dataToUseInReport?.selectedGroups, dataToUseInReport?.selectedAuthors, dataToUseInReport?.renewalreportingTimePeriod, dataToUseInReport?.selectedPosition, dataToUseInReport?.selectedApplicationType, dataToUseInReport?.initialValueSet, dataToUseInReport?.selectedTimesheetInterval, dataToUseInReport?.selectedReappointmentStatus, dataToUseInReport?.selectedApplicationSentStatus, dataToUseInReport?.selectedWorkflowLevel, dataToUseInReport?.noOfDays, dataToUseInReport?.tab, dataToUseInReport?.search]);
 
     useEffect(() => {
         setApexStackedBarChartDisplay(<ApexStackedBarChart stackedSeries={stackedSeries} stackedCategories={stackedCategories} />);
@@ -401,6 +425,9 @@ const ReportTypeOverview = () => {
             case 'locumTermExpirationSummary':
                 getLocumTermExpirationSummary(signal)
                 break;
+            case 'renewedLocumStaff':
+                getRenewedLocumStaff(signal)
+                break;
             case 'currentPolicyAndProcedures':
                 getCurrentPolicyAndProcedure();
                 break;
@@ -435,11 +462,11 @@ const ReportTypeOverview = () => {
         setMultipleContract(staffReappointments?.filter(data => data?.contractType === "MULTIPLE")?.map(data => data));
     }, [staffReappointments]);
 
-    useEffect(() => {
-        if (reportType === 'nonCompliant' && isNonCompliantReportTileClicked) {
-            getNonCompliantContractReport();
-        }
-    }, [isNonCompliantReportTileClicked]);
+    // useEffect(() => {
+    //     if (reportType === 'nonCompliant' && isNonCompliantReportTileClicked) {
+    //         getNonCompliantContractReport();
+    //     }
+    // }, [isNonCompliantReportTileClicked]);
 
     useEffect(() => {
         setIsNoData((paymentsReportLog?.paymentContracts?.length === 0 && paymentsReportLog?.rejected?.length === 0 && paymentsReportLog?.paymentPastDue?.length === 0 && paymentsReportLog?.paymentNotDone?.length === 0 && paymentsReportLog?.paymentDelayed?.length === 0 && paymentsReportLog?.paidOnTime?.length === 0) ? true : false);
@@ -516,7 +543,8 @@ const ReportTypeOverview = () => {
         appointmentHistorySummary: 'Appointment History',
         inactiveStaffSummaryByMonth: 'Inactive Staff Summary By Month',
         staffUploadedDocumentsSummary: 'Staff Uploaded Documents',
-        locumTermExpirationSummary: 'Locum Term Expiration',
+        locumTermExpirationSummary: 'Expired Locum Staff That Were Not Renewed',
+        renewedLocumStaff: 'Renewed Locum Staff',
         currentMedicalDirectives: 'Current Medical Directives',
         retiredMedicalDirectives: 'Retired Medical Directives',
         workflow: 'Medical Directives Workflow',
@@ -770,16 +798,22 @@ const ReportTypeOverview = () => {
 
     const getPayments = async () => {
         let chartData;
-        if (!isMyReport) {
+        if (!isMyReport && !isScheduledReport) {
             if (dataToUseInReport?.from !== undefined && dataToUseInReport?.to !== undefined && dataToUseInReport?.selectedContracts !== undefined && dataToUseInReport?.selectedContractedServiceProvider !== undefined && dataToUseInReport?.selectedSites !== undefined && dataToUseInReport?.selectedDepartments !== undefined) {
                 setIsLoading(true)
                 const { data: chartDataValues } = await GET(`timesheet-management-service/report/paymentProcessingSummary?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&contracts=${dataToUseInReport?.selectedContracts || []}&users=${dataToUseInReport?.selectedContractedServiceProvider || []}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
                 chartData = chartDataValues;
             }
-        } else {
+        } else if (isMyReport && !isScheduledReport) {
             setIsLoading(true)
             const { data: chartDataValues } = await GET(`timesheet-management-service/report/myReport/paymentProcessingSummary?id=${myReportId}`);
             chartData = chartDataValues;
+        } else {
+            setIsLoading(true)
+            const { data: chartDataValues } = await GET(`timesheet-management-service/report/scheduledReport/${scheduleId}`);
+            chartData = chartDataValues;
+            setScheduledTime(chartDataValues?.[0]?.createdDate);
+            sessionStorage.setItem("reportFilter", JSON.stringify(chartDataValues?.[0]?.filter));
         }
         setIsLoading(false)
         setPaymentsReportLog(chartData);
@@ -1335,7 +1369,7 @@ const ReportTypeOverview = () => {
 
     const getCurrentMedicalDirective = async (signal) => {
         setIsLoading(true)
-        if (!isMyReport) {
+        if (!isMyReport && !isScheduledReport) {
             const queryParams = new URLSearchParams({
             });
 
@@ -1344,18 +1378,26 @@ const ReportTypeOverview = () => {
                     (deptId) => `${siteId}#${deptId}`
                 ));
             }
+            if (dataToUseInReport?.search) {
+                queryParams.append('searchText', dataToUseInReport?.search);
+            }
             const { data: data } = await GET(`medical-directive-service/report/currentMedicalDirectives?${queryParams.toString()}`, { signal });
             setCurrentMedicalDirectives(data);
-        } else {
+        } else if (!isScheduledReport && isMyReport) {
             const { data: data } = await GET(`medical-directive-service/report/myReport/currentMedicalDirectives?id=${myReportId}`, { signal });
             setCurrentMedicalDirectives(data);
+        } else {
+            const { data: data } = await GET(`medical-directive-service/report/scheduledReports/${scheduleId}`, { signal });
+            setUpcomingForReview(data?.reportJson);
+            setScheduledTime(data?.createdDate);
+            sessionStorage.setItem("reportFilter", JSON.stringify(data?.filter));
         }
         setIsLoading(false)
     }
 
     const getRetiredMedicalDirective = async (signal) => {
         setIsLoading(true)
-        if (!isMyReport) {
+        if (!isMyReport && !isScheduledReport) {
             const queryParams = new URLSearchParams({
             });
 
@@ -1370,18 +1412,26 @@ const ReportTypeOverview = () => {
             if (dataToUseInReport?.selectedGroups) {
                 queryParams.append('groupIds', dataToUseInReport?.selectedGroups);
             }
+            if (dataToUseInReport?.search) {
+                queryParams.append('searchText', dataToUseInReport?.search);
+            }
             const { data: data } = await GET(`medical-directive-service/report/retiredMedicalDirectives?${queryParams.toString()}`, { signal });
             setRetiredMedicalDirectives(data);
-        } else {
+        } else if (!isScheduledReport && isMyReport) {
             const { data: data } = await GET(`medical-directive-service/report/myReport/retiredMedicalDirectives?id=${myReportId}`, { signal });
             setRetiredMedicalDirectives(data);
+        } else {
+            const { data: data } = await GET(`medical-directive-service/report/scheduledReports/${scheduleId}`, { signal });
+            setUpcomingForReview(data?.reportJson);
+            setScheduledTime(data?.createdDate);
+            sessionStorage.setItem("reportFilter", JSON.stringify(data?.filter));
         }
         setIsLoading(false)
     }
 
     const getCurrentPolicyAndProcedure = async (signal) => {
         setIsLoading(true)
-        if (!isMyReport) {
+        if (!isMyReport && !isScheduledReport) {
             const queryParams = new URLSearchParams({
             });
 
@@ -1390,18 +1440,26 @@ const ReportTypeOverview = () => {
                     (deptId) => `${siteId}#${deptId}`
                 ));
             }
+            if (dataToUseInReport?.search) {
+                queryParams.append('searchText', dataToUseInReport?.search);
+            }
             const { data: data } = await GET(`policy-and-procedure-management-service/report/currentPolicyAndProcedures?${queryParams.toString()}`, { signal });
             setCurrentPolicyAndProcedures(data);
-        } else {
+        } else if (!isScheduledReport && isMyReport) {
             const { data: data } = await GET(`policy-and-procedure-management-service/report/myReport/currentPolicyAndProcedures?id=${myReportId}`, { signal });
             setCurrentPolicyAndProcedures(data);
+        } else {
+            const { data: data } = await GET(`policy-and-procedure-management-service/report/scheduledReports/${scheduleId}`, { signal });
+            setCurrentPolicyAndProcedures(data?.reportJson);
+            setScheduledTime(data?.createdDate);
+            sessionStorage.setItem("reportFilter", JSON.stringify(data?.filter));
         }
         setIsLoading(false)
     }
 
     const getRetiredPolicyAndProcedure = async (signal) => {
         setIsLoading(true)
-        if (!isMyReport) {
+        if (!isMyReport && !isScheduledReport) {
             const queryParams = new URLSearchParams({
             });
 
@@ -1416,18 +1474,26 @@ const ReportTypeOverview = () => {
             if (dataToUseInReport?.selectedGroups) {
                 queryParams.append('groupIds', dataToUseInReport?.selectedGroups);
             }
+            if (dataToUseInReport?.search) {
+                queryParams.append('searchText', dataToUseInReport?.search);
+            }
             const { data: data } = await GET(`policy-and-procedure-management-service/report/retiredPolicyAndProcedures?${queryParams.toString()}`, { signal });
             setRetiredPolicyAndProcedures(data);
-        } else {
+        } else if (!isScheduledReport && isMyReport) {
             const { data: data } = await GET(`policy-and-procedure-management-service/report/myReport/retiredPolicyAndProcedures?id=${myReportId}`, { signal });
             setRetiredPolicyAndProcedures(data);
+        } else {
+            const { data: data } = await GET(`policy-and-procedure-management-service/report/scheduledReports/${scheduleId}`, { signal });
+            setRetiredPolicyAndProcedures(data?.reportJson);
+            setScheduledTime(data?.createdDate);
+            sessionStorage.setItem("reportFilter", JSON.stringify(data?.filter));
         }
         setIsLoading(false)
     }
 
     const getMedicalDirectivesWorkflow = async (signal) => {
         setIsLoading(true)
-        if (!isMyReport) {
+        if (!isMyReport && !isScheduledReport) {
             const queryParams = new URLSearchParams({
             });
 
@@ -1445,18 +1511,26 @@ const ReportTypeOverview = () => {
             if (dataToUseInReport?.selectedWorkflowLevel) {
                 queryParams.append('currentLevel', dataToUseInReport?.selectedWorkflowLevel !== "All" ? dataToUseInReport?.selectedWorkflowLevel : '');
             }
+            if (dataToUseInReport?.search) {
+                queryParams.append('searchText', dataToUseInReport?.search);
+            }
             const { data: data } = await GET(`medical-directive-service/report/workflow?${queryParams.toString()}`, { signal });
             setMedicalDirectivesWorkflow(data);
-        } else {
+        } else if (!isScheduledReport && isMyReport) {
             const { data: data } = await GET(`medical-directive-service/report/myReport/workflow?id=${myReportId}`, { signal });
             setMedicalDirectivesWorkflow(data);
+        } else {
+            const { data: data } = await GET(`medical-directive-service/report/scheduledReports/${scheduleId}`, { signal });
+            setUpcomingForReview(data?.reportJson);
+            setScheduledTime(data?.createdDate);
+            sessionStorage.setItem("reportFilter", JSON.stringify(data?.filter));
         }
         setIsLoading(false)
     }
 
     const getUpcomingForReview = async (signal) => {
         setIsLoading(true)
-        if (!isMyReport) {
+        if (!isMyReport && !isScheduledReport) {
             const queryParams = new URLSearchParams({
             });
 
@@ -1474,37 +1548,74 @@ const ReportTypeOverview = () => {
             if (dataToUseInReport?.noOfDays) {
                 queryParams.append('noOfDays', dataToUseInReport?.noOfDays);
             }
+            if (dataToUseInReport?.search) {
+                queryParams.append('searchText', dataToUseInReport?.search);
+            }
             const { data: data } = await GET(`medical-directive-service/report/upcomingForReview?${queryParams.toString()}`, { signal });
             setUpcomingForReview(data);
-        } else {
+        } else if (!isScheduledReport && isMyReport) {
             const { data: data } = await GET(`medical-directive-service/report/myReport/upcomingForReview?id=${myReportId}`, { signal });
             setUpcomingForReview(data);
+        } else {
+            const { data: data } = await GET(`medical-directive-service/report/scheduledReports/${scheduleId}`, { signal });
+            setUpcomingForReview(data?.reportJson);
+            setScheduledTime(data?.createdDate);
+            sessionStorage.setItem("reportFilter", JSON.stringify(data?.filter));
         }
         setIsLoading(false)
     }
 
     const getExpiredDocumentsSummaryForStaff = async (signal) => {
         setIsLoading(true)
-        if (!isMyReport) {
+        if (!isMyReport && !isScheduledReport) {
             const queryParams = new URLSearchParams({
             });
+
+            if (dataToUseInReport?.selectedStaffType) {
+                queryParams.append('applicantTypeId', dataToUseInReport?.selectedStaffType);
+            }
+
+            if (dataToUseInReport?.selectedPrivilegeCategory) {
+                queryParams.append('privilegingCategoryId', dataToUseInReport?.selectedPrivilegeCategory);
+            }
+
+            if (dataToUseInReport?.from) {
+                queryParams.append('startDate', dataToUseInReport?.from);
+            }
+
+            if (dataToUseInReport?.to) {
+                queryParams.append('endDate', dataToUseInReport?.to);
+            }
+
+            if (dataToUseInReport?.selectedDepartments) {
+                queryParams.append('departmentSpecialties', dataToUseInReport?.selectedDepartments);
+            }
 
             if (dataToUseInReport?.selectedPosition) {
                 queryParams.append('positionType', dataToUseInReport?.selectedPosition);
             }
 
+            if (dataToUseInReport?.search) {
+                queryParams.append('searchText', dataToUseInReport?.search);
+            }
+
             const { data: data } = await GET(`application-management-service/report/staffExpiredDocuments?${queryParams.toString()}`, { signal });
             setExpiredDocumentsSummaryForStaff(data);
-        } else {
+        } else if (!isScheduledReport && isMyReport) {
             const { data: data } = await GET(`application-management-service/report/myReport/staffExpiredDocuments?id=${myReportId}`, { signal });
             setExpiredDocumentsSummaryForStaff(data);
+        } else {
+            const { data: data } = await GET(`application-management-service/report/scheduledReports/${scheduleId}`, { signal });
+            setExpiredDocumentsSummaryForStaff(data?.reportJson);
+            setScheduledTime(data?.createdDate);
+            sessionStorage.setItem("reportFilter", JSON.stringify(data?.filter));
         }
         setIsLoading(false)
     }
 
     const getDocumentsExpirationSummaryForStaff = async (signal) => {
         setIsLoading(true)
-        if (!isMyReport) {
+        if (!isMyReport && !isScheduledReport) {
             const queryParams = new URLSearchParams({
             });
 
@@ -1516,18 +1627,47 @@ const ReportTypeOverview = () => {
                 queryParams.append('noOfDays', dataToUseInReport?.noOfDays);
             }
 
+            if (dataToUseInReport?.selectedStaffType) {
+                queryParams.append('applicantTypeId', dataToUseInReport?.selectedStaffType);
+            }
+
+            if (dataToUseInReport?.selectedPrivilegeCategory) {
+                queryParams.append('privilegingCategoryId', dataToUseInReport?.selectedPrivilegeCategory);
+            }
+
+            if (dataToUseInReport?.from) {
+                queryParams.append('startDate', dataToUseInReport?.from);
+            }
+
+            if (dataToUseInReport?.to) {
+                queryParams.append('endDate', dataToUseInReport?.to);
+            }
+
+            if (dataToUseInReport?.selectedDepartments) {
+                queryParams.append('departmentSpecialties', dataToUseInReport?.selectedDepartments);
+            }
+
+            if (dataToUseInReport?.search) {
+                queryParams.append('searchText', dataToUseInReport?.search);
+            }
+
             const { data: data } = await GET(`application-management-service/report/staffDocumentsExpiration?${queryParams.toString()}`, { signal });
             setStaffDocumentsExpiration(data);
-        } else {
+        } else if (!isScheduledReport && isMyReport) {
             const { data: data } = await GET(`application-management-service/report/myReport/staffDocumentsExpiration?id=${myReportId}`, { signal });
             setStaffDocumentsExpiration(data);
+        } else {
+            const { data: data } = await GET(`application-management-service/report/scheduledReports/${scheduleId}`, { signal });
+            setStaffDocumentsExpiration(data?.reportJson);
+            setScheduledTime(data?.createdDate);
+            sessionStorage.setItem("reportFilter", JSON.stringify(data?.filter));
         }
         setIsLoading(false)
     }
 
     const getInactiveStaffSummary = async (signal) => {
         setIsLoading(true)
-        if (!isMyReport) {
+        if (!isMyReport && !isScheduledReport) {
             const queryParams = new URLSearchParams({
             });
 
@@ -1535,18 +1675,47 @@ const ReportTypeOverview = () => {
                 queryParams.append('positionType', dataToUseInReport?.selectedPosition);
             }
 
+            if (dataToUseInReport?.selectedStaffType) {
+                queryParams.append('applicantTypeId', dataToUseInReport?.selectedStaffType);
+            }
+
+            if (dataToUseInReport?.selectedPrivilegeCategory) {
+                queryParams.append('privilegingCategoryId', dataToUseInReport?.selectedPrivilegeCategory);
+            }
+
+            if (dataToUseInReport?.from) {
+                queryParams.append('startDate', dataToUseInReport?.from);
+            }
+
+            if (dataToUseInReport?.to) {
+                queryParams.append('endDate', dataToUseInReport?.to);
+            }
+
+            if (dataToUseInReport?.selectedDepartments) {
+                queryParams.append('departmentSpecialties', dataToUseInReport?.selectedDepartments);
+            }
+
+            if (dataToUseInReport?.search) {
+                queryParams.append('searchText', dataToUseInReport?.search);
+            }
+
             const { data: data } = await GET(`application-management-service/report/inactiveStaffs?${queryParams.toString()}`, { signal });
             setInactiveStaffSummary(data);
-        } else {
+        } else if (!isScheduledReport && isMyReport) {
             const { data: data } = await GET(`application-management-service/report/myReport/inactiveStaffs?id=${myReportId}`, { signal });
             setInactiveStaffSummary(data);
+        } else {
+            const { data: data } = await GET(`application-management-service/report/scheduledReports/${scheduleId}`, { signal });
+            setInactiveStaffSummary(data?.reportJson);
+            setScheduledTime(data?.createdDate);
+            sessionStorage.setItem("reportFilter", JSON.stringify(data?.filter));
         }
         setIsLoading(false)
     }
 
     const getNewStaffAppointmentsSummary = async (signal) => {
         setIsLoading(true)
-        if (!isMyReport) {
+        if (!isMyReport && !isScheduledReport) {
             const queryParams = new URLSearchParams({
             });
             if (dataToUseInReport?.selectedStaffType) {
@@ -1555,6 +1724,10 @@ const ReportTypeOverview = () => {
 
             if (dataToUseInReport?.from) {
                 queryParams.append('startDate', dataToUseInReport?.from);
+            }
+
+            if (dataToUseInReport?.selectedPrivilegeCategory) {
+                queryParams.append('privilegingCategoryId', dataToUseInReport?.selectedPrivilegeCategory);
             }
 
             if (dataToUseInReport?.to) {
@@ -1568,22 +1741,35 @@ const ReportTypeOverview = () => {
                 queryParams.append('positionType', dataToUseInReport?.selectedPosition);
             }
 
+            if (dataToUseInReport?.search) {
+                queryParams.append('searchText', dataToUseInReport?.search);
+            }
+
             const { data: data } = await GET(`application-management-service/report/newStaffAppointments?${queryParams.toString()}`, { signal });
             setNewStaffAppointmentsSummary(data);
-        } else {
+        } else if (!isScheduledReport && isMyReport) {
             const { data: data } = await GET(`application-management-service/report/myReport/newStaffAppointments?id=${myReportId}`, { signal });
             setNewStaffAppointmentsSummary(data);
+        } else {
+            const { data: data } = await GET(`application-management-service/report/scheduledReports/${scheduleId}`, { signal });
+            setNewStaffAppointmentsSummary(data?.reportJson);
+            setScheduledTime(data?.createdDate);
+            sessionStorage.setItem("reportFilter", JSON.stringify(data?.filter));
         }
         setIsLoading(false)
     }
 
     const getAppointmentHistorySummary = async (signal) => {
         setIsLoading(true)
-        if (!isMyReport) {
+        if (!isMyReport && !isScheduledReport) {
             const queryParams = new URLSearchParams({
             });
             if (dataToUseInReport?.selectedStaffType) {
                 queryParams.append('applicantTypeId', dataToUseInReport?.selectedStaffType);
+            }
+
+            if (dataToUseInReport?.selectedPrivilegeCategory) {
+                queryParams.append('privilegingCategoryId', dataToUseInReport?.selectedPrivilegeCategory);
             }
 
             if (dataToUseInReport?.selectedDepartments) {
@@ -1593,18 +1779,27 @@ const ReportTypeOverview = () => {
                 queryParams.append('positionType', dataToUseInReport?.selectedPosition);
             }
 
+            if (dataToUseInReport?.search) {
+                queryParams.append('searchText', dataToUseInReport?.search);
+            }
+
             const { data: data } = await GET(`application-management-service/report/appointmentHistory?${queryParams.toString()}`, { signal });
             setAppointmentHistorySummary(data);
-        } else {
+        } else if (!isScheduledReport && isMyReport) {
             const { data: data } = await GET(`application-management-service/report/myReport/appointmentHistory?id=${myReportId}`, { signal });
             setAppointmentHistorySummary(data);
+        } else {
+            const { data: data } = await GET(`application-management-service/report/scheduledReports/${scheduleId}`, { signal });
+            setAppointmentHistorySummary(data?.reportJson);
+            setScheduledTime(data?.createdDate);
+            sessionStorage.setItem("reportFilter", JSON.stringify(data?.filter));
         }
         setIsLoading(false)
     }
 
     const getInactiveStaffSummaryByMonth = async (signal) => {
         setIsLoading(true)
-        if (!isMyReport) {
+        if (!isMyReport && !isScheduledReport) {
             const queryParams = new URLSearchParams({
             });
             if (dataToUseInReport?.from) {
@@ -1615,22 +1810,43 @@ const ReportTypeOverview = () => {
                 queryParams.append('endDate', dataToUseInReport?.to);
             }
 
+            if (dataToUseInReport?.selectedStaffType) {
+                queryParams.append('applicantTypeId', dataToUseInReport?.selectedStaffType);
+            }
+
+            if (dataToUseInReport?.selectedPrivilegeCategory) {
+                queryParams.append('privilegingCategoryId', dataToUseInReport?.selectedPrivilegeCategory);
+            }
+
+            if (dataToUseInReport?.selectedDepartments) {
+                queryParams.append('departmentSpecialties', dataToUseInReport?.selectedDepartments);
+            }
+
             if (dataToUseInReport?.selectedPosition) {
                 queryParams.append('positionType', dataToUseInReport?.selectedPosition);
             }
 
+            if (dataToUseInReport?.search) {
+                queryParams.append('searchText', dataToUseInReport?.search);
+            }
+
             const { data: data } = await GET(`application-management-service/report/inactiveStaffsByMonth?${queryParams.toString()}`, { signal });
             setInactiveStaffSummaryByMonth(data);
-        } else {
+        } else if (!isScheduledReport && isMyReport) {
             const { data: data } = await GET(`application-management-service/report/myReport/inactiveStaffsByMonth?id=${myReportId}`, { signal });
             setInactiveStaffSummaryByMonth(data);
+        } else {
+            const { data: data } = await GET(`application-management-service/report/scheduledReports/${scheduleId}`, { signal });
+            setInactiveStaffSummaryByMonth(data?.reportJson);
+            setScheduledTime(data?.createdDate);
+            sessionStorage.setItem("reportFilter", JSON.stringify(data?.filter));
         }
         setIsLoading(false)
     }
 
     const getStaffUploadedDocumentsSummary = async (signal) => {
         setIsLoading(true)
-        if (!isMyReport) {
+        if (!isMyReport && !isScheduledReport) {
             const queryParams = new URLSearchParams({
             });
             if (dataToUseInReport?.from) {
@@ -1643,6 +1859,10 @@ const ReportTypeOverview = () => {
 
             if (dataToUseInReport?.selectedStaffType) {
                 queryParams.append('applicantTypeId', dataToUseInReport?.selectedStaffType);
+            }
+
+            if (dataToUseInReport?.selectedPrivilegeCategory) {
+                queryParams.append('privilegingCategoryId', dataToUseInReport?.selectedPrivilegeCategory);
             }
 
             if (dataToUseInReport?.selectedDepartments) {
@@ -1653,18 +1873,27 @@ const ReportTypeOverview = () => {
                 queryParams.append('positionType', dataToUseInReport?.selectedPosition);
             }
 
+            if (dataToUseInReport?.search) {
+                queryParams.append('searchText', dataToUseInReport?.search);
+            }
+
             const { data: data } = await GET(`application-management-service/report/staffUploadedDocuments?${queryParams.toString()}`, { signal });
             setStaffUploadedDocumentsSummary(data);
-        } else {
+        } else if (!isScheduledReport && isMyReport) {
             const { data: data } = await GET(`application-management-service/report/myReport/staffUploadedDocuments?id=${myReportId}`, { signal });
             setStaffUploadedDocumentsSummary(data);
+        } else {
+            const { data: data } = await GET(`application-management-service/report/scheduledReports/${scheduleId}`, { signal });
+            setStaffUploadedDocumentsSummary(data?.reportJson);
+            setScheduledTime(data?.createdDate);
+            sessionStorage.setItem("reportFilter", JSON.stringify(data?.filter));
         }
         setIsLoading(false)
     }
 
     const getLocumTermExpirationSummary = async (signal) => {
         setIsLoading(true)
-        if (!isMyReport) {
+        if (!isMyReport && !isScheduledReport) {
             const queryParams = new URLSearchParams({
             });
             if (dataToUseInReport?.from) {
@@ -1683,46 +1912,113 @@ const ReportTypeOverview = () => {
                 queryParams.append('departmentSpecialties', dataToUseInReport?.selectedDepartments);
             }
 
+            if (dataToUseInReport?.search) {
+                queryParams.append('searchText', dataToUseInReport?.search);
+            }
+
             const { data: data } = await GET(`application-management-service/report/locumTermExpiration?${queryParams.toString()}`, { signal });
             setLocumTermExpirationSummary(data);
-        } else {
+        } else if (!isScheduledReport && isMyReport) {
             const { data: data } = await GET(`application-management-service/report/myReport/locumTermExpiration?id=${myReportId}`, { signal });
             setLocumTermExpirationSummary(data);
+        } else {
+            const { data: data } = await GET(`application-management-service/report/scheduledReports/${scheduleId}`, { signal });
+            setLocumTermExpirationSummary(data?.reportJson);
+            setScheduledTime(data?.createdDate);
+            sessionStorage.setItem("reportFilter", JSON.stringify(data?.filter));
+        }
+        setIsLoading(false)
+    }
+
+    const getRenewedLocumStaff = async (signal) => {
+        setIsLoading(true)
+        if (!isMyReport && !isScheduledReport) {
+            const queryParams = new URLSearchParams({
+            });
+            if (dataToUseInReport?.from) {
+                queryParams.append('startDate', dataToUseInReport?.from);
+            }
+
+            if (dataToUseInReport?.to) {
+                queryParams.append('endDate', dataToUseInReport?.to);
+            }
+
+            if (dataToUseInReport?.selectedStaffType) {
+                queryParams.append('applicantTypeId', dataToUseInReport?.selectedStaffType);
+            }
+
+            if (dataToUseInReport?.selectedDepartments) {
+                queryParams.append('departmentSpecialties', dataToUseInReport?.selectedDepartments);
+            }
+
+            if (dataToUseInReport?.search) {
+                queryParams.append('searchText', dataToUseInReport?.search);
+            }
+
+            const { data: data } = await GET(`application-management-service/report/renewedLocumStaffs?${queryParams.toString()}`, { signal });
+            setRenewedLocumStaff(data);
+        } else if (!isScheduledReport && isMyReport) {
+            const { data: data } = await GET(`application-management-service/report/myReport/renewedLocumStaffs?id=${myReportId}`, { signal });
+            setRenewedLocumStaff(data);
+        } else {
+            const { data: data } = await GET(`application-management-service/report/scheduledReports/${scheduleId}`, { signal });
+            setRenewedLocumStaff(data?.reportJson);
+            setScheduledTime(data?.createdDate);
+            sessionStorage.setItem("reportFilter", JSON.stringify(data?.filter));
         }
         setIsLoading(false)
     }
 
     const getMedicalDirectivesTracker = async (signal) => {
         setIsLoading(true)
-        if (!isMyReport) {
-            const { data: data } = await GET(`medical-directive-service/report/tracker?tab=${dataToUseInReport?.tab}`, { signal });
+        if (!isMyReport && !isScheduledReport) {
+            const { data: data } = await GET(`medical-directive-service/report/tracker?tab=${dataToUseInReport?.tab}&searchText=${dataToUseInReport?.search}`, { signal });
+            setMedicalDirectivesTracker(dataToUseInReport?.tab === "medical_directive_tab" ?
+                data?.medicalDirectivesWithAttestationLogsList :
+                dataToUseInReport?.tab === "applicant_tab" ?
+                    data?.users :
+                    data?.attestationCountBySite?.[0]?.attestationCountByDepartment);
+        } else if (!isScheduledReport && isMyReport) {
+            const { data: data } = await GET(`medical-directive-service/report/myReport/tracker?id=${myReportId}`, { signal });
             setMedicalDirectivesTracker(dataToUseInReport?.tab === "medical_directive_tab" ?
                 data?.medicalDirectivesWithAttestationLogsList :
                 dataToUseInReport?.tab === "applicant_tab" ?
                     data?.users :
                     data?.attestationCountBySite?.[0]?.attestationCountByDepartment);
         } else {
-            const { data: data } = await GET(`medical-directive-service/report/myReport/tracker?id=${myReportId}`, { signal });
-            setMedicalDirectivesTracker(data);
+            const { data: data } = await GET(`medical-directive-service/report/scheduledReports/${scheduleId}`, { signal });
+            setMedicalDirectivesTracker(dataToUseInReport?.tab === "medical_directive_tab" ?
+                data?.reportJson?.medicalDirectivesWithAttestationLogsList :
+                dataToUseInReport?.tab === "applicant_tab" ?
+                    data?.reportJson?.users :
+                    data?.reportJson?.attestationCountBySite?.[0]?.attestationCountByDepartment);
+            setScheduledTime(data?.createdDate);
+            sessionStorage.setItem("reportFilter", JSON.stringify(data?.filter));
+            console.log(data, 'reportFilter')
         }
         setIsLoading(false)
     }
 
     const getAttestationOutstanding = async (signal) => {
         setIsLoading(true)
-        if (!isMyReport) {
-            const { data: data } = await GET(`medical-directive-service/report/attestationOutstanding?siteIds?=${siteId}`, { signal });
+        if (!isMyReport && !isScheduledReport) {
+            const { data: data } = await GET(`medical-directive-service/report/attestationOutstanding?siteIds?=${siteId}&searchText=${dataToUseInReport?.search}`, { signal });
             setAttestationOutstanding(data);
-        } else {
+        } else if (!isScheduledReport && isMyReport) {
             const { data: data } = await GET(`medical-directive-service/report/myReport/attestationOutstanding?id=${myReportId}`, { signal });
             setAttestationOutstanding(data);
+        } else {
+            const { data: data } = await GET(`medical-directive-service/report/scheduledReports/${scheduleId}`, { signal });
+            setAttestationOutstanding(data?.reportJson);
+            setScheduledTime(data?.createdDate);
+            sessionStorage.setItem("reportFilter", JSON.stringify(data?.filter));
         }
         setIsLoading(false)
     }
 
     const getPolicyAndProceduresWorkflow = async (signal) => {
         setIsLoading(true)
-        if (!isMyReport) {
+        if (!isMyReport && !isScheduledReport) {
             const queryParams = new URLSearchParams({
             });
 
@@ -1740,18 +2036,26 @@ const ReportTypeOverview = () => {
             if (dataToUseInReport?.selectedWorkflowLevel) {
                 queryParams.append('currentLevel', dataToUseInReport?.selectedWorkflowLevel !== "All" ? dataToUseInReport?.selectedWorkflowLevel : '');
             }
+            if (dataToUseInReport?.search) {
+                queryParams.append('searchText', dataToUseInReport?.search);
+            }
             const { data: data } = await GET(`policy-and-procedure-management-service/report/workflow?${queryParams.toString()}`, { signal });
             setPolicyAndProceduresWorkflow(data);
-        } else {
+        } else if (!isScheduledReport && isMyReport) {
             const { data: data } = await GET(`policy-and-procedure-management-service/report/myReport/workflow?id=${myReportId}`, { signal });
             setPolicyAndProceduresWorkflow(data);
+        } else {
+            const { data: data } = await GET(`policy-and-procedure-management-service/report/scheduledReports/${scheduleId}`, { signal });
+            setPolicyAndProceduresWorkflow(data?.reportJson);
+            setScheduledTime(data?.createdDate);
+            sessionStorage.setItem("reportFilter", JSON.stringify(data?.filter));
         }
         setIsLoading(false)
     }
 
     const getPolicyAndProceduresUpcomingForReview = async (signal) => {
         setIsLoading(true)
-        if (!isMyReport) {
+        if (!isMyReport && !isScheduledReport) {
             const queryParams = new URLSearchParams({
             });
 
@@ -1769,39 +2073,57 @@ const ReportTypeOverview = () => {
             if (dataToUseInReport?.noOfDays) {
                 queryParams.append('noOfDays', dataToUseInReport?.noOfDays);
             }
+            if (dataToUseInReport?.search) {
+                queryParams.append('searchText', dataToUseInReport?.search);
+            }
             const { data: data } = await GET(`policy-and-procedure-management-service/report/upcomingForReview?${queryParams.toString()}`, { signal });
             setPolicyAndProceduresUpcomingForReview(data);
-        } else {
+        } else if (!isScheduledReport && isMyReport) {
             const { data: data } = await GET(`policy-and-procedure-management-service/report/myReport/upcomingForReview?id=${myReportId}`, { signal });
             setPolicyAndProceduresUpcomingForReview(data);
+        } else {
+            const { data: data } = await GET(`policy-and-procedure-management-service/report/scheduledReports/${scheduleId}`, { signal });
+            setPolicyAndProceduresUpcomingForReview(data?.reportJson);
+            setScheduledTime(data?.createdDate);
+            sessionStorage.setItem("reportFilter", JSON.stringify(data?.filter));
         }
         setIsLoading(false)
     }
 
     const getPolicyAndProceduresTracker = async (signal) => {
         setIsLoading(true)
-        if (!isMyReport) {
-            const { data: data } = await GET(`policy-and-procedure-management-service/report/tracker?tab=${dataToUseInReport?.tab}`, { signal });
+        if (!isMyReport && !isScheduledReport) {
+            const { data: data } = await GET(`policy-and-procedure-management-service/report/tracker?tab=${dataToUseInReport?.tab}&searchText=${dataToUseInReport?.search}`, { signal });
             setPolicyAndProceduresTracker(dataToUseInReport?.tab === "policy_and_procedure_tab" ?
                 data?.policyAndProceduresWithAttestationLogsList :
                 dataToUseInReport?.tab === "applicant_tab" ?
                     data?.users :
                     data?.attestationCountBySite?.[0]?.attestationCountByDepartment);
-        } else {
+        } else if (!isScheduledReport && isMyReport) {
             const { data: data } = await GET(`policy-and-procedure-management-service/report/myReport/tracker?id=${myReportId}`, { signal });
             setPolicyAndProceduresTracker(data);
+        } else {
+            const { data: data } = await GET(`policy-and-procedure-management-service/report/scheduledReports/${scheduleId}`, { signal });
+            setPolicyAndProceduresTracker(data?.reportJson);
+            setScheduledTime(data?.createdDate);
+            sessionStorage.setItem("reportFilter", JSON.stringify(data?.filter));
         }
         setIsLoading(false)
     }
 
     const getPolicyAndProceduresAttestationOutstanding = async (signal) => {
         setIsLoading(true)
-        if (!isMyReport) {
-            const { data: data } = await GET(`policy-and-procedure-management-service/report/attestationOutstanding?siteIds?=${siteId}`, { signal });
+        if (!isMyReport && !isScheduledReport) {
+            const { data: data } = await GET(`policy-and-procedure-management-service/report/attestationOutstanding?siteIds?=${siteId}&searchText=${dataToUseInReport?.search}`, { signal });
             setPolicyAndProceduresAttestationOutstanding(data);
-        } else {
+        } else if (!isScheduledReport && isMyReport) {
             const { data: data } = await GET(`policy-and-procedure-management-service/report/myReport/attestationOutstanding?id=${myReportId}`, { signal });
             setPolicyAndProceduresAttestationOutstanding(data);
+        } else {
+            const { data: data } = await GET(`policy-and-procedure-management-service/report/scheduledReports/${scheduleId}`, { signal });
+            setPolicyAndProceduresAttestationOutstanding(data?.reportJson);
+            setScheduledTime(data?.createdDate);
+            sessionStorage.setItem("reportFilter", JSON.stringify(data?.filter));
         }
         setIsLoading(false)
     }
@@ -2413,6 +2735,177 @@ const ReportTypeOverview = () => {
         const staffType = [];
 
         inactiveStaffSummary?.map((data, index) => {
+            No.push(index + 1 + ".")
+            staffName.push(
+                `${formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName)}` || " "
+            );
+
+            staffId.push(data?.staffId);
+            departmentSpecialty.push(`${data?.basicDetailReferences?.department?.name} ${data?.basicDetailReferences?.specialty?.name ? `- ${data?.basicDetailReferences?.specialty?.name}` : ''}`);
+            email.push(
+                `${data?.applicant?.email?.officialEmail || "-"}`
+            );
+            staffType.push(data?.basicDetailReferences?.applicantType?.serviceProviderType)
+        });
+
+        return [
+            { type: "text", value: No },
+            { type: "text", value: staffName },
+            { type: "text", value: departmentSpecialty },
+            { type: "text", value: staffId },
+            { type: "text", value: staffType },
+            { type: "text", value: email },
+        ];
+    };
+
+    const headerValuesLocumTermExpiration = [
+        "No.",
+        "Staff Name",
+        "Department / Specialty",
+        "Last Locum Period End Date",
+        "E-mail"
+    ];
+    const colSortValuesLocumTermExpiration = [false, false, false, false, false, false, false];
+
+    const getLocumTermExpirationTableValues = (data) => {
+        const No = [];
+        const staffName = [];
+        const endDate = [];
+        const departmentSpecialty = [];
+        const email = [];
+        const status = [];
+        const priorEndDate = [];
+
+        data?.map((innerData, index) => {
+            No.push(index + 1 + ".")
+            staffName.push(
+                `${formatFirstNameLastName(innerData?.applicant?.name?.firstName, innerData?.applicant?.name?.lastName)}` || " "
+            );
+
+            endDate.push(innerData?.tenure?.to ? format(new Date(innerData?.tenure?.to), 'MMM dd, yyyy') : '-');
+            priorEndDate.push(innerData?.onGoingApplication?.cyclePeriod?.to ? format(new Date(innerData?.onGoingApplication?.cyclePeriod?.to), 'MMM dd, yyyy') : '-')
+            departmentSpecialty.push(`${innerData?.basicDetailReferences?.department?.name} ${innerData?.basicDetailReferences?.specialty?.name ? `- ${innerData?.basicDetailReferences?.specialty?.name}` : ''}`);
+            email.push(
+                `${innerData?.applicant?.email?.officialEmail || "-"}`
+            );
+            status.push(`${innerData?.onGoingApplication?.status ? innerData?.onGoingApplication?.status === "CREATED" ? applicationSubStatus[innerData?.onGoingApplication?.subStatus] : applicationStatus[innerData?.onGoingApplication?.status] : 'Application Not Sent'}`)
+        });
+
+        return [
+            { type: "text", value: No },
+            { type: "text", value: staffName },
+            { type: "text", value: departmentSpecialty },
+            { type: "text", value: endDate },
+            { type: "text", value: email },
+            // { type: "text", value: priorEndDate },
+        ];
+    };
+
+    const headerValuesRenewedLocumStaff = [
+        "No.",
+        "Staff Name",
+        "Department / Specialty",
+        "Last Locum Period End Date",
+        "Status",
+        "Extension End Date",
+    ];
+    const colSortValuesRenewedLocumStaff = [false, false, false, false, false, false, false];
+
+    const getRenewedLocumStaffTableValues = (data) => {
+        const No = [];
+        const staffName = [];
+        const endDate = [];
+        const departmentSpecialty = [];
+        const email = [];
+        const status = [];
+        const priorEndDate = [];
+
+        data?.map((innerData, index) => {
+            No.push(index + 1 + ".")
+            staffName.push(
+                `${formatFirstNameLastName(innerData?.applicant?.name?.firstName, innerData?.applicant?.name?.lastName)}` || " "
+            );
+
+            endDate.push(innerData?.tenure?.to ? format(new Date(innerData?.tenure?.to), 'MMM dd, yyyy') : '-');
+            priorEndDate.push(innerData?.onGoingApplication?.cyclePeriod?.to ? format(new Date(innerData?.onGoingApplication?.cyclePeriod?.to), 'MMM dd, yyyy') : '-')
+            departmentSpecialty.push(`${innerData?.basicDetailReferences?.department?.name} ${innerData?.basicDetailReferences?.specialty?.name ? `- ${innerData?.basicDetailReferences?.specialty?.name}` : ''}`);
+            email.push(
+                `${innerData?.applicant?.email?.officialEmail || "-"}`
+            );
+            status.push(`${innerData?.onGoingApplication?.status ? innerData?.onGoingApplication?.status === "CREATED" ? applicationSubStatus[innerData?.onGoingApplication?.subStatus] : applicationStatus[innerData?.onGoingApplication?.status] : 'Application Not Sent'}`)
+        });
+
+        return [
+            { type: "text", value: No },
+            { type: "text", value: staffName, tooltipValueText: email },
+            { type: "text", value: departmentSpecialty },
+            { type: "text", value: endDate },
+            { type: "text", value: status },
+            { type: "text", value: priorEndDate },
+        ];
+    };
+
+    const headerValuesNewStaffReappointments = [
+        "No.",
+        "Staff Name",
+        "Department / Specialty",
+        "Staff ID",
+        "Staff Type",
+        "Email",
+    ];
+    const colSortValuesNewStaffReappointments = [false, false, false, false, false, false, false];
+
+    const getNewStaffReappointmentsTableValues = (data) => {
+        const No = [];
+        const staffName = [];
+        const staffId = [];
+        const departmentSpecialty = [];
+        const email = [];
+        const staffType = [];
+
+        data?.map((data, index) => {
+            No.push(index + 1 + ".")
+            staffName.push(
+                `${formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName)}` || " "
+            );
+
+            staffId.push(data?.staffId);
+            departmentSpecialty.push(`${data?.basicDetailReferences?.department?.name} ${data?.basicDetailReferences?.specialty?.name ? `- ${data?.basicDetailReferences?.specialty?.name}` : ''}`);
+            email.push(
+                `${data?.applicant?.email?.officialEmail || "-"}`
+            );
+            staffType.push(data?.basicDetailReferences?.applicantType?.serviceProviderType)
+        });
+
+        return [
+            { type: "text", value: No },
+            { type: "text", value: staffName },
+            { type: "text", value: departmentSpecialty },
+            { type: "text", value: staffId },
+            { type: "text", value: staffType },
+            { type: "text", value: email },
+        ];
+    };
+
+    const headerValuesInactiveStaffSummaryByMonth = [
+        "No.",
+        "Staff Name",
+        "Department / Specialty",
+        "Staff ID",
+        "Staff Type",
+        "Email",
+    ];
+    const colSortValuesInactiveStaffSummaryByMonth = [false, false, false, false, false, false, false];
+
+    const getInactiveStaffSummaryByMonthTableValues = (data) => {
+        const No = [];
+        const staffName = [];
+        const staffId = [];
+        const departmentSpecialty = [];
+        const email = [];
+        const staffType = [];
+
+        data?.map((data, index) => {
             No.push(index + 1 + ".")
             staffName.push(
                 `${formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName)}` || " "
@@ -3826,12 +4319,14 @@ const ReportTypeOverview = () => {
             )}
             <Fragment>
                 <Navbar />
-                <div className={`${isExpanded ? style.bigCardGrid : style.smallCardGrid} ${style.margin20WithoutTop} `}>
-                    <div>
-                        <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
-                            <SampleReportLeftCard getDataToUseInReport={getDataToUseInReport} isLoading={isLoading} />
-                        </SideBar>
-                    </div>
+                <div className={`${isScheduledReport ? '' : isExpanded ? style.bigCardGrid : style.smallCardGrid} ${style.margin20WithoutTop} `}>
+                    {!isScheduledReport && (
+                        <div>
+                            <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
+                                <SampleReportLeftCard getDataToUseInReport={getDataToUseInReport} isLoading={isLoading} />
+                            </SideBar>
+                        </div>
+                    )}
                     <div>
                         <ReportPerformanceAndOptions handle={handle} handlePrint={handlePrint} dataToUseInReport={dataToUseInReport} refToUse={PDFRef} getIsDownloadClicked={getIsDownloadClicked} isNoData={isNoData} setIsFullScreenLoading={setIsFullScreenLoading} />
                         <FullScreen handle={handle} className={handle.active ? style.scroll : ''}>
@@ -3849,7 +4344,7 @@ const ReportTypeOverview = () => {
                                                         {isMyReport ? myReportContent?.title : reportTitleList[reportType]}
                                                     </div>
                                                     {(dataToUseInReport?.reportingTimePeriod !== "" && reportType !== "staffReappointmentTracker" && reportType !== "privilegedStaffSummary" && reportType !== "locumStaffbyTypes" && reportType !== "staffbyTypes" && reportType !== "currentNotesSummary" && reportType !== "locumStaffRenewalStatusTracker" && reportType !== "staffReappointmentStatusSummary" && reportType !== "ohipBillingNumbersByCareProvider" && reportType !== "currentMedicalDirectives" && reportType !== "retiredMedicalDirectives" && reportType !== "workflow" && reportType !== "attestationOutstanding" && reportType !== "medicalDirectivesTracker" && reportType !== "upcomingForReview" && reportType !== "reappointmentApplicationNotStarted" && reportType !== "locumRenewalOrExtensionApplicationsSummary" && reportType !== "declinedOrNotRenewedStaffSummary"
-                                                        && reportType !== "expiredDocumentsSummaryForStaff" && reportType !== "documentsExpirationSummaryForStaff" && reportType !== "inactiveStaffSummary" && reportType !== "appointmentHistorySummary" && reportType !== "currentPolicyAndProcedures" && reportType !== "retiredPolicyAndProcedures" && reportType !== "policyAndProceduresWorkflow" && reportType !== "policyAndProceduresAttestationOutstanding" && reportType !== "policyAndProceduresTracker" && reportType !== "policyAndProceduresUpcomingForReview"
+                                                        && reportType !== "appointmentHistorySummary" && reportType !== "inactiveStaffSummary" && reportType !== "currentPolicyAndProcedures" && reportType !== "retiredPolicyAndProcedures" && reportType !== "policyAndProceduresWorkflow" && reportType !== "policyAndProceduresAttestationOutstanding" && reportType !== "policyAndProceduresTracker" && reportType !== "policyAndProceduresUpcomingForReview"
                                                     ) && (
                                                             <div className={`${style.reportRunByTextStyle} ${style.textAlignCenter} ${style.marginTop5} `}>Reporting Period used for this report : {dataToUseInReport?.reportingTimePeriod} ({dataToUseInReport?.fromToDisplay} to {dataToUseInReport?.toToDisplay}) </div>
                                                         )}
@@ -3930,7 +4425,7 @@ const ReportTypeOverview = () => {
                                                         reportType === "submittedApplicationsReviewSummary" || reportType === "staffReappointmentTracker" || reportType === "ohipBillingNumbersByCareProvider" || reportType === "careProviderCareerMilestoneSummary" ||
                                                         reportType === "declinedOrNotRenewedStaffSummary" || reportType === "reappointmentApplicationNotStarted" || reportType === "currentNotesSummary" || reportType === "staffReappointmentStatusSummary" || reportType === "staffbyTypes" || reportType === "locumStaffRenewalStatusTracker" || reportType === "locumStaffbyTypes" || reportType === "privilegedStaffSummary" || reportType === "careProvidersSummary"
                                                         || reportType === "expiredDocumentsSummaryForStaff" || reportType === "documentsExpirationSummaryForStaff" || reportType === "appointmentHistorySummary" || reportType === "inactiveStaffSummary"
-                                                        || reportType === "newStaffAppointmentsSummary" || reportType === "inactiveStaffSummaryByMonth" || reportType === "staffUploadedDocumentsSummary" || reportType === "locumTermExpirationSummary") ? (
+                                                        || reportType === "newStaffAppointmentsSummary" || reportType === "inactiveStaffSummaryByMonth" || reportType === "staffUploadedDocumentsSummary" || reportType === "locumTermExpirationSummary" || reportType === "renewedLocumStaff") ? (
                                                         <div className={`${style.grid4} ${style.marginTop20} `}>
                                                             {/* {reportType === "staffReappointmentsNotes" && (
                                                         <div>
@@ -3942,28 +4437,24 @@ const ReportTypeOverview = () => {
                                                         <div className={`${style.reportRunByParamStyle} ${style.marginTop5} `}>Sites </div>
                                                         <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedSitesToSend?.map(data => data?.siteName?.siteName).join(', ') || 'All Sites'}</div>
                                                     </div> */}
-                                                            {(reportType !== "expiredDocumentsSummaryForStaff" && reportType !== "documentsExpirationSummaryForStaff" && reportType !== "inactiveStaffSummary" && reportType !== "inactiveStaffSummaryByMonth") && (
-                                                                <div>
-                                                                    <div className={`${style.reportRunByParamStyle} ${style.marginTop5}`}>
-                                                                        {(dataToUseInReport?.selectedDepartmentsToSend?.length === 1 &&
-                                                                            dataToUseInReport?.selectedDepartmentsToSend[0]?.departmentName?.name)
-                                                                            ? 'Department'
-                                                                            : 'Departments'}
-                                                                    </div>
-                                                                    <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.departmentName?.name).join(', ') || 'All Departments'}</div>
+                                                            <div>
+                                                                <div className={`${style.reportRunByParamStyle} ${style.marginTop5}`}>
+                                                                    {(dataToUseInReport?.selectedDepartmentsToSend?.length === 1 &&
+                                                                        dataToUseInReport?.selectedDepartmentsToSend[0]?.departmentName?.name)
+                                                                        ? 'Department'
+                                                                        : 'Departments'}
                                                                 </div>
-                                                            )}
+                                                                <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.departmentName?.name).join(', ') || 'All Departments'}</div>
+                                                            </div>
                                                             {/* <div>
                                                             <div className={`${style.reportRunByParamStyle} ${style.marginTop5} `}>DIVISION / SPECIALITY </div>
                                                             <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedContractsToSend?.map(data => data?.contractName?.contractName).join(', ') || 'All'}</div>
                                                         </div> */}
-                                                            {(reportType !== "expiredDocumentsSummaryForStaff" && reportType !== "documentsExpirationSummaryForStaff" && reportType !== "inactiveStaffSummary" && reportType !== "inactiveStaffSummaryByMonth") && (
-                                                                <div>
-                                                                    <div className={`${style.reportRunByParamStyle} ${style.marginTop5} `}>STAFF TYPE </div>
-                                                                    <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedStaffTypeToSend?.map(data => data?.applicantType).join(', ') || 'All Staff Type'}</div>
-                                                                </div>
-                                                            )}
-                                                            {(reportType !== "expiredDocumentsSummaryForStaff" && reportType !== "documentsExpirationSummaryForStaff" && reportType !== "inactiveStaffSummary" && reportType !== "newStaffAppointmentsSummary" && reportType !== "appointmentHistorySummary" && reportType !== "inactiveStaffSummaryByMonth" && reportType !== "staffUploadedDocumentsSummary" && reportType !== "locumTermExpirationSummary") && (
+                                                            <div>
+                                                                <div className={`${style.reportRunByParamStyle} ${style.marginTop5} `}>STAFF TYPE </div>
+                                                                <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedStaffTypeToSend?.map(data => data?.applicantType).join(', ') || 'All Staff Type'}</div>
+                                                            </div>
+                                                            {(reportType !== "locumTermExpirationSummary" && reportType !== "renewedLocumStaff") && (
                                                                 <div>
                                                                     <div className={`${style.reportRunByParamStyle} ${style.marginTop5} `}>PRIVILEGE CATEGORY </div>
                                                                     <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedPrivilegeCategoryToSend?.map(data => data?.category).join(', ') || 'All Categories'}</div>
@@ -5085,12 +5576,54 @@ const ReportTypeOverview = () => {
                                                                             (locumTermExpirationSummary?.length > 0) ? (
                                                                                 <div className={`${style.marginTop20}`}>
                                                                                     <ApexBarChart series={[{
-                                                                                        name: "Locum Term Expiration",
+                                                                                        name: "Expired Locum Staff That Were Not Renewed",
                                                                                         data: locumTermExpirationSummary?.map(data => data?.count)
-                                                                                    }]} categories={locumTermExpirationSummary?.map(data => data?.month ? format(new Date(data?.month), 'MMM yyyy') : '') || []} reportingPeriod={``} yAxisTitle="Staff Count" xAxisTitle="Locum Term Expiration" />
+                                                                                    }]} categories={locumTermExpirationSummary?.map(data => data?.month ? format(new Date(data?.month), 'MMM yyyy') : '') || []} reportingPeriod={``} yAxisTitle="Staff Count" xAxisTitle="Expired Locum Staff That Were Not Renewed" />
+                                                                                    {locumTermExpirationSummary?.map(data => (
+                                                                                        <>
+                                                                                            <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} `}>{format(new Date(data?.month), 'MMMM, yyyy')}</div>
+                                                                                            <TableTwo
+                                                                                                tableHeaderValues={headerValuesLocumTermExpiration}
+                                                                                                tableDataValues={getLocumTermExpirationTableValues(data?.staffs)}
+                                                                                                tableData={data?.staffs}
+                                                                                                gridStyle={style.locumTermExpirationGrid}
+                                                                                                tableSortValues={colSortValuesLocumTermExpiration}
+                                                                                                heading={"There are no record to display"}
+                                                                                                className={`${style.tableRow} ${style.reportSection}`}
+                                                                                                hidePagination={true}
+                                                                                            />
+                                                                                        </>
+                                                                                    ))}
                                                                                 </div>
                                                                             ) : (
-                                                                                <ReportNoDataBox heading={'You do not have any Locum Term Expiration for the selected period.'}
+                                                                                <ReportNoDataBox heading={'You do not have any Expired Locum Staff That Were Not Renewed for the selected period.'}
+                                                                                    subHeading={''} />
+                                                                            )
+                                                                        ) : (reportType === "renewedLocumStaff") ? (
+                                                                            (renewedLocumStaff?.length > 0) ? (
+                                                                                <div className={`${style.marginTop20}`}>
+                                                                                    <ApexBarChart series={[{
+                                                                                        name: "Renewed Locum Staff",
+                                                                                        data: renewedLocumStaff?.map(data => data?.count)
+                                                                                    }]} categories={renewedLocumStaff?.map(data => data?.month ? format(new Date(data?.month), 'MMM yyyy') : '') || []} reportingPeriod={``} yAxisTitle="Staff Count" xAxisTitle="Renewed Locum Staff" />
+                                                                                    {renewedLocumStaff?.map(data => (
+                                                                                        <>
+                                                                                            <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} `}>{format(new Date(data?.month), 'MMMM, yyyy')}</div>
+                                                                                            <TableTwo
+                                                                                                tableHeaderValues={headerValuesRenewedLocumStaff}
+                                                                                                tableDataValues={getRenewedLocumStaffTableValues(data?.staffs)}
+                                                                                                tableData={data?.staffs}
+                                                                                                gridStyle={style.renewedLocumStaffGrid}
+                                                                                                tableSortValues={colSortValuesRenewedLocumStaff}
+                                                                                                heading={"There are no record to display"}
+                                                                                                className={`${style.tableRow} ${style.reportSection}`}
+                                                                                                hidePagination={true}
+                                                                                            />
+                                                                                        </>
+                                                                                    ))}
+                                                                                </div>
+                                                                            ) : (
+                                                                                <ReportNoDataBox heading={'You do not have any Renewed Locum Staff for the selected period.'}
                                                                                     subHeading={''} />
                                                                             )
                                                                         ) : (reportType === "newStaffAppointmentsSummary") ? (
@@ -5100,6 +5633,21 @@ const ReportTypeOverview = () => {
                                                                                         name: "New Staff Appointments",
                                                                                         data: newStaffAppointmentsSummary?.map(data => data?.count)
                                                                                     }]} categories={newStaffAppointmentsSummary?.map(data => data?.month ? format(new Date(data?.month), 'MMM yyyy') : '') || []} reportingPeriod={``} yAxisTitle="Staff Count" xAxisTitle="New Staff Appointments" />
+                                                                                    {newStaffAppointmentsSummary?.map(data => (
+                                                                                        <>
+                                                                                            <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} `}>{format(new Date(data?.month), 'MMMM, yyyy')}</div>
+                                                                                            <TableTwo
+                                                                                                tableHeaderValues={headerValuesNewStaffReappointments}
+                                                                                                tableDataValues={getNewStaffReappointmentsTableValues(data?.staffs)}
+                                                                                                tableData={data?.staffs}
+                                                                                                gridStyle={style.locumTermExpirationGrid}
+                                                                                                tableSortValues={colSortValuesNewStaffReappointments}
+                                                                                                heading={"There are no record to display"}
+                                                                                                className={`${style.tableRow} ${style.reportSection}`}
+                                                                                                hidePagination={true}
+                                                                                            />
+                                                                                        </>
+                                                                                    ))}
                                                                                 </div>
                                                                             ) : (
                                                                                 <ReportNoDataBox heading={'You do not have any New Staff Appointments for the selected period.'}
@@ -5112,6 +5660,21 @@ const ReportTypeOverview = () => {
                                                                                         name: "Inactive Staff Summary",
                                                                                         data: inactiveStaffSummaryByMonth?.map(data => data?.count)
                                                                                     }]} categories={inactiveStaffSummaryByMonth?.map(data => data?.month ? format(new Date(data?.month), 'MMM yyyy') : '') || []} reportingPeriod={``} yAxisTitle="Staff Count" xAxisTitle="Inactive Staff Summary" />
+                                                                                    {inactiveStaffSummaryByMonth?.map(data => (
+                                                                                        <>
+                                                                                            <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} `}>{format(new Date(data?.month), 'MMMM, yyyy')}</div>
+                                                                                            <TableTwo
+                                                                                                tableHeaderValues={headerValuesInactiveStaffSummaryByMonth}
+                                                                                                tableDataValues={getInactiveStaffSummaryByMonthTableValues(data?.staffs)}
+                                                                                                tableData={data?.staffs}
+                                                                                                gridStyle={style.locumTermExpirationGrid}
+                                                                                                tableSortValues={colSortValuesInactiveStaffSummaryByMonth}
+                                                                                                heading={"There are no record to display"}
+                                                                                                className={`${style.tableRow} ${style.reportSection}`}
+                                                                                                hidePagination={true}
+                                                                                            />
+                                                                                        </>
+                                                                                    ))}
                                                                                 </div>
                                                                             ) : (
                                                                                 <ReportNoDataBox heading={'You do not have any Inactive Staff Summary for the selected period.'}

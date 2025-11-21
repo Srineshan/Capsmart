@@ -33,12 +33,12 @@ const ContactAddress = ({ basicForm, setBasicForm, applicationId, getPreApplicat
       getFormSchema()
     }
     if (basicForm !== undefined && formIndex !== undefined) {
-      setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form')?.length === (formIndex + 1)) ? `/applicationForm/${applicationId}/Form/PODCheck` : `/applicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${basicForm?.forms[formIndex + 1]?.schemaCategory}`)
+      setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form')?.length === (formIndex + 1)) ? `/applicationForm/${applicationId}/Form/${btoa('PODCheck')}` : `/applicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
     }
   }, [basicForm?.formSchemas?.[formIndex]?.id, formIndex])
 
   useEffect(() => {
-    setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === step))
+    setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === atob(step)))
   }, [basicForm, step])
 
   useEffect(() => {
@@ -46,7 +46,7 @@ const ContactAddress = ({ basicForm, setBasicForm, applicationId, getPreApplicat
   }, [applicationId])
 
   useEffect(() => {
-    setLabels(uniqueLabels?.map(data => data?.labels));
+    setLabels(uniqueLabels?.map(data => data));
   }, [uniqueLabels])
 
   // const getIsOpen = (value) => {
@@ -82,7 +82,7 @@ const ContactAddress = ({ basicForm, setBasicForm, applicationId, getPreApplicat
   const getAllLabels = (data) => {
     let tempLabels = addObjectIfNotPresent(uniqueLabels, data);
     setUniqueLabels(tempLabels)
-    console.log("tempLabelsssss", tempLabels, uniqueLabels, data)
+    console.log("tempLabelsssss", tempLabels, uniqueLabels, data, labels, metadata)
   }
 
   const getIsSaveInProgressOpen = (value) => {
@@ -126,7 +126,9 @@ const ContactAddress = ({ basicForm, setBasicForm, applicationId, getPreApplicat
     let missingKeys = [];
     let keyValuePair = [];
     metadata?.map((data, index) => {
-      keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: uniqueLabels?.filter(labelData => labelData?.path === data)[0]?.label })
+      if (labels[index]?.mandatory) {
+        keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: labels[index]?.label })
+      }
     })
     const validateBusinessPhone = (phone) => {
       const phoneRegex = /^[0-9]{10}$/; // Example: validate if phone is a 10-digit number
@@ -214,7 +216,7 @@ const ContactAddress = ({ basicForm, setBasicForm, applicationId, getPreApplicat
     } else {
       handleSubmitApplicationReq()
     }
-    console.log(keyValuePair, 'Metadata', missingKeys, getValueByPath(basicForm, `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`))
+    console.log(keyValuePair, 'Metadata', labels, missingKeys, getValueByPath(basicForm, `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`))
   }
 
 
@@ -303,6 +305,7 @@ const ContactAddress = ({ basicForm, setBasicForm, applicationId, getPreApplicat
         <div>
           <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
           <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
+          <div className={`${style.saveInProgress} ${style.marginTop10} `} onClick={() => getSkipClicked(true)} > SKIP FOR NOW </div>
           <div className={style.twoColForButton}>
             <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
             <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()}>CONTINUE</div>

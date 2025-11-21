@@ -16,7 +16,7 @@ import TextField from "@mui/material/TextField";
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import Dropzone from "react-dropzone";
-import { SuccessToaster, ErrorToaster,SuccessToaster2 } from "../../utils/toaster";
+import { SuccessToaster, ErrorToaster, SuccessToaster2 } from "../../utils/toaster";
 import DescriptionIcon from '@mui/icons-material/Description';
 import { fileLoadingURL, FormatPhoneNumber, FormatPostalCode } from "../../utils/formatting";
 import LoadingScreen from "../LoadingScreen";
@@ -95,11 +95,11 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen, getActiveApplicationView, sele
     handleSignatureClick();
   };
 
-  console.log("selectedRoleCred",selectedRoleCred)
+  console.log("selectedRoleCred", selectedRoleCred)
 
   const handleRoleCredChange = (event) => {
-  const value = event.target.value;
-  setSelectedRoleCred(value); 
+    const value = event.target.value;
+    setSelectedRoleCred(value);
   };
 
   useEffect(() => {
@@ -117,69 +117,69 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen, getActiveApplicationView, sele
     console.log('selectedRoleCred:', selectedRoleCred);
     console.log('selectedRoleDept:', selectedRoleDept);
 
-  // Handle selectedRoleCred (can be string or array)
- if (Array.isArray(selectedRoleCred)) {
-  const matchedRoles = selectedRoleCred.map(id =>
-    userSelectRole?.find(role => role?.id === id)
-  ).filter(Boolean); // Remove any undefined values
+    // Handle selectedRoleCred (can be string or array)
+    if (Array.isArray(selectedRoleCred)) {
+      const matchedRoles = selectedRoleCred.map(id =>
+        userSelectRole?.find(role => role?.id === id)
+      ).filter(Boolean); // Remove any undefined values
 
-   const transformed = matchedRoles.map(role => ({
-    id: role?.id,
-    name: {
-      firstName: role?.name?.firstName || '',
-      lastName: role?.name?.lastName || '',
-      middleName: role?.name?.middleName || ''
-    },
-    role: "Credentialing Committee"
-  }));
+      const transformed = matchedRoles.map(role => ({
+        id: role?.id,
+        name: {
+          firstName: role?.name?.firstName || '',
+          lastName: role?.name?.lastName || '',
+          middleName: role?.name?.middleName || ''
+        },
+        role: "Credentialing Committee"
+      }));
 
-  setTransformedRoles(transformed);
+      setTransformedRoles(transformed);
 
-  console.log('Transformed Roles:', transformed);
+      console.log('Transformed Roles:', transformed);
 
-  // You can now store this in a state
-  // setMatchedCredRoles(transformedRoles);
-} else {
-    const matchedRole = userSelectRole?.find(role => role?.id === selectedRoleCred);
-    if (matchedRole) {
-      const { firstName, lastName, middleName } = matchedRole?.name || {};
-      setFirstName(firstName || '');
-      setLastName(lastName || '');
-      setMiddleName(middleName || '');
-      console.log('matchedRole:', firstName,lastName,middleName);
+      // You can now store this in a state
+      // setMatchedCredRoles(transformedRoles);
+    } else {
+      const matchedRole = userSelectRole?.find(role => role?.id === selectedRoleCred);
+      if (matchedRole) {
+        const { firstName, lastName, middleName } = matchedRole?.name || {};
+        setFirstName(firstName || '');
+        setLastName(lastName || '');
+        setMiddleName(middleName || '');
+        console.log('matchedRole:', firstName, lastName, middleName);
+      }
     }
-  }
 
-  // Handle selectedRoleDept (can be string or array - apply same logic if needed)
-  if (Array.isArray(selectedRoleDept)) {
-    const matchedDeptRoles = selectedRoleDept.map(id =>
-      userSelectRoleDept?.find(role => role?.id === id)
-    ).filter(Boolean);
+    // Handle selectedRoleDept (can be string or array - apply same logic if needed)
+    if (Array.isArray(selectedRoleDept)) {
+      const matchedDeptRoles = selectedRoleDept.map(id =>
+        userSelectRoleDept?.find(role => role?.id === id)
+      ).filter(Boolean);
 
-    const extractedDeptNames = matchedDeptRoles.map(role => {
-      const { id, name } = role;
-      return {
-        id,
-        firstName: name?.firstName || '',
-        lastName: name?.lastName || '',
-        middleName: name?.middleName || ''
-      };
-    });
+      const extractedDeptNames = matchedDeptRoles.map(role => {
+        const { id, name } = role;
+        return {
+          id,
+          firstName: name?.firstName || '',
+          lastName: name?.lastName || '',
+          middleName: name?.middleName || ''
+        };
+      });
 
-    console.log('Extracted Dept Names:', extractedDeptNames);
+      console.log('Extracted Dept Names:', extractedDeptNames);
 
-    // setMatchedDeptRoles(extractedDeptNames);
+      // setMatchedDeptRoles(extractedDeptNames);
 
-  } else {
-    const matchedRoleDept = userSelectRoleDept?.find(role => role?.id === selectedRoleDept);
-    if (matchedRoleDept) {
-      const { firstName, lastName, middleName } = matchedRoleDept?.name || {};
-      setFirstNameDept(firstName || '');
-      setLastNameDept(lastName || '');
-      setMiddleNameDept(middleName || '');
+    } else {
+      const matchedRoleDept = userSelectRoleDept?.find(role => role?.id === selectedRoleDept);
+      if (matchedRoleDept) {
+        const { firstName, lastName, middleName } = matchedRoleDept?.name || {};
+        setFirstNameDept(firstName || '');
+        setLastNameDept(lastName || '');
+        setMiddleNameDept(middleName || '');
+      }
     }
-  }
-}, [userSelectRole, userSelectRoleDept, selectedRoleCred, selectedRoleDept]);
+  }, [userSelectRole, userSelectRoleDept, selectedRoleCred, selectedRoleDept]);
 
 
   useEffect(() => {
@@ -548,8 +548,8 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen, getActiveApplicationView, sele
   const checkApproveEnabled = () => {
     const hasValidComments = userRoleComments.trim() !== '';
     const hasValidMember = Array.isArray(selectedRoleCred)
-    ? selectedRoleCred.length > 1
-    : selectedRoleCred !== '';
+      ? selectedRoleCred.length > 1
+      : selectedRoleCred !== '';
     const hasValidMemberDept = selectedRoleDept !== '';
     const isLocum = applicationType === "LOCUM";
 
@@ -566,12 +566,12 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen, getActiveApplicationView, sele
         setIsApproveEnabled(hasValidMember && hasValidMemberDept && allFilesHaveTitles);
       }
     } else {
-     // If no files are uploaded
-    if (isLocum) {
-      setIsApproveEnabled(hasValidMember);
-    } else {
-      setIsApproveEnabled(hasValidMember && hasValidMemberDept);
-    }
+      // If no files are uploaded
+      if (isLocum) {
+        setIsApproveEnabled(hasValidMember);
+      } else {
+        setIsApproveEnabled(hasValidMember && hasValidMemberDept);
+      }
     }
   };
 
@@ -857,18 +857,18 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen, getActiveApplicationView, sele
               <span className={`${style.Subheading}`}>{isUser ? "Applicant is designated as Department Head" : ""}</span>
               <div className={style.spaceBetween}>
                 <div className={`${style.heading}`}>
-                  {isUser && applicationType === "REAPPOINTMENT" ? "SEND TO CHIEF / DEP COS FOR REVIEW" : applicationType === "REAPPOINTMENT" ? "SEND TO DEPARTMENT HEAD FOR REVIEW" : "SEND TO CRED COMM FOR REVIEW"}
+                  {isUser && (applicationType === "REAPPOINTMENT" || applicationType === "NEW") ? "SEND TO CHIEF / DEP COS FOR REVIEW" : (applicationType === "REAPPOINTMENT" || applicationType === "NEW") ? "SEND TO DEPARTMENT HEAD FOR REVIEW" : "SEND TO CRED COMM FOR REVIEW"}
                 </div>
                 <div className={style.displayInRow}>
-                <Tooltip title="Click to Close" arrow>
-                  <img
-                    src={CrossPink}
-                    alt="cross"
-                    className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft}`}
-                    onClick={() => {
-                      getIsOpen(false);
-                    }}
-                  />
+                  <Tooltip title="Click to Close" arrow>
+                    <img
+                      src={CrossPink}
+                      alt="cross"
+                      className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft}`}
+                      onClick={() => {
+                        getIsOpen(false);
+                      }}
+                    />
                   </Tooltip>
                 </div>
               </div>
@@ -886,7 +886,7 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen, getActiveApplicationView, sele
                             : ""}{" "}
                         </span>
                           <span className={`${style.rejectionTextStyle} ${style.marginLeft4}`}>
-                          {applicationType === "LOCUM" ? "Locum":""} {formDetails?.providerType?.serviceProviderType}
+                            {applicationType === "LOCUM" ? "Locum" : ""} {formDetails?.providerType?.serviceProviderType}
                           </span>
                         </div>
                         <div className={`${style.gridItem2}`}>
@@ -927,7 +927,7 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen, getActiveApplicationView, sele
                             {formDetails?.basicDetails?.applicant?.name?.firstName
                               ? formDetails?.updatedBy?.name?.firstName.charAt(0).toUpperCase() +
                               formDetails?.updatedBy?.name?.firstName.slice(1).toLowerCase()
-                              : ""}{formDetails?.updatedBy?.name?.lastName?.toUpperCase()} {formDetails?.updatedBy?.title?.title  ? `, ${formDetails?.updatedBy?.title?.title}`: ""}
+                              : ""}{formDetails?.updatedBy?.name?.lastName?.toUpperCase()} {formDetails?.updatedBy?.title?.title ? `, ${formDetails?.updatedBy?.title?.title}` : ""}
                           </span>
                         </div>
                       </div>
@@ -938,7 +938,7 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen, getActiveApplicationView, sele
             Provide notes, if any, for the Department Head regarding this application(Optional)
             </div> */}
                 <div className={`${style.marginTop} ${style.commentsNotesHeadingFontStyle}`}>
-                  {isUser && applicationType === "REAPPOINTMENT" ? " Provide notes, if any, for the Chief / Deputy COS regarding this application (Optional)" : applicationType === "REAPPOINTMENT" ? " Provide notes, if any, for the Department Head regarding this application (Optional)" : "Provide notes, if any, for the Cred Comm regarding this application (Optional)"}
+                  {isUser && (applicationType === "REAPPOINTMENT" || applicationType === "NEW") ? " Provide notes, if any, for the Chief / Deputy COS regarding this application (Optional)" : (applicationType === "REAPPOINTMENT" || applicationType === "NEW") ? " Provide notes, if any, for the Department Head regarding this application (Optional)" : "Provide notes, if any, for the Cred Comm regarding this application (Optional)"}
                 </div>
                 {/* <CommonTextField
                 className={`${style.commentsNotesFontStyle} ${style.notesBorderStyle}`}
@@ -1062,47 +1062,47 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen, getActiveApplicationView, sele
                 <div className={`${style.twoColumnGridDropDown} ${style.marginTop10}`}>
                   {applicationType !== "LOCUM" && (
                     <div>
-                    <CommonSelectField
-                      value={selectedRoleDept}
-                      onChange={(e) => setSelectedRoleDept(e.target.value)}
-                      className={style.fullWidth}
-                      firstOptionLabel={''}
-                      firstOptionValue={''}
-                      // valueList={["HIGH", "NO"]}
-                      // labelList={['High Priority', 'No Priority']}
-                      valueList={userSelectRoleDept?.map(data => data?.id)}
-                      // labelList={userSelectRoleDept?.map(data => `${data?.name?.firstName} ${data?.name?.lastName}`)}
-                      labelList={userSelectRoleDept?.map(data => {
-                         const firstName = data?.name?.firstName || "";
-                         const lastName = data?.name?.lastName || "";
-                        const primaryTitle = data?.title?.title || "";
-                        const secondaryTitle = data?.secondaryTitle?.title || "";
-                        const combinedTitle = secondaryTitle
-                          ? `${primaryTitle} , ${secondaryTitle}`
-                          : primaryTitle;
-                        // const departmentName = data?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.departmentName?.name;
-                        const departmentName = data?.sites?.sites?.[0]?.departmentList?.departments?.map(
-                          department => department?.departmentName?.name
-                        ).join(', ');
-                        // let label = `${data?.name?.firstName} ${data?.name?.lastName}, ${combinedTitle}`;
+                      <CommonSelectField
+                        value={selectedRoleDept}
+                        onChange={(e) => setSelectedRoleDept(e.target.value)}
+                        className={style.fullWidth}
+                        firstOptionLabel={''}
+                        firstOptionValue={''}
+                        // valueList={["HIGH", "NO"]}
+                        // labelList={['High Priority', 'No Priority']}
+                        valueList={userSelectRoleDept?.map(data => data?.id)}
+                        // labelList={userSelectRoleDept?.map(data => `${data?.name?.firstName} ${data?.name?.lastName}`)}
+                        labelList={userSelectRoleDept?.map(data => {
+                          const firstName = data?.name?.firstName || "";
+                          const lastName = data?.name?.lastName || "";
+                          const primaryTitle = data?.title?.title || "";
+                          const secondaryTitle = data?.secondaryTitle?.title || "";
+                          const combinedTitle = secondaryTitle
+                            ? `${primaryTitle} , ${secondaryTitle}`
+                            : primaryTitle;
+                          // const departmentName = data?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.departmentName?.name;
+                          const departmentName = data?.sites?.sites?.[0]?.departmentList?.departments?.map(
+                            department => department?.departmentName?.name
+                          ).join(', ');
+                          // let label = `${data?.name?.firstName} ${data?.name?.lastName}, ${combinedTitle}`;
 
-                         if (combinedTitle && departmentName) {
-                          return `${firstName} ${lastName}, ${departmentName} (${combinedTitle})`;
-                        } else if (combinedTitle) {
-                          return `${firstName} ${lastName} (${combinedTitle})`;
-                        } else {
-                          return `${firstName} ${lastName}`;
-                        }
-                      })}
-                      disabledList={false}
-                      required={false}
-                      //  menuColor={userSelectRoleDept?.map((_, index) =>
-                      //     index % 2 === 0 ? '#ffffff' : '#f5f5f5'
-                      //   )}
-                      // label="Assign a Department Head to Review & Approve*"
-                      label={isUser ? "Assign a Chief / Dep COS to Review & Approve*" : "Assign a Department Head / COS to Review & Approve*"}
-                    />
-                  </div>
+                          if (combinedTitle && departmentName) {
+                            return `${firstName} ${lastName}, ${departmentName} (${combinedTitle})`;
+                          } else if (combinedTitle) {
+                            return `${firstName} ${lastName} (${combinedTitle})`;
+                          } else {
+                            return `${firstName} ${lastName}`;
+                          }
+                        })}
+                        disabledList={false}
+                        required={false}
+                        //  menuColor={userSelectRoleDept?.map((_, index) =>
+                        //     index % 2 === 0 ? '#ffffff' : '#f5f5f5'
+                        //   )}
+                        // label="Assign a Department Head to Review & Approve*"
+                        label={isUser ? "Assign a Chief / Dep COS to Review & Approve*" : "Assign a Department Head / COS to Review & Approve*"}
+                      />
+                    </div>
                   )}
                   {/* <div>
               <CommonDateField
@@ -1159,7 +1159,7 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen, getActiveApplicationView, sele
                         ).join(', ');
                         // let label = `${data?.name?.firstName} ${data?.name?.lastName}, ${combinedTitle}`;
 
-                       if (combinedTitle && departmentName) {
+                        if (combinedTitle && departmentName) {
                           return `${firstName} ${lastName}, ${departmentName} (${combinedTitle})`;
                         } else if (combinedTitle) {
                           return `${firstName} ${lastName} (${combinedTitle})`;
@@ -1213,8 +1213,8 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen, getActiveApplicationView, sele
 
                 <div className={`${style.marginTop}  ${style.reviewButtonContainer}`}>
                   <div className={` ${style.cursorPointer}`} onClick={() => getIsOpen(false)}>
-                  <Tooltip title="Click to Close" arrow>
-                    <div className={`${style.cancelButton} ${style.cancelButtonTextStyle}`}>Cancel</div></Tooltip>
+                    <Tooltip title="Click to Close" arrow>
+                      <div className={`${style.cancelButton} ${style.cancelButtonTextStyle}`}>Cancel</div></Tooltip>
                   </div>
                   <div
                     className={`${style.reviewButtonStyle} ${isApproveEnabled ? style.cursorPointer : undefined} ${style.marginLeft}`}
@@ -1224,8 +1224,8 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen, getActiveApplicationView, sele
                       opacity: isApproveEnabled ? 1 : 0.5
                     }}
                   >
-                    <Tooltip title={isApproveEnabled ? "Click to Send Application for Review" : ""}arrow>
-                    <div className={style.reviewButton}>SEND FOR REVIEW</div>
+                    <Tooltip title={isApproveEnabled ? "Click to Send Application for Review" : ""} arrow>
+                      <div className={style.reviewButton}>SEND FOR REVIEW</div>
                     </Tooltip>
                   </div>
                 </div>

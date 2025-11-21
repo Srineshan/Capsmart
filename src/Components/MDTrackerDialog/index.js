@@ -20,6 +20,8 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import PrintOutlinedIcon from "@mui/icons-material/PrintOutlined";
 import { useReactToPrint } from "react-to-print";
 import { Tooltip } from "@mui/material";
+import PrintHeader from "../Print/printHeader";
+import PrintFooter from "../Print/printFooter";
 import { ErrorToaster2, SuccessToaster2 } from "../../utils/toaster";
 
 const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
@@ -292,7 +294,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
     "No.",
     "MD ID",
     "MD Title",
-    "Department / Division",
+    "Dept / Division",
     "Attested",
     "Not Attested",
     ""
@@ -304,7 +306,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
     "Name",
     "Applicant ID",
     "Type",
-    "Department / Division",
+    "Dept / Division",
     "Attested",
     "Not Attested",
     ""
@@ -313,7 +315,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
   const headerValuesByDept = [
     "",
     "No.",
-    "Department / Division",
+    "Dept / Division",
     "Staff Count",
     "MD Count",
     "Attested",
@@ -325,7 +327,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
     "No.",
     "Applicant Type",
     "Applicant Name",
-    "Department / Division",
+    "Dept / Division",
     "Attestation Status",
     "Attestation Date",
     ""
@@ -345,7 +347,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
     "No.",
     "MD ID",
     "MD Title",
-    "Department / Division",
+    "Dept / Division",
     "Attested",
     "Not Attested",
     ""
@@ -812,17 +814,27 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
       applicantName.push(`${formatFirstNameLastName(data?.user?.name?.firstName, data?.user?.name?.lastName)}`);
       // dept.push(`${data?.application?.basicDetailReferences?.department?.name} ${data?.application?.basicDetailReferences?.specialty?.name ? `- ${data?.application?.basicDetailReferences?.specialty?.name}` : ''}`)
       dept.push(
-        ...(data?.user?.sites?.sites ?? []).map(site =>
-          (site?.departmentList?.departments ?? [])
-            .map(dept =>
-              `${dept?.departmentName?.name ?? '-'}${dept?.serviceAreas?.length
-                ? ` / ${dept.serviceAreas.map(sa => sa?.name ?? '').join(', ')}`
-                : ''
-              }`
-            )
-            .join(', ')
+        ...(
+          (data?.user?.sites?.sites?.length
+            ? data.user.sites.sites
+            : ['']
+          ).map(site => {
+            if (site === '') return '';
+
+            const departments = site?.departmentList?.departments ?? [];
+            if (departments.length === 0) return '';
+            return departments
+              .map(dept =>
+                `${dept?.departmentName?.name ?? '-'}${dept?.serviceAreas?.length
+                  ? ` / ${dept.serviceAreas.map(sa => sa?.name ?? '').join(', ')}`
+                  : ''
+                }`
+              )
+              .join(', ');
+          })
         )
       );
+      // console.log(dept, 'dept')
       // type.push(data?.application?.basicDetailReferences?.applicantType?.serviceProviderType)
       type.push('-')
       attestationDate.push(data?.attestationLog?.esign?.signedDate ? result.parsedDate ? format(result.parsedDate, dateFormat) : '-' : '-');
@@ -981,7 +993,8 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
       >
         <div>
           {!displayInnerList ? (
-            <div ref={tableRef} className={Classes.DIALOG_BODY}>
+            <div ref={tableRef} className={`${Classes.DIALOG_BODY} print-content`}>
+              <PrintHeader />
               <div className={style.spaceBetween}>
                 <div>
                   <div className={`${style.heading}`}>
@@ -1162,9 +1175,11 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                   </div>
                 </div>
               </div>
+              {/* <PrintFooter /> */}
             </div>
           ) : (
-            <div ref={tableRef} className={Classes.DIALOG_BODY}>
+            <div ref={tableRef} className={`${Classes.DIALOG_BODY} print-content`}>
+              <PrintHeader />
               <div className={style.spaceBetween}>
                 <div>
                   <div className={`${style.heading}`}>
@@ -1328,6 +1343,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                   </div>
                 </div>
               </div>
+              {/* <PrintFooter /> */}
             </div>
           )}
         </div>

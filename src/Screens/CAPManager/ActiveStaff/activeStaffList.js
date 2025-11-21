@@ -31,6 +31,7 @@ import Tooltip from "@mui/material/Tooltip";
 import { formatFirstNameLastName } from "../../../utils/formatting";
 import CommonSearchField from "../../../Components/CommonFields/CommonSearchField";
 import LoadingScreen from "../../../Components/LoadingScreen";
+import ApplicantDetailsViewScreen from "../../../Components/ApplicantDetailViewScreen";
 
 const ActiveStaffList = ({
   isLoading,
@@ -38,8 +39,8 @@ const ActiveStaffList = ({
   selectedTab,
   getTitleCounts,
   getActiveApplicationView,
-  getStaffView
-
+  getStaffView,
+  getApplicantDetailsViewScreen
 }) => {
   const PDFRef = createRef();
   const navigate = useNavigate();
@@ -60,7 +61,6 @@ const ActiveStaffList = ({
     applicationsRejected: 0,
     applicationsApprovedButDenied: 0,
   });
-
   const [tableData, setTableData] = useState([]);
   const [rejectionListData, setRejectionListData] = useState([]);
   const [sortField, setSortField] = useState("DEFAULT");
@@ -102,6 +102,13 @@ const ActiveStaffList = ({
 
   const handleLimitChange = (newLimit) => {
     setLimit(newLimit);
+  };
+
+  const onClickViewAndVerifyStaffViewFunction = (id) => {
+    getApplicantDetailsViewScreen(true);
+    sessionStorage.setItem('applicationCreationType', 'REAPPOINTMENT');
+    sessionStorage.setItem("applicationId", id);
+    console.log("id", id)
   };
 
   const onClickViewAndVerifyFunction = (data) => {
@@ -287,6 +294,7 @@ const ActiveStaffList = ({
   let lastUpdated = [];
   let action = [];
   let applicantName = [];
+  let applicantNameHoverText = [];
   let applicantId = [];
   let applicantType = [];
   let docs = [];
@@ -384,6 +392,7 @@ const ActiveStaffList = ({
   const getPermanentValues = () => {
     dot = [];
     applicantName = [];
+    applicantNameHoverText = [];
     applicantId = [];
     applicantType = [];
     department = [];
@@ -415,6 +424,13 @@ const ActiveStaffList = ({
       applicantName.push(
         `${formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName)}` || " "
       );
+      applicantNameHoverText.push(
+        <div>
+          <div className={style.customStyle}>
+            Click To View Details
+          </div>
+        </div>
+      )
       // applicantId.push(data?.displayId || "123");
       applicantId.push(data?.staffId || "123");
       // applicantType.push(data?.providerType?.serviceProviderType || "Doctor");
@@ -494,7 +510,7 @@ const ActiveStaffList = ({
 
     return [
       { type: "dot", value: dot, tooltipValue: dotTooltipValues },
-      { type: "text", value: applicantName },
+      { type: "text", value: applicantName, tooltipValueText: applicantNameHoverText, onClickFunction: (data, index) => onClickViewAndVerifyStaffViewFunction(data.id) },
       { type: "text", value: applicantId },
       { type: "text", value: applicantType },
       // { type: "text", value: department },
@@ -835,7 +851,7 @@ const ActiveStaffList = ({
           : style.approvedStaffGrid;
 
   return (
-    <div className={style.margin20}>
+    <div className={style.margin20} >
       {isLoadingImage && (
         <div className={style.loadingOverlay}>
           <LoadingScreen />
@@ -954,8 +970,8 @@ const ActiveStaffList = ({
         </div>
         <p className={style.poweredBy}>© {new Date().getFullYear()} HapiCare</p>
       </div>
-    </div>
-  );
-};
+    </div >
+  )
+}
 
 export default ActiveStaffList;

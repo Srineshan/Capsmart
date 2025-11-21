@@ -58,6 +58,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, applicationId, getPreAppl
     const [formIndex, setFormIndex] = useState();
     const navigate = useNavigate()
     const [navigateURL, setNavigateURL] = useState();
+    const title = sessionStorage.getItem('title')
     const [isSaveInProgressOpen, setIsSaveInProgressOpen] = useState(false);
     useEffect(() => {
         getApplication();
@@ -79,14 +80,14 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, applicationId, getPreAppl
             setSelectedPrivilege(basicForm?.privileges?.obligatedPrivileges?.[0]?.id)
         }
         if (basicForm !== undefined && formIndex !== undefined) {
-            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form')?.length === (formIndex + 1)) ? `/applicationForm/${applicationId}/Form/PODCheck` : `/applicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${basicForm?.forms[formIndex + 1]?.schemaCategory}`)
+            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form')?.length === (formIndex + 1)) ? `/applicationForm/${applicationId}/Form/${btoa('PODCheck')}` : `/applicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
         }
         setSelectedAdditionalPrivilegeForDisplay(basicForm?.privileges?.additionalPrivileges)
         setSelectedPrivilegeForDisplay(basicForm?.privileges?.obligatedPrivileges)
     }, [basicForm, formIndex])
 
     useEffect(() => {
-        setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === step))
+        setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === atob(step)))
     }, [basicForm, step])
 
     const getSelectedPrivilegeList = (value) => {
@@ -422,7 +423,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, applicationId, getPreAppl
             return (
                 <>
                     <div className={style.padding}>
-                        <div className={style.cardTitle}>{`CAMBRIDGE MEMORIAL HOSPITAL ${staffPrivilege?.filter(data => data?.id === selectedPrivilege)?.map(data => data?.privilegeSetTitle)[0] !== undefined ? staffPrivilege?.filter(data => data?.id === selectedPrivilege)?.map(data => data?.privilegeSetTitle)[0]?.toUpperCase() : ''}`}</div>
+                        <div className={style.cardTitle}>{`${title !== 'HapiCare' ? title : ''} ${staffPrivilege?.filter(data => data?.id === selectedPrivilege)?.map(data => data?.privilegeSetTitle)[0] !== undefined ? staffPrivilege?.filter(data => data?.id === selectedPrivilege)?.map(data => data?.privilegeSetTitle)[0]?.toUpperCase() : ''}`}</div>
 
                         {
                             selectedPrivilegeForDisplay?.map((data) => data?.privilegeDetails?.corePrivileges?.privilegesByCategories?.map((categories, index) => (
@@ -1013,6 +1014,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, applicationId, getPreAppl
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                     <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
+                    <div className={`${style.saveInProgress} ${style.marginTop10} `} onClick={() => handleContinue(true)} > SKIP FOR NOW </div>
                     <div className={style.twoColForButton}>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue(true)}>CONTINUE</div>

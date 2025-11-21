@@ -138,7 +138,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         USER_NAME: ['Name'],
         STAFF_COUNT: ['Total Count'],
         PARTIALLY_ATTESTED_COUNT: ['Some Attested'],
-        GROUP_NAME: ['Attestation Group']
+        GROUP_NAME: ['Attestation Group'],
     }
 
     const availableSortValueEnum = {

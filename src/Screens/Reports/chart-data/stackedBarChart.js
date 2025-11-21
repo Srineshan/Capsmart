@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Chart from 'react-apexcharts';
 
-const ApexStackedBarChart = ({ stackedSeries, stackedCategories, horizontal }) => {
+const ApexStackedBarChart = ({ stackedSeries, stackedCategories, horizontal, height }) => {
   const [series, setSeries] = useState(stackedSeries);
   const [categories, setCategories] = useState(stackedCategories);
   useEffect(() => {
@@ -16,7 +16,7 @@ const ApexStackedBarChart = ({ stackedSeries, stackedCategories, horizontal }) =
     options: {
       chart: {
         type: 'bar',
-        height: 300,
+        height: height || 300,
         stacked: true,
         toolbar: {
           show: false

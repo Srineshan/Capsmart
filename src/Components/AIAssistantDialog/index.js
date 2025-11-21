@@ -43,7 +43,7 @@ const AIAssistantDialog = ({ getIsOpen }) => {
                             </div>
                         </div>
                     </div> */}
-                    <div className={`${style.threeCol} ${style.marginTop40}`}>
+                    <div className={`${style.threeCol} ${style.marginTop}`}>
                         <div className={style.advantagesCard}>
                             <img src={Timer} alt='' className={style.advantagesImageStyle} />
                             <div className={`${style.advantageHeading} ${style.marginTop}`}>90% Faster</div>

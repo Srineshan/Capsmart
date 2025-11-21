@@ -25,7 +25,7 @@ import TableTwo from '../../../Components/TableDesignTwo';
 import { Tooltip } from '@mui/material';
 import { format } from 'date-fns';
 import CommonPdfViewer from '../../../Components/CommonPdfViewer';
-import { GET } from '../../dataSaver';
+import { GET, TenantID } from '../../dataSaver';
 
 const MDLibrary = () => {
     const viewerDivId = 'adobe-pdf-viewer';
@@ -228,7 +228,12 @@ const MDLibrary = () => {
     const handleShowMd = (data) => {
         // setShowMD(true);
         // setSelectedMD(data);
-        navigate(`${window.location.pathname}/${data?.id}`)
+        console.log(data, 'dataCheck')
+        if (departmentId) {
+            navigate(`${window.location.pathname}/${data?.id}`)
+        } else {
+            navigate(`${window.location.pathname}/${data?.sites?.[0]?.departments?.[0]?.id ? data?.sites?.[0]?.departments?.[0]?.id : departmentList?.[0]?.id}/${data?.id}`)
+        }
     }
 
     const handleChange = (e) => {
@@ -285,7 +290,7 @@ const MDLibrary = () => {
         // setDashboardData(dashboardData?.medicalDirectives);
         // setTotalTableCount(dashboardData?.numberOfElements);
         let data = {
-            siteDepartmentSpecialties: [selectedDepartmentSpecialities !== "" ? `${selectedSite}#${selectedDepartmentSpecialities}` : `${selectedSite}#${departmentId}`],
+            siteDepartmentSpecialties: [selectedDepartmentSpecialities !== "" ? `${selectedSite}#${selectedDepartmentSpecialities}` : departmentId ? `${selectedSite}#${departmentId}` : `${selectedSite}`],
             searchText: searchTermForTable,
             mdID: mdId,
             title: mdTitle,
@@ -316,7 +321,7 @@ const MDLibrary = () => {
     }
 
     const getLibraryMeta = async () => {
-        let url = `medical-directive-service/medicalDirectives/library/meta?siteDepartmentSpecialties=${[selectedDepartmentSpecialities !== "" ? `${selectedSite}%23${selectedDepartmentSpecialities?.replace(/#/g, "%23")}` : `${selectedSite}%23${departmentId}`]}`
+        let url = `medical-directive-service/medicalDirectives/library/meta?siteDepartmentSpecialties=${[selectedDepartmentSpecialities !== "" ? `${selectedSite}%23${selectedDepartmentSpecialities?.replace(/#/g, "%23")}` : departmentId ? `${selectedSite}%23${departmentId}` : `${selectedSite}`]}`
         const response = await axios(`${baseUrl()}/${url}`, {
             method: "GET",
             headers: {
@@ -391,7 +396,11 @@ const MDLibrary = () => {
 
     const handleDept = (id) => {
         const newPath = window.location.pathname.split("/").slice(0, -1).join("/");
-        navigate(`${newPath}/${id}`);
+        if (departmentId) {
+            navigate(`${newPath}/${id}`);
+        } else {
+            navigate(`${newPath}/${TenantID}/${id}`);
+        }
     }
 
     const handleCopy = () => {
@@ -419,7 +428,7 @@ const MDLibrary = () => {
                         className={style.logo}
                     />
                     {!showMD && (
-                        <div className={`${style.titleText} ${style.verticalAlignCenter} ${style.marginLeft20}`}>{`${departmentList?.filter(data => data?.id === (selectedDepartmentSpecialities !== "" ? selectedDepartmentSpecialities?.split('#')?.[0] : departmentId))?.[0]?.departmentName?.name} ${selectedDepartmentSpecialities?.split('#')?.length > 1 ? `/ ${departmentList?.filter(data => data?.id === (selectedDepartmentSpecialities !== "" ? selectedDepartmentSpecialities?.split('#')?.[0] : departmentId))?.[0]?.serviceAreas?.filter(innerData => innerData?.id === selectedDepartmentSpecialities?.split('#')?.[1])?.[0]?.name}` : ''} Medical Directives Library`}</div>
+                        <div className={`${style.titleText} ${style.verticalAlignCenter} ${style.marginLeft20}`}>{`${(selectedDepartmentSpecialities || departmentId) ? departmentList?.filter(data => data?.id === (selectedDepartmentSpecialities !== "" ? selectedDepartmentSpecialities?.split('#')?.[0] : departmentId))?.[0]?.departmentName?.name : ''} ${(selectedDepartmentSpecialities || departmentId) ? selectedDepartmentSpecialities?.split('#')?.length > 1 ? `/ ${departmentList?.filter(data => data?.id === (selectedDepartmentSpecialities !== "" ? selectedDepartmentSpecialities?.split('#')?.[0] : departmentId))?.[0]?.serviceAreas?.filter(innerData => innerData?.id === selectedDepartmentSpecialities?.split('#')?.[1])?.[0]?.name}` : '' : ''} Medical Directives Library`}</div>
                     )}
                     {showMD && (
                         <div className={`${style.titleText} ${style.verticalAlignCenter} ${style.marginLeft20}`}>{selectedMD?.title ? `${selectedMD?.mdID} : ${selectedMD?.title}` : ''}</div>
@@ -767,7 +776,7 @@ const MDLibrary = () => {
                             </div>
                         )}
                         <div className={`${style.mdCard} ${style.marginTop}`}>
-                            <div className={style.deptTableHeading}>{`Medical Directives For ${departmentList?.filter(data => data?.id === (selectedDepartmentSpecialities !== "" ? selectedDepartmentSpecialities?.split('#')?.[0] : departmentId))?.[0]?.departmentName?.name} ${selectedDepartmentSpecialities?.split('#')?.length > 1 ? `- ${departmentList?.filter(data => data?.id === (selectedDepartmentSpecialities !== "" ? selectedDepartmentSpecialities?.split('#')?.[0] : departmentId))?.[0]?.serviceAreas?.filter(innerData => innerData?.id === selectedDepartmentSpecialities?.split('#')?.[1])?.[0]?.name}` : ''} (${dashboardData?.length})`}</div>
+                            <div className={style.deptTableHeading}>{`Medical Directives ${(selectedDepartmentSpecialities || departmentId) ? 'For' : ''} ${(selectedDepartmentSpecialities || departmentId) ? departmentList?.filter(data => data?.id === (selectedDepartmentSpecialities !== "" ? selectedDepartmentSpecialities?.split('#')?.[0] : departmentId))?.[0]?.departmentName?.name : ''} ${(selectedDepartmentSpecialities || departmentId) ? selectedDepartmentSpecialities?.split('#')?.length > 1 ? `- ${departmentList?.filter(data => data?.id === (selectedDepartmentSpecialities !== "" ? selectedDepartmentSpecialities?.split('#')?.[0] : departmentId))?.[0]?.serviceAreas?.filter(innerData => innerData?.id === selectedDepartmentSpecialities?.split('#')?.[1])?.[0]?.name}` : '' : ''} (${dashboardData?.length})`}</div>
                             <div ref={componentRef} className={style.marginTop20}>
                                 <div className={`${style.reduceMarginTop10} registeredUsers`} ref={PDFRef}>
                                     <TableTwo

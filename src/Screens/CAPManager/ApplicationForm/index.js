@@ -37,8 +37,6 @@ import OffenceDeclaration from './OffenceDeclaration';
 import ConflictOfInterest from './ConflictOfInterest';
 import ConfidentialityAgreement from './ConfidentialityAgreement';
 import PoliceVulnerableCheck from './PoliceVulnerableCheck';
-import ApplicationAcknowledgementStep9 from './AcknowledgementStep9';
-import ApplicationAcknowledgementStep10 from './AcknowledgementStep10';
 import ApplicationAcknowledgementStep11 from './AcknowledgementStep11';
 import DisabilitiesAct from './DisabilitiesAct';
 import PACSAdminStep1 from './PACSAdminStep1';
@@ -49,6 +47,8 @@ import AcknowledgementCheck from './AcknowledgementCheck';
 // import { Logout } from '../../utils/auth';
 import MiscellaneousQuestions from './MiscellaneousQuestions';
 import { useDescope } from '@descope/react-sdk';
+import PharmacySignature from './PharmacySignature';
+import PACSRequest from './PACSRequest';
 
 
 const ApplicationForm = () => {
@@ -119,7 +119,7 @@ const ApplicationForm = () => {
     }
 
     const StepDisplay = () => {
-        switch (step) {
+        switch (atob(step)) {
             case 'BasicInformation':
                 return <BasicInformation basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
             case 'UploadYourDoc':
@@ -149,7 +149,7 @@ const ApplicationForm = () => {
             case 'step14':
                 return <Step14 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
             case 'Immunization':
-                return <Immunization basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
+                return <Immunization basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} />;
             case 'MISCELLANEOUS_QUESTIONS':
                 return <MiscellaneousQuestions basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />
             case 'ApplicantAcknowledgement':
@@ -169,9 +169,9 @@ const ApplicationForm = () => {
             case 'OffenceDeclaration':
                 return <OffenceDeclaration acknowledgementForm={acknowledgementForms[0]} dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} basicForm={basicForm} getPreApplication={getPreApplication} applicationId={applicationId} />;
             case 'PACS_Request':
-                return <ApplicationAcknowledgementStep9 acknowledgementForm={acknowledgementForms[0]} dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} basicForm={basicForm} getPreApplication={getPreApplication} applicationId={applicationId} />;
+                return <PACSRequest acknowledgementForm={acknowledgementForms[0]} dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} basicForm={basicForm} getPreApplication={getPreApplication} applicationId={applicationId} />;
             case 'PharmacySignature':
-                return <ApplicationAcknowledgementStep10 acknowledgementForm={acknowledgementForms[0]} dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} basicForm={basicForm} getPreApplication={getPreApplication} applicationId={applicationId} />;
+                return <PharmacySignature acknowledgementForm={acknowledgementForms[0]} dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} basicForm={basicForm} getPreApplication={getPreApplication} applicationId={applicationId} />;
             case 'acknowledgementStep11':
                 return <ApplicationAcknowledgementStep11 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
             case 'DisabilitiesAct':

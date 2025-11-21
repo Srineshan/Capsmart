@@ -53,6 +53,7 @@ import { fileLoadingURL, FormatPhoneNumber, FormatPostalCode, formatFirstNameLas
 import CommonSearchField from "../../../Components/CommonFields/CommonSearchField";
 import CommonSwitch from "../../../Components/CommonFields/CommonSwitch";
 import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined';
+import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import { Tooltip } from "@mui/material";
 import ReappointmentReportDialog from "./ReappointmentReportDialog";
@@ -63,6 +64,7 @@ import sendBod from './../../../images/BODLetterActive.png';
 import Renewed from "./../../../images/Renewed.png";
 import overRidePending from "./../../../images/OveridePendingIcon.png";
 import overRideComplete from "./../../../images/OverideIconCompleted.png";
+import { SuccessToaster2 } from "../../../utils/toaster";
 
 const StaffApplicationList = ({
   isLoading,
@@ -1300,7 +1302,7 @@ const StaffApplicationList = ({
 
   const onClickViewAndVerifyLevelFunction = (data) => {
     sessionStorage.setItem("applicationId", data?.id);
-    getNotesCommentBox(true);
+    // getNotesCommentBox(true);
     getActiveApplicationView(true);
   };
 
@@ -2030,6 +2032,26 @@ const StaffApplicationList = ({
   const handleLimitChange = (newLimit) => {
     setLimit(newLimit);
   };
+
+  const handleSendNotificationsToCCMembers = async () => {
+    await GET(`application-management-service/application/sendWorkflowMail?role=Credentialing Committee&creationType=REAPPOINTMENT&positionType=LOCUM`)
+      .then((response) => {
+        SuccessToaster2("Reminders Sent To CC Members")
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+  }
+
+  const onClickSendCCReminder = async (data) => {
+    await GET(`application-management-service/application/sendWorkflowMail?applicationIds=${[data?.id]}&role=Credentialing Committee&creationType=REAPPOINTMENT&positionType=LOCUM`)
+      .then((response) => {
+        SuccessToaster2("Reminder Sent To CC Members")
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+  }
 
   console.log("searchTermForTablesssssssssssssss", searchTermForTable)
 
@@ -6937,6 +6959,11 @@ const StaffApplicationList = ({
       onClick: onClickOverRideDialog,
       conditionToShow: `data?.overrideStatus === "NA"`,
     },
+    {
+      data: "Send Reminder To CC members",
+      requiredValue: "boolean",
+      onClick: onClickSendCCReminder,
+    },
     // { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog },
   ];
 
@@ -8098,6 +8125,26 @@ const StaffApplicationList = ({
                     </div>
                     {/* )} */}
                   </>
+                )}
+                {(selectedTab === "level-2" && applicationType === "LOCUM") && (
+                  <div
+                    className={`${style.alignCenter} ${style.cursorPointer
+                      } ${style.marginRight20}`}
+                    style={{
+                      opacity: 1,
+                    }}
+                    onClick={() => handleSendNotificationsToCCMembers()}
+                  >
+                    <Tooltip title="Send reminders to CC members" arrow>
+                      <NotificationsActiveIcon
+                        sx={{
+                          fontSize: 25,
+                          color: "#06617A",
+                        }}
+
+                      />
+                    </Tooltip>
+                  </div>
                 )}
                 {
                   workModeType === "Credentialing Committee" || workModeType === "Department Head" || workModeType === "Chief Of Staff" || workModeType === "Staff Manager" ? (

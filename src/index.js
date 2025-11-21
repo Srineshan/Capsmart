@@ -17,6 +17,10 @@ import { currentUser } from './utils/auth';
 import { SuccessToaster, ErrorToaster } from './utils/toaster';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from "./theme";
+import { registerLicense } from '@syncfusion/ej2-base';
+
+// Register Syncfusion license key
+registerLicense('Ngo9BigBOggjHTQxAR8/V1JFaF1cX2hIf0x0TXxbf1x1ZFdMYlhbRnVPMyBoS35Rc0RjW3ZecnZRRGhYWEZxVEFc');
 
 // const root = ReactDOM.createRoot(document.getElementById('root'));
 // root.render(

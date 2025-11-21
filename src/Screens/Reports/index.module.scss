@@ -1928,6 +1928,18 @@
     grid-gap: 1%;
 }
 
+.locumTermExpirationGrid {
+    display: grid;
+    grid-template-columns: 3% 25% 27% 20% 20%;
+    grid-gap: 1%;
+}
+
+.renewedLocumStaffGrid {
+    display: grid;
+    grid-template-columns: 3% 18% 27% 15% 15% 16%;
+    grid-gap: 1%;
+}
+
 .statusTrackerGrid {
     display: grid;
     grid-template-columns: 3% 17% 15% 25% 19% 15%;

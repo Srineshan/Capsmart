@@ -16,6 +16,39 @@
     display: grid;
     grid-template-columns: 3fr 1fr;
     grid-gap: 20px;
+    position: relative;
+}
+
+.stickyContainer {
+    position: fixed;
+    bottom: 0;
+    right: 60px;
+    width: 25%;
+    padding: 0px 20px 20px 20px;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
+    z-index: 10;
+}
+
+@media (max-width: 948px) {
+    .stickyContainer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: auto;
+        margin: 0 auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .stickyContainer {
+        display: none;
+    }
+}
+
+.hiddenStickyContainer {
+    opacity: 0;
+    pointer-events: none;
 }
 
 .saveInProgress {
@@ -138,8 +171,8 @@
 }
 
 .requiredDocumentCard {
-    background: $secondarycolor 0% 0% no-repeat padding-box;
-    border: 0.4000000059604645px solid $secondarycolor;
+    background: $tableRow1 0% 0% no-repeat padding-box;
+    border: 0.4000000059604645px solid var(--primary-color);
     border-radius: 4px;
     padding: 10px 15px;
 }
@@ -149,7 +182,7 @@
 }
 
 .requiredDocumentCardAlternativeColor {
-    background: #f0f0f5 0% 0% no-repeat padding-box;
+    background: $tableRowAlternative 0% 0% no-repeat padding-box;
 }
 
 .documentTextStyle {
@@ -182,6 +215,16 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 20px;
+}
+
+.threeColForButton {
+    display: none;
+
+    @media (max-width: 768px) {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+    }
 }
 
 .twoColForButton {
@@ -223,12 +266,24 @@
 
 .gridStyle {
     display: grid;
-    grid-template-columns: 3% 23% 5% 32% 14% 8% 5% 2%;
+    grid-template-columns: 3% 24% 30% 14% 9% 7% 3% 3%;
     gap: 1%;
+}
+
+.tableContainer {
+    overflow-x: auto;
+    max-width: 100%;
 }
 
 .fullWidth {
     width: 100%;
+}
+
+.gridContainer {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    align-items: center;
+    gap: 16px;
 }
 
 .collapsableCardText {
@@ -292,10 +347,36 @@
     object-fit: contain;
 }
 
+.docTypeEditImgStyle {
+    height: 20px;
+    width: auto;
+    object-fit: contain;
+    color: var(--primary-color);
+}
+
 .fileLoadingStyle {
     height: auto;
     width: 40%;
     object-fit: contain;
+}
+
+.fileLoadingStyleCapLogo {
+    height: 200px;
+    width: 40%;
+    object-fit: contain;
+}
+
+.uploadContainer {
+    background-color: #fff;
+    padding: 40px;
+    border-radius: 20px;
+    text-align: center;
+}
+
+.fileImportingMsg {
+    font: normal normal bold 20px/28px var(--font-style);
+    color: var(--primary-color);
+    margin: 10px 0;
 }
 
 .loadingOverlay {
@@ -344,6 +425,139 @@
     background: #ffffff 0% 0% no-repeat padding-box;
     padding: 20px 40px 0px 40px;
     border-radius: 20px !important;
+}
+
+.toggleButton {
+    display: none;
+
+    @media (max-width: 768px) {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        top: 0;
+        left: 0;
+        background-color: var(--primary-color);
+        color: white;
+        padding: 10px 5px;
+        border-radius: 0 0 0 12px;
+        cursor: pointer;
+        z-index: 1001;
+    }
+}
+
+.headerData {
+    display: none;
+
+    @media (max-width: 768px) {
+        display: flex;
+        align-items: center;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background-color: var(--primary-color);
+        color: white;
+        padding: 15px;
+        z-index: 1000;
+        font: normal normal bold 18px var(--font-style);
+        border-radius: 0 0 12px 12px;
+    }
+}
+
+.bgdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.5);
+    z-index: 999;
+}
+
+.infoContainer {
+    @media (max-width: 768px) {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 40%;
+        background-color: var(--primary-color);
+        color: #fff;
+        padding: 20px;
+        border-radius: 0 12px 12px 0;
+        z-index: 1000;
+        max-height: 100vh;
+        overflow-y: auto;
+    }
+}
+
+.infoContainer.show {
+    display: block;
+}
+
+.closeIcon {
+    display: none;
+
+    @media (max-width: 768px) {
+        display: block;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 24px;
+        height: 24px;
+        cursor: pointer;
+    }
+}
+
+.hidden {
+    @media (max-width: 768px) {
+        display: none !important;
+    }
+}
+
+.eSignatureOnFileCard {
+    background: $secondarycolor 0% 0% no-repeat padding-box;
+    border: 1px dashed var(--primary-color);
+    border-radius: 8px;
+    padding: 20px 40px;
+}
+
+.eSignatureOnFileTitle {
+    text-align: center;
+    font: normal normal 600 23px/26px var(--font-style);
+    color: var(--primary-color);
+}
+
+.eSignatureOnFileButton {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.eSignatureOnFileButtonPadding {
+    padding: 5px 30px;
+}
+
+.dateTitle {
+    text-align: left;
+    font: normal normal bold 17px/26px var(--font-style);
+    color: #52575D;
+}
+
+.date {
+    text-align: left;
+    font: normal normal normal 17px/26px var(--font-style);
+    color: #52575D;
+}
+
+.eSignGrid {
+    display: grid;
+    grid-template-columns: 49% 24% 24%;
+    gap: 1%;
+
+    @media (max-width: 900px) {
+        grid-template-columns: 1fr;
+    }
 }
 
 .crossStyle {

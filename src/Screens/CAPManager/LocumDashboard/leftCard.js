@@ -77,6 +77,7 @@ const LeftCard = ({ getDataToUseInReport, isLoading }) => {
     const [user, setUsers] = useState([]);
     const [from, setFrom] = useState(startOfMonth(new Date()));
     const [to, setTo] = useState(endOfMonth(new Date()));
+    const [locumStatus, setLocumStatus] = useState('EXTENSION');
     const [selectedCombinations, setSelectedCombinations] = useState([]);
     const [selectedDepartment, setSelectedDepartment] = useState([]);
     const [selectedServiceArea, setSelectedServiceArea] = useState([]);
@@ -164,7 +165,8 @@ const LeftCard = ({ getDataToUseInReport, isLoading }) => {
         selectedApplicationSentStatus: selectedApplicationSentStatus,
         selectedWorkflowLevel: workflowLevel,
         noOfDays: noOfDays,
-        tab: trackerTabName
+        tab: trackerTabName,
+        locumStatus: locumStatus
     };
 
     useEffect(() => {
@@ -418,7 +420,7 @@ const LeftCard = ({ getDataToUseInReport, isLoading }) => {
         getDataToUseInReport(dataToUseInReport);
     }, [renewalreportingTimePeriod, selectedSites, selectedDepartments, selectedPrivilegeCategory, selectedStaffType,
         podType, contractStatus, reportingTimePeriod, selectedApplicationType, selectedReappointmentStatus,
-        selectedPosition, from, to, initialValueSet, selectedTimesheetInterval, selectedApplicationSentStatus, workflowLevel, selectedAuthors, selectedGroups, noOfDays, trackerTabName]);
+        selectedPosition, from, to, initialValueSet, selectedTimesheetInterval, selectedApplicationSentStatus, workflowLevel, selectedAuthors, selectedGroups, noOfDays, trackerTabName, locumStatus]);
 
     useEffect(() => {
         let tempDept = [];
@@ -1118,7 +1120,33 @@ const LeftCard = ({ getDataToUseInReport, isLoading }) => {
                             })}
                         </div>
                     )}
-
+                    {/* <CommonSelectField
+                        value={locumStatus}
+                        onChange={(e) => setLocumStatus(e.target.value)}
+                        className={style.fullWidth1}
+                        // firstOptionLabel={'Select Category'}
+                        // firstOptionValue={''}
+                        valueList={["ACTIVE", "EXPIRED"]}
+                        labelList={["Active", "Expired"]}
+                        disabledList={false}
+                        required={false}
+                        label={"Locum Status*"}
+                    /> */}
+                    <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
+                        <InputLabel id="demo-simple-select-standard-label3">Locum Status*</InputLabel>
+                        <Select
+                            labelId="demo-simple-select-standard-label3"
+                            id="demo-simple-select-standard3"
+                            value={locumStatus}
+                            onChange={(e) => { setLocumStatus(e.target.value) }}
+                            MenuProps={MenuProps}
+                            disabled={isLoading}
+                            className={style.textAlignLeft}
+                        >
+                            <MenuItem value={'EXTENSION'} disabled={isLoading}>Active</MenuItem>
+                            <MenuItem value={'RENEWAL'} disabled={isLoading}>Expired</MenuItem>
+                        </Select>
+                    </FormControl>
                 </>
             </div>
 

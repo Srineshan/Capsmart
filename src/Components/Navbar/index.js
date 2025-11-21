@@ -532,7 +532,7 @@ const Navbar = () => {
                   id={"mouse-over-popover"}
                   open={openStaff}
                   anchorEl={popoverAnchorStaff.current}
-                  onClose={handleCloseGuide}
+                  onClose={handleCloseStaff}
                   anchorOrigin={{
                     vertical: "bottom",
                     horizontal: "center",
@@ -636,15 +636,6 @@ const Navbar = () => {
                   </div>
                 </Popover>
               </div>
-              <Link to={`https://lms.indocaribe.com/descope-login/?ssotoken=${cookie.get("authorization")}`} className={style.noFontStyle}>
-                <div
-                  className={`${style.menuStyle} ${window.location.pathname.includes("/lms") &&
-                    style.activeMenuColor
-                    }`}
-                >
-                  <p>LMS</p>
-                </div>
-              </Link>
               {/* {
             isContractManager && (
               <div>
@@ -969,7 +960,7 @@ const Navbar = () => {
                   </div>
                 </Link>
               ) : (
-                <Link to={"/mdManager"} className={style.noFontStyle}>
+                <Link to={`/mdManager/libraries/${TenantID}`} className={style.noFontStyle}>
                   <div
                     className={`${style.menuStyle} ${(window.location.pathname.includes("/mdManager") && window.location.pathname === "/mdManager") &&
                       style.activeMenuColor
@@ -1108,7 +1099,7 @@ const Navbar = () => {
                   </div>
                 </Link>
               ) : (
-                <Link to={"/pnpManager"} className={style.noFontStyle}>
+                <Link to={`/pnpManager/libraries/${TenantID}`} className={style.noFontStyle}>
                   <div
                     className={`${style.menuStyle} ${(window.location.pathname.includes("/pnpManager") && window.location.pathname === "/pnpManager") &&
                       style.activeMenuColor
@@ -1149,6 +1140,15 @@ const Navbar = () => {
                   </div>
                 </Link>
               )}
+              <Link to={"/pnpManager/dashboard"} className={style.noFontStyle}>
+                <div
+                  className={`${style.menuStyle} ${window.location.pathname.includes("/dashboard") &&
+                    style.activeMenuColor
+                    }`}
+                >
+                  <p>DASHBOARD</p>
+                </div>
+              </Link>
               <Link to={"/reports/policiesAndProcedures"} className={style.noFontStyle}>
                 <div
                   className={`${style.menuStyle} ${(window.location.pathname.includes("/reports") ||

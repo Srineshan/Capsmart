@@ -130,7 +130,7 @@ const AcknowledgementCheck = ({ basicForm, setBasicForm, applicationId }) => {
                                     </div>
                                     <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
                                         <div className={`${style.tableDataFontStyle1}`}>{data?.description}</div>
-                                        <img src={Pencil} alt="" className={`${style.pencilImgStyle} ${style.justifyCenter} ${style.cursorPointer}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/applicationForm/${applicationId}/${data?.formCategory}/${data?.schemaCategory}`) }} />
+                                        <img src={Pencil} alt="" className={`${style.pencilImgStyle} ${style.justifyCenter} ${style.cursorPointer}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/applicationForm/${applicationId}/${data?.formCategory}/${btoa(data?.schemaCategory)}`) }} />
                                     </div>
                                     <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
                                         <div className={`${basicForm?.forms?.filter(data => data?.formCategory !== 'Form')[index]?.acknowledged ? style.greenDotStyle : style.yellowDotStyle} `}></div>

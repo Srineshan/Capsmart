@@ -338,7 +338,7 @@ const NewActiveApplication = ({
       setSelectedDateForCC(new Date(`${credentialingCommitteeDate?.meetingDate}T00:00`), dateFormat);
       setIsButtonDisabled(false);
     }
-    if (workModeType === "Staff Manager" && selectedTab === "level-3" && credentialingCommitteeDate?.meetingDate && applicationType === "REAPPOINTMENT") {
+    if (workModeType === "Staff Manager" && selectedTab === "level-3" && credentialingCommitteeDate?.meetingDate && (applicationType === "REAPPOINTMENT" || applicationType === "NEW")) {
       setSelectedDateForReappoint(new Date(`${credentialingCommitteeDate?.meetingDate}T00:00`), dateFormat);
       setSelectedDateForCC(new Date(`${credentialingCommitteeDate?.meetingDate}T00:00`), dateFormat);
       setIsButtonDisabled(false);
@@ -348,7 +348,7 @@ const NewActiveApplication = ({
       setSelectedDateForCC(new Date(`${AdvisoryCommitteeDate?.meetingDate}T00:00`), dateFormat);
       setIsButtonDisabled(false);
     }
-    if (workModeType === "Staff Manager" && selectedTab === "level-4" && AdvisoryCommitteeDate?.meetingDate && applicationType === "REAPPOINTMENT") {
+    if (workModeType === "Staff Manager" && selectedTab === "level-4" && AdvisoryCommitteeDate?.meetingDate && (applicationType === "REAPPOINTMENT" || applicationType === "NEW")) {
       setSelectedDateForMac(new Date(`${AdvisoryCommitteeDate?.meetingDate}T00:00`), dateFormat);
       setIsButtonDisabled(false);
     }
@@ -742,7 +742,7 @@ const NewActiveApplication = ({
       console.log("levelofApprovalfalse:", isApproverDept);
     }
 
-    console.log("selectedTab:", selectedTab, (workModeType === 'Chief Of Staff' && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && isApproverDept === "Approve"), workModeType === 'Chief Of Staff', selectedTab === 'level-2', applicationType === "REAPPOINTMENT", isApproverDept);
+    console.log("selectedTab:", selectedTab, (workModeType === 'Chief Of Staff' && selectedTab === 'level-2' && (applicationType === "REAPPOINTMENT" || applicationType === "NEW") && isApproverDept === "Approve"), workModeType === 'Chief Of Staff', selectedTab === 'level-2', applicationType === "REAPPOINTMENT", isApproverDept);
   }, [form, applicationId, userFirstName, userLastName, workModeType, applicationType, isApproverDept]);
 
   useEffect(() => {
@@ -1324,18 +1324,18 @@ const NewActiveApplication = ({
     let role;
     let meetingDate;
     let temp = [applicationId];
-    if (selectedTab === 'level-2' && applicationType === "REAPPOINTMENT") {
+    if (selectedTab === 'level-2' && (applicationType === "REAPPOINTMENT" || applicationType === "NEW")) {
       role = "Department Head";
     } else if (selectedTab === 'level-2' && applicationType === "LOCUM") {
       role = "Credentialing Committee";
       meetingDate = format(new Date(selectedDateForCC), 'yyyy-MM-dd');
-    } else if (selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") {
+    } else if (selectedTab === 'level-3' && (applicationType === "REAPPOINTMENT" || applicationType === "NEW")) {
       role = "Credentialing Committee";
       meetingDate = format(new Date(selectedDateForCC), 'yyyy-MM-dd');
     } else if (selectedTab === 'level-3' && applicationType === "LOCUM") {
       role = "Advisory Committee";
       meetingDate = format(new Date(selectedDateForMac), 'yyyy-MM-dd');
-    } else if (selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") {
+    } else if (selectedTab === 'level-4' && (applicationType === "REAPPOINTMENT" || applicationType === "NEW")) {
       role = "Advisory Committee";
       meetingDate = format(new Date(selectedDateForMac), 'yyyy-MM-dd');
     } else if (selectedTab === 'level-4' && applicationType === "LOCUM") {
@@ -1385,7 +1385,7 @@ const NewActiveApplication = ({
         isDelegate = false;
         title = "Chief Of Staff Review";
       }
-    } else if (selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") {
+    } else if (selectedTab === 'level-4' && (applicationType === "REAPPOINTMENT" || applicationType === "NEW")) {
       role = "Advisory Committee";
       title = "MAC Review";
     } else if (selectedTab === 'level-4' && applicationType === "LOCUM") {
@@ -1557,7 +1557,7 @@ const NewActiveApplication = ({
         isDelegate = true;
         title = "Credentialing Committee Review";
       }
-    } else if (selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") {
+    } else if (selectedTab === 'level-4' && (applicationType === "REAPPOINTMENT" || applicationType === "NEW")) {
       role = "Advisory Committee";
       title = "MAC Review";
     } else if (selectedTab === 'level-4' && applicationType === "LOCUM") {
@@ -1815,7 +1815,7 @@ const NewActiveApplication = ({
       console.error("Array is undefined or not an array:", array);
       return [];
     }
-    let schema = applicationType === "NEW" ? formSchema : allFormSchemas?.[index]?.formSchema?.schema
+    let schema = allFormSchemas?.[index]?.formSchema?.schema
     let temp = [];
     console.log(array, 'arrayyyyyy')
     console.log("allFormSchemas?.[index]?.formSchema?.schema", allFormSchemas?.[index]?.formSchema?.schema);
@@ -2887,7 +2887,7 @@ const NewActiveApplication = ({
 
   // console.log("showDot" + checkApprovalAndLogMatch())
 
-  const renderFieldsBasedOnStep = (data) => {
+  const renderFieldsBasedOnStep = (data, index) => {
     let formIndex = form?.forms?.findIndex(formData => formData?.schemaCategory === data?.schemaCategory);
     switch (data?.schemaCategory) {
       case "UploadYourDoc":
@@ -2906,7 +2906,7 @@ const NewActiveApplication = ({
                   "Valid",
                   "",
                 ]}
-                tableDataValues={getApplicantValues(form?.forms?.[formIndex]?.data?.table)}
+                tableDataValues={getApplicantValues(form?.forms?.[formIndex]?.data?.table, index)}
                 tableData={form?.forms?.[formIndex]?.data?.table || []}
                 gridStyle={style.uploadYourDocGrid}
                 actions={[]}
@@ -2922,11 +2922,11 @@ const NewActiveApplication = ({
       case "CME":
         return (
           <>
-            {formSchema !== undefined &&
-              formSchema?.properties !== null &&
-              formSchema?.properties !== undefined &&
-              'education' in formSchema?.properties && (
-                <ApplicationFieldCard object={formSchema?.properties?.education} baseKey={'education'} basicForm={form} setBasicForm={setForm} addMoreType={true} formId={form?.forms?.[formIndex]?.id} applicationId={applicationId} tableGrid={style.tableGridCME} isPOD={true}
+            {allFormSchemas?.[index]?.formSchema?.schema !== undefined &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== null &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined &&
+              'education' in allFormSchemas?.[index]?.formSchema?.schema?.properties && (
+                <ApplicationFieldCard object={allFormSchemas?.[index]?.formSchema?.schema?.properties?.education} baseKey={'education'} basicForm={form} setBasicForm={setForm} addMoreType={true} formId={form?.forms?.[formIndex]?.id} applicationId={applicationId} tableGrid={style.tableGridCME} isPOD={true}
                   heading={'Information Requirement Alert'}
                   subHeading={'For this application you are required to provide information on all of the different undergraduate / graduate qualifications you have.'}
                   subHeading2={'You will not be able to submit your application if this is not provided.'} />
@@ -2962,7 +2962,7 @@ const NewActiveApplication = ({
             <div>
               <div>
                 <div className={style.cardTitle}>
-                  {formSchema?.properties?.isModulesForReAppointmentCompleted?.label}
+                  {allFormSchemas?.[index]?.formSchema?.schema?.properties?.isModulesForReAppointmentCompleted?.label}
                 </div>
                 {form?.forms?.[formIndex]?.data?.lms?.yesOrNo !== undefined && (
                   <div className={`${style.markedAsText} ${style.marginTop20}`}><strong>Marked as <span className={form?.forms?.[formIndex]?.data?.lms?.yesOrNo === 'Yes' ? style.yesText : style.noText}>{form?.forms?.[formIndex]?.data?.lms?.yesOrNo}</span></strong> on {format(new Date(form?.forms?.[formIndex]?.data?.lms?.updatedDate), dateFormat)}</div>
@@ -2970,7 +2970,7 @@ const NewActiveApplication = ({
               </div>
               <div className={`${style.marginTop20}`}>
                 <div className={style.cardTitle}>
-                  {formSchema?.properties?.doYouPrescribeSuboxone?.label}
+                  {allFormSchemas?.[index]?.formSchema?.schema?.properties?.doYouPrescribeSuboxone?.label}
                 </div>
                 {form?.forms?.[formIndex]?.data?.suboxone?.yesOrNo !== undefined && (
                   <div className={`${style.markedAsText} ${style.marginTop20}`}><strong>Marked as <span className={form?.forms?.[formIndex]?.data?.suboxone?.yesOrNo === 'Yes' ? style.yesText : style.noText}>{form?.forms?.[formIndex]?.data?.suboxone?.yesOrNo}</span></strong> on {format(new Date(form?.forms?.[formIndex]?.data?.suboxone?.updatedDate), dateFormat)}</div>
@@ -2979,7 +2979,7 @@ const NewActiveApplication = ({
               {(form?.basicDetails?.departmentSpecialty?.department === 'Women & Children' && form?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics') && (
                 <div className={`${style.marginTop20}`}>
                   <div className={style.cardTitle}>
-                    {formSchema?.properties?.wishToBeMRP?.label}
+                    {allFormSchemas?.[index]?.formSchema?.schema?.properties?.wishToBeMRP?.label}
                   </div>
                   {form?.forms?.[formIndex]?.data?.mrp?.yesOrNo !== undefined && (
                     <div className={`${style.markedAsText} ${style.marginTop20}`}><strong>Marked as <span className={form?.forms?.[formIndex]?.data?.mrp?.yesOrNo === 'Yes' ? style.yesText : style.noText}>{form?.forms?.[formIndex]?.data?.mrp?.yesOrNo}</span></strong> on {format(new Date(form?.forms?.[formIndex]?.data?.mrp?.updatedDate), dateFormat)}</div>
@@ -3011,18 +3011,18 @@ const NewActiveApplication = ({
       case "DemographicData":
         return (
           <>
-            {formSchema !== undefined &&
-              formSchema?.properties !== null &&
-              formSchema?.properties !== undefined && 'applicant' in formSchema?.properties && (
-                <ApplicationFieldCard object={formSchema?.properties?.applicant} gridStyle={style.applicantGrid} baseKey={'applicant'} basicForm={form} setBasicForm={setForm} isBasicPath={true} isPOD={true} />
+            {allFormSchemas?.[index]?.formSchema?.schema !== undefined &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== null &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined && 'applicant' in formSchema?.properties && (
+                <ApplicationFieldCard object={allFormSchemas?.[index]?.formSchema?.schema?.properties?.applicant} gridStyle={style.applicantGrid} baseKey={'applicant'} basicForm={form} setBasicForm={setForm} isBasicPath={true} isPOD={true} />
               )}
             <CommonDivider />
-            {formSchema !== undefined &&
-              formSchema?.properties !== null &&
-              formSchema?.properties !== undefined &&
-              "contactAddress1" in formSchema?.properties && (
+            {allFormSchemas?.[index]?.formSchema?.schema !== undefined &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== null &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined &&
+              "contactAddress1" in allFormSchemas?.[index]?.formSchema?.schema?.properties && (
                 <ApplicationFieldCard
-                  object={formSchema?.properties?.contactAddress1}
+                  object={allFormSchemas?.[index]?.formSchema?.schema?.properties?.contactAddress1}
                   basicForm={form}
                   setBasicForm={setForm}
                   stepPath={`forms[${formIndex}].data`}
@@ -3032,12 +3032,12 @@ const NewActiveApplication = ({
                 />
               )}
             <CommonDivider />
-            {formSchema !== undefined &&
-              formSchema?.properties !== null &&
-              formSchema?.properties !== undefined &&
-              "contactAddress2" in formSchema?.properties && (
+            {allFormSchemas?.[index]?.formSchema?.schema !== undefined &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== null &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined &&
+              "contactAddress2" in allFormSchemas?.[index]?.formSchema?.schema?.properties && (
                 <ApplicationFieldCard
-                  object={formSchema?.properties?.contactAddress2}
+                  object={allFormSchemas?.[index]?.formSchema?.schema?.properties?.contactAddress2}
                   basicForm={form}
                   setBasicForm={setForm}
                   stepPath={`forms[${formIndex}].data`}
@@ -3047,12 +3047,12 @@ const NewActiveApplication = ({
                 />
               )}
             <CommonDivider />
-            {formSchema !== undefined &&
-              formSchema?.properties !== null &&
-              formSchema?.properties !== undefined &&
-              "contactAddress3" in formSchema?.properties && (
+            {allFormSchemas?.[index]?.formSchema?.schema !== undefined &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== null &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined &&
+              "contactAddress3" in allFormSchemas?.[index]?.formSchema?.schema?.properties && (
                 <ApplicationFieldCard
-                  object={formSchema?.properties?.contactAddress3}
+                  object={allFormSchemas?.[index]?.formSchema?.schema?.properties?.contactAddress3}
                   basicForm={form}
                   setBasicForm={setForm}
                   stepPath={`forms[${formIndex}].data`}
@@ -3080,12 +3080,12 @@ const NewActiveApplication = ({
       case "ContactAddress":
         return (
           <>
-            {formSchema !== undefined &&
-              formSchema?.properties !== null &&
-              formSchema?.properties !== undefined &&
-              "contactAddress1" in formSchema?.properties && (
+            {allFormSchemas?.[index]?.formSchema?.schema !== undefined &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== null &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined &&
+              "contactAddress1" in allFormSchemas?.[index]?.formSchema?.schema?.properties && (
                 <ApplicationFieldCard
-                  object={formSchema?.properties?.contactAddress1}
+                  object={allFormSchemas?.[index]?.formSchema?.schema?.properties?.contactAddress1}
                   basicForm={form}
                   setBasicForm={setForm}
                   stepPath={`forms[${formIndex}].data`}
@@ -3095,12 +3095,12 @@ const NewActiveApplication = ({
                 />
               )}
             <CommonDivider />
-            {formSchema !== undefined &&
-              formSchema?.properties !== null &&
-              formSchema?.properties !== undefined &&
-              "contactAddress2" in formSchema?.properties && (
+            {allFormSchemas?.[index]?.formSchema?.schema !== undefined &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== null &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined &&
+              "contactAddress2" in allFormSchemas?.[index]?.formSchema?.schema?.properties && (
                 <ApplicationFieldCard
-                  object={formSchema?.properties?.contactAddress2}
+                  object={allFormSchemas?.[index]?.formSchema?.schema?.properties?.contactAddress2}
                   basicForm={form}
                   setBasicForm={setForm}
                   stepPath={`forms[${formIndex}].data`}
@@ -3110,12 +3110,12 @@ const NewActiveApplication = ({
                 />
               )}
             <CommonDivider />
-            {formSchema !== undefined &&
-              formSchema?.properties !== null &&
-              formSchema?.properties !== undefined &&
-              "contactAddress3" in formSchema?.properties && (
+            {allFormSchemas?.[index]?.formSchema?.schema !== undefined &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== null &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined &&
+              "contactAddress3" in allFormSchemas?.[index]?.formSchema?.schema?.properties && (
                 <ApplicationFieldCard
-                  object={formSchema?.properties?.contactAddress3}
+                  object={allFormSchemas?.[index]?.formSchema?.schema?.properties?.contactAddress3}
                   basicForm={form}
                   setBasicForm={setForm}
                   stepPath={`forms[${formIndex}].data`}
@@ -3129,12 +3129,12 @@ const NewActiveApplication = ({
       case "Qualification":
         return (
           <>
-            {formSchema !== undefined &&
-              formSchema?.properties !== null &&
-              formSchema?.properties !== undefined &&
-              "certifications" in formSchema?.properties && (
+            {allFormSchemas?.[index]?.formSchema?.schema !== undefined &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== null &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined &&
+              "certifications" in allFormSchemas?.[index]?.formSchema?.schema?.properties && (
                 <ApplicationFieldCard
-                  object={formSchema?.properties?.certifications}
+                  object={allFormSchemas?.[index]?.formSchema?.schema?.properties?.certifications}
                   basicForm={form}
                   setBasicForm={setForm}
                   stepPath={`forms[${formIndex}].data`}
@@ -3148,12 +3148,12 @@ const NewActiveApplication = ({
       case "MalpracticeInfo":
         return (
           <>
-            {formSchema !== undefined &&
-              formSchema?.properties !== null &&
-              formSchema?.properties !== undefined &&
-              "insuranceCarrierInformation" in formSchema?.properties && (
+            {allFormSchemas?.[index]?.formSchema?.schema !== undefined &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== null &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined &&
+              "insuranceCarrierInformation" in allFormSchemas?.[index]?.formSchema?.schema?.properties && (
                 <ApplicationFieldCard
-                  object={formSchema?.properties?.insuranceCarrierInformation}
+                  object={allFormSchemas?.[index]?.formSchema?.schema?.properties?.insuranceCarrierInformation}
                   basicForm={form}
                   setBasicForm={setForm}
                   stepPath={`forms[${formIndex}].data`}
@@ -3167,12 +3167,12 @@ const NewActiveApplication = ({
       case "Education":
         return (
           <>
-            {formSchema !== undefined &&
-              formSchema?.properties !== null &&
-              formSchema?.properties !== undefined &&
-              "graduation" in formSchema?.properties && (
+            {allFormSchemas?.[index]?.formSchema?.schema !== undefined &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== null &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined &&
+              "graduation" in allFormSchemas?.[index]?.formSchema?.schema?.properties && (
                 <ApplicationFieldCard
-                  object={formSchema?.properties?.graduation}
+                  object={allFormSchemas?.[index]?.formSchema?.schema?.properties?.graduation}
                   basicForm={form}
                   gridStyle={style.EducationGrid}
                   baseKey={"graduation"}
@@ -3268,12 +3268,12 @@ const NewActiveApplication = ({
       case "WorkExperience":
         return (
           <>
-            {formSchema !== undefined &&
-              formSchema?.properties !== null &&
-              formSchema?.properties !== undefined &&
-              "trainingAndWorkingExperience" in formSchema?.properties && (
+            {allFormSchemas?.[index]?.formSchema?.schema !== undefined &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== null &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined &&
+              "trainingAndWorkingExperience" in allFormSchemas?.[index]?.formSchema?.schema?.properties && (
                 <ApplicationFieldCard
-                  object={formSchema?.properties?.trainingAndWorkingExperience}
+                  object={allFormSchemas?.[index]?.formSchema?.schema?.properties?.trainingAndWorkingExperience}
                   basicForm={form}
                   gridStyle={style.trainingGrid}
                   baseKey={"trainingAndWorkingExperience"}
@@ -3360,13 +3360,13 @@ const NewActiveApplication = ({
               )}
             </div>
             <CommonDivider />
-            {formSchema !== undefined &&
-              formSchema?.properties !== null &&
-              formSchema?.properties !== undefined &&
-              "healthcareFacilityAppointments" in formSchema?.properties && (
+            {allFormSchemas?.[index]?.formSchema?.schema !== undefined &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== null &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined &&
+              "healthcareFacilityAppointments" in allFormSchemas?.[index]?.formSchema?.schema?.properties && (
                 <ApplicationFieldCard
                   object={
-                    formSchema?.properties?.healthcareFacilityAppointments
+                    allFormSchemas?.[index]?.formSchema?.schema?.properties?.healthcareFacilityAppointments
                   }
                   basicForm={form}
                   gridStyle={style.healthCareGrid}
@@ -3456,15 +3456,15 @@ const NewActiveApplication = ({
           </>
         );
       case "References":
-        console.log(formSchema);
+        console.log(allFormSchemas?.[index]?.formSchema?.schema);
         return (
           <>
-            {formSchema !== undefined &&
-              formSchema?.properties !== null &&
-              formSchema?.properties !== undefined &&
-              "references" in formSchema?.properties && (
+            {allFormSchemas?.[index]?.formSchema?.schema !== undefined &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== null &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined &&
+              "references" in allFormSchemas?.[index]?.formSchema?.schema?.properties && (
                 <ApplicationFieldCard
-                  object={formSchema?.properties?.references}
+                  object={allFormSchemas?.[index]?.formSchema?.schema?.properties?.references}
                   basicForm={form}
                   gridStyle={style.twoCol}
                   baseKey={"references"}
@@ -3549,12 +3549,12 @@ const NewActiveApplication = ({
               )}
             </div>
             <CommonDivider />
-            {formSchema !== undefined &&
-              formSchema?.properties !== null &&
-              formSchema?.properties !== undefined &&
-              "privilegeReferences" in formSchema?.properties && (
+            {allFormSchemas?.[index]?.formSchema?.schema !== undefined &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== null &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined &&
+              "privilegeReferences" in allFormSchemas?.[index]?.formSchema?.schema?.properties && (
                 <ApplicationFieldCard
-                  object={formSchema?.properties?.privilegeReferences}
+                  object={allFormSchemas?.[index]?.formSchema?.schema?.properties?.privilegeReferences}
                   basicForm={form}
                   gridStyle={style.twoCol}
                   baseKey={"privilegeReferences"}
@@ -3643,12 +3643,12 @@ const NewActiveApplication = ({
       case "ProfessionalConduct":
         return (
           <>
-            {formSchema !== undefined &&
-              formSchema?.properties !== null &&
-              formSchema?.properties !== undefined &&
-              "conductDisclosure1" in formSchema?.properties && (
+            {allFormSchemas?.[index]?.formSchema?.schema !== undefined &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== null &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined &&
+              "conductDisclosure1" in allFormSchemas?.[index]?.formSchema?.schema?.properties && (
                 <ApplicationFieldCard
-                  object={formSchema?.properties?.conductDisclosure1}
+                  object={allFormSchemas?.[index]?.formSchema?.schema?.properties?.conductDisclosure1}
                   basicForm={form}
                   stepPath={`forms[${formIndex}].data`}
                   gridStyle={style.conductGrid}
@@ -3657,12 +3657,12 @@ const NewActiveApplication = ({
                   isPOD={true}
                 />
               )}
-            {formSchema !== undefined &&
-              formSchema?.properties !== null &&
-              formSchema?.properties !== undefined &&
-              "conductDisclosure2" in formSchema?.properties && (
+            {allFormSchemas?.[index]?.formSchema?.schema !== undefined &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== null &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined &&
+              "conductDisclosure2" in allFormSchemas?.[index]?.formSchema?.schema?.properties && (
                 <ApplicationFieldCard
-                  object={formSchema?.properties?.conductDisclosure2}
+                  object={allFormSchemas?.[index]?.formSchema?.schema?.properties?.conductDisclosure2}
                   basicForm={form}
                   stepPath={`forms[${formIndex}].data`}
                   gridStyle={style.conductGrid}
@@ -3676,12 +3676,12 @@ const NewActiveApplication = ({
       case "CriminalHistory":
         return (
           <>
-            {formSchema !== undefined &&
-              formSchema?.properties !== null &&
-              formSchema?.properties !== undefined &&
-              "criminalData1" in formSchema?.properties && (
+            {allFormSchemas?.[index]?.formSchema?.schema !== undefined &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== null &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined &&
+              "criminalData1" in allFormSchemas?.[index]?.formSchema?.schema?.properties && (
                 <ApplicationFieldCard
-                  object={formSchema?.properties?.criminalData1}
+                  object={allFormSchemas?.[index]?.formSchema?.schema?.properties?.criminalData1}
                   basicForm={form}
                   stepPath={`forms[${formIndex}].data`}
                   gridStyle={style.conductGrid}
@@ -3690,12 +3690,12 @@ const NewActiveApplication = ({
                   isPOD={true}
                 />
               )}
-            {formSchema !== undefined &&
-              formSchema?.properties !== null &&
-              formSchema?.properties !== undefined &&
-              "criminalData2" in formSchema?.properties && (
+            {allFormSchemas?.[index]?.formSchema?.schema !== undefined &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== null &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined &&
+              "criminalData2" in allFormSchemas?.[index]?.formSchema?.schema?.properties && (
                 <ApplicationFieldCard
-                  object={formSchema?.properties?.criminalData2}
+                  object={allFormSchemas?.[index]?.formSchema?.schema?.properties?.criminalData2}
                   basicForm={form}
                   stepPath={`forms[${formIndex}].data`}
                   gridStyle={style.conductGrid}
@@ -3709,12 +3709,12 @@ const NewActiveApplication = ({
       case "MedicalHistory":
         return (
           <>
-            {formSchema !== undefined &&
-              formSchema?.properties !== null &&
-              formSchema?.properties !== undefined &&
-              "impactingPractice" in formSchema?.properties && (
+            {allFormSchemas?.[index]?.formSchema?.schema !== undefined &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== null &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined &&
+              "impactingPractice" in allFormSchemas?.[index]?.formSchema?.schema?.properties && (
                 <ApplicationFieldCard
-                  object={formSchema?.properties?.impactingPractice}
+                  object={allFormSchemas?.[index]?.formSchema?.schema?.properties?.impactingPractice}
                   basicForm={form}
                   stepPath={`forms[${formIndex}].data`}
                   gridStyle={style.conductGrid}
@@ -3753,7 +3753,25 @@ const NewActiveApplication = ({
           </>
         );
       default:
-        return <></>;
+        return (
+          <div
+            className={`${style.marginTop} ${style.screenPadding}`}
+          >
+            {form?.forms?.[index]?.uploadedFiles?.length !== 0 && (
+              <>
+                <iframe
+                  src={
+                    form?.forms?.[index]?.uploadedFiles[
+                      form?.forms?.[index]?.uploadedFiles?.length - 1
+                    ]?.fileURL
+                  }
+                  width="100%"
+                  height="600px"
+                ></iframe>
+              </>
+            )}
+          </div>
+        )
     }
   };
 
@@ -5041,6 +5059,8 @@ const NewActiveApplication = ({
     }
   };
 
+
+
   return (
     <>
       {/* {isLoadingImage && (
@@ -5106,7 +5126,7 @@ const NewActiveApplication = ({
               {(workModeType === 'Staff Manager') || (workModeType === 'Chief Of Staff') || (workModeType === 'Credentialing Committee') || (workModeType === 'Credentialing Committee User') || (workModeType === 'Department Head') ? (
                 <>
                   <div>
-                    {((selectedTab === "level-1" && applicationType === "REAPPOINTMENT")) ? (
+                    {((selectedTab === "level-1" && (applicationType === "REAPPOINTMENT" || applicationType === "NEW"))) ? (
                       <div className={style.grid5and2}>
                         <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth}`}>
                           <div className={style.flex}>
@@ -5147,7 +5167,7 @@ const NewActiveApplication = ({
                               </div>
                               <div className={`${style.marginTop10} ${style.twoColumnGridInner2}`}>
                                 <span className={style.rightAlignTextStyle}>
-                                  {applicationType === "REAPPOINTMENT"
+                                  {(applicationType === "REAPPOINTMENT" || applicationType === "NEW")
                                     ? "Reappointment Date:"
                                     : applicationType === "LOCUM" && form?.reappointmentType === "EXTENSION"
                                       ? "Extension Date:"
@@ -5278,7 +5298,7 @@ const NewActiveApplication = ({
                               </div>
                               <div className={`${style.marginTop10} ${style.twoColumnGridInner2}`}>
                                 <span className={style.rightAlignTextStyle}>
-                                  {applicationType === "REAPPOINTMENT"
+                                  {(applicationType === "REAPPOINTMENT" || applicationType === "NEW")
                                     ? "Reappointment Date:"
                                     : applicationType === "LOCUM" && form?.reappointmentType === "EXTENSION"
                                       ? "Extension Date:"
@@ -5396,158 +5416,15 @@ const NewActiveApplication = ({
                                 </div>
                               </div>
                             </div>
-                            {applicationType === "NEW" && (
-                              <div
-                                className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderGridStyle} `}
-                              >
-                                <>
-                                  <div
-                                    className={`${style.displayInRow} ${style.verticalAlignCenter} `}
-                                  >
-                                    <div
-                                      className={`${style.marginLeft30} ${style.tableHeaderTextStyle}`}
-                                    ></div>
-                                  </div>
-                                  <div
-                                    className={`${style.displayInRow} ${style.verticalAlignCenter} `}
-                                  >
-                                    <div className={`${style.tableHeaderTextStyle}`}>
-                                      Required {applicationType === "LOCUM" ? `Application ${form?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'} data and Proof of Documentation for ${formattedStartingDate} and ${formattedExpiringDate}` : 'Reappointment data and Proof of Documentation for July 1, 2025 and June 30, 2026'}
-                                    </div>
-                                  </div>
-                                  <div
-                                    className={`${style.displayInRow} ${style.verticalAlignCenter} `}
-                                  >
-                                    <div
-                                      className={`${style.tableHeaderTextStyle}`}
-                                      aria-owns={open ? "mouse-over-popover" : undefined}
-                                      aria-haspopup="true"
-                                      onMouseEnter={handlePopoverOpen}
-                                      onMouseLeave={handlePopoverClose}
-                                    >
-                                      <img
-                                        src={DataStatusIcon}
-                                        alt=""
-                                        style={{
-                                          width: "18px",
-                                          height: "20px",
-                                        }}
-                                      />
-                                      <Popover
-                                        id={"mouse-over-popover"}
-                                        sx={{
-                                          pointerEvents: "none",
-                                        }}
-                                        open={open}
-                                        anchorEl={anchorEl}
-                                        anchorOrigin={{
-                                          vertical: "bottom",
-                                          horizontal: "center",
-                                        }}
-                                        transformOrigin={{
-                                          vertical: "top",
-                                          horizontal: "center",
-                                        }}
-                                        onClose={handlePopoverClose}
-                                        PaperProps={{
-                                          style: {
-                                            backgroundColor: "transparent",
-                                            boxShadow: "none",
-                                            borderRadius: 0,
-                                          },
-                                        }}
-                                        disableRestoreFocus
-                                      >
-                                        <div className={style.multipleOptionsCard}>
-                                          <div
-                                            className={`${style.specificActionCard} ${style.cursorPointer}`}
-                                          >
-                                            Data Quality Status
-                                          </div>
-                                        </div>
-                                      </Popover>
-                                    </div>
-                                  </div>
-                                  <div
-                                    className={`${style.displayInRow} ${style.verticalAlignCenter} `}
-                                  >
-                                    <div
-                                      className={`${style.tableHeaderTextStyle}`}
-                                      aria-owns={
-                                        openTextWithHover ? "mouse-over-popover" : undefined
-                                      }
-                                      aria-haspopup="true"
-                                      onMouseEnter={handlePopoverTextOpen}
-                                      onMouseLeave={handlePopoverTextClose}
-                                    >
-                                      <img
-                                        src={DocumentIcon}
-                                        alt=""
-                                        style={{
-                                          width: "18px",
-                                          height: "20px",
-                                        }}
-                                      />
-                                      <Popover
-                                        id={"mouse-over-popover"}
-                                        sx={{
-                                          pointerEvents: "none",
-                                        }}
-                                        open={openTextWithHover}
-                                        anchorEl={anchorTextEl}
-                                        anchorOrigin={{
-                                          vertical: "bottom",
-                                          horizontal: "center",
-                                        }}
-                                        transformOrigin={{
-                                          vertical: "top",
-                                          horizontal: "center",
-                                        }}
-                                        onClose={handlePopoverTextClose}
-                                        PaperProps={{
-                                          style: {
-                                            backgroundColor: "transparent",
-                                            boxShadow: "none",
-                                            borderRadius: 0,
-                                          },
-                                        }}
-                                        disableRestoreFocus
-                                      >
-                                        <div className={style.multipleOptionsCard}>
-                                          <div
-                                            className={`${style.specificActionCard} ${style.cursorPointer}`}
-                                          >
-                                            Document Status
-                                          </div>
-                                        </div>
-                                      </Popover>
-                                    </div>
-                                  </div>
-                                  <div
-                                    className={`${style.displayInRow} ${style.verticalAlignCenter} `}
-                                  >
-                                    <div className={`${style.tableHeaderTextStyle}`}>
-                                      Documents
-                                    </div>
-                                  </div>
-                                </>
-                              </div>
-                            )}
                             {/* </div> */}
                             <div>
                               <>
                                 {applicationType === "NEW" && (
                                   <div
-                                    className={` ${style.marginTop5} ${expand?.status && expand?.index === 0
-                                      ? style.tableDataStyle1
-                                      : style.tableDataStyle
-                                      }`}
+                                    className={` ${style.marginTop5} ${style.tableDataStyle}`}
                                   >
                                     <div
-                                      className={` ${expand?.status && expand?.index === 0
-                                        ? style.tableHeaderGridStyleForm
-                                        : style.tableHeaderGridStyle
-                                        } ${style.marginTop10}`}
+                                      className={` ${style.tableHeaderGridStyleForm} ${style.marginTop10}`}
                                     >
                                       <div
                                         className={`${style.displayInRow} ${style.verticalAlignCenter} `}
@@ -5572,181 +5449,117 @@ const NewActiveApplication = ({
                                           Applicant Profile Information
                                         </div>
                                       </div>
-                                      {expand?.status && expand?.index === 0 ? (
-                                        <>
-                                          {!form?.basicInformationStatus ? (
-                                            <div
-                                              className={`${style.purpleButton} ${style.cursorPointer} `}
-                                            >
-                                              <Tooltip arrow title={"Click to Verify"}>
-                                                <div
-                                                  className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                  onClick={() => handleVerify()}
-                                                >
-                                                  Verify
-                                                </div>
-                                              </Tooltip>
-                                            </div>
-                                          ) : (
-                                            <div
-                                              className={`${style.greenButton}  ${style.cursorPointer} `}
-                                            >
+                                      <>
+                                        {!form?.basicInformationStatus ? (
+                                          <div
+                                            className={`${style.purpleButton} ${style.cursorPointer} `}
+                                          >
+                                            <Tooltip arrow title={"Click to Verify"}>
                                               <div
                                                 className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                                onClick={() => handleVerify()}
                                               >
-                                                Verified
+                                                Verify
                                               </div>
-                                            </div>
-                                          )}
-                                        </>
-                                      ) : (
-                                        <>
-                                          <div
-                                            className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                          >
-                                            <div
-                                              className={`${style.marginLeft10}${style.justifySpaceAround} ${style.greyDotStyle}`}
-                                            ></div>
+                                            </Tooltip>
                                           </div>
+                                        ) : (
                                           <div
-                                            className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                                            className={`${style.greenButton}  ${style.cursorPointer} `}
                                           >
                                             <div
-                                              className={`${style.marginLeft10}${style.justifySpaceAround} ${style.greyDotStyle}`}
-                                            ></div>
-                                          </div>
-                                          <div
-                                            className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                          >
-                                            <div
-                                              className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
+                                              className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
                                             >
-                                              -
+                                              Verified
                                             </div>
                                           </div>
-                                        </>
-                                      )}
+                                        )}
+                                      </>
 
-                                      <div
-                                        className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                      >
-                                        <div
-                                          className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
-                                        >
-                                          {expand?.status && expand?.index === 0 ? (
-                                            <Tooltip arrow title={"Click to Collapse Section"}>
-                                              <RemoveIcon
-                                                sx={{
-                                                  fontSize: 20,
-                                                  color: "#94979A",
-                                                  cursor: "pointer",
-                                                }}
-                                                onClick={() =>
-                                                  setExpand({ status: false, index: 0 })
-                                                }
-                                              />
-                                            </Tooltip>
-                                          ) : (
-                                            <Tooltip arrow title={"Click to Expand Section"}>
-                                              <AddIcon
-                                                sx={{
-                                                  fontSize: 20,
-                                                  color: "#94979A",
-                                                  cursor: "pointer",
-                                                }}
-                                                onClick={() =>
-                                                  setExpand({ status: true, index: 0 })
-                                                }
-                                              />
-                                            </Tooltip>
-                                          )}{" "}
-                                        </div>
-                                      </div>
+
                                     </div>
-                                    {expand?.status && expand?.index === 0 && (
-                                      <div
-                                        className={`${style.marginTop} ${style.screenPadding}`}
-                                      >
+                                    <div
+                                      className={`${style.marginTop} ${style.screenPadding}`}
+                                    >
 
-                                        {form1 !== undefined &&
-                                          "applicant" in form1?.properties && (
-                                            <ApplicationFieldCard
-                                              object={form1?.properties?.applicant}
-                                              gridStyle={style.applicantGrid}
-                                              baseKey={"applicant"}
-                                              basicForm={form}
-                                              setBasicForm={setForm}
-                                              isBasicPath={true}
-                                              isPOD={true}
-                                            />
-                                          )}
-                                        {form1 !== undefined &&
-                                          "credentialingPrivilegeCategory" in
-                                          form1?.properties && (
-                                            <ApplicationFieldCard
-                                              object={
-                                                form1?.properties?.credentialingPrivilegeCategory
-                                              }
-                                              gridStyle={style.credentialingGrid}
-                                              baseKey={"credentialingPrivilegeCategory"}
-                                              basicForm={form}
-                                              setBasicForm={setForm}
-                                              isBasicPath={true}
-                                              isPOD={true}
-                                            />
-                                          )}
-                                        {form1 !== undefined &&
-                                          "departmentSpecialty" in form1?.properties && (
-                                            <ApplicationFieldCard
-                                              object={form1?.properties?.departmentSpecialty}
-                                              gridStyle={style.twoCol}
-                                              baseKey={"departmentSpecialty"}
-                                              basicForm={form}
-                                              setBasicForm={setForm}
-                                              isBasicPath={true}
-                                              isPOD={true}
-                                            />
-                                          )}
-                                        {form1 !== undefined &&
+                                      {form1 !== undefined &&
+                                        "applicant" in form1?.properties && (
+                                          <ApplicationFieldCard
+                                            object={form1?.properties?.applicant}
+                                            gridStyle={style.applicantGrid}
+                                            baseKey={"applicant"}
+                                            basicForm={form}
+                                            setBasicForm={setForm}
+                                            isBasicPath={true}
+                                            isPOD={true}
+                                          />
+                                        )}
+                                      {form1 !== undefined &&
+                                        "credentialingPrivilegeCategory" in
+                                        form1?.properties && (
+                                          <ApplicationFieldCard
+                                            object={
+                                              form1?.properties?.credentialingPrivilegeCategory
+                                            }
+                                            gridStyle={style.credentialingGrid}
+                                            baseKey={"credentialingPrivilegeCategory"}
+                                            basicForm={form}
+                                            setBasicForm={setForm}
+                                            isBasicPath={true}
+                                            isPOD={true}
+                                          />
+                                        )}
+                                      {form1 !== undefined &&
+                                        "departmentSpecialty" in form1?.properties && (
+                                          <ApplicationFieldCard
+                                            object={form1?.properties?.departmentSpecialty}
+                                            gridStyle={style.twoCol}
+                                            baseKey={"departmentSpecialty"}
+                                            basicForm={form}
+                                            setBasicForm={setForm}
+                                            isBasicPath={true}
+                                            isPOD={true}
+                                          />
+                                        )}
+                                      {form1 !== undefined &&
+                                        getValueByPath(
+                                          form,
+                                          "basicDetails.departmentSpecialty.department"
+                                        ) ===
+                                        form1?.if?.properties?.departmentSpecialty?.properties?.department?.const &&
+                                        form1?.if?.properties?.departmentSpecialty?.properties?.specialty?.enum?.includes(
                                           getValueByPath(
                                             form,
-                                            "basicDetails.departmentSpecialty.department"
-                                          ) ===
-                                          form1?.if?.properties?.departmentSpecialty?.properties?.department?.const &&
-                                          form1?.if?.properties?.departmentSpecialty?.properties?.specialty?.enum?.includes(
-                                            getValueByPath(
-                                              form,
-                                              "basicDetails.departmentSpecialty.specialty"
-                                            )
-                                          ) &&
-                                          form1 !== undefined &&
-                                          "regionalCallResponsibilities" in form1?.properties && (
-                                            <ApplicationFieldCard
-                                              object={
-                                                form1?.properties?.regionalCallResponsibilities
-                                              }
-                                              gridStyle={""}
-                                              baseKey={"regionalCallResponsibilities"}
-                                              basicForm={form}
-                                              setBasicForm={setForm}
-                                              isBasicPath={true}
-                                              isPOD={true}
-                                            />
-                                          )}
-                                        {form1 !== undefined &&
-                                          "billingNumber" in form1?.properties && (
-                                            <ApplicationFieldCard
-                                              object={form1?.properties?.billingNumber}
-                                              gridStyle={style.twoCol}
-                                              baseKey={"billingNumber"}
-                                              basicForm={form}
-                                              setBasicForm={setForm}
-                                              isBasicPath={true}
-                                              isPOD={true}
-                                            />
-                                          )}
-                                      </div>
-                                    )}
+                                            "basicDetails.departmentSpecialty.specialty"
+                                          )
+                                        ) &&
+                                        form1 !== undefined &&
+                                        "regionalCallResponsibilities" in form1?.properties && (
+                                          <ApplicationFieldCard
+                                            object={
+                                              form1?.properties?.regionalCallResponsibilities
+                                            }
+                                            gridStyle={""}
+                                            baseKey={"regionalCallResponsibilities"}
+                                            basicForm={form}
+                                            setBasicForm={setForm}
+                                            isBasicPath={true}
+                                            isPOD={true}
+                                          />
+                                        )}
+                                      {form1 !== undefined &&
+                                        "billingNumber" in form1?.properties && (
+                                          <ApplicationFieldCard
+                                            object={form1?.properties?.billingNumber}
+                                            gridStyle={style.twoCol}
+                                            baseKey={"billingNumber"}
+                                            basicForm={form}
+                                            setBasicForm={setForm}
+                                            isBasicPath={true}
+                                            isPOD={true}
+                                          />
+                                        )}
+                                    </div>
                                   </div>
                                 )}
                               </>
@@ -5756,8 +5569,7 @@ const NewActiveApplication = ({
                                   (data) => {
                                     if (form?.creationType === "NEW") {
                                       return (
-                                        (data?.formCategory === "Form" || data?.formCategory === "Disclosure") &&
-                                        data?.schemaCategory !== "UploadYourDoc"
+                                        (data?.formCategory === "Form" || data?.formCategory === "Disclosure" || data?.formCategory === "Acknowledgement")
                                       );
                                     } else {
                                       // Default filter when form?.creationType is not "NEW"
@@ -5769,16 +5581,10 @@ const NewActiveApplication = ({
                                   })
                                 ?.map((data, index) => (
                                   <div
-                                    className={` ${style.marginTop5} ${expand?.status && expand?.index === index + 1
-                                      ? style.tableDataStyle1
-                                      : style.tableDataStyle
-                                      }`}
+                                    className={` ${style.marginTop5} ${style.tableDataStyle}`}
                                   >
                                     <div
-                                      className={` ${applicationType !== "NEW" ? style.tableHeaderGridStyleFormReappointmentForStaff : expand?.index === index + 1
-                                        ? style.tableHeaderGridStyleForm
-                                        : style.tableHeaderGridStyle
-                                        } ${style.marginTop10} ${style.backgroundColorStyle} ${style.paddingTopBottom10}`}
+                                      className={` ${style.tableHeaderGridStyleFormReappointmentForStaff} ${style.marginTop10} ${style.backgroundColorStyle} ${style.paddingTopBottom10}`}
                                     >
                                       {/* <div  className={`${style.backgroundColorStyle}`}> */}
                                       <div
@@ -5797,400 +5603,16 @@ const NewActiveApplication = ({
                                       <div
                                         className={`${style.displayInRow} ${style.verticalAlignCenter}`}
                                       >
-                                        <div className={`${applicationType === "NEW" ? style.tableDataFontStyle1 : style.tableDataFontStyleCredReappointment}`}>
+                                        <div className={`${style.tableDataFontStyleCredReappointment}`}>
                                           {data?.title}
                                         </div>
-                                        {/* <div>
-                                        {data?.title}
-                                      </div> */}
-                                      </div>
-                                      {/* </div> */}
-                                      {/* {((expand?.status && expand?.index === index + 1) || applicationType !== "NEW") ? (
-                                      <>
-                                        {credApproval?.some((newData) => {
-                                          console.log("newData.approvalRequired:", newData.approvalRequired);
-                                          return newData.schemaId === data.id && newData.approvalRequired;
-                                        }) && (
-                                            <>
-                                              {logDetails?.logs && Array.isArray(logDetails.logs) && (
-                                                (() => {
-                                                  const isMatch = logDetails.logs.some((log) => {
-                                                    if (log.form && log.form.id) {
-                                                      const match = log.form.id === form?.forms?.[index]?.id;
-                                                      console.log("Checking log.form.id === form.forms?.[index].id:", log.form.id, form?.forms?.[index]?.id, match);
-
-                                                      if (match) {
-                                                        let Match = false;
-
-                                                        // Check if userRole includes log.role
-                                                        if (userRole?.includes(log.role)) {
-                                                          console.log("Role matches user role: " + log.role);
-                                                          Match = true;
-                                                        }
-
-                                                        // Determine selectedTabRole based on selectedTab
-                                                        let selectedTabRole;
-                                                        if (selectedTab === 'level-2') {
-                                                          selectedTabRole = "Department Head";
-                                                        } else if (selectedTab === 'level-3') {
-                                                          selectedTabRole = "Chief Of Staff";
-                                                        } else if (selectedTab === 'level-4') {
-                                                          selectedTabRole = "Advisory Committee";
-                                                        } else if (selectedTab === 'level-5') {
-                                                          selectedTabRole = "Board";
-                                                        } else if (selectedTab === 'level-1') {
-                                                          selectedTabRole = "Staff Manager";
-                                                        }
-
-                                                        // Check if selectedTabRole matches log.role
-                                                        if (selectedTabRole === log.role) {
-                                                          console.log("Selected tab role matches log role: " + log.role);
-                                                          Match = true;
-                                                        }
-
-                                                        return Match;
-                                                      }
-                                                    }
-                                                    return false;
-                                                  });
-
-                                                  return (
-                                                    <div>
-                                                      {isMatch ? (
-                                                        <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                          <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                            Verified
-                                                          </div>
-                                                        </div>
-                                                      ) : (
-                                                        form?.forms?.[index]?.status !== "APPROVED" ? (
-                                                          <div className={`${style.purpleButton} ${style.cursorPointer}`}>
-                                                            <div
-                                                              className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                              onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
-                                                            >
-                                                              Verify
-                                                            </div>
-                                                          </div>
-                                                        ) : (
-                                                          <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                            <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                              Verified
-                                                            </div>
-                                                          </div>
-                                                        )
-                                                      )}
-                                                    </div>
-                                                  );
-                                                })()
-                                              )}
-                                            </>
-                                          )}
-                                      </>
-                                    )
-                                      : (
-                                        <>
-                                          <div
-                                            className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                          >
-                                            <div
-                                              className={`${style.marginLeft10}${style.justifySpaceAround
-                                                } ${form?.forms?.[index]?.status !== "APPROVED"
-                                                  ? style.greyDotStyle
-                                                  : style.greenDotStyle
-                                                }`}
-                                            ></div>
-                                          </div>
-                                          <div
-                                            className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                          >
-                                            <div
-                                              className={`${style.marginLeft10}${style.justifySpaceAround
-                                                } ${form?.forms?.[index]?.status !== "APPROVED"
-                                                  ? style.greyDotStyle
-                                                  : style.greenDotStyle
-                                                }`}
-                                            ></div>
-                                          </div>
-                                          <div
-                                            className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                          >
-                                            <div
-                                              className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
-                                            >
-                                              {form?.forms
-                                                ?.filter(
-                                                  (formData, formIndex) => formIndex === index
-                                                )
-                                                ?.map(
-                                                  (data) => data?.uploadedFiles?.length || 0
-                                                )}
-                                            </div>
-                                          </div>
-                                        </>
-                                      )} */}
-                                      {/* {expand?.status && expand?.index === index + 1 ? (
-                       <>
-                          {credApproval?.filter((newData) => {
-                              console.log("newData.schema:", newData.schemaId);
-                              console.log("data.id:", data.id);
-                              return newData.schemaId === data.id;
-                          })[0]?.approvalRequired === true && (
-                          <>
-                          {logDetails?.logs && Array.isArray(logDetails?.logs) ? (
-                            (() => {
-                              let Match = false;
-
-                              logDetails.logs.forEach((log) => {
-                                if (log.form && log.form.id) {
-                                  console.log("form id: " + log.form.id);
-                                  
-                                  if (form?.forms?.some(f => f.id === log.form.id)) {
-                                    console.log("form match found, setting isMatch to true");
-                                    Match = true;
-                              
-                                    // Check if userRole includes log.role
-                                    if (userRole?.includes(log?.role)) {
-                                      console.log("Role matches user role: " + log.role);
-                                      Match = true;
-                                    } 
-                              
-                                    // Determine selectedTabRole
-                                    let selectedTabRole;
-                                    if (selectedTab === 'level-2') {
-                                      selectedTabRole = "Department Head";
-                                    } else if (selectedTab === 'level-3') {
-                                      selectedTabRole = "Chief Of Staff";
-                                    } else if (selectedTab === 'level-4') {
-                                      selectedTabRole = "Advisory Committee";
-                                    } else if (selectedTab === 'level-5') {
-                                      selectedTabRole = "Board";
-                                    } else if (selectedTab === 'level-1') {
-                                      selectedTabRole = "Staff Manager";
-                                    }
-                              
-                                    // Check if selectedTabRole matches log.role
-                                    if (selectedTabRole === log.role) {
-                                      console.log("Selected tab role matches log role: " + log.role);
-                                      Match = true;
-                                    }
-                                  } else {
-                                    Match = false;
-                                  }
-                                }
-                              });
-
-                              return Match && (
-                                <div>
-                                  {form?.forms?.[index]?.status !== "APPROVED" ? (
-                                    <div className={`${style.purpleButton} ${style.cursorPointer}`}>
-                                      <div
-                                        className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                        onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
-                                      >
-                                        Verify
-                                      </div>
-                                    </div>
-                                  ) : (
-                                    <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                      <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                        Verified
-                                      </div>
-                                    </div>
-                                  )}
-                                </div>
-                              );
-                            })()
-                          ) : null}
-                        </>
-                      )}
-
-                     </>
-                        ) : (
-                          <>
-                            <div
-                              className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                            >
-                              <div
-                                className={`${style.marginLeft10}${style.justifySpaceAround
-                                  } ${form?.forms?.[index]?.status !== "APPROVED"
-                                    ? style.greyDotStyle
-                                    : style.greenDotStyle
-                                  }`}
-                              ></div>
-                            </div>
-                            <div
-                              className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                            >
-                              <div
-                                className={`${style.marginLeft10}${style.justifySpaceAround
-                                  } ${form?.forms?.[index]?.status !== "APPROVED"
-                                    ? style.greyDotStyle
-                                    : style.greenDotStyle
-                                  }`}
-                              ></div>
-                            </div>
-                            <div
-                              className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                            >
-                              <div
-                                className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
-                              >
-                                {form?.forms
-                                  ?.filter(
-                                    (formData, formIndex) => formIndex === index
-                                  )
-                                  ?.map(
-                                    (data) => data?.uploadedFiles?.length || 0
-                                  )}
-                              </div>
-                            </div>
-                          </>
-                        )} */}
-
-                                      {/* {expand?.status && expand?.index === index + 1 ? (
-                                <>
-                                  {credApproval?.filter((newData) => {
-                                    console.log("newData.schema:", newData.schemaId);
-                                    console.log("data.id:", data.id);
-                                    return newData.schemaId === data.id;
-                                  })[0]?.approvalRequired === true && (
-                                    <>
-                                      {logDetails?.logs && Array.isArray(logDetails?.logs) ? (
-                                        (() => {
-                                          let isMatch = false;
-                                          let selectedTabRole;
-
-                                          logDetails.logs.forEach((log) => {
-                                            if (log.form && log.form.id) {
-                                              console.log("form id: " + log.form.id);
-
-                                              if (form?.forms?.some(f => f.id === log.form.id)) {
-                                                console.log("form match found, setting isMatch to true");
-                                                isMatch = true;
-
-                                                // Check if userRole includes log.role
-                                                if (userRole?.includes(!log?.role)) {
-                                                  console.log("Role matches user role: " + log.role);
-                                                  isMatch = false;
-                                                } else if (selectedTabRole === log.role) {
-                                                  
-                                                  if (selectedTab === 'level-2') {
-                                                    selectedTabRole = "Department Head";
-                                                  } else if (selectedTab === 'level-3') {
-                                                    selectedTabRole = "Chief Of Staff";
-                                                  } else if (selectedTab === 'level-4') {
-                                                    selectedTabRole = "Advisory Committee";
-                                                  } else if (selectedTab === 'level-5') {
-                                                    selectedTabRole = "Board";
-                                                  } else if (selectedTab === 'level-1') {
-                                                    selectedTabRole = "Staff Manager";
-                                                  }
-                                                  isMatch = true;
-                                                }
-                                              }
-                                            }
-                                          });
-
-                                          return isMatch && (
-                                            <div>
-                                              {form?.forms?.[index]?.status !== "APPROVED" ? (
-                                                <div className={`${style.purpleButton} ${style.cursorPointer}`}>
-                                                  <div
-                                                    className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                    onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
-                                                  >
-                                                    Verify
-                                                  </div>
-                                                </div>
-                                              ) : (
-                                                <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                  <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                    Verified
-                                                  </div>
-                                                </div>
-                                              )}
-                                            </div>
-                                          );
-                                        })()
-                                      ) : null}
-                                    </>
-                                  )}
-                                </>
-                              ) : (
-                                <>
-                                  <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
-                                    <div
-                                      className={`${style.marginLeft10} ${style.justifySpaceAround} ${form?.forms?.[index]?.status !== "APPROVED" ? style.greyDotStyle : style.greenDotStyle}`}
-                                    ></div>
-                                  </div>
-                                  <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
-                                    <div
-                                      className={`${style.marginLeft10} ${style.justifySpaceAround} ${form?.forms?.[index]?.status !== "APPROVED" ? style.greyDotStyle : style.greenDotStyle}`}
-                                    ></div>
-                                  </div>
-                                  <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
-                                    <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>
-                                      {form?.forms
-                                        ?.filter(
-                                          (formData, formIndex) => formIndex === index
-                                        )
-                                        ?.map(
-                                          (data) => data?.uploadedFiles?.length || 0
-                                        )}
-                                    </div>
-                                  </div>
-                                </>
-                              )} */}
-
-
-                                      <div
-                                        className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                      >
-                                        {applicationType === "NEW" && (
-                                          <div
-                                            className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
-                                          >
-                                            {expand?.status && expand?.index === index + 1 ? (
-                                              <Tooltip arrow title={"Click to Collapse Section"}>
-                                                <RemoveIcon
-                                                  sx={{
-                                                    fontSize: 20,
-                                                    color: "#94979A",
-                                                    cursor: "pointer",
-                                                  }}
-                                                  onClick={() => {
-                                                    setExpand({ status: false, index: 0 });
-                                                    setFormSchemaId("");
-                                                  }}
-                                                />
-                                              </Tooltip>
-                                            ) : (
-                                              <Tooltip arrow title={"Click to Expand Section"}>
-                                                <AddIcon
-                                                  sx={{
-                                                    fontSize: 20,
-                                                    color: "#94979A",
-                                                    cursor: "pointer",
-                                                  }}
-                                                  onClick={() => {
-                                                    setExpand({ status: true, index: index + 1 });
-                                                    setFormSchemaId(data?.id);
-                                                  }}
-                                                />
-                                              </Tooltip>
-                                            )}
-                                          </div>
-                                        )}
                                       </div>
                                     </div>
                                     {applicationType === "NEW" ? (
                                       <>
-                                        {expand?.status && expand?.index === index + 1 &&
-                                          <div className={`${style.marginTop} ${style.screenPadding}`}>
-                                            {renderFieldsBasedOnStep(data)}
-                                          </div>
-                                        }
+                                        <div className={`${style.marginTop} ${style.screenPadding}`}>
+                                          {renderFieldsBasedOnStep(data, index)}
+                                        </div>
                                       </>
                                     ) : (
                                       <>
@@ -6199,99 +5621,95 @@ const NewActiveApplication = ({
                                         </div>
                                       </>
                                     )}
-                                    {/* </div> */}
+
                                     {applicationType === "NEW" ? (
                                       <>
-                                        {expand?.status && expand?.index === index + 1 && (
+                                        {credApproval?.some((newData) => {
+                                          console.log("newData.approvalRequired:", newData.approvalRequired);
+                                          return newData.schemaId === data.id && newData.approvalRequired;
+                                        }) ? (
                                           <>
-                                            {credApproval?.some((newData) => {
-                                              console.log("newData.approvalRequired:", newData.approvalRequired);
-                                              return newData.schemaId === data.id && newData.approvalRequired;
-                                            }) ? (
-                                              <>
-                                                {logDetails?.logs && Array.isArray(logDetails.logs) && (
-                                                  (() => {
-                                                    const isMatch = logDetails?.logs?.some((log) => {
-                                                      if (log?.form && log?.form?.id) {
-                                                        const match = log.form.id === form?.forms?.[index]?.id;
-                                                        console.log("Checking log.form.id === form.forms?.[index].id:", log.form.id, form?.forms?.[index]?.id, match);
+                                            {logDetails?.logs && Array.isArray(logDetails.logs) && (
+                                              (() => {
+                                                const isMatch = logDetails?.logs?.some((log) => {
+                                                  if (log?.form && log?.form?.id) {
+                                                    const match = log.form.id === form?.forms?.[index]?.id;
+                                                    console.log("Checking log.form.id === form.forms?.[index].id:", log.form.id, form?.forms?.[index]?.id, match);
 
-                                                        if (match) {
-                                                          let Match = false;
+                                                    if (match) {
+                                                      let Match = false;
 
-                                                          // Check if userRole includes log.role
-                                                          if (workModeType === log.role) {
-                                                            console.log("Role matches user role: " + log.role);
-                                                            Match = true;
-                                                          }
-
-                                                          // Determine selectedTabRole based on selectedTab
-                                                          let selectedTabRole;
-                                                          if (selectedTab === 'level-2') {
-                                                            selectedTabRole = "Department Head";
-                                                          } else if (selectedTab === 'level-3') {
-                                                            selectedTabRole = "Chief Of Staff";
-                                                          } else if (selectedTab === 'level-4') {
-                                                            selectedTabRole = "Advisory Committee";
-                                                          } else if (selectedTab === 'level-5') {
-                                                            selectedTabRole = "Board";
-                                                          } else if (selectedTab === 'level-1') {
-                                                            selectedTabRole = "Staff Manager";
-                                                          }
-
-                                                          // Check if selectedTabRole matches log.role
-                                                          if (selectedTabRole === log.role) {
-                                                            console.log("Selected tab role matches log role: " + log.role);
-                                                            Match = true;
-                                                          }
-
-                                                          return Match;
-                                                        }
+                                                      // Check if userRole includes log.role
+                                                      if (workModeType === log.role) {
+                                                        console.log("Role matches user role: " + log.role);
+                                                        Match = true;
                                                       }
-                                                      return false;
-                                                    });
 
-                                                    return (
-                                                      <div>
-                                                        {isMatch ? (
-                                                          <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                            <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                              Approved
-                                                            </div>
-                                                          </div>
-                                                        ) : (
-                                                          form?.forms?.[index]?.status !== "APPROVED" ? (
-                                                            <div className={`${style.purpleButton} ${style.cursorPointer}`}>
-                                                              <Tooltip title="Click to Approve this Step" arrow>
-                                                                <div
-                                                                  className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                                  onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
-                                                                >
-                                                                  Approve
-                                                                </div>
-                                                              </Tooltip>
-                                                            </div>
-                                                          ) : (
-                                                            <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                              <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                                Approved
-                                                              </div>
-                                                            </div>
-                                                          )
-                                                        )}
+                                                      // Determine selectedTabRole based on selectedTab
+                                                      let selectedTabRole;
+                                                      if (selectedTab === 'level-2') {
+                                                        selectedTabRole = "Department Head";
+                                                      } else if (selectedTab === 'level-3') {
+                                                        selectedTabRole = "Chief Of Staff";
+                                                      } else if (selectedTab === 'level-4') {
+                                                        selectedTabRole = "Advisory Committee";
+                                                      } else if (selectedTab === 'level-5') {
+                                                        selectedTabRole = "Board";
+                                                      } else if (selectedTab === 'level-1') {
+                                                        selectedTabRole = "Staff Manager";
+                                                      }
+
+                                                      // Check if selectedTabRole matches log.role
+                                                      if (selectedTabRole === log.role) {
+                                                        console.log("Selected tab role matches log role: " + log.role);
+                                                        Match = true;
+                                                      }
+
+                                                      return Match;
+                                                    }
+                                                  }
+                                                  return false;
+                                                });
+
+                                                return (
+                                                  <div>
+                                                    {isMatch ? (
+                                                      <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                          Approved
+                                                        </div>
                                                       </div>
-                                                    );
-                                                  })()
-                                                )}
-                                              </>
-                                            ) : (
-                                              <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                  Approved
-                                                </div>
-                                              </div>
+                                                    ) : (
+                                                      form?.forms?.[index]?.status !== "APPROVED" ? (
+                                                        <div className={`${style.purpleButton} ${style.cursorPointer}`}>
+                                                          <Tooltip title="Click to Approve this Step" arrow>
+                                                            <div
+                                                              className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                                              onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
+                                                            >
+                                                              Approve
+                                                            </div>
+                                                          </Tooltip>
+                                                        </div>
+                                                      ) : (
+                                                        <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                          <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                            Approved
+                                                          </div>
+                                                        </div>
+                                                      )
+                                                    )}
+                                                  </div>
+                                                );
+                                              })()
                                             )}
                                           </>
+                                        ) : (
+                                          <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                            <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                              Approved
+                                            </div>
+                                          </div>
                                         )}
                                       </>
                                     ) : (
@@ -6407,53 +5825,7 @@ const NewActiveApplication = ({
                                                               )
                                                             )
                                                         )}
-                                                        {/* {form?.forms?.[index]?.schemaCategory === 'UploadYourDoc' ? (
-                                                    // isMatch ? (
-                                                    //   <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                    //     <Tooltip title="Click To Revert Verification">
-                                                    //     <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                    //      onClick={() => {
-                                                    //       handleStepsVerifyRevoke(form?.forms?.[index]?.id);
-                                                    //   }}
-                                                    //     >
-                                                    //       Verified
-                                                    //     </div>
-                                                    //     </Tooltip>
-                                                    //   </div>
-                                                    // ) : 
-                                                    (
-                                                      form?.forms?.[index]?.status !== "APPROVED" ? (
-                                                        <div className={`${style.purpleButton} ${style.cursorPointer}`} style={buttonStyle}>
-                                                          <Tooltip title="Click To Verify">
-                                                            <div
-                                                              className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                              onClick={() => {
-                                                                if (
-                                                                  !(isUploadYourDoc && !allVerified)
-                                                                ) {
-                                                                  handleStepsVerify(form?.forms?.[index]?.id);
-                                                                }
-                                                              }}
-                                                            >
-                                                              Verify
-                                                            </div>
-                                                          </Tooltip>
-                                                        </div>
-                                                      ) : (
-                                                        <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                          <Tooltip title="Click To Revert Verification">
-                                                            <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                              onClick={() => {
-                                                                handleStepsVerifyRevoke(form?.forms?.[index]?.id);
-                                                              }}
-                                                            >
-                                                              Verified
-                                                            </div>
-                                                          </Tooltip>
-                                                        </div>
-                                                      )
-                                                    )
-                                                  ): null} */}
+
                                                       </div>
                                                       {(
                                                         <div className={`${style.whiteButton} ${style.cursorPointer}`} onClick={() => toggleDropdown(index)}>
@@ -6545,7 +5917,7 @@ const NewActiveApplication = ({
                                 </div>
                             ) : ("")} */}
                             </div>
-                            {applicationType === "NEW" ? (
+                            {/* {applicationType === "NEW" ? (
                               <div>
                                 <div
                                   className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderGridStyle1} `}
@@ -6569,18 +5941,10 @@ const NewActiveApplication = ({
                                   ?.filter((data) => data?.formCategory === "Acknowledgement")
                                   ?.map((data, index) => (
                                     <div
-                                      className={` ${style.marginTop5} ${expandAcknowledgement?.status &&
-                                        expandAcknowledgement?.index === index
-                                        ? style.tableDataStyle1
-                                        : style.tableDataStyle
-                                        }`}
+                                      className={` ${style.marginTop5} ${style.tableDataStyle}`}
                                     >
                                       <div
-                                        className={` ${style.marginTop10} ${expandAcknowledgement?.status &&
-                                          expandAcknowledgement?.index === index
-                                          ? style.tableHeaderGridStyleForm
-                                          : style.tableHeaderGridStyle1
-                                          }`}
+                                        className={` ${style.marginTop10} ${style.tableHeaderGridStyleForm}`}
                                       >
                                         <div
                                           className={`${style.displayInRow} ${style.verticalAlignCenter} `}
@@ -6603,305 +5967,217 @@ const NewActiveApplication = ({
                                             {data?.title}
                                           </div>
                                         </div>
-                                        {/* {expandAcknowledgement?.status &&
-                          expandAcknowledgement?.index === index && (
-                            <>
-                              {form?.forms?.filter(
-                                (data) =>
-                                  data?.formCategory === "Acknowledgement"
-                              )[index]?.status !== "APPROVED" ? (
-                                <div
-                                  className={`${style.purpleButton} ${style.cursorPointer} `}
-                                >
-                                  <div
-                                    className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                    onClick={() =>
-                                      handleStepsVerify(
-                                        form?.forms?.filter(
-                                          (data) =>
-                                            data?.formCategory ===
-                                            "Acknowledgement"
-                                        )[index]?.id
-                                      )
-                                    }
-                                  >
-                                    Verify
-                                  </div>
-                                </div>
-                              ) : (
-                                <div
-                                  className={`${style.greenButton}  ${style.cursorPointer} `}
-                                >
-                                  <div
-                                    className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                  >
-                                    Verified
-                                  </div>
-                                </div>
-                              )}
-                            </>
-                          )} */}
-                                        {/* working without credapproval false */}
-                                        {expandAcknowledgement?.status && expandAcknowledgement?.index === index && (
-                                          <>
-                                            {form?.forms?.filter((data) => data?.formCategory === "Acknowledgement")[index]?.status !== "APPROVED" && (
-                                              <>
-                                                {credApproval?.some((newData) => newData.schemaId === data.id && newData.approvalRequired) && (
-                                                  <>
-                                                    {logDetails?.logs && Array.isArray(logDetails.logs) && (() => {
-                                                      const isMatch = logDetails.logs.some((log) => {
-                                                        if (log.form && log.form.id) {
-                                                          const match = log.form.id === form?.forms?.[index]?.id;
-                                                          console.log("Checking log.form.id === form.forms?.[index].id:", log.form.id, form?.forms?.[index]?.id, match);
+                                        
+                                        <>
+                                          {form?.forms?.filter((data) => data?.formCategory === "Acknowledgement")[index]?.status !== "APPROVED" && (
+                                            <>
+                                              {credApproval?.some((newData) => newData.schemaId === data.id && newData.approvalRequired) && (
+                                                <>
+                                                  {logDetails?.logs && Array.isArray(logDetails.logs) && (() => {
+                                                    const isMatch = logDetails.logs.some((log) => {
+                                                      if (log.form && log.form.id) {
+                                                        const match = log.form.id === form?.forms?.[index]?.id;
+                                                        console.log("Checking log.form.id === form.forms?.[index].id:", log.form.id, form?.forms?.[index]?.id, match);
 
-                                                          if (match) {
-                                                            let Match = false;
+                                                        if (match) {
+                                                          let Match = false;
 
-                                                            // Check if userRole includes log.role
-                                                            if (workModeType === log.role) {
-                                                              console.log("Role matches user role: " + log.role);
-                                                              Match = true;
-                                                            }
-
-                                                            // Determine selectedTabRole based on selectedTab
-                                                            let selectedTabRole;
-                                                            switch (selectedTab) {
-                                                              case 'level-1':
-                                                                selectedTabRole = "Staff Manager";
-                                                                break;
-                                                              case 'level-2':
-                                                                selectedTabRole = "Department Head";
-                                                                break;
-                                                              case 'level-3':
-                                                                selectedTabRole = "Chief Of Staff";
-                                                                break;
-                                                              case 'level-4':
-                                                                selectedTabRole = "Advisory Committee";
-                                                                break;
-                                                              case 'level-5':
-                                                                selectedTabRole = "Board";
-                                                                break;
-                                                              default:
-                                                                selectedTabRole = "";
-                                                            }
-
-                                                            // Check if selectedTabRole matches log.role
-                                                            if (selectedTabRole === log.role) {
-                                                              console.log("Selected tab role matches log role: " + log.role);
-                                                              Match = true;
-                                                            }
-
-                                                            return Match;
+                                                          if (workModeType === log.role) {
+                                                            console.log("Role matches user role: " + log.role);
+                                                            Match = true;
                                                           }
-                                                        }
-                                                        return false;
-                                                      });
 
-                                                      return (
-                                                        <div>
-                                                          {isMatch ? (
+                                                          let selectedTabRole;
+                                                          switch (selectedTab) {
+                                                            case 'level-1':
+                                                              selectedTabRole = "Staff Manager";
+                                                              break;
+                                                            case 'level-2':
+                                                              selectedTabRole = "Department Head";
+                                                              break;
+                                                            case 'level-3':
+                                                              selectedTabRole = "Chief Of Staff";
+                                                              break;
+                                                            case 'level-4':
+                                                              selectedTabRole = "Advisory Committee";
+                                                              break;
+                                                            case 'level-5':
+                                                              selectedTabRole = "Board";
+                                                              break;
+                                                            default:
+                                                              selectedTabRole = "";
+                                                          }
+
+                                                          if (selectedTabRole === log.role) {
+                                                            console.log("Selected tab role matches log role: " + log.role);
+                                                            Match = true;
+                                                          }
+
+                                                          return Match;
+                                                        }
+                                                      }
+                                                      return false;
+                                                    });
+
+                                                    return (
+                                                      <div>
+                                                        {isMatch ? (
+                                                          <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                            <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                              Verified
+                                                            </div>
+                                                          </div>
+                                                        ) : (
+                                                          form?.forms?.[index]?.status !== "APPROVED" ? (
+                                                            <div className={`${style.purpleButton} ${style.cursorPointer}`}>
+                                                              <Tooltip title="Click to Verify" arrow>
+                                                                <div
+                                                                  className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                                                  onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
+                                                                >
+                                                                  Verify
+                                                                </div>
+                                                              </Tooltip>
+                                                            </div>
+                                                          ) : (
                                                             <div className={`${style.greenButton} ${style.cursorPointer}`}>
                                                               <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
                                                                 Verified
                                                               </div>
                                                             </div>
-                                                          ) : (
-                                                            form?.forms?.[index]?.status !== "APPROVED" ? (
-                                                              <div className={`${style.purpleButton} ${style.cursorPointer}`}>
-                                                                <Tooltip title="Click to Verify" arrow>
-                                                                  <div
-                                                                    className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                                    onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
-                                                                  >
-                                                                    Verify
-                                                                  </div>
-                                                                </Tooltip>
-                                                              </div>
-                                                            ) : (
-                                                              <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                                <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                                  Verified
-                                                                </div>
-                                                              </div>
-                                                            )
-                                                          )}
-                                                        </div>
-                                                      );
-                                                    })()}
-                                                  </>
-                                                )}
-                                              </>
-                                            )}
-                                          </>
-                                        )}
-                                        <div
-                                          className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                        >
-                                          <div
-                                            className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
-                                          >
-                                            {expandAcknowledgement?.status &&
-                                              expandAcknowledgement?.index === index ? (
-                                              <Tooltip title="Click to Collapse Acknowledgement" arrow>
-                                                <RemoveIcon
-                                                  sx={{
-                                                    fontSize: 20,
-                                                    color: "#94979A",
-                                                    cursor: "pointer",
-                                                  }}
-                                                  onClick={() => {
-                                                    setExpandAcknowledgement({
-                                                      status: false,
-                                                      index: 0,
-                                                    });
-                                                    setFormSchemaId("");
-                                                  }}
-                                                />
-                                              </Tooltip>
-                                            ) : (
-                                              <Tooltip title="Click to Expand Acknowledgement" arrow>
-                                                <AddIcon
-                                                  sx={{
-                                                    fontSize: 20,
-                                                    color: "#94979A",
-                                                    cursor: "pointer",
-                                                  }}
-                                                  onClick={() => {
-                                                    setExpandAcknowledgement({
-                                                      status: true,
-                                                      index: index,
-                                                    });
-                                                    setFormSchemaId(data?.id);
-                                                  }}
-                                                />
-                                              </Tooltip>
-                                            )}
-                                          </div>
-                                        </div>
-                                      </div>
-                                      {expandAcknowledgement?.status &&
-                                        expandAcknowledgement?.index === index && (
-                                          <div
-                                            className={`${style.marginTop} ${style.screenPadding}`}
-                                          >
-                                            {form?.forms?.filter(
-                                              (data) => data?.formCategory === "Acknowledgement"
-                                            )[index]?.uploadedFiles?.length !== 0 && (
-                                                <>
-                                                  <iframe
-                                                    src={
-                                                      form?.forms?.filter(
-                                                        (data) =>
-                                                          data?.formCategory === "Acknowledgement"
-                                                      )[index]?.uploadedFiles[
-                                                        form?.forms?.filter(
-                                                          (data) =>
-                                                            data?.formCategory ===
-                                                            "Acknowledgement"
-                                                        )[index]?.uploadedFiles?.length - 1
-                                                      ]?.fileURL
-                                                    }
-                                                    width="100%"
-                                                    height="600px"
-                                                  ></iframe>
-                                                  {(data?.description ===
-                                                    "Statement of Confidentiality and Non-Disclosure" ||
-                                                    data?.description ===
-                                                    "Conflict Of Interest Policy") && (
-                                                      <div className={style.grid2}>
-                                                        <div
-                                                          onClick={
-                                                            form?.forms?.[index]?.staffEsign === null
-                                                              ? () =>
-                                                                handleStaffEsign(
-                                                                  form?.forms?.filter(
-                                                                    (data) =>
-                                                                      data?.formCategory ===
-                                                                      "Acknowledgement"
-                                                                  )[index]?.id
-                                                                )
-                                                              : () => { }
-                                                          }
-                                                        >
-                                                          <ESignature
-                                                            userName={
-                                                              form?.forms?.filter(
-                                                                (data) =>
-                                                                  data?.formCategory ===
-                                                                  "Acknowledgement"
-                                                              )[index]?.staffEsign !== null
-                                                                ? form?.forms?.filter(
-                                                                  (data) =>
-                                                                    data?.formCategory ===
-                                                                    "Acknowledgement"
-                                                                )[index]?.staffEsign?.name
-                                                                : ""
-                                                            }
-                                                            encData={
-                                                              form?.forms?.filter(
-                                                                (data) =>
-                                                                  data?.formCategory ===
-                                                                  "Acknowledgement"
-                                                              )[index]?.staffEsign !== null
-                                                                ? form?.forms?.filter(
-                                                                  (data) =>
-                                                                    data?.formCategory ===
-                                                                    "Acknowledgement"
-                                                                )[index]?.staffEsign?.esign
-                                                                : ""
-                                                            }
-                                                            showData={
-                                                              form?.forms?.filter(
-                                                                (data) =>
-                                                                  data?.formCategory ===
-                                                                  "Acknowledgement"
-                                                              )[index]?.staffEsign !== null
-                                                                ? true
-                                                                : false
-                                                            }
-                                                            showDatais={true}
-                                                          />
-                                                        </div>
-                                                        <div className={style.verticalAlignCenter}>
-                                                          <div className={style.displayInRow}>
-                                                            <div className={style.dateTitle}>
-                                                              Date:{" "}
-                                                            </div>
-                                                            <div
-                                                              className={`${style.date} ${style.marginLeft}`}
-                                                            >
-                                                              {form?.forms?.filter(
-                                                                (data) =>
-                                                                  data?.formCategory ===
-                                                                  "Acknowledgement"
-                                                              )[index]?.staffEsign !== null
-                                                                ? format(
-                                                                  new Date(
-                                                                    form?.forms?.filter(
-                                                                      (data) =>
-                                                                        data?.formCategory ===
-                                                                        "Acknowledgement"
-                                                                    )[
-                                                                      index
-                                                                    ]?.staffEsign?.signedDate
-                                                                  ),
-                                                                  canadaData?.dateFormat ||
-                                                                  "dd/MM/yyyy"
-                                                                )
-                                                                : ""}
-                                                            </div>
-                                                          </div>
-                                                        </div>
+                                                          )
+                                                        )}
                                                       </div>
-                                                    )}
+                                                    );
+                                                  })()}
                                                 </>
                                               )}
-                                          </div>
-                                        )}
+                                            </>
+                                          )}
+                                        </>
+
+                                      </div>
+
+                                      <div
+                                        className={`${style.marginTop} ${style.screenPadding}`}
+                                      >
+                                        {form?.forms?.filter(
+                                          (data) => data?.formCategory === "Acknowledgement"
+                                        )[index]?.uploadedFiles?.length !== 0 && (
+                                            <>
+                                              <iframe
+                                                src={
+                                                  form?.forms?.filter(
+                                                    (data) =>
+                                                      data?.formCategory === "Acknowledgement"
+                                                  )[index]?.uploadedFiles[
+                                                    form?.forms?.filter(
+                                                      (data) =>
+                                                        data?.formCategory ===
+                                                        "Acknowledgement"
+                                                    )[index]?.uploadedFiles?.length - 1
+                                                  ]?.fileURL
+                                                }
+                                                width="100%"
+                                                height="600px"
+                                              ></iframe>
+                                              {(data?.description ===
+                                                "Statement of Confidentiality and Non-Disclosure" ||
+                                                data?.description ===
+                                                "Conflict Of Interest Policy") && (
+                                                  <div className={style.grid2}>
+                                                    <div
+                                                      onClick={
+                                                        form?.forms?.[index]?.staffEsign === null
+                                                          ? () =>
+                                                            handleStaffEsign(
+                                                              form?.forms?.filter(
+                                                                (data) =>
+                                                                  data?.formCategory ===
+                                                                  "Acknowledgement"
+                                                              )[index]?.id
+                                                            )
+                                                          : () => { }
+                                                      }
+                                                    >
+                                                      <ESignature
+                                                        userName={
+                                                          form?.forms?.filter(
+                                                            (data) =>
+                                                              data?.formCategory ===
+                                                              "Acknowledgement"
+                                                          )[index]?.staffEsign !== null
+                                                            ? form?.forms?.filter(
+                                                              (data) =>
+                                                                data?.formCategory ===
+                                                                "Acknowledgement"
+                                                            )[index]?.staffEsign?.name
+                                                            : ""
+                                                        }
+                                                        encData={
+                                                          form?.forms?.filter(
+                                                            (data) =>
+                                                              data?.formCategory ===
+                                                              "Acknowledgement"
+                                                          )[index]?.staffEsign !== null
+                                                            ? form?.forms?.filter(
+                                                              (data) =>
+                                                                data?.formCategory ===
+                                                                "Acknowledgement"
+                                                            )[index]?.staffEsign?.esign
+                                                            : ""
+                                                        }
+                                                        showData={
+                                                          form?.forms?.filter(
+                                                            (data) =>
+                                                              data?.formCategory ===
+                                                              "Acknowledgement"
+                                                          )[index]?.staffEsign !== null
+                                                            ? true
+                                                            : false
+                                                        }
+                                                        showDatais={true}
+                                                      />
+                                                    </div>
+                                                    <div className={style.verticalAlignCenter}>
+                                                      <div className={style.displayInRow}>
+                                                        <div className={style.dateTitle}>
+                                                          Date:{" "}
+                                                        </div>
+                                                        <div
+                                                          className={`${style.date} ${style.marginLeft}`}
+                                                        >
+                                                          {form?.forms?.filter(
+                                                            (data) =>
+                                                              data?.formCategory ===
+                                                              "Acknowledgement"
+                                                          )[index]?.staffEsign !== null
+                                                            ? format(
+                                                              new Date(
+                                                                form?.forms?.filter(
+                                                                  (data) =>
+                                                                    data?.formCategory ===
+                                                                    "Acknowledgement"
+                                                                )[
+                                                                  index
+                                                                ]?.staffEsign?.signedDate
+                                                              ),
+                                                              canadaData?.dateFormat ||
+                                                              "dd/MM/yyyy"
+                                                            )
+                                                            : ""}
+                                                        </div>
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                )}
+                                            </>
+                                          )}
+                                      </div>
                                     </div>
                                   ))}
                               </div>
-                            ) : (" ")}
+                            ) : (" ")} */}
                             <div className={style.marginBottom20}></div>
                           </div>
                         </div>
@@ -6920,61 +6196,48 @@ const NewActiveApplication = ({
                             <div>
                               <>
                                 {applicationType === "NEW" && (
-                                  <div className={` ${style.marginTop5} ${(expand?.status && expand?.index === 0) ? style.tableDataStyle1 : style.tableDataStyle}`}>
-                                    <div className={` ${(expand?.status && expand?.index === 0) ? style.tableHeaderGridStyleFormCred : style.tableHeaderGridStyleCred1} ${style.marginTop10}`}>
+                                  <div className={` ${style.marginTop5} ${style.tableDataStyle}`}>
+                                    <div className={` ${style.tableHeaderGridStyleFormCred} ${style.marginTop10}`}>
 
                                       <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-                                        <div className={`${(expand?.status && expand?.index === 0) ? style.tableHeaderTextStyleCred : style.tableDataFontStyleCred}`}>Applicant Profile Information</div>
+                                        <div className={`${style.tableHeaderTextStyleCred}`}>Applicant Profile Information</div>
                                       </div>
 
 
-                                      {(expand?.status && expand?.index === 0) ? (
-                                        <>
-                                          {!form?.basicInformationStatus ? (
-                                            <div className={`${style.purpleButton} ${style.cursorPointer} `}>
-                                              <Tooltip title="Click to Approve this Step" arrow>
-                                                <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`} onClick={() => handleVerify()}>Approve</div></Tooltip>
-                                            </div>
-                                          ) : (
-                                            <div className={`${style.greenButton}  ${style.cursorPointer} `}>
-                                              <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>Approved</div>
-                                            </div>
-                                          )}
-                                        </>
-                                      ) : (
-                                        " "
-                                      )}
+                                      <>
+                                        {!form?.basicInformationStatus ? (
+                                          <div className={`${style.purpleButton} ${style.cursorPointer} `}>
+                                            <Tooltip title="Click to Approve this Step" arrow>
+                                              <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`} onClick={() => handleVerify()}>Approve</div></Tooltip>
+                                          </div>
+                                        ) : (
+                                          <div className={`${style.greenButton}  ${style.cursorPointer} `}>
+                                            <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>Approved</div>
+                                          </div>
+                                        )}
+                                      </>
 
-                                      <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-                                        <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>
-                                          {
-                                            (expand?.status && expand?.index === 0) ? (<Tooltip arrow title={"Click to Collapse Section"}><RemoveIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => setExpand({ status: false, index: 0 })} /></Tooltip>)
-                                              : (<Tooltip title="Click to Expand Section" arrow><AddIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => setExpand({ status: true, index: 0 })} /></Tooltip>)
-                                          }                    </div>
-                                      </div>
                                     </div>
-                                    {expand?.status && expand?.index === 0 &&
-                                      <div className={`${style.marginTop} ${style.screenPadding}`}>
+                                    <div className={`${style.marginTop} ${style.screenPadding}`}>
 
-                                        {form1 !== undefined && 'applicant' in form1?.properties && (
-                                          <ApplicationFieldCard object={form1?.properties?.applicant} gridStyle={style.applicantGrid} baseKey={'applicant'} basicForm={form} setBasicForm={setForm} isBasicPath={true} isPOD={true} />
-                                        )}
-                                        {form1 !== undefined && 'credentialingPrivilegeCategory' in form1?.properties && (
-                                          <ApplicationFieldCard object={form1?.properties?.credentialingPrivilegeCategory} gridStyle={style.credentialingGrid} baseKey={'credentialingPrivilegeCategory'} basicForm={form} setBasicForm={setForm} isBasicPath={true} isPOD={true} />
-                                        )}
-                                        {form1 !== undefined && 'departmentSpecialty' in form1?.properties && (
-                                          <ApplicationFieldCard object={form1?.properties?.departmentSpecialty} gridStyle={style.twoCol} baseKey={'departmentSpecialty'} basicForm={form} setBasicForm={setForm} isBasicPath={true} isPOD={true} />
-                                        )}
-                                        {form1 !== undefined && (getValueByPath(form, 'basicDetails.departmentSpecialty.department') === form1.if.properties.departmentSpecialty.properties.department.const && form1.if.properties.departmentSpecialty.properties.specialty.enum?.includes(getValueByPath(form, 'basicDetails.departmentSpecialty.specialty'))) && (
-                                          form1 !== undefined && 'regionalCallResponsibilities' in form1?.properties && (
-                                            <ApplicationFieldCard object={form1?.properties?.regionalCallResponsibilities} gridStyle={''} baseKey={'regionalCallResponsibilities'} basicForm={form} setBasicForm={setForm} isBasicPath={true} isPOD={true} />
-                                          )
-                                        )}
-                                        {form1 !== undefined && 'billingNumber' in form1?.properties && (
-                                          <ApplicationFieldCard object={form1?.properties?.billingNumber} gridStyle={style.twoCol} baseKey={'billingNumber'} basicForm={form} setBasicForm={setForm} isBasicPath={true} isPOD={true} />
-                                        )}
-                                      </div>
-                                    }
+                                      {form1 !== undefined && 'applicant' in form1?.properties && (
+                                        <ApplicationFieldCard object={form1?.properties?.applicant} gridStyle={style.applicantGrid} baseKey={'applicant'} basicForm={form} setBasicForm={setForm} isBasicPath={true} isPOD={true} />
+                                      )}
+                                      {form1 !== undefined && 'credentialingPrivilegeCategory' in form1?.properties && (
+                                        <ApplicationFieldCard object={form1?.properties?.credentialingPrivilegeCategory} gridStyle={style.credentialingGrid} baseKey={'credentialingPrivilegeCategory'} basicForm={form} setBasicForm={setForm} isBasicPath={true} isPOD={true} />
+                                      )}
+                                      {form1 !== undefined && 'departmentSpecialty' in form1?.properties && (
+                                        <ApplicationFieldCard object={form1?.properties?.departmentSpecialty} gridStyle={style.twoCol} baseKey={'departmentSpecialty'} basicForm={form} setBasicForm={setForm} isBasicPath={true} isPOD={true} />
+                                      )}
+                                      {form1 !== undefined && (getValueByPath(form, 'basicDetails.departmentSpecialty.department') === form1.if.properties.departmentSpecialty.properties.department.const && form1.if.properties.departmentSpecialty.properties.specialty.enum?.includes(getValueByPath(form, 'basicDetails.departmentSpecialty.specialty'))) && (
+                                        form1 !== undefined && 'regionalCallResponsibilities' in form1?.properties && (
+                                          <ApplicationFieldCard object={form1?.properties?.regionalCallResponsibilities} gridStyle={''} baseKey={'regionalCallResponsibilities'} basicForm={form} setBasicForm={setForm} isBasicPath={true} isPOD={true} />
+                                        )
+                                      )}
+                                      {form1 !== undefined && 'billingNumber' in form1?.properties && (
+                                        <ApplicationFieldCard object={form1?.properties?.billingNumber} gridStyle={style.twoCol} baseKey={'billingNumber'} basicForm={form} setBasicForm={setForm} isBasicPath={true} isPOD={true} />
+                                      )}
+                                    </div>
 
 
                                   </div>
@@ -6986,137 +6249,38 @@ const NewActiveApplication = ({
                                     (data) => {
                                       if (form?.creationType === "NEW") {
                                         return (
-                                          (data?.formCategory === "Form" || data?.formCategory === "Disclosure") &&
-                                          data?.schemaCategory !== "UploadYourDoc"
+                                          (data?.formCategory === "Form" || data?.formCategory === "Disclosure" || data?.formCategory === "Acknowledgement")
                                         );
                                       } else {
-                                        // Default filter when form?.creationType is not "NEW"
                                         return (
                                           (data?.formCategory === "Form" || data?.formCategory === "Disclosure" || data?.formCategory === "Acknowledgement")
-                                          // data?.schemaCategory !== "UploadYourDoc"
                                         );
                                       }
                                     })?.map((data, index) => (
 
-                                      <div className={` ${style.marginTop5} ${(expand?.status && expand?.index === index + 1) ? style.tableDataStyle1 : style.tableDataStyle}`}>
-                                        {/* <div className={` ${applicationType !== "NEW" ? style.tableHeaderGridStyleFormReappointment : (expand?.index === index + 1) ? style.tableHeaderGridStyleFormCred : style.tableHeaderGridStyleCred} ${style.marginTop10}`}> */}
+                                      <div className={` ${style.marginTop5} ${style.tableDataStyle}`}>
                                         <div>
                                           <div className={`${style.tableHeaderGridStyleCred1} ${style.backgroundColorStyle} ${style.paddingTopBottom10}`} >
-                                            <div className={`${applicationType !== "NEW" ? style.tableDataFontStyleCredReappointment : style.tableDataFontStyleCred}`}>{data?.title}</div>
-                                            {/* <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} > */}
-                                            {applicationType === "NEW" ? (
-                                              <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>
-                                                {
-                                                  (expand?.status && expand?.index === index + 1) ? (<RemoveIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => { setExpand({ status: false, index: 0 }); setFormSchemaId('') }} />)
-                                                    : (<AddIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => { setExpand({ status: true, index: index + 1 }); setFormSchemaId(data?.id) }} />)
-                                                }
-
-                                              </div>
-                                            ) : ''}
-                                            {/* </div> */}
+                                            <div className={`${style.tableDataFontStyleCredReappointment}`}>{data?.title}</div>
                                           </div>
-                                          {/* {!(expand?.status && expand?.index === index + 1) && (
-                          <>
-                            {form?.forms?.[index]?.status === "APPROVED" ? (
-                              <div className={`${style.approvedButtonStyle} ${style.ApprovedTextStyle}`}>Approved</div>
-                            ) : (
-                              <div className={`${style.assessInCred} ${style.assessTextStyle}`}>4 to Assess</div>
-                            )}
-                          </>
-                        )} */}
-                                          {/* {applicationType === "NEW" ? (
+
+                                        </div>
+
+                                        {applicationType === "NEW" ? (
                                           <>
-                                            {expand?.status && expand?.index === index + 1 && (
-                                              <>
-                                                {credApproval?.some((newData) => {
-                                                  console.log("newData.approvalRequired:", newData.approvalRequired);
-                                                  return newData.schemaId === data.id && newData.approvalRequired;
-                                                }) ? (
-                                                  <>
-                                                    {logDetails?.logs && Array.isArray(logDetails.logs) && (
-                                                      (() => {
-                                                        const isMatch = logDetails.logs.some((log) => {
-                                                          if (log.form && log.form.id) {
-                                                            const match = log.form.id === form?.forms?.[index]?.id;
-                                                            console.log("Checking log.form.id === form.forms?.[index].id:", log.form.id, form?.forms?.[index]?.id, match);
-
-                                                            if (match) {
-                                                              let Match = false;
-
-                                                              // Check if userRole includes log.role
-                                                              if (userRole?.includes(log.role)) {
-                                                                console.log("Role matches user role: " + log.role);
-                                                                Match = true;
-                                                              }
-
-                                                              // Determine selectedTabRole based on selectedTab
-                                                              let selectedTabRole;
-                                                              if (selectedTab === 'level-2') {
-                                                                selectedTabRole = "Department Head";
-                                                              } else if (selectedTab === 'level-3') {
-                                                                selectedTabRole = "Chief Of Staff";
-                                                              } else if (selectedTab === 'level-4') {
-                                                                selectedTabRole = "Advisory Committee";
-                                                              } else if (selectedTab === 'level-5') {
-                                                                selectedTabRole = "Board";
-                                                              } else if (selectedTab === 'level-1') {
-                                                                selectedTabRole = "Staff Manager";
-                                                              }
-
-                                                              // Check if selectedTabRole matches log.role
-                                                              if (selectedTabRole === log.role) {
-                                                                console.log("Selected tab role matches log role: " + log.role);
-                                                                Match = true;
-                                                              }
-
-                                                              return Match;
-                                                            }
-                                                          }
-                                                          return false;
-                                                        });
-
-                                                        return (
-                                                          <div>
-                                                            {isMatch ? (
-                                                              <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                                <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                                  Approved
-                                                                </div>
-                                                              </div>
-                                                            ) : (
-                                                              form?.forms?.[index]?.status !== "APPROVED" ? (
-                                                                <div className={`${style.purpleButton} ${style.cursorPointer}`}>
-                                                                  <div
-                                                                    className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                                    onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
-                                                                  >
-                                                                    Approve
-                                                                  </div>
-                                                                </div>
-                                                              ) : (
-                                                                <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                                  <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                                    Approved
-                                                                  </div>
-                                                                </div>
-                                                              )
-                                                            )}
-                                                          </div>
-                                                        );
-                                                      })()
-                                                    )}
-                                                  </>
-                                                ) : (
-                                                  <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                    <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                      Approved
-                                                    </div>
-                                                  </div>
-                                                )}
-                                              </>
-                                            )}
+                                            <div className={`${style.marginTop} ${style.screenPadding}`}>
+                                              {renderFieldsBasedOnStep(data, index)}
+                                            </div>
                                           </>
                                         ) : (
+                                          <>
+                                            <div className={`${style.marginTop} ${style.screenPadding}`}>
+                                              {renderFieldsBasedOnStepReappointment(data, index)}
+                                            </div>
+
+                                          </>
+                                        )}
+                                        {applicationType === "NEW" ? (
                                           <>
                                             {credApproval?.some((newData) => {
                                               console.log("newData.approvalRequired:", newData.approvalRequired);
@@ -7133,13 +6297,11 @@ const NewActiveApplication = ({
                                                         if (match) {
                                                           let Match = false;
 
-                                                          // Check if userRole includes log.role
-                                                          if (userRole?.includes(log.role)) {
+                                                          if (workModeType === log.role) {
                                                             console.log("Role matches user role: " + log.role);
                                                             Match = true;
                                                           }
 
-                                                          // Determine selectedTabRole based on selectedTab
                                                           let selectedTabRole;
                                                           if (selectedTab === 'level-2') {
                                                             selectedTabRole = "Department Head";
@@ -7153,7 +6315,6 @@ const NewActiveApplication = ({
                                                             selectedTabRole = "Staff Manager";
                                                           }
 
-                                                          // Check if selectedTabRole matches log.role
                                                           if (selectedTabRole === log.role) {
                                                             console.log("Selected tab role matches log role: " + log.role);
                                                             Match = true;
@@ -7176,12 +6337,14 @@ const NewActiveApplication = ({
                                                         ) : (
                                                           form?.forms?.[index]?.status !== "APPROVED" ? (
                                                             <div className={`${style.purpleButton} ${style.cursorPointer}`}>
-                                                              <div
-                                                                className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                                onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
-                                                              >
-                                                                Approve
-                                                              </div>
+                                                              <Tooltip title="Click to Approve this Step" arrow>
+                                                                <div
+                                                                  className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                                                  onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
+                                                                >
+                                                                  Approve
+                                                                </div>
+                                                              </Tooltip>
                                                             </div>
                                                           ) : (
                                                             <div className={`${style.greenButton} ${style.cursorPointer}`}>
@@ -7199,226 +6362,9 @@ const NewActiveApplication = ({
                                             ) : (
                                               <div className={`${style.greenButton} ${style.cursorPointer}`}>
                                                 <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                  Verified
+                                                  Approved
                                                 </div>
                                               </div>
-                                            )}
-                                          </>
-                                        )} */}
-
-                                          {/* {expand?.status && expand?.index === index + 1 && (
-                              <>
-                                {credApproval?.filter(
-                                  (newData) => {
-                                    console.log("newData.schema:", newData.schemaId);
-                                    console.log("data.id:", data.id);
-                                    return newData.schemaId === data.id;
-                                  }
-                                )[0]?.approvalRequired === true && (
-                                  <>
-                                    {logDetails?.logs && Array.isArray(logDetails?.logs) && (() => {
-                                      let isMatch = false;
-
-                                      logDetails.logs.forEach((log) => {
-                                        if (log.form && log.form.id) {
-                                          console.log("form id: " + log.form.id);
-
-                                          if (form?.forms?.some(f => f.id === log.form.id)) {
-                                            console.log("form match found, setting isMatch to true");
-                                            isMatch = true;
-
-                                            // Check if userRole includes log.role
-                                            if (userRole?.includes(log?.role)) {
-                                              console.log("Role matches user role: " + log.role);
-                                              isMatch = true;
-                                            } else {
-                                              console.log("Role does NOT match user role: " + log.role);
-                                              isMatch = false;
-                                            }
-
-                                            // Determine selectedTabRole
-                                            let selectedTabRole;
-                                            switch (selectedTab) {
-                                              case 'level-2':
-                                                selectedTabRole = "Department Head";
-                                                break;
-                                              case 'level-3':
-                                                selectedTabRole = "Chief Of Staff";
-                                                break;
-                                              case 'level-4':
-                                                selectedTabRole = "Advisory Committee";
-                                                break;
-                                              case 'level-5':
-                                                selectedTabRole = "Board";
-                                                break;
-                                              case 'level-1':
-                                                selectedTabRole = "Staff Manager";
-                                                break;
-                                              default:
-                                                selectedTabRole = "";
-                                            }
-
-                                            // Check if selectedTabRole matches log.role
-                                            if (selectedTabRole === log.role) {
-                                              console.log("Selected tab role matches log role: " + log.role);
-                                              isMatch = true;
-                                            } else {
-                                              console.log("Selected tab role does NOT match log role: " + log.role);
-                                              isMatch = false;
-                                            }
-                                          } else {
-                                            console.log("form match NOT found, setting isMatch to false");
-                                            isMatch = false;
-                                          }
-                                        }
-                                      });
-
-                                      return isMatch && (
-                                        <div>
-                                          {form?.forms?.[index]?.status !== "APPROVED" ? (
-                                            <div className={`${style.purpleButton} ${style.cursorPointer}`}>
-                                              <div
-                                                className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
-                                              >
-                                                Approve
-                                              </div>
-                                            </div>
-                                          ) : (
-                                            <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                              <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                Approved
-                                              </div>
-                                            </div>
-                                          )}
-                                        </div>
-                                      );
-                                    })()}
-                                  </>
-                                )}
-                              </>
-                            )} */}
-                                          {/* <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-                                          {applicationType === "NEW" ? (
-                                            <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>
-                                              {
-                                                (expand?.status && expand?.index === index + 1) ? (<RemoveIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => { setExpand({ status: false, index: 0 }); setFormSchemaId('') }} />)
-                                                  : (<AddIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => { setExpand({ status: true, index: index + 1 }); setFormSchemaId(data?.id) }} />)
-                                              }
-
-                                            </div>
-                                          ) : ''}
-                                        </div> */}
-                                        </div>
-
-                                        {applicationType === "NEW" ? (
-                                          <>
-                                            {expand?.status && expand?.index === index + 1 &&
-                                              <div className={`${style.marginTop} ${style.screenPadding}`}>
-                                                {renderFieldsBasedOnStep(data)}
-                                              </div>
-                                            }
-                                          </>
-                                        ) : (
-                                          <>
-                                            <div className={`${style.marginTop} ${style.screenPadding}`}>
-                                              {renderFieldsBasedOnStepReappointment(data, index)}
-                                            </div>
-
-                                          </>
-                                        )}
-                                        {applicationType === "NEW" ? (
-                                          <>
-                                            {expand?.status && expand?.index === index + 1 && (
-                                              <>
-                                                {credApproval?.some((newData) => {
-                                                  console.log("newData.approvalRequired:", newData.approvalRequired);
-                                                  return newData.schemaId === data.id && newData.approvalRequired;
-                                                }) ? (
-                                                  <>
-                                                    {logDetails?.logs && Array.isArray(logDetails.logs) && (
-                                                      (() => {
-                                                        const isMatch = logDetails.logs.some((log) => {
-                                                          if (log.form && log.form.id) {
-                                                            const match = log.form.id === form?.forms?.[index]?.id;
-                                                            console.log("Checking log.form.id === form.forms?.[index].id:", log.form.id, form?.forms?.[index]?.id, match);
-
-                                                            if (match) {
-                                                              let Match = false;
-
-                                                              // Check if userRole includes log.role
-                                                              if (workModeType === log.role) {
-                                                                console.log("Role matches user role: " + log.role);
-                                                                Match = true;
-                                                              }
-
-                                                              // Determine selectedTabRole based on selectedTab
-                                                              let selectedTabRole;
-                                                              if (selectedTab === 'level-2') {
-                                                                selectedTabRole = "Department Head";
-                                                              } else if (selectedTab === 'level-3') {
-                                                                selectedTabRole = "Chief Of Staff";
-                                                              } else if (selectedTab === 'level-4') {
-                                                                selectedTabRole = "Advisory Committee";
-                                                              } else if (selectedTab === 'level-5') {
-                                                                selectedTabRole = "Board";
-                                                              } else if (selectedTab === 'level-1') {
-                                                                selectedTabRole = "Staff Manager";
-                                                              }
-
-                                                              // Check if selectedTabRole matches log.role
-                                                              if (selectedTabRole === log.role) {
-                                                                console.log("Selected tab role matches log role: " + log.role);
-                                                                Match = true;
-                                                              }
-
-                                                              return Match;
-                                                            }
-                                                          }
-                                                          return false;
-                                                        });
-
-                                                        return (
-                                                          <div>
-                                                            {isMatch ? (
-                                                              <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                                <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                                  Approved
-                                                                </div>
-                                                              </div>
-                                                            ) : (
-                                                              form?.forms?.[index]?.status !== "APPROVED" ? (
-                                                                <div className={`${style.purpleButton} ${style.cursorPointer}`}>
-                                                                  <Tooltip title="Click to Approve this Step" arrow>
-                                                                    <div
-                                                                      className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                                      onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
-                                                                    >
-                                                                      Approve
-                                                                    </div>
-                                                                  </Tooltip>
-                                                                </div>
-                                                              ) : (
-                                                                <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                                  <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                                    Approved
-                                                                  </div>
-                                                                </div>
-                                                              )
-                                                            )}
-                                                          </div>
-                                                        );
-                                                      })()
-                                                    )}
-                                                  </>
-                                                ) : (
-                                                  <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                    <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                      Approved
-                                                    </div>
-                                                  </div>
-                                                )}
-                                              </>
                                             )}
                                           </>
                                         ) : (
@@ -7438,13 +6384,11 @@ const NewActiveApplication = ({
                                                         if (match) {
                                                           let Match = false;
 
-                                                          // Check if userRole includes log.role
                                                           if (workModeType === log.role) {
                                                             console.log("Role matches user role: " + log.role);
                                                             Match = true;
                                                           }
 
-                                                          // Determine selectedTabRole based on selectedTab
                                                           let selectedTabRole;
                                                           if (selectedTab === 'level-2') {
                                                             selectedTabRole = "Department Head";
@@ -7458,7 +6402,6 @@ const NewActiveApplication = ({
                                                             selectedTabRole = "Staff Manager";
                                                           }
 
-                                                          // Check if selectedTabRole matches log.role
                                                           if (selectedTabRole === log.role) {
                                                             console.log("Selected tab role matches log role: " + log.role);
                                                             Match = true;
@@ -7518,205 +6461,14 @@ const NewActiveApplication = ({
                                                 )}
                                               </>
                                             )}
-                                            {/* {form?.forms?.[index]?.schemaCategory === 'PrivilegeSelection' && (
-                                                    <div className={style.padding20}>
-                                                      <div className={`${style.cardTitle} ${style.advanceBoxStyle}  ${style.marginTop10}`}>
-                                                        Application Payment Status
-                                                        <span className={`${style.marginLeft30}  ${form?.payment?.paymentCompleted ? style.paidTextStyle : style.unpaidTextStyle}`}>
-                                                          {form?.payment?.paymentCompleted ? 'Paid' : 'Unpaid'}
-                                                        </span>
-                                                      </div>
-                                                      <div className={`${style.threeColumnGrid}`}>
-                                                        <div className={`${style.alignStart} ${style.marginTop10}`}>
-                                                          <div>Amount</div>
-                                                          <div className={`${style.borderStyleTiles}`}></div>
-                                                          <div className={`${style.marginLeft30} ${style.marginTop10}`}>{form?.payment?.currency || ""} {form?.payment?.fee || "-"}</div>
-                                                        </div>
-                                                        <div className={`${style.alignStart} ${style.marginTop10}`}>
-                                                          <div>Transaction ID / Confirmation Number</div>
-                                                          <div className={`${style.borderStyleTiles}`}></div>
-                                                          <div className={`${style.marginLeft30} ${style.marginTop10}`}>{form?.payment?.receiptId || "-"}</div>
-                                                        </div>
-                                                        <div className={`${style.alignStart} ${style.marginTop10}`}>
-                                                          <div>Payment Date & Time</div>
-                                                          <div className={`${style.borderStyleTiles}`}></div>
-                                                          <div className={`${style.marginLeft30} ${style.marginTop10}`}>{paymentmentPaidDate || ""}</div>
-                                                        </div>
-                                                      </div>
-                                                    </div>
-                                                  )} */}
+
                                           </>
                                         )}
                                       </div>))}
-                                {/* {(userRole?.includes("Department Head") && selectedTab === "level-2" && applicationType === "REAPPOINTMENT") || (userRole?.includes("Credentialing Committee") && selectedTab === "level-3" && applicationType === "REAPPOINTMENT") ? (
-                                <div className={`${style.margin20}`}>
-                                  <div className={`${style.fourColumnGrid}`}>
-                                    <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
-                                      <div
-                                        className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                                        onClick={() => {
-                                          onClose();
-                                        }}
-                                      >
-                                        SAVE IN PROGRESS
-                                      </div>
-                                    </div>
-                                    <div
-                                      className={`${style.buttonCardStyle} ${style.cursorPointer}`}
-                                    >
-                                      <div
-                                        className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                                      
-                                        onClick={() => {
-                                          setShowApplicationDeclineDialog(true);
-                                        }}
-                                      >
-                                        NOT RECOMMENDED
-                                      </div>
-                                    </div>
-                                    <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
-                                      <div
-                                        className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer}`}
-                                        // onClick={onClickApproveFunction}
-                                        onClick={() => {
-                                          onClickApprovalFunction();
-                                        }}
-                                      >
-                                        RECOMMENDED WITH COMMENTS
-                                      </div>
-                                    </div>
-                                    <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
-                                      <div
-                                        className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                                        onClick={onClickApprovalwithoutnotesFunction}
-                                      >
-                                        RECOMMEND
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              ) : (" ")} */}
-                                {/* {(userRole?.includes("Staff Manager") && selectedTab === "level-4" && applicationType === "REAPPOINTMENT")  ? (
-                                <div className={`${style.margin20}`}>
-                                  <div className={`${style.twoColumnGrid1}`}>
-                                    <div
-                                      className={`${style.buttonCardStyle2} ${style.cursorPointer}`}
-                                    >
-                                      <div
-                                        className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                                        
-                                        onClick={() => {
-                                          setShowApplicationDeclineDialog(true);
-                                        }}
-                                      >
-                                        NOT RECOMMENDED BY MAC
-                                      </div>
-                                    </div>
-                                   
-                                    <div
-                                     className={`${style.bigButtonStyle2} ${style.cursorPointer}`}
-                                     style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
-                                     onClick={isButtonDisabled ? undefined : onClickEmailDialogFunction}
-                                    >
-                                      <div
-                                        className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.cursorPointer}`}
-                                       
-                                      >
-                                        RECOMMENDED BY MAC
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              ) : (" ")} */}
-                                {/* {(userRole?.includes("Staff Manager") && selectedTab === "level-5" && applicationType === "REAPPOINTMENT")  ? (
-                                <div className={`${style.margin20}`}>
-                                  <div className={`${style.twoColumnGrid1}`}>
-                                    <div
-                                      className={`${style.buttonCardStyle2} ${style.cursorPointer}`}
-                                    >
-                                      <div
-                                        className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                                        
-                                        onClick={() => {
-                                          setShowApplicationDeclineDialog(true);
-                                        }}
-                                      >
-                                        REJECTED BY BOD
-                                      </div>
-                                    </div>
-                                   
-                                    <div
-                                     className={`${style.bigButtonStyle2} ${style.cursorPointer}`}
-                                     style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
-                                     onClick={isButtonDisabled ? undefined : onClickEmailDialogFunction}
-                                    >
-                                      <div
-                                        className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.cursorPointer}`}
-                                        
-                                      >
-                                        APPROVED BY BOD
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              ) : (" ")} */}
-                                {/* {(userRole?.includes("Credentialing Committee") && selectedTab === "level-2" && applicationType === "REAPPOINTMENT") ? (
-                                <div className={`${style.margin20}`}>
-                                  <div className={`${style.fourColumnGrid}`}>
-                                    <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
-                                      <div
-                                        className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                                        onClick={() => {
-                                          onClose();
-                                        }}
-                                      >
-                                        SAVE IN PROGRESS
-                                      </div>
-                                    </div>
-                                    <div
-                                      className={`${style.buttonCardStyle} ${style.cursorPointer}`}
-                                    >
-                                      <div
-                                        className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                                        onClick={() => {
-                                          setShowApplicationDeclineDialog(true);
-                                        }}
-                                      >
-                                        NOT RECOMMENDED
-                                      </div>
-                                    </div>
-                                    <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
-                                      <div
-                                        className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer}`}
-                                        onClick={() => {
-                                          onClickApprovalFunction();
-                                        }}
-                                      >
-                                        RECOMMENDED WITH COMMENTS
-                                      </div>
-                                    </div>
-                                    <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
-                                      <div
-                                        className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                                        onClick={onClickApprovalwithoutnotesFunction}
-                                      >
-                                        RECOMMENDED
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              ) : (" ")} */}
-                                {/* {userRole?.includes('Staff Manager') && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && (<>
-                                    <div className={${style.margin20}}>
-                                      <div className={${style.textCardStyle} ${style.buttonTextStyle} ${style.alignCenter}}>
-                                      Pending Cred. Comm. Verification
-                                      </div>
-                                    </div>
-                                  </>)} */}
                               </>
 
                             </div >
-                            {applicationType === "NEW" ? (
+                            {/* {applicationType === "NEW" ? (
                               <div>
                                 <div className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderStyleCred} `}>
                                   <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
@@ -7727,169 +6479,143 @@ const NewActiveApplication = ({
                                   </div>
                                 </div>
                                 {form?.formSchemas?.filter(data => data?.formCategory === 'Acknowledgement')?.map((data, index) => (
-                                  <div className={` ${style.marginTop5} ${(expandAcknowledgement?.status && expandAcknowledgement?.index === index) ? style.tableDataStyle1 : style.tableDataStyle}`}>
-                                    <div className={` ${style.marginTop10} ${(expandAcknowledgement?.status && expandAcknowledgement?.index === index) ? style.tableHeaderGridStyleFormCred : style.tableHeaderGridStyleCred1}`}>
+                                  <div className={` ${style.marginTop5} ${style.tableDataStyle}`}>
+                                    <div className={` ${style.marginTop10} ${style.tableHeaderGridStyleCred1}`}>
 
                                       <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
                                         <div className={`${style.tableDataFontStyleCred}`}>{data?.title}</div>
                                       </div>
-                                      {/* {expandAcknowledgement?.status && expandAcknowledgement?.index === index && (
-                        <>
-                          {form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.status !== "APPROVED" ? (
-                            <div className={`${style.purpleButton} ${style.cursorPointer} `}>
-                              <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`} onClick={() => handleStepsVerify(form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.id)}>Approve</div>
-                            </div>
-                          ) : (
-                            <div className={`${style.greenButton}  ${style.cursorPointer} `}>
-                              <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>Approved</div>
-                            </div>
-                          )}
-                        </>
-                      )} */}
-                                      {expandAcknowledgement?.status && expandAcknowledgement?.index === index && (
-                                        <>
-                                          {form?.forms?.filter((data) => data?.formCategory === "Acknowledgement")[index]?.status !== "APPROVED" && (
-                                            <>
-                                              {credApproval?.some((newData) => {
 
-                                                return newData.schemaId === data.id && newData.approvalRequired;
+                                      <>
+                                        {form?.forms?.filter((data) => data?.formCategory === "Acknowledgement")[index]?.status !== "APPROVED" && (
+                                          <>
+                                            {credApproval?.some((newData) => {
 
-                                              }) ? (
+                                              return newData.schemaId === data.id && newData.approvalRequired;
+
+                                            }) ? (
+                                              <>
                                                 <>
-                                                  <>
-                                                    {logDetails?.logs && Array.isArray(logDetails.logs) && (() => {
-                                                      const isMatch = logDetails.logs.some((log) => {
-                                                        if (log.form && log.form.id) {
-                                                          const match = log.form.id === form?.forms?.[index]?.id;
-                                                          console.log("Checking log.form.id === form.forms?.[index].id:", log.form.id, form?.forms?.[index]?.id, match);
+                                                  {logDetails?.logs && Array.isArray(logDetails.logs) && (() => {
+                                                    const isMatch = logDetails.logs.some((log) => {
+                                                      if (log.form && log.form.id) {
+                                                        const match = log.form.id === form?.forms?.[index]?.id;
+                                                        console.log("Checking log.form.id === form.forms?.[index].id:", log.form.id, form?.forms?.[index]?.id, match);
 
-                                                          if (match) {
-                                                            let Match = false;
+                                                        if (match) {
+                                                          let Match = false;
 
-                                                            // Check if userRole includes log.role
-                                                            if (workModeType === log.role) {
-                                                              console.log("Role matches user role: " + log.role);
-                                                              Match = true;
-                                                            }
-
-                                                            // Determine selectedTabRole based on selectedTab
-                                                            let selectedTabRole;
-                                                            switch (selectedTab) {
-                                                              case 'level-1':
-                                                                selectedTabRole = "Staff Manager";
-                                                                break;
-                                                              case 'level-2':
-                                                                selectedTabRole = "Department Head";
-                                                                break;
-                                                              case 'level-3':
-                                                                selectedTabRole = "Chief Of Staff";
-                                                                break;
-                                                              case 'level-4':
-                                                                selectedTabRole = "Advisory Committee";
-                                                                break;
-                                                              case 'level-5':
-                                                                selectedTabRole = "Board";
-                                                                break;
-                                                              default:
-                                                                selectedTabRole = "";
-                                                            }
-
-                                                            // Check if selectedTabRole matches log.role
-                                                            if (selectedTabRole === log.role) {
-                                                              console.log("Selected tab role matches log role: " + log.role);
-                                                              Match = true;
-                                                            }
-
-                                                            return Match;
+                                                          if (workModeType === log.role) {
+                                                            console.log("Role matches user role: " + log.role);
+                                                            Match = true;
                                                           }
-                                                        }
-                                                        return false;
-                                                      });
 
-                                                      return (
-                                                        <div>
-                                                          {isMatch ? (
+                                                          let selectedTabRole;
+                                                          switch (selectedTab) {
+                                                            case 'level-1':
+                                                              selectedTabRole = "Staff Manager";
+                                                              break;
+                                                            case 'level-2':
+                                                              selectedTabRole = "Department Head";
+                                                              break;
+                                                            case 'level-3':
+                                                              selectedTabRole = "Chief Of Staff";
+                                                              break;
+                                                            case 'level-4':
+                                                              selectedTabRole = "Advisory Committee";
+                                                              break;
+                                                            case 'level-5':
+                                                              selectedTabRole = "Board";
+                                                              break;
+                                                            default:
+                                                              selectedTabRole = "";
+                                                          }
+
+                                                          if (selectedTabRole === log.role) {
+                                                            console.log("Selected tab role matches log role: " + log.role);
+                                                            Match = true;
+                                                          }
+
+                                                          return Match;
+                                                        }
+                                                      }
+                                                      return false;
+                                                    });
+
+                                                    return (
+                                                      <div>
+                                                        {isMatch ? (
+                                                          <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                            <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                              Approved
+                                                            </div>
+                                                          </div>
+                                                        ) : (
+                                                          form?.forms?.[index]?.status !== "APPROVED" ? (
+                                                            <div className={`${style.purpleButton} ${style.cursorPointer}`}>
+                                                              <Tooltip title="Click to Approve this Step" arrow>
+                                                                <div
+                                                                  className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                                                  onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
+                                                                >
+                                                                  Approve
+                                                                </div>
+                                                              </Tooltip>
+                                                            </div>
+                                                          ) : (
                                                             <div className={`${style.greenButton} ${style.cursorPointer}`}>
                                                               <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
                                                                 Approved
                                                               </div>
                                                             </div>
-                                                          ) : (
-                                                            form?.forms?.[index]?.status !== "APPROVED" ? (
-                                                              <div className={`${style.purpleButton} ${style.cursorPointer}`}>
-                                                                <Tooltip title="Click to Approve this Step" arrow>
-                                                                  <div
-                                                                    className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                                    onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
-                                                                  >
-                                                                    Approve
-                                                                  </div>
-                                                                </Tooltip>
-                                                              </div>
-                                                            ) : (
-                                                              <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                                <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                                  Approved
-                                                                </div>
-                                                              </div>
-                                                            )
-                                                          )}
-                                                        </div>
-                                                      );
-                                                    })()}
-                                                  </>
-
+                                                          )
+                                                        )}
+                                                      </div>
+                                                    );
+                                                  })()}
                                                 </>
-                                              ) : (
-                                                <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                  <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                    Approved
-                                                  </div>
-                                                </div>
-                                              )}
-                                            </>
-                                          )}
-                                        </>
-                                      )}
-                                      <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-                                        <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>
-                                          {
-                                            (expandAcknowledgement?.status && expandAcknowledgement?.index === index) ? (<Tooltip title="Click to Collapse Acknowledgement" arrow><RemoveIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => { setExpandAcknowledgement({ status: false, index: 0 }); setFormSchemaId('') }} /></Tooltip>)
-                                              : (<Tooltip title="Click to Expand Acknowledgement" arrow><AddIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => { setExpandAcknowledgement({ status: true, index: index }); setFormSchemaId(data?.id) }} /></Tooltip>)
-                                          }
-                                        </div>
-                                      </div>
-                                    </div>
-                                    {expandAcknowledgement?.status && expandAcknowledgement?.index === index &&
-                                      <div className={`${style.marginTop} ${style.screenPadding}`}>
-                                        {form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.uploadedFiles?.length !== 0 && (
-                                          <>
-                                            <iframe src={form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.uploadedFiles[form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.uploadedFiles?.length - 1]?.fileURL} width="100%" height="600px"></iframe>
-                                            {(data?.description === 'Statement of Confidentiality and Non-Disclosure' || data?.description === 'Conflict Of Interest Policy') && (
-                                              <div className={style.grid2}>
-                                                <div onClick={form?.forms?.[index]?.staffEsign === null ? () => handleStaffEsign(form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.id) : () => { }} >
-                                                  <ESignature
-                                                    userName={form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign !== null ? form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign?.name : ""}
-                                                    encData={form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign !== null ? form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign?.esign : ''}
-                                                    showData={form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign !== null ? true : false}
-                                                    showDatais={true}
-                                                  />
-                                                </div>
-                                                <div className={style.verticalAlignCenter}>
-                                                  <div className={style.displayInRow}>
-                                                    <div className={style.dateTitle}>Date: </div>
-                                                    <div className={`${style.date} ${style.marginLeft}`}>{form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign !== null ? format(new Date(form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign?.signedDate), canadaData?.dateFormat || 'dd/MM/yyyy') : ""}</div>
-                                                  </div>
+
+                                              </>
+                                            ) : (
+                                              <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                  Approved
                                                 </div>
                                               </div>
                                             )}
                                           </>
                                         )}
-                                      </div>
-                                    }
+                                      </>
+
+                                    </div>
+                                    <div className={`${style.marginTop} ${style.screenPadding}`}>
+                                      {form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.uploadedFiles?.length !== 0 && (
+                                        <>
+                                          <iframe src={form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.uploadedFiles[form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.uploadedFiles?.length - 1]?.fileURL} width="100%" height="600px"></iframe>
+                                          {(data?.description === 'Statement of Confidentiality and Non-Disclosure' || data?.description === 'Conflict Of Interest Policy') && (
+                                            <div className={style.grid2}>
+                                              <div onClick={form?.forms?.[index]?.staffEsign === null ? () => handleStaffEsign(form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.id) : () => { }} >
+                                                <ESignature
+                                                  userName={form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign !== null ? form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign?.name : ""}
+                                                  encData={form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign !== null ? form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign?.esign : ''}
+                                                  showData={form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign !== null ? true : false}
+                                                  showDatais={true}
+                                                />
+                                              </div>
+                                              <div className={style.verticalAlignCenter}>
+                                                <div className={style.displayInRow}>
+                                                  <div className={style.dateTitle}>Date: </div>
+                                                  <div className={`${style.date} ${style.marginLeft}`}>{form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign !== null ? format(new Date(form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign?.signedDate), canadaData?.dateFormat || 'dd/MM/yyyy') : ""}</div>
+                                                </div>
+                                              </div>
+                                            </div>
+                                          )}
+                                        </>
+                                      )}
+                                    </div>
                                   </div>))}
                               </div>
-                            ) : (" ")}
+                            ) : (" ")} */}
                             <div className={style.marginBottom20}></div>
                           </div >
                         </div >
@@ -8090,10 +6816,7 @@ const NewActiveApplication = ({
                             </div>
                             <div>
                               <div
-                                className={` ${style.marginTop5} ${expand?.status && expand?.index === 0
-                                  ? style.tableDataStyle1
-                                  : style.tableDataStyle
-                                  }`}
+                                className={` ${style.marginTop5} ${style.tableDataStyle}`}
                               >
                                 <div
                                   className={` ${expand?.status && expand?.index === 0
@@ -8307,8 +7030,7 @@ const NewActiveApplication = ({
                                   (data) => {
                                     if (form?.creationType === "NEW") {
                                       return (
-                                        (data?.formCategory === "Form" || data?.formCategory === "Disclosure") &&
-                                        data?.schemaCategory !== "UploadYourDoc"
+                                        (data?.formCategory === "Form" || data?.formCategory === "Disclosure" || data?.formCategory === "Acknowledgement")
                                       );
                                     } else {
                                       // Default filter when form?.creationType is not "NEW"
@@ -8320,10 +7042,7 @@ const NewActiveApplication = ({
                                   })
                                 ?.map((data, index) => (
                                   <div
-                                    className={` ${style.marginTop5} ${expand?.status && expand?.index === index + 1
-                                      ? style.tableDataStyle1
-                                      : style.tableDataStyle
-                                      }`}
+                                    className={` ${style.marginTop5} ${style.tableDataStyle}`}
                                   >
                                     <div
                                       className={` ${expand?.index === index + 1
@@ -8349,74 +7068,7 @@ const NewActiveApplication = ({
                                           {data?.title}
                                         </div>
                                       </div>
-                                      {/* {expand?.status && expand?.index === index + 1 ? ( 
-                          <>
-                            {form?.forms?.[index]?.status !== "APPROVED" ? (
-                              <div
-                                className={`${style.purpleButton} ${style.cursorPointer} `}
-                              >
-                                <div
-                                  className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                  onClick={() =>
-                                    handleStepsVerify(form?.forms?.[index]?.id)
-                                  }
-                                >
-                                  Verify
-                                </div>
-                              </div>
-                            ) : (
-                              <div
-                                className={`${style.greenButton}  ${style.cursorPointer} `}
-                              >
-                                <div
-                                  className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                >
-                                  Verified
-                                </div>
-                              </div>
-                            )}
-                          </>
-                        ) : (
-                          <>
-                            <div
-                              className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                            >
-                              <div
-                                className={`${style.marginLeft10}${style.justifySpaceAround
-                                  } ${form?.forms?.[index]?.status !== "APPROVED"
-                                    ? style.greyDotStyle
-                                    : style.greenDotStyle
-                                  }`}
-                              ></div>
-                            </div>
-                            <div
-                              className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                            >
-                              <div
-                                className={`${style.marginLeft10}${style.justifySpaceAround
-                                  } ${form?.forms?.[index]?.status !== "APPROVED"
-                                    ? style.greyDotStyle
-                                    : style.greenDotStyle
-                                  }`}
-                              ></div>
-                            </div>
-                            <div
-                              className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                            >
-                              <div
-                                className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
-                              >
-                                {form?.forms
-                                  ?.filter(
-                                    (formData, formIndex) => formIndex === index
-                                  )
-                                  ?.map(
-                                    (data) => data?.uploadedFiles?.length || 0
-                                  )}
-                              </div>
-                            </div>
-                          </>
-                        )} */}
+
                                       {expand?.status && expand?.index === index + 1 ? (
                                         <>
                                           {credApproval?.some((newData) => {
@@ -8580,17 +7232,15 @@ const NewActiveApplication = ({
                                         </div>
                                       </div>
                                     </div>
-                                    {expand?.status && expand?.index === index + 1 && (
-                                      <div
-                                        className={`${style.marginTop} ${style.screenPadding}`}
-                                      >
-                                        {renderFieldsBasedOnStep(data)}
-                                      </div>
-                                    )}
+                                    <div
+                                      className={`${style.marginTop} ${style.screenPadding}`}
+                                    >
+                                      {renderFieldsBasedOnStep(data, index)}
+                                    </div>
                                   </div>
                                 ))}
                             </div>
-                            {applicationType === "NEW" ? (
+                            {/* {applicationType === "NEW" ? (
                               <div>
                                 <div
                                   className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderGridStyle1} `}
@@ -8614,18 +7264,10 @@ const NewActiveApplication = ({
                                   ?.filter((data) => data?.formCategory === "Acknowledgement")
                                   ?.map((data, index) => (
                                     <div
-                                      className={` ${style.marginTop5} ${expandAcknowledgement?.status &&
-                                        expandAcknowledgement?.index === index
-                                        ? style.tableDataStyle1
-                                        : style.tableDataStyle
-                                        }`}
+                                      className={` ${style.marginTop5} ${style.tableDataStyle}`}
                                     >
                                       <div
-                                        className={` ${style.marginTop10} ${expandAcknowledgement?.status &&
-                                          expandAcknowledgement?.index === index
-                                          ? style.tableHeaderGridStyleForm
-                                          : style.tableHeaderGridStyle1
-                                          }`}
+                                        className={` ${style.marginTop10} ${style.tableHeaderGridStyle1}`}
                                       >
                                         <div
                                           className={`${style.displayInRow} ${style.verticalAlignCenter} `}
@@ -8648,304 +7290,216 @@ const NewActiveApplication = ({
                                             {data?.title}
                                           </div>
                                         </div>
-                                        {/* {expandAcknowledgement?.status &&
-                          expandAcknowledgement?.index === index && (
-                            <>
-                              {form?.forms?.filter(
-                                (data) =>
-                                  data?.formCategory === "Acknowledgement"
-                              )[index]?.status !== "APPROVED" ? (
-                                <div
-                                  className={`${style.purpleButton} ${style.cursorPointer} `}
-                                >
-                                  <div
-                                    className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                    onClick={() =>
-                                      handleStepsVerify(
-                                        form?.forms?.filter(
-                                          (data) =>
-                                            data?.formCategory ===
-                                            "Acknowledgement"
-                                        )[index]?.id
-                                      )
-                                    }
-                                  >
-                                    Verify
-                                  </div>
-                                </div>
-                              ) : (
-                                <div
-                                  className={`${style.greenButton}  ${style.cursorPointer} `}
-                                >
-                                  <div
-                                    className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                  >
-                                    Verified
-                                  </div>
-                                </div>
-                              )}
-                            </>
-                          )} */}
-                                        {expandAcknowledgement?.status && expandAcknowledgement?.index === index && (
-                                          <>
-                                            {form?.forms?.filter((data) => data?.formCategory === "Acknowledgement")[index]?.status !== "APPROVED" && (
-                                              <>
-                                                {credApproval?.some((newData) => newData.schemaId === data.id && newData.approvalRequired) && (
-                                                  <>
-                                                    {logDetails?.logs && Array.isArray(logDetails.logs) && (() => {
-                                                      const isMatch = logDetails.logs.some((log) => {
-                                                        if (log.form && log.form.id) {
-                                                          const match = log.form.id === form?.forms?.[index]?.id;
-                                                          console.log("Checking log.form.id === form.forms?.[index].id:", log.form.id, form?.forms?.[index]?.id, match);
 
-                                                          if (match) {
-                                                            let Match = false;
+                                        <>
+                                          {form?.forms?.filter((data) => data?.formCategory === "Acknowledgement")[index]?.status !== "APPROVED" && (
+                                            <>
+                                              {credApproval?.some((newData) => newData.schemaId === data.id && newData.approvalRequired) && (
+                                                <>
+                                                  {logDetails?.logs && Array.isArray(logDetails.logs) && (() => {
+                                                    const isMatch = logDetails.logs.some((log) => {
+                                                      if (log.form && log.form.id) {
+                                                        const match = log.form.id === form?.forms?.[index]?.id;
+                                                        console.log("Checking log.form.id === form.forms?.[index].id:", log.form.id, form?.forms?.[index]?.id, match);
 
-                                                            // Check if userRole includes log.role
-                                                            if (workModeType === log.role) {
-                                                              console.log("Role matches user role: " + log.role);
-                                                              Match = true;
-                                                            }
+                                                        if (match) {
+                                                          let Match = false;
 
-                                                            // Determine selectedTabRole based on selectedTab
-                                                            let selectedTabRole;
-                                                            switch (selectedTab) {
-                                                              case 'level-1':
-                                                                selectedTabRole = "Staff Manager";
-                                                                break;
-                                                              case 'level-2':
-                                                                selectedTabRole = "Department Head";
-                                                                break;
-                                                              case 'level-3':
-                                                                selectedTabRole = "Chief Of Staff";
-                                                                break;
-                                                              case 'level-4':
-                                                                selectedTabRole = "Advisory Committee";
-                                                                break;
-                                                              case 'level-5':
-                                                                selectedTabRole = "Board";
-                                                                break;
-                                                              default:
-                                                                selectedTabRole = "";
-                                                            }
-
-                                                            // Check if selectedTabRole matches log.role
-                                                            if (selectedTabRole === log.role) {
-                                                              console.log("Selected tab role matches log role: " + log.role);
-                                                              Match = true;
-                                                            }
-
-                                                            return Match;
+                                                          if (workModeType === log.role) {
+                                                            console.log("Role matches user role: " + log.role);
+                                                            Match = true;
                                                           }
-                                                        }
-                                                        return false;
-                                                      });
 
-                                                      return (
-                                                        <div>
-                                                          {isMatch ? (
+                                                          let selectedTabRole;
+                                                          switch (selectedTab) {
+                                                            case 'level-1':
+                                                              selectedTabRole = "Staff Manager";
+                                                              break;
+                                                            case 'level-2':
+                                                              selectedTabRole = "Department Head";
+                                                              break;
+                                                            case 'level-3':
+                                                              selectedTabRole = "Chief Of Staff";
+                                                              break;
+                                                            case 'level-4':
+                                                              selectedTabRole = "Advisory Committee";
+                                                              break;
+                                                            case 'level-5':
+                                                              selectedTabRole = "Board";
+                                                              break;
+                                                            default:
+                                                              selectedTabRole = "";
+                                                          }
+
+                                                          if (selectedTabRole === log.role) {
+                                                            console.log("Selected tab role matches log role: " + log.role);
+                                                            Match = true;
+                                                          }
+
+                                                          return Match;
+                                                        }
+                                                      }
+                                                      return false;
+                                                    });
+
+                                                    return (
+                                                      <div>
+                                                        {isMatch ? (
+                                                          <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                            <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                              Approved
+                                                            </div>
+                                                          </div>
+                                                        ) : (
+                                                          form?.forms?.[index]?.status !== "APPROVED" ? (
+                                                            <div className={`${style.purpleButton} ${style.cursorPointer}`}>
+                                                              <Tooltip title="Click to Approve this Step" arrow>
+                                                                <div
+                                                                  className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                                                  onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
+                                                                >
+                                                                  Approve
+                                                                </div>
+                                                              </Tooltip>
+                                                            </div>
+                                                          ) : (
                                                             <div className={`${style.greenButton} ${style.cursorPointer}`}>
                                                               <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
                                                                 Approved
                                                               </div>
                                                             </div>
-                                                          ) : (
-                                                            form?.forms?.[index]?.status !== "APPROVED" ? (
-                                                              <div className={`${style.purpleButton} ${style.cursorPointer}`}>
-                                                                <Tooltip title="Click to Approve this Step" arrow>
-                                                                  <div
-                                                                    className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                                    onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
-                                                                  >
-                                                                    Approve
-                                                                  </div>
-                                                                </Tooltip>
-                                                              </div>
-                                                            ) : (
-                                                              <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                                <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                                  Approved
-                                                                </div>
-                                                              </div>
-                                                            )
-                                                          )}
-                                                        </div>
-                                                      );
-                                                    })()}
-                                                  </>
-                                                )}
-                                              </>
-                                            )}
-                                          </>
-                                        )}
-                                        <div
-                                          className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                        >
-                                          <div
-                                            className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
-                                          >
-                                            {expandAcknowledgement?.status &&
-                                              expandAcknowledgement?.index === index ? (
-                                              <Tooltip arrow title={"Click to Collapse Section"}>
-                                                <RemoveIcon
-                                                  sx={{
-                                                    fontSize: 20,
-                                                    color: "#94979A",
-                                                    cursor: "pointer",
-                                                  }}
-                                                  onClick={() => {
-                                                    setExpandAcknowledgement({
-                                                      status: false,
-                                                      index: 0,
-                                                    });
-                                                    setFormSchemaId("");
-                                                  }}
-                                                />
-                                              </Tooltip>
-                                            ) : (
-                                              <Tooltip arrow title={"Click to Expand Section"}>
-                                                <AddIcon
-                                                  sx={{
-                                                    fontSize: 20,
-                                                    color: "#94979A",
-                                                    cursor: "pointer",
-                                                  }}
-                                                  onClick={() => {
-                                                    setExpandAcknowledgement({
-                                                      status: true,
-                                                      index: index,
-                                                    });
-                                                    setFormSchemaId(data?.id);
-                                                  }}
-                                                />
-                                              </Tooltip>
-                                            )}
-                                          </div>
-                                        </div>
-                                      </div>
-                                      {expandAcknowledgement?.status &&
-                                        expandAcknowledgement?.index === index && (
-                                          <div
-                                            className={`${style.marginTop} ${style.screenPadding}`}
-                                          >
-                                            {form?.forms?.filter(
-                                              (data) => data?.formCategory === "Acknowledgement"
-                                            )[index]?.uploadedFiles?.length !== 0 && (
-                                                <>
-                                                  <iframe
-                                                    src={
-                                                      form?.forms?.filter(
-                                                        (data) =>
-                                                          data?.formCategory === "Acknowledgement"
-                                                      )[index]?.uploadedFiles[
-                                                        form?.forms?.filter(
-                                                          (data) =>
-                                                            data?.formCategory ===
-                                                            "Acknowledgement"
-                                                        )[index]?.uploadedFiles?.length - 1
-                                                      ]?.fileURL
-                                                    }
-                                                    width="100%"
-                                                    height="600px"
-                                                  ></iframe>
-                                                  {(data?.description ===
-                                                    "Statement of Confidentiality and Non-Disclosure" ||
-                                                    data?.description ===
-                                                    "Conflict Of Interest Policy") && (
-                                                      <div className={style.grid2}>
-                                                        <div
-                                                          onClick={
-                                                            form?.forms?.[index]?.staffEsign === null
-                                                              ? () =>
-                                                                handleStaffEsign(
-                                                                  form?.forms?.filter(
-                                                                    (data) =>
-                                                                      data?.formCategory ===
-                                                                      "Acknowledgement"
-                                                                  )[index]?.id
-                                                                )
-                                                              : () => { }
-                                                          }
-                                                        >
-                                                          <ESignature
-                                                            userName={
-                                                              form?.forms?.filter(
-                                                                (data) =>
-                                                                  data?.formCategory ===
-                                                                  "Acknowledgement"
-                                                              )[index]?.staffEsign !== null
-                                                                ? form?.forms?.filter(
-                                                                  (data) =>
-                                                                    data?.formCategory ===
-                                                                    "Acknowledgement"
-                                                                )[index]?.staffEsign?.name
-                                                                : ""
-                                                            }
-                                                            encData={
-                                                              form?.forms?.filter(
-                                                                (data) =>
-                                                                  data?.formCategory ===
-                                                                  "Acknowledgement"
-                                                              )[index]?.staffEsign !== null
-                                                                ? form?.forms?.filter(
-                                                                  (data) =>
-                                                                    data?.formCategory ===
-                                                                    "Acknowledgement"
-                                                                )[index]?.staffEsign?.esign
-                                                                : ""
-                                                            }
-                                                            showData={
-                                                              form?.forms?.filter(
-                                                                (data) =>
-                                                                  data?.formCategory ===
-                                                                  "Acknowledgement"
-                                                              )[index]?.staffEsign !== null
-                                                                ? true
-                                                                : false
-                                                            }
-                                                            showDatais={true}
-                                                          />
-                                                        </div>
-                                                        <div className={style.verticalAlignCenter}>
-                                                          <div className={style.displayInRow}>
-                                                            <div className={style.dateTitle}>
-                                                              Date:{" "}
-                                                            </div>
-                                                            <div
-                                                              className={`${style.date} ${style.marginLeft}`}
-                                                            >
-                                                              {form?.forms?.filter(
-                                                                (data) =>
-                                                                  data?.formCategory ===
-                                                                  "Acknowledgement"
-                                                              )[index]?.staffEsign !== null
-                                                                ? format(
-                                                                  new Date(
-                                                                    form?.forms?.filter(
-                                                                      (data) =>
-                                                                        data?.formCategory ===
-                                                                        "Acknowledgement"
-                                                                    )[
-                                                                      index
-                                                                    ]?.staffEsign?.signedDate
-                                                                  ),
-                                                                  canadaData?.dateFormat ||
-                                                                  "dd/MM/yyyy"
-                                                                )
-                                                                : ""}
-                                                            </div>
-                                                          </div>
-                                                        </div>
+                                                          )
+                                                        )}
                                                       </div>
-                                                    )}
+                                                    );
+                                                  })()}
                                                 </>
                                               )}
-                                          </div>
-                                        )}
+                                            </>
+                                          )}
+                                        </>
+                                      </div>
+
+                                      <div
+                                        className={`${style.marginTop} ${style.screenPadding}`}
+                                      >
+                                        {form?.forms?.filter(
+                                          (data) => data?.formCategory === "Acknowledgement"
+                                        )[index]?.uploadedFiles?.length !== 0 && (
+                                            <>
+                                              <iframe
+                                                src={
+                                                  form?.forms?.filter(
+                                                    (data) =>
+                                                      data?.formCategory === "Acknowledgement"
+                                                  )[index]?.uploadedFiles[
+                                                    form?.forms?.filter(
+                                                      (data) =>
+                                                        data?.formCategory ===
+                                                        "Acknowledgement"
+                                                    )[index]?.uploadedFiles?.length - 1
+                                                  ]?.fileURL
+                                                }
+                                                width="100%"
+                                                height="600px"
+                                              ></iframe>
+                                              {(data?.description ===
+                                                "Statement of Confidentiality and Non-Disclosure" ||
+                                                data?.description ===
+                                                "Conflict Of Interest Policy") && (
+                                                  <div className={style.grid2}>
+                                                    <div
+                                                      onClick={
+                                                        form?.forms?.[index]?.staffEsign === null
+                                                          ? () =>
+                                                            handleStaffEsign(
+                                                              form?.forms?.filter(
+                                                                (data) =>
+                                                                  data?.formCategory ===
+                                                                  "Acknowledgement"
+                                                              )[index]?.id
+                                                            )
+                                                          : () => { }
+                                                      }
+                                                    >
+                                                      <ESignature
+                                                        userName={
+                                                          form?.forms?.filter(
+                                                            (data) =>
+                                                              data?.formCategory ===
+                                                              "Acknowledgement"
+                                                          )[index]?.staffEsign !== null
+                                                            ? form?.forms?.filter(
+                                                              (data) =>
+                                                                data?.formCategory ===
+                                                                "Acknowledgement"
+                                                            )[index]?.staffEsign?.name
+                                                            : ""
+                                                        }
+                                                        encData={
+                                                          form?.forms?.filter(
+                                                            (data) =>
+                                                              data?.formCategory ===
+                                                              "Acknowledgement"
+                                                          )[index]?.staffEsign !== null
+                                                            ? form?.forms?.filter(
+                                                              (data) =>
+                                                                data?.formCategory ===
+                                                                "Acknowledgement"
+                                                            )[index]?.staffEsign?.esign
+                                                            : ""
+                                                        }
+                                                        showData={
+                                                          form?.forms?.filter(
+                                                            (data) =>
+                                                              data?.formCategory ===
+                                                              "Acknowledgement"
+                                                          )[index]?.staffEsign !== null
+                                                            ? true
+                                                            : false
+                                                        }
+                                                        showDatais={true}
+                                                      />
+                                                    </div>
+                                                    <div className={style.verticalAlignCenter}>
+                                                      <div className={style.displayInRow}>
+                                                        <div className={style.dateTitle}>
+                                                          Date:{" "}
+                                                        </div>
+                                                        <div
+                                                          className={`${style.date} ${style.marginLeft}`}
+                                                        >
+                                                          {form?.forms?.filter(
+                                                            (data) =>
+                                                              data?.formCategory ===
+                                                              "Acknowledgement"
+                                                          )[index]?.staffEsign !== null
+                                                            ? format(
+                                                              new Date(
+                                                                form?.forms?.filter(
+                                                                  (data) =>
+                                                                    data?.formCategory ===
+                                                                    "Acknowledgement"
+                                                                )[
+                                                                  index
+                                                                ]?.staffEsign?.signedDate
+                                                              ),
+                                                              canadaData?.dateFormat ||
+                                                              "dd/MM/yyyy"
+                                                            )
+                                                            : ""}
+                                                        </div>
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                )}
+                                            </>
+                                          )}
+                                      </div>
                                     </div>
                                   ))}
                               </div>
-                            ) : (" ")}
+                            ) : (" ")} */}
                             <div className={style.marginBottom20}></div>
                           </div>
                         </div>
@@ -8962,7 +7516,7 @@ const NewActiveApplication = ({
 
                             </div>
                             <div>
-                              <div className={` ${style.marginTop5} ${(expand?.status && expand?.index === 0) ? style.tableDataStyle1 : style.tableDataStyle}`}>
+                              <div className={` ${style.marginTop5} ${style.tableDataStyle}`}>
                                 <div className={` ${(expand?.status && expand?.index === 0) ? style.tableHeaderGridStyleFormCred : style.tableHeaderGridStyleCred1} ${style.marginTop10}`}>
 
                                   <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
@@ -9026,8 +7580,7 @@ const NewActiveApplication = ({
                                   (data) => {
                                     if (form?.creationType === "NEW") {
                                       return (
-                                        (data?.formCategory === "Form" || data?.formCategory === "Disclosure") &&
-                                        data?.schemaCategory !== "UploadYourDoc"
+                                        (data?.formCategory === "Form" || data?.formCategory === "Disclosure" || data?.formCategory === "Acknowledgement")
                                       );
                                     } else {
                                       // Default filter when form?.creationType is not "NEW"
@@ -9038,136 +7591,13 @@ const NewActiveApplication = ({
                                     }
                                   })?.map((data, index) => (
 
-                                    <div className={` ${style.marginTop5} ${(expand?.status && expand?.index === index + 1) ? style.tableDataStyle1 : style.tableDataStyle}`}>
+                                    <div className={` ${style.marginTop5} ${style.tableDataStyle}`}>
                                       <div className={` ${expand?.index === index + 1 ? style.tableHeaderGridStyleFormCred : style.tableHeaderGridStyleCred} ${style.marginTop10}`}>
 
                                         <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
                                           <div className={`${style.tableDataFontStyleCred}`}>{data?.title}</div>
                                         </div>
-                                        {/* {!(expand?.status && expand?.index === index + 1) && (
-                          <>
-                            {form?.forms?.[index]?.status === "APPROVED" ? (
-                              <div className={`${style.approvedButtonStyle} ${style.ApprovedTextStyle}`}>Approved</div>
-                            ) : (
-                              <div className={`${style.assessInCred} ${style.assessTextStyle}`}>4 to Assess</div>
-                            )}
-                          </>
-                        )} */}
-                                        {/* {expand?.status && expand?.index === index + 1 && (
-                            <>
-                                {credApproval?.filter(
-                                (newData) =>{console.log("newData.schema:", newData.schemaId);
-                                    console.log("data.id:", data.id);
-                                   return newData.schemaId === data.id
-                                }
-                                )[0]?.approvalRequired === true ? (
-                                <>
-                                    {form?.forms?.[index]?.status !== "APPROVED" ? (
-                                    <div className={`${style.purpleButton} ${style.cursorPointer}`}>
-                                        <div
-                                        className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                        onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
-                                        >
-                                        Approve
-                                        </div>
-                                    </div>
-                                    ) : (
-                                    <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                        Approved
-                                        </div>
-                                    </div>
-                                    )}
-                                </>
-                                ) : (""
-                                )}
-                            </>
-                            )} */}
 
-                                        {/* working with log details without credapproval false */}
-                                        {/* {expand?.status && expand?.index === index + 1 && (
-                            <>
-                                {credApproval?.some((newData) => {
-                          console.log("newData.approvalRequired:", newData.approvalRequired);
-                          return newData.schemaId === data.id && newData.approvalRequired;
-                        }) && (
-                          <>
-                            {logDetails?.logs && Array.isArray(logDetails.logs) && (
-                              (() => {
-                                const isMatch = logDetails.logs.some((log) => {
-                                  if (log.form && log.form.id) {
-                                    const match = log.form.id === form?.forms?.[index]?.id;
-                                    console.log("Checking log.form.id === form.forms?.[index].id:", log.form.id, form?.forms?.[index]?.id, match);
-
-                                    if (match) {
-                                      let Match = false;
-
-                                      // Check if userRole includes log.role
-                                      if (userRole?.includes(log.role)) {
-                                        console.log("Role matches user role: " + log.role);
-                                        Match = true;
-                                      }
-
-                                      // Determine selectedTabRole based on selectedTab
-                                      let selectedTabRole;
-                                      if (selectedTab === 'level-2') {
-                                        selectedTabRole = "Department Head";
-                                      } else if (selectedTab === 'level-3') {
-                                        selectedTabRole = "Chief Of Staff";
-                                      } else if (selectedTab === 'level-4') {
-                                        selectedTabRole = "Advisory Committee";
-                                      } else if (selectedTab === 'level-5') {
-                                        selectedTabRole = "Board";
-                                      } else if (selectedTab === 'level-1') {
-                                        selectedTabRole = "Staff Manager";
-                                      }
-
-                                      // Check if selectedTabRole matches log.role
-                                      if (selectedTabRole === log.role) {
-                                        console.log("Selected tab role matches log role: " + log.role);
-                                        Match = true;
-                                      }
-
-                                      return Match;
-                                    }
-                                  }
-                                  return false;
-                                });
-
-                                return (
-                                  <div>
-                                    {isMatch ? (
-                                      <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                        Approved
-                                        </div>
-                                    </div>
-                                    ) : (
-                                    form?.forms?.[index]?.status !== "APPROVED" ? (
-                                    <div className={`${style.purpleButton} ${style.cursorPointer}`}>
-                                        <div
-                                        className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                        onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
-                                        >
-                                        Approve
-                                        </div>
-                                    </div>
-                                    ) : (
-                                    <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                        Approved
-                                        </div>
-                                    </div>
-                                    )
-                                    )}
-                                  </div>
-                                );
-                              })()
-                            )}
-                          </>
-                        )}
-                            </>
-                            )} */}
                                         {/* woking with credapproval false  */}
                                         {expand?.status && expand?.index === index + 1 && (
                                           <>
@@ -9271,15 +7701,13 @@ const NewActiveApplication = ({
                                           </div>
                                         </div>
                                       </div>
-                                      {expand?.status && expand?.index === index + 1 &&
-                                        <div className={`${style.marginTop} ${style.screenPadding}`}>
-                                          {renderFieldsBasedOnStep(data)}
-                                        </div>
-                                      }
+                                      <div className={`${style.marginTop} ${style.screenPadding}`}>
+                                        {renderFieldsBasedOnStep(data, index)}
+                                      </div>
                                     </div>))}
 
                             </div>
-                            {applicationType === "NEW" ? (
+                            {/* {applicationType === "NEW" ? (
                               <div>
                                 <div className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderStyleCred} `}>
                                   <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
@@ -9290,259 +7718,142 @@ const NewActiveApplication = ({
                                   </div>
                                 </div>
                                 {form?.formSchemas?.filter(data => data?.formCategory === 'Acknowledgement')?.map((data, index) => (
-                                  <div className={` ${style.marginTop5} ${(expandAcknowledgement?.status && expandAcknowledgement?.index === index) ? style.tableDataStyle1 : style.tableDataStyle}`}>
-                                    <div className={` ${style.marginTop10} ${(expandAcknowledgement?.status && expandAcknowledgement?.index === index) ? style.tableHeaderGridStyleFormCred : style.tableHeaderGridStyleCred1}`}>
+                                  <div className={` ${style.marginTop5} ${style.tableDataStyle}`}>
+                                    <div className={` ${style.marginTop10} ${style.tableHeaderGridStyleCred1}`}>
 
                                       <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
                                         <div className={`${style.tableDataFontStyleCred}`}>{data?.title}</div>
                                       </div>
-                                      {/* {expandAcknowledgement?.status && expandAcknowledgement?.index === index && (
-                        <>
-                          {form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.status !== "APPROVED" ? (
-                            <div className={`${style.purpleButton} ${style.cursorPointer} `}>
-                              <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`} onClick={() => handleStepsVerify(form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.id)}>Approve</div>
-                            </div>
-                          ) : (
-                            <div className={`${style.greenButton}  ${style.cursorPointer} `}>
-                              <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>Approved</div>
-                            </div>
-                          )}
-                        </>
-                      )} */}
-                                      {/* {expandAcknowledgement?.status && expandAcknowledgement?.index === index && (
-                              <>
-                                {form?.forms?.filter((data) => data?.formCategory === "Acknowledgement")[index]?.status !== "APPROVED" && (
-                                  <>
-                                    {credApproval?.some((newData) => newData.schemaId === data.id && newData.approvalRequired) && (
+
                                       <>
-                                        {logDetails?.logs && Array.isArray(logDetails.logs) && (() => {
-                                          const isMatch = logDetails.logs.some((log) => {
-                                            if (log.form && log.form.id) {
-                                              const match = log.form.id === form?.forms?.[index]?.id;
-                                              console.log("Checking log.form.id === form.forms?.[index].id:", log.form.id, form?.forms?.[index]?.id, match);
+                                        {form?.forms?.filter((data) => data?.formCategory === "Acknowledgement")[index]?.status !== "APPROVED" && (
+                                          <>
+                                            {credApproval?.some((newData) => {
 
-                                              if (match) {
-                                                let Match = false;
+                                              return newData.schemaId === data.id && newData.approvalRequired;
 
-                                                // Check if userRole includes log.role
-                                                if (userRole?.includes(log.role)) {
-                                                  console.log("Role matches user role: " + log.role);
-                                                  Match = true;
-                                                }
-
-                                                // Determine selectedTabRole based on selectedTab
-                                                let selectedTabRole;
-                                                switch (selectedTab) {
-                                                  case 'level-1':
-                                                    selectedTabRole = "Staff Manager";
-                                                    break;
-                                                  case 'level-2':
-                                                    selectedTabRole = "Department Head";
-                                                    break;
-                                                  case 'level-3':
-                                                    selectedTabRole = "Chief Of Staff";
-                                                    break;
-                                                  case 'level-4':
-                                                    selectedTabRole = "Advisory Committee";
-                                                    break;
-                                                  case 'level-5':
-                                                    selectedTabRole = "Board";
-                                                    break;
-                                                  default:
-                                                    selectedTabRole = "";
-                                                }
-
-                                                // Check if selectedTabRole matches log.role
-                                                if (selectedTabRole === log.role) {
-                                                  console.log("Selected tab role matches log role: " + log.role);
-                                                  Match = true;
-                                                }
-
-                                                return Match;
-                                              }
-                                            }
-                                            return false;
-                                          });
-
-                                          return (
-                                            <div>
-                                                                                            {isMatch ? (
-                                      <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                          Approved
-                                        </div>
-                                      </div>
-                                    ) : (
-                                      form?.forms?.[index]?.status !== "APPROVED" ? (
-                                        <div className={`${style.purpleButton} ${style.cursorPointer}`}>
-                                          <div
-                                            className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                            onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
-                                          >
-                                            Approve
-                                          </div>
-                                        </div>
-                                      ) : (
-                                        <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                          <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                            Approved
-                                          </div>
-                                        </div>
-                                      )
-                                    )}
-                                            </div>
-                                          );
-                                        })()}
-                                      </>
-                                    )}
-                                  </>
-                                )}
-                              </>
-                            )} */}
-                                      {expandAcknowledgement?.status && expandAcknowledgement?.index === index && (
-                                        <>
-                                          {form?.forms?.filter((data) => data?.formCategory === "Acknowledgement")[index]?.status !== "APPROVED" && (
-                                            <>
-                                              {credApproval?.some((newData) => {
-
-                                                return newData.schemaId === data.id && newData.approvalRequired;
-
-                                              }) ? (
+                                            }) ? (
+                                              <>
                                                 <>
-                                                  <>
-                                                    {logDetails?.logs && Array.isArray(logDetails.logs) && (() => {
-                                                      const isMatch = logDetails.logs.some((log) => {
-                                                        if (log.form && log.form.id) {
-                                                          const match = log.form.id === form?.forms?.[index]?.id;
-                                                          console.log("Checking log.form.id === form.forms?.[index].id:", log.form.id, form?.forms?.[index]?.id, match);
+                                                  {logDetails?.logs && Array.isArray(logDetails.logs) && (() => {
+                                                    const isMatch = logDetails.logs.some((log) => {
+                                                      if (log.form && log.form.id) {
+                                                        const match = log.form.id === form?.forms?.[index]?.id;
+                                                        console.log("Checking log.form.id === form.forms?.[index].id:", log.form.id, form?.forms?.[index]?.id, match);
 
-                                                          if (match) {
-                                                            let Match = false;
+                                                        if (match) {
+                                                          let Match = false;
 
-                                                            // Check if userRole includes log.role
-                                                            if (workModeType === log.role) {
-                                                              console.log("Role matches user role: " + log.role);
-                                                              Match = true;
-                                                            }
-
-                                                            // Determine selectedTabRole based on selectedTab
-                                                            let selectedTabRole;
-                                                            switch (selectedTab) {
-                                                              case 'level-1':
-                                                                selectedTabRole = "Staff Manager";
-                                                                break;
-                                                              case 'level-2':
-                                                                selectedTabRole = "Department Head";
-                                                                break;
-                                                              case 'level-3':
-                                                                selectedTabRole = "Chief Of Staff";
-                                                                break;
-                                                              case 'level-4':
-                                                                selectedTabRole = "Advisory Committee";
-                                                                break;
-                                                              case 'level-5':
-                                                                selectedTabRole = "Board";
-                                                                break;
-                                                              default:
-                                                                selectedTabRole = "";
-                                                            }
-
-                                                            // Check if selectedTabRole matches log.role
-                                                            if (selectedTabRole === log.role) {
-                                                              console.log("Selected tab role matches log role: " + log.role);
-                                                              Match = true;
-                                                            }
-
-                                                            return Match;
+                                                          if (workModeType === log.role) {
+                                                            console.log("Role matches user role: " + log.role);
+                                                            Match = true;
                                                           }
-                                                        }
-                                                        return false;
-                                                      });
 
-                                                      return (
-                                                        <div>
-                                                          {isMatch ? (
+                                                          let selectedTabRole;
+                                                          switch (selectedTab) {
+                                                            case 'level-1':
+                                                              selectedTabRole = "Staff Manager";
+                                                              break;
+                                                            case 'level-2':
+                                                              selectedTabRole = "Department Head";
+                                                              break;
+                                                            case 'level-3':
+                                                              selectedTabRole = "Chief Of Staff";
+                                                              break;
+                                                            case 'level-4':
+                                                              selectedTabRole = "Advisory Committee";
+                                                              break;
+                                                            case 'level-5':
+                                                              selectedTabRole = "Board";
+                                                              break;
+                                                            default:
+                                                              selectedTabRole = "";
+                                                          }
+
+                                                          if (selectedTabRole === log.role) {
+                                                            console.log("Selected tab role matches log role: " + log.role);
+                                                            Match = true;
+                                                          }
+
+                                                          return Match;
+                                                        }
+                                                      }
+                                                      return false;
+                                                    });
+
+                                                    return (
+                                                      <div>
+                                                        {isMatch ? (
+                                                          <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                            <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                              Approved
+                                                            </div>
+                                                          </div>
+                                                        ) : (
+                                                          form?.forms?.[index]?.status !== "APPROVED" ? (
+                                                            <div className={`${style.purpleButton} ${style.cursorPointer}`}>
+                                                              <Tooltip title="Click to Approve this Step" arrow>
+                                                                <div
+                                                                  className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                                                  onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
+                                                                >
+                                                                  Approve
+                                                                </div>
+                                                              </Tooltip>
+                                                            </div>
+                                                          ) : (
                                                             <div className={`${style.greenButton} ${style.cursorPointer}`}>
                                                               <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
                                                                 Approved
                                                               </div>
                                                             </div>
-                                                          ) : (
-                                                            form?.forms?.[index]?.status !== "APPROVED" ? (
-                                                              <div className={`${style.purpleButton} ${style.cursorPointer}`}>
-                                                                <Tooltip title="Click to Approve this Step" arrow>
-                                                                  <div
-                                                                    className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                                    onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
-                                                                  >
-                                                                    Approve
-                                                                  </div>
-                                                                </Tooltip>
-                                                              </div>
-                                                            ) : (
-                                                              <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                                <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                                  Approved
-                                                                </div>
-                                                              </div>
-                                                            )
-                                                          )}
-                                                        </div>
-                                                      );
-                                                    })()}
-                                                  </>
-
+                                                          )
+                                                        )}
+                                                      </div>
+                                                    );
+                                                  })()}
                                                 </>
-                                              ) : (
-                                                <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                  <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                    Approved
-                                                  </div>
-                                                </div>
-                                              )}
-                                            </>
-                                          )}
-                                        </>
-                                      )}
-                                      <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-                                        <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>
-                                          {
-                                            (expandAcknowledgement?.status && expandAcknowledgement?.index === index) ? (<Tooltip arrow title={"Click to Collapse Section"}><RemoveIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => { setExpandAcknowledgement({ status: false, index: 0 }); setFormSchemaId('') }} /></Tooltip>)
-                                              : (<Tooltip arrow title={"Click to Expand Section"}><AddIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => { setExpandAcknowledgement({ status: true, index: index }); setFormSchemaId(data?.id) }} /></Tooltip>)
-                                          }
-                                        </div>
-                                      </div>
-                                    </div>
-                                    {expandAcknowledgement?.status && expandAcknowledgement?.index === index &&
-                                      <div className={`${style.marginTop} ${style.screenPadding}`}>
-                                        {form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.uploadedFiles?.length !== 0 && (
-                                          <>
-                                            <iframe src={form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.uploadedFiles[form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.uploadedFiles?.length - 1]?.fileURL} width="100%" height="600px"></iframe>
-                                            {(data?.description === 'Statement of Confidentiality and Non-Disclosure' || data?.description === 'Conflict Of Interest Policy') && (
-                                              <div className={style.grid2}>
-                                                <div onClick={form?.forms?.[index]?.staffEsign === null ? () => handleStaffEsign(form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.id) : () => { }} >
-                                                  <ESignature
-                                                    userName={form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign !== null ? form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign?.name : ""}
-                                                    encData={form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign !== null ? form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign?.esign : ''}
-                                                    showData={form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign !== null ? true : false}
-                                                    showDatais={true}
-                                                  />
-                                                </div>
-                                                <div className={style.verticalAlignCenter}>
-                                                  <div className={style.displayInRow}>
-                                                    <div className={style.dateTitle}>Date: </div>
-                                                    <div className={`${style.date} ${style.marginLeft}`}>{form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign !== null ? format(new Date(form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign?.signedDate), canadaData?.dateFormat || 'dd/MM/yyyy') : ""}</div>
-                                                  </div>
+
+                                              </>
+                                            ) : (
+                                              <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                  Approved
                                                 </div>
                                               </div>
                                             )}
                                           </>
                                         )}
-                                      </div>
-                                    }
+                                      </>
+                                    </div>
+                                    <div className={`${style.marginTop} ${style.screenPadding}`}>
+                                      {form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.uploadedFiles?.length !== 0 && (
+                                        <>
+                                          <iframe src={form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.uploadedFiles[form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.uploadedFiles?.length - 1]?.fileURL} width="100%" height="600px"></iframe>
+                                          {(data?.description === 'Statement of Confidentiality and Non-Disclosure' || data?.description === 'Conflict Of Interest Policy') && (
+                                            <div className={style.grid2}>
+                                              <div onClick={form?.forms?.[index]?.staffEsign === null ? () => handleStaffEsign(form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.id) : () => { }} >
+                                                <ESignature
+                                                  userName={form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign !== null ? form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign?.name : ""}
+                                                  encData={form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign !== null ? form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign?.esign : ''}
+                                                  showData={form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign !== null ? true : false}
+                                                  showDatais={true}
+                                                />
+                                              </div>
+                                              <div className={style.verticalAlignCenter}>
+                                                <div className={style.displayInRow}>
+                                                  <div className={style.dateTitle}>Date: </div>
+                                                  <div className={`${style.date} ${style.marginLeft}`}>{form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign !== null ? format(new Date(form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign?.signedDate), canadaData?.dateFormat || 'dd/MM/yyyy') : ""}</div>
+                                                </div>
+                                              </div>
+                                            </div>
+                                          )}
+                                        </>
+                                      )}
+                                    </div>
                                   </div>))}
                               </div>
-                            ) : (" ")}
+                            ) : (" ")} */}
                             <div className={style.marginBottom20}></div>
                           </div>
                         </div>
@@ -9691,10 +8002,7 @@ const NewActiveApplication = ({
                           </div>
                           <div>
                             <div
-                              className={` ${style.marginTop5} ${expand?.status && expand?.index === 0
-                                ? style.tableDataStyle1
-                                : style.tableDataStyle
-                                }`}
+                              className={` ${style.marginTop5} ${style.tableDataStyle}`}
                             >
                               <div
                                 className={` ${expand?.status && expand?.index === 0
@@ -9908,8 +8216,7 @@ const NewActiveApplication = ({
                                 (data) => {
                                   if (form?.creationType === "NEW") {
                                     return (
-                                      (data?.formCategory === "Form" || data?.formCategory === "Disclosure") &&
-                                      data?.schemaCategory !== "UploadYourDoc"
+                                      (data?.formCategory === "Form" || data?.formCategory === "Disclosure" || data?.formCategory === "Acknowledgement")
                                     );
                                   } else {
                                     // Default filter when form?.creationType is not "NEW"
@@ -9921,10 +8228,7 @@ const NewActiveApplication = ({
                                 })
                               ?.map((data, index) => (
                                 <div
-                                  className={` ${style.marginTop5} ${expand?.status && expand?.index === index + 1
-                                    ? style.tableDataStyle1
-                                    : style.tableDataStyle
-                                    }`}
+                                  className={` ${style.marginTop5} ${style.tableDataStyle}`}
                                 >
                                   <div
                                     className={` ${expand?.index === index + 1
@@ -9988,77 +8292,7 @@ const NewActiveApplication = ({
                                         </div>
                                       </div>
                                     </div>
-                                    {/* {expand?.status && expand?.index === index + 1 ? (
-                          <>
-                            {form?.forms?.[index]?.status !== "APPROVED" &&
-                             form?.forms?.[index]?.schemaCategory !== "UploadYourDoc" ? (
-                              <div
-                                className={`${style.purpleButton} ${style.cursorPointer} `}
-                              >
-                               {form?.forms?.[index]?.schemaCategory !== "UploadYourDoc" && (
-                                    <div
-                                      className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                      onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
-                                    >
-                                      Verify
-                                    </div>
-                                  )}
-                              </div>
-                            ) : (
-                              <div
-                                className={`${style.greenButton}  ${style.cursorPointer} `}
-                              >
-                                <div
-                                  className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                >
-                                  Verified
-                                </div>
-                              </div>
-                            )}
-                          </>
-                        ) : (
-                          <>
-                            <div
-                              className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                            >
-                              <div
-                                className={`${style.marginLeft10}${style.justifySpaceAround
-                                  } ${form?.forms?.[index]?.status !== "APPROVED" &&
-                                      form?.forms?.[index]?.schemaCategory !== "UploadYourDoc"
-                                    ? style.greyDotStyle
-                                    : style.greenDotStyle
-                                  }`}
-                              ></div>
-                            </div>
-                            <div
-                              className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                            >
-                              <div
-                                className={`${style.marginLeft10}${style.justifySpaceAround
-                                  } ${form?.forms?.[index]?.status !== "APPROVED" &&
-                                      form?.forms?.[index]?.schemaCategory !== "UploadYourDoc"
-                                    ? style.greyDotStyle
-                                    : style.greenDotStyle
-                                  }`}
-                              ></div>
-                            </div>
-                            <div
-                              className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                            >
-                              <div
-                                className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
-                              >
-                                {form?.forms
-                                  ?.filter(
-                                    (formData, formIndex) => formIndex === index
-                                  )
-                                  ?.map(
-                                    (data) => data?.uploadedFiles?.length || 0
-                                  )}
-                              </div>
-                            </div>
-                          </>
-                        )} */}
+
                                     {expand?.status && expand?.index === index + 1 ? (
                                       <>
                                         {credApproval?.some((newData) => {
@@ -10184,51 +8418,17 @@ const NewActiveApplication = ({
                                         </div>
                                       </>
                                     )}
-                                    {/* <div
-                                    className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                  >
-                                    <div
-                                      className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
-                                    >
-                                      {expand?.status && expand?.index === index + 1 ? (
-                                        <RemoveIcon
-                                          sx={{
-                                            fontSize: 20,
-                                            color: "#94979A",
-                                            cursor: "pointer",
-                                          }}
-                                          onClick={() => {
-                                            setExpand({ status: false, index: 0 });
-                                            setFormSchemaId("");
-                                          }}
-                                        />
-                                      ) : (
-                                        <AddIcon
-                                          sx={{
-                                            fontSize: 20,
-                                            color: "#94979A",
-                                            cursor: "pointer",
-                                          }}
-                                          onClick={() => {
-                                            setExpand({ status: true, index: index + 1 });
-                                            setFormSchemaId(data?.id);
-                                          }}
-                                        />
-                                      )}
-                                    </div>
-                                  </div> */}
+
                                   </div>
-                                  {expand?.status && expand?.index === index + 1 && (
-                                    <div
-                                      className={`${style.marginTop} ${style.screenPadding}`}
-                                    >
-                                      {renderFieldsBasedOnStep(data)}
-                                    </div>
-                                  )}
+                                  <div
+                                    className={`${style.marginTop} ${style.screenPadding}`}
+                                  >
+                                    {renderFieldsBasedOnStep(data, index)}
+                                  </div>
                                 </div>
                               ))}
                           </div>
-                          {applicationType === "NEW" ? (
+                          {/* {applicationType === "NEW" ? (
                             <div>
                               <div
                                 className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderGridStyle1} `}
@@ -10252,18 +8452,10 @@ const NewActiveApplication = ({
                                 ?.filter((data) => data?.formCategory === "Acknowledgement")
                                 ?.map((data, index) => (
                                   <div
-                                    className={` ${style.marginTop5} ${expandAcknowledgement?.status &&
-                                      expandAcknowledgement?.index === index
-                                      ? style.tableDataStyle1
-                                      : style.tableDataStyle
-                                      }`}
+                                    className={` ${style.marginTop5} ${style.tableDataStyle}`}
                                   >
                                     <div
-                                      className={` ${style.marginTop10} ${expandAcknowledgement?.status &&
-                                        expandAcknowledgement?.index === index
-                                        ? style.tableHeaderGridStyleForm
-                                        : style.tableHeaderGridStyle1
-                                        }`}
+                                      className={` ${style.marginTop10} ${style.tableHeaderGridStyle1}`}
                                     >
                                       <div
                                         className={`${style.displayInRow} ${style.verticalAlignCenter} `}
@@ -10286,411 +8478,232 @@ const NewActiveApplication = ({
                                           {data?.title}
                                         </div>
                                       </div>
-                                      {/* {expandAcknowledgement?.status &&
-                          expandAcknowledgement?.index === index && (
-                            <>
-                              {form?.forms?.filter(
-                                (data) =>
-                                  data?.formCategory === "Acknowledgement"
-                              )[index]?.status !== "APPROVED" ? (
-                                <div
-                                  className={`${style.purpleButton} ${style.cursorPointer} `}
-                                >
-                                  <div
-                                    className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                    onClick={() =>
-                                      handleStepsVerify(
-                                        form?.forms?.filter(
-                                          (data) =>
-                                            data?.formCategory ===
-                                            "Acknowledgement"
-                                        )[index]?.id
-                                      )
-                                    }
-                                  >
-                                    Verify
-                                  </div>
-                                </div>
-                              ) : (
-                                <div
-                                  className={`${style.greenButton}  ${style.cursorPointer} `}
-                                >
-                                  <div
-                                    className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                  >
-                                    Verified
-                                  </div>
-                                </div>
-                              )}
-                            </>
-                          )} */}
-                                      {/* wokring credapproval without false */}
-                                      {/* {expandAcknowledgement?.status && expandAcknowledgement?.index === index && (
-                              <>
-                                {form?.forms?.filter((data) => data?.formCategory === "Acknowledgement") && (
-                                  <>
-                                    {credApproval?.some((newData) => newData.schemaId === data.id && newData.approvalRequired) && (
+
                                       <>
-                                        {logDetails?.logs && Array.isArray(logDetails.logs) && (() => {
-                                          const isMatch = logDetails.logs.some((log) => {
-                                            if (log.form && log.form.id) {
-                                              const match = log.form.id === form?.forms?.[index]?.id;
-                                              console.log("Checking log.form.id === form.forms?.[index].id:", log.form.id, form?.forms?.[index]?.id, match);
-
-                                              if (match) {
-                                                let Match = false;
-
-                                                // Check if userRole includes log.role
-                                                if (userRole?.includes(log.role)) {
-                                                  console.log("Role matches user role: " + log.role);
-                                                  Match = true;
-                                                }
-
-                                                // Determine selectedTabRole based on selectedTab
-                                                let selectedTabRole;
-                                                switch (selectedTab) {
-                                                  case 'level-1':
-                                                    selectedTabRole = "Staff Manager";
-                                                    break;
-                                                  case 'level-2':
-                                                    selectedTabRole = "Department Head";
-                                                    break;
-                                                  case 'level-3':
-                                                    selectedTabRole = "Chief Of Staff";
-                                                    break;
-                                                  case 'level-4':
-                                                    selectedTabRole = "Advisory Committee";
-                                                    break;
-                                                  case 'level-5':
-                                                    selectedTabRole = "Board";
-                                                    break;
-                                                  default:
-                                                    selectedTabRole = "";
-                                                }
-
-                                                // Check if selectedTabRole matches log.role
-                                                if (selectedTabRole === log.role) {
-                                                  console.log("Selected tab role matches log role: " + log.role);
-                                                  Match = true;
-                                                }
-
-                                                return Match;
+                                        {form?.forms?.filter((data) => data?.formCategory === "Acknowledgement")[index]?.status !== "APPROVED" && (
+                                          <>
+                                            {credApproval?.some((newData) => {
+                                              if (newData.schemaId === data.id && newData.approvalRequired) {
+                                                return true;
                                               }
-                                            }
-                                            return false;
-                                          });
+                                              return false;
+                                            }) ? (
+                                              <>
+                                                {credApproval?.some((newData) => newData.schemaId === data.id && newData.approvalRequired) && (
+                                                  <>
+                                                    {logDetails?.logs && Array.isArray(logDetails.logs) && (() => {
+                                                      const isMatch = logDetails.logs.some((log) => {
+                                                        if (log.form && log.form.id) {
+                                                          const match = log.form.id === form?.forms?.[index]?.id;
+                                                          console.log("Checking log.form.id === form.forms?.[index].id:", log.form.id, form?.forms?.[index]?.id, match);
 
-                                          return (
-                                            <div>
-                                               {isMatch ? (
-                                      <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                          Approved
-                                        </div>
-                                      </div>
-                                    ) : (
-                                      form?.forms?.[index]?.status !== "APPROVED" ? (
-                                        <div className={`${style.purpleButton} ${style.cursorPointer}`}>
-                                          <div
-                                            className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                            onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
-                                          >
-                                            Approve
-                                          </div>
-                                        </div>
-                                      ) : (
-                                        <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                          <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                            Approved
-                                          </div>
-                                        </div>
-                                      )
-                                    )}
-                                            </div>
-                                          );
-                                        })()}
-                                      </>
-                                    )}
-                                  </>
-                                )}
-                              </>
-                            )} */}
-                                      {/* working with cred Approval */}
-                                      {expandAcknowledgement?.status && expandAcknowledgement?.index === index && (
-                                        <>
-                                          {form?.forms?.filter((data) => data?.formCategory === "Acknowledgement")[index]?.status !== "APPROVED" && (
-                                            <>
-                                              {credApproval?.some((newData) => {
-                                                if (newData.schemaId === data.id && newData.approvalRequired) {
-                                                  return true;
-                                                }
-                                                return false;
-                                              }) ? (
-                                                <>
-                                                  {credApproval?.some((newData) => newData.schemaId === data.id && newData.approvalRequired) && (
-                                                    <>
-                                                      {logDetails?.logs && Array.isArray(logDetails.logs) && (() => {
-                                                        const isMatch = logDetails.logs.some((log) => {
-                                                          if (log.form && log.form.id) {
-                                                            const match = log.form.id === form?.forms?.[index]?.id;
-                                                            console.log("Checking log.form.id === form.forms?.[index].id:", log.form.id, form?.forms?.[index]?.id, match);
+                                                          if (match) {
+                                                            let Match = false;
 
-                                                            if (match) {
-                                                              let Match = false;
-
-                                                              // Check if userRole includes log.role
-                                                              if (workModeType === log.role) {
-                                                                console.log("Role matches user role: " + log.role);
-                                                                Match = true;
-                                                              }
-
-                                                              // Determine selectedTabRole based on selectedTab
-                                                              let selectedTabRole;
-                                                              switch (selectedTab) {
-                                                                case 'level-1':
-                                                                  selectedTabRole = "Staff Manager";
-                                                                  break;
-                                                                case 'level-2':
-                                                                  selectedTabRole = "Department Head";
-                                                                  break;
-                                                                case 'level-3':
-                                                                  selectedTabRole = "Chief Of Staff";
-                                                                  break;
-                                                                case 'level-4':
-                                                                  selectedTabRole = "Advisory Committee";
-                                                                  break;
-                                                                case 'level-5':
-                                                                  selectedTabRole = "Board";
-                                                                  break;
-                                                                default:
-                                                                  selectedTabRole = "";
-                                                              }
-
-                                                              // Check if selectedTabRole matches log.role
-                                                              if (selectedTabRole === log.role) {
-                                                                console.log("Selected tab role matches log role: " + log.role);
-                                                                Match = true;
-                                                              }
-
-                                                              return Match;
+                                                            if (workModeType === log.role) {
+                                                              console.log("Role matches user role: " + log.role);
+                                                              Match = true;
                                                             }
-                                                          }
-                                                          return false;
-                                                        });
 
-                                                        return (
-                                                          <div>
-                                                            {isMatch ? (
+                                                            let selectedTabRole;
+                                                            switch (selectedTab) {
+                                                              case 'level-1':
+                                                                selectedTabRole = "Staff Manager";
+                                                                break;
+                                                              case 'level-2':
+                                                                selectedTabRole = "Department Head";
+                                                                break;
+                                                              case 'level-3':
+                                                                selectedTabRole = "Chief Of Staff";
+                                                                break;
+                                                              case 'level-4':
+                                                                selectedTabRole = "Advisory Committee";
+                                                                break;
+                                                              case 'level-5':
+                                                                selectedTabRole = "Board";
+                                                                break;
+                                                              default:
+                                                                selectedTabRole = "";
+                                                            }
+
+                                                            if (selectedTabRole === log.role) {
+                                                              console.log("Selected tab role matches log role: " + log.role);
+                                                              Match = true;
+                                                            }
+
+                                                            return Match;
+                                                          }
+                                                        }
+                                                        return false;
+                                                      });
+
+                                                      return (
+                                                        <div>
+                                                          {isMatch ? (
+                                                            <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                              <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                                Approved
+                                                              </div>
+                                                            </div>
+                                                          ) : (
+                                                            form?.forms?.[index]?.status !== "APPROVED" ? (
+                                                              <div className={`${style.purpleButton} ${style.cursorPointer}`}>
+                                                                <Tooltip title="Click to Approve this Step" arrow>
+                                                                  <div
+                                                                    className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                                                    onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
+                                                                  >
+                                                                    Approve
+                                                                  </div>
+                                                                </Tooltip>
+                                                              </div>
+                                                            ) : (
                                                               <div className={`${style.greenButton} ${style.cursorPointer}`}>
                                                                 <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
                                                                   Approved
                                                                 </div>
                                                               </div>
-                                                            ) : (
-                                                              form?.forms?.[index]?.status !== "APPROVED" ? (
-                                                                <div className={`${style.purpleButton} ${style.cursorPointer}`}>
-                                                                  <Tooltip title="Click to Approve this Step" arrow>
-                                                                    <div
-                                                                      className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                                      onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
-                                                                    >
-                                                                      Approve
-                                                                    </div>
-                                                                  </Tooltip>
-                                                                </div>
-                                                              ) : (
-                                                                <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                                  <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                                    Approved
-                                                                  </div>
-                                                                </div>
-                                                              )
-                                                            )}
-                                                          </div>
-                                                        );
-                                                      })()}
-                                                    </>
-                                                  )}
-                                                </>
-                                              ) : (
-                                                <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                  <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                    Approved
+                                                            )
+                                                          )}
+                                                        </div>
+                                                      );
+                                                    })()}
+                                                  </>
+                                                )}
+                                              </>
+                                            ) : (
+                                              <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                  Approved
+                                                </div>
+                                              </div>
+                                            )}
+                                          </>
+                                        )}
+                                      </>
+
+                                    </div>
+
+                                    <div
+                                      className={`${style.marginTop} ${style.screenPadding}`}
+                                    >
+                                      {form?.forms?.filter(
+                                        (data) => data?.formCategory === "Acknowledgement"
+                                      )[index]?.uploadedFiles?.length !== 0 && (
+                                          <>
+                                            <iframe
+                                              src={
+                                                form?.forms?.filter(
+                                                  (data) =>
+                                                    data?.formCategory === "Acknowledgement"
+                                                )[index]?.uploadedFiles[
+                                                  form?.forms?.filter(
+                                                    (data) =>
+                                                      data?.formCategory ===
+                                                      "Acknowledgement"
+                                                  )[index]?.uploadedFiles?.length - 1
+                                                ]?.fileURL
+                                              }
+                                              width="100%"
+                                              height="600px"
+                                            ></iframe>
+                                            {(data?.description ===
+                                              "Statement of Confidentiality and Non-Disclosure" ||
+                                              data?.description ===
+                                              "Conflict Of Interest Policy") && (
+                                                <div className={style.grid2}>
+                                                  <div
+                                                    onClick={
+                                                      form?.forms?.[index]?.staffEsign === null
+                                                        ? () =>
+                                                          handleStaffEsign(
+                                                            form?.forms?.filter(
+                                                              (data) =>
+                                                                data?.formCategory ===
+                                                                "Acknowledgement"
+                                                            )[index]?.id
+                                                          )
+                                                        : () => { }
+                                                    }
+                                                  >
+                                                    <ESignature
+                                                      userName={
+                                                        form?.forms?.filter(
+                                                          (data) =>
+                                                            data?.formCategory ===
+                                                            "Acknowledgement"
+                                                        )[index]?.staffEsign !== null
+                                                          ? form?.forms?.filter(
+                                                            (data) =>
+                                                              data?.formCategory ===
+                                                              "Acknowledgement"
+                                                          )[index]?.staffEsign?.name
+                                                          : ""
+                                                      }
+                                                      encData={
+                                                        form?.forms?.filter(
+                                                          (data) =>
+                                                            data?.formCategory ===
+                                                            "Acknowledgement"
+                                                        )[index]?.staffEsign !== null
+                                                          ? form?.forms?.filter(
+                                                            (data) =>
+                                                              data?.formCategory ===
+                                                              "Acknowledgement"
+                                                          )[index]?.staffEsign?.esign
+                                                          : ""
+                                                      }
+                                                      showData={
+                                                        form?.forms?.filter(
+                                                          (data) =>
+                                                            data?.formCategory ===
+                                                            "Acknowledgement"
+                                                        )[index]?.staffEsign !== null
+                                                          ? true
+                                                          : false
+                                                      }
+                                                      showDatais={true}
+                                                    />
+                                                  </div>
+                                                  <div className={style.verticalAlignCenter}>
+                                                    <div className={style.displayInRow}>
+                                                      <div className={style.dateTitle}>
+                                                        Date:{" "}
+                                                      </div>
+                                                      <div
+                                                        className={`${style.date} ${style.marginLeft}`}
+                                                      >
+                                                        {form?.forms?.filter(
+                                                          (data) =>
+                                                            data?.formCategory ===
+                                                            "Acknowledgement"
+                                                        )[index]?.staffEsign !== null
+                                                          ? format(
+                                                            new Date(
+                                                              form?.forms?.filter(
+                                                                (data) =>
+                                                                  data?.formCategory ===
+                                                                  "Acknowledgement"
+                                                              )[
+                                                                index
+                                                              ]?.staffEsign?.signedDate
+                                                            ),
+                                                            canadaData?.dateFormat ||
+                                                            "dd/MM/yyyy"
+                                                          )
+                                                          : ""}
+                                                      </div>
+                                                    </div>
                                                   </div>
                                                 </div>
                                               )}
-                                            </>
-                                          )}
-                                        </>
-                                      )}
-                                      <div
-                                        className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                      >
-                                        <div
-                                          className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
-                                        >
-                                          {expandAcknowledgement?.status &&
-                                            expandAcknowledgement?.index === index ? (
-                                            <Tooltip arrow title={"Click to Collapse Section"}>
-                                              <RemoveIcon
-                                                sx={{
-                                                  fontSize: 20,
-                                                  color: "#94979A",
-                                                  cursor: "pointer",
-                                                }}
-                                                onClick={() => {
-                                                  setExpandAcknowledgement({
-                                                    status: false,
-                                                    index: 0,
-                                                  });
-                                                  setFormSchemaId("");
-                                                }}
-                                              />
-                                            </Tooltip>
-                                          ) : (
-                                            <Tooltip arrow title={"Click to Expand Section"}>
-                                              <AddIcon
-                                                sx={{
-                                                  fontSize: 20,
-                                                  color: "#94979A",
-                                                  cursor: "pointer",
-                                                }}
-                                                onClick={() => {
-                                                  setExpandAcknowledgement({
-                                                    status: true,
-                                                    index: index,
-                                                  });
-                                                  setFormSchemaId(data?.id);
-                                                }}
-                                              />
-                                            </Tooltip>
-                                          )}
-                                        </div>
-                                      </div>
+                                          </>
+                                        )}
                                     </div>
-                                    {expandAcknowledgement?.status &&
-                                      expandAcknowledgement?.index === index && (
-                                        <div
-                                          className={`${style.marginTop} ${style.screenPadding}`}
-                                        >
-                                          {form?.forms?.filter(
-                                            (data) => data?.formCategory === "Acknowledgement"
-                                          )[index]?.uploadedFiles?.length !== 0 && (
-                                              <>
-                                                <iframe
-                                                  src={
-                                                    form?.forms?.filter(
-                                                      (data) =>
-                                                        data?.formCategory === "Acknowledgement"
-                                                    )[index]?.uploadedFiles[
-                                                      form?.forms?.filter(
-                                                        (data) =>
-                                                          data?.formCategory ===
-                                                          "Acknowledgement"
-                                                      )[index]?.uploadedFiles?.length - 1
-                                                    ]?.fileURL
-                                                  }
-                                                  width="100%"
-                                                  height="600px"
-                                                ></iframe>
-                                                {(data?.description ===
-                                                  "Statement of Confidentiality and Non-Disclosure" ||
-                                                  data?.description ===
-                                                  "Conflict Of Interest Policy") && (
-                                                    <div className={style.grid2}>
-                                                      <div
-                                                        onClick={
-                                                          form?.forms?.[index]?.staffEsign === null
-                                                            ? () =>
-                                                              handleStaffEsign(
-                                                                form?.forms?.filter(
-                                                                  (data) =>
-                                                                    data?.formCategory ===
-                                                                    "Acknowledgement"
-                                                                )[index]?.id
-                                                              )
-                                                            : () => { }
-                                                        }
-                                                      >
-                                                        <ESignature
-                                                          userName={
-                                                            form?.forms?.filter(
-                                                              (data) =>
-                                                                data?.formCategory ===
-                                                                "Acknowledgement"
-                                                            )[index]?.staffEsign !== null
-                                                              ? form?.forms?.filter(
-                                                                (data) =>
-                                                                  data?.formCategory ===
-                                                                  "Acknowledgement"
-                                                              )[index]?.staffEsign?.name
-                                                              : ""
-                                                          }
-                                                          encData={
-                                                            form?.forms?.filter(
-                                                              (data) =>
-                                                                data?.formCategory ===
-                                                                "Acknowledgement"
-                                                            )[index]?.staffEsign !== null
-                                                              ? form?.forms?.filter(
-                                                                (data) =>
-                                                                  data?.formCategory ===
-                                                                  "Acknowledgement"
-                                                              )[index]?.staffEsign?.esign
-                                                              : ""
-                                                          }
-                                                          showData={
-                                                            form?.forms?.filter(
-                                                              (data) =>
-                                                                data?.formCategory ===
-                                                                "Acknowledgement"
-                                                            )[index]?.staffEsign !== null
-                                                              ? true
-                                                              : false
-                                                          }
-                                                          showDatais={true}
-                                                        />
-                                                      </div>
-                                                      <div className={style.verticalAlignCenter}>
-                                                        <div className={style.displayInRow}>
-                                                          <div className={style.dateTitle}>
-                                                            Date:{" "}
-                                                          </div>
-                                                          <div
-                                                            className={`${style.date} ${style.marginLeft}`}
-                                                          >
-                                                            {form?.forms?.filter(
-                                                              (data) =>
-                                                                data?.formCategory ===
-                                                                "Acknowledgement"
-                                                            )[index]?.staffEsign !== null
-                                                              ? format(
-                                                                new Date(
-                                                                  form?.forms?.filter(
-                                                                    (data) =>
-                                                                      data?.formCategory ===
-                                                                      "Acknowledgement"
-                                                                  )[
-                                                                    index
-                                                                  ]?.staffEsign?.signedDate
-                                                                ),
-                                                                canadaData?.dateFormat ||
-                                                                "dd/MM/yyyy"
-                                                              )
-                                                              : ""}
-                                                          </div>
-                                                        </div>
-                                                      </div>
-                                                    </div>
-                                                  )}
-                                              </>
-                                            )}
-                                        </div>
-                                      )}
                                   </div>
                                 ))}
                             </div>
-                          ) : (" ")}
+                          ) : (" ")} */}
                           <div className={style.marginBottom20}></div>
                         </div>
                       </div>
@@ -10704,68 +8717,11 @@ const NewActiveApplication = ({
             <div>
               {(workModeType === 'Staff Manager') || (workModeType === 'Chief Of Staff') || (workModeType === 'Credentialing Committee') || (workModeType === 'Credentialing Committee User') || (workModeType === 'Department Head') ? (
                 <>
-                  {/* {selectedTab !== "level-4" && selectedTab !== "level-5" && !(applicationType === "REAPPOINTMENT" && selectedTab === "level-1") && !(userRole.includes('Staff Manager') && applicationType === "REAPPOINTMENT" && selectedTab === "level-2") && !(userRole.includes('Credentialing Committee') && applicationType === "REAPPOINTMENT" && selectedTab === "level-4") && (
-                  <div className={`${style.twoColumnGrid}`}>
-                    <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
-                      <div
-                        className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                        onClick={() => {
-                          onClose();
-                        }}
-                      >
-                        SAVE IN PROGRESS
-                      </div>
-                    </div>
-                    <div
-                      className={`${style.buttonCardStyle} ${style.cursorPointer}`}
-                    >
-                      <div
-                        className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                        // onClick={() => {
-                        //   setShowApplicationDeclineDialog(true);
-                        // }}
-                        onClick={() => {
-                          setShowApplicationDeclineDialog(true);
-                        }}
-                      >
-                        NOT RECOMMENDED
-                      </div>
-                    </div>
-                  </div>
-                )} */}
-                  {((workModeType === 'Staff Manager' && applicationType === "REAPPOINTMENT" && selectedTab === "level-1") || (workModeType === 'Chief Of Staff' && applicationType === "REAPPOINTMENT" && selectedTab === "level-1") || (workModeType === 'Staff Manager' && selectedTab === 'level-1' && applicationType === "LOCUM")) ? (
-                    // <div className={`${style.twoColumnGrid}`}>
-                    //   <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
-                    //     <div
-                    //       className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                    //       onClick={() => {
-                    //         onClose();
-                    //       }}
-                    //     >
-                    //       SAVE IN PROGRESS
-                    //     </div>
-                    //   </div>
-                    //   <div
-                    //     className={`${style.buttonCardStyle} ${style.cursorPointer}`}
-                    //     // className={`${style.buttonCardStyle} ${isApproved ? style.cursorPointer : ''}`}
-                    //     // style={{ opacity: isApproved ? 1 : 0.5 }}
-                    //   >
-                    //     <div
-                    //       className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                    //       // onClick={() => {
-                    //       //   onClickApprovalDeptFunction();
-                    //       // }}
-                    //       // onClick={isApproved ? onClickApprovalDeptFunction : undefined}
-                    //       onClick={() => {
-                    //         onClickApproveMoveFunction();
-                    //       }}
 
-                    //     >
-                    //       Verified, Send to Dept. Chief
-                    //     </div>
-                    //   </div>
-                    // </div>
-                    <div className={`${style.fixedBottom} ${approvalwithoutnotesCommentsBox || approvalnotesCommentsBox || approvalnotesCommentsBoxDept || showApplicationDeclineDialog || notesCommentsBox || reappointmentChangesCommentsBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
+                  {((workModeType === 'Staff Manager' && (applicationType === "REAPPOINTMENT" || applicationType === "NEW") && selectedTab === "level-1") || (workModeType === 'Chief Of Staff' && (applicationType === "REAPPOINTMENT" || applicationType === "NEW") && selectedTab === "level-1") || (workModeType === 'Staff Manager' && selectedTab === 'level-1' && applicationType === "LOCUM")) ? (
+
+                    <div className={`${style.fixedBottom} ${(approvalwithoutnotesCommentsBox || approvalnotesCommentsBox || approvalnotesCommentsBoxDept || showApplicationDeclineDialog || notesCommentsBox || reappointmentChangesCommentsBox) ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
+                      {/* <div> */}
                       <div className={`${style.twoColumnGrid}`}>
                         <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
                           <Tooltip title={"Click to Save Your Progress"} arrow>
@@ -10802,13 +8758,13 @@ const NewActiveApplication = ({
                           // className={`${style.bigButtonStyle1} ${style.cursorPointer}`}
                           className={`${style.buttonCardStyle} ${isApproved ? style.cursorPointer : ''}`}
                           style={{ opacity: isApproved ? 1 : 0.5 }}>
-                          <Tooltip title={isApproved && applicationType === "REAPPOINTMENT" ? "Click to Send later to the Department Head after verification" : isApproved && applicationType === "LOCUM" ? "Click to Send later to the Cred Comm after verification" : ""} arrow>
+                          <Tooltip title={isApproved && (applicationType === "REAPPOINTMENT" || applicationType === "NEW") ? "Click to Send later to the Department Head after verification" : isApproved && applicationType === "LOCUM" ? "Click to Send later to the Cred Comm after verification" : ""} arrow>
                             <div
                               className={`${style.buttonTextStyle} ${style.alignCenter}`}
                               // onClick={onClickApprovalDeptFunction}
                               onClick={isApproved ? onClose : undefined}
                             >
-                              {applicationType === "REAPPOINTMENT" ? "Verified, send later to Department Head" : "Verified, send later to Cred Comm"}
+                              {(applicationType === "REAPPOINTMENT" || applicationType === "NEW") ? "Verified, send later to Department Head" : "Verified, send later to Cred Comm"}
                             </div>
                           </Tooltip>
                         </div>
@@ -10818,13 +8774,13 @@ const NewActiveApplication = ({
                           // className={`${style.bigButtonStyle1} ${style.cursorPointer}`}
                           className={`${style.bigButtonStyle1} ${isApproved ? style.cursorPointer : ''}`}
                           style={{ opacity: isApproved ? 1 : 0.5 }}>
-                          <Tooltip title={isApproved && applicationType === "REAPPOINTMENT" ? "Click to Send the verified application to the Department Head" : isApproved && applicationType === "LOCUM" ? "Click to Send the verified application to the Cred Comm" : ""} arrow>
+                          <Tooltip title={isApproved && (applicationType === "REAPPOINTMENT" || applicationType === "NEW") ? "Click to Send the verified application to the Department Head" : isApproved && applicationType === "LOCUM" ? "Click to Send the verified application to the Cred Comm" : ""} arrow>
                             <div
                               className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
                               // onClick={onClickApprovalDeptFunction}
                               onClick={isApproved ? onClickApprovalDeptFunction : undefined}
                             >
-                              {applicationType === "REAPPOINTMENT" ? "Verified, Send to Department Head" : "Verified, Send to Cred Comm"}
+                              {(applicationType === "REAPPOINTMENT" || applicationType === "NEW") ? "Verified, Send to Department Head" : "Verified, Send to Cred Comm"}
                             </div>
                           </Tooltip>
                         </div>
@@ -10903,7 +8859,7 @@ const NewActiveApplication = ({
                       </div>
                     </div>
                   ) : ("")}
-                  {(applicationType === "NEW" && (selectedTab === "level-1" || selectedTab === "level-2" || selectedTab === "level-3")) ? (
+                  {/* {(applicationType === "NEW" && (selectedTab === "level-1" || selectedTab === "level-2" || selectedTab === "level-3")) ? (
                     <>
                       <div className={`${style.twoColumnGrid}`}>
                         <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
@@ -10920,16 +8876,11 @@ const NewActiveApplication = ({
                         </div>
                         <div
                           className={`${style.buttonCardStyle} ${style.cursorPointer}`}
-                        // className={`${style.buttonCardStyle} ${isApproved ? style.cursorPointer : ''}`}
-                        // style={{ opacity: isApproved ? 1 : 0.5 }}
+
                         >
                           <Tooltip title={"Click to Reject this Application"} arrow>
                             <div
                               className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                            // onClick={() => {
-                            //   onClickApprovalDeptFunction();
-                            // }}
-                            // onClick={isApproved ? onClickApprovalDeptFunction : undefined}
                             >
                               Reject
                             </div>
@@ -10937,9 +8888,9 @@ const NewActiveApplication = ({
                         </div>
                       </div>
                     </>
-                  ) : ("")}
+                  ) : ("")} */}
 
-                  {(applicationType === "NEW" && selectedTab === "level-1") ? (
+                  {/* {(applicationType === "NEW" && selectedTab === "level-1") ? (
                     <div className={`${style.bigButtonStyle1} ${style.cursorPointer} ${style.marginTop20}`}>
                       <Tooltip title={"Click to Verify and Send to the Department Head"} arrow>
                         <div
@@ -10950,9 +8901,9 @@ const NewActiveApplication = ({
                         </div>
                       </Tooltip>
                     </div>
-                  ) : ("")}
+                  ) : ("")} */}
 
-                  {(applicationType === "NEW" && selectedTab === "level-2") ? (
+                  {/* {(applicationType === "NEW" && selectedTab === "level-2") ? (
                     <div className={`${style.bigButtonStyle1} ${style.cursorPointer} ${style.marginTop20}`}>
                       <Tooltip title={"Click to verify and send to the Credentialing Committee"} arrow>
                         <div
@@ -10963,15 +8914,14 @@ const NewActiveApplication = ({
                         </div>
                       </Tooltip>
                     </div>
-                  ) : ("")}
+                  ) : ("")} */}
 
-                  {(applicationType === "NEW" && selectedTab === "level-3") ? (
+                  {/* {(applicationType === "NEW" && selectedTab === "level-3") ? (
                     <div
                       className={`${style.bigButtonStyle1} ${style.cursorPointer} ${style.marginTop20} ${(workModeType === "Chief Of Staff") ? style.disabledButton : ""}`}
                       style={{ opacity: (workModeType === "Chief Of Staff") ? 0.5 : 1 }}
                       onClick={() => {
                         if (!(workModeType === "Chief Of Staff")) {
-                          // Call your approve move function here
                           onClickApproveMoveFunction();
                         }
                       }}
@@ -10984,137 +8934,11 @@ const NewActiveApplication = ({
                     </div>
                   ) : (
                     ""
-                  )}
-
-                  {/* <div className={`${style.marginBottom20}`}> */}
-
-                  {/* {userRole?.includes('Staff Manager') && selectedTab !== "level-4" && selectedTab !== "level-5" && (!(applicationType === "REAPPOINTMENT" && userRole?.includes('Staff Manager'))) && (
-                    <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
-                      <div
-                        className={`${style.buttonCardStyle} ${style.cursorPointer}`}                      
-                      >
-                        <div
-                          className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer}`}
-                          onClick={() => {
-                            onClickApprovalFunction();
-                          }}
-                        >
-  
-                          RECOMMENDED WITH COMMENTS
-                        </div>
-                      </div>
-                      <div
-                        className={`${style.buttonCardStyle} ${style.cursorPointer}`}
-                  
-                      >
-                        <div
-                          className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                          
-                          onClick={onClickApprovalFunction}
-                        >
-                          RECOMMENDED
-                        </div>
-                      </div>
-                    </div>
-                  )} */}
-                  {/* 
-                  {userRole?.includes('Department Head') && selectedTab === 'level-2' && (
-                    <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
-                      <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
-                        <div
-                          className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer}`}
-                          // onClick={onClickApproveFunction}
-                          onClick={() => {
-                            onClickApprovalFunction();
-                          }}
-                        >
-                          RECOMMENDED WITH COMMENTS
-                        </div>
-                      </div>
-                      <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
-                        <div
-                          className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                          onClick={onClickApprovalwithoutnotesFunction}
-                        >
-                          RECOMMENDED
-                        </div>
-                      </div>
-                    </div>
                   )} */}
 
-                  {/* {userRole?.includes('Credentialing Committee') && selectedTab === 'level-2' && (
-                    <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
-                      <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
-                        <div
-                          className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer}`}
-                          // onClick={onClickApproveFunction}
-                          onClick={() => {
-                            onClickApprovalFunction();
-                          }}
-                        >
-                          RECOMMENDED WITH COMMENTS
-                        </div>
-                      </div>
-                      <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
-                        <div
-                          className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                          onClick={onClickApprovalwithoutnotesFunction}
-                        >
-                          RECOMMENDED
-                        </div>
-                      </div>
-                    </div>
-                  )} */}
 
-                  {/* {userRole?.includes('Staff Manager') && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && (
-                    <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
-                      <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
-                        <div
-                          className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer}`}
-                          // onClick={onClickApproveFunction}
-                          onClick={() => {
-                            onClickApprovalFunction();
-                          }}
-                        >
-                          RECOMMENDED WITH COMMENTS
-                        </div>
-                      </div>
-                      <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
-                        <div
-                          className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                          onClick={onClickApprovalFunction}
-                        >
-                          RECOMMENDED
-                        </div>
-                      </div>
-                    </div>
-                  )} */}
-                  {/* 
-                  {(userRole?.includes('Staff Manager') && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") && (
-                    <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
-                      <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
-                        <div
-                          className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer}`}
-                          // onClick={onClickApproveFunction}
-                          onClick={() => {
-                            onClickApprovalFunction();
-                          }}
-                        >
-                          RECOMMENDED WITH COMMENTS
-                        </div>
-                      </div>
-                      <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
-                        <div
-                          className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                          onClick={onClickApproveMoveFunction}
-                        >
-                          RECOMMENDED
-                        </div>
-                      </div>
-                    </div>
-                  )} */}
 
-                  {(workModeType === 'Department Head' && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && isApproverDept === "Approve") ? (
+                  {(workModeType === 'Department Head' && selectedTab === 'level-2' && (applicationType === "REAPPOINTMENT" || applicationType === "NEW") && isApproverDept === "Approve") ? (
                     <div className={`${style.fixedBottom} `}>
                       {/* <div className={`${style.twoColumnGrid}`}> */}
                       <div className={`${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer}`}>
@@ -11178,7 +9002,7 @@ const NewActiveApplication = ({
                       </div>
                     </div>
                   ) : (" ")}
-                  {(workModeType === 'Chief Of Staff' && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && isApproverDept === "Approve") ? (
+                  {(workModeType === 'Chief Of Staff' && selectedTab === 'level-2' && (applicationType === "REAPPOINTMENT" || applicationType === "NEW") && isApproverDept === "Approve") ? (
                     <div className={`${style.fixedBottom}`}>
                       {/* <div className={`${style.twoColumnGrid}`}> */}
                       <div className={`${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer}`}>
@@ -11242,7 +9066,7 @@ const NewActiveApplication = ({
                       </div>
                     </div>
                   ) : (" ")}
-                  {((workModeType === 'Credentialing Committee' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" && isApproverCred === "Approve") || (workModeType === 'Credentialing Committee' && selectedTab === 'level-2' && applicationType === "LOCUM" && isApproverCred === "Approve") || (workModeType === 'Chief Of Staff' && selectedTab === 'level-2' && applicationType === "LOCUM" && isApproverCred === "Approve")) ? (
+                  {((workModeType === 'Credentialing Committee' && selectedTab === 'level-3' && (applicationType === "REAPPOINTMENT" || applicationType === "NEW") && isApproverCred === "Approve") || (workModeType === 'Credentialing Committee' && selectedTab === 'level-2' && applicationType === "LOCUM" && isApproverCred === "Approve") || (workModeType === 'Chief Of Staff' && selectedTab === 'level-2' && applicationType === "LOCUM" && isApproverCred === "Approve")) ? (
                     <div className={`${style.fixedBottom} ${approvalwithoutnotesCommentsBox || approvalnotesCommentsBox || approvalnotesCommentsBoxDept || showApplicationDeclineDialog || notesCommentsBox || reappointmentChangesCommentsBox ? style.hiddenStickyContainer : " "}`}>
                       {/* <div className={`${style.twoColumnGrid}`}> */}
                       <div className={`${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer}`}>
@@ -11306,30 +9130,16 @@ const NewActiveApplication = ({
                       </div>
                     </div>
                   ) : (" ")}
-                  {((workModeType === 'Staff Manager' && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT") || (workModeType === 'Department Head' && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && isApproverDept === "NotApproved") || (workModeType === 'Chief Of Staff' && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && isApproverDept === "NotApproved")) ? (<>
+                  {((workModeType === 'Staff Manager' && selectedTab === 'level-2' && (applicationType === "REAPPOINTMENT" || applicationType === "NEW")) || (workModeType === 'Department Head' && selectedTab === 'level-2' && (applicationType === "REAPPOINTMENT" || applicationType === "NEW") && isApproverDept === "NotApproved") || (workModeType === 'Chief Of Staff' && selectedTab === 'level-2' && (applicationType === "REAPPOINTMENT" || applicationType === "NEW") && isApproverDept === "NotApproved")) ? (<>
                     <div>
                       <div className={`${style.textCardStyle} ${style.pendingTextStyle} ${style.alignCenter} ${style.padding30} ${style.marginBottom20}`}>
                         Pending Dept. Head. Recommendation
                       </div>
                     </div>
                   </>) : ("")}
-                  {/* {((workModeType === 'Chief Of Staff' && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && isApproverDept === "NotApproved"))  && (<>
-                  <div>
-                    <div className={`${style.textCardStyle} ${style.pendingTextStyle} ${style.alignCenter} ${style.padding30} ${style.marginBottom20}`}>
-                      Pending Dept. Head. Recommendation
-                    </div>
-                  </div>
-                </>)} */}
 
-                  {/* {((workModeType === 'Staff Manager' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") || (workModeType === 'Department Head' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") || (workModeType === 'Chief Of Staff' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") || (workModeType === 'Credentialing Committee' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" && isApproverCred === "NotApproved")) ? (<>
-                  <div>
-                    <div className={`${style.textCardStyle} ${style.pendingTextStyle} ${style.alignCenter} ${style.padding30} ${style.marginBottom20}`}>
-                      Pending Cred. Comm. Recommendation
-                    </div>
-                  </div>
-                </>) : ("")} */}
 
-                  {((workModeType === 'Credentialing Committee' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" && isApproverCred === "NotApproved") || (workModeType === 'Credentialing Committee' && selectedTab === 'level-2' && applicationType === "LOCUM" && isApproverCred === "NotApproved") || (workModeType === 'Chief Of Staff' && selectedTab === 'level-2' && applicationType === "LOCUM" && isApproverCred === "NotApproved")) ? (<>
+                  {((workModeType === 'Staff Manager' && selectedTab === 'level-3' && (applicationType === "REAPPOINTMENT" || applicationType === "NEW") && isApproverCred === "NotApproved") || (workModeType === 'Credentialing Committee' && selectedTab === 'level-2' && applicationType === "LOCUM" && isApproverCred === "NotApproved") || (workModeType === 'Chief Of Staff' && selectedTab === 'level-2' && applicationType === "LOCUM" && isApproverCred === "NotApproved")) ? (<>
                     <div>
                       <div className={`${style.textCardStyle} ${style.pendingTextStyle} ${style.alignCenter} ${style.padding30} ${style.marginBottom20}`}>
                         Pending Cred. Comm. Recommendation
@@ -11345,7 +9155,7 @@ const NewActiveApplication = ({
                   </div>
                 </>) : ("")} */}
 
-                  {(workModeType === 'Credentialing Committee' && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") || (workModeType === 'Department Head' && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") || (workModeType === 'Advisory Committee' && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") ? (<>
+                  {(workModeType === 'Credentialing Committee' && selectedTab === 'level-4' && (applicationType === "REAPPOINTMENT" || applicationType === "NEW")) || (workModeType === 'Department Head' && selectedTab === 'level-4' && (applicationType === "REAPPOINTMENT" || applicationType === "NEW")) || (workModeType === 'Advisory Committee' && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") ? (<>
                     <div>
                       <div className={`${style.textCardStyle} ${style.pendingTextStyle} ${style.alignCenter} ${style.padding30} ${style.marginBottom20}`}>
                         Pending MAC Recommendation
@@ -11353,14 +9163,14 @@ const NewActiveApplication = ({
                     </div>
                   </>) : (" ")}
 
-                  {(workModeType === 'Credentialing Committee' && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT") || (workModeType === 'Department Head' && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT") || (workModeType === 'Advisory Committee' && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT") || (workModeType === 'Board' && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") ? (<>
+                  {(workModeType === 'Credentialing Committee' && selectedTab === 'level-5' && (applicationType === "REAPPOINTMENT" || applicationType === "NEW")) || (workModeType === 'Department Head' && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT") || (workModeType === 'Advisory Committee' && selectedTab === 'level-5' && (applicationType === "REAPPOINTMENT" || applicationType === "NEW")) || (workModeType === 'Board' && selectedTab === 'level-4' && (applicationType === "REAPPOINTMENT" || applicationType === "NEW")) ? (<>
                     <div>
                       <div className={`${style.textCardStyle} ${style.pendingTextStyle} ${style.alignCenter} ${style.padding30} ${style.marginBottom20}`}>
                         Pending BOD Recommendation
                       </div>
                     </div>
                   </>) : (" ")}
-                  {((workModeType === 'Staff Manager' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" && dataLevel === "ReviewFromCC") || (workModeType === 'Staff Manager' && selectedTab === 'level-2' && applicationType === "LOCUM" && dataLevel === "ReviewFromCC")) ? (
+                  {((workModeType === 'Staff Manager' && selectedTab === 'level-3' && (applicationType === "REAPPOINTMENT" || applicationType === "NEW") && dataLevel === "ReviewFromCC") || (workModeType === 'Staff Manager' && selectedTab === 'level-2' && applicationType === "LOCUM" && dataLevel === "ReviewFromCC")) ? (
                     <div className={`${style.fixedBottom1} ${emailDialogBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
                       <div className={`${style.cardLeftStyle2}`}>
                         <div className={`${style.displayInCol}`}>
@@ -11423,7 +9233,7 @@ const NewActiveApplication = ({
                     </div>
                   ) : (" ")
                   }
-                  {((workModeType === 'Staff Manager' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" && dataLevel === "DateSetForCC") || (workModeType === 'Staff Manager' && selectedTab === 'level-2' && applicationType === "LOCUM" && dataLevel === "DateSetForCC")) ? (
+                  {((workModeType === 'Staff Manager' && selectedTab === 'level-3' && (applicationType === "REAPPOINTMENT" || applicationType === "NEW") && dataLevel === "DateSetForCC") || (workModeType === 'Staff Manager' && selectedTab === 'level-2' && applicationType === "LOCUM" && dataLevel === "DateSetForCC")) ? (
                     <div className={`${style.fixedBottom1} ${emailDialogBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
                       <div className={`${style.cardLeftStyleSaveButton}`}>
                         <div className={`${style.displayInCol}`}>
@@ -11476,7 +9286,7 @@ const NewActiveApplication = ({
                     </div>
                   ) : (" ")
                   }
-                  {((workModeType === 'Staff Manager' && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT" && dataLevel === "DateSetForMAC") || (workModeType === 'Staff Manager' && selectedTab === 'level-3' && applicationType === "LOCUM" && dataLevel === "DateSetForMAC")) ? (
+                  {((workModeType === 'Staff Manager' && selectedTab === 'level-4' && (applicationType === "REAPPOINTMENT" || applicationType === "NEW") && dataLevel === "DateSetForMAC") || (workModeType === 'Staff Manager' && selectedTab === 'level-3' && applicationType === "LOCUM" && dataLevel === "DateSetForMAC")) ? (
                     <div className={`${style.fixedBottom1} ${emailDialogBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
                       <div className={`${style.cardLeftStyleSaveButton}`}>
                         <div className={`${style.displayInCol}`}>
@@ -11532,7 +9342,7 @@ const NewActiveApplication = ({
                     </div>
                   ) : (" ")
                   }
-                  {((workModeType === 'Staff Manager' && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT" && dataLevel === "DateSetForBOD") || (workModeType === 'Staff Manager' && selectedTab === 'level-4' && applicationType === "LOCUM" && dataLevel === "DateSetForBOD")) ? (
+                  {((workModeType === 'Staff Manager' && selectedTab === 'level-5' && (applicationType === "REAPPOINTMENT" || applicationType === "NEW") && dataLevel === "DateSetForBOD") || (workModeType === 'Staff Manager' && selectedTab === 'level-4' && applicationType === "LOCUM" && dataLevel === "DateSetForBOD")) ? (
                     <div className={`${style.fixedBottom1} ${emailDialogBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
                       <div className={`${style.cardLeftStyleSaveButton}`}>
                         <div className={`${style.displayInCol}`}>
@@ -11585,7 +9395,7 @@ const NewActiveApplication = ({
                     </div>
                   ) : (" ")
                   }
-                  {((workModeType === 'Staff Manager' && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT" && dataLevel === "ReviewFromMAC") || (workModeType === 'Chief Of Staff' && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") || (workModeType === 'Staff Manager' && selectedTab === 'level-3' && applicationType === "LOCUM" && dataLevel === "ReviewFromMAC")) ? (
+                  {((workModeType === 'Staff Manager' && selectedTab === 'level-4' && (applicationType === "REAPPOINTMENT" || applicationType === "NEW") && dataLevel === "ReviewFromMAC") || (workModeType === 'Chief Of Staff' && selectedTab === 'level-4' && (applicationType === "REAPPOINTMENT" || applicationType === "NEW")) || (workModeType === 'Staff Manager' && selectedTab === 'level-3' && applicationType === "LOCUM" && dataLevel === "ReviewFromMAC")) ? (
                     <div className={`${style.fixedBottom1} ${emailDialogBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
                       <div className={`${style.cardLeftStyle2}`}>
                         <div className={`${style.displayInRow}${style.marginTop20}`}>
@@ -11642,7 +9452,7 @@ const NewActiveApplication = ({
                     </div>
                   ) : (" ")
                   }
-                  {((workModeType === 'Staff Manager' && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT" && dataLevel === "ReviewFromBOD") || (workModeType === 'Chief Of Staff' && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT") || (workModeType === 'Staff Manager' && selectedTab === 'level-4' && applicationType === "LOCUM" && dataLevel === "ReviewFromBOD")) ? (
+                  {((workModeType === 'Staff Manager' && selectedTab === 'level-5' && (applicationType === "REAPPOINTMENT" || applicationType === "NEW") && dataLevel === "ReviewFromBOD") || (workModeType === 'Chief Of Staff' && selectedTab === 'level-5' && (applicationType === "REAPPOINTMENT" || applicationType === "NEW")) || (workModeType === 'Staff Manager' && selectedTab === 'level-4' && applicationType === "LOCUM" && dataLevel === "ReviewFromBOD")) ? (
                     <div className={`${style.fixedBottom1} ${emailDialogBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
                       <div className={`${style.cardLeftStyle2}`}>
                         <div className={`${style.displayInCol}`}>
@@ -11718,27 +9528,7 @@ const NewActiveApplication = ({
                     <>
                       {selectedTab === "level-3" && (
                         <>
-                          {/* <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
-                            <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
-                              <div
-                                className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer}`}
-                                // onClick={onClickApprovalFunction}
-                                onClick={() => {
-                                  onClickApprovalFunction();
-                                }}
-                              >
-                                RECOMMENDED WITH COMMENTS
-                              </div>
-                            </div>
-                            <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
-                              <div
-                                className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                                onClick={onClickApprovalFunction}
-                              >
-                                RECOMMEND
-                              </div>
-                            </div>
-                          </div> */}
+
                           {applicationType === "NEW" && (
                             <div className={`${style.bigButtonStyle1} ${style.cursorPointer}`}>
                               <Tooltip title={"Click to Override and grant Temporary Privileges"} arrow>
@@ -11804,34 +9594,7 @@ const NewActiveApplication = ({
                       )}
                       {(selectedTab === "level-2") && (
                         <>
-                          {/* <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
-                            <div
-                              className={`${style.buttonCardStyle} ${isApproved ? style.cursorPointer : ''}`}
-                            //  style={{ opacity: isApproved ? 1 : 0.5 }}
-                            >
-                              <div
-                                className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer}`}
-                                // onClick={isApproved ? onClickApproveFunction : undefined}
-                                onClick={() => {
-                                  onClickApprovalFunction();
-                                }}
-                              >
-                                RECOMMENDED WITH COMMENTS
-                              </div>
-                            </div>
-                            <div
-                              className={`${style.buttonCardStyle} ${style.cursorPointer}`}
-                            // className={`${style.bigButtonStyle} ${isApproved ? style.cursorPointer : ''}`}
-                            //  style={{ opacity: isApproved ? 1 : 0.5 }}
-                            >
-                              <div
-                                className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                                onClick={onClickApprovalFunction}
-                              >
-                                RECOMMEND
-                              </div>
-                            </div>
-                          </div> */}
+
                           {applicationType === "NEW" && (
                             <div className={`${style.bigButtonStyle1} ${style.cursorPointer}`}>
                               <Tooltip title={"Click to Override and Grant Temporary Privileges"} arrow>
@@ -11849,37 +9612,8 @@ const NewActiveApplication = ({
                     </>
                   )}
 
-                  {/* {((userRole?.includes('Credentialing Committee') && selectedTab === 'level-3' && applicationType === "NEW")) && (
-                    <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
-                      <div
-                        className={`${style.buttonCardStyle} ${isApproved ? style.cursorPointer : ''}`}
-                      //  style={{ opacity: isApproved ? 1 : 0.5 }}
-                      >
-                        <div
-                          className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer}`}
-                          // onClick={isApproved ? onClickApproveFunction : undefined}
-                          onClick={() => {
-                            onClickApprovalFunction();
-                          }}
-                        >
-                          RECOMMENDED WITH COMMENTS
-                        </div>
-                      </div>
-                      <div
-                        className={`${style.buttonCardStyle} ${style.cursorPointer}`}
-                      // className={`${style.bigButtonStyle} ${isApproved ? style.cursorPointer : ''}`}
-                      //  style={{ opacity: isApproved ? 1 : 0.5 }}
-                      >
-                        <div
-                          className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                          onClick={onClickApprovalFunction}
-                        >
-                          RECOMMEND
-                        </div>
-                      </div>
-                    </div>
-                  )} */}
-                  {applicationType === "NEW" ? (
+
+                  {/* {applicationType === "NEW" ? (
                     ((workModeType === 'Credentialing Committee' && selectedTab === 'level-3') ||
                       (workModeType === 'Chief Of Staff' && selectedTab === "level-3") ||
                       (workModeType === 'Staff Manager' && selectedTab === "level-3") ||
@@ -11908,31 +9642,9 @@ const NewActiveApplication = ({
                         </div>
                       </div>
                     ) : null
-                  ) : null}
+                  ) : null} */}
 
-                  {/* {((userRole?.includes('Credentialing Committee')&& selectedTab === 'level-3') || (userRole?.includes('Chief Of Staff') && selectedTab === "level-3") || (userRole?.includes('Staff Manager') && selectedTab === "level-3") || (userRole?.includes('Department Head') && selectedTab === "level-3")) ? (
-                      <div className={`${style.statusCard} ${style.marginTop20} ${style.marginBottom20}`}>
-                      <div className={`${style.statusCardTextStyle1} ${style.marginTop20}`}>Review and Approval Status</div>
-                      <div className={`${style.spaceEvenly} ${style.marginTop20}`}>
-                      <div className={`${style.displayInCol}`}>
-                        <div className={`${style.statusStartTextStyle}`}>Not Started Yet</div>
-                        <div className={`${style.statusRoleTextStyle}`}>CHIEF OF STAFF / DEPUTY</div>
-                      </div>
-                      <div className={`${style.displayInCol}`}>
-                        <div className={`${style.statusStartTextStyle}`}>Not Started Yet</div>
-                        <div className={`${style.statusRoleTextStyle}`}>CREDENTIALING COMMITTEE</div>
-                      </div>
-                      </div>
-                    </div>
-                    ) : null } */}
-                  {/* <div
-                  className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
-                  onClick={handleApplicationAccept}
-                >
-                  ACCEPT APPLICATION
-                </div> */}
 
-                  {/* </div> */}
                   <>
                     {selectedTab !== "level-4" && selectedTab !== "level-5" && applicationType === "NEW" && (
                       <>
@@ -12199,7 +9911,7 @@ const NewActiveApplication = ({
                         )}
                       </>
                     )}
-                    {applicationType === "REAPPOINTMENT" || applicationType === "LOCUM" ? (
+                    {(applicationType === "REAPPOINTMENT" || applicationType === "NEW") || applicationType === "LOCUM" ? (
                       <>
                         {selectedTab === "level-4" || selectedTab === "level-5" || (selectedTab === "level-3" && applicationType === "LOCUM") ? (
                           <div className={`${style.cardLeftStyle} ${style.marginBottom20}`}>
@@ -12288,10 +10000,10 @@ const NewActiveApplication = ({
                                 <span className={`${style.tableHeaderHeadingTextStyle1}`}>
                                   Notes
                                 </span>
-                                {!((workModeType === "Staff Manager" && selectedTab === "level-2" && applicationType === "REAPPOINTMENT") ||
-                                  (workModeType === "Department Head" && selectedTab === "level-2" && applicationType === "REAPPOINTMENT" && isApproverDept === "NotApproved") ||
-                                  (workModeType === "Chief Of Staff" && selectedTab === "level-2" && applicationType === "REAPPOINTMENT" && isApproverDept === "NotApproved") ||
-                                  (workModeType === 'Credentialing Committee' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" && isApproverCred === "NotApproved") ||
+                                {!((workModeType === "Staff Manager" && selectedTab === "level-2" && (applicationType === "REAPPOINTMENT" || applicationType === "NEW")) ||
+                                  (workModeType === "Department Head" && selectedTab === "level-2" && (applicationType === "REAPPOINTMENT" || applicationType === "NEW") && isApproverDept === "NotApproved") ||
+                                  (workModeType === "Chief Of Staff" && selectedTab === "level-2" && (applicationType === "REAPPOINTMENT" || applicationType === "NEW") && isApproverDept === "NotApproved") ||
+                                  (workModeType === 'Credentialing Committee' && selectedTab === 'level-3' && (applicationType === "REAPPOINTMENT" || applicationType === "NEW") && isApproverCred === "NotApproved") ||
                                   (workModeType === 'Credentialing Committee' && selectedTab === 'level-2' && applicationType === "LOCUM" && isApproverCred === "NotApproved") ||
                                   (workModeType === 'Chief Of Staff' && selectedTab === 'level-2' && applicationType === "LOCUM" && isApproverCred === "NotApproved")) && (
                                     <div
@@ -12341,25 +10053,7 @@ const NewActiveApplication = ({
                               )}
                             </div>
                             {expandStates.section5 && (
-                              // <>
-                              //   {logDetails?.logs
-                              //     ?.filter((log) => log.workflowStatus !== "SUBMITTED" && log?.approvalType === null && log?.approvalType === "")
-                              //     .map((log, index) => (
-                              //       <div key={index}>
-                              //         <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationTextStyle} ${style.marginTop10}`}>
-                              //           Staff Manager Comments / Notes
-                              //         </div>
-                              //         <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationRoleTextStyle}`}>{log?.workflowUser?.name?.firstName}{log?.workflowUser?.name?.lastName}, {log?.role} on {approvalFromDate[index]} </div>
-                              //         {/* <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.notesTextStyle}`}>
-                              //     Specify the clarification that is needed tur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut
-                              //     </div> */}
-                              //         <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.notesTextStyle}`}>
-                              //           {log.notes || "-"}
-                              //         </div>
-                              //       </div>
-                              //     ))}
 
-                              // </>
                               <>
                                 {form?.notesDetails
                                   ?.filter(log => {
@@ -12380,7 +10074,7 @@ const NewActiveApplication = ({
                                         <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.notesTextStyle} ${style.marginBottom0}`}>
                                           <div dangerouslySetInnerHTML={{ __html: log.notes.notes }} />
                                         </div>
-                                        {log?.user?.id === users?.id && !(workModeType === "Staff Manager" && selectedTab === "level-2" && applicationType === "REAPPOINTMENT") && (
+                                        {log?.user?.id === users?.id && !(workModeType === "Staff Manager" && selectedTab === "level-2" && (applicationType === "REAPPOINTMENT" || applicationType === "NEW")) && (
                                           <div>
                                             <Tooltip title="Edit a Note" arrow>
                                               <EditOutlinedIcon
@@ -12391,7 +10085,7 @@ const NewActiveApplication = ({
                                             </Tooltip>
                                           </div>
                                         )}
-                                        {log?.user?.id === users?.id && !(workModeType === "Staff Manager" && selectedTab === "level-2" && applicationType === "REAPPOINTMENT") && (
+                                        {log?.user?.id === users?.id && !(workModeType === "Staff Manager" && selectedTab === "level-2" && (applicationType === "REAPPOINTMENT" || applicationType === "NEW")) && (
                                           <div>
                                             <Tooltip title="Delete a Note" arrow>
                                               <DeleteOutlineIcon
