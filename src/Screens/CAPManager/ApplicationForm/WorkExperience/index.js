@@ -71,13 +71,11 @@ const WorkExperience = ({ basicForm, setBasicForm, applicationId, getPreApplicat
     }
 
     const getAllLabels = (data) => {
-        let tempLabels = labels;
-        if (!tempLabels?.includes(data)) {
-            console.log(tempLabels, data, 'Metadata')
-            tempLabels.push(data);
-        }
-        setLabels(tempLabels);
-    }
+        setLabels(prev => {
+            const exists = prev.some(item => JSON.stringify(item) === JSON.stringify(data));
+            return exists ? prev : [...prev, data];
+        });
+    };
 
     const getIsSaveInProgressOpen = (value) => {
         setIsSaveInProgressOpen(value);
@@ -111,7 +109,7 @@ const WorkExperience = ({ basicForm, setBasicForm, applicationId, getPreApplicat
         let missingKeys = [];
         let keyValuePair = [];
         metadata?.map((data, index) => {
-            keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: labels[index] })
+            keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: labels[index]?.label })
         })
         keyValuePair?.map(data => {
             if (data?.value === "" || data?.value === null || data?.value === undefined || data?.value === 0) {
@@ -211,6 +209,7 @@ const WorkExperience = ({ basicForm, setBasicForm, applicationId, getPreApplicat
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                     <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
+                    <div className={`${style.saveInProgress} ${style.marginTop10} `} onClick={() => handleContinue()} > SKIP FOR NOW </div>
                     <div className={style.twoColForButton}>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue()}>CONTINUE</div>

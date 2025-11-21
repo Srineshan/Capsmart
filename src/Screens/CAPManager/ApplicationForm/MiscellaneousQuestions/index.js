@@ -71,13 +71,11 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
     }
 
     const getAllLabels = (data) => {
-        let tempLabels = labels;
-        if (!tempLabels?.includes(data)) {
-            console.log(tempLabels, data, 'Metadata')
-            tempLabels.push(data);
-        }
-        setLabels(tempLabels);
-    }
+        setLabels(prev => {
+            const exists = prev.some(item => JSON.stringify(item) === JSON.stringify(data));
+            return exists ? prev : [...prev, data];
+        });
+    };
 
     const getIsShowReappointmentJourneyDialog = (value) => {
         setShowJourneyDialog(value);

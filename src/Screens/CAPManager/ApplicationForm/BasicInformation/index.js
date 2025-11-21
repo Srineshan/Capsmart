@@ -52,12 +52,11 @@ const BasicInformation = ({ basicForm, setBasicForm, applicationId, getPreApplic
   };
 
   const getAllLabels = (data) => {
-    let tempLabels = labels;
-    if (!tempLabels?.includes(data)) {
-      console.log(tempLabels, data, "Metadata");
-      tempLabels.push(data);
-    }
-    setLabels(tempLabels);
+    setLabels(prev => {
+      const exists = prev.some(item => JSON.stringify(item) === JSON.stringify(data));
+      return exists ? prev : [...prev, data];
+    });
+    console.log(labels, "Metadata");
   };
 
   const getIsSaveInProgressOpen = (value) => {
@@ -91,12 +90,15 @@ const BasicInformation = ({ basicForm, setBasicForm, applicationId, getPreApplic
   const getMissingFields = () => {
     let missingKeys = [];
     let keyValuePair = [];
+    console.log(metadata, 'metadata')
     metadata?.map((data, index) => {
+      // if (labels[index]?.mandatory) {
       keyValuePair.push({
         key: data,
         value: getValueByPath(basicForm, data),
-        label: labels[index],
+        label: labels[index]?.label,
       });
+      // }
     });
     const phoneRegex = /^\(\d{3}\) \d{3}-\d{4}$/; // Example for formatted phone number
 

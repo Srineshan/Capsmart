@@ -183,3 +183,39 @@ select {
 .css-10d36jd-MuiSvgIcon-root-MuiSelect-icon{
 	fill: #06617A !important
 } */
+
+@media print {
+	body {
+		-webkit-print-color-adjust: exact;
+	}
+
+	#global-print-header,
+	#global-print-footer {
+		position: fixed;
+		width: 100%;
+		left: 0;
+		background: white !important;
+		z-index: 999999 !important;
+		/* VERY IMPORTANT */
+	}
+
+	#global-print-header {
+		top: 0;
+		padding: 10px 0;
+	}
+
+	#global-print-footer {
+		bottom: 0;
+		padding: 10px 0;
+	}
+
+	/* Push printed content */
+	.print-content {
+		margin-top: 0px !important;
+		margin-bottom: 0px !important;
+	}
+
+	@page {
+		size: landscape;
+	}
+}

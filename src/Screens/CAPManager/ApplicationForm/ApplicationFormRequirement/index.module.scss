@@ -82,7 +82,7 @@
 }
 
 .requiredDocumentCard:hover {
-    background: #f0f0f5 0% 0% no-repeat padding-box;
+    background: $tableRowAlternative 0% 0% no-repeat padding-box;
 
     .info {
         visibility: visible;

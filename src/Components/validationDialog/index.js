@@ -33,7 +33,7 @@ const ValidationDialog = ({ getIsOpen, labelList, getSkipClicked }) => {
                 <div
                   className={`${style.description} ${style.marginTop10} ${style.marginLeft}`}
                   dangerouslySetInnerHTML={{
-                    __html: (window.location.pathname.includes("reappointmentApplicationForm") || window.location.pathname.includes("locumApplicationForm") || window.location.pathname.includes("createStaffMemberApplication") || window.location.pathname.includes("applicationForm"))
+                    __html: (window.location.pathname.includes("reappointmentApplicationForm") || window.location.pathname.includes("locumApplicationForm") || window.location.pathname.includes("createStaffMemberApplication"))
                       ? data?.label?.label
                       : data?.label
                   }}

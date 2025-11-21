@@ -354,7 +354,7 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
         role = "Credentialing Committee";
         title = "Credentialing Committee Review"
       }
-    }  else if (selectedTab === 'level-3') {
+    } else if (selectedTab === 'level-3') {
       if (workModeType === "Credentialing Committee") {
         role = "Credentialing Committee";
         title = "Credentialing Committee Review";
@@ -488,7 +488,7 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
         role = "Credentialing Committee";
         title = "Credentialing Committee Review"
       }
-    }  else if (selectedTab === 'level-3') {
+    } else if (selectedTab === 'level-3') {
       if (workModeType === "Credentialing Committee") {
         role = "Credentialing Committee";
         title = "Credentialing Committee Review";
@@ -627,22 +627,21 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
             <div className={Classes.DIALOG_BODY}>
               <div className={style.spaceBetween}>
                 <div className={style.heading}>
-                  {`Staff Recommended for ${
-                    applicationType === "LOCUM"
+                  {`Staff Recommended for ${applicationType === "LOCUM"
                       ? `${formDetails?.reappointmentType === "EXTENSION" ? "Locum Extension" : "Locum Renewal"}`
-                      : "Reappointment"
-                  }`}
+                      : applicationType === "NEW" ? "Appointment" : "Reappointment"
+                    }`}
                 </div>
                 <div className={style.displayInRow}>
-                <Tooltip title="Click to Close" arrow>
-                  <img
-                    src={CrossPink}
-                    alt="cross"
-                    className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft}`}
-                    onClick={() => {
-                      getIsOpen(false);
-                    }}
-                  />
+                  <Tooltip title="Click to Close" arrow>
+                    <img
+                      src={CrossPink}
+                      alt="cross"
+                      className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft}`}
+                      onClick={() => {
+                        getIsOpen(false);
+                      }}
+                    />
                   </Tooltip>
                 </div>
               </div>
@@ -681,7 +680,7 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
                             : ""}
                         </span>
                           <span className={`${style.rejectionTextStyle} ${style.marginLeft4}`}>
-                          {" "} {applicationType === "LOCUM" ? "Locum":""} {formDetails?.providerType?.serviceProviderType}
+                            {" "} {applicationType === "LOCUM" ? "Locum" : ""} {formDetails?.providerType?.serviceProviderType}
                           </span>
                         </div>
                         <div className={`${style.gridItem2}`}>
@@ -722,7 +721,7 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
                             {formDetails?.basicDetails?.applicant?.name?.firstName
                               ? formDetails?.updatedBy?.name?.firstName.charAt(0).toUpperCase() +
                               formDetails?.updatedBy?.name?.firstName.slice(1).toLowerCase()
-                              : ""}{formDetails?.updatedBy?.name?.lastName?.toUpperCase()} {formDetails?.updatedBy?.title?.title  ? `, ${formDetails?.updatedBy?.title?.title}`: ""}
+                              : ""}{formDetails?.updatedBy?.name?.lastName?.toUpperCase()} {formDetails?.updatedBy?.title?.title ? `, ${formDetails?.updatedBy?.title?.title}` : ""}
                           </span>
                         </div>
                       </div>
@@ -917,7 +916,7 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
                     }}
                   >
                     <Tooltip title={isApproveEnabled ? "Click to Recommend Staff for Approval" : ""} arrow>
-                    <div className={style.reviewButton}>RECOMMEND STAFF</div>
+                      <div className={style.reviewButton}>RECOMMEND STAFF</div>
                     </Tooltip>
                   </div>
                   {/* <div

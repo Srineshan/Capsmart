@@ -1,6 +1,6 @@
 // main applicationFieldCard
 
-import React, { useEffect, useState,useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import CommonPhoneField from "../../Components/CommonFields/CommonPhoneField";
 import CommonInputField from "../CommonFields/CommonInputField";
 import CommonSelectField from "../CommonFields/CommonSelectField";
@@ -101,7 +101,7 @@ const ApplicationFieldCard = ({
   const [isLoading, setIsLoading] = useState(false);
   const [disclosureBaseKey, setDisclosureBaseKey] = useState('');
   const [disclosureFieldKey, setDisclosureFieldKey] = useState('');
-  const [disclosurSchema, setDisclosureSchema] = useState({});  
+  const [disclosurSchema, setDisclosureSchema] = useState({});
   const { setValue, value } = useComboboxControls({ initialValue: "" });
   const canadaData = JSON.parse(sessionStorage.getItem("canadaData")) || {};
   let user = JSON.parse(sessionStorage.getItem("user"));
@@ -113,7 +113,7 @@ const ApplicationFieldCard = ({
   useEffect(() => {
     renderObjectFields(object);
     console.log("entered");
-  }, [basicForm, isAddMore]); 
+  }, [basicForm, isAddMore]);
 
   useEffect(() => {
     if (step !== undefined && basicForm !== undefined) {
@@ -300,7 +300,7 @@ const ApplicationFieldCard = ({
         setNestedValue(newData, `${basicpath}.${basePath}.${path}`, value);
       } else if (basePath2 && basePath && path) {
         setNestedValue(newData, `${basePath}.${basePath2}.${path}`, value);
-        setNestedValue(newData, `${basicpath}.${basePath}.${path}`, value); 
+        setNestedValue(newData, `${basicpath}.${basePath}.${path}`, value);
       } else if (basePath && path) {
         setNestedValue(newData, `${basePath}.${path}`, value);
         setNestedValue(newData, `${basicpath}.${basePath}.${path}`, value);
@@ -311,31 +311,31 @@ const ApplicationFieldCard = ({
         setNestedValue(newData, baseKey, value);
         setNestedValue(newData, `${basicpath}.${baseKey}`, value);
       }
-         // **New Logic to Reset Address Fields**
-         if (path === "isMailingAddressSameAsHomeAddress") {
-          if (value === "Different Address") {
-            setNestedValue(newData, `forms[${addressPageIndex}].data.contactAddress2.mailingAddress`, {
-              pinCode: "",
-              streetName: "",
-              city: "",
-              province: "",
-            });
-          }
+      // **New Logic to Reset Address Fields**
+      if (path === "isMailingAddressSameAsHomeAddress") {
+        if (value === "Different Address") {
+          setNestedValue(newData, `forms[${addressPageIndex}].data.contactAddress2.mailingAddress`, {
+            pinCode: "",
+            streetName: "",
+            city: "",
+            province: "",
+          });
         }
-    
-        // Business Address Logic
-        if (path === "isBusinessAddressSameAsHomeAddressOrMailingAddress") {
-          if (value === "Different Address") {
-            setNestedValue(newData, `forms[${addressPageIndex}].data.contactAddress3.business.businessAddress`, {
-              pinCode: "",
-              streetName: "",
-              city: "",
-              province: "",
-            });
-          }
+      }
+
+      // Business Address Logic
+      if (path === "isBusinessAddressSameAsHomeAddressOrMailingAddress") {
+        if (value === "Different Address") {
+          setNestedValue(newData, `forms[${addressPageIndex}].data.contactAddress3.business.businessAddress`, {
+            pinCode: "",
+            streetName: "",
+            city: "",
+            province: "",
+          });
         }
-  
-  
+      }
+
+
       return newData;
     });
   };
@@ -896,16 +896,16 @@ const ApplicationFieldCard = ({
     }
   }, [isBusinessAddressSameAsHomeAddressOrMailingAddress]);
 
-  
+
   // const updateMailingAddress = (prevData) => {
   //   let tempData = { ...prevData };
   //   let formRef = tempData.forms[addressPageIndex].data;
-  
-   
+
+
   //   if (!formRef.contactAddress2) {
   //     formRef.contactAddress2 = { mailingAddress: {} };
   //   }
-  
+
   //   switch (isMailingAddressSameAsHomeAddress) {
   //     case "Same as Home Address":
   //       if (formRef.contactAddress1?.homeAddress) {
@@ -917,7 +917,7 @@ const ApplicationFieldCard = ({
   //         };
   //       }
   //       break;
-  
+
   //     case "Same as Business Address":
   //       if (formRef.contactAddress3?.business?.businessAddress) {
   //         formRef.contactAddress2.mailingAddress = {
@@ -928,9 +928,9 @@ const ApplicationFieldCard = ({
   //         };
   //       }
   //       break;
-  
+
   //     case "Different Address":
-        
+
   //       if (!isInitialLoad && isManualChange) {
   //         formRef.contactAddress2.mailingAddress = {
   //           streetName: "",
@@ -940,25 +940,25 @@ const ApplicationFieldCard = ({
   //         };
   //       }
   //       break;
-  
+
   //     default:
   //       break;
   //   }
-  
+
   //   return tempData;
   // };
-  
 
- 
+
+
   // const updateBusinessAddress = (prevData) => {
   //   let tempData = { ...prevData };
   //   let formRef = tempData.forms[addressPageIndex].data;
-  
-   
+
+
   //   if (!formRef.contactAddress3) {
   //     formRef.contactAddress3 = { business: { businessAddress: {} } };
   //   }
-  
+
   //   switch (isBusinessAddressSameAsHomeAddressOrMailingAddress) {
   //     case "Same as Home Address":
   //       if (formRef.contactAddress1?.homeAddress) {
@@ -970,7 +970,7 @@ const ApplicationFieldCard = ({
   //         };
   //       }
   //       break;
-  
+
   //     case "Same as Mailing Address":
   //       if (formRef.contactAddress2?.mailingAddress) {
   //         formRef.contactAddress3.business.businessAddress = {
@@ -981,9 +981,9 @@ const ApplicationFieldCard = ({
   //         };
   //       }
   //       break;
-  
+
   //     case "Different Address":
-        
+
   //       if (!isInitialLoad && isManualChange) {
   //         formRef.contactAddress3.business.businessAddress = {
   //           streetName: "",
@@ -993,16 +993,16 @@ const ApplicationFieldCard = ({
   //         };
   //       }
   //       break;
-  
+
   //     default:
   //       break;
   //   }
-  
+
   //   return tempData;
   // };
-  
 
-  
+
+
   // useEffect(() => {
   //   if (isMailingAddressSameAsHomeAddress) {
   //     setBasicForm((prevData) => updateMailingAddress(prevData));
@@ -1018,12 +1018,12 @@ const ApplicationFieldCard = ({
   //   }
   // }, [isBusinessAddressSameAsHomeAddressOrMailingAddress]);
 
-  
+
   // useEffect(() => {
   //   setIsInitialLoad(false);
   // }, []);
 
-  
+
 
   useEffect(() => {
     if (
@@ -1187,7 +1187,7 @@ const ApplicationFieldCard = ({
         );
         let data = response.data;
         console.log(data);
-  
+
         setBasicForm((prevData) => {
           let tempContactAddress2 = { ...prevData };
           tempContactAddress2.forms[
@@ -1202,9 +1202,9 @@ const ApplicationFieldCard = ({
         console.log("Error fetching data");
       }
     };
-  
+
     if (
-      isMailingAddressSameAsHomeAddress === "Different Address" && 
+      isMailingAddressSameAsHomeAddress === "Different Address" &&
       isMailingAddressPincodeEntered !== undefined &&
       isMailingAddressPincodeEntered !== null &&
       isMailingAddressPincodeEntered?.length >= 7 &&
@@ -1230,8 +1230,8 @@ const ApplicationFieldCard = ({
         });
       }
     }
-  }, [isMailingAddressPincodeEntered, isMailingAddressSameAsHomeAddress]); 
-  
+  }, [isMailingAddressPincodeEntered, isMailingAddressSameAsHomeAddress]);
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -1241,7 +1241,7 @@ const ApplicationFieldCard = ({
         );
         let data = response.data;
         console.log(data);
-  
+
         setBasicForm((prevData) => {
           let tempContactAddress3 = { ...prevData };
           tempContactAddress3.forms[
@@ -1256,9 +1256,9 @@ const ApplicationFieldCard = ({
         console.log("Error fetching data");
       }
     };
-  
+
     if (
-      isBusinessAddressSameAsHomeAddressOrMailingAddress === "Different Address" && 
+      isBusinessAddressSameAsHomeAddressOrMailingAddress === "Different Address" &&
       isBusinessAddressPincodeEntered !== undefined &&
       isBusinessAddressPincodeEntered !== null &&
       isBusinessAddressPincodeEntered?.length >= 7 &&
@@ -1284,8 +1284,8 @@ const ApplicationFieldCard = ({
         });
       }
     }
-  }, [isBusinessAddressPincodeEntered, isBusinessAddressSameAsHomeAddressOrMailingAddress]); 
-  
+  }, [isBusinessAddressPincodeEntered, isBusinessAddressSameAsHomeAddressOrMailingAddress]);
+
 
   const getItems = (data) => {
     let temp = [];
@@ -1549,7 +1549,7 @@ const ApplicationFieldCard = ({
           getAllLabels({
             label: fieldData?.label,
             path: `${basicpath}.${baseKey}.${fieldKey}`,
-            mandatory:  (isLableEmpty(fieldData.label)
+            mandatory: (isLableEmpty(fieldData.label)
               ? false
               : object.required?.includes(fieldKey) ||
               (parentData !== null
@@ -1561,7 +1561,7 @@ const ApplicationFieldCard = ({
           getAllLabels({
             label: fieldData?.label,
             path: `${basicpath}.${baseKey}.${fieldKey}`,
-            mandatory: parentData?.required?.includes(fieldKey),
+            mandatory: parentData?.required?.includes(fieldKey) || object.required?.includes(fieldKey),
           });
         }
       }
@@ -2373,21 +2373,21 @@ const ApplicationFieldCard = ({
           const ckEditorFields = additionalFields.filter(key => parentData?.properties?.[key]?.fieldType === "ckeditor");
           const fileUploadFields = additionalFields.filter(key => parentData?.properties?.[key]?.fieldType === "fileupload");
 
-const isRequired =
-  !isLableEmpty(fieldData.label) &&
-  (object.required?.includes(fieldKey) ||
-    (parentData?.required?.includes(fieldKey) ?? false));
+          const isRequired =
+            !isLableEmpty(fieldData.label) &&
+            (object.required?.includes(fieldKey) ||
+              (parentData?.required?.includes(fieldKey) ?? false));
 
-const insertAsteriskBeforeClosingP = (html) => {
-  return isRequired
-    ? html.replace(
-        /<\/p>/i,
-        '<span style="color:#171A1A;"> *</span></p>'
-      )
-    : html;
-};
+          const insertAsteriskBeforeClosingP = (html) => {
+            return isRequired
+              ? html.replace(
+                /<\/p>/i,
+                '<span style="color:#171A1A;"> *</span></p>'
+              )
+              : html;
+          };
 
-const labelWithAsterisk = insertAsteriskBeforeClosingP(fieldData.label);
+          const labelWithAsterisk = insertAsteriskBeforeClosingP(fieldData.label);
 
 
 
@@ -2408,11 +2408,11 @@ const labelWithAsterisk = insertAsteriskBeforeClosingP(fieldData.label);
                   className={`${style.lableRadioStyle} ${!isPOD ? fieldData.serialNumber !== null ? style.marginLeft10 : "" : ""
                     } ${fieldData.label !== null ? style.marginRight : ""} ${style.displayInRow}`} style={{ display: 'inline' }}
                 >
- <span
-    dangerouslySetInnerHTML={{
-      __html: labelWithAsterisk,
-    }}
-  />
+                  <span
+                    dangerouslySetInnerHTML={{
+                      __html: labelWithAsterisk,
+                    }}
+                  />
                 </div>
               </div>
               {isPOD ? (
@@ -2712,12 +2712,12 @@ const labelWithAsterisk = insertAsteriskBeforeClosingP(fieldData.label);
                         </span>
                       </Tooltip>
                       <Tooltip title="Click to Delete File" arrow>
-                      <img
-                        src={DeleteIcon}
-                        alt="Delete"
-                        className={`${style.imgIcon} ${style.cursorPointer}`}
-                        onClick={() => handleChange(fieldKey, null, baseKey)}
-                      />
+                        <img
+                          src={DeleteIcon}
+                          alt="Delete"
+                          className={`${style.imgIcon} ${style.cursorPointer}`}
+                          onClick={() => handleChange(fieldKey, null, baseKey)}
+                        />
                       </Tooltip>
                     </div>
                   </div>
@@ -2753,7 +2753,7 @@ const labelWithAsterisk = insertAsteriskBeforeClosingP(fieldData.label);
                         src={VerifiedImage}
                         alt=""
                         className={`${style.imgIcon} ${style.cursorPointer}`}
-                         onClick={() => {
+                        onClick={() => {
                           setShowFileDisplayDialog(true); setselectedFile(
                             getValueByPath(
                               basicForm,
@@ -2786,13 +2786,13 @@ const labelWithAsterisk = insertAsteriskBeforeClosingP(fieldData.label);
                         })`}
                     </div>
                     <div>
-                    <Tooltip title="Click to upload a file" arrow>
-                      <label
-                        for={`file-upload-dynamic-${fieldKey}`}
-                        className={` ${style.uploadTextButton} ${style.cursorPointer} ${style.verticalAlignCenter}`}
-                      >
-                        Click to upload
-                      </label>
+                      <Tooltip title="Click to upload a file" arrow>
+                        <label
+                          for={`file-upload-dynamic-${fieldKey}`}
+                          className={` ${style.uploadTextButton} ${style.cursorPointer} ${style.verticalAlignCenter}`}
+                        >
+                          Click to upload
+                        </label>
                       </Tooltip>
                     </div>
                   </div>
@@ -2803,18 +2803,18 @@ const labelWithAsterisk = insertAsteriskBeforeClosingP(fieldData.label);
                   accept=".pdf,.doc,.png,.xls,.xlsx,.jpeg,.gif,.docx"
                   onChange={(e) => {
                     const selectedFile = e.target.files[0];
-                
+                    console.log(basicForm?.forms?.[formIndex]?.formCategory, 'Disclosure Check')
                     if (basicForm?.forms?.[formIndex]?.formCategory === "Disclosure") {
-                    
+
                       setBasicForm((prevData) => {
                         const newData = { ...prevData };
                         setNestedValue(newData, `${basicpath}.${baseKey}.${fieldKey}`, {
-                          fileName: selectedFile.name,  
+                          fileName: selectedFile.name,
                         });
                         return newData;
                       });
-                
-                      
+
+
                       handleChange(fieldKey, selectedFile, baseKey);
                     }
                   }}
@@ -2832,8 +2832,8 @@ const labelWithAsterisk = insertAsteriskBeforeClosingP(fieldData.label);
                                 basicForm,
                                 `${basicpath}.${baseKey}.${fieldKey}`
                               )
-                            );
-                               setselectedFile(
+                              );
+                              setselectedFile(
                                 getValueByPath(
                                   basicForm,
                                   `${basicpath}.${baseKey}.${fieldKey}`
@@ -2842,16 +2842,16 @@ const labelWithAsterisk = insertAsteriskBeforeClosingP(fieldData.label);
                             }
                             }
                           >
-                           {getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)?.fileName}
+                            {getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)?.fileName}
                           </span>
                         </Tooltip>
                         <Tooltip title="Click to Delete File" arrow>
-                        <img
-                          src={DeleteIcon}
-                          alt="Delete"
-                          className={`${style.imgIcon} ${style.cursorPointer}`}
-                          onClick={() => handleChange(fieldKey, null, baseKey)}
-                        />
+                          <img
+                            src={DeleteIcon}
+                            alt="Delete"
+                            className={`${style.imgIcon} ${style.cursorPointer}`}
+                            onClick={() => handleChange(fieldKey, null, baseKey)}
+                          />
                         </Tooltip>
                       </div>
                     </div>
@@ -3244,7 +3244,7 @@ const labelWithAsterisk = insertAsteriskBeforeClosingP(fieldData.label);
     const formatString = "yyyy-MM-dd";
 
     // Check if the string matches the 'yyyy-MM-dd' format
-    const regex = /^\d{4}-\d{2}-\d{2}$/;
+    const regex = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2})?$/;
     if (!regex.test(dateString)) {
       return false;
     }
@@ -3256,6 +3256,11 @@ const labelWithAsterisk = insertAsteriskBeforeClosingP(fieldData.label);
     return (
       isValid(parsedDate) && format(parsedDate, formatString) === dateString
     );
+  };
+
+  const isValidDate = (value) => {
+    const d = new Date(value);
+    return !isNaN(d);
   };
 
   const getApplicantValues = (array) => {
@@ -3277,7 +3282,7 @@ const labelWithAsterisk = insertAsteriskBeforeClosingP(fieldData.label);
             type: "text",
             value: array?.map((innerData) =>
               innerData !== null
-                ? isValidDateString(innerData[data])
+                ? isValidDate(innerData[data])
                   ? format(
                     new Date(innerData[data]),
                     canadaData?.dateFormat || "dd/MM/yyyy"
@@ -3422,27 +3427,27 @@ const labelWithAsterisk = insertAsteriskBeforeClosingP(fieldData.label);
                       className={`${style.displayInRowRev} ${style.marginTop}`}
                     >
                       <div className={style.marginLeft}>
-                      <Tooltip title={"Click to Save & Close"} arrow>
-                        <div
-                          className={`${style.addMoreButton}`}
-                          onClick={() => {
-                            handleAddMore("close");
-                          }}
-                        >
-                          SAVE & CLOSE
-                        </div>
+                        <Tooltip title={"Click to Save & Close"} arrow>
+                          <div
+                            className={`${style.addMoreButton}`}
+                            onClick={() => {
+                              handleAddMore("close");
+                            }}
+                          >
+                            SAVE & CLOSE
+                          </div>
                         </Tooltip>
                       </div>
                       <div>
-                      <Tooltip title={"Click to Save & Addmore"} arrow>
-                        <div
-                          className={`${style.addMoreButtonOutlined}`}
-                          onClick={() => {
-                            handleAddMore("");
-                          }}
-                        >
-                          SAVE & ADD MORE
-                        </div>
+                        <Tooltip title={"Click to Save & Addmore"} arrow>
+                          <div
+                            className={`${style.addMoreButtonOutlined}`}
+                            onClick={() => {
+                              handleAddMore("");
+                            }}
+                          >
+                            SAVE & ADD MORE
+                          </div>
                         </Tooltip>
                       </div>
                     </div>
@@ -3456,12 +3461,12 @@ const labelWithAsterisk = insertAsteriskBeforeClosingP(fieldData.label);
                       dangerouslySetInnerHTML={{ __html: object?.items?.label }}
                     />
                     <Tooltip title={"Click to Add"} arrow>
-                    <div
-                      className={`${style.addMoreButton} ${style.marginLeft}`}
-                      onClick={() => setIsAddMore(true)}
-                    >
-                      ADD
-                    </div>
+                      <div
+                        className={`${style.addMoreButton} ${style.marginLeft}`}
+                        onClick={() => setIsAddMore(true)}
+                      >
+                        ADD
+                      </div>
                     </Tooltip>
                   </div>
                 )}
@@ -3563,21 +3568,21 @@ const labelWithAsterisk = insertAsteriskBeforeClosingP(fieldData.label);
                         className={`${style.displayInRowRev} ${style.marginTop}`}
                       >
                         <div className={style.marginLeft}>
-                        <Tooltip title={isEdited ? "Click to Update" : ""} arrow>
-                          <button
-                            className={`${style.reappointmentButton} ${isEdited ? "" : style.disabledButtonLook
-                              }`}
-                            onClick={
-                              isEdited
-                                ? () => {
-                                  handleReappointmentUpdate();
-                                }
-                                : () => { }
-                            }
-                            disabled={!isEdited}
-                          >
-                            UPDATE
-                          </button>
+                          <Tooltip title={isEdited ? "Click to Update" : ""} arrow>
+                            <button
+                              className={`${style.reappointmentButton} ${isEdited ? "" : style.disabledButtonLook
+                                }`}
+                              onClick={
+                                isEdited
+                                  ? () => {
+                                    handleReappointmentUpdate();
+                                  }
+                                  : () => { }
+                              }
+                              disabled={!isEdited}
+                            >
+                              UPDATE
+                            </button>
                           </Tooltip>
                         </div>
                         {/* <div>
@@ -3596,16 +3601,16 @@ const labelWithAsterisk = insertAsteriskBeforeClosingP(fieldData.label);
                         className={`${style.displayInRowRev} ${style.marginTop}`}
                       >
                         <div>
-                        <Tooltip title={"Click to Close"} arrow>
-                          <div
-                            className={`${style.reappointmentButton}`}
-                            onClick={() => {
-                              setIsChanged(false);
-                              setIsView(false);
-                            }}
-                          >
-                            CLOSE
-                          </div>
+                          <Tooltip title={"Click to Close"} arrow>
+                            <div
+                              className={`${style.reappointmentButton}`}
+                              onClick={() => {
+                                setIsChanged(false);
+                                setIsView(false);
+                              }}
+                            >
+                              CLOSE
+                            </div>
                           </Tooltip>
                         </div>
                       </div>
@@ -3626,32 +3631,32 @@ const labelWithAsterisk = insertAsteriskBeforeClosingP(fieldData.label);
                       className={`${style.displayInRow} ${style.verticalAlignCenter}`}
                     >
                       <Tooltip title={"Click to Yes"} arrow>
-                      <div
-                        className={`${yesOrNoDemographic === "Yes"
-                          ? style.reappointmentButton
-                          : style.reappointmentButtonOutlined
-                          }`}
-                        onClick={() => {
-                          setIsChanged(true);
-                          setYesOrNoDemographic("Yes");
-                        }}
-                      >
-                        YES
-                      </div>
+                        <div
+                          className={`${yesOrNoDemographic === "Yes"
+                            ? style.reappointmentButton
+                            : style.reappointmentButtonOutlined
+                            }`}
+                          onClick={() => {
+                            setIsChanged(true);
+                            setYesOrNoDemographic("Yes");
+                          }}
+                        >
+                          YES
+                        </div>
                       </Tooltip>
                       <Tooltip title={"Click to No"} arrow>
-                      <div
-                        className={`${yesOrNoDemographic === "No"
-                          ? style.reappointmentButton
-                          : style.reappointmentButtonOutlined
-                          } ${style.marginLeft}`}
-                        onClick={() => {
-                          setIsChanged(false);
-                          setYesOrNoDemographic("No");
-                        }}
-                      >
-                        NO
-                      </div>
+                        <div
+                          className={`${yesOrNoDemographic === "No"
+                            ? style.reappointmentButton
+                            : style.reappointmentButtonOutlined
+                            } ${style.marginLeft}`}
+                          onClick={() => {
+                            setIsChanged(false);
+                            setYesOrNoDemographic("No");
+                          }}
+                        >
+                          NO
+                        </div>
                       </Tooltip>
                     </div>
                   </>

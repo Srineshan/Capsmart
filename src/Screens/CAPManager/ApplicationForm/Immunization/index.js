@@ -7,7 +7,7 @@ import { GET, POST, PUT } from '../../../dataSaver';
 import { useNavigate, useParams } from 'react-router-dom';
 import ApplicationReferenceDocuments from '../../../../Components/ApplicationReferenceDocuments';
 import { ErrorToaster, SuccessToaster } from '../../../../utils/toaster';
-
+import CryptoJS from 'crypto-js';
 import style from './index.module.scss';
 import NoDataBox from '../../../../Components/ReusableSmallComponents/noDataBox';
 import CommonDivider from '../../../../Components/CommonFields/CommonDivider';
@@ -17,10 +17,24 @@ import CommonSelectField from '../../../../Components/CommonFields/CommonSelectF
 import CommonDateField from '../../../../Components/CommonFields/CommonDateField';
 import { TextField } from '@mui/material';
 import SaveInProgressDialog from '../../../../Components/SaveInProgressDialog';
+import CommonPhoneField from '../../../../Components/CommonFields/CommonPhoneField';
+import ESignature from '../../../../Components/ESignature';
+import { format } from 'date-fns';
+import DeleteIcon from './../../../../images/deleteHcRow.png';
+import CheckIcon from '@mui/icons-material/Check';
+import ClearIcon from '@mui/icons-material/Clear';
+import TableTwo from '../../../../Components/TableDesignTwo';
 
-const Immunization = ({ basicForm, setBasicForm, applicationId, getPreApplication }) => {
+const Immunization = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFormat, name }) => {
     const [formSchema, setFormSchema] = useState();
+    const [isChecked, setIsChecked] = useState(false);
     const [isEdited, setIsEdited] = useState(false);
+    const [isSigned, setIsSigned] = useState(false);
+    const publicKey = "-----BEGIN PUBLIC KEY-----MIGeMA0GCSqGSIb3DQEBAQUAA4GMADCBiAKBgHA5SDu30/8uQAqqkQE0NuY4ePBptMGufG6AWnC/88YVLXi4thh7M8VU6kElVJkfXL5DwlfVnwPb08+PK1EcaOWWtp2gdQitkohjZLB9zVE+0OtRrzSc33wItf7Iwisi5dHPggHvfOp5fr+QYWFMa/kKYl3SgNo8fryeLbKKalmdAgMBAAE=-----END PUBLIC KEY-----";
+    const [dateTime, setDateTime] = useState(new Date().toISOString());
+    const [encryptedText, setEncryptedText] = useState(CryptoJS.AES.encrypt(name + dateTime, publicKey).toString());
+    // const [decryptedText, setDecryptedText] = useState(CryptoJS.AES.decrypt(encryptedText, publicKey).toString(CryptoJS.enc.Utf8));
+    const [currentDate, setCurrentDate] = useState(format(new Date(), dateFormat));
     const [formSchemaWholeObject, setFormSchemaWholeObject] = useState();
     const { section, step } = useParams()
     const [formIndex, setFormIndex] = useState();
@@ -28,20 +42,88 @@ const Immunization = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
     const [files, setFiles] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [calendarStart, setCalendarStart] = useState(false);
+    const [immunization, setImmunization] = useState('');
+    const [from, setFrom] = useState(null);
+    const [result, setResult] = useState('');
+    const [induration, setInduration] = useState('');
+    const [uploadedFiles, setUploadedFiles] = useState([]);
+    const [applicationImmunization, setApplicationImmunization] = useState();
+    const [immunizationCategory, setImmunizationCategory] = useState('');
     const [isSaveInProgressOpen, setIsSaveInProgressOpen] = useState(false);
     const navigate = useNavigate()
+    const immunizationCategoryValues = {
+        "Tuberculosis": 'TUBERCULIN', "Measles, Mumps & Rubella (MMR)": 'MEASLES_MUMPS_RUBELLA', "Hepatitis B Vaccination": 'HEPATITIS_B', "Varicella": 'VARICELLA', "Tetnues/Diptheriea/Pertussis(Tdap) and Tetatnus/Diphtheria(Td)": 'TETANUS_DIPHTHERIA_PERTUSSIS_OR_TETANUS_DIPHTHERIA', "Influenza": 'INFLUENZA', "Covid": 'COVID'
+    }
+
+    const immunizationValues = {
+        "2 Step Test ": 'TWO_STEP_TEST', "1 Step Test": 'ONE_STEP_TEST', "Chest X Ray": 'CHEST_X_RAY', 'MMR 1': 'MMR1', 'MMR 2': 'MMR2', "Laboratory Evidence Of Immunity": 'LABORATORY_EVIDENCE_OF_IMMUNITY', "HEP B 3": 'HEP_B_3', "HEP B 2": 'HEP_B_2', "HEP B 1": 'HEP_B_1', "Varicella 1": 'VARICELLA_1', "Varicella 2": 'VARICELLA_2', "Laboratory Confirmation Of Disease": 'LABORATORY_CONFIRMATION_OF_DISEASE', "Influenza Vaccine": 'INFLUENZA_VACCINE', "Covid Vaccine": 'COVID_VACCINE', "Booster": 'BOOSTER', "TD Immunization": 'TD_IMMUNIZATION', "TDAP Immunization": 'TDAP_IMMUNIZATION', "HEP B Booster": 'HEP_B_BOOSTER', "Pertusis Asult Dose": 'PERTUSIS_ADULT_DOSE'
+    }
+
+    const resultValues = {
+        "Pos": 'POSITIVE', "Neg": 'NEGATIVE'
+    }
+
+    const immunizationCategoryLabels = Object.fromEntries(
+        Object.entries(immunizationCategoryValues).map(([label, value]) => [value, label])
+    );
+
+    const immunizationLabels = Object.fromEntries(
+        Object.entries(immunizationValues).map(([label, value]) => [value, label])
+    );
+
+    const resultLabels = Object.fromEntries(
+        Object.entries(resultValues).map(([label, value]) => [value, label])
+    );
+
+    const immunizationKeys = [
+        "2 Step Test ",
+        "1 Step Test",
+        "Chest X Ray",
+        "MMR 1",
+        "MMR 2",
+        "Laboratory Evidence Of Immunity",
+        "HEP B 3",
+        "HEP B 2",
+        "HEP B 1",
+        "Varicella 1",
+        "Varicella 2",
+        "Laboratory Confirmation Of Disease",
+        "Influenza Vaccine",
+        "Covid Vaccine",
+        "Booster",
+        "TD Immunization",
+        "TDAP Immunization",
+        "HEP B Booster",
+        "Pertusis Asult Dose"
+    ];
+
+    const tableHeader = ['Test / Immunization', 'Result', 'Last Test Date', 'Valid', '']
+
+    useEffect(() => {
+        if (applicationId)
+            getApplicationImmunization()
+    }, [applicationId])
+
     useEffect(() => {
         if (basicForm && !formSchema) {
             getFormSchema()
         }
         if (basicForm !== undefined && formIndex !== undefined) {
-            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form')?.length === (formIndex + 1)) ? `/applicationForm/${applicationId}/Form/PODCheck` : `/applicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${basicForm?.forms[formIndex + 1]?.schemaCategory}`)
+            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form')?.length === (formIndex + 1)) ? `/applicationForm/${applicationId}/Form/${btoa('PODCheck')}` : `/applicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
         }
     }, [basicForm, formIndex])
 
     useEffect(() => {
-        setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === step))
+        setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === atob(step)))
     }, [basicForm, step])
+
+    const getApplicationImmunization = async () => {
+        const { data: immunization } = await GET(
+            `application-management-service/application/${applicationId}/immunization`
+        );
+        setApplicationImmunization(immunization)
+        setIsSigned((immunization?.esign?.esign && immunization?.esign) ? true : false);
+    }
 
     const getFormSchema = async () => {
         const { data: form } = await GET(
@@ -97,6 +179,7 @@ const Immunization = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
             const response = await POST(`application-management-service/application/${applicationId}/files/bulk?isLLMRequired=${true}`, formData);
             SuccessToaster('File Uploaded Successfully');
             console.log(response?.data);
+            setUploadedFiles(response?.data)
             setIsLoading(false);
             return response?.data;
         } catch (error) {
@@ -107,8 +190,177 @@ const Immunization = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
         }
     };
 
-    const handleAddMore = () => {
+    const handleAddMore = async (close) => {
+        let temp = []
 
+        setApplicationImmunization((prev) => {
+
+            const categoryEnum = immunizationCategoryValues[immunizationCategory];
+            const immunizationEnum = immunizationValues[immunization];
+            const resultEnum = resultValues[result];
+
+            if (!categoryEnum || !immunizationEnum) {
+                console.warn("Invalid category or immunization mapping.");
+                return prev;
+            }
+
+            const newTestDetail = {
+                immunization: immunizationEnum,
+                testDate: from || "",
+                result: resultEnum || "",
+                induration: induration || "",
+                files: uploadedFiles
+            };
+
+            const updated = { ...prev };
+
+            updated.esign = updated.esign || null;
+
+            updated.immunizationDetails = updated.immunizationDetails || [];
+
+            const categoryIndex = updated.immunizationDetails.findIndex(
+                (item) => item.immunizationCategory === categoryEnum
+            );
+
+            if (categoryIndex === -1) {
+                updated.immunizationDetails.push({
+                    immunizationCategory: categoryEnum,
+                    testDetails: [newTestDetail]
+                });
+            } else {
+                updated.immunizationDetails[categoryIndex].testDetails.push(newTestDetail);
+            }
+            console.log(updated, 'updated')
+            temp = updated;
+
+            return updated;
+        });
+        await PUT(`application-management-service/application/${applicationId}/immunization`, temp)
+            .then(response => {
+                console.log(response)
+                SuccessToaster("Application Updated Successfully");
+                handleClear();
+                getApplicationImmunization();
+            })
+            .catch((error) => {
+                console.log(error)
+                ErrorToaster("Unexpected Error Updating Application");
+            });
+    };
+
+    const handleContinue = async (close) => {
+        if (isEdited) {
+            let temp = []
+
+            setApplicationImmunization((prev) => {
+
+                const updated = { ...prev };
+
+                updated.esign = updated.esign?.esign ? updated.esign : {
+                    esign: isSigned ? encryptedText : '',
+                    name: isSigned ? name : '',
+                    signedDate: isSigned ? currentDate : ''
+                };
+
+                console.log(updated, 'updated')
+                temp = updated;
+
+                return updated;
+            });
+            await PUT(`application-management-service/application/${applicationId}/immunization`, temp)
+                .then(response => {
+                    console.log(response)
+                    SuccessToaster("Application Updated Successfully");
+                    handleClear();
+                    getApplicationImmunization();
+                    navigate(navigateURL)
+                })
+                .catch((error) => {
+                    console.log(error)
+                    ErrorToaster("Unexpected Error Updating Application");
+                });
+        } else {
+            navigate(navigateURL)
+        }
+    };
+
+    const handleDeleteTestDetail = async (categoryEnum, testDetailToDelete) => {
+        let temp = []
+        setApplicationImmunization((prev) => {
+            const updated = { ...prev };
+
+            if (!updated.immunizationDetails) return prev;
+
+            updated.immunizationDetails = updated.immunizationDetails
+                .map((cat) => {
+                    if (cat.immunizationCategory !== categoryEnum) return cat;
+
+                    // Filter out the testDetail to delete
+                    const filteredTests = cat.testDetails.filter(
+                        (td) => td !== testDetailToDelete
+                    );
+
+                    return {
+                        ...cat,
+                        testDetails: filteredTests
+                    };
+                })
+                // Optionally remove categories that become empty
+                .filter((cat) => cat.testDetails.length > 0);
+            temp = updated;
+            return updated;
+        });
+        await PUT(`application-management-service/application/${applicationId}/immunization`, temp)
+            .then(response => {
+                console.log(response)
+                SuccessToaster("Application Updated Successfully");
+                getApplicationImmunization();
+            })
+            .catch((error) => {
+                console.log(error)
+                ErrorToaster("Unexpected Error Updating Application");
+            });
+    };
+
+    const handleClear = () => {
+        setImmunization('');
+        setImmunizationCategory('');
+        setFrom(null);
+        setResult('');
+        setInduration('');
+    }
+
+    const handleDelete = () => {
+
+    }
+
+    let test = [];
+    let pos = [];
+    let lastTestDate = [];
+    let valid = [];
+    let deleteIcon = [];
+
+    const getTableValues = (data, category) => {
+        test = [];
+        pos = [];
+        lastTestDate = [];
+        valid = [];
+        deleteIcon = [];
+        data?.map(innerData => {
+            test.push(immunizationLabels[innerData?.immunization])
+            pos.push(resultLabels[innerData?.result] !== "Neg" ? 'Positive' : 'Negative')
+            lastTestDate.push(innerData?.testDate ? format(new Date(innerData?.testDate), 'MMM dd, yyyy') : '')
+            valid.push(innerData?.files?.[0]?.valid ? <CheckIcon sx={{ color: '#06617A' }} /> : <ClearIcon sx={{ color: '#06617A' }} />)
+            deleteIcon.push(<img src={DeleteIcon} alt="" className={`${style.docTypeImgStyle} ${style.cursorPointer}`} onClick={() => { handleDeleteTestDetail(category, innerData) }} />)
+        })
+
+        return [
+            { type: "text", value: test },
+            { type: "text", value: pos },
+            { type: "text", value: lastTestDate },
+            { type: "icon", icon: valid },
+            { type: "icon", icon: deleteIcon },
+        ];
     }
 
     const getIsEdited = (value) => {
@@ -153,30 +405,29 @@ const Immunization = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
                                 </div>
                                 <div className={`${style.ImmunizationGrid} ${style.marginTop}`}>
                                     <CommonSelectField
-                                        value={''}
-                                        // onChange={(e) =>
-                                        //     handleChange(fieldKey, e.target.value, baseKey)
-                                        // }
+                                        value={immunizationCategory}
+                                        onChange={(e) => setImmunizationCategory(e.target.value)}
                                         className={style.fullWidth}
                                         // firstOptionLabel={fieldData.label}
                                         // firstOptionValue={fieldData.label}
-                                        valueList={[]}
-                                        labelList={[]}
-                                        disabledList={[]}
+                                        valueList={formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['enterTest/ImmunizationInformation']?.properties['test/ImmunizationCategory']?.enum}
+                                        labelList={formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['enterTest/ImmunizationInformation']?.properties['test/ImmunizationCategory']?.enum}
+                                        disabledList={formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['enterTest/ImmunizationInformation']?.properties['test/ImmunizationCategory']?.enum?.map(data => false)}
                                         label={formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['enterTest/ImmunizationInformation']?.properties['test/ImmunizationCategory']?.label}
                                         required={true}
                                     />
                                     <CommonSelectField
-                                        value={''}
-                                        // onChange={(e) =>
-                                        //     handleChange(fieldKey, e.target.value, baseKey)
-                                        // }
+                                        value={immunization}
+                                        onChange={(e) => setImmunization(e.target.value)}
                                         className={style.fullWidth}
                                         // firstOptionLabel={fieldData.label}
                                         // firstOptionValue={fieldData.label}
-                                        valueList={[]}
-                                        labelList={[]}
-                                        disabledList={[]}
+                                        // valueList={formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['enterTest/ImmunizationInformation']?.properties['test/Immunization']?.enum}
+                                        // labelList={formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['enterTest/ImmunizationInformation']?.properties['test/Immunization']?.enum}
+                                        // disabledList={formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['enterTest/ImmunizationInformation']?.properties['test/Immunization']?.enum?.map(data => false)}
+                                        valueList={immunizationKeys}
+                                        labelList={immunizationKeys}
+                                        disabledList={immunizationKeys?.map(data => false)}
                                         label={formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['enterTest/ImmunizationInformation']?.properties['test/Immunization']?.label}
                                         required={true}
                                     />
@@ -187,21 +438,8 @@ const Immunization = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
                                         onClose={() => setCalendarStart(false)}
                                         // minDate={sub(new Date(), { years: 3 })}
                                         // maxDate={add(new Date(), { months: 6 })}
-                                        // value={
-                                        //     getValueByPath(
-                                        //         basicForm,
-                                        //         `${basicpath}.${baseKey}.${fieldKey}`
-                                        //     ) || null
-                                        // }
-                                        // onChange={(newValue) =>
-                                        //     handleChange(
-                                        //         fieldKey,
-                                        //         fieldData.format === "date-time"
-                                        //             ? format(new Date(newValue), "yyyy-MM-dd'T'HH:mm:ss'Z'")
-                                        //             : format(new Date(newValue), "yyyy-MM-dd"),
-                                        //         baseKey
-                                        //     )
-                                        // }
+                                        value={from || null}
+                                        onChange={(newValue) => setFrom(newValue)}
                                         InputProps={{
                                             style: {
                                                 fontSize: 14,
@@ -254,40 +492,36 @@ const Immunization = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
                                         required={true}
                                     />
                                     <CommonSelectField
-                                        value={''}
-                                        // onChange={(e) =>
-                                        //     handleChange(fieldKey, e.target.value, baseKey)
-                                        // }
+                                        value={result}
+                                        onChange={(e) => setResult(e.target.value)}
                                         className={style.fullWidth}
                                         // firstOptionLabel={fieldData.label}
                                         // firstOptionValue={fieldData.label}
-                                        valueList={[]}
-                                        labelList={[]}
-                                        disabledList={[]}
+                                        valueList={formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['enterTest/ImmunizationInformation']?.properties['result']?.enum}
+                                        labelList={formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['enterTest/ImmunizationInformation']?.properties['result']?.enum}
+                                        disabledList={formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['enterTest/ImmunizationInformation']?.properties['result']?.enum?.map(data => false)}
                                         label={formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['enterTest/ImmunizationInformation']?.properties['result']?.label}
                                         required={true}
                                     />
                                     <CommonTextField
-                                        value={""
-                                        }
+                                        value={induration}
                                         className={style.fullWidth}
-                                        // onChange={(e) =>
-                                        //     handleChange(
-                                        //         fieldKey,
-                                        //         fieldData.type === "number"
-                                        //             ? parseInt(
-                                        //                 e.target.value <= fieldData.maximum
-                                        //                     ? e.target.value
-                                        //                     : fieldData.maximum
-                                        //             )
-                                        //             : fieldKey === "pinCode" ? FormatPostalCode(e.target.value) : e.target.value,
-                                        //         baseKey
-                                        //     )
-                                        // }
+                                        onChange={(e) => setInduration(e.target.value)}
                                         placeholder={''}
                                         label={formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['enterTest/ImmunizationInformation']?.properties['induration']?.label}
                                         required={true}
                                     />
+                                </div>
+                                <div>
+                                    {uploadedFiles?.map((data, index) => (
+                                        <div className={style.uploadButton2}>
+                                            <span
+                                                className={`${style.uploadText2} ${style.verticalAlignCenter}`}
+                                            >
+                                                {data?.file?.fileName}
+                                            </span>
+                                        </div>
+                                    ))}
                                 </div>
                                 <div
                                     className={`${style.displayInRowRev} ${style.marginTop}`}
@@ -317,25 +551,150 @@ const Immunization = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
                         </div>
                         <div className={`${style.cardTitle} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Tuberculosis(TB)']?.label}</div>
                         <div className={`${style.descriptionText} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Tuberculosis(TB)']?.description}</div>
+                        {applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "TUBERCULIN")?.length !== 0 && (
+                            <TableTwo
+                                tableHeaderValues={tableHeader}
+                                tableDataValues={getTableValues(applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "TUBERCULIN")?.[0]?.testDetails, 'TUBERCULIN')}
+                                tableData={applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "TUBERCULIN")?.[0]?.testDetails}
+                                gridStyle={style.testGrid}
+                                tableSortValues={[]}
+                                heading={"There are no record to display"}
+                                className={`${style.tableRow} ${style.reportSection}`}
+                                hidePagination={true}
+                            />
+                        )}
                         <CommonDivider />
                         <div className={`${style.cardTitle} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Measles, Mumps & Rubella (MMR)']?.label}</div>
                         <div className={`${style.descriptionText} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Measles, Mumps & Rubella (MMR)']?.description}</div>
+                        {applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "MEASLES_MUMPS_RUBELLA")?.length !== 0 && (
+                            <TableTwo
+                                tableHeaderValues={tableHeader}
+                                tableDataValues={getTableValues(applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "MEASLES_MUMPS_RUBELLA")?.[0]?.testDetails, "MEASLES_MUMPS_RUBELLA")}
+                                tableData={applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "MEASLES_MUMPS_RUBELLA")?.[0]?.testDetails}
+                                gridStyle={style.testGrid}
+                                tableSortValues={[]}
+                                heading={"There are no record to display"}
+                                className={`${style.tableRow} ${style.reportSection}`}
+                                hidePagination={true}
+                            />
+                        )}
                         <CommonDivider />
                         <div className={`${style.cardTitle} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Hepatitis B Vaccination']?.label}</div>
                         <div className={`${style.descriptionText} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Hepatitis B Vaccination']?.description}</div>
+                        {applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "HEPATITIS_B")?.length !== 0 && (
+                            <TableTwo
+                                tableHeaderValues={tableHeader}
+                                tableDataValues={getTableValues(applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "HEPATITIS_B")?.[0]?.testDetails, "HEPATITIS_B")}
+                                tableData={applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "HEPATITIS_B")}
+                                gridStyle={style.testGrid}
+                                tableSortValues={[]}
+                                heading={"There are no record to display"}
+                                className={`${style.tableRow} ${style.reportSection}`}
+                                hidePagination={true}
+                            />
+                        )}
                         <CommonDivider />
                         <div className={`${style.cardTitle} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Varicella']?.label}</div>
                         <div className={`${style.descriptionText} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Varicella']?.description}</div>
+                        {applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "VARICELLA")?.length !== 0 && (
+                            <TableTwo
+                                tableHeaderValues={tableHeader}
+                                tableDataValues={getTableValues(applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "VARICELLA")?.[0]?.testDetails, "VARICELLA")}
+                                tableData={applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "VARICELLA")?.[0]?.testDetails}
+                                gridStyle={style.testGrid}
+                                tableSortValues={[]}
+                                heading={"There are no record to display"}
+                                className={`${style.tableRow} ${style.reportSection}`}
+                                hidePagination={true}
+                            />
+                        )}
                         <CommonDivider />
                         <div className={`${style.cardTitle} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Tetnues/Diptheriea/Pertussis(Tdap) and Tetatnus/Diphtheria(Td)']?.label}</div>
                         <div className={`${style.descriptionText} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Tetnues/Diptheriea/Pertussis(Tdap) and Tetatnus/Diphtheria(Td)']?.description}</div>
+                        {applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "TETANUS_DIPHTHERIA_PERTUSSIS_OR_TETANUS_DIPHTHERIA")?.length !== 0 && (
+                            <TableTwo
+                                tableHeaderValues={tableHeader}
+                                tableDataValues={getTableValues(applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "TETANUS_DIPHTHERIA_PERTUSSIS_OR_TETANUS_DIPHTHERIA")?.[0]?.testDetails, "TETANUS_DIPHTHERIA_PERTUSSIS_OR_TETANUS_DIPHTHERIA")}
+                                tableData={applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "TETANUS_DIPHTHERIA_PERTUSSIS_OR_TETANUS_DIPHTHERIA")?.[0]?.testDetails}
+                                gridStyle={style.testGrid}
+                                tableSortValues={[]}
+                                heading={"There are no record to display"}
+                                className={`${style.tableRow} ${style.reportSection}`}
+                                hidePagination={true}
+                            />
+                        )}
                         <CommonDivider />
                         <div className={`${style.cardTitle} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Influenza']?.label}</div>
                         <div className={`${style.descriptionText} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Influenza']?.description}</div>
-                        <CommonDivider />
+                        {applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "INFLUENZA")?.length !== 0 && (
+                            <TableTwo
+                                tableHeaderValues={tableHeader}
+                                tableDataValues={getTableValues(applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "INFLUENZA")?.[0]?.testDetails, "INFLUENZA")}
+                                tableData={applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "INFLUENZA")?.[0]?.testDetails}
+                                gridStyle={style.testGrid}
+                                tableSortValues={[]}
+                                heading={"There are no record to display"}
+                                className={`${style.tableRow} ${style.reportSection}`}
+                                hidePagination={true}
+                            />
+                        )}
+                        {/* <CommonDivider />
                         <div className={`${style.cardTitle} ${style.marginTop}`}>{formSchema?.properties?.primaryCarePhysicianForVerificationOfImmunizationHistory?.label}</div>
                         <div className={`${style.descriptionText} ${style.marginTop}`}>{formSchema?.properties?.primaryCarePhysicianForVerificationOfImmunizationHistory?.description}</div>
-                        <CommonDivider />
+                        <div className={`${style.addMoreBorder} ${style.marginTop}`}>
+                            <div className={style.padding20}>
+                                <div className={`${style.ImmunizationGrid} `}>
+                                    <CommonTextField
+                                        className={style.fullWidth}
+                                        placeholder={''}
+                                        label={formSchema?.properties?.primaryCarePhysicianForVerificationOfImmunizationHistory?.properties['primaryPhysicianName']?.label}
+                                        required={true}
+                                    />
+                                    <CommonTextField
+                                        
+                                        className={style.fullWidth}
+                                        
+                                        placeholder={''}
+                                        label={formSchema?.properties?.primaryCarePhysicianForVerificationOfImmunizationHistory?.properties['medicalCentricClinicName']?.label}
+                                        required={true}
+                                    />
+                                </div>
+                                <div className={`${style.ImmunizationGrid} ${style.marginTop}`}>
+                                    <CommonTextField
+                                        
+                                        className={style.fullWidth}
+                                        
+                                        placeholder={''}
+                                        label={formSchema?.properties?.primaryCarePhysicianForVerificationOfImmunizationHistory?.properties['emailId']?.label}
+                                        required={true}
+                                    />
+                                    <CommonPhoneField
+                                        
+                                        className={style.fullWidth}
+
+                                        placeholder={''}
+                                        label={formSchema?.properties?.primaryCarePhysicianForVerificationOfImmunizationHistory?.properties['contactNumber']?.label}
+                                        required={true}
+                                    />
+                                </div>
+                            </div>
+                        </div> */}
+                        <div className={style.twoCol}>
+                            <div onClick={!isSigned ? () => { setIsSigned(!isSigned); setIsEdited(true) } : () => { }}>
+                                <ESignature
+                                    userName={isSigned ? name : ""}
+                                    encData={isSigned ? encryptedText : ''}
+                                    showData={isSigned}
+                                    showDatais={true}
+                                />
+                            </div>
+                            <div className={style.verticalAlignCenter}>
+                                <div className={style.displayInRow}>
+                                    <div className={style.dateTitle}>Date: </div>
+                                    <div className={`${style.date} ${style.marginLeft}`}>{isSigned ? (applicationImmunization?.esign?.signedDate !== '' && applicationImmunization?.esign?.signedDate !== undefined) ? applicationImmunization?.esign?.signedDate : currentDate : ""}</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div>
@@ -343,7 +702,7 @@ const Immunization = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
                     <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                     <div className={style.twoColForButton}>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
-                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(`/applicationForm/${applicationId}/section1/acknowledgementStep1`)} >CONTINUE</div>
+                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue()} >CONTINUE</div>
                     </div>
                     <div className={style.marginTop}>
                         <ApplicationReferenceDocuments />

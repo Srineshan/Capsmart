@@ -53,13 +53,11 @@ const MedicalHistory = ({ basicForm, setBasicForm, applicationId, getPreApplicat
   }
 
   const getAllLabels = (data) => {
-    let tempLabels = labels;
-    if (!tempLabels?.includes(data)) {
-      console.log(tempLabels, data, 'Metadata')
-      tempLabels.push(data);
-    }
-    setLabels(tempLabels);
-  }
+    setLabels(prev => {
+      const exists = prev.some(item => JSON.stringify(item) === JSON.stringify(data));
+      return exists ? prev : [...prev, data];
+    });
+  };
 
   const getIsSaveInProgressOpen = (value) => {
     setIsSaveInProgressOpen(value);
@@ -98,7 +96,7 @@ const MedicalHistory = ({ basicForm, setBasicForm, applicationId, getPreApplicat
       keyValuePair.push({
         key: data,
         value: getValueByPath(basicForm, data),
-        label: labels[index],
+        label: labels[index]?.label,
       });
     });
 
@@ -190,8 +188,14 @@ const MedicalHistory = ({ basicForm, setBasicForm, applicationId, getPreApplicat
     // }
 
     if (getValueByPath(basicForm, `forms[${formIndex}].data.impactingPractice.medicalHistory.abilityToPractice`) === 'No' && getValueByPath(basicForm, `forms[${formIndex}].data.impactingPractice.medicalHistory.abilityToPractice`) !== undefined && getValueByPath(basicForm, `forms[${formIndex}].data.impactingPractice.medicalHistory.abilityToPractice`) !== null) {
-      let medicalHistoryRequiredKeys = [`forms[${formIndex}].data.impactingPractice.medicalHistory.nameOfFacility`]
+      let medicalHistoryRequiredKeys = [`forms[${formIndex}].data.impactingPractice.medicalHistory.nameOfFacility`, `forms[${formIndex}].data.impactingPractice.medicalHistory.treatingPhysicianOrProvider`, `forms[${formIndex}].data.impactingPractice.medicalHistory.emailId`, `forms[${formIndex}].data.impactingPractice.medicalHistory.cellPhone`]
       let temp = missingKeys?.filter(data => !medicalHistoryRequiredKeys?.includes(data?.key));
+      missingKeys = temp;
+    }
+
+    if (getValueByPath(basicForm, `forms[${formIndex}].data.impactingPractice.medicalHistory.abilityToPractice`) === 'No' || getValueByPath(basicForm, `forms[${formIndex}].data.impactingPractice.medicalHistory.abilityToPractice`) === undefined) {
+      let filterKeys = [`forms[${formIndex}].data.impactingPractice.medicalHistory.text`, `forms[${formIndex}].data.impactingPractice.medicalHistory.file`]
+      let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
       missingKeys = temp;
     }
 
