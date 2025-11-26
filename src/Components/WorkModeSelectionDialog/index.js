@@ -326,7 +326,14 @@ const WorkModeDialog = ({ getIsOpen }) => {
               <div className={`${style.workSpaceDesc}  ${selectedWorkSpace !== '' ? style.disabledView : ''}`}>Select the application you want to work in:</div>
               <div className={`${style.threeCol} ${style.padding}`}>
                 {applications?.map(data => (
-                  <Tooltip title={`Click here to launch ${data === 'CAP_MANAGER' ? 'CAPManager' : data === "MD_MANAGER" ? 'MDManager' : data === "LMS_MANAGER" ? 'EDUSmart' : 'PNPManager'}`} arrow>
+                  <Tooltip title={`${data === 'CAP_MANAGER' ?
+                    'Click to access the Credentialing & Privileging workspace to manage staff, locum workflows, and privilege approvals.'
+                    : data === "MD_MANAGER" ?
+                      'Click to access the Medical Directives workspace to create, update, and manage MDs, workflows, and attestations.'
+                      : data === "LMS_MANAGER" ?
+                        'Click to access the EduSmart learning workspace to assign, track, and complete training and competency modules.'
+                        :
+                        'Click to access the Policies & Procedures workspace to author, review, and manage P&Ps and their attestation cycles.'}`} arrow>
                     <div className={`${data === "PNP_MANAGER" ? style.applicationSelectionPNPCard : style.applicationSelectionCard} ${selectedWorkSpace === data ? data === "PNP_MANAGER" ? style.selectedApplicationPNPCard : style.selectedApplicationCard : ''} ${style.justifyCenter} ${style.verticalAlignCenter} ${style.cursorPointer} ${style.marginRight}`} onClick={data === "LMS_MANAGER" ? () => handleLMSRoute() : () => { setSelectedWorkSpace(data); sessionStorage.setItem('selectedApplication', data) }}>
                       <img src={data === 'CAP_MANAGER' ? CAPManager : data === "MD_MANAGER" ? MDManager : data === "LMS_MANAGER" ? EDUSmart : PNPManager} alt="" className={style.applicationImage} />
                       <div className={style.marginLeft10}>{data === 'CAP_MANAGER' ? <div className={style.applicationName}>CAP<span className={style.applicationNamePrimary}>Manager</span></div> : data === 'MD_MANAGER' ? <div className={style.applicationName}>MD<span className={style.applicationNamePrimary}>Manager</span></div> : data === 'LMS_MANAGER' ? <div className={style.applicationName}>EDU<span className={style.applicationNamePrimary}>Smart</span></div> : <div className={style.applicationPNPName}>P&P<span className={style.pnpNamePrimary}>Manager</span></div>}</div>
@@ -345,169 +352,191 @@ const WorkModeDialog = ({ getIsOpen }) => {
               </div>
               <div className={`${style.threeCol} ${style.padding2}`}>
                 {userRoleToDisplay?.includes("MD Librarian") && (
-                  <div
-                    className={`${style.applicationSelectionCard} ${style.verticalAlignCenter} ${style.cursorPointer} ${style.marginRight}`}
-                    onClick={() => handleWorkModeSelection("MD Librarian")}
-                    onMouseEnter={() => setHoveredRole("MD Librarian")}
-                    onMouseLeave={() => setHoveredRole(null)}
-                  >
-                    <img
-                      src={hoveredRole === "MD Librarian" ? SMimgHover : SMimg}
-                      alt="MD Librarian"
-                      className={` ${style.cursorPointer} ${style.applicationImage} ${style.marginRight}`}
-                    />
-                    <p className={`${hoveredRole === "MD Librarian" ? style.roleTitleHover : style.roleTitle} ${style.marginTop10}`}>MD Librarian</p>
-                  </div>
+                  <Tooltip title="Select this workspace to create or update Medical Directives, adjust workflows, and manage attestation groups." arrow>
+                    <div
+                      className={`${style.applicationSelectionCard} ${style.verticalAlignCenter} ${style.cursorPointer} ${style.marginRight}`}
+                      onClick={() => handleWorkModeSelection("MD Librarian")}
+                      onMouseEnter={() => setHoveredRole("MD Librarian")}
+                      onMouseLeave={() => setHoveredRole(null)}
+                    >
+                      <img
+                        src={hoveredRole === "MD Librarian" ? SMimgHover : SMimg}
+                        alt="MD Librarian"
+                        className={` ${style.cursorPointer} ${style.applicationImage} ${style.marginRight}`}
+                      />
+                      <p className={`${hoveredRole === "MD Librarian" ? style.roleTitleHover : style.roleTitle} ${style.marginTop10}`}>MD Librarian</p>
+                    </div>
+                  </Tooltip>
                 )}
                 {userRoleToDisplay?.includes("Acknowledger") && (
-                  <div
-                    className={`${selectedWorkSpace === "PNP_MANAGER" ? style.applicationSelectionPNPWorkspaceCard : style.applicationSelectionCard} ${style.verticalAlignCenter} ${style.cursorPointer} ${style.marginRight}`}
-                    onClick={() => handleWorkModeSelection("Acknowledger")}
-                    onMouseEnter={() => setHoveredRole("Acknowledger")}
-                    onMouseLeave={() => setHoveredRole(null)}
-                  >
-                    <img
-                      src={hoveredRole === "Acknowledger" ? SMimgHover : SMimg}
-                      alt="Acknowledger"
-                      className={` ${style.applicationImage} ${style.cursorPointer} ${style.marginRight}`}
-                    />
-                    <p className={`${hoveredRole === "Acknowledger" ? style.roleTitleHover : style.roleTitle} ${style.marginTop10}`}>Acknowledger</p>
-                  </div>
+                  <Tooltip title={selectedWorkSpace === 'PNP_MANAGER' ? "Select this workspace to validate P&P content and confirm details before they move to approval." : "Select this workspace to review MDs and confirm they align with your department’s practices."} arrow>
+                    <div
+                      className={`${selectedWorkSpace === "PNP_MANAGER" ? style.applicationSelectionPNPWorkspaceCard : style.applicationSelectionCard} ${style.verticalAlignCenter} ${style.cursorPointer} ${style.marginRight}`}
+                      onClick={() => handleWorkModeSelection("Acknowledger")}
+                      onMouseEnter={() => setHoveredRole("Acknowledger")}
+                      onMouseLeave={() => setHoveredRole(null)}
+                    >
+                      <img
+                        src={hoveredRole === "Acknowledger" ? SMimgHover : SMimg}
+                        alt="Acknowledger"
+                        className={` ${style.applicationImage} ${style.cursorPointer} ${style.marginRight}`}
+                      />
+                      <p className={`${hoveredRole === "Acknowledger" ? style.roleTitleHover : style.roleTitle} ${style.marginTop10}`}>Acknowledger</p>
+                    </div>
+                  </Tooltip>
                 )}
                 {userRoleToDisplay?.includes("Reviewer / Approver") && (
-                  <div
-                    className={`${selectedWorkSpace === "PNP_MANAGER" ? style.applicationSelectionPNPWorkspaceCard : style.applicationSelectionCard} ${style.verticalAlignCenter} ${style.cursorPointer} ${style.marginRight}`}
-                    onClick={() => handleWorkModeSelection("Reviewer / Approver")}
-                    onMouseEnter={() => setHoveredRole("Reviewer / Approver")}
-                    onMouseLeave={() => setHoveredRole(null)}
-                  >
-                    <img
-                      src={hoveredRole === "Reviewer / Approver" ? SMimgHover : SMimg}
-                      alt="Reviewer / Approver"
-                      className={` ${style.applicationImage} ${style.cursorPointer} ${style.marginRight}`}
-                    />
-                    <p className={`${hoveredRole === "Reviewer / Approver" ? style.roleTitleHover : style.roleTitle} ${style.marginTop10}`}>Reviewer / Approver</p>
-                  </div>
+                  <Tooltip title={selectedWorkSpace === 'PNP_MANAGER' ? "Select this workspace to review policy drafts for accuracy and approve them for publishing." : "Select this workspace to review MDs for accuracy and approve them for publishing and attestation."} arrow>
+                    <div
+                      className={`${selectedWorkSpace === "PNP_MANAGER" ? style.applicationSelectionPNPWorkspaceCard : style.applicationSelectionCard} ${style.verticalAlignCenter} ${style.cursorPointer} ${style.marginRight}`}
+                      onClick={() => handleWorkModeSelection("Reviewer / Approver")}
+                      onMouseEnter={() => setHoveredRole("Reviewer / Approver")}
+                      onMouseLeave={() => setHoveredRole(null)}
+                    >
+                      <img
+                        src={hoveredRole === "Reviewer / Approver" ? SMimgHover : SMimg}
+                        alt="Reviewer / Approver"
+                        className={` ${style.applicationImage} ${style.cursorPointer} ${style.marginRight}`}
+                      />
+                      <p className={`${hoveredRole === "Reviewer / Approver" ? style.roleTitleHover : style.roleTitle} ${style.marginTop10}`}>Reviewer / Approver</p>
+                    </div>
+                  </Tooltip>
                 )}
                 {userRoleToDisplay?.includes("Author / Owner") && (
-                  <div
-                    className={`${selectedWorkSpace === "PNP_MANAGER" ? style.applicationSelectionPNPWorkspaceCard : style.applicationSelectionCard} ${style.verticalAlignCenter} ${style.cursorPointer} ${style.marginRight}`}
-                    onClick={() => handleWorkModeSelection("Author / Owner")}
-                    onMouseEnter={() => setHoveredRole("Author / Owner")}
-                    onMouseLeave={() => setHoveredRole(null)}
-                  >
-                    <img
-                      src={hoveredRole === "Author / Owner" ? SAimgHover : SAimg}
-                      alt="Author / Owner"
-                      className={` ${style.applicationImage} ${style.cursorPointer} ${style.marginRight}`}
-                    />
-                    <p className={`${hoveredRole === "Author / Owner" ? style.roleTitleHover : style.roleTitle} ${style.marginTop10}`}>Author / Owner</p>
-                  </div>
+                  <Tooltip title={selectedWorkSpace === 'PNP_MANAGER' ? "Select this workspace to draft or update Policy & Procedures and ensure they are accurate and current." : "Select this workspace to draft or update Medical Directives and ensure they are accurate and current."} arrow>
+                    <div
+                      className={`${selectedWorkSpace === "PNP_MANAGER" ? style.applicationSelectionPNPWorkspaceCard : style.applicationSelectionCard} ${style.verticalAlignCenter} ${style.cursorPointer} ${style.marginRight}`}
+                      onClick={() => handleWorkModeSelection("Author / Owner")}
+                      onMouseEnter={() => setHoveredRole("Author / Owner")}
+                      onMouseLeave={() => setHoveredRole(null)}
+                    >
+                      <img
+                        src={hoveredRole === "Author / Owner" ? SAimgHover : SAimg}
+                        alt="Author / Owner"
+                        className={` ${style.applicationImage} ${style.cursorPointer} ${style.marginRight}`}
+                      />
+                      <p className={`${hoveredRole === "Author / Owner" ? style.roleTitleHover : style.roleTitle} ${style.marginTop10}`}>Author / Owner</p>
+                    </div>
+                  </Tooltip>
                 )}
                 {userRoleToDisplay?.includes("P&P Manager") && (
-                  <div
-                    className={`${style.applicationSelectionPNPWorkspaceCard} ${style.verticalAlignCenter} ${style.cursorPointer} ${style.marginRight}`}
-                    onClick={() => handleWorkModeSelection("P&P Manager")}
-                    onMouseEnter={() => setHoveredRole("P&P Manager")}
-                    onMouseLeave={() => setHoveredRole(null)}
-                  >
-                    <img
-                      src={hoveredRole === "P&P Manager" ? SMimgHover : SMimg}
-                      alt="P&P Manager"
-                      className={` ${style.cursorPointer} ${style.applicationImage} ${style.marginRight}`}
-                    />
-                    <p className={`${hoveredRole === "P&P Manager" ? style.roleTitleHover : style.roleTitle} ${style.marginTop10}`}>P&P Manager</p>
-                  </div>
+                  <Tooltip title="Select this workspace to create and manage policy documents, update workflows, and coordinate reviews." arrow>
+                    <div
+                      className={`${style.applicationSelectionPNPWorkspaceCard} ${style.verticalAlignCenter} ${style.cursorPointer} ${style.marginRight}`}
+                      onClick={() => handleWorkModeSelection("P&P Manager")}
+                      onMouseEnter={() => setHoveredRole("P&P Manager")}
+                      onMouseLeave={() => setHoveredRole(null)}
+                    >
+                      <img
+                        src={hoveredRole === "P&P Manager" ? SMimgHover : SMimg}
+                        alt="P&P Manager"
+                        className={` ${style.cursorPointer} ${style.applicationImage} ${style.marginRight}`}
+                      />
+                      <p className={`${hoveredRole === "P&P Manager" ? style.roleTitleHover : style.roleTitle} ${style.marginTop10}`}>P&P Manager</p>
+                    </div>
+                  </Tooltip>
                 )}
                 {userRoleToDisplay?.includes("Staff Manager") && (
-                  <div
-                    className={`${style.applicationSelectionCard} ${style.verticalAlignCenter} ${style.cursorPointer} ${style.marginRight}`}
-                    onClick={() => handleWorkModeSelection("Staff Manager")}
-                    onMouseEnter={() => setHoveredRole("Staff Manager")}
-                    onMouseLeave={() => setHoveredRole(null)}
-                  >
-                    <img
-                      src={hoveredRole === "Staff Manager" ? SMimgHover : SMimg}
-                      alt="Staff Manager"
-                      className={` ${style.applicationImage} ${style.cursorPointer} ${style.marginRight}`}
-                    />
-                    <p className={`${hoveredRole === "Staff Manager" ? style.roleTitleHover : style.roleTitle} ${style.marginTop10}`}>Staff Manager</p>
-                  </div>
+                  <Tooltip title="Select this workspace to manage staff records, send applications, and verify applications & documents." arrow>
+                    <div
+                      className={`${style.applicationSelectionCard} ${style.verticalAlignCenter} ${style.cursorPointer} ${style.marginRight}`}
+                      onClick={() => handleWorkModeSelection("Staff Manager")}
+                      onMouseEnter={() => setHoveredRole("Staff Manager")}
+                      onMouseLeave={() => setHoveredRole(null)}
+                    >
+                      <img
+                        src={hoveredRole === "Staff Manager" ? SMimgHover : SMimg}
+                        alt="Staff Manager"
+                        className={` ${style.applicationImage} ${style.cursorPointer} ${style.marginRight}`}
+                      />
+                      <p className={`${hoveredRole === "Staff Manager" ? style.roleTitleHover : style.roleTitle} ${style.marginTop10}`}>Staff Manager</p>
+                    </div>
+                  </Tooltip>
                 )}
                 {userRoleToDisplay?.includes("Department Head") && (
-                  <div
-                    className={`${style.applicationSelectionCard} ${style.verticalAlignCenter} ${style.cursorPointer} ${style.marginRight}`}
-                    onClick={() => handleWorkModeSelection("Department Head")}
-                    onMouseEnter={() => setHoveredRole("Department Head")}
-                    onMouseLeave={() => setHoveredRole(null)}
-                  >
-                    <img
-                      src={hoveredRole === "Department Head" ? HODimgHover : HODimg}
-                      alt="Department Head"
-                      className={` ${style.applicationImage} ${style.cursorPointer} ${style.marginRight}`}
-                    />
-                    <p className={`${hoveredRole === "Department Head" ? style.roleTitleHover : style.roleTitle}  ${style.marginTop10}`}>Department Head</p>
-                  </div>
+                  <Tooltip title="Select this workspace to manage your department's staff including locums and review applicants" arrow>
+                    <div
+                      className={`${style.applicationSelectionCard} ${style.verticalAlignCenter} ${style.cursorPointer} ${style.marginRight}`}
+                      onClick={() => handleWorkModeSelection("Department Head")}
+                      onMouseEnter={() => setHoveredRole("Department Head")}
+                      onMouseLeave={() => setHoveredRole(null)}
+                    >
+                      <img
+                        src={hoveredRole === "Department Head" ? HODimgHover : HODimg}
+                        alt="Department Head"
+                        className={` ${style.applicationImage} ${style.cursorPointer} ${style.marginRight}`}
+                      />
+                      <p className={`${hoveredRole === "Department Head" ? style.roleTitleHover : style.roleTitle}  ${style.marginTop10}`}>Department Head</p>
+                    </div>
+                  </Tooltip>
                 )}
                 {userRoleToDisplay?.includes("Credentialing Committee") && (
-                  <div
-                    className={`${style.applicationSelectionCard} ${style.verticalAlignCenter} ${style.cursorPointer} ${style.marginRight}`}
-                    onClick={() => handleWorkModeSelection("Credentialing Committee")}
-                    onMouseEnter={() => setHoveredRole("Credentialing Committee")}
-                    onMouseLeave={() => setHoveredRole(null)}
-                  >
-                    <img
-                      src={hoveredRole === "Credentialing Committee" ? CCimgHover : CCimg}
-                      alt="Credentialing Committee"
-                      className={` ${style.applicationImage} ${style.cursorPointer} ${style.marginRight}`}
-                    />
-                    <p className={`${hoveredRole === "Credentialing Committee" ? style.roleTitleHover : style.roleTitle} ${style.marginTop10}`}>Credentialing Committee</p>
-                  </div>
+                  <Tooltip title="Select this workspace to review staff data on applications, documents and approve applications." arrow>
+                    <div
+                      className={`${style.applicationSelectionCard} ${style.verticalAlignCenter} ${style.cursorPointer} ${style.marginRight}`}
+                      onClick={() => handleWorkModeSelection("Credentialing Committee")}
+                      onMouseEnter={() => setHoveredRole("Credentialing Committee")}
+                      onMouseLeave={() => setHoveredRole(null)}
+                    >
+                      <img
+                        src={hoveredRole === "Credentialing Committee" ? CCimgHover : CCimg}
+                        alt="Credentialing Committee"
+                        className={` ${style.applicationImage} ${style.cursorPointer} ${style.marginRight}`}
+                      />
+                      <p className={`${hoveredRole === "Credentialing Committee" ? style.roleTitleHover : style.roleTitle} ${style.marginTop10}`}>Credentialing Committee</p>
+                    </div>
+                  </Tooltip>
                 )}
                 {userRoleToDisplay?.includes("Credentialing Committee User") && (
-                  <div
-                    className={`${style.applicationSelectionCard} ${style.verticalAlignCenter} ${style.cursorPointer} ${style.marginRight}`}
-                    onClick={() => handleWorkModeSelection("Credentialing Committee User")}
-                    onMouseEnter={() => setHoveredRole("Credentialing Committee User")}
-                    onMouseLeave={() => setHoveredRole(null)}
-                  >
-                    <img
-                      src={hoveredRole === "Credentialing Committee User" ? CCimgHover : CCimg}
-                      alt="Credentialing Committee User"
-                      className={` ${style.applicationImage} ${style.cursorPointer} ${style.marginRight}`}
-                    />
-                    <p className={`${hoveredRole === "Credentialing Committee User" ? style.roleTitleHover : style.roleTitle}  ${style.marginTop10}`}>Staff Manager's Credentialing Committee Workspace</p>
-                  </div>
+                  <Tooltip title="" arrow>
+                    <div
+                      className={`${style.applicationSelectionCard} ${style.verticalAlignCenter} ${style.cursorPointer} ${style.marginRight}`}
+                      onClick={() => handleWorkModeSelection("Credentialing Committee User")}
+                      onMouseEnter={() => setHoveredRole("Credentialing Committee User")}
+                      onMouseLeave={() => setHoveredRole(null)}
+                    >
+                      <img
+                        src={hoveredRole === "Credentialing Committee User" ? CCimgHover : CCimg}
+                        alt="Credentialing Committee User"
+                        className={` ${style.applicationImage} ${style.cursorPointer} ${style.marginRight}`}
+                      />
+                      <p className={`${hoveredRole === "Credentialing Committee User" ? style.roleTitleHover : style.roleTitle}  ${style.marginTop10}`}>Staff Manager's Credentialing Committee Workspace</p>
+                    </div>
+                  </Tooltip>
                 )}
                 {userRoleToDisplay?.includes("Chief Of Staff") && (
-                  <div
-                    className={`${style.applicationSelectionCard} ${style.verticalAlignCenter} ${style.cursorPointer} ${style.marginRight}`}
-                    onClick={() => handleWorkModeSelection("Chief Of Staff")}
-                    onMouseEnter={() => setHoveredRole("Chief Of Staff")}
-                    onMouseLeave={() => setHoveredRole(null)}
-                  >
-                    <img
-                      src={hoveredRole === "Chief Of Staff" ? COSimgHover : COSimg}
-                      alt="Chief Of Staff"
-                      className={` ${style.applicationImage} ${style.cursorPointer} ${style.marginRight}`}
-                    />
-                    <p className={`${hoveredRole === "Chief Of Staff" ? style.roleTitleHover : style.roleTitle} ${style.marginTop10}`}>Chief Of Staff</p>
-                  </div>
+                  <Tooltip title="Select this workspace to finalize privileging decisions and override temporary appointments when required." arrow>
+                    <div
+                      className={`${style.applicationSelectionCard} ${style.verticalAlignCenter} ${style.cursorPointer} ${style.marginRight}`}
+                      onClick={() => handleWorkModeSelection("Chief Of Staff")}
+                      onMouseEnter={() => setHoveredRole("Chief Of Staff")}
+                      onMouseLeave={() => setHoveredRole(null)}
+                    >
+                      <img
+                        src={hoveredRole === "Chief Of Staff" ? COSimgHover : COSimg}
+                        alt="Chief Of Staff"
+                        className={` ${style.applicationImage} ${style.cursorPointer} ${style.marginRight}`}
+                      />
+                      <p className={`${hoveredRole === "Chief Of Staff" ? style.roleTitleHover : style.roleTitle} ${style.marginTop10}`}>Chief Of Staff</p>
+                    </div>
+                  </Tooltip>
                 )}
                 {userRoleToDisplay?.includes("Entity Sys Admin") && (
-                  <div
-                    className={`${style.applicationSelectionCard} ${style.verticalAlignCenter} ${style.cursorPointer} ${style.marginRight}`}
-                    onClick={() => handleWorkModeSelectionSys("Entity Sys Admin")}
-                    onMouseEnter={() => setHoveredRole("Entity Sys Admin")}
-                    onMouseLeave={() => setHoveredRole(null)}
-                  >
-                    <img
-                      src={hoveredRole === "Entity Sys Admin" ? SAimgHover : SAimg}
-                      alt="Entity Sys Admin"
-                      className={` ${style.applicationImage} ${style.cursorPointer} ${style.marginRight}`}
-                    />
-                    <p className={`${hoveredRole === "Entity Sys Admin" ? style.roleTitleHover : style.roleTitle} ${style.marginTop10}`}>System Administrator</p>
-                  </div>
+                  <Tooltip title="" arrow>
+                    <div
+                      className={`${style.applicationSelectionCard} ${style.verticalAlignCenter} ${style.cursorPointer} ${style.marginRight}`}
+                      onClick={() => handleWorkModeSelectionSys("Entity Sys Admin")}
+                      onMouseEnter={() => setHoveredRole("Entity Sys Admin")}
+                      onMouseLeave={() => setHoveredRole(null)}
+                    >
+                      <img
+                        src={hoveredRole === "Entity Sys Admin" ? SAimgHover : SAimg}
+                        alt="Entity Sys Admin"
+                        className={` ${style.applicationImage} ${style.cursorPointer} ${style.marginRight}`}
+                      />
+                      <p className={`${hoveredRole === "Entity Sys Admin" ? style.roleTitleHover : style.roleTitle} ${style.marginTop10}`}>System Administrator</p>
+                    </div>
+                  </Tooltip>
                 )}
               </div>
               {/* {selectedWorkSpace === "MD_MANAGER" && (

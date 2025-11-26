@@ -154,10 +154,32 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
 
   const docLabel = (doc) => doc?.document?.shortName || doc?.document?.name || '';
 
-  const getIsDocRequired = (label) => {
-    const doc = basicForm?.documentsRequired?.find((d) => docLabel(d) === label);
-    return doc?.required ? 'Required' : 'Recommended';
-  };
+  const getIsDocRequired = (shortName) => {
+    let documentData = basicForm?.documentsRequired?.filter(data => data?.document?.shortName === shortName)?.[0]
+    if (!documentData?.departmentSpecific) {
+      return documentData?.documentType?.shortName === "Profile Picture" ? "Optional" : documentData?.required ? 'Required' : 'Recommended';
+    } else {
+      if (documentData?.document?.shortName === "Profile Picture") {
+        return "Optional";
+      } else {
+        let isDepartmentMatching = documentData?.departments?.map(deptData => deptData?.department?.id)?.includes(basicForm?.basicDetailReferences?.department?.id)
+        if (isDepartmentMatching) {
+          if (documentData?.departments?.filter(deptData => deptData?.department?.id === basicForm?.basicDetailReferences?.department?.id)?.[0]?.specialitySpecific) {
+            let isSpecialtyMatching = documentData?.departments?.filter(deptData => deptData?.department?.id === basicForm?.basicDetailReferences?.department?.id)?.[0]?.specialities?.map(specialtyData => specialtyData?.specialty?.id)?.includes(basicForm?.basicDetailReferences?.specialty?.id);
+            if (isSpecialtyMatching) {
+              return documentData?.departments?.filter(deptData => deptData?.department?.id === basicForm?.basicDetailReferences?.department?.id)?.[0]?.specialities?.filter(specialtyData => specialtyData?.specialty?.id === basicForm?.basicDetailReferences?.specialty?.id)?.[0]?.required ? 'Required' : 'Recommended';
+            } else {
+              return documentData?.departments?.filter(deptData => deptData?.department?.id === basicForm?.basicDetailReferences?.department?.id)?.[0]?.required ? 'Required' : 'Recommended';
+            }
+          } else {
+            return documentData?.departments?.filter(deptData => deptData?.department?.id === basicForm?.basicDetailReferences?.department?.id)?.[0]?.required ? 'Required' : 'Recommended';
+          }
+        } else {
+          return documentData?.required ? 'Required' : 'Recommended';
+        }
+      }
+    }
+  }
 
   const handleFileUpload = async (e, id) => {
     setIsEdited(true);
@@ -247,7 +269,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
         formData,
       );
       responseData?.forEach((uploadedDoc, index) => {
-        const documentLabel = uploadedDoc?.classification || '';
+        const documentLabel = uploadedDoc?.documentType !== null ? uploadedDoc?.documentType?.shortName : '';
         const newRow = {
           rowId: uploadedDoc?.id,
           documentType: documentLabel,
@@ -403,7 +425,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
       schemaId: basicForm?.forms?.[formIndex]?.schemaId,
       data: basicForm?.forms?.[formIndex]?.data,
       unFilledFields: getMissingDocs()?.map((doc) => docLabel(doc)),
-      acknowledged: action === 'continue',
+      acknowledged: getMissingDocs()?.map((doc) => docLabel(doc))?.length !== 0 ? false : true,
     };
     try {
       const response = await PUT(

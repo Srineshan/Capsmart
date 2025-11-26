@@ -332,13 +332,13 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
       };
     });
 
-    if (workModeType === "Department Head" && applicationType === "REAPPOINTMENT") {
+    if (workModeType === "Department Head" && (applicationType === "REAPPOINTMENT" || applicationType === "NEW")) {
       filteredArray = baseUserFlowArray.filter(tile => tile.level === 'level-2');
     }
-    else if (workModeType === "Chief Of Staff" && applicationType === "REAPPOINTMENT") {
+    else if (workModeType === "Chief Of Staff" && (applicationType === "REAPPOINTMENT" || applicationType === "NEW")) {
       filteredArray = baseUserFlowArray.filter(tile => tile.level === 'level-2').map(tile => ({
         ...tile,
-        label: "Reappointments To Process",
+        label: applicationType === "REAPPOINTMENT" ? "Reappointments To Process" : "Appointments To Process",
       }));
     }
     else if (workModeType === "Credentialing Committee User") {

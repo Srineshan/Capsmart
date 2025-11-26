@@ -326,7 +326,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
   const innerHeaderValuesForByMedicalDirective = [
     "No.",
     "Applicant Type",
-    "Applicant Name",
+    "User Name",
     "Dept / Division",
     "Attestation Status",
     "Attestation Date",

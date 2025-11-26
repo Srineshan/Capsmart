@@ -268,6 +268,7 @@ const NewActiveApplication = ({
   const [approvalType, setApprovalType] = useState(false);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [noteToDelete, setNoteToDelete] = useState(null);
+  const [applicationImmunization, setApplicationImmunization] = useState();
   const canadaData =
     sessionStorage.getItem("canadaData") !== "undefined"
       ? JSON.parse(sessionStorage.getItem("canadaData"))
@@ -435,7 +436,7 @@ const NewActiveApplication = ({
     setShowFileVerifyDialog(true);
     setSelectedRow(files);
     setSelectedRowTableName("table");
-    setSelectedFormId(form?.forms?.[1]?.id);
+    setSelectedFormId(form?.forms?.[form?.forms?.findIndex(data => data?.schemaCategory === "UploadYourDoc")]?.id);
   };
 
   const handleVerifyClickMD = (files, index) => {
@@ -968,6 +969,13 @@ const NewActiveApplication = ({
       setForm1(form1?.schema);
     }
   };
+
+  const getApplicationImmunization = async () => {
+    const { data: immunization } = await GET(
+      `application-management-service/application/${applicationId}/immunization`
+    );
+    setApplicationImmunization(immunization)
+  }
 
   const getFileData = () => {
     let temp = [];
@@ -1579,7 +1587,7 @@ const NewActiveApplication = ({
       title: title
     };
 
-    await PUT(`application-management-service/application/${applicationId}/workflow/move?isDelegate=${isDelegate}`, temp)
+    await PUT(`application-management-service/application/${applicationId}/workflow/move?isDelegate=${isDelegate}&workflowAction=APPROVED`, temp)
       .then(response => {
         console.log('successfull')
         onClose()
@@ -3752,7 +3760,103 @@ const NewActiveApplication = ({
             </div>
           </>
         );
+      case "Immunization":
+        return (
+          <></>
+          // <>
+          // <div className={`${style.cardTitle} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Tuberculosis(TB)']?.label}</div>
+          //             <div className={`${style.descriptionText} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Tuberculosis(TB)']?.description}</div>
+          //             {applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "TUBERCULIN")?.length !== 0 && (
+          //                 <TableTwo
+          //                     tableHeaderValues={tableHeader}
+          //                     tableDataValues={getTableValues(applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "TUBERCULIN")?.[0]?.testDetails, 'TUBERCULIN')}
+          //                     tableData={applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "TUBERCULIN")?.[0]?.testDetails}
+          //                     gridStyle={style.testGrid}
+          //                     tableSortValues={[]}
+          //                     heading={"There are no record to display"}
+          //                     className={`${style.tableRow} ${style.reportSection}`}
+          //                     hidePagination={true}
+          //                 />
+          //             )}
+          //             <CommonDivider />
+          //             <div className={`${style.cardTitle} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Measles, Mumps & Rubella (MMR)']?.label}</div>
+          //             <div className={`${style.descriptionText} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Measles, Mumps & Rubella (MMR)']?.description}</div>
+          //             {applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "MEASLES_MUMPS_RUBELLA")?.length !== 0 && (
+          //                 <TableTwo
+          //                     tableHeaderValues={tableHeader}
+          //                     tableDataValues={getTableValues(applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "MEASLES_MUMPS_RUBELLA")?.[0]?.testDetails, "MEASLES_MUMPS_RUBELLA")}
+          //                     tableData={applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "MEASLES_MUMPS_RUBELLA")?.[0]?.testDetails}
+          //                     gridStyle={style.testGrid}
+          //                     tableSortValues={[]}
+          //                     heading={"There are no record to display"}
+          //                     className={`${style.tableRow} ${style.reportSection}`}
+          //                     hidePagination={true}
+          //                 />
+          //             )}
+          //             <CommonDivider />
+          //             <div className={`${style.cardTitle} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Hepatitis B Vaccination']?.label}</div>
+          //             <div className={`${style.descriptionText} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Hepatitis B Vaccination']?.description}</div>
+          //             {applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "HEPATITIS_B")?.length !== 0 && (
+          //                 <TableTwo
+          //                     tableHeaderValues={tableHeader}
+          //                     tableDataValues={getTableValues(applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "HEPATITIS_B")?.[0]?.testDetails, "HEPATITIS_B")}
+          //                     tableData={applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "HEPATITIS_B")}
+          //                     gridStyle={style.testGrid}
+          //                     tableSortValues={[]}
+          //                     heading={"There are no record to display"}
+          //                     className={`${style.tableRow} ${style.reportSection}`}
+          //                     hidePagination={true}
+          //                 />
+          //             )}
+          //             <CommonDivider />
+          //             <div className={`${style.cardTitle} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Varicella']?.label}</div>
+          //             <div className={`${style.descriptionText} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Varicella']?.description}</div>
+          //             {applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "VARICELLA")?.length !== 0 && (
+          //                 <TableTwo
+          //                     tableHeaderValues={tableHeader}
+          //                     tableDataValues={getTableValues(applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "VARICELLA")?.[0]?.testDetails, "VARICELLA")}
+          //                     tableData={applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "VARICELLA")?.[0]?.testDetails}
+          //                     gridStyle={style.testGrid}
+          //                     tableSortValues={[]}
+          //                     heading={"There are no record to display"}
+          //                     className={`${style.tableRow} ${style.reportSection}`}
+          //                     hidePagination={true}
+          //                 />
+          //             )}
+          //             <CommonDivider />
+          //             <div className={`${style.cardTitle} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Tetnues/Diptheriea/Pertussis(Tdap) and Tetatnus/Diphtheria(Td)']?.label}</div>
+          //             <div className={`${style.descriptionText} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Tetnues/Diptheriea/Pertussis(Tdap) and Tetatnus/Diphtheria(Td)']?.description}</div>
+          //             {applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "TETANUS_DIPHTHERIA_PERTUSSIS_OR_TETANUS_DIPHTHERIA")?.length !== 0 && (
+          //                 <TableTwo
+          //                     tableHeaderValues={tableHeader}
+          //                     tableDataValues={getTableValues(applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "TETANUS_DIPHTHERIA_PERTUSSIS_OR_TETANUS_DIPHTHERIA")?.[0]?.testDetails, "TETANUS_DIPHTHERIA_PERTUSSIS_OR_TETANUS_DIPHTHERIA")}
+          //                     tableData={applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "TETANUS_DIPHTHERIA_PERTUSSIS_OR_TETANUS_DIPHTHERIA")?.[0]?.testDetails}
+          //                     gridStyle={style.testGrid}
+          //                     tableSortValues={[]}
+          //                     heading={"There are no record to display"}
+          //                     className={`${style.tableRow} ${style.reportSection}`}
+          //                     hidePagination={true}
+          //                 />
+          //             )}
+          //             <CommonDivider />
+          //             <div className={`${style.cardTitle} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Influenza']?.label}</div>
+          //             <div className={`${style.descriptionText} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Influenza']?.description}</div>
+          //             {applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "INFLUENZA")?.length !== 0 && (
+          //                 <TableTwo
+          //                     tableHeaderValues={tableHeader}
+          //                     tableDataValues={getTableValues(applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "INFLUENZA")?.[0]?.testDetails, "INFLUENZA")}
+          //                     tableData={applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "INFLUENZA")?.[0]?.testDetails}
+          //                     gridStyle={style.testGrid}
+          //                     tableSortValues={[]}
+          //                     heading={"There are no record to display"}
+          //                     className={`${style.tableRow} ${style.reportSection}`}
+          //                     hidePagination={true}
+          //                 />
+          //             )}
+          // </>
+        );
       default:
+        console.log(form?.forms?.[index]?.uploadedFiles, 'uploadedFiles', data?.schemaCategory)
         return (
           <div
             className={`${style.marginTop} ${style.screenPadding}`}
@@ -5449,32 +5553,6 @@ const NewActiveApplication = ({
                                           Applicant Profile Information
                                         </div>
                                       </div>
-                                      <>
-                                        {!form?.basicInformationStatus ? (
-                                          <div
-                                            className={`${style.purpleButton} ${style.cursorPointer} `}
-                                          >
-                                            <Tooltip arrow title={"Click to Verify"}>
-                                              <div
-                                                className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                onClick={() => handleVerify()}
-                                              >
-                                                Verify
-                                              </div>
-                                            </Tooltip>
-                                          </div>
-                                        ) : (
-                                          <div
-                                            className={`${style.greenButton}  ${style.cursorPointer} `}
-                                          >
-                                            <div
-                                              className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                            >
-                                              Verified
-                                            </div>
-                                          </div>
-                                        )}
-                                      </>
 
 
                                     </div>
@@ -5560,6 +5638,32 @@ const NewActiveApplication = ({
                                           />
                                         )}
                                     </div>
+                                    <>
+                                      {!form?.basicInformationStatus ? (
+                                        <div
+                                          className={`${style.purpleButton} ${style.cursorPointer} `}
+                                        >
+                                          <Tooltip arrow title={"Click to Verify"}>
+                                            <div
+                                              className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                              onClick={() => handleVerify()}
+                                            >
+                                              Verify
+                                            </div>
+                                          </Tooltip>
+                                        </div>
+                                      ) : (
+                                        <div
+                                          className={`${style.greenButton}  ${style.cursorPointer} `}
+                                        >
+                                          <div
+                                            className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                          >
+                                            Verified
+                                          </div>
+                                        </div>
+                                      )}
+                                    </>
                                   </div>
                                 )}
                               </>
@@ -6204,18 +6308,6 @@ const NewActiveApplication = ({
                                       </div>
 
 
-                                      <>
-                                        {!form?.basicInformationStatus ? (
-                                          <div className={`${style.purpleButton} ${style.cursorPointer} `}>
-                                            <Tooltip title="Click to Approve this Step" arrow>
-                                              <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`} onClick={() => handleVerify()}>Approve</div></Tooltip>
-                                          </div>
-                                        ) : (
-                                          <div className={`${style.greenButton}  ${style.cursorPointer} `}>
-                                            <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>Approved</div>
-                                          </div>
-                                        )}
-                                      </>
 
                                     </div>
                                     <div className={`${style.marginTop} ${style.screenPadding}`}>
@@ -6238,7 +6330,18 @@ const NewActiveApplication = ({
                                         <ApplicationFieldCard object={form1?.properties?.billingNumber} gridStyle={style.twoCol} baseKey={'billingNumber'} basicForm={form} setBasicForm={setForm} isBasicPath={true} isPOD={true} />
                                       )}
                                     </div>
-
+                                    <>
+                                      {!form?.basicInformationStatus ? (
+                                        <div className={`${style.purpleButton} ${style.cursorPointer} `}>
+                                          <Tooltip title="Click to Approve this Step" arrow>
+                                            <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`} onClick={() => handleVerify()}>Approve</div></Tooltip>
+                                        </div>
+                                      ) : (
+                                        <div className={`${style.greenButton}  ${style.cursorPointer} `}>
+                                          <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>Approved</div>
+                                        </div>
+                                      )}
+                                    </>
 
                                   </div>
                                 )}
@@ -9613,40 +9716,8 @@ const NewActiveApplication = ({
                   )}
 
 
-                  {/* {applicationType === "NEW" ? (
-                    ((workModeType === 'Credentialing Committee' && selectedTab === 'level-3') ||
-                      (workModeType === 'Chief Of Staff' && selectedTab === "level-3") ||
-                      (workModeType === 'Staff Manager' && selectedTab === "level-3") ||
-                      (workModeType === 'Department Head' && selectedTab === "level-3")) ? (
-                      <div className={`${style.statusCard} ${style.marginTop20} ${style.marginBottom20}`}>
-                        <div className={`${style.statusCardTextStyle1} ${style.marginTop20}`}>
-                          Review and Approval Status
-                        </div>
-                        <div className={`${style.spaceEvenly} ${style.marginTop20}`}>
-                          <div className={style.displayInCol}>
-                            <div className={style.statusStartTextStyle}>
-                              Not Started Yet
-                            </div>
-                            <div className={style.statusRoleTextStyle}>
-                              CHIEF OF STAFF / DEPUTY
-                            </div>
-                          </div>
-                          <div className={style.displayInCol}>
-                            <div className={style.statusStartTextStyle}>
-                              Not Started Yet
-                            </div>
-                            <div className={style.statusRoleTextStyle}>
-                              CREDENTIALING COMMITTEE
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    ) : null
-                  ) : null} */}
-
-
                   <>
-                    {selectedTab !== "level-4" && selectedTab !== "level-5" && applicationType === "NEW" && (
+                    {/* {selectedTab !== "level-4" && selectedTab !== "level-5" && applicationType === "NEW" && (
                       <>
                         <div className={style.cardLeftStyle}>
                           <div className={`${style.displayInRow}${style.marginTop20}`}>
@@ -9910,7 +9981,7 @@ const NewActiveApplication = ({
                           </>
                         )}
                       </>
-                    )}
+                    )} */}
                     {(applicationType === "REAPPOINTMENT" || applicationType === "NEW") || applicationType === "LOCUM" ? (
                       <>
                         {selectedTab === "level-4" || selectedTab === "level-5" || (selectedTab === "level-3" && applicationType === "LOCUM") ? (
@@ -10770,9 +10841,6 @@ const NewActiveApplication = ({
                       </div>
                       <div
                       >
-                        {/* <div
-                                        className={`${allTasksCompleted  ? style.bigButtonGreyStyle2 : style.bigButtonStyle2} ${style.cursorPointer}`}
-                                      > */}
                         <div
                           className={` ${style.bigButtonStyle2} ${style.cursorPointer}`}
                           style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
@@ -10781,10 +10849,6 @@ const NewActiveApplication = ({
                           <Tooltip title={isButtonDisabled ? "" : "Click to Approve as Board of Directors"} arrow>
                             <div
                               className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20}`}
-                            //  onClick={allTasksCompleted ? handleApplicationAccept : null}
-                            // onClick={onClickApproveMoveFunction}
-                            // style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
-                            // onClick={isButtonDisabled ? undefined : onClickApproveMoveFunction}
                             >
                               BOD APPROVED
                             </div>

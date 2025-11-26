@@ -57,7 +57,7 @@ const ApplicationReferenceDocuments = ({ refetchRefDoc, getResetRefetch }) => {
 
   return (
     <div className={style.referenceDocumentParentCard}>
-      <div className={style.referenceDocumentTitle}>Your {basicForm?.privilegeCategoryType === "LOCUM" ? `Locum ${basicForm?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'}` : 'Reappointment'} Documents</div>
+      <div className={style.referenceDocumentTitle}>Your {basicForm?.privilegeCategoryType === "LOCUM" ? `Locum ${basicForm?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'}` : basicForm?.creationType === "NEW" ? "" : 'Reappointment'} Documents</div>
       {(tableData?.length > 0 || basicForm?.payment?.invoice?.fileURL !== undefined) ? (
         <>
           {tableData?.map((document, index) => {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import ProgressCard from '../../../../Components/ProgressCard';
 import ApplicationUserCard from '../../../../Components/ApplicationUserCard';
 import ApplicationAssistanceCard from '../../../../Components/ApplicationAssistanceCard';
@@ -23,10 +23,12 @@ import { format } from 'date-fns';
 import DeleteIcon from './../../../../images/deleteHcRow.png';
 import CheckIcon from '@mui/icons-material/Check';
 import ClearIcon from '@mui/icons-material/Clear';
+import html2pdf from "html2pdf.js";
 import TableTwo from '../../../../Components/TableDesignTwo';
 
 const Immunization = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFormat, name }) => {
     const [formSchema, setFormSchema] = useState();
+    const targetRef = useRef();
     const [isChecked, setIsChecked] = useState(false);
     const [isEdited, setIsEdited] = useState(false);
     const [isSigned, setIsSigned] = useState(false);
@@ -140,6 +142,64 @@ const Immunization = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
 
     const getIsSaveInProgressOpen = (value) => {
         setIsSaveInProgressOpen(value);
+    };
+
+    const addNewDocument = async (file) => {
+        console.log(file, file?.name, 'Test')
+        let fileName = {
+            "fileName": 'immunization.pdf'
+        };
+        const formData = new FormData();
+
+        if (file !== null) {
+            const blob = new Blob([file], { type: `application/pdf` });
+            formData.append('files', new Blob([JSON.stringify(fileName)], {
+                type: "application/json"
+            }));
+            formData.append('documents', blob, fileName?.fileName);
+
+            let uploadedFile = {};
+            try {
+                const response = await POST(`application-management-service/application/${applicationId}/files`, formData);
+                console.log(response?.data);
+                uploadedFile = response?.data?.file;
+            } catch (error) {
+                console.error(error);
+                return null;
+            }
+
+            try {
+                const response = await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}/addFileToForm`, uploadedFile);
+                console.log(response?.data);
+                return response?.data;
+            } catch (error) {
+                console.error(error);
+                return null;
+            }
+        }
+    }
+
+    const handleDownload = () => {
+        const element = targetRef.current;
+        const opt = {
+            margin: 0.5,
+            filename: "page.pdf",
+            image: { type: "jpeg", quality: 0.98 },
+            html2canvas: {
+                scale: 2,
+                useCORS: true,
+                logging: true,
+            },
+            jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
+            pagebreak: { mode: ["avoid-all", "css", "legacy"] },
+        };
+        const nestedElements = element.querySelectorAll('.applicationCardScrollStyle');
+        nestedElements.forEach((_element) => {
+            _element.classList.remove('applicationCardScrollStyle');
+        });
+        html2pdf().set(opt).from(element).outputPdf("blob").then((pdfBlob) => {
+            addNewDocument(pdfBlob);
+        });
     };
 
     const handleSubmitApplicationReq = async (data) => {
@@ -272,6 +332,7 @@ const Immunization = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
                     console.log(response)
                     SuccessToaster("Application Updated Successfully");
                     handleClear();
+                    handleDownload()
                     getApplicationImmunization();
                     navigate(navigateURL)
                 })
@@ -280,6 +341,7 @@ const Immunization = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
                     ErrorToaster("Unexpected Error Updating Application");
                 });
         } else {
+            handleDownload()
             navigate(navigateURL)
         }
     };
@@ -549,95 +611,97 @@ const Immunization = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
                                 </div>
                             </div>
                         </div>
-                        <div className={`${style.cardTitle} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Tuberculosis(TB)']?.label}</div>
-                        <div className={`${style.descriptionText} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Tuberculosis(TB)']?.description}</div>
-                        {applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "TUBERCULIN")?.length !== 0 && (
-                            <TableTwo
-                                tableHeaderValues={tableHeader}
-                                tableDataValues={getTableValues(applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "TUBERCULIN")?.[0]?.testDetails, 'TUBERCULIN')}
-                                tableData={applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "TUBERCULIN")?.[0]?.testDetails}
-                                gridStyle={style.testGrid}
-                                tableSortValues={[]}
-                                heading={"There are no record to display"}
-                                className={`${style.tableRow} ${style.reportSection}`}
-                                hidePagination={true}
-                            />
-                        )}
-                        <CommonDivider />
-                        <div className={`${style.cardTitle} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Measles, Mumps & Rubella (MMR)']?.label}</div>
-                        <div className={`${style.descriptionText} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Measles, Mumps & Rubella (MMR)']?.description}</div>
-                        {applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "MEASLES_MUMPS_RUBELLA")?.length !== 0 && (
-                            <TableTwo
-                                tableHeaderValues={tableHeader}
-                                tableDataValues={getTableValues(applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "MEASLES_MUMPS_RUBELLA")?.[0]?.testDetails, "MEASLES_MUMPS_RUBELLA")}
-                                tableData={applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "MEASLES_MUMPS_RUBELLA")?.[0]?.testDetails}
-                                gridStyle={style.testGrid}
-                                tableSortValues={[]}
-                                heading={"There are no record to display"}
-                                className={`${style.tableRow} ${style.reportSection}`}
-                                hidePagination={true}
-                            />
-                        )}
-                        <CommonDivider />
-                        <div className={`${style.cardTitle} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Hepatitis B Vaccination']?.label}</div>
-                        <div className={`${style.descriptionText} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Hepatitis B Vaccination']?.description}</div>
-                        {applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "HEPATITIS_B")?.length !== 0 && (
-                            <TableTwo
-                                tableHeaderValues={tableHeader}
-                                tableDataValues={getTableValues(applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "HEPATITIS_B")?.[0]?.testDetails, "HEPATITIS_B")}
-                                tableData={applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "HEPATITIS_B")}
-                                gridStyle={style.testGrid}
-                                tableSortValues={[]}
-                                heading={"There are no record to display"}
-                                className={`${style.tableRow} ${style.reportSection}`}
-                                hidePagination={true}
-                            />
-                        )}
-                        <CommonDivider />
-                        <div className={`${style.cardTitle} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Varicella']?.label}</div>
-                        <div className={`${style.descriptionText} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Varicella']?.description}</div>
-                        {applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "VARICELLA")?.length !== 0 && (
-                            <TableTwo
-                                tableHeaderValues={tableHeader}
-                                tableDataValues={getTableValues(applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "VARICELLA")?.[0]?.testDetails, "VARICELLA")}
-                                tableData={applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "VARICELLA")?.[0]?.testDetails}
-                                gridStyle={style.testGrid}
-                                tableSortValues={[]}
-                                heading={"There are no record to display"}
-                                className={`${style.tableRow} ${style.reportSection}`}
-                                hidePagination={true}
-                            />
-                        )}
-                        <CommonDivider />
-                        <div className={`${style.cardTitle} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Tetnues/Diptheriea/Pertussis(Tdap) and Tetatnus/Diphtheria(Td)']?.label}</div>
-                        <div className={`${style.descriptionText} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Tetnues/Diptheriea/Pertussis(Tdap) and Tetatnus/Diphtheria(Td)']?.description}</div>
-                        {applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "TETANUS_DIPHTHERIA_PERTUSSIS_OR_TETANUS_DIPHTHERIA")?.length !== 0 && (
-                            <TableTwo
-                                tableHeaderValues={tableHeader}
-                                tableDataValues={getTableValues(applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "TETANUS_DIPHTHERIA_PERTUSSIS_OR_TETANUS_DIPHTHERIA")?.[0]?.testDetails, "TETANUS_DIPHTHERIA_PERTUSSIS_OR_TETANUS_DIPHTHERIA")}
-                                tableData={applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "TETANUS_DIPHTHERIA_PERTUSSIS_OR_TETANUS_DIPHTHERIA")?.[0]?.testDetails}
-                                gridStyle={style.testGrid}
-                                tableSortValues={[]}
-                                heading={"There are no record to display"}
-                                className={`${style.tableRow} ${style.reportSection}`}
-                                hidePagination={true}
-                            />
-                        )}
-                        <CommonDivider />
-                        <div className={`${style.cardTitle} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Influenza']?.label}</div>
-                        <div className={`${style.descriptionText} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Influenza']?.description}</div>
-                        {applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "INFLUENZA")?.length !== 0 && (
-                            <TableTwo
-                                tableHeaderValues={tableHeader}
-                                tableDataValues={getTableValues(applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "INFLUENZA")?.[0]?.testDetails, "INFLUENZA")}
-                                tableData={applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "INFLUENZA")?.[0]?.testDetails}
-                                gridStyle={style.testGrid}
-                                tableSortValues={[]}
-                                heading={"There are no record to display"}
-                                className={`${style.tableRow} ${style.reportSection}`}
-                                hidePagination={true}
-                            />
-                        )}
+                        <div ref={targetRef}>
+                            <div className={`${style.cardTitle} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Tuberculosis(TB)']?.label}</div>
+                            <div className={`${style.descriptionText} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Tuberculosis(TB)']?.description}</div>
+                            {applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "TUBERCULIN")?.length !== 0 && (
+                                <TableTwo
+                                    tableHeaderValues={tableHeader}
+                                    tableDataValues={getTableValues(applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "TUBERCULIN")?.[0]?.testDetails, 'TUBERCULIN')}
+                                    tableData={applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "TUBERCULIN")?.[0]?.testDetails}
+                                    gridStyle={style.testGrid}
+                                    tableSortValues={[]}
+                                    heading={"There are no record to display"}
+                                    className={`${style.tableRow} ${style.reportSection}`}
+                                    hidePagination={true}
+                                />
+                            )}
+                            <CommonDivider />
+                            <div className={`${style.cardTitle} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Measles, Mumps & Rubella (MMR)']?.label}</div>
+                            <div className={`${style.descriptionText} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Measles, Mumps & Rubella (MMR)']?.description}</div>
+                            {applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "MEASLES_MUMPS_RUBELLA")?.length !== 0 && (
+                                <TableTwo
+                                    tableHeaderValues={tableHeader}
+                                    tableDataValues={getTableValues(applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "MEASLES_MUMPS_RUBELLA")?.[0]?.testDetails, "MEASLES_MUMPS_RUBELLA")}
+                                    tableData={applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "MEASLES_MUMPS_RUBELLA")?.[0]?.testDetails}
+                                    gridStyle={style.testGrid}
+                                    tableSortValues={[]}
+                                    heading={"There are no record to display"}
+                                    className={`${style.tableRow} ${style.reportSection}`}
+                                    hidePagination={true}
+                                />
+                            )}
+                            <CommonDivider />
+                            <div className={`${style.cardTitle} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Hepatitis B Vaccination']?.label}</div>
+                            <div className={`${style.descriptionText} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Hepatitis B Vaccination']?.description}</div>
+                            {applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "HEPATITIS_B")?.length !== 0 && (
+                                <TableTwo
+                                    tableHeaderValues={tableHeader}
+                                    tableDataValues={getTableValues(applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "HEPATITIS_B")?.[0]?.testDetails, "HEPATITIS_B")}
+                                    tableData={applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "HEPATITIS_B")}
+                                    gridStyle={style.testGrid}
+                                    tableSortValues={[]}
+                                    heading={"There are no record to display"}
+                                    className={`${style.tableRow} ${style.reportSection}`}
+                                    hidePagination={true}
+                                />
+                            )}
+                            <CommonDivider />
+                            <div className={`${style.cardTitle} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Varicella']?.label}</div>
+                            <div className={`${style.descriptionText} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Varicella']?.description}</div>
+                            {applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "VARICELLA")?.length !== 0 && (
+                                <TableTwo
+                                    tableHeaderValues={tableHeader}
+                                    tableDataValues={getTableValues(applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "VARICELLA")?.[0]?.testDetails, "VARICELLA")}
+                                    tableData={applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "VARICELLA")?.[0]?.testDetails}
+                                    gridStyle={style.testGrid}
+                                    tableSortValues={[]}
+                                    heading={"There are no record to display"}
+                                    className={`${style.tableRow} ${style.reportSection}`}
+                                    hidePagination={true}
+                                />
+                            )}
+                            <CommonDivider />
+                            <div className={`${style.cardTitle} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Tetnues/Diptheriea/Pertussis(Tdap) and Tetatnus/Diphtheria(Td)']?.label}</div>
+                            <div className={`${style.descriptionText} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Tetnues/Diptheriea/Pertussis(Tdap) and Tetatnus/Diphtheria(Td)']?.description}</div>
+                            {applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "TETANUS_DIPHTHERIA_PERTUSSIS_OR_TETANUS_DIPHTHERIA")?.length !== 0 && (
+                                <TableTwo
+                                    tableHeaderValues={tableHeader}
+                                    tableDataValues={getTableValues(applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "TETANUS_DIPHTHERIA_PERTUSSIS_OR_TETANUS_DIPHTHERIA")?.[0]?.testDetails, "TETANUS_DIPHTHERIA_PERTUSSIS_OR_TETANUS_DIPHTHERIA")}
+                                    tableData={applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "TETANUS_DIPHTHERIA_PERTUSSIS_OR_TETANUS_DIPHTHERIA")?.[0]?.testDetails}
+                                    gridStyle={style.testGrid}
+                                    tableSortValues={[]}
+                                    heading={"There are no record to display"}
+                                    className={`${style.tableRow} ${style.reportSection}`}
+                                    hidePagination={true}
+                                />
+                            )}
+                            <CommonDivider />
+                            <div className={`${style.cardTitle} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Influenza']?.label}</div>
+                            <div className={`${style.descriptionText} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Influenza']?.description}</div>
+                            {applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "INFLUENZA")?.length !== 0 && (
+                                <TableTwo
+                                    tableHeaderValues={tableHeader}
+                                    tableDataValues={getTableValues(applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "INFLUENZA")?.[0]?.testDetails, "INFLUENZA")}
+                                    tableData={applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "INFLUENZA")?.[0]?.testDetails}
+                                    gridStyle={style.testGrid}
+                                    tableSortValues={[]}
+                                    heading={"There are no record to display"}
+                                    className={`${style.tableRow} ${style.reportSection}`}
+                                    hidePagination={true}
+                                />
+                            )}
+                        </div>
                         {/* <CommonDivider />
                         <div className={`${style.cardTitle} ${style.marginTop}`}>{formSchema?.properties?.primaryCarePhysicianForVerificationOfImmunizationHistory?.label}</div>
                         <div className={`${style.descriptionText} ${style.marginTop}`}>{formSchema?.properties?.primaryCarePhysicianForVerificationOfImmunizationHistory?.description}</div>

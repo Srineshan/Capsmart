@@ -205,11 +205,29 @@ const ContactAddress = ({ basicForm, setBasicForm, applicationId, getPreApplicat
         missingKeys.push(data)
       }
     })
-    if (!getValueByPath(basicForm, `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`) && getValueByPath(basicForm, `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`) !== undefined && getValueByPath(basicForm, `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`) !== null) {
+    if (!getValueByPath(basicForm, `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`)) {
       let registeredBusinessAddressKeys = [`forms[${formIndex}].data.contactAddress3.business.businessName`, `forms[${formIndex}].data.contactAddress3.business.businessAddress.streetName`, `forms[${formIndex}].data.contactAddress3.business.businessAddress.pinCode`, `forms[${formIndex}].data.contactAddress3.business.businessAddress.city`, `forms[${formIndex}].data.contactAddress3.business.businessAddress.province`, `forms[${formIndex}].data.contactAddress3.business.businessPhone`, `forms[${formIndex}].data.contactAddress3.business.businessWebsite`]
       let temp = missingKeys?.filter(data => !registeredBusinessAddressKeys?.includes(data?.key));
       missingKeys = temp;
     }
+    // const businessAddressKeys = [
+    //   `forms[${formIndex}].data.contactAddress3.isBusinessAddressSameAsHomeAddressOrMailingAddress`,
+    //   `forms[${formIndex}].data.contactAddress3.business.b`,
+    //   `forms[${formIndex}].data.contactAddress3.business.businessName`,
+    //   `forms[${formIndex}].data.contactAddress3.business.businessAddress.streetName`,
+    //   `forms[${formIndex}].data.contactAddress3.business.businessAddress.pinCode`,
+    //   `forms[${formIndex}].data.contactAddress3.business.businessAddress.city`,
+    //   `forms[${formIndex}].data.contactAddress3.business.businessAddress.province`,
+    //   `forms[${formIndex}].data.contactAddress3.business.businessPhone`,
+    //   `forms[${formIndex}].data.contactAddress3.business.businessWebsite`,
+    // ];
+
+    // if (
+    //   !getValueByPath(basicForm, `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`)
+    // ) {
+    //   missingKeys = missingKeys.filter(data => !businessAddressKeys.includes(data?.key));
+    // }
+
     setWarningFields(missingKeys)
     if (missingKeys?.length !== 0) {
       setShowValidationDialog(true)
@@ -293,12 +311,12 @@ const ContactAddress = ({ basicForm, setBasicForm, applicationId, getPreApplicat
               <ApplicationFieldCard object={formSchema?.properties?.contactAddress1} gridStyle={style.homeMailingAddressGrid} baseKey={'contactAddress1'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} stepPath={`forms[${formIndex}].data`} setIsEdited={getIsEdited} warningFields={warningFields} formSchema={formSchemaWholeObject} />
             )}
             <CommonDivider />
-            {formSchema !== undefined && 'contactAddress2' in formSchema?.properties && (
-              <ApplicationFieldCard object={formSchema?.properties?.contactAddress2} gridStyle={style.mailingAddressGrid} baseKey={'contactAddress2'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} stepPath={`forms[${formIndex}].data`} setIsEdited={getIsEdited} warningFields={warningFields} formSchema={formSchemaWholeObject} />
-            )}
-            <CommonDivider />
             {formSchema !== undefined && 'contactAddress3' in formSchema?.properties && (
               <ApplicationFieldCard object={formSchema?.properties?.contactAddress3} gridStyle={style.businessMailingAddressGrid} baseKey={'contactAddress3'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} stepPath={`forms[${formIndex}].data`} setIsEdited={getIsEdited} warningFields={warningFields} formSchema={formSchemaWholeObject} />
+            )}
+            <CommonDivider />
+            {formSchema !== undefined && 'contactAddress2' in formSchema?.properties && (
+              <ApplicationFieldCard object={formSchema?.properties?.contactAddress2} gridStyle={style.mailingAddressGrid} baseKey={'contactAddress2'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} stepPath={`forms[${formIndex}].data`} setIsEdited={getIsEdited} warningFields={warningFields} formSchema={formSchemaWholeObject} />
             )}
           </div>
         </div>
