@@ -125,7 +125,7 @@ const PODCheck = ({ basicForm, setBasicForm, applicationId }) => {
           <div>
 
             {
-              form?.formSchemas?.filter(data => data?.formCategory === 'Form')?.map((data, index) => (
+              form?.formSchemas?.filter(data => data?.formCategory === 'Form' || data?.formCategory === 'Disclosure')?.map((data, index) => (
                 <div className={`${style.tableDataStyle} ${style.marginTop5} ${style.tableValueGridStyle} `}>
                   <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
                     {index !== 0 && (

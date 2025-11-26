@@ -15,6 +15,7 @@ import { format } from 'date-fns';
 import { SuccessToaster, ErrorToaster } from '../../../../utils/toaster';
 import ESignature from '../../../../Components/ESignature';
 import SaveInProgressDialog from '../../../../Components/SaveInProgressDialog';
+import CommonPdfViewer from '../../../../Components/CommonPdfViewer';
 
 const PoliceVulnerableCheck = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApplication, applicationId }) => {
     const [isChecked, setIsChecked] = useState(false);
@@ -102,7 +103,7 @@ const PoliceVulnerableCheck = ({ acknowledgementForm, dateFormat, name, basicFor
             try {
                 const response = await POST(`application-management-service/application/${applicationId}/files`, formData);
                 console.log(response?.data);
-                uploadedFile = response?.data;
+                uploadedFile = response?.data?.file;
             } catch (error) {
                 console.error(error);
                 return null;
@@ -208,6 +209,8 @@ const PoliceVulnerableCheck = ({ acknowledgementForm, dateFormat, name, basicFor
                         {formSchema?.disclaimer?.title !== null && (
                             <div className={style.cardTitle}>{formSchema?.disclaimer?.title}</div>
                         )}
+
+                        {/* <CommonPdfViewer pdfurl={basicForm?.documents?.documentDetails?.filter(data => data?.documentType === "Vulnerable Sector Check")?.[0]?.file?.fileURL} /> */}
                         {formContent?.disclaimer !== null && formContent?.disclaimer?.content !== null && (
                             <div className={`${style.checkGrid} ${style.marginTop}`}>
                                 <CommonCheckBox checked={isChecked} onChange={(e) => handleIsChecked(e.target.checked)} bigCheckbox={true} />

@@ -92,13 +92,13 @@ const BasicInformation = ({ basicForm, setBasicForm, applicationId, getPreApplic
     let keyValuePair = [];
     console.log(metadata, 'metadata')
     metadata?.map((data, index) => {
-      // if (labels[index]?.mandatory) {
-      keyValuePair.push({
-        key: data,
-        value: getValueByPath(basicForm, data),
-        label: labels[index]?.label,
-      });
-      // }
+      if (labels[index]?.mandatory) {
+        keyValuePair.push({
+          key: data,
+          value: getValueByPath(basicForm, data),
+          label: labels[index]?.label,
+        });
+      }
     });
     const phoneRegex = /^\(\d{3}\) \d{3}-\d{4}$/; // Example for formatted phone number
 

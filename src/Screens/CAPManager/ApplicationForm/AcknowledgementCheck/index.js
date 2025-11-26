@@ -108,7 +108,7 @@ const AcknowledgementCheck = ({ basicForm, setBasicForm, applicationId }) => {
                         <div className={`${style.displayInRow}${style.marginTop20}`}>
                             <div className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}>
                                 <span className={`${style.tableHeaderHeadingTextStyle}`}>Acknowledgements, Consents & Disclosures</span>
-                                <div className={`${basicForm?.forms?.filter(data => data?.formCategory !== 'Form')?.every(item => item.acknowledged === true) ? style.greenDotStyle : style.yellowDotStyle}`}></div>
+                                <div className={`${basicForm?.forms?.filter(data => data?.formCategory !== 'Form' && data?.formCategory !== 'Disclosure')?.every(item => item.acknowledged === true) ? style.greenDotStyle : style.yellowDotStyle}`}></div>
                             </div>
                         </div>
                         <div className={`${style.tableHeaderStyle} ${style.marginTop10} ${style.tableHeaderGridStyle} `}>
@@ -123,17 +123,17 @@ const AcknowledgementCheck = ({ basicForm, setBasicForm, applicationId }) => {
                             </div>
                         </div>
                         {
-                            basicForm?.formSchemas?.filter(data => data?.formCategory !== 'Form')?.map((data, index) => (
+                            basicForm?.forms?.filter(data => data?.formCategory !== 'Form' && data?.formCategory !== 'Disclosure')?.map((data, index) => (
                                 <div className={`${index % 2 !== 0 ? style.tableDataStyle : style.tableDataStyle1} ${style.marginTop5} ${style.tableValueGridStyle} `}>
                                     <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
                                         <div className={`${style.marginLeft40} ${style.tableDataFontStyle1}}`}>{index + 1}</div>
                                     </div>
                                     <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                                        <div className={`${style.tableDataFontStyle1}`}>{data?.description}</div>
+                                        <div className={`${style.tableDataFontStyle1}`}>{data?.title}</div>
                                         <img src={Pencil} alt="" className={`${style.pencilImgStyle} ${style.justifyCenter} ${style.cursorPointer}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/applicationForm/${applicationId}/${data?.formCategory}/${btoa(data?.schemaCategory)}`) }} />
                                     </div>
                                     <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                                        <div className={`${basicForm?.forms?.filter(data => data?.formCategory !== 'Form')[index]?.acknowledged ? style.greenDotStyle : style.yellowDotStyle} `}></div>
+                                        <div className={`${basicForm?.forms?.filter(data => data?.formCategory !== 'Form' && data?.formCategory !== 'Disclosure')[index]?.acknowledged ? style.greenDotStyle : style.yellowDotStyle} `}></div>
                                     </div>
                                 </div>
                             ))
@@ -155,7 +155,7 @@ const AcknowledgementCheck = ({ basicForm, setBasicForm, applicationId }) => {
                         </div> */}
                 </div>
                 {isOpen && (
-                    <ApplicationSubmitDialog getIsOpen={getIsOpen} />
+                    <ApplicationSubmitDialog getIsOpen={getIsOpen} title={`Mission Accomplished! You're A Champion`} description={`Please note that the entire application process for full board approval may take up to 3 months to complete.`} />
                 )}
             </div>
         </div>

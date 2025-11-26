@@ -69,6 +69,7 @@ const PACSRequest = ({
 
   useEffect(() => {
     setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === atob(step)))
+    console.log(basicForm?.forms?.findIndex(data => data?.schemaCategory === atob(step)), 'indexCheck')
   }, [basicForm, step]);
 
   useEffect(() => {
@@ -85,8 +86,9 @@ const PACSRequest = ({
     setFormContent(content);
   };
   useEffect(() => {
-    getApplicantProfile();
-  }, [applicationId]);
+    if (formIndex)
+      getApplicantProfile();
+  }, [applicationId, formIndex]);
 
   const getFormSchema = async () => {
     const { data: form } = await GET(
@@ -200,7 +202,7 @@ const PACSRequest = ({
   };
 
   const addNewDocument = async (file) => {
-    let fileName = { fileName: 'AcknowledgementStep9.pdf' };
+    let fileName = { fileName: 'PACS.pdf' };
     const formData = new FormData();
     if (file !== null) {
       const blob = new Blob([file], { type: `application/pdf` });
@@ -233,37 +235,37 @@ const PACSRequest = ({
 
 
   const handleSubmitApplicationReq = async () => {
-    if (isSigned) {
-      let temp = {
-        schemaId: basicForm?.forms?.[formIndex]?.schemaId,
-        data: { initials: initialArray },
-        acknowledged: isSigned,
-        esign: { esign: isSigned ? encryptedText : '', name: isSigned ? name : '', signedDate: isSigned ? currentDate : '' }
-      }
-      await PUT(`application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
-        .then(response => {
-          console.log(response)
-          getPreApplication()
-          SuccessToaster("Application Updated Successfully");
-          if (sessionStorage.getItem('fromSummary') === 'true') {
-            navigate(-1);
-          }
-          else {
-            navigate(navigateURL)
-          }
-        })
-        .catch((error) => {
-          console.log(error)
-          ErrorToaster("Unexpected Error Updating Application");
-        });
+    // if (isSigned) {
+    let temp = {
+      schemaId: basicForm?.forms?.[formIndex]?.schemaId,
+      data: { initials: initialArray },
+      acknowledged: true,
+      esign: { esign: isSigned ? encryptedText : '', name: isSigned ? name : '', signedDate: isSigned ? currentDate : '' }
     }
-    else {
-      if (sessionStorage.getItem('fromSummary') === 'true') {
-        navigate(-1);
-      } else {
-        navigate(navigateURL)
-      }
-    }
+    await PUT(`application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
+      .then(response => {
+        console.log(response)
+        getPreApplication()
+        SuccessToaster("Application Updated Successfully");
+        if (sessionStorage.getItem('fromSummary') === 'true') {
+          navigate(-1);
+        }
+        else {
+          navigate(navigateURL)
+        }
+      })
+      .catch((error) => {
+        console.log(error)
+        ErrorToaster("Unexpected Error Updating Application");
+      });
+    // }
+    // else {
+    //   if (sessionStorage.getItem('fromSummary') === 'true') {
+    //     navigate(-1);
+    //   } else {
+    //     navigate(navigateURL)
+    //   }
+    // }
   }
 
   const renderPdfContent = () => {

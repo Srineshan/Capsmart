@@ -100,7 +100,7 @@ const ScheduleA = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
       try {
         const response = await POST(`application-management-service/application/${applicationId}/files`, formData);
         console.log(response?.data);
-        uploadedFile = response?.data;
+        uploadedFile = response?.data?.file;
       } catch (error) {
         console.error(error);
         return null;
