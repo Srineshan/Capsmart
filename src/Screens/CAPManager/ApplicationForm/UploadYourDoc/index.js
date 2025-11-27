@@ -705,7 +705,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                           tempValue?.table?.filter(
                             (tableData) =>
                               tableData?.documentType ===
-                              data?.document?.name
+                              data?.document?.shortName
                           )?.length === 0 &&
                           data?.required
                           ? style.redBorder

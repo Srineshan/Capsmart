@@ -241,3 +241,35 @@
     align-items: center;
     height: 100%;
 }
+
+.stickyContainer {
+    position: fixed;
+    bottom: 0;
+    right: 60px;
+    width: 25%;
+    padding: 0px 20px 20px 20px;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
+    z-index: 10;
+}
+
+@media (max-width: 948px) {
+    .stickyContainer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: auto;
+        margin: 0 auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .stickyContainer {
+        display: none;
+    }
+}
+
+.hiddenStickyContainer {
+    opacity: 0;
+    pointer-events: none;
+}

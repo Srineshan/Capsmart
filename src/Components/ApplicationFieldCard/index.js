@@ -2693,7 +2693,7 @@ const ApplicationFieldCard = ({
                     </div>
                   </div>
                 </div>
-                {basicForm?.forms?.[formIndex]?.formCategory === "Disclosure" && fileValid && (
+                {fileValid && (
                   <div className={style.uploadButton2}>
                     <div className={style.uploadGrid2}>
 
@@ -2804,58 +2804,55 @@ const ApplicationFieldCard = ({
                   onChange={(e) => {
                     const selectedFile = e.target.files[0];
                     console.log(basicForm?.forms?.[formIndex]?.formCategory, 'Disclosure Check')
-                    if (basicForm?.forms?.[formIndex]?.formCategory === "Disclosure") {
 
-                      setBasicForm((prevData) => {
-                        const newData = { ...prevData };
-                        setNestedValue(newData, `${basicpath}.${baseKey}.${fieldKey}`, {
-                          fileName: selectedFile.name,
-                        });
-                        return newData;
+                    setBasicForm((prevData) => {
+                      const newData = { ...prevData };
+                      setNestedValue(newData, `${basicpath}.${baseKey}.${fieldKey}`, {
+                        fileName: selectedFile.name,
                       });
+                      return newData;
+                    });
 
 
-                      handleChange(fieldKey, selectedFile, baseKey);
-                    }
+                    handleChange(fieldKey, selectedFile, baseKey);
                   }}
                 />
-                {basicForm?.forms?.[formIndex]?.formCategory === "Disclosure" &&
-                  getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)?.fileName && (
-                    <div className={style.uploadButton2}>
-                      <div className={style.uploadGrid2}>
-                        <Tooltip title="Click to View File" placement="bottom-start" followCursor arrow   >
-                          <span
-                            className={`${style.uploadText2} ${style.cursorPointer} ${style.verticalAlignCenter}`}
-                            onClick={() => {
-                              setShowFileDisplayDialog(true);
-                              console.log(getValueByPath(
+                {getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)?.fileName && (
+                  <div className={style.uploadButton2}>
+                    <div className={style.uploadGrid2}>
+                      <Tooltip title="Click to View File" placement="bottom-start" followCursor arrow   >
+                        <span
+                          className={`${style.uploadText2} ${style.cursorPointer} ${style.verticalAlignCenter}`}
+                          onClick={() => {
+                            setShowFileDisplayDialog(true);
+                            console.log(getValueByPath(
+                              basicForm,
+                              `${basicpath}.${baseKey}.${fieldKey}`
+                            )
+                            );
+                            setselectedFile(
+                              getValueByPath(
                                 basicForm,
                                 `${basicpath}.${baseKey}.${fieldKey}`
                               )
-                              );
-                              setselectedFile(
-                                getValueByPath(
-                                  basicForm,
-                                  `${basicpath}.${baseKey}.${fieldKey}`
-                                )
-                              );
-                            }
-                            }
-                          >
-                            {getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)?.fileName}
-                          </span>
-                        </Tooltip>
-                        <Tooltip title="Click to Delete File" arrow>
-                          <img
-                            src={DeleteIcon}
-                            alt="Delete"
-                            className={`${style.imgIcon} ${style.cursorPointer}`}
-                            onClick={() => handleChange(fieldKey, null, baseKey)}
-                          />
-                        </Tooltip>
-                      </div>
+                            );
+                          }
+                          }
+                        >
+                          {getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)?.fileName}
+                        </span>
+                      </Tooltip>
+                      <Tooltip title="Click to Delete File" arrow>
+                        <img
+                          src={DeleteIcon}
+                          alt="Delete"
+                          className={`${style.imgIcon} ${style.cursorPointer}`}
+                          onClick={() => handleChange(fieldKey, null, baseKey)}
+                        />
+                      </Tooltip>
                     </div>
-                  )}
+                  </div>
+                )}
               </div>
             );
           }

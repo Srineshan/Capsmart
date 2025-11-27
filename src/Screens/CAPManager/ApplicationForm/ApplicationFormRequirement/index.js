@@ -183,8 +183,10 @@ const ApplicationFormRequirement = () => {
                                 <div className={style.marginTop10}>
                                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                                 </div>
-                                <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => setIsDoItLaterOpen(true)}>NOT READY TO START</div>
-                                <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleSubmitApplicationReq()}>READY TO START MY APPLICATION</div>
+                                <div className={style.stickyContainer}>
+                                    <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => setIsDoItLaterOpen(true)}>NOT READY TO START</div>
+                                    <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleSubmitApplicationReq()}>READY TO START MY APPLICATION</div>
+                                </div>
                             </div>
                         </div>
                     </div>

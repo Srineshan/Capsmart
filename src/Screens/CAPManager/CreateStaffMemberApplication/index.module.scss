@@ -7,7 +7,7 @@
 }
 
 .screenBackground {
-    background: #EDEDF3 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
 }
 
 .breadcrumbStyle {
@@ -276,7 +276,7 @@
 
 
 .alternativeBackgroundColor {
-    background-color: #d8d4f7 !important;
+    background-color: $tableRowAlternative !important;
 }
 
 .tableHeader {

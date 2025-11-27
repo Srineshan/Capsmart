@@ -31,7 +31,7 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, applicationId, getPreApp
             getFormSchema()
         }
         if (basicForm !== undefined && formIndex !== undefined) {
-            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form')?.length === (formIndex + 1)) ? `/applicationForm/${applicationId}/Form/${btoa('PODCheck')}` : `/applicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
+            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form' || data?.formCategory === 'Disclosure')?.length === (formIndex + 1)) ? `/applicationForm/${applicationId}/Form/${btoa('PODCheck')}` : `/applicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
         }
     }, [basicForm, formIndex])
 
@@ -264,11 +264,13 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, applicationId, getPreApp
                 </div>
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
-                    <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
-                    <div className={`${style.saveInProgress} ${style.marginTop10} `} onClick={() => getSkipClicked(true)} > SKIP FOR NOW </div>
-                    <div className={style.twoColForButton}>
-                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
-                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()}>CONTINUE</div>
+                    <div className={style.stickyContainer}>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
+                        <div className={`${style.saveInProgress} ${style.marginTop10} `} onClick={() => getSkipClicked(true)} > SKIP FOR NOW </div>
+                        <div className={style.twoColForButton}>
+                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
+                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()}>CONTINUE</div>
+                        </div>
                     </div>
                     <div className={style.marginTop}>
                         <ApplicationReferenceDocuments />

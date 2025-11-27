@@ -168,9 +168,13 @@ const AcknowledgementCheck = ({ basicForm, setBasicForm, applicationId }) => {
                     <div className={style.marginTop10}>
                         <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                     </div>
-                    <div className={`${style.saveInProgress} ${style.marginTop}`}>SAVE IN PROGRESS</div>
-                    <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleSubmitApplication()}>SUBMIT APPLICATION</div>
-                    <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowPaymentDialog(true)}>PROCEED TO PAYMENT</div>
+                    <div className={style.stickyContainer}>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`}>SAVE IN PROGRESS</div>
+                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleSubmitApplication()}>SUBMIT APPLICATION</div>
+                        {(paymentListData?.fee !== 0 && paymentListData?.fee !== undefined && !basicForm?.payment?.paymentCompleted) && (
+                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowPaymentDialog(true)}>PROCEED TO PAYMENT</div>
+                        )}
+                    </div>
                     {/* <div className={style.marginTop}>
                             <ApplicationReferenceDocuments />
                         </div> */}
