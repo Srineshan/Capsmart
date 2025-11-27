@@ -128,7 +128,7 @@ const ApplicationFormRequirement = () => {
         ) : (
             <>
                 <div className={style.screenBackground}>
-                    <ApplicationHeader title={`New ${basicForm?.basicDetails?.applicant?.applicantType !== undefined ? basicForm?.basicDetails?.applicant?.applicantType : '{Applicant Type}'} Application For ${basicForm?.basicDetails?.applicant?.name?.firstName !== undefined ? basicForm?.basicDetails?.applicant?.name?.firstName : '{First Name}'} ${basicForm?.basicDetails?.applicant?.name?.lastName !== undefined ? basicForm?.basicDetails?.applicant?.name?.lastName : '{Last Name}'}`} close={true} closeClick={logout} />
+                    <ApplicationHeader title={`New Medical Professional Staff Application For ${basicForm?.basicDetails?.applicant?.name?.firstName !== undefined ? basicForm?.basicDetails?.applicant?.name?.firstName : ''} ${basicForm?.basicDetails?.applicant?.name?.lastName !== undefined ? basicForm?.basicDetails?.applicant?.name?.lastName : ''}, ${(basicForm?.basicDetails?.applicant?.applicantType !== null) ? basicForm?.basicDetails?.applicant?.applicantType : ''}`} close={true} closeClick={logout} />
                     <div className={style.screenPadding}>
                         <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
                             <div>
@@ -183,8 +183,10 @@ const ApplicationFormRequirement = () => {
                                 <div className={style.marginTop10}>
                                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                                 </div>
-                                <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => setIsDoItLaterOpen(true)}>NOT READY TO START</div>
-                                <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleSubmitApplicationReq()}>READY TO START MY APPLICATION</div>
+                                <div className={style.stickyContainer}>
+                                    <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => setIsDoItLaterOpen(true)}>NOT READY TO START</div>
+                                    <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleSubmitApplicationReq()}>READY TO START MY APPLICATION</div>
+                                </div>
                             </div>
                         </div>
                     </div>

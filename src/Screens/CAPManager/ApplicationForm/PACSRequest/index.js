@@ -56,7 +56,7 @@ const PACSRequest = ({
   }, [name, currentDate]);
 
   useEffect(() => {
-    if (basicForm && !formSchema) {
+    if (basicForm && !formSchema && formIndex) {
       getFormSchema()
     }
     setInitialArray(basicForm?.forms?.[formIndex]?.data ? basicForm?.forms?.[formIndex]?.data?.initials : []);
@@ -86,9 +86,8 @@ const PACSRequest = ({
     setFormContent(content);
   };
   useEffect(() => {
-    if (formIndex)
-      getApplicantProfile();
-  }, [applicationId, formIndex]);
+    getApplicantProfile();
+  }, [applicationId, formIndex, basicForm]);
 
   const getFormSchema = async () => {
     const { data: form } = await GET(
@@ -110,6 +109,7 @@ const PACSRequest = ({
   };
 
   const populatePdfWithProfileData = async (profileData) => {
+    console.log('indexCheck')
     try {
       const existingPdfBytes = await fetch(`${proxyUrl}${fixedPdfUrl}`).then((res) =>
         res.arrayBuffer()
@@ -194,6 +194,7 @@ const PACSRequest = ({
       // Save and display updated PDF
       const pdfBytes = await pdfDoc.save();
       const blob = new Blob([pdfBytes], { type: "application/pdf" });
+      console.log('indexCheck')
       await addNewDocument(blob);
     } catch (error) {
       console.error("Error populating PDF:", error);
@@ -221,7 +222,7 @@ const PACSRequest = ({
       }
 
       try {
-        const response = await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}/addFileToForm`, uploadedFile);
+        const response = await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[basicForm?.forms?.findIndex(data => data?.schemaCategory === atob(step))]?.id}/addFileToForm`, uploadedFile);
         return response?.data;
         console.log(response?.data)
       } catch (error) {
@@ -311,10 +312,12 @@ const PACSRequest = ({
         </div>
         <div>
           <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
-          <div className={`${style.saveInProgress} ${style.marginTop}`} >SAVE IN PROGRESS</div>
-          <div className={style.twoColForButton}>
-            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
-            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleSubmitApplicationReq()} >CONTINUE</div>
+          <div className={style.stickyContainer}>
+            <div className={`${style.saveInProgress} ${style.marginTop}`} >SAVE IN PROGRESS</div>
+            <div className={style.twoColForButton}>
+              <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
+              <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleSubmitApplicationReq()} >CONTINUE</div>
+            </div>
           </div>
         </div>
       </div>

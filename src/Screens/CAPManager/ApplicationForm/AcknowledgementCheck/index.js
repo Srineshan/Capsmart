@@ -16,13 +16,15 @@ import style from './index.module.scss';
 import AIAssistantDialog from '../../../../Components/AIAssistantDialog';
 import ApplicationHeader from '../../../../Components/ApplicationHeader';
 import ApplicationSubmitDialog from '../../../../Components/ApplicationSubmitDialog';
+import PaymentDialog from '../../../../Components/paymentDialog';
 
 const AcknowledgementCheck = ({ basicForm, setBasicForm, applicationId }) => {
     const [form, setForm] = useState();
     const [form2, setForm2] = useState();
     const navigate = useNavigate()
     const [isOpen, setIsOpen] = useState(false);
-
+    const [paymentListData, setPaymentListData] = useState(false);
+    const [showPaymentDialog, setShowPaymentDialog] = useState(false);
     const id = sessionStorage.getItem('applicationId');
 
     useEffect(() => {
@@ -30,9 +32,10 @@ const AcknowledgementCheck = ({ basicForm, setBasicForm, applicationId }) => {
         sessionStorage.setItem('fromSummary', false)
     }, [])
 
-    // useEffect(() => {
-    //     getBasicForm()
-    // }, [])
+    useEffect(() => {
+        if (basicForm)
+            fetchPaymentListData();
+    }, [basicForm])
 
     const getIsOpen = (value) => {
         setIsOpen(value);
@@ -44,6 +47,24 @@ const AcknowledgementCheck = ({ basicForm, setBasicForm, applicationId }) => {
     //     );
     //     setForm(basicForm)
     // }
+
+    const fetchPaymentListData = async () => {
+        try {
+            const regionalCallResponsibility = 'NA';
+            const response = await GET(`entity-service/paymentAndFeeDetails/getFeeDetail?privilegeCategoryId=${basicForm?.basicDetailReferences?.credentialingAndPrivilegingCategory?.id}&applicantTypeId=${basicForm?.basicDetailReferences?.applicantType?.id}&applicantCreationType=${basicForm?.creationType}&regionalCallResponsibility=${regionalCallResponsibility}&departmentId=${basicForm?.basicDetailReferences?.department?.id}&specialtyId=${basicForm?.basicDetailReferences?.specialty?.id}`);
+            setPaymentListData(response.data);
+        } catch (error) {
+            console.error("Error fetching payment list data:", error);
+        }
+    };
+
+    const getIsShowPaymentDialog = (value) => {
+        setShowPaymentDialog(value)
+    }
+
+    const handleContinue = () => {
+        setShowPaymentDialog(false)
+    }
 
     const handleSubmitApplication = async () => {
         await POST(`application-management-service/application/${applicationId}/submit`)
@@ -147,15 +168,27 @@ const AcknowledgementCheck = ({ basicForm, setBasicForm, applicationId }) => {
                     <div className={style.marginTop10}>
                         <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                     </div>
-                    <div className={`${style.saveInProgress} ${style.marginTop}`}>SAVE IN PROGRESS</div>
-                    <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleSubmitApplication()}>SUBMIT APPLICATION</div>
-                    <div className={`${style.continue} ${style.marginTop10}`}>PROCEED TO PAYMENT</div>
+                    <div className={style.stickyContainer}>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`}>SAVE IN PROGRESS</div>
+                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleSubmitApplication()}>SUBMIT APPLICATION</div>
+                        {(paymentListData?.fee !== 0 && paymentListData?.fee !== undefined && !basicForm?.payment?.paymentCompleted) && (
+                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowPaymentDialog(true)}>PROCEED TO PAYMENT</div>
+                        )}
+                    </div>
                     {/* <div className={style.marginTop}>
                             <ApplicationReferenceDocuments />
                         </div> */}
                 </div>
                 {isOpen && (
                     <ApplicationSubmitDialog getIsOpen={getIsOpen} title={`Mission Accomplished! You're A Champion`} description={`Please note that the entire application process for full board approval may take up to 3 months to complete.`} />
+                )}
+                {showPaymentDialog && (
+                    <PaymentDialog
+                        getIsOpen={getIsShowPaymentDialog}
+                        continueClickFunc={handleContinue}
+                        paymentListData={paymentListData}
+                        applicantName={`${basicForm?.applicant?.name?.firstName}_${basicForm?.applicant?.name?.lastName}`}
+                    />
                 )}
             </div>
         </div>

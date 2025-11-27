@@ -373,24 +373,26 @@ const BasicInformation = ({ basicForm, setBasicForm, applicationId, getPreApplic
             contactNumber={"{Contact Number}"}
             email={"{Email}"}
           />
-          <div
-            className={`${style.saveInProgress} ${style.marginTop}`}
-            onClick={() => getIsSaveInProgressOpen(true)}
-          >
-            SAVE IN PROGRESS
-          </div>
-          <div className={style.twoColForButton}>
+          <div className={style.stickyContainer}>
             <div
-              className={`${style.continue} ${style.marginTop10}`}
-              onClick={() => navigate(-1)}
+              className={`${style.saveInProgress} ${style.marginTop}`}
+              onClick={() => getIsSaveInProgressOpen(true)}
             >
-              BACK
+              SAVE IN PROGRESS
             </div>
-            <div
-              className={`${style.continue} ${style.marginTop10}`}
-              onClick={() => getMissingFields()}
-            >
-              CONTINUE
+            <div className={style.twoColForButton}>
+              <div
+                className={`${style.continue} ${style.marginTop10}`}
+                onClick={() => navigate(-1)}
+              >
+                BACK
+              </div>
+              <div
+                className={`${style.continue} ${style.marginTop10}`}
+                onClick={() => getMissingFields()}
+              >
+                CONTINUE
+              </div>
             </div>
           </div>
           {/* <div className={style.marginTop}>

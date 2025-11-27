@@ -919,8 +919,8 @@ body::-webkit-scrollbar {
 
 .tableHeaderGridStyle {
     display: grid;
-    grid-template-columns: 55% 10% 10% 20%;
-    grid-gap: 10px;
+    grid-template-columns: 10% 66% 10% 10%;
+    grid-gap: 1%;
 }
 
 // .tableHeaderGridStyle {
@@ -931,8 +931,8 @@ body::-webkit-scrollbar {
 
 .tableValueGridStyle {
     display: grid;
-    grid-template-columns: 10% 45% 10% 10% 20%;
-    grid-gap: 10px;
+    grid-template-columns: 10% 66% 10% 10%;
+    grid-gap: 1%;
 }
 
 .editIcon {
@@ -3181,11 +3181,11 @@ input[type="number"] {
 }
 
 .tableTopHeaderStyle {
-    background: $secondarycolor 0% 0% no-repeat padding-box;
+    // background: $secondarycolor 0% 0% no-repeat padding-box;
     min-height: 48px;
     width: 96%;
     margin-left: 2%;
-    border: 0.400000006px solid $secondarycolor;
+    // border: 0.400000006px solid $secondarycolor;
     border-radius: 2px;
 }
 
@@ -3944,4 +3944,36 @@ input[type="number"] {
     height: 1px;
     width: 50%;
     margin-bottom: 20px;
+}
+
+.stickyContainer {
+    position: fixed;
+    bottom: 0;
+    right: 60px;
+    width: 25%;
+    padding: 0px 20px 20px 20px;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
+    z-index: 10;
+}
+
+@media (max-width: 948px) {
+    .stickyContainer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: auto;
+        margin: 0 auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .stickyContainer {
+        display: none;
+    }
+}
+
+.hiddenStickyContainer {
+    opacity: 0;
+    pointer-events: none;
 }
