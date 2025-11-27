@@ -919,8 +919,8 @@ body::-webkit-scrollbar {
 
 .tableHeaderGridStyle {
     display: grid;
-    grid-template-columns: 55% 10% 10% 20%;
-    grid-gap: 10px;
+    grid-template-columns: 10% 66% 10% 10%;
+    grid-gap: 1%;
 }
 
 // .tableHeaderGridStyle {
@@ -931,8 +931,8 @@ body::-webkit-scrollbar {
 
 .tableValueGridStyle {
     display: grid;
-    grid-template-columns: 10% 45% 10% 10% 20%;
-    grid-gap: 10px;
+    grid-template-columns: 10% 66% 10% 10%;
+    grid-gap: 1%;
 }
 
 .editIcon {
@@ -3181,11 +3181,11 @@ input[type="number"] {
 }
 
 .tableTopHeaderStyle {
-    background: $secondarycolor 0% 0% no-repeat padding-box;
+    // background: $secondarycolor 0% 0% no-repeat padding-box;
     min-height: 48px;
     width: 96%;
     margin-left: 2%;
-    border: 0.400000006px solid $secondarycolor;
+    // border: 0.400000006px solid $secondarycolor;
     border-radius: 2px;
 }
 
