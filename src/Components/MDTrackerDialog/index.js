@@ -219,7 +219,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
     setIsLoadingImage(true);
     const departmentParam = selectedDepartment || selectedServiceArea ? `&siteDepartmentSpecialties=${selectedSite}%23${selectedDepartment}%23${selectedServiceArea}` : "";
     const { data: medicalDirectiveSummaryLevel2 } = await GET(
-      `medical-directive-service/medicalDirectives/${id}/summary?sortBy=${sortValue}&sortByField=${sortField}&limit=${limit}&searchText=${searchTermForTable}&isPaginationRequired=${limit === 9999 ? false : true}&offset=${page - 1}&isNewAppointment=${applicationType === 'NEW' ? true : false}&isReAppointment=${applicationType === 'NEW' ? false : true}${departmentParam}`
+      `medical-directive-service/medicalDirectives/${id}/summary?sortBy=${sortValue}&sortByField=${sortField}&limit=${limit}&searchText=${searchTermForTable}&isPaginationRequired=${limit === 9999 ? false : true}&siteId=${selectedSite}&offset=${page - 1}&isNewAppointment=${applicationType === 'NEW' ? true : false}&isReAppointment=${applicationType === 'NEW' ? false : true}${departmentParam}`
     );
     setSelectedMedicalDirectiveList(medicalDirectiveSummaryLevel2);
     setTotalCount(medicalDirectiveSummaryLevel2?.allUsers?.length);

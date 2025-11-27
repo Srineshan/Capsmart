@@ -129,6 +129,7 @@ const RegisteredUsers = ({ getSelectedOption }) => {
             .then(response => {
                 SuccessToaster('User Deactivated Successfully');
                 getUser();
+                userTileValues()
             })
             .catch(error => {
                 ErrorToaster('Unexpected Error Occured');
