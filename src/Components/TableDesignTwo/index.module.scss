@@ -432,10 +432,10 @@
 }
 
 @media print {
-    .tableWrapper {
-        page-break-inside: avoid;
-        break-inside: avoid;
-    }
+    // .tableWrapper {
+    //     page-break-inside: avoid;
+    //     break-inside: avoid;
+    // }
 
     .pagebreak {
         page-break-after: auto;

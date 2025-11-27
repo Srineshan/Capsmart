@@ -116,7 +116,7 @@
 }
 
 .homeMailingAddressGrid> :nth-child(1) {
-    grid-column: span 6;
+    grid-column: span 3;
 }
 
 .homeMailingAddressGrid> :nth-child(2) {
@@ -154,7 +154,7 @@
 }
 
 .mailingAddressGrid> :nth-child(2) {
-    grid-column: span 6;
+    grid-column: span 3;
 }
 
 .mailingAddressGrid> :nth-child(3) {
@@ -189,19 +189,18 @@
 
 .businessMailingAddressGrid> :nth-child(1) {
     grid-column: span 12;
-    margin-top: 0px;
 }
 
 .businessMailingAddressGrid> :nth-child(2) {
-    grid-column: span 5;
+    grid-column: span 12;
 }
 
 .businessMailingAddressGrid> :nth-child(3) {
-    grid-column: span 7;
+    grid-column: span 6;
 }
 
 .businessMailingAddressGrid> :nth-child(4) {
-    grid-column: span 12;
+    grid-column: span 6;
 }
 
 .businessMailingAddressGrid> :nth-child(5) {
@@ -234,4 +233,36 @@
 
 .businessMailingAddressGrid> :nth-child(12) {
     grid-column: span 6;
+}
+
+.stickyContainer {
+    position: fixed;
+    bottom: 0;
+    right: 60px;
+    width: 25%;
+    padding: 0px 20px 20px 20px;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
+    z-index: 10;
+}
+
+@media (max-width: 948px) {
+    .stickyContainer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: auto;
+        margin: 0 auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .stickyContainer {
+        display: none;
+    }
+}
+
+.hiddenStickyContainer {
+    opacity: 0;
+    pointer-events: none;
 }

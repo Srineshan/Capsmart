@@ -46,7 +46,7 @@ const ContactAddress = ({ basicForm, setBasicForm, applicationId, getPreApplicat
   }, [applicationId])
 
   useEffect(() => {
-    setLabels(uniqueLabels?.map(data => data?.labels));
+    setLabels(uniqueLabels?.map(data => data));
   }, [uniqueLabels])
 
   // const getIsOpen = (value) => {
@@ -82,7 +82,7 @@ const ContactAddress = ({ basicForm, setBasicForm, applicationId, getPreApplicat
   const getAllLabels = (data) => {
     let tempLabels = addObjectIfNotPresent(uniqueLabels, data);
     setUniqueLabels(tempLabels)
-    console.log("tempLabelsssss", tempLabels, uniqueLabels, data)
+    console.log("tempLabelsssss", tempLabels, uniqueLabels, data, labels, metadata)
   }
 
   const getIsSaveInProgressOpen = (value) => {
@@ -126,7 +126,9 @@ const ContactAddress = ({ basicForm, setBasicForm, applicationId, getPreApplicat
     let missingKeys = [];
     let keyValuePair = [];
     metadata?.map((data, index) => {
-      keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: uniqueLabels?.filter(labelData => labelData?.path === data)[0]?.label })
+      if (labels[index]?.mandatory) {
+        keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: labels[index]?.label })
+      }
     })
     const validateBusinessPhone = (phone) => {
       const phoneRegex = /^[0-9]{10}$/; // Example: validate if phone is a 10-digit number
@@ -203,18 +205,36 @@ const ContactAddress = ({ basicForm, setBasicForm, applicationId, getPreApplicat
         missingKeys.push(data)
       }
     })
-    if (!getValueByPath(basicForm, `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`) && getValueByPath(basicForm, `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`) !== undefined && getValueByPath(basicForm, `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`) !== null) {
+    if (!getValueByPath(basicForm, `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`)) {
       let registeredBusinessAddressKeys = [`forms[${formIndex}].data.contactAddress3.business.businessName`, `forms[${formIndex}].data.contactAddress3.business.businessAddress.streetName`, `forms[${formIndex}].data.contactAddress3.business.businessAddress.pinCode`, `forms[${formIndex}].data.contactAddress3.business.businessAddress.city`, `forms[${formIndex}].data.contactAddress3.business.businessAddress.province`, `forms[${formIndex}].data.contactAddress3.business.businessPhone`, `forms[${formIndex}].data.contactAddress3.business.businessWebsite`]
       let temp = missingKeys?.filter(data => !registeredBusinessAddressKeys?.includes(data?.key));
       missingKeys = temp;
     }
+    // const businessAddressKeys = [
+    //   `forms[${formIndex}].data.contactAddress3.isBusinessAddressSameAsHomeAddressOrMailingAddress`,
+    //   `forms[${formIndex}].data.contactAddress3.business.b`,
+    //   `forms[${formIndex}].data.contactAddress3.business.businessName`,
+    //   `forms[${formIndex}].data.contactAddress3.business.businessAddress.streetName`,
+    //   `forms[${formIndex}].data.contactAddress3.business.businessAddress.pinCode`,
+    //   `forms[${formIndex}].data.contactAddress3.business.businessAddress.city`,
+    //   `forms[${formIndex}].data.contactAddress3.business.businessAddress.province`,
+    //   `forms[${formIndex}].data.contactAddress3.business.businessPhone`,
+    //   `forms[${formIndex}].data.contactAddress3.business.businessWebsite`,
+    // ];
+
+    // if (
+    //   !getValueByPath(basicForm, `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`)
+    // ) {
+    //   missingKeys = missingKeys.filter(data => !businessAddressKeys.includes(data?.key));
+    // }
+
     setWarningFields(missingKeys)
     if (missingKeys?.length !== 0) {
       setShowValidationDialog(true)
     } else {
       handleSubmitApplicationReq()
     }
-    console.log(keyValuePair, 'Metadata', missingKeys, getValueByPath(basicForm, `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`))
+    console.log(keyValuePair, 'Metadata', labels, missingKeys, getValueByPath(basicForm, `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`))
   }
 
 
@@ -291,21 +311,24 @@ const ContactAddress = ({ basicForm, setBasicForm, applicationId, getPreApplicat
               <ApplicationFieldCard object={formSchema?.properties?.contactAddress1} gridStyle={style.homeMailingAddressGrid} baseKey={'contactAddress1'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} stepPath={`forms[${formIndex}].data`} setIsEdited={getIsEdited} warningFields={warningFields} formSchema={formSchemaWholeObject} />
             )}
             <CommonDivider />
-            {formSchema !== undefined && 'contactAddress2' in formSchema?.properties && (
-              <ApplicationFieldCard object={formSchema?.properties?.contactAddress2} gridStyle={style.mailingAddressGrid} baseKey={'contactAddress2'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} stepPath={`forms[${formIndex}].data`} setIsEdited={getIsEdited} warningFields={warningFields} formSchema={formSchemaWholeObject} />
-            )}
-            <CommonDivider />
             {formSchema !== undefined && 'contactAddress3' in formSchema?.properties && (
               <ApplicationFieldCard object={formSchema?.properties?.contactAddress3} gridStyle={style.businessMailingAddressGrid} baseKey={'contactAddress3'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} stepPath={`forms[${formIndex}].data`} setIsEdited={getIsEdited} warningFields={warningFields} formSchema={formSchemaWholeObject} />
+            )}
+            <CommonDivider />
+            {formSchema !== undefined && 'contactAddress2' in formSchema?.properties && (
+              <ApplicationFieldCard object={formSchema?.properties?.contactAddress2} gridStyle={style.mailingAddressGrid} baseKey={'contactAddress2'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} stepPath={`forms[${formIndex}].data`} setIsEdited={getIsEdited} warningFields={warningFields} formSchema={formSchemaWholeObject} />
             )}
           </div>
         </div>
         <div>
           <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
-          <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
-          <div className={style.twoColForButton}>
-            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
-            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()}>CONTINUE</div>
+          <div className={style.stickyContainer}>
+            <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
+            <div className={`${style.saveInProgress} ${style.marginTop10} `} onClick={() => getSkipClicked(true)} > SKIP FOR NOW </div>
+            <div className={style.twoColForButton}>
+              <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
+              <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()}>CONTINUE</div>
+            </div>
           </div>
           <div className={style.marginTop}>
             <ApplicationReferenceDocuments />

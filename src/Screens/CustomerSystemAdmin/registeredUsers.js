@@ -59,7 +59,7 @@ const RegisteredUsers = ({ getSelectedOption }) => {
 
     const getUser = async () => {
         if (selectedOption === 'ENTITY REGISTERED USERS') {
-            const { data: user } = await GET(`user-management-service/user?userType=REGISTERED_USER`);
+            const { data: user } = await GET(`user-management-service/user?userType=REGISTERED_USER&activated=true`);
             setRegisteredUsers(user?.filter(data => data?.blocked === false)?.map(data => data));
             setBlockedUsers(user?.filter(data => data?.blocked === true)?.map(data => data));
         }
@@ -258,7 +258,7 @@ const RegisteredUsers = ({ getSelectedOption }) => {
         action = [];
 
         valuesToUse?.map(data => {
-            dot.push(data?.activated ? 'green' : 'grey');
+            dot.push(data?.activated ? 'green' : 'red');
             dotTooltipValues.push(data?.activated ? 'Activated' : 'Deactivated');
             userName.push(`${data?.name?.firstName} ${data?.name?.lastName}`);
             userAffiliation.push(getUserAffiliation(data));
@@ -397,7 +397,7 @@ const RegisteredUsers = ({ getSelectedOption }) => {
                             tableHeaderValues={tableHeaderValues}
                             tableDataValues={getValues()}
                             tableData={valuesToUse}
-                            gridStyle={selectedOption === 'INVITED USERS' ? style.invitedUsersGrid : isMultiSiteEntity ? (selectedOption === 'ENTITY REGISTERED USERS' || selectedOption === 'CONTRACTED SERVICE PROVIDER USERS') ? style.registeredUsersMultiSiteGrid : style.registeredUsersGrid : style.registeredUsersGrid}
+                            gridStyle={selectedOption === 'INVITED USERS' ? style.invitedUsersGrid : selectedOption === "DEACTIVATED USERS" ? style.deactivatedUsersGrid : isMultiSiteEntity ? (selectedOption === 'ENTITY REGISTERED USERS' || selectedOption === 'CONTRACTED SERVICE PROVIDER USERS') ? style.registeredUsersMultiSiteGrid : style.registeredUsersGrid : style.registeredUsersGrid}
                             actions={actionsData}
                             hidePagination={true}
                         />

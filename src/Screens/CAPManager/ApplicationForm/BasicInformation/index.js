@@ -52,12 +52,11 @@ const BasicInformation = ({ basicForm, setBasicForm, applicationId, getPreApplic
   };
 
   const getAllLabels = (data) => {
-    let tempLabels = labels;
-    if (!tempLabels?.includes(data)) {
-      console.log(tempLabels, data, "Metadata");
-      tempLabels.push(data);
-    }
-    setLabels(tempLabels);
+    setLabels(prev => {
+      const exists = prev.some(item => JSON.stringify(item) === JSON.stringify(data));
+      return exists ? prev : [...prev, data];
+    });
+    console.log(labels, "Metadata");
   };
 
   const getIsSaveInProgressOpen = (value) => {
@@ -91,12 +90,15 @@ const BasicInformation = ({ basicForm, setBasicForm, applicationId, getPreApplic
   const getMissingFields = () => {
     let missingKeys = [];
     let keyValuePair = [];
+    console.log(metadata, 'metadata')
     metadata?.map((data, index) => {
-      keyValuePair.push({
-        key: data,
-        value: getValueByPath(basicForm, data),
-        label: labels[index],
-      });
+      if (labels[index]?.mandatory) {
+        keyValuePair.push({
+          key: data,
+          value: getValueByPath(basicForm, data),
+          label: labels[index]?.label,
+        });
+      }
     });
     const phoneRegex = /^\(\d{3}\) \d{3}-\d{4}$/; // Example for formatted phone number
 
@@ -371,24 +373,26 @@ const BasicInformation = ({ basicForm, setBasicForm, applicationId, getPreApplic
             contactNumber={"{Contact Number}"}
             email={"{Email}"}
           />
-          <div
-            className={`${style.saveInProgress} ${style.marginTop}`}
-            onClick={() => getIsSaveInProgressOpen(true)}
-          >
-            SAVE IN PROGRESS
-          </div>
-          <div className={style.twoColForButton}>
+          <div className={style.stickyContainer}>
             <div
-              className={`${style.continue} ${style.marginTop10}`}
-              onClick={() => navigate(-1)}
+              className={`${style.saveInProgress} ${style.marginTop}`}
+              onClick={() => getIsSaveInProgressOpen(true)}
             >
-              BACK
+              SAVE IN PROGRESS
             </div>
-            <div
-              className={`${style.continue} ${style.marginTop10}`}
-              onClick={() => getMissingFields()}
-            >
-              CONTINUE
+            <div className={style.twoColForButton}>
+              <div
+                className={`${style.continue} ${style.marginTop10}`}
+                onClick={() => navigate(-1)}
+              >
+                BACK
+              </div>
+              <div
+                className={`${style.continue} ${style.marginTop10}`}
+                onClick={() => getMissingFields()}
+              >
+                CONTINUE
+              </div>
             </div>
           </div>
           {/* <div className={style.marginTop}>

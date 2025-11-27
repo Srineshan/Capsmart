@@ -56,7 +56,7 @@ const PharmacySignature = ({
   }, [name, currentDate]);
 
   useEffect(() => {
-    if (basicForm && !formSchema) {
+    if (basicForm && !formSchema && formIndex) {
       getFormSchema()
     }
     setInitialArray(basicForm?.forms?.[formIndex]?.data ? basicForm?.forms?.[formIndex]?.data?.initials : []);
@@ -69,6 +69,7 @@ const PharmacySignature = ({
 
   useEffect(() => {
     setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === atob(step)))
+    console.log(basicForm?.forms?.findIndex(data => data?.schemaCategory === atob(step)), 'indexCheck', basicForm)
   }, [basicForm, step]);
 
   useEffect(() => {
@@ -86,7 +87,7 @@ const PharmacySignature = ({
   };
   useEffect(() => {
     getApplicantProfile();
-  }, [applicationId]);
+  }, [applicationId, formIndex, basicForm]);
 
   const getFormSchema = async () => {
     const { data: form } = await GET(
@@ -200,7 +201,7 @@ const PharmacySignature = ({
   };
 
   const addNewDocument = async (file) => {
-    let fileName = { fileName: 'AcknowledgementStep9.pdf' };
+    let fileName = { fileName: 'PharmacySignature.pdf' };
     const formData = new FormData();
     if (file !== null) {
       const blob = new Blob([file], { type: `application/pdf` });
@@ -219,7 +220,8 @@ const PharmacySignature = ({
       }
 
       try {
-        const response = await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}/addFileToForm`, uploadedFile);
+        console.log(formIndex, 'indexCheck', step, basicForm)
+        const response = await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[basicForm?.forms?.findIndex(data => data?.schemaCategory === atob(step))]?.id}/addFileToForm`, uploadedFile);
         return response?.data;
         console.log(response?.data)
       } catch (error) {
@@ -233,37 +235,37 @@ const PharmacySignature = ({
 
 
   const handleSubmitApplicationReq = async () => {
-    if (isSigned) {
-      let temp = {
-        schemaId: basicForm?.forms?.[formIndex]?.schemaId,
-        data: { initials: initialArray },
-        acknowledged: isSigned,
-        esign: { esign: isSigned ? encryptedText : '', name: isSigned ? name : '', signedDate: isSigned ? currentDate : '' }
-      }
-      await PUT(`application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
-        .then(response => {
-          console.log(response)
-          getPreApplication()
-          SuccessToaster("Application Updated Successfully");
-          if (sessionStorage.getItem('fromSummary') === 'true') {
-            navigate(-1);
-          }
-          else {
-            navigate(navigateURL)
-          }
-        })
-        .catch((error) => {
-          console.log(error)
-          ErrorToaster("Unexpected Error Updating Application");
-        });
+    // if (isSigned) {
+    let temp = {
+      schemaId: basicForm?.forms?.[formIndex]?.schemaId,
+      data: { initials: initialArray },
+      acknowledged: true,
+      esign: { esign: isSigned ? encryptedText : '', name: isSigned ? name : '', signedDate: isSigned ? currentDate : '' }
     }
-    else {
-      if (sessionStorage.getItem('fromSummary') === 'true') {
-        navigate(-1);
-      } else {
-        navigate(navigateURL)
-      }
-    }
+    await PUT(`application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
+      .then(response => {
+        console.log(response)
+        getPreApplication()
+        SuccessToaster("Application Updated Successfully");
+        if (sessionStorage.getItem('fromSummary') === 'true') {
+          navigate(-1);
+        }
+        else {
+          navigate(navigateURL)
+        }
+      })
+      .catch((error) => {
+        console.log(error)
+        ErrorToaster("Unexpected Error Updating Application");
+      });
+    // }
+    // else {
+    //   if (sessionStorage.getItem('fromSummary') === 'true') {
+    //     navigate(-1);
+    //   } else {
+    //     navigate(navigateURL)
+    //   }
+    // }
   }
 
   const renderPdfContent = () => {
@@ -309,10 +311,12 @@ const PharmacySignature = ({
         </div>
         <div>
           <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
-          <div className={`${style.saveInProgress} ${style.marginTop}`} >SAVE IN PROGRESS</div>
-          <div className={style.twoColForButton}>
-            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
-            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleSubmitApplicationReq()} >CONTINUE</div>
+          <div className={style.stickyContainer}>
+            <div className={`${style.saveInProgress} ${style.marginTop}`} >SAVE IN PROGRESS</div>
+            <div className={style.twoColForButton}>
+              <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
+              <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleSubmitApplicationReq()} >CONTINUE</div>
+            </div>
           </div>
         </div>
       </div>

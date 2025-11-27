@@ -55,7 +55,7 @@ const ESignature = ({ userName, currentDate, encData, showData, showDatais = tru
         <div className={style.text}>
           <span>
             {isInitial
-              ? "Electronically Initialed by y"
+              ? "Electronically Initialed by"
               : "e-Signed by"}
           </span>
         </div>

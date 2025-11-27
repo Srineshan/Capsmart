@@ -32,7 +32,7 @@ const CriminalHistory = ({ basicForm, setBasicForm, applicationId, getPreApplica
             getFormSchema()
         }
         if (basicForm !== undefined && formIndex !== undefined) {
-            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form')?.length === (formIndex + 1)) ? `/applicationForm/${applicationId}/Form/${btoa('PODCheck')}` : `/applicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
+            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form' || data?.formCategory === 'Disclosure')?.length === (formIndex + 1)) ? `/applicationForm/${applicationId}/Form/${btoa('PODCheck')}` : `/applicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
         }
     }, [basicForm, formIndex])
 
@@ -54,13 +54,11 @@ const CriminalHistory = ({ basicForm, setBasicForm, applicationId, getPreApplica
     }
 
     const getAllLabels = (data) => {
-        let tempLabels = labels;
-        if (!tempLabels?.includes(data)) {
-            console.log(tempLabels, data, 'Metadata')
-            tempLabels.push(data);
-        }
-        setLabels(tempLabels);
-    }
+        setLabels(prev => {
+            const exists = prev.some(item => JSON.stringify(item) === JSON.stringify(data));
+            return exists ? prev : [...prev, data];
+        });
+    };
 
     const getIsSaveInProgressOpen = (value) => {
         setIsSaveInProgressOpen(value);
@@ -87,13 +85,33 @@ const CriminalHistory = ({ basicForm, setBasicForm, applicationId, getPreApplica
         let missingKeys = [];
         let keyValuePair = [];
         metadata?.map((data, index) => {
-            keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: labels[index] })
+            keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: labels[index]?.label })
         })
         keyValuePair?.map(data => {
             if (data?.value === "" || data?.value === null || data?.value === undefined || data?.value === 0) {
                 missingKeys.push(data)
             }
         })
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.criminalData1.criminalHistory.haveYouBeenArrested`) === 'No' || getValueByPath(basicForm, `forms[${formIndex}].data.criminalData1.criminalHistory.haveYouBeenArrested`) === undefined) {
+            let filterKeys = [`forms[${formIndex}].data.criminalData1.criminalHistory.haveYouBeenArrestedText`, `forms[${formIndex}].data.criminalData1.criminalHistory.haveYouBeenArrestedFile`, `forms[${formIndex}].data.criminalData1.criminalHistory.haveYouBeenArrestedResponse`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.criminalData1.criminalHistory.medicalPractice`) === 'No' || getValueByPath(basicForm, `forms[${formIndex}].data.criminalData1.criminalHistory.medicalPractice`) === undefined) {
+            let filterKeys = [`forms[${formIndex}].data.criminalData1.criminalHistory.medicalPracticeText`, `forms[${formIndex}].data.criminalData1.criminalHistory.medicalPracticeFile`, `forms[${formIndex}].data.criminalData1.criminalHistory.medicalPracticeResponse`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.criminalData1.criminalHistory.haveYouBeenArrested`) === 'Yes') {
+            let filterKeys = [`forms[${formIndex}].data.criminalData1.criminalHistory.haveYouBeenArrestedResponse`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.criminalData1.criminalHistory.medicalPractice`) === 'Yes') {
+            let filterKeys = [`forms[${formIndex}].data.criminalData1.criminalHistory.medicalPracticeResponse`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
         if (missingKeys?.length !== 0) {
             setShowValidationDialog(true)
         } else {
@@ -173,10 +191,13 @@ const CriminalHistory = ({ basicForm, setBasicForm, applicationId, getPreApplica
                 </div>
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
-                    <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
-                    <div className={style.twoColForButton}>
-                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
-                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()}>CONTINUE</div>
+                    <div className={style.stickyContainer}>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
+                        <div className={`${style.saveInProgress} ${style.marginTop10} `} onClick={() => getSkipClicked(true)} > SKIP FOR NOW </div>
+                        <div className={style.twoColForButton}>
+                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
+                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()}>CONTINUE</div>
+                        </div>
                     </div>
                     <div className={style.marginTop}>
                         <ApplicationReferenceDocuments />

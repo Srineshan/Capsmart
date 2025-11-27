@@ -31,7 +31,7 @@ const MedicalHistory = ({ basicForm, setBasicForm, applicationId, getPreApplicat
       getFormSchema()
     }
     if (basicForm !== undefined && formIndex !== undefined) {
-      setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form')?.length === (formIndex + 1)) ? `/applicationForm/${applicationId}/Form/${btoa('PODCheck')}` : `/applicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
+      setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form' || data?.formCategory === 'Disclosure')?.length === (formIndex + 1)) ? `/applicationForm/${applicationId}/Form/${btoa('PODCheck')}` : `/applicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
     }
   }, [basicForm, formIndex])
 
@@ -53,13 +53,11 @@ const MedicalHistory = ({ basicForm, setBasicForm, applicationId, getPreApplicat
   }
 
   const getAllLabels = (data) => {
-    let tempLabels = labels;
-    if (!tempLabels?.includes(data)) {
-      console.log(tempLabels, data, 'Metadata')
-      tempLabels.push(data);
-    }
-    setLabels(tempLabels);
-  }
+    setLabels(prev => {
+      const exists = prev.some(item => JSON.stringify(item) === JSON.stringify(data));
+      return exists ? prev : [...prev, data];
+    });
+  };
 
   const getIsSaveInProgressOpen = (value) => {
     setIsSaveInProgressOpen(value);
@@ -98,7 +96,7 @@ const MedicalHistory = ({ basicForm, setBasicForm, applicationId, getPreApplicat
       keyValuePair.push({
         key: data,
         value: getValueByPath(basicForm, data),
-        label: labels[index],
+        label: labels[index]?.label,
       });
     });
 
@@ -190,8 +188,14 @@ const MedicalHistory = ({ basicForm, setBasicForm, applicationId, getPreApplicat
     // }
 
     if (getValueByPath(basicForm, `forms[${formIndex}].data.impactingPractice.medicalHistory.abilityToPractice`) === 'No' && getValueByPath(basicForm, `forms[${formIndex}].data.impactingPractice.medicalHistory.abilityToPractice`) !== undefined && getValueByPath(basicForm, `forms[${formIndex}].data.impactingPractice.medicalHistory.abilityToPractice`) !== null) {
-      let medicalHistoryRequiredKeys = [`forms[${formIndex}].data.impactingPractice.medicalHistory.nameOfFacility`]
+      let medicalHistoryRequiredKeys = [`forms[${formIndex}].data.impactingPractice.medicalHistory.nameOfFacility`, `forms[${formIndex}].data.impactingPractice.medicalHistory.treatingPhysicianOrProvider`, `forms[${formIndex}].data.impactingPractice.medicalHistory.emailId`, `forms[${formIndex}].data.impactingPractice.medicalHistory.cellPhone`]
       let temp = missingKeys?.filter(data => !medicalHistoryRequiredKeys?.includes(data?.key));
+      missingKeys = temp;
+    }
+
+    if (getValueByPath(basicForm, `forms[${formIndex}].data.impactingPractice.medicalHistory.abilityToPractice`) === 'No' || getValueByPath(basicForm, `forms[${formIndex}].data.impactingPractice.medicalHistory.abilityToPractice`) === undefined) {
+      let filterKeys = [`forms[${formIndex}].data.impactingPractice.medicalHistory.text`, `forms[${formIndex}].data.impactingPractice.medicalHistory.file`]
+      let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
       missingKeys = temp;
     }
 
@@ -269,10 +273,12 @@ const MedicalHistory = ({ basicForm, setBasicForm, applicationId, getPreApplicat
         </div>
         <div>
           <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
-          <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
-          <div className={style.twoColForButton}>
-            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
-            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()}>CONTINUE</div>
+          <div className={style.stickyContainer}>
+            <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
+            <div className={style.twoColForButton}>
+              <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
+              <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()}>CONTINUE</div>
+            </div>
           </div>
           <div className={style.marginTop}>
             <ApplicationReferenceDocuments />

@@ -117,6 +117,12 @@
     grid-gap: 10px;
 }
 
+.deactivatedUsersGrid {
+    display: grid;
+    grid-template-columns: 5% 15% 15% 8% 8% 15% 10% 10% 5%;
+    grid-gap: 1%;
+}
+
 .registeredUsersMultiSiteGrid {
     display: grid;
     grid-template-columns: 5% 15% 14% 5% 8% 10% 10% 9% 5%;

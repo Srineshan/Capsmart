@@ -86,11 +86,11 @@ const NotesCommentsDialog = ({ getIsOpen, getActiveApplicationView, selectedTab 
     console.log("Updated firstname:", approverDetailsDept, formDetails?.id);
     console.log("Updated lastname:", lastName);
 
-    
+
 
 
     if (firstName === userFirstName && lastName === userLastName) {
-    
+
       setIsApproverDept1("Approve");
     } else {
       setIsApproverDept1("notApproved")
@@ -108,9 +108,9 @@ const NotesCommentsDialog = ({ getIsOpen, getActiveApplicationView, selectedTab 
 
     // const firstName = approverDetailsCred?.approverDetail?.name?.firstName;
     // const lastName = approverDetailsCred?.approverDetail?.name?.lastName;
-    
 
-      const matchedApprover = approverDetailsArray.find((approverObj) => {
+
+    const matchedApprover = approverDetailsArray.find((approverObj) => {
       const approverName = approverObj?.approverDetail?.name;
       return (
         approverName?.firstName === userFirstName &&
@@ -468,11 +468,10 @@ const NotesCommentsDialog = ({ getIsOpen, getActiveApplicationView, selectedTab 
             <div className={Classes.DIALOG_BODY}>
               <div className={style.spaceBetween}>
                 <div className={style.heading}>
-                  {`Staff ${
-                    applicationType === "LOCUM"
-                      ? `${formDetails?.reappointmentType === "EXTENSION" ? "Locum Extension" : "Locum Renewal"}`
-                      : "Reappointment"
-                  } for Review & Approval`}
+                  {`Staff ${applicationType === "LOCUM"
+                    ? `${formDetails?.reappointmentType === "EXTENSION" ? "Locum Extension" : "Locum Renewal"}`
+                    : applicationType === "NEW" ? "Appointment" : "Reappointment"
+                    } for Review & Approval`}
                 </div>
                 <div className={style.displayInRow}>
                   <Tooltip title={"Click to Close"} arrow>
@@ -488,7 +487,7 @@ const NotesCommentsDialog = ({ getIsOpen, getActiveApplicationView, selectedTab 
                 </div>
               </div>
               <div ref={componentRef} className={`${style.pagebreak}`}>
-                
+
                 <div className={`${style.rejectionBorderStyle} ${style.declineBorderStyle} ${style.marginTop10}`}>
                   <div className={`${style.marginTop10} ${style.displayInRowCenter}`}>
                     <div className={`${style.gridContainer2} ${style.marginLeftRight20} ${style.marginBottom10}`}>
@@ -502,7 +501,7 @@ const NotesCommentsDialog = ({ getIsOpen, getActiveApplicationView, selectedTab 
                             : ""}
                         </span>
                           <span className={`${style.rejectionTextStyle} ${style.marginLeft4}`}>
-                          {" "} {applicationType === "LOCUM" ? "Locum":""} {formDetails?.providerType?.serviceProviderType}
+                            {" "} {applicationType === "LOCUM" ? "Locum" : ""} {formDetails?.providerType?.serviceProviderType}
                           </span>
                         </div>
                         <div className={`${style.gridItem2}`}>
@@ -543,7 +542,7 @@ const NotesCommentsDialog = ({ getIsOpen, getActiveApplicationView, selectedTab 
                             {formDetails?.basicDetails?.applicant?.name?.firstName
                               ? formDetails?.updatedBy?.name?.firstName.charAt(0).toUpperCase() +
                               formDetails?.updatedBy?.name?.firstName.slice(1).toLowerCase()
-                              : ""}{formDetails?.updatedBy?.name?.lastName?.toUpperCase()} {formDetails?.updatedBy?.title?.title  ? `, ${formDetails?.updatedBy?.title?.title}`: ""}
+                              : ""}{formDetails?.updatedBy?.name?.lastName?.toUpperCase()} {formDetails?.updatedBy?.title?.title ? `, ${formDetails?.updatedBy?.title?.title}` : ""}
                           </span>
                         </div>
                       </div>

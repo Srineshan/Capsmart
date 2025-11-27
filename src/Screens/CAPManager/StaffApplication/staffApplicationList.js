@@ -1302,7 +1302,7 @@ const StaffApplicationList = ({
 
   const onClickViewAndVerifyLevelFunction = (data) => {
     sessionStorage.setItem("applicationId", data?.id);
-    getNotesCommentBox(true);
+    // getNotesCommentBox(true);
     getActiveApplicationView(true);
   };
 

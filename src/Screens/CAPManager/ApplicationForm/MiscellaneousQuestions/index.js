@@ -48,7 +48,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
             setUpdatedDateSuboxone(basicForm?.forms?.[formIndex]?.data?.suboxone?.updatedDate !== undefined ? basicForm?.forms?.[formIndex]?.data?.suboxone?.updatedDate : '');
             setYesOrNoMRP(basicForm?.forms?.[formIndex]?.data?.mrp?.yesOrNo !== undefined ? basicForm?.forms?.[formIndex]?.data?.mrp?.yesOrNo : '');
             setUpdatedDateMRP(basicForm?.forms?.[formIndex]?.data?.mrp?.updatedDate !== undefined ? basicForm?.forms?.[formIndex]?.data?.mrp?.updatedDate : '');
-            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form')?.length === (formIndex + 1)) ? `/applicationForm/${applicationId}/Form/${btoa('PODCheck')}` : `/applicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
+            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form' || data?.formCategory === 'Disclosure')?.length === (formIndex + 1)) ? `/applicationForm/${applicationId}/Form/${btoa('PODCheck')}` : `/applicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
         }
     }, [basicForm, formIndex])
 
@@ -71,13 +71,11 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
     }
 
     const getAllLabels = (data) => {
-        let tempLabels = labels;
-        if (!tempLabels?.includes(data)) {
-            console.log(tempLabels, data, 'Metadata')
-            tempLabels.push(data);
-        }
-        setLabels(tempLabels);
-    }
+        setLabels(prev => {
+            const exists = prev.some(item => JSON.stringify(item) === JSON.stringify(data));
+            return exists ? prev : [...prev, data];
+        });
+    };
 
     const getIsShowReappointmentJourneyDialog = (value) => {
         setShowJourneyDialog(value);
@@ -295,11 +293,13 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                 </div>
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
-                    <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
-                    <div className={style.twoColForButton}>
-                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
-                        {/* <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowJourneyDialog(true)}>CONTINUE</div> */}
-                        <div className={`${style.continue} ${style.marginTop10} ${(yesOrNoLMS !== '' && yesOrNoSuboxone !== '' && yesOrNoMRP !== '') ? '' : style.disabledButton}`} onClick={(yesOrNoLMS !== '' && yesOrNoSuboxone !== '' && yesOrNoMRP !== '') ? () => getMissingFields() : () => { }}>CONTINUE</div>
+                    <div className={style.stickyContainer}>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
+                        <div className={style.twoColForButton}>
+                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
+                            {/* <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowJourneyDialog(true)}>CONTINUE</div> */}
+                            <div className={`${style.continue} ${style.marginTop10} ${(yesOrNoLMS !== '' && yesOrNoSuboxone !== '' && yesOrNoMRP !== '') ? '' : style.disabledButton}`} onClick={(yesOrNoLMS !== '' && yesOrNoSuboxone !== '' && yesOrNoMRP !== '') ? () => getMissingFields() : () => { }}>CONTINUE</div>
+                        </div>
                     </div>
                     <div className={style.marginTop}>
                         <ApplicationReferenceDocuments />

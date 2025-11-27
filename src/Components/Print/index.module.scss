@@ -1,0 +1,113 @@
+@import "../../index.scss";
+
+// Used in printHeader.js
+.headerBackground {
+    background: #fff 0% 0% no-repeat padding-box;
+    padding: 30px 40px;
+    margin: -30px -40px;
+}
+
+.alignCenter {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.centerAlignUsingBlock {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.textAlignCenter {
+    text-align: center !important;
+}
+
+.headerLogoReport {
+    height: 55px;
+    object-fit: contain;
+}
+
+// Used in printFooter.js
+.printFooter {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+    font-size: 12px;
+    margin-top: auto;
+}
+
+.marginTop40 {
+    margin-top: 0px !important;
+}
+
+.spaceBetween {
+    display: flex;
+    justify-content: space-between;
+}
+
+.reportFooterLogoApplicant {
+    width: 100px;
+    object-fit: contain;
+}
+
+.marginTop10 {
+    margin-top: 10px !important;
+}
+
+.reportCopyRightFooterTextStyle {
+    text-align: left;
+    font: normal normal 600 16px/20px var(--font-style);
+    letter-spacing: 0px;
+    color: #454747;
+    opacity: 0.6;
+}
+
+// Print media queries
+@page {
+    margin-top: 20px;
+}
+
+.onlyPrint {
+    display: none !important;
+}
+
+@media print {
+    body {
+        padding-top: 0;
+        margin: 0;
+    }
+
+    .printContainer {
+        page-break-inside: avoid;
+    }
+
+    .printContainer>* {
+        page-break-before: auto;
+        page-break-inside: avoid;
+    }
+
+    .printFooter {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        text-align: center;
+        font-size: 12px;
+        margin-top: auto;
+    }
+
+    .onlyPrint {
+        display: block !important;
+    }
+}
+
+@media print {
+    @page {
+        margin: 20px 15px 40px 15px;
+    }
+}
+
+textarea {
+    resize: none;
+}

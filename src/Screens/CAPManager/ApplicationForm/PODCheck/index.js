@@ -66,7 +66,8 @@ const PODCheck = ({ basicForm, setBasicForm, applicationId }) => {
               <div className={`${style.greyDotStyle}`}></div>
             </div>
           </div>
-          <div className={` ${style.marginTop10} ${style.tableHeaderGridStyle} `}>
+          <div className={` ${style.tableTopHeaderStyle} ${style.marginTop10} ${style.tableHeaderGridStyle} `}>
+            <div></div>
             <div></div>
             <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
               <div className={form?.forms.every(item => item.acknowledged === true) ? style.greenDotStyle : style.yellowDotStyle}></div>
@@ -74,11 +75,11 @@ const PODCheck = ({ basicForm, setBasicForm, applicationId }) => {
             <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
               <div className={form?.forms.every(item => item.acknowledged === true) ? style.greenDotStyle : style.yellowDotStyle}></div>
             </div>
-            <div></div>
           </div>
           <div className={`${style.tableHeaderStyle} ${style.marginTop10} ${style.tableHeaderGridStyle} `}>
+            <div></div>
             <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-              <div className={`${style.tableHeaderTextStyle} ${style.marginLeft20}`}>POD Verification Check</div>
+              <div className={`${style.tableHeaderTextStyle}`}>POD Verification Check</div>
             </div>
             <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
               <div className={`${style.tableHeaderTextStyle}`}
@@ -101,9 +102,9 @@ const PODCheck = ({ basicForm, setBasicForm, applicationId }) => {
 
               </div>
             </div>
-            <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
+            {/* <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
               <div className={`${style.tableHeaderTextStyle}`}>Items To Address</div>
-            </div>
+            </div> */}
           </div>
           <div className={`${style.tableDataStyle} ${style.marginTop5} ${style.tableValueGridStyle} `}>
             <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
@@ -125,7 +126,7 @@ const PODCheck = ({ basicForm, setBasicForm, applicationId }) => {
           <div>
 
             {
-              form?.formSchemas?.filter(data => data?.formCategory === 'Form')?.map((data, index) => (
+              form?.formSchemas?.filter(data => data?.formCategory === 'Form' || data?.formCategory === 'Disclosure')?.map((data, index) => (
                 <div className={`${style.tableDataStyle} ${style.marginTop5} ${style.tableValueGridStyle} `}>
                   <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
                     {index !== 0 && (
@@ -137,20 +138,17 @@ const PODCheck = ({ basicForm, setBasicForm, applicationId }) => {
                     <img src={Pencil} alt="" className={`${style.pencilImgStyle} ${style.justifyCenter} ${style.cursorPointer}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/applicationForm/${applicationId}/${data?.formCategory}/${btoa(data?.schemaCategory)}`) }} />
                   </div>
                   <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                    {/* <div className={`${style.greyDotStyle} `}></div> */}
                     <div className={`${form?.forms[index]?.acknowledged === true ? style.greenDotStyle : style.yellowDotStyle}`}></div>
-                    {/* <div className={data?.acknowledged ? style.greenDotStyle : style.yellowDotStyle}></div> */}
 
                   </div>
                   <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                    {/* <div className={`${style.greyDotStyle} `}></div> */}
                     <div className={`${form?.forms[index]?.acknowledged === true ? style.greenDotStyle : style.yellowDotStyle}`}></div>
                   </div>
-                  <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
+                  {/* <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
                     <div className={`${style.marginLeft5} ${style.tableDataFontDisabledStyle1}`}>
                       {(itemsToProcessConditionCheckCategories?.includes(form?.forms?.filter(data => data?.formCategory === 'Form')[index]?.schemaCategory) && form?.forms[index]?.unFilledFields?.length !== 0) ? 'Missing mandatory fields.' : form?.forms[index]?.unFilledFields?.join(', ')}
                     </div>
-                  </div>
+                  </div> */}
                 </div>
               ))
             }
@@ -163,10 +161,12 @@ const PODCheck = ({ basicForm, setBasicForm, applicationId }) => {
           <div className={style.marginTop10}>
             <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
           </div>
-          <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
-          <div className={style.twoColForButton}>
-            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
-            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue()}>CONTINUE</div>
+          <div className={style.stickyContainer}>
+            <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
+            <div className={style.twoColForButton}>
+              <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
+              <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue()}>CONTINUE</div>
+            </div>
           </div>
           {/* <div className={style.marginTop}>
                             <ApplicationReferenceDocuments />

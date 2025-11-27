@@ -31,7 +31,7 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, applicationId, getPreApp
             getFormSchema()
         }
         if (basicForm !== undefined && formIndex !== undefined) {
-            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form')?.length === (formIndex + 1)) ? `/applicationForm/${applicationId}/Form/${btoa('PODCheck')}` : `/applicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
+            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form' || data?.formCategory === 'Disclosure')?.length === (formIndex + 1)) ? `/applicationForm/${applicationId}/Form/${btoa('PODCheck')}` : `/applicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
         }
     }, [basicForm, formIndex])
 
@@ -53,13 +53,11 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, applicationId, getPreApp
     }
 
     const getAllLabels = (data) => {
-        let tempLabels = labels;
-        if (!tempLabels?.includes(data)) {
-            console.log(tempLabels, data, 'Metadata')
-            tempLabels.push(data);
-        }
-        setLabels(tempLabels);
-    }
+        setLabels(prev => {
+            const exists = prev.some(item => JSON.stringify(item) === JSON.stringify(data));
+            return exists ? prev : [...prev, data];
+        });
+    };
 
     const getIsSaveInProgressOpen = (value) => {
         setIsSaveInProgressOpen(value);
@@ -85,13 +83,113 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, applicationId, getPreApp
         let missingKeys = [];
         let keyValuePair = [];
         metadata?.map((data, index) => {
-            keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: labels[index] })
+            keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: labels[index]?.label })
         })
         keyValuePair?.map(data => {
             if (data?.value === "" || data?.value === null || data?.value === undefined || data?.value === 0) {
                 missingKeys.push(data)
             }
         })
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.disciplineCommittee`) === 'No' || getValueByPath(basicForm, `forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.disciplineCommittee`) === undefined) {
+            let filterKeys = [`forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.disciplineCommitteeText`, `forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.disciplineCommitteeFile`, `forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.disciplineCommitteeResponse`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.complaintsAndReportCommittee`) === 'No' || getValueByPath(basicForm, `forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.complaintsAndReportCommittee`) === undefined) {
+            let filterKeys = [`forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.complaintsAndReportCommitteeText`, `forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.complaintsAndReportCommitteeFile`, `forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.complaintsAndReportCommitteeResponse`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.investigation`) === 'No' || getValueByPath(basicForm, `forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.investigation`) === undefined) {
+            let filterKeys = [`forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.investigationText`, `forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.investigationFile`, `forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.investigationResponse`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.randomReview`) === 'No' || getValueByPath(basicForm, `forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.randomReview`) === undefined) {
+            let filterKeys = [`forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.randomReviewText`, `forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.randomReviewFile`, `forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.randomReviewResponse`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.resultOfQac`) === 'No' || getValueByPath(basicForm, `forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.resultOfQac`) === undefined) {
+            let filterKeys = [`forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.resultOfQacText`, `forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.resultOfQacFile`, `forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.resultOfQacResponse`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.outcomeByTheCollege`) === 'No' || getValueByPath(basicForm, `forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.outcomeByTheCollege`) === undefined) {
+            let filterKeys = [`forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.outcomeByTheCollegeText`, `forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.outcomeByTheCollegeFile`, `forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.outcomeByTheCollegeResponse`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.conductDisclosure2.hospitalMisconductHistory.advanceProceeding`) === 'No' || getValueByPath(basicForm, `forms[${formIndex}].data.conductDisclosure2.hospitalMisconductHistory.advanceProceeding`) === undefined) {
+            let filterKeys = [`forms[${formIndex}].data.conductDisclosure2.hospitalMisconductHistory.advanceProceedingText`, `forms[${formIndex}].data.conductDisclosure2.hospitalMisconductHistory.advanceProceedingFile`, `forms[${formIndex}].data.conductDisclosure2.hospitalMisconductHistory.advanceProceedingResponse`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.conductDisclosure2.hospitalMisconductHistory.disciplinaryReviews`) === 'No' || getValueByPath(basicForm, `forms[${formIndex}].data.conductDisclosure2.hospitalMisconductHistory.disciplinaryReviews`) === undefined) {
+            let filterKeys = [`forms[${formIndex}].data.conductDisclosure2.hospitalMisconductHistory.disciplinaryReviewsText`, `forms[${formIndex}].data.conductDisclosure2.hospitalMisconductHistory.disciplinaryReviewsFile`, `forms[${formIndex}].data.conductDisclosure2.hospitalMisconductHistory.disciplinaryReviewsResponse`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.conductDisclosure2.hospitalMisconductHistory.involuntaryRestriction`) === 'No' || getValueByPath(basicForm, `forms[${formIndex}].data.conductDisclosure2.hospitalMisconductHistory.involuntaryRestriction`) === undefined) {
+            let filterKeys = [`forms[${formIndex}].data.conductDisclosure2.hospitalMisconductHistory.involuntaryRestrictionText`, `forms[${formIndex}].data.conductDisclosure2.hospitalMisconductHistory.involuntaryRestrictionFile`, `forms[${formIndex}].data.conductDisclosure2.hospitalMisconductHistory.involuntaryRestrictionResponse`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.conductDisclosure2.hospitalMisconductHistory.privilegeDisputes`) === 'No' || getValueByPath(basicForm, `forms[${formIndex}].data.conductDisclosure2.hospitalMisconductHistory.privilegeDisputes`) === undefined) {
+            let filterKeys = [`forms[${formIndex}].data.conductDisclosure2.hospitalMisconductHistory.privilegeDisputesText`, `forms[${formIndex}].data.conductDisclosure2.hospitalMisconductHistory.privilegeDisputesFile`, `forms[${formIndex}].data.conductDisclosure2.hospitalMisconductHistory.privilegeDisputesResponse`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.disciplineCommittee`) === 'Yes') {
+            let filterKeys = [`forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.disciplineCommitteeResponse`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.complaintsAndReportCommittee`) === 'Yes') {
+            let filterKeys = [`forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.complaintsAndReportCommitteeResponse`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.investigation`) === 'Yes') {
+            let filterKeys = [`forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.investigationResponse`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.randomReview`) === 'Yes') {
+            let filterKeys = [`forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.randomReviewResponse`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.resultOfQac`) === 'Yes') {
+            let filterKeys = [`forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.resultOfQacResponse`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.outcomeByTheCollege`) === 'Yes') {
+            let filterKeys = [`forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.outcomeByTheCollegeResponse`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.conductDisclosure2.hospitalMisconductHistory.advanceProceeding`) === 'Yes') {
+            let filterKeys = [`forms[${formIndex}].data.conductDisclosure2.hospitalMisconductHistory.advanceProceedingResponse`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.conductDisclosure2.hospitalMisconductHistory.disciplinaryReviews`) === 'Yes') {
+            let filterKeys = [`forms[${formIndex}].data.conductDisclosure2.hospitalMisconductHistory.disciplinaryReviewsResponse`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.conductDisclosure2.hospitalMisconductHistory.involuntaryRestriction`) === 'Yes') {
+            let filterKeys = [`forms[${formIndex}].data.conductDisclosure2.hospitalMisconductHistory.involuntaryRestrictionResponse`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.conductDisclosure2.hospitalMisconductHistory.privilegeDisputes`) === 'Yes') {
+            let filterKeys = [`forms[${formIndex}].data.conductDisclosure2.hospitalMisconductHistory.privilegeDisputesResponse`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
         if (missingKeys?.length !== 0) {
             setShowValidationDialog(true)
         } else {
@@ -166,10 +264,13 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, applicationId, getPreApp
                 </div>
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
-                    <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
-                    <div className={style.twoColForButton}>
-                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
-                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()}>CONTINUE</div>
+                    <div className={style.stickyContainer}>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
+                        <div className={`${style.saveInProgress} ${style.marginTop10} `} onClick={() => getSkipClicked(true)} > SKIP FOR NOW </div>
+                        <div className={style.twoColForButton}>
+                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
+                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()}>CONTINUE</div>
+                        </div>
                     </div>
                     <div className={style.marginTop}>
                         <ApplicationReferenceDocuments />

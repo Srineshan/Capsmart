@@ -94,7 +94,7 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
       try {
         const response = await POST(`application-management-service/application/${applicationId}/files`, formData);
         console.log(response?.data);
-        uploadedFile = response?.data;
+        uploadedFile = response?.data?.file;
       } catch (error) {
         console.error(error);
         return null;
@@ -233,10 +233,12 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
         </div>
         <div>
           <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
-          <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
-          <div className={style.twoColForButton}>
-            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
-            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleSubmitApplicationReq()} >CONTINUE</div>
+          <div className={style.stickyContainer}>
+            <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
+            <div className={style.twoColForButton}>
+              <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
+              <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleSubmitApplicationReq()} >CONTINUE</div>
+            </div>
           </div>
         </div>
       </div>
