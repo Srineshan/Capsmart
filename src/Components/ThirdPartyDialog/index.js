@@ -133,7 +133,7 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData, applicant
       "total": data?.amount,
       "currency": paymentListData?.currencyType,
       "quantity": 1,
-      "product": "Reappointment Application Fee",
+      "product": window.location.pathname.includes("applicationForm") ? 'Applicant Fee' : "Reappointment Application Fee",
       // "paidDateTime": format(new Date(data?.created), "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"),
       "paidDateTime": new Date().toISOString(),
       "paymentMethod": data?.payment_method,
@@ -255,7 +255,7 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData, applicant
       "total": data?.amount,
       "currency": paymentListData?.currencyType,
       "quantity": 1,
-      "product": "Reappointment Application Fee",
+      "product": window.location.pathname.includes("applicationForm") ? 'Application Fee' : "Reappointment Application Fee",
       // "paidDateTime": format(new Date(data?.created || new Date()), "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"),
       "paidDateTime": new Date().toISOString(),
       "paymentMethod": data?.payment_method,
@@ -418,7 +418,7 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData, applicant
             <div className={style.receiptDetails}>
               {/* <h3>Transaction Details</h3> */}
               <div className={`${style.receiptDescription} ${style.marginTop10}`}>
-                This is confirmation for the Reappointment Application Processing Fee that was charged to {basicForm?.applicant?.name?.firstName} {basicForm?.applicant?.name?.lastName}'s Credit Card. Save this receipt for your finance department records. The receipt will also be available from the Staff Account in CAPManager.
+                This is confirmation for the {window.location.pathname.includes("applicationForm") ? '' : 'Reappointment'} Application Processing Fee that was charged to {basicForm?.applicant?.name?.firstName} {basicForm?.applicant?.name?.lastName}'s Credit Card. Save this receipt for your finance department records. The receipt will also be available from the Staff Account in CAPManager.
               </div>
               <div className={style.twoCol}>
                 <div>
@@ -431,7 +431,7 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData, applicant
                       Description:
                     </div>
                     <div className={style.detailsText}>
-                      Reappointment Application Processing Fee
+                      {window.location.pathname.includes("applicationForm") ? '' : 'Reappointment'} Application Processing Fee
                     </div>
                   </div>
                   <div className={style.marginTop10}>

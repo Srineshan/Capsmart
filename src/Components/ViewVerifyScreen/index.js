@@ -3021,7 +3021,7 @@ const NewActiveApplication = ({
           <>
             {allFormSchemas?.[index]?.formSchema?.schema !== undefined &&
               allFormSchemas?.[index]?.formSchema?.schema?.properties !== null &&
-              allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined && 'applicant' in formSchema?.properties && (
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined && 'applicant' in allFormSchemas?.[index]?.formSchema?.schema?.properties && (
                 <ApplicationFieldCard object={allFormSchemas?.[index]?.formSchema?.schema?.properties?.applicant} gridStyle={style.applicantGrid} baseKey={'applicant'} basicForm={form} setBasicForm={setForm} isBasicPath={true} isPOD={true} />
               )}
             <CommonDivider />
@@ -3066,6 +3066,25 @@ const NewActiveApplication = ({
                   stepPath={`forms[${formIndex}].data`}
                   gridStyle={style.businessMailingAddressGrid}
                   baseKey={"contactAddress3"}
+                  isPOD={true}
+                />
+              )}
+          </>
+        );
+      case "PaymentOrder":
+        return (
+          <>
+            {allFormSchemas?.[index]?.formSchema?.schema !== undefined &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== null &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined &&
+              "physicianPaymentOrder" in allFormSchemas?.[index]?.formSchema?.schema?.properties && (
+                <ApplicationFieldCard
+                  object={allFormSchemas?.[index]?.formSchema?.schema?.properties?.physicianPaymentOrder}
+                  basicForm={form}
+                  setBasicForm={setForm}
+                  stepPath={`forms[${formIndex}].data`}
+                  gridStyle={style.PaymentGrid}
+                  baseKey={"physicianPaymentOrder"}
                   isPOD={true}
                 />
               )}

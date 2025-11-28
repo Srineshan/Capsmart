@@ -406,11 +406,11 @@ const App = ({ props }) => {
   }, [cookie.get("authorization"), isAuthenticated, errorInfo, isSessionLoading])
 
   useEffect(() => {
-    if ((entityId !== undefined && entityId !== '' && cookie.get("authorization") !== undefined && isAuthenticated) || (entityId !== undefined && entityId !== '' && cookie.get("authorization") !== undefined && isAuthenticated && errorInfo === 'Invalid token specified')) {
+    if ((entityId !== undefined && entityId !== '' && cookie.get("authorization") !== undefined && isAuthenticated && !cookie.get("user")) || (entityId !== undefined && entityId !== '' && cookie.get("authorization") !== undefined && isAuthenticated && errorInfo === 'Invalid token specified' && !cookie.get("user"))) {
       login(entityId);
     }
     console.log(isAuthenticated, 'isAuthenticated')
-  }, [entityId, cookie.get("authorization"), isAuthenticated, errorInfo])
+  }, [entityId, cookie.get("authorization"), isAuthenticated, errorInfo, cookie.get("user")])
 
   useEffect(() => {
     if (userFromCookie) {
@@ -750,6 +750,7 @@ const App = ({ props }) => {
               secure: true,
               sameSite: 'none',
             });
+            cookie.remove("user", { path: "/" });
             console.log('Session refreshed and cookie updated!', refreshedSession);
           }
         })
