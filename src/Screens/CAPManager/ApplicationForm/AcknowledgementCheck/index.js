@@ -17,6 +17,7 @@ import AIAssistantDialog from '../../../../Components/AIAssistantDialog';
 import ApplicationHeader from '../../../../Components/ApplicationHeader';
 import ApplicationSubmitDialog from '../../../../Components/ApplicationSubmitDialog';
 import PaymentDialog from '../../../../Components/paymentDialog';
+import { Tooltip } from '@mui/material';
 
 const AcknowledgementCheck = ({ basicForm, setBasicForm, applicationId }) => {
     const [form, setForm] = useState();
@@ -26,6 +27,10 @@ const AcknowledgementCheck = ({ basicForm, setBasicForm, applicationId }) => {
     const [paymentListData, setPaymentListData] = useState(false);
     const [showPaymentDialog, setShowPaymentDialog] = useState(false);
     const id = sessionStorage.getItem('applicationId');
+    const isDisabled =
+        paymentListData?.fee !== 0 &&
+        paymentListData?.fee !== undefined &&
+        !basicForm?.payment?.paymentCompleted;
 
     useEffect(() => {
         // getPreApplication();
@@ -170,7 +175,9 @@ const AcknowledgementCheck = ({ basicForm, setBasicForm, applicationId }) => {
                     </div>
                     <div className={style.stickyContainer}>
                         <div className={`${style.saveInProgress} ${style.marginTop}`}>SAVE IN PROGRESS</div>
-                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleSubmitApplication()}>SUBMIT APPLICATION</div>
+                        <Tooltip title={isDisabled ? 'Payment is required to submit the application' : ''} arrow isDisabled={!isDisabled}>
+                            <div className={`${isDisabled ? style.disabled : ''} ${style.continue} ${style.marginTop10}`} onClick={isDisabled ? () => { } : () => handleSubmitApplication()}>SUBMIT APPLICATION</div>
+                        </Tooltip>
                         {(paymentListData?.fee !== 0 && paymentListData?.fee !== undefined && !basicForm?.payment?.paymentCompleted) && (
                             <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowPaymentDialog(true)}>PROCEED TO PAYMENT</div>
                         )}

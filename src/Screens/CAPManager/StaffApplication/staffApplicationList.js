@@ -1782,7 +1782,8 @@ const StaffApplicationList = ({
         const positionTypeParam =
           applicationType === "LOCUM"
             ? `&positionType=${applicationType}`
-            : "&positionType=PERMANENT";
+            : applicationType === "NEW" ? ""
+              : "&positionType=PERMANENT";
 
         const selectedTabCC =
           applicationType === "LOCUM"
@@ -1877,7 +1878,7 @@ const StaffApplicationList = ({
               workModeType === "Credentialing Committee");
           const assignedUserIdsParam = shouldIncludeAssignee ? `&assignedUserIds=${users?.id}` : "";
           const departmentParam = selectedDepartment || selectedServiceArea ? `&departmentSpecialties=${selectedDepartment}%23${selectedServiceArea}` : "";
-          const positionTypeParam = applicationType === "LOCUM" ? `&positionType=${applicationType}` : "&positionType=PERMANENT";
+          const positionTypeParam = applicationType === "LOCUM" ? `&positionType=${applicationType}` : applicationType === "NEW" ? "" : "&positionType=PERMANENT";
           const selectedTabFlow = selectedTab === "ReviewedApplications" ? "level-2" : selectedTab
           setIsLoadingImage(true);
           response = await GET(
@@ -1931,7 +1932,7 @@ const StaffApplicationList = ({
             workModeType === "Credentialing Committee");
         const assignedUserIdsParam = shouldIncludeAssignee ? `&assignedUserIds=${users?.id}` : "";
         const departmentParam = selectedDepartment || selectedServiceArea ? `&departmentSpecialties=${selectedDepartment}%23${selectedServiceArea}` : "";
-        const positionTypeParam = applicationType === "LOCUM" ? `&positionType=${applicationType}` : "&positionType=PERMANENT";
+        const positionTypeParam = applicationType === "LOCUM" ? `&positionType=${applicationType}` : applicationType === "NEW" ? "" : "&positionType=PERMANENT";
         const selectedTabFlow = selectedTab === "ReviewedApplications" ? "level-3" : selectedTab
         setIsLoadingImage(true);
         response = await GET(
@@ -2174,8 +2175,9 @@ const StaffApplicationList = ({
   // }, [showApplicationRejectionDialog]);
 
   const getSentConfirmationCount = async () => {
+    const positionTypeParam = applicationType === "LOCUM" ? `&positionType=${applicationType}` : applicationType === "NEW" ? "" : "&positionType=PERMANENT";
     await GET(
-      `application-management-service/application/sentToApplicant/status?applicationCreationType=${applicationType === "LOCUM" ? "REAPPOINTMENT" : applicationType}&positionType=${applicationType === "LOCUM" ? "LOCUM" : "PERMANENT"}`
+      `application-management-service/application/sentToApplicant/status?applicationCreationType=${applicationType === "LOCUM" ? "REAPPOINTMENT" : applicationType}${positionTypeParam}`
     )
       .then((response) => {
         setSentCompletion(response?.data || null);

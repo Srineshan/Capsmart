@@ -5627,3 +5627,101 @@ input[type="number"] {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.PaymentGrid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 20px;
+}
+
+.PaymentGrid> :nth-child(1) {
+  grid-column: span 3;
+}
+
+.PaymentGrid> :nth-child(2) {
+  grid-column: span 3;
+}
+
+.PaymentGrid> :nth-child(3) {
+  grid-column: span 3;
+}
+
+.PaymentGrid> :nth-child(4) {
+  grid-column: span 6;
+}
+
+.PaymentGrid> :nth-child(5) {
+  grid-column: span 6;
+}
+
+.PaymentGrid> :nth-child(6) {
+  grid-column: span 6;
+}
+
+.PaymentGrid> :nth-child(7) {
+  grid-column: span 6;
+}
+
+.PaymentGrid> :nth-child(8) {
+  grid-column: span 2;
+}
+
+.PaymentGrid> :nth-child(9) {
+  grid-column: span 2;
+}
+
+.PaymentGrid> :nth-child(10) {
+  grid-column: span 2;
+}
+
+.PaymentGrid> :nth-child(11) {
+  grid-column: span 3;
+}
+
+.PaymentGrid> :nth-child(12) {
+  grid-column: span 3;
+}
+
+.PaymentGrid> :nth-child(13) {
+  grid-column: span 6;
+}
+
+.PaymentGrid> :nth-child(14) {
+  grid-column: span 6;
+}
+
+.PaymentGrid> :nth-child(15) {
+  grid-column: span 6;
+}
+
+.PaymentGrid> :nth-child(16) {
+  grid-column: span 2;
+}
+
+.PaymentGrid> :nth-child(17) {
+  grid-column: span 2;
+}
+
+.PaymentGrid> :nth-child(18) {
+  grid-column: span 2;
+}
+
+.PaymentGrid> :nth-child(19) {
+  grid-column: span 3;
+}
+
+.PaymentGrid> :nth-child(20) {
+  grid-column: span 3;
+}
+
+.PaymentGrid> :nth-child(21) {
+  grid-column: span 3;
+}
+
+.PaymentGrid> :nth-child(22) {
+  grid-column: span 3;
+}
+
+.PaymentGrid> :nth-child(23) {
+  grid-column: span 6;
+}

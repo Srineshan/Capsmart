@@ -67,35 +67,35 @@ const PaymentDialog = ({ getIsOpen, continueClickFunc, paymentListData, applican
                         <div className={style.spaceBetween}>
                             <div className={style.heading}>Payment Required</div>
                             <div className={style.displayInRow}>
-                            <Tooltip title={"Click to Close"} arrow>
-                                <img
-                                    src={CrossPink}
-                                    alt="cross"
-                                    className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft} `}
-                                    onClick={() => { getIsOpen(false) }}
-                                />
+                                <Tooltip title={"Click to Close"} arrow>
+                                    <img
+                                        src={CrossPink}
+                                        alt="cross"
+                                        className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft} `}
+                                        onClick={() => { getIsOpen(false) }}
+                                    />
                                 </Tooltip>
                             </div>
                         </div>
-                        <p className={`${style.description} ${style.marginTop}`}>{`For your reappointment application there is a processing fee of ${paymentListData?.currencyType}${paymentListData?.fee} that is applicable.`}</p>
+                        <p className={`${style.description} ${style.marginTop}`}>{`For your ${window.location.pathname.includes("applicationForm") ? '' : 'reappointment'} application there is a processing fee of ${paymentListData?.currencyType}${paymentListData?.fee} that is applicable.`}</p>
                         <p className={`${style.description} ${style.marginTop}`}>Payment is required before you can complete the rest of your application.</p>
                         <div className={style.paymentGrid}>
                             <div className={`${style.description} ${style.marginTop}`}>Your Purchase</div>
-                            <div className={`${style.description} ${style.marginTop}`}><strong>Reappointment Application Processing Fee</strong></div>
+                            <div className={`${style.description} ${style.marginTop}`}><strong>{window.location.pathname.includes("applicationForm") ? '' : 'Reappointment'} Application Processing Fee</strong></div>
                         </div>
                         <div className={style.paymentGrid}>
                             <div className={`${style.description} ${style.marginTop10}`}>Amount</div>
                             <div className={`${style.description} ${style.marginTop10}`}><strong>{`${paymentListData?.currencyType}${paymentListData?.fee}`}</strong></div>
                         </div>
                         <div className={`${style.spaceBetween} ${style.marginTop}`}>
-                        <Tooltip title={"Click to Cancel"} arrow>
-                            <div className={`${style.saveInProgress}`} onClick={() => { getIsOpen(false); }}>CANCEL</div></Tooltip>
+                            <Tooltip title={"Click to Cancel"} arrow>
+                                <div className={`${style.saveInProgress}`} onClick={() => { getIsOpen(false); }}>CANCEL</div></Tooltip>
                             {/* <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { getIsOpen(false); continueClickFunc(); }}>CONTINUE</div> */}
                             <Tooltip title={"Click to Proceed to Payment"} arrow>
-                            <div className={`${style.continue} ${style.marginLeft}`} onClick={() => {
-                                getIsOpen(true); setShowThirdPartyDialog(true)
-                                // handleClick()
-                            }}>CONTINUE</div></Tooltip>
+                                <div className={`${style.continue} ${style.marginLeft}`} onClick={() => {
+                                    getIsOpen(true); setShowThirdPartyDialog(true)
+                                    // handleClick()
+                                }}>CONTINUE</div></Tooltip>
                         </div>
                     </div>
 
