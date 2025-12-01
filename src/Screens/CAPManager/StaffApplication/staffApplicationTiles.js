@@ -29,7 +29,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
   const [isLoadingImage, setIsLoadingImage] = useState(false);
   const [totalCountLocum, setTotalCountLocum] = useState(0);
   const workModeType = sessionStorage.getItem('workModeType')
-
+  const [applicantType, setApplicantType] = useState([]);
 
   console.log("tileLocumCOunt", totalCount)
 
@@ -65,11 +65,9 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
     fetchUserDetails();
   }, [user]);
 
-  // useEffect(() => {
-  //   if (applicationType) {
-  //     getTitleCounts();
-  //   }
-  // }, [applicationType]);
+  useEffect(() => {
+    getApplicantType();
+  }, []);
 
   useEffect(() => {
     getTitleCounts();
@@ -81,11 +79,19 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
     }
   }, [userDetails])
 
+  const getApplicantType = async () => {
+    const response = await GET(
+      `entity-service/applicantType`
+    );
+
+    setApplicantType(response?.data);
+  }
+
   const getTitleCounts = async () => {
     try {
       const role = workModeType === "Credentialing Committee User" ? "Staff Manager" : workModeType;
       const applicationCreationType = applicationType === "LOCUM" ? "REAPPOINTMENT" : applicationType;
-      const positionTypeParam = applicationType === "LOCUM" ? `&positionType=${applicationType}` : "&positionType=PERMANENT";
+      const positionTypeParam = applicationType === "LOCUM" ? `&positionType=${applicationType}` : applicationType === "NEW" ? "" : "&positionType=PERMANENT";
       const response = await GET(
         `application-management-service/application/workflowUser/meta?role=${role}&searchText=${searchTermForTable}&applicationCreationType=${applicationCreationType}${positionTypeParam}`
       );
@@ -136,7 +142,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
       applicationType === "LOCUM" ? "REAPPOINTMENT" : applicationType;
 
     // Construct base URL
-    let url = `application-management-service/applicantType/approvalFlow?applicantTypeId=${applicationId}&applicationCreationType=${applicationCreationType}`;
+    let url = `application-management-service/applicantType/approvalFlow?applicantTypeId=${applicantType?.[0]?.id}&applicationCreationType=${applicationCreationType}`;
 
     // Append positionType only if LOCUM
     if (applicationType === "LOCUM") {
@@ -158,7 +164,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
   useEffect(() => {
     // setUserDetails();
     getUserRoleType();
-  }, [applicationType]);
+  }, [applicationType, applicantType]);
 
   useEffect(() => {
     if (applicationType === "LOCUM" || applicationType === "REAPPOINTMENT" || applicationType === "NEW") {
