@@ -6785,24 +6785,25 @@ const StaffApplicationList = ({
       requiredValue: "boolean",
       onClick: onClickViewAndVerifyLevelFunction,
     },
-    // {
-    //   data: "Send for Dept Head Review",
-    //   requiredValue: "boolean",
-    //   onClick: onClickMoveToNextFunction,
-    // },
+    {
+      data: "Send for Dept Head Review",
+      requiredValue: "boolean",
+      onClick: onClickDeptReviewDialog,
+      conditionToShow: `!data?.completedWorkflows?.find(wf => wf?.role === "Staff Manager")?.allFormsApproved === false`,
+    },
     {
       data: applicationType === "NEW" ? "Applicant Processing Tasks" : "Staff Processing Tasks",
       requiredValue: "boolean",
       onClick: onClickProcessingTaskFunction,
     },
-    {
-      data: "Request For Clarification",
-      requiredValue: "boolean",
-      isParagraph: true,
-    },
-    { data: applicationType === "NEW" ? "From Applicant" : "From Staff", requiredValue: "boolean", onClick: "", isIndent: true },
-    { data: "From Internal Approver", requiredValue: "boolean", onClick: "", isIndent: true },
-    { data: "From Institution", requiredValue: "boolean", onClick: "", isIndent: true },
+    // {
+    //   data: "Request For Clarification",
+    //   requiredValue: "boolean",
+    //   isParagraph: true,
+    // },
+    // { data: applicationType === "NEW" ? "From Applicant" : "From Staff", requiredValue: "boolean", onClick: "", isIndent: true },
+    // { data: "From Internal Approver", requiredValue: "boolean", onClick: "", isIndent: true },
+    // { data: "From Institution", requiredValue: "boolean", onClick: "", isIndent: true },
   ] : [
     {
       data: "View & Verify",
@@ -6867,51 +6868,27 @@ const StaffApplicationList = ({
   ];
 
 
-  const departmentHeadActionsData = [
+  const departmentHeadActionsData = applicationType === "NEW" ? [
     {
       data: workModeType === "Staff Manager" ? "View" : "Review to Recommend",
       requiredValue: "boolean",
       onClick: onClickViewAndVerifyDeptFunction,
       // conditionToShow: `data?.completedWorkflows?.find(wf => wf?.role === "Department Head")?.approverDetail?.name?.firstName === ${userFirstName}`,
     },
-    // {
-    //   data: "Send for Dept Head Review",
-    //   requiredValue: "boolean",
-    //   // onClick: onClickDeptReviewDialog,
-    //   conditionToShow: `data?.completedWorkflows?.find(wf => wf?.role === "Department Head")?.approverDetail?.name?.firstName === ${userFirstName}`,
-    // },
+    {
+      data: "Applicant Processing Tasks",
+      requiredValue: "boolean",
+      onClick: onClickProcessingTaskFunction,
+    },
     { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog, hideForRoles: "Staff Manager" },
-    // {
-    //   data: applicationType === "NEW" ? "Applicant Processing Tasks" : "Staff Processing Tasks",
-    //   requiredValue: "boolean",
-    //   onClick: onClickProcessingTaskFunction,
-    //   hideForRoles: "Staff Manager",
-    //   showForRoles: "Chief Of Staff",
-    //   showForRoles2: "Department Head",
-    // },
-    // {
-    //   data: "Send for Cred Comm Review",
-    //   requiredValue: "boolean",
-    //   onClick: "",
-    // },
-    // {
-    //   data: "Move To Cred Comm for Review",
-    //   requiredValue: "boolean",
-    //   onClick: onClickMoveToNextFunction,
-    //   //  onClick: onClickViewAndVerifyFunction,
-    //   hideForRoles: userRole,
-    // },
-    // {
-    //   data: "Request For Clarification",
-    //   requiredValue: "boolean",
-    //   isParagraph: true,
-    //   hideForRoles: "Staff Manager",
-    //   hideForRoles2: "Chief Of Staff",
-    //   showForRoles: "Department Head",
-    // },
-    // { data: applicationType === "NEW" ? "From Applicant" : "From Staff", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Staff Manager",hideForRoles2: "Chief Of Staff", showForRoles: "Department Head", },
-    // { data: "From Internal Approver", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Staff Manager", hideForRoles2: "Chief Of Staff", showForRoles: "Department Head", },
-    // { data: "From Institution", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Staff Manager", hideForRoles2: "Chief Of Staff", showForRoles: "Department Head", },
+  ] : [
+    {
+      data: workModeType === "Staff Manager" ? "View" : "Review to Recommend",
+      requiredValue: "boolean",
+      onClick: onClickViewAndVerifyDeptFunction,
+      // conditionToShow: `data?.completedWorkflows?.find(wf => wf?.role === "Department Head")?.approverDetail?.name?.firstName === ${userFirstName}`,
+    },
+    { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog, hideForRoles: "Staff Manager" },
   ];
 
   const credUserActionsData = [
@@ -7109,7 +7086,7 @@ const StaffApplicationList = ({
     // { data: "Print Summary For MAC", requiredValue: "boolean", onClick: "", isIndent: true },
     // { data: "Applicant Processing Tasks", requiredValue: "boolean", onClick: "", isIndent: true },
     { data: (workModeType === "Department Head") || (workModeType === "Credentialing Committee") ? "View" : "MAC Review", requiredValue: "boolean", onClick: onClickViewAndVerifyFunction, },
-    { data: "Print Summary For MAC", requiredValue: "boolean", onClick: "", hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
+    // { data: "Print Summary For MAC", requiredValue: "boolean", onClick: "", hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
     { data: applicationType === "NEW" ? "Applicant Processing Tasks" : "Staff Processing Tasks", requiredValue: "boolean", onClick: onClickProcessingTaskFunction, hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
   ] : [
     // { data: (workModeType === "Department Head") || (workModeType === "Credentialing Committee") ? "View" : "MAC Review", requiredValue: "boolean", onClick: onClickViewAndVerifyFunction, },
@@ -7200,7 +7177,7 @@ const StaffApplicationList = ({
     // },
     // { data: "BOD Move Approval Status", requiredValue: "boolean", onClick: onClickMoveToNextFunction },
     { data: (workModeType === "Department Head") || (workModeType === "Credentialing Committee") ? "View" : "BOD Approval Status", requiredValue: "boolean", onClick: onClickViewAndVerifyFunction },
-    { data: "Print Summary For BOD", requiredValue: "boolean", onClick: "", hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
+    // { data: "Print Summary For BOD", requiredValue: "boolean", onClick: "", hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
     { data: applicationType === "NEW" ? "Applicant Processing Tasks" : "Staff Processing Tasks", requiredValue: "boolean", onClick: onClickProcessingTaskFunction, hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
   ] : [
     // { data: (workModeType === "Department Head") || (workModeType === "Credentialing Committee") ? "View" : "BOD Approval", requiredValue: "boolean", onClick: onClickViewAndVerifyFunction, },

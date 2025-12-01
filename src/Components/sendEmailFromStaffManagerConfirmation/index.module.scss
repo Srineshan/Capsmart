@@ -89,7 +89,7 @@
 }
 
 .mailEnvelopeStyle {
-    height: 30px;
+    height: 45px;
 }
 
 .cursorPointer {
@@ -105,13 +105,13 @@
 
 .sendMailGrid {
     display: grid;
-    grid-template-columns: 5% 93%;
+    grid-template-columns: 8% 90%;
     gap: 2%;
 }
 
 .emailSentText {
     text-align: left;
-    font: normal normal normal 24px/34px var(--font-style);
+    font: normal normal normal 22px/25px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
 }
