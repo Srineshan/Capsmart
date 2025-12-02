@@ -64,6 +64,8 @@ const PACSRequest = ({
       getFormSchema()
     }
     setInitialArray(basicForm?.forms?.[formIndex]?.data ? basicForm?.forms?.[formIndex]?.data?.initials : []);
+    setAccessType(basicForm?.forms?.[formIndex]?.data && basicForm?.forms?.[formIndex]?.data?.accessType ? basicForm?.forms?.[formIndex]?.data?.accessType : [])
+    setOtherAccessType(basicForm?.forms?.[formIndex]?.data && basicForm?.forms?.[formIndex]?.data?.otherAccessType ? basicForm?.forms?.[formIndex]?.data?.otherAccessType : "")
     setSignText(basicForm?.forms?.[formIndex]?.acknowledged ? basicForm?.forms?.[formIndex]?.esign?.esign : '');
     setIsSigned((basicForm?.forms?.[formIndex]?.esign?.esign !== undefined && basicForm?.forms?.[formIndex]?.acknowledged) ? true : false);
     if (basicForm !== undefined && formIndex !== undefined) {
@@ -93,6 +95,10 @@ const PACSRequest = ({
     getApplicantProfile();
   }, [applicationId, formIndex, basicForm]);
 
+  useEffect(() => {
+    populatePdfWithProfileData(applicantProfile);
+  }, [applicantProfile, accessType, otherAccessType])
+
   const getFormSchema = async () => {
     const { data: form } = await GET(
       `application-management-service/formSchema/${basicForm?.formSchemas?.[formIndex]?.id}`
@@ -115,6 +121,7 @@ const PACSRequest = ({
   const populatePdfWithProfileData = async (profileData) => {
     console.log('indexCheck')
     try {
+      console.log('indexCheck')
       const existingPdfBytes = await fetch(`${proxyUrl}${fixedPdfUrl}`).then((res) =>
         res.arrayBuffer()
       );
@@ -148,32 +155,32 @@ const PACSRequest = ({
       } else {
         form.getCheckBox("Check Box132").uncheck();
       }
-      if (accessType?.includes('Orthopedic Surgeon')) {
+      if (accessType?.includes('Physician')) {
         form.getCheckBox("Check Box133").check();
       } else {
         form.getCheckBox("Check Box133").uncheck();
       }
-      if (accessType?.includes('Physician')) {
+      if (accessType?.includes('ER Physician')) {
         form.getCheckBox("Check Box134").check();
       } else {
         form.getCheckBox("Check Box134").uncheck();
       }
-      if (accessType?.includes('Super User')) {
+      if (accessType?.includes('DI Technologist')) {
         form.getCheckBox("Check Box135").check();
       } else {
         form.getCheckBox("Check Box135").uncheck();
       }
-      if (accessType?.includes('ER Physician')) {
+      if (accessType?.includes('Orthopedic Surgeon')) {
         form.getCheckBox("Check Box136").check();
       } else {
         form.getCheckBox("Check Box136").uncheck();
       }
-      if (accessType?.includes('Cleirical')) {
+      if (accessType?.includes('Super User')) {
         form.getCheckBox("Check Box137").check();
       } else {
         form.getCheckBox("Check Box137").uncheck();
       }
-      if (accessType?.includes('DI Technologist')) {
+      if (accessType?.includes('Cleirical')) {
         form.getCheckBox("Check Box138").check();
       } else {
         form.getCheckBox("Check Box138").uncheck();
@@ -196,35 +203,32 @@ const PACSRequest = ({
 
       // Signature field on the first page
       const signatureField1 = form.getField("Signature141");
-      if (esignText) {
-        const { x: x1, y: y1, width: width1, height: height1 } =
-          signatureField1.getWidgets()[0].getRectangle();
+      // if (esignText) {
+      //   const { x: x1, y: y1, width: width1, height: height1 } =
+      //     signatureField1.getWidgets()[0].getRectangle();
 
-        // Draw the text (esign)
-        pages[0].drawText(esignText, {
-          x: x1,
-          y: y1 - 15, // Adjust positioning slightly below the field rectangle
-          size: 12,
-        });
-      } else {
+      //   pages[0].drawText(esignText, {
+      //     x: x1,
+      //     y: y1 - 15,
+      //     size: 12,
+      //   });
+      // } else {
 
-      }
+      // }
 
-      // Signature field on the second page
       const signatureField2 = form.getField("Signature151");
-      if (esignText) {
-        const { x: x2, y: y2, width: width2, height: height2 } =
-          signatureField2.getWidgets()[0].getRectangle();
+      // if (esignText) {
+      //   const { x: x2, y: y2, width: width2, height: height2 } =
+      //     signatureField2.getWidgets()[0].getRectangle();
 
-        // Draw the text (esign)
-        pages[1].drawText(esignText, {
-          x: x2,
-          y: y2 - 15, // Adjust positioning slightly below the field rectangle
-          size: 12,
-        });
-      } else {
+      //   pages[1].drawText(esignText, {
+      //     x: x2,
+      //     y: y2 - 15, 
+      //     size: 12,
+      //   });
+      // } else {
 
-      }
+      // }
 
       // Save and display updated PDF
       const pdfBytes = await pdfDoc.save();
@@ -232,6 +236,7 @@ const PACSRequest = ({
       console.log('indexCheck')
       await addNewDocument(blob);
     } catch (error) {
+      console.log('indexCheck')
       console.error("Error populating PDF:", error);
       ErrorToaster("Failed to populate PDF");
     }
@@ -271,11 +276,14 @@ const PACSRequest = ({
 
 
   const handleSubmitApplicationReq = async () => {
-    populatePdfWithProfileData(applicantProfile);
     // if (isSigned) {
     let temp = {
       schemaId: basicForm?.forms?.[formIndex]?.schemaId,
-      data: { initials: initialArray },
+      data: {
+        initials: initialArray,
+        accessType: accessType,
+        otherAccessType: otherAccessType
+      },
       acknowledged: true,
       esign: { esign: isSigned ? encryptedText : '', name: isSigned ? name : '', signedDate: isSigned ? currentDate : '' }
     }

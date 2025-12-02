@@ -13,6 +13,7 @@ import style from "./index.module.scss";
 import { format } from "date-fns";
 import CommonSelectField from "../CommonFields/CommonSelectField";
 import jsPDF from "jspdf";
+import CommonRadio from "../CommonFields/CommonRadio";
 
 const TaskStatusDialog = ({ getIsOpen, selectedTab }) => {
   const [isPrintClicked, setIsPrintClicked] = useState(false);
@@ -397,20 +398,26 @@ const TaskStatusDialog = ({ getIsOpen, selectedTab }) => {
                       <TaskAltIcon className={style.correcticon} />
                     )}
                     <div className={style.task}>{taskData?.taskName}
-                      {taskData?.taskName === 'Logistics Form for IT' && <div className={style.requestForm} onClick={() => window.open(taskData?.formLink?.url, '_blank')}>{taskData?.formLink?.urlLabel?.text}</div>}
+                      {/* {taskData?.taskName === 'Logistics Form for IT' && <div className={style.requestForm} onClick={() => window.open(taskData?.formLink?.url, '_blank')}>{taskData?.formLink?.urlLabel?.text}</div>} */}
                     </div>
                     <div>
                       {showSelect ? (
                         <div className={style.sentstatus}>
                           Status
                           <div>
-                            <CommonSelectField
+                            {/* <CommonSelectField
                               value={selectedOption[taskData.id] || taskData?.taskUpdateStatus?.status}
                               onChange={(e) => handleChange(taskData.id, e, taskData?.statusLabels?.filter((data) => e.target.value === data.status)?.map((statusLabel) => statusLabel?.label)?.[0])}
                               className={`${style.fullWidth}`}
                               valueList={taskData?.statusLabels.map((statusLabel) => `${statusLabel?.status}`)}
                               labelList={taskData?.statusLabels.map((statusLabel) => `${statusLabel?.label}`)}
                               disabledList={taskData?.statusLabels.map(() => false)}
+                            /> */}
+                            <CommonRadio
+                              onChange={(e) => handleChange(taskData.id, e, taskData?.statusLabels?.filter((data) => e.target.value === data.status)?.map((statusLabel) => statusLabel?.label)?.[0])}
+                              value={selectedOption[taskData.id] || taskData?.taskUpdateStatus?.status}
+                              radioValue={taskData?.statusLabels.map((statusLabel) => `${statusLabel?.status}`)}
+                              label={taskData?.statusLabels.map((statusLabel) => `${statusLabel?.label}`)}
                             />
                           </div>
                         </div>
