@@ -3077,14 +3077,56 @@ const NewActiveApplication = ({
             {allFormSchemas?.[index]?.formSchema?.schema !== undefined &&
               allFormSchemas?.[index]?.formSchema?.schema?.properties !== null &&
               allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined &&
-              "physicianPaymentOrder" in allFormSchemas?.[index]?.formSchema?.schema?.properties && (
+              "personalInformation" in allFormSchemas?.[index]?.formSchema?.schema?.properties && (
                 <ApplicationFieldCard
-                  object={allFormSchemas?.[index]?.formSchema?.schema?.properties?.physicianPaymentOrder}
+                  object={allFormSchemas?.[index]?.formSchema?.schema?.properties?.personalInformation}
                   basicForm={form}
                   setBasicForm={setForm}
                   stepPath={`forms[${formIndex}].data`}
                   gridStyle={style.PaymentGrid}
-                  baseKey={"physicianPaymentOrder"}
+                  baseKey={"personalInformation"}
+                  isPOD={true}
+                />
+              )}
+            {allFormSchemas?.[index]?.formSchema?.schema !== undefined &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== null &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined &&
+              "corporateInformation" in allFormSchemas?.[index]?.formSchema?.schema?.properties && (
+                <ApplicationFieldCard
+                  object={allFormSchemas?.[index]?.formSchema?.schema?.properties?.corporateInformation}
+                  basicForm={form}
+                  setBasicForm={setForm}
+                  stepPath={`forms[${formIndex}].data`}
+                  gridStyle={style.PaymentGrid2}
+                  baseKey={"corporateInformation"}
+                  isPOD={true}
+                />
+              )}
+            {allFormSchemas?.[index]?.formSchema?.schema !== undefined &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== null &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined &&
+              "contactInformation" in allFormSchemas?.[index]?.formSchema?.schema?.properties && (
+                <ApplicationFieldCard
+                  object={allFormSchemas?.[index]?.formSchema?.schema?.properties?.contactInformation}
+                  basicForm={form}
+                  setBasicForm={setForm}
+                  stepPath={`forms[${formIndex}].data`}
+                  gridStyle={style.PaymentGrid3}
+                  baseKey={"contactInformation"}
+                  isPOD={true}
+                />
+              )}
+            {allFormSchemas?.[index]?.formSchema?.schema !== undefined &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== null &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined &&
+              "methodOfPayment" in allFormSchemas?.[index]?.formSchema?.schema?.properties && (
+                <ApplicationFieldCard
+                  object={allFormSchemas?.[index]?.formSchema?.schema?.properties?.methodOfPayment}
+                  basicForm={form}
+                  setBasicForm={setForm}
+                  stepPath={`forms[${formIndex}].data`}
+                  gridStyle={style.PaymentGrid4}
+                  baseKey={"methodOfPayment"}
                   isPOD={true}
                 />
               )}

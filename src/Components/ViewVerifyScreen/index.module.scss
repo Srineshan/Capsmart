@@ -5634,6 +5634,24 @@ input[type="number"] {
   gap: 20px;
 }
 
+.PaymentGrid2 {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 20px;
+}
+
+.PaymentGrid3 {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 20px;
+}
+
+.PaymentGrid4 {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 20px;
+}
+
 .PaymentGrid> :nth-child(1) {
   grid-column: span 3;
 }
@@ -5646,82 +5664,82 @@ input[type="number"] {
   grid-column: span 3;
 }
 
-.PaymentGrid> :nth-child(4) {
+.PaymentGrid2> :nth-child(1) {
   grid-column: span 6;
 }
 
-.PaymentGrid> :nth-child(5) {
+.PaymentGrid2> :nth-child(2) {
   grid-column: span 6;
 }
 
-.PaymentGrid> :nth-child(6) {
+.PaymentGrid3> :nth-child(1) {
   grid-column: span 6;
 }
 
-.PaymentGrid> :nth-child(7) {
+.PaymentGrid3> :nth-child(2) {
   grid-column: span 6;
 }
 
-.PaymentGrid> :nth-child(8) {
+.PaymentGrid3> :nth-child(3) {
   grid-column: span 2;
 }
 
-.PaymentGrid> :nth-child(9) {
+.PaymentGrid3> :nth-child(4) {
   grid-column: span 2;
 }
 
-.PaymentGrid> :nth-child(10) {
+.PaymentGrid3> :nth-child(5) {
   grid-column: span 2;
 }
 
-.PaymentGrid> :nth-child(11) {
+.PaymentGrid3> :nth-child(6) {
   grid-column: span 3;
 }
 
-.PaymentGrid> :nth-child(12) {
+.PaymentGrid3> :nth-child(7) {
   grid-column: span 3;
 }
 
-.PaymentGrid> :nth-child(13) {
+.PaymentGrid4> :nth-child(1) {
   grid-column: span 6;
 }
 
-.PaymentGrid> :nth-child(14) {
+.PaymentGrid4> :nth-child(2) {
   grid-column: span 6;
 }
 
-.PaymentGrid> :nth-child(15) {
+.PaymentGrid4> :nth-child(3) {
   grid-column: span 6;
 }
 
-.PaymentGrid> :nth-child(16) {
+.PaymentGrid4> :nth-child(4) {
   grid-column: span 2;
 }
 
-.PaymentGrid> :nth-child(17) {
+.PaymentGrid4> :nth-child(5) {
   grid-column: span 2;
 }
 
-.PaymentGrid> :nth-child(18) {
+.PaymentGrid4> :nth-child(6) {
   grid-column: span 2;
 }
 
-.PaymentGrid> :nth-child(19) {
+.PaymentGrid4> :nth-child(7) {
   grid-column: span 3;
 }
 
-.PaymentGrid> :nth-child(20) {
+.PaymentGrid4> :nth-child(8) {
   grid-column: span 3;
 }
 
-.PaymentGrid> :nth-child(21) {
+.PaymentGrid4> :nth-child(9) {
   grid-column: span 3;
 }
 
-.PaymentGrid> :nth-child(22) {
+.PaymentGrid4> :nth-child(10) {
   grid-column: span 3;
 }
 
-.PaymentGrid> :nth-child(23) {
+.PaymentGrid4> :nth-child(11) {
   grid-column: span 6;
 }

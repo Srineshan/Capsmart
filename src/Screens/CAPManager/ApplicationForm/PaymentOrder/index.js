@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import ProgressCard from '../../../../Components/ProgressCard';
 import ApplicationUserCard from '../../../../Components/ApplicationUserCard';
 import ApplicationAssistanceCard from '../../../../Components/ApplicationAssistanceCard';
@@ -9,6 +9,7 @@ import ApplicationReferenceDocuments from '../../../../Components/ApplicationRef
 import { ErrorToaster, SuccessToaster } from '../../../../utils/toaster';
 import SaveInProgressDialog from '../../../../Components/SaveInProgressDialog';
 import ValidationDialog from '../../../../Components/validationDialog';
+import html2pdf from "html2pdf.js";
 
 import style from './index.module.scss';
 import CommonDivider from '../../../../Components/CommonFields/CommonDivider';
@@ -16,6 +17,7 @@ import NoDataBox from '../../../../Components/ReusableSmallComponents/noDataBox'
 
 const PaymentOrder = ({ basicForm, setBasicForm, applicationId, getPreApplication }) => {
     const [formSchema, setFormSchema] = useState();
+    const targetRef = useRef();
     const [formSchemaWholeObject, setFormSchemaWholeObject] = useState();
     const [metadata, setMetadata] = useState([]);
     const [labels, setLabels] = useState([]);
@@ -28,6 +30,7 @@ const PaymentOrder = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
     const navigate = useNavigate()
     const [navigateURL, setNavigateURL] = useState();
     const [isEdited, setIsEdited] = useState(false);
+    const [completedFormAsFile, setCompletedFormAsFile] = useState();
     useEffect(() => {
         if (basicForm && !formSchema) {
             getFormSchema()
@@ -59,6 +62,7 @@ const PaymentOrder = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
             const exists = prev.some(item => JSON.stringify(item) === JSON.stringify(data));
             return exists ? prev : [...prev, data];
         });
+        console.log(labels, 'labels', data)
     };
 
     const getIsSaveInProgressOpen = (value) => {
@@ -103,7 +107,8 @@ const PaymentOrder = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
         let missingKeys = [];
         let keyValuePair = [];
         metadata?.map((data, index) => {
-            keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: labels[index]?.label })
+            if (labels[index]?.mandatory)
+                keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: labels[index]?.label })
         })
         keyValuePair?.map(data => {
             if (data?.value === "" || data?.value === null || data?.value === undefined || data?.value === 0) {
@@ -133,6 +138,7 @@ const PaymentOrder = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
                     console.log(response)
                     SuccessToaster("Application Updated Successfully");
                     getPreApplication();
+                    handleDownload();
                     if (sessionStorage.getItem('fromSummary') === "true") {
                         navigate(-1);
                     }
@@ -176,17 +182,102 @@ const PaymentOrder = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
         setIsEdited(value)
     }
 
+    const addNewDocument = async (file) => {
+        console.log(file, file?.name, 'Test')
+        let fileName = {
+            "fileName": 'acknowledgement.pdf'
+        };
+        const formData = new FormData();
+
+        if (file !== null) {
+            const blob = new Blob([file], { type: `application/pdf` });
+            formData.append('files', new Blob([JSON.stringify(fileName)], {
+                type: "application/json"
+            }));
+            formData.append('documents', blob, fileName?.fileName);
+            let uploadedFile = {};
+            try {
+                const response = await POST(`application-management-service/application/${applicationId}/files`, formData);
+                console.log(response?.data);
+                uploadedFile = response?.data?.file;
+            } catch (error) {
+                console.error(error);
+                return null;
+            }
+
+
+            let temp = {
+                schemaId: basicForm?.forms?.[formIndex]?.schemaId,
+                completedFormAsFile: uploadedFile,
+                data: basicForm?.forms?.[formIndex]?.data,
+                unFilledFields: basicForm?.forms?.[formIndex]?.unFilledFields,
+                acknowledged: basicForm?.forms?.[formIndex]?.acknowledged
+            }
+            await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
+                .then(response => {
+                    console.log(response)
+                    SuccessToaster("Application Updated Successfully");
+                    getPreApplication();
+                    if (sessionStorage.getItem('fromSummary') === "true") {
+                        navigate(-1);
+                    }
+                    else {
+                        navigate(navigateURL)
+
+                    }
+                })
+                .catch((error) => {
+                    console.log(error)
+                    ErrorToaster("Unexpected Error Updating Application");
+                });
+
+
+        }
+    }
+
+    const handleDownload = () => {
+        const element = targetRef.current;
+        const opt = {
+            margin: 0.5,
+            filename: "page.pdf",
+            image: { type: "jpeg", quality: 0.98 },
+            html2canvas: {
+                scale: 2,
+                useCORS: true,
+                logging: true,
+            },
+            jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
+            pagebreak: { mode: ["avoid-all", "css", "legacy"] },
+        };
+        const nestedElements = element.querySelectorAll('.applicationCardScrollStyle');
+        nestedElements.forEach((_element) => {
+            _element.classList.remove('applicationCardScrollStyle');
+        });
+        html2pdf().set(opt).from(element).outputPdf("blob").then((pdfBlob) => {
+            addNewDocument(pdfBlob);
+        });
+    };
+
     return (
         <div>
             <div className={style.applicationScreenGrid}>
                 <ProgressCard step={'STEP 4'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={8} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
                 <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
             </div>
-            <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
-                <div>
+            <div className={`${style.applicationScreenGrid} ${style.marginTop}`} >
+                <div ref={targetRef}>
                     <div className={style.applicationCardStyle}>
-                        {formSchema !== undefined && 'physicianPaymentOrder' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.physicianPaymentOrder} gridStyle={style.PaymentGrid} baseKey={'physicianPaymentOrder'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} stepPath={`forms[${formIndex}].data`} setIsEdited={getIsEdited} warningFields={warningFields} formSchema={formSchemaWholeObject} applicationId={applicationId} />
+                        {formSchema !== undefined && 'personalInformation' in formSchema?.properties && (
+                            <ApplicationFieldCard object={formSchema?.properties?.personalInformation} gridStyle={style.PaymentGrid} baseKey={'personalInformation'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} stepPath={`forms[${formIndex}].data`} setIsEdited={getIsEdited} warningFields={warningFields} formSchema={formSchemaWholeObject} applicationId={applicationId} />
+                        )}
+                        {formSchema !== undefined && 'corporateInformation' in formSchema?.properties && (
+                            <ApplicationFieldCard object={formSchema?.properties?.corporateInformation} gridStyle={style.PaymentGrid2} baseKey={'corporateInformation'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} stepPath={`forms[${formIndex}].data`} setIsEdited={getIsEdited} warningFields={warningFields} formSchema={formSchemaWholeObject} applicationId={applicationId} />
+                        )}
+                        {formSchema !== undefined && 'contactInformation' in formSchema?.properties && (
+                            <ApplicationFieldCard object={formSchema?.properties?.contactInformation} gridStyle={style.PaymentGrid3} baseKey={'contactInformation'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} stepPath={`forms[${formIndex}].data`} setIsEdited={getIsEdited} warningFields={warningFields} formSchema={formSchemaWholeObject} applicationId={applicationId} />
+                        )}
+                        {formSchema !== undefined && 'methodOfPayment' in formSchema?.properties && (
+                            <ApplicationFieldCard object={formSchema?.properties?.methodOfPayment} gridStyle={style.PaymentGrid4} baseKey={'methodOfPayment'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} stepPath={`forms[${formIndex}].data`} setIsEdited={getIsEdited} warningFields={warningFields} formSchema={formSchemaWholeObject} applicationId={applicationId} />
                         )}
                     </div>
                 </div>
@@ -210,10 +301,12 @@ const PaymentOrder = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
                     <SaveInProgressDialog getIsOpen={getIsSaveInProgressOpen} />
                 )
             }
-            {showValidationDialog && (
-                <ValidationDialog getIsOpen={getIsValidationDialogOpen} labelList={warningFields} getSkipClicked={getSkipClicked} />
-            )}
-        </div>
+            {
+                showValidationDialog && (
+                    <ValidationDialog getIsOpen={getIsValidationDialogOpen} labelList={warningFields} getSkipClicked={getSkipClicked} />
+                )
+            }
+        </div >
     )
 }
 
