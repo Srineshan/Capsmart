@@ -493,6 +493,7 @@ const StaffApplicationTopTiles = (searchTermForTable, totalCount, showBulkApprov
   const [currentRoleIndex, setCurrentRoleIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const applicationId = "66dc44ec788741fedc982b01";
+  const [applicantType, setApplicantType] = useState([]);
   const [totalCountLocumOverride, setTotalCountLocumOverride] = useState(0);
   const workModeType = sessionStorage.getItem('workModeType')
   const userDetailsFetchOption = (sessionStorage.getItem('user') !== "undefined" && sessionStorage.getItem('user')) ? JSON.parse(sessionStorage.getItem('user')) : {};
@@ -520,6 +521,10 @@ const StaffApplicationTopTiles = (searchTermForTable, totalCount, showBulkApprov
   }, [workModeType])
 
   useEffect(() => {
+    getApplicantType();
+  }, []);
+
+  useEffect(() => {
     if (recordUpdate) {
       getTitleCounts("REAPPOINTMENT");
       getTitleCountsLocum();
@@ -530,7 +535,7 @@ const StaffApplicationTopTiles = (searchTermForTable, totalCount, showBulkApprov
   useEffect(() => {
     // getTitleCounts(applicationCreationType);
     getUserRoleType(applicationCreationType)
-  }, [applicationCreationType]);
+  }, [applicationCreationType, applicantType]);
 
   console.log("searchTermForTable", searchTermForTable?.searchTermForTable)
 
@@ -553,13 +558,21 @@ const StaffApplicationTopTiles = (searchTermForTable, totalCount, showBulkApprov
   //   }
   // };
 
+  const getApplicantType = async () => {
+    const response = await GET(
+      `entity-service/applicantType`
+    );
+
+    setApplicantType(response?.data);
+  }
+
   const getTitleCounts = async (type) => {
     try {
       setIsLoading(true);
-      // const positionTypeParam = applicationType === "LOCUM" ? `&positionType=${applicationType}` : "&positionType=PERMANENT";
+      const positionTypeParam = applicationType === "LOCUM" ? `&positionType=${applicationType}` : applicationType === "NEW" ? "" : "&positionType=PERMANENT";
       let role = workModeType === "Credentialing Committee User" ? "Staff Manager" : workModeType;
       const response = await GET(
-        `application-management-service/application/workflowUser/meta?applicationCreationType=${type === "LOCUM" ? "REAPPOINTMENT" : type}&role=${role}&searchText=${searchTermForTable?.searchTermForTable}&positionType=PERMANENT`
+        `application-management-service/application/workflowUser/meta?applicationCreationType=${type === "LOCUM" ? "REAPPOINTMENT" : type}&role=${role}&searchText=${searchTermForTable?.searchTermForTable}${positionTypeParam}`
       );
       console.log("setLocumCounts", response.data, type)
       if (type === 'NEW') {
@@ -598,9 +611,9 @@ const StaffApplicationTopTiles = (searchTermForTable, totalCount, showBulkApprov
     // if (type === "LOCUM") return;
 
     try {
-      const positionTypeParam = applicationType === "LOCUM" ? `&positionType=${applicationType}` : "&positionType=PERMANENT";
+      const positionTypeParam = applicationType === "LOCUM" ? `&positionType=${applicationType}` : applicationType === "NEW" ? "" : "&positionType=PERMANENT";
       const response = await GET(
-        `application-management-service/applicantType/approvalFlow?applicantTypeId=${applicationId}&applicationCreationType=${type === "LOCUM" ? "REAPPOINTMENT" : type}${positionTypeParam}`
+        `application-management-service/applicantType/approvalFlow?applicantTypeId=${applicantType?.[0]?.id}&applicationCreationType=${type === "LOCUM" ? "REAPPOINTMENT" : type}${positionTypeParam}`
       );
       setUserFlow(response?.data?.approvalFlowMap);
     } catch (error) {

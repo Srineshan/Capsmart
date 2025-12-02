@@ -2711,14 +2711,14 @@ const ApplicationFieldCard = ({
                           {fieldValue?.fileName}
                         </span>
                       </Tooltip>
-                      <Tooltip title="Click to Delete File" arrow>
+                      {/* <Tooltip title="Click to Delete File" arrow>
                         <img
                           src={DeleteIcon}
                           alt="Delete"
                           className={`${style.imgIcon} ${style.cursorPointer}`}
                           onClick={() => handleChange(fieldKey, null, baseKey)}
                         />
-                      </Tooltip>
+                      </Tooltip> */}
                     </div>
                   </div>
                 )}

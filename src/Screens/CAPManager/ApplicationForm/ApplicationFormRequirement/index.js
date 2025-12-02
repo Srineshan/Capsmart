@@ -120,6 +120,15 @@ const ApplicationFormRequirement = () => {
     //     return remainingDays > 0 ? remainingDays : 0;
     // }
 
+    const handleLogout = () => {
+        var cookies = new Cookie();
+        cookies.remove("user", { path: "/" });
+        cookies.remove("entityId", { path: "/" });
+        cookies.remove("authorization", { path: "/" });
+        logout()
+        navigate('/')
+    }
+
     console.log(basicForm, '75')
 
     return (
@@ -128,7 +137,7 @@ const ApplicationFormRequirement = () => {
         ) : (
             <>
                 <div className={style.screenBackground}>
-                    <ApplicationHeader title={`New Medical Professional Staff Application For ${basicForm?.basicDetails?.applicant?.name?.firstName !== undefined ? basicForm?.basicDetails?.applicant?.name?.firstName : ''} ${basicForm?.basicDetails?.applicant?.name?.lastName !== undefined ? basicForm?.basicDetails?.applicant?.name?.lastName : ''}, ${(basicForm?.basicDetails?.applicant?.applicantType !== null) ? basicForm?.basicDetails?.applicant?.applicantType : ''}`} close={true} closeClick={logout} />
+                    <ApplicationHeader title={`New Medical Professional Staff Application For ${basicForm?.basicDetails?.applicant?.name?.firstName !== undefined ? basicForm?.basicDetails?.applicant?.name?.firstName : ''} ${basicForm?.basicDetails?.applicant?.name?.lastName !== undefined ? basicForm?.basicDetails?.applicant?.name?.lastName : ''}, ${(basicForm?.basicDetails?.applicant?.applicantType !== null) ? basicForm?.basicDetails?.applicant?.applicantType : ''}`} close={true} closeClick={handleLogout} />
                     <div className={style.screenPadding}>
                         <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
                             <div>

@@ -11,6 +11,8 @@ import style from "./index.module.scss";
 import { PDFDocument } from "pdf-lib";
 import CryptoJS from 'crypto-js';
 import { format } from 'date-fns';
+import CommonCheckBox from "../../../../Components/CommonFields/CommonCheckBox";
+import CommonInputField from "../../../../Components/CommonFields/CommonInputField";
 
 const PACSRequest = ({
   basicForm,
@@ -34,6 +36,8 @@ const PACSRequest = ({
   const [encryptedText, setEncryptedText] = useState("");
   const [signText, setSignText] = useState("")
   const [isSigned, setIsSigned] = useState(false);
+  const [accessType, setAccessType] = useState([]);
+  const [otherAccessType, setOtherAccessType] = useState("")
   console.log(initialArray)
   const publicKey = "-----BEGIN PUBLIC KEY-----MIGeMA0GCSqGSIb3DQEBAQUAA4GMADCBiAKBgHA5SDu30/8uQAqqkQE0NuY4ePBptMGufG6AWnC/88YVLXi4thh7M8VU6kElVJkfXL5DwlfVnwPb08+PK1EcaOWWtp2gdQitkohjZLB9zVE+0OtRrzSc33wItf7Iwisi5dHPggHvfOp5fr+QYWFMa/kKYl3SgNo8fryeLbKKalmdAgMBAAE=-----END PUBLIC KEY-----";
   const fixedPdfUrl =
@@ -60,6 +64,8 @@ const PACSRequest = ({
       getFormSchema()
     }
     setInitialArray(basicForm?.forms?.[formIndex]?.data ? basicForm?.forms?.[formIndex]?.data?.initials : []);
+    setAccessType(basicForm?.forms?.[formIndex]?.data && basicForm?.forms?.[formIndex]?.data?.accessType ? basicForm?.forms?.[formIndex]?.data?.accessType : [])
+    setOtherAccessType(basicForm?.forms?.[formIndex]?.data && basicForm?.forms?.[formIndex]?.data?.otherAccessType ? basicForm?.forms?.[formIndex]?.data?.otherAccessType : "")
     setSignText(basicForm?.forms?.[formIndex]?.acknowledged ? basicForm?.forms?.[formIndex]?.esign?.esign : '');
     setIsSigned((basicForm?.forms?.[formIndex]?.esign?.esign !== undefined && basicForm?.forms?.[formIndex]?.acknowledged) ? true : false);
     if (basicForm !== undefined && formIndex !== undefined) {
@@ -89,6 +95,10 @@ const PACSRequest = ({
     getApplicantProfile();
   }, [applicationId, formIndex, basicForm]);
 
+  useEffect(() => {
+    populatePdfWithProfileData(applicantProfile);
+  }, [applicantProfile, accessType, otherAccessType])
+
   const getFormSchema = async () => {
     const { data: form } = await GET(
       `application-management-service/formSchema/${basicForm?.formSchemas?.[formIndex]?.id}`
@@ -111,6 +121,7 @@ const PACSRequest = ({
   const populatePdfWithProfileData = async (profileData) => {
     console.log('indexCheck')
     try {
+      console.log('indexCheck')
       const existingPdfBytes = await fetch(`${proxyUrl}${fixedPdfUrl}`).then((res) =>
         res.arrayBuffer()
       );
@@ -138,18 +149,49 @@ const PACSRequest = ({
 
 
       // Fill checkboxes
-      form.getCheckBox("Check Box131").check(profileData.option1 || false);
-      form.getCheckBox("Check Box132").check(profileData.option2 || false);
-      form.getCheckBox("Check Box133").check(profileData.option3 || false);
-      form.getCheckBox("Check Box134").check(profileData.option4 || false);
-      form.getCheckBox("Check Box135").check(profileData.option5 || false);
-      form.getCheckBox("Check Box136").check(profileData.option6 || false);
-      form.getCheckBox("Check Box137").check(profileData.option7 || false);
-      form.getCheckBox("Check Box138").check(profileData.option8 || false);
-      form.getCheckBox("Check Box139").check(profileData.option9 || false);
+      form.getCheckBox("Check Box131").check();
+      if (accessType?.includes('Radiologist')) {
+        form.getCheckBox("Check Box132").check();
+      } else {
+        form.getCheckBox("Check Box132").uncheck();
+      }
+      if (accessType?.includes('Physician')) {
+        form.getCheckBox("Check Box133").check();
+      } else {
+        form.getCheckBox("Check Box133").uncheck();
+      }
+      if (accessType?.includes('ER Physician')) {
+        form.getCheckBox("Check Box134").check();
+      } else {
+        form.getCheckBox("Check Box134").uncheck();
+      }
+      if (accessType?.includes('DI Technologist')) {
+        form.getCheckBox("Check Box135").check();
+      } else {
+        form.getCheckBox("Check Box135").uncheck();
+      }
+      if (accessType?.includes('Orthopedic Surgeon')) {
+        form.getCheckBox("Check Box136").check();
+      } else {
+        form.getCheckBox("Check Box136").uncheck();
+      }
+      if (accessType?.includes('Super User')) {
+        form.getCheckBox("Check Box137").check();
+      } else {
+        form.getCheckBox("Check Box137").uncheck();
+      }
+      if (accessType?.includes('Cleirical')) {
+        form.getCheckBox("Check Box138").check();
+      } else {
+        form.getCheckBox("Check Box138").uncheck();
+      }
+      if (accessType?.includes('Other')) {
+        form.getCheckBox("Check Box139").check();
+      } else {
+        form.getCheckBox("Check Box139").uncheck();
+      }
 
-      // Fill additional fields
-      form.getTextField("Text140").setText(profileData.other || "");
+      form.getTextField("Text140").setText(otherAccessType);
       const formattedDate = format(new Date(), 'dd/MM/yyyy');
       form.getTextField("Text144").setText(formattedDate || "");
       form.getTextField("Text150").setText(formattedDate || "");
@@ -161,35 +203,32 @@ const PACSRequest = ({
 
       // Signature field on the first page
       const signatureField1 = form.getField("Signature141");
-      if (esignText) {
-        const { x: x1, y: y1, width: width1, height: height1 } =
-          signatureField1.getWidgets()[0].getRectangle();
+      // if (esignText) {
+      //   const { x: x1, y: y1, width: width1, height: height1 } =
+      //     signatureField1.getWidgets()[0].getRectangle();
 
-        // Draw the text (esign)
-        pages[0].drawText(esignText, {
-          x: x1,
-          y: y1 - 15, // Adjust positioning slightly below the field rectangle
-          size: 12,
-        });
-      } else {
+      //   pages[0].drawText(esignText, {
+      //     x: x1,
+      //     y: y1 - 15,
+      //     size: 12,
+      //   });
+      // } else {
 
-      }
+      // }
 
-      // Signature field on the second page
       const signatureField2 = form.getField("Signature151");
-      if (esignText) {
-        const { x: x2, y: y2, width: width2, height: height2 } =
-          signatureField2.getWidgets()[0].getRectangle();
+      // if (esignText) {
+      //   const { x: x2, y: y2, width: width2, height: height2 } =
+      //     signatureField2.getWidgets()[0].getRectangle();
 
-        // Draw the text (esign)
-        pages[1].drawText(esignText, {
-          x: x2,
-          y: y2 - 15, // Adjust positioning slightly below the field rectangle
-          size: 12,
-        });
-      } else {
+      //   pages[1].drawText(esignText, {
+      //     x: x2,
+      //     y: y2 - 15, 
+      //     size: 12,
+      //   });
+      // } else {
 
-      }
+      // }
 
       // Save and display updated PDF
       const pdfBytes = await pdfDoc.save();
@@ -197,6 +236,7 @@ const PACSRequest = ({
       console.log('indexCheck')
       await addNewDocument(blob);
     } catch (error) {
+      console.log('indexCheck')
       console.error("Error populating PDF:", error);
       ErrorToaster("Failed to populate PDF");
     }
@@ -239,7 +279,11 @@ const PACSRequest = ({
     // if (isSigned) {
     let temp = {
       schemaId: basicForm?.forms?.[formIndex]?.schemaId,
-      data: { initials: initialArray },
+      data: {
+        initials: initialArray,
+        accessType: accessType,
+        otherAccessType: otherAccessType
+      },
       acknowledged: true,
       esign: { esign: isSigned ? encryptedText : '', name: isSigned ? name : '', signedDate: isSigned ? currentDate : '' }
     }
@@ -269,6 +313,15 @@ const PACSRequest = ({
     // }
   }
 
+  const handleAccessType = (data, checked) => {
+    if (checked) {
+      setAccessType(prev => [...prev, data]);
+    } else {
+      setAccessType(prev => prev.filter(innerData => innerData !== data));
+    }
+  }
+
+
   const renderPdfContent = () => {
     return (
       <div>
@@ -295,9 +348,7 @@ const PACSRequest = ({
       </div>
       <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
         <div>
-          <div className={style.applicationCardStyle} ref={targetRef} style={
-            { height: "2000px" }
-          }>
+          <div className={style.applicationCardStyle} ref={targetRef}>
             <div className={`${style.marginTop} ${style.justifyCenter}`}>
               <img src={logo} alt="Hospital Logo" className={`${style.logo}`} />
             </div>
@@ -306,6 +357,92 @@ const PACSRequest = ({
             <CommonDivider />
             <div className={`${style.labelText} ${style.marginTop}`}>My making of this application and signature below indicate my understanding of and consent to the following (please note that references to Public Hospitals Act are not applicable to Homewood):</div>
             <CommonDivider />
+            <div className={`${style.cardTitle} ${style.marginTop}  ${style.justifyCenter}`}>Access Type</div>
+            <div className={style.twoColForButton}>
+              <CommonCheckBox
+                value="Radiologist"
+                className={style.marginLeft20}
+                checked={accessType?.includes('Radiologist')}
+                onChange={(e) => {
+                  handleAccessType("Radiologist", e.target.checked);
+                }}
+                label="Radiologist"
+              />
+              <CommonCheckBox
+                value="Orthopedic Surgeon"
+                className={style.marginLeft20}
+                checked={accessType?.includes('Orthopedic Surgeon')}
+                onChange={(e) => {
+                  handleAccessType("Orthopedic Surgeon", e.target.checked);
+                }}
+                label="Orthopedic Surgeon"
+              />
+              <CommonCheckBox
+                value="Physician"
+                className={style.marginLeft20}
+                checked={accessType?.includes('Physician')}
+                onChange={(e) => {
+                  handleAccessType("Physician", e.target.checked);
+                }}
+                label="Physician"
+              />
+              <CommonCheckBox
+                value="Super User"
+                className={style.marginLeft20}
+                checked={accessType?.includes('Super User')}
+                onChange={(e) => {
+                  handleAccessType("Super User", e.target.checked);
+                }}
+                label="Super User"
+              />
+              <CommonCheckBox
+                value="ER Physician"
+                className={style.marginLeft20}
+                checked={accessType?.includes('ER Physician')}
+                onChange={(e) => {
+                  handleAccessType("ER Physician", e.target.checked);
+                }}
+                label="ER Physician"
+              />
+              <CommonCheckBox
+                value="Cleirical"
+                className={style.marginLeft20}
+                checked={accessType?.includes('Cleirical')}
+                onChange={(e) => {
+                  handleAccessType("Cleirical", e.target.checked);
+                }}
+                label="Cleirical"
+              />
+              <CommonCheckBox
+                value="DI Technologist"
+                className={style.marginLeft20}
+                checked={accessType?.includes('DI Technologist')}
+                onChange={(e) => {
+                  handleAccessType("DI Technologist", e.target.checked);
+                }}
+                label="DI Technologist"
+              />
+              <div className={style.displayInRow}>
+                <CommonCheckBox
+                  value="Other"
+                  className={style.marginLeft20}
+                  checked={accessType?.includes('Other')}
+                  onChange={(e) => {
+                    handleAccessType("Other", e.target.checked);
+                  }}
+                  label="Other"
+                />
+                {accessType?.includes('Other') && (
+                  <CommonInputField
+                    className={style.fourFieldWidth}
+                    placeholder={'Enter Access Type'}
+                    value={otherAccessType}
+                    onChange={(e) => setOtherAccessType(e.target.value)}
+                  />
+                )}
+              </div>
+
+            </div>
             {renderPdfContent()}
 
           </div>

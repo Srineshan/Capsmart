@@ -79,7 +79,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
   const eSignImg = getValueByPath(basicForm, `forms[${formIndex}].data.setUpYourSignature.file`);
   const eSignTypeContent = getValueByPath(basicForm, `forms[${formIndex}].data.setUpYourSignature.type.text`);
   const eSignTypeContentStyle = getValueByPath(basicForm, `forms[${formIndex}].data.setUpYourSignature.type.style`);
-  const showRedBorderForESign = !eSignTitle || !eSignInitial;
+  const showRedBorderForESign = ((!eSignTypeContent || !eSignTypeContentStyle) && !eSignImg);
 
   const tempValue =
     basicForm?.forms?.[formIndex]?.data === null
@@ -702,11 +702,11 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                     <div
                       className={`${style.requiredDocumentCard} ${style.tableGrid
                         } ${basicForm?.forms?.[formIndex]?.data !== null &&
-                          tempValue?.table?.filter(
+                          (tempValue?.table?.filter(
                             (tableData) =>
                               tableData?.documentType ===
                               data?.document?.shortName
-                          )?.length === 0 &&
+                          )?.length === 0 || !(tempValue?.table?.filter((tableData) => tableData?.documentType === data?.document?.shortName)?.[0]?.verified && tempValue?.table?.filter((tableData) => tableData?.documentType === data?.document?.shortName)?.[0]?.valid)) &&
                           data?.required
                           ? style.redBorder
                           : ""
@@ -786,7 +786,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
             {(basicForm?.forms?.[formIndex]?.data !== null && !showRedBorderForESign) ||
               applicantProfile?.signature?.updated ? (
               <>
-                <div className={`${style.setupCompleteCard} ${style.setupCompleteGrid} ${style.marginTop}`}>
+                {/* <div className={`${style.setupCompleteCard} ${style.setupCompleteGrid} ${style.marginTop}`}>
                   <div></div>
                   <div className={`${style.displayInRow} ${style.justifyCenter}`}>
                     <DoneIcon sx={{ color: '#06617A', fontSize: 25 }} />
@@ -797,7 +797,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                   <div className={`${style.editOrUpdateESign} ${style.cursorPointer}`} onClick={() => setIsShowESignDialog(true)}>
                     Edit / Update
                   </div>
-                </div>
+                </div> */}
                 <div className={`${style.eSignatureOnFileCard} ${style.marginTop10}`}>
                   <div className={style.eSignatureOnFileTitle}>Your eSignature On File</div>
                   <div className={style.eSignGrid}>
@@ -820,9 +820,9 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                 </div>
               </>
             ) : (
-              <div className={style.marginTop} onClick={() => setIsShowESignConfirmationDialog(true)}>
+              <div className={style.marginTop} onClick={() => setIsShowESignDialog(true)}>
                 <div className={`${style.uploadBorderStyle} ${showRedBorderForESign ? style.redBorder : ''}`}>
-                  <p className={style.uploadTextStyle}>Confirm Your eSignature</p>
+                  <p className={style.uploadTextStyle}>Add Your eSignature</p>
                   <p className={style.uploadDescriptionText}>
                     Our paperless automated application submission uses electronic signatures with digital fingerprinting.
                   </p>

@@ -309,7 +309,7 @@ const NewActiveApplication = ({
 
   useEffect(() => {
     getPreApplication();
-    // getPreApplicationTask();
+    getPreApplicationTask();
     console.log("staffview", staffView)
   }, [applicationId]);
 
@@ -617,11 +617,11 @@ const NewActiveApplication = ({
   // console.log('Filtered Schemas:', filteredSchemas);
 
 
-  // const getPreApplicationTask = async () => {
-  //   const { data: tasks } = await GET(`application-management-service/application/${applicationId}/tasks`);
-  //   const pendingTasks = tasks.filter(task => task.taskStatus !== 'COMPLETED');
-  //   setTaskCount(pendingTasks.length);
-  // };
+  const getPreApplicationTask = async () => {
+    const { data: tasks } = await GET(`application-management-service/application/${applicationId}/tasks`);
+    const pendingTasks = tasks.filter(task => task.taskStatus !== 'COMPLETED');
+    setTaskCount(pendingTasks.length);
+  };
 
   const allTasksCompleted = taskCount !== 0;
 
@@ -3021,7 +3021,7 @@ const NewActiveApplication = ({
           <>
             {allFormSchemas?.[index]?.formSchema?.schema !== undefined &&
               allFormSchemas?.[index]?.formSchema?.schema?.properties !== null &&
-              allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined && 'applicant' in formSchema?.properties && (
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined && 'applicant' in allFormSchemas?.[index]?.formSchema?.schema?.properties && (
                 <ApplicationFieldCard object={allFormSchemas?.[index]?.formSchema?.schema?.properties?.applicant} gridStyle={style.applicantGrid} baseKey={'applicant'} basicForm={form} setBasicForm={setForm} isBasicPath={true} isPOD={true} />
               )}
             <CommonDivider />
@@ -3066,6 +3066,25 @@ const NewActiveApplication = ({
                   stepPath={`forms[${formIndex}].data`}
                   gridStyle={style.businessMailingAddressGrid}
                   baseKey={"contactAddress3"}
+                  isPOD={true}
+                />
+              )}
+          </>
+        );
+      case "PaymentOrder":
+        return (
+          <>
+            {allFormSchemas?.[index]?.formSchema?.schema !== undefined &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== null &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined &&
+              "physicianPaymentOrder" in allFormSchemas?.[index]?.formSchema?.schema?.properties && (
+                <ApplicationFieldCard
+                  object={allFormSchemas?.[index]?.formSchema?.schema?.properties?.physicianPaymentOrder}
+                  basicForm={form}
+                  setBasicForm={setForm}
+                  stepPath={`forms[${formIndex}].data`}
+                  gridStyle={style.PaymentGrid}
+                  baseKey={"physicianPaymentOrder"}
                   isPOD={true}
                 />
               )}
@@ -10659,7 +10678,7 @@ const NewActiveApplication = ({
                 </>
               ) : (selectedTab === 'level-5' && applicationType === "NEW") ? (
                 <>
-                  <div className={`${style.cardLeftStyle2}`}>
+                  <div className={`${style.cardLeftStyle2} ${style.marginTop20}`}>
                     <div className={`${style.displayInCol}`}>
                       <div
                         className={`${style.spaceBetween} ${style.marginLeftRight20}`}
@@ -10692,7 +10711,7 @@ const NewActiveApplication = ({
                         )}
                       />
                     </div>
-                    <div className={style.marginBottom20}></div>
+                    {/* <div className={style.marginBottom20}></div>
                     <div className={`${style.displayInRow}${style.marginTop20}`}>
                       <div
                         className={`${style.spaceBetween} ${style.marginLeftRight20}`}
@@ -10797,13 +10816,13 @@ const NewActiveApplication = ({
                       ) : (
                         <div className={`${style.marginLeft20}`}>No documents uploaded</div>
                       )}
-                    </div>
+                    </div> */}
                     <>
                       {taskCount > 0 ? (
                         <>
                           <div className={`${style.displayInRow} ${style.alignContent} ${style.marginTop10}`}>
                             <WarningIcon className={style.warning} />
-                            <div className={`${style.marginLeft20} ${style.alignItem}`}>ChecklistList Item Pending Completion <span className={style.checkListitem}> {taskCount} items </span></div>
+                            <div className={`${style.marginLeft10}`}>Checklist Item Pending Completion <span className={style.checkListitem}> {taskCount} items </span></div>
                           </div>
 
                         </>
@@ -10811,7 +10830,7 @@ const NewActiveApplication = ({
                         <>
                           <div className={`${style.displayInRow} ${style.alignContent} ${style.marginTop10}`}>
                             <TaskAltIcon className={style.correcticon} />
-                            <div className={`${style.marginLeft20} ${style.alignItem}`}>All checklist items are completed</div>
+                            <div className={`${style.marginLeft10}`}>All checklist items are completed</div>
                           </div>
                         </>
                       )}
@@ -10843,10 +10862,10 @@ const NewActiveApplication = ({
                       >
                         <div
                           className={` ${style.bigButtonStyle2} ${style.cursorPointer}`}
-                          style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
-                          onClick={isButtonDisabled ? undefined : onClickApproveMoveFunction}
+                          style={{ opacity: (taskCount > 0 || isButtonDisabled) ? 0.5 : 1 }}
+                          onClick={(taskCount > 0 || isButtonDisabled) ? undefined : onClickApproveMoveFunction}
                         >
-                          <Tooltip title={isButtonDisabled ? "" : "Click to Approve as Board of Directors"} arrow>
+                          <Tooltip title={(taskCount > 0 || isButtonDisabled) ? "" : "Click to Approve as Board of Directors"} arrow>
                             <div
                               className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20}`}
                             >
