@@ -721,7 +721,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                         <div
                           className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}
                         >
-                          {data?.document?.name}
+                          {data?.document?.shortName}
                         </div>
                         <InfoOutlinedIcon
                           sx={{ fontSize: 14, marginLeft: "10px" }}

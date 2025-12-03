@@ -175,11 +175,11 @@ const TaskStatusDialog = ({ getIsOpen, selectedTab }) => {
 
   const tasksendapplication = async (taskId, status, label) => {
     const formData = new FormData();
-    formData.append('documents', file);
+    // formData.append('documents', file);
     const fileData = { fileName: `generated.pdf` };
-    formData.append('files', new Blob([JSON.stringify({ ...fileData })], {
-      type: "application/json"
-    }));
+    // formData.append('files', new Blob([JSON.stringify({ ...fileData })], {
+    //   type: "application/json"
+    // }));
 
     formData.append('taskStatusLabel', new Blob([JSON.stringify({ status: status, label: label })], {
       type: "application/json"

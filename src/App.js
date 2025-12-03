@@ -17,7 +17,7 @@ import {
   isDesktop,
   isTablet,
 } from "react-device-detect";
-import { SuccessToaster, ErrorToaster } from "./utils/toaster";
+import { SuccessToaster, ErrorToaster, ErrorToaster2 } from "./utils/toaster";
 import axios from "axios";
 import jwt from "jwt-decode";
 import { isSessionTokenExpired, useSession, getSessionToken, useDescope } from '@descope/react-sdk';
@@ -854,7 +854,7 @@ const App = ({ props }) => {
         method: "GET",
         headers: {
           "Authorization": `Bearer ${authorization}`,
-          "X-subdomain": 'master',
+          "X-subdomain": 'cmh-hospital',
         },
       };
     console.log(requestHeader, 'requestHeader')
@@ -897,7 +897,7 @@ const App = ({ props }) => {
         "Content-Type": "application/json",
         "X-tenantID": id,
         "Authorization": `Bearer ${authorization}`,
-        "X-subdomain": 'master',
+        "X-subdomain": 'cmh-hospital',
       },
     }
     fetch(`${baseUrl()}/user-management-service/auth/login`, requestOptions)
@@ -911,6 +911,18 @@ const App = ({ props }) => {
         });
         organizations = data?.organizations || [];
         sessionStorage.setItem('organizations', JSON.stringify(data?.organizations))
+      })
+      .catch((error) => {
+        ErrorToaster2("Login failed. Please try again. If the issue persists, please contact the administrator.")
+        cookie.remove("authorization", {
+          path: "/",
+          domain: window.location.hostname?.split('.')?.length >= 3 ? `.${window.location.hostname?.split('.')?.slice(-2)?.join('.')}` : window.location.hostname,
+          secure: true,
+          sameSite: 'none',
+        });
+        cookie.remove("user", { path: "/" });
+        cookie.remove("entityId", { path: "/" });
+        logout();
       });
     console.log('entered')
     if (cookie.get("authorization") && cookie.get("authorization") !== 'undefined') {

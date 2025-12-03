@@ -160,7 +160,7 @@ const ApplicationFormRequirement = () => {
                                         <div>
                                             <div className={`${style.requiredDocumentCard} ${style.tableGrid} ${index % 2 === 0 ? style.requiredDocumentCardAlternativeColor : ''}  ${style.marginTop5}`}>
                                                 <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
-                                                    <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.document?.name}</div>
+                                                    <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.document?.shortName}</div>
                                                     <InfoOutlinedIcon sx={{ fontSize: 14, marginLeft: '10px' }} className={style.info} />
                                                 </div>
                                                 <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.required ? 'Required' : 'Recommended'}</div>

@@ -70,25 +70,25 @@
 .PaymentGrid {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
-    gap: 20px;
+    gap: 10px;
 }
 
 .PaymentGrid2 {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
-    gap: 20px;
+    gap: 10px;
 }
 
 .PaymentGrid3 {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
-    gap: 20px;
+    gap: 10px;
 }
 
 .PaymentGrid4 {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
-    gap: 20px;
+    gap: 10px;
 }
 
 .PaymentGrid> :nth-child(1) {
