@@ -2970,7 +2970,7 @@ const NewActiveApplication = ({
             <div>
               <div>
                 <div className={style.cardTitle}>
-                  {allFormSchemas?.[index]?.formSchema?.schema?.properties?.isModulesForReAppointmentCompleted?.label}
+                  {allFormSchemas?.[index]?.formSchema?.schema?.properties?.isModulesForReAppointmentCompleted?.properties?.response?.label}
                 </div>
                 {form?.forms?.[formIndex]?.data?.lms?.yesOrNo !== undefined && (
                   <div className={`${style.markedAsText} ${style.marginTop20}`}><strong>Marked as <span className={form?.forms?.[formIndex]?.data?.lms?.yesOrNo === 'Yes' ? style.yesText : style.noText}>{form?.forms?.[formIndex]?.data?.lms?.yesOrNo}</span></strong> on {format(new Date(form?.forms?.[formIndex]?.data?.lms?.updatedDate), dateFormat)}</div>
@@ -2978,7 +2978,7 @@ const NewActiveApplication = ({
               </div>
               <div className={`${style.marginTop20}`}>
                 <div className={style.cardTitle}>
-                  {allFormSchemas?.[index]?.formSchema?.schema?.properties?.doYouPrescribeSuboxone?.label}
+                  {allFormSchemas?.[index]?.formSchema?.schema?.properties?.doYouPrescribeSuboxone?.properties?.response?.label}
                 </div>
                 {form?.forms?.[formIndex]?.data?.suboxone?.yesOrNo !== undefined && (
                   <div className={`${style.markedAsText} ${style.marginTop20}`}><strong>Marked as <span className={form?.forms?.[formIndex]?.data?.suboxone?.yesOrNo === 'Yes' ? style.yesText : style.noText}>{form?.forms?.[formIndex]?.data?.suboxone?.yesOrNo}</span></strong> on {format(new Date(form?.forms?.[formIndex]?.data?.suboxone?.updatedDate), dateFormat)}</div>
@@ -2987,7 +2987,7 @@ const NewActiveApplication = ({
               {(form?.basicDetails?.departmentSpecialty?.department === 'Women & Children' && form?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics') && (
                 <div className={`${style.marginTop20}`}>
                   <div className={style.cardTitle}>
-                    {allFormSchemas?.[index]?.formSchema?.schema?.properties?.wishToBeMRP?.label}
+                    {allFormSchemas?.[index]?.formSchema?.schema?.properties?.wishToBeMRP?.properties?.response?.label}
                   </div>
                   {form?.forms?.[formIndex]?.data?.mrp?.yesOrNo !== undefined && (
                     <div className={`${style.markedAsText} ${style.marginTop20}`}><strong>Marked as <span className={form?.forms?.[formIndex]?.data?.mrp?.yesOrNo === 'Yes' ? style.yesText : style.noText}>{form?.forms?.[formIndex]?.data?.mrp?.yesOrNo}</span></strong> on {format(new Date(form?.forms?.[formIndex]?.data?.mrp?.updatedDate), dateFormat)}</div>

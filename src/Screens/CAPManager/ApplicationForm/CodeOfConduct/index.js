@@ -39,6 +39,7 @@ const CodeOfConduct = ({ acknowledgementForm, dateFormat, name, basicForm, getPr
     const [formSchema, setFormSchema] = useState();
     const [formContent, setFormContent] = useState();
     const [navigateURL, setNavigateURL] = useState();
+    const [navigateBackURL, setNavigateBackURL] = useState();
     const { section, step } = useParams()
     const [formIndex, setFormIndex] = useState();
     const [isSaveInProgressOpen, setIsSaveInProgressOpen] = useState(false);
@@ -65,6 +66,11 @@ const CodeOfConduct = ({ acknowledgementForm, dateFormat, name, basicForm, getPr
         // setDecryptedText(CryptoJS.AES.decrypt(basicForm?.forms?.[formIndex]?.esign?.esign, publicKey).toString(CryptoJS.enc.Utf8))
         if (basicForm !== undefined && formIndex !== undefined) {
             setNavigateURL((basicForm?.forms?.length === (formIndex + 1)) ? `/applicationForm/${applicationId}/Acknowledgement/${btoa('AcknowledgementCheck')}` : `/applicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
+            if (formIndex > 0) {
+                setNavigateBackURL(`/applicationForm/${applicationId}/${basicForm?.forms[formIndex - 1]?.formCategory}/${btoa(basicForm?.forms[formIndex - 1]?.schemaCategory)}`)
+            } else {
+                setNavigateBackURL(`/applicationForm/${applicationId}/${basicForm?.forms[0]?.formCategory}/${btoa(basicForm?.forms[0]?.schemaCategory)}`)
+            }
         }
     }, [basicForm, formIndex])
 
@@ -189,10 +195,14 @@ const CodeOfConduct = ({ acknowledgementForm, dateFormat, name, basicForm, getPr
         }
     }
 
+    const handleBackClick = () => {
+        navigate(navigateBackURL)
+    }
+
     return (
         <div>
             <div className={style.applicationScreenGrid}>
-                <ProgressCard step={'STEP 4'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={34} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
+                <ProgressCard step={'STEP 4'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={34} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} applicationId={applicationId} />
                 <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
             </div>
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
@@ -203,8 +213,6 @@ const CodeOfConduct = ({ acknowledgementForm, dateFormat, name, basicForm, getPr
                         </div>
                         <CommonDivider />
                         <div className={`${style.cardTitle} ${style.marginTop}  ${style.justifyCenter}`}>{formSchema?.title}</div>
-                        <CommonDivider />
-                        <div className={`${style.labelText} ${style.marginTop}`}>My making of this application and signature below indicate my understanding of and consent to the following (please note that references to Public Hospitals Act are not applicable to Homewood):</div>
                         <CommonDivider />
                         {/* <img src={pdf} alt="" className={style.pdfStyle} />
                         <ESign />
@@ -228,7 +236,7 @@ const CodeOfConduct = ({ acknowledgementForm, dateFormat, name, basicForm, getPr
                     <div className={style.stickyContainer}>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                         <div className={style.twoColForButton}>
-                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
+                            <div className={`${style.continue} ${style.marginTop10}`} onClick={handleBackClick}>BACK</div>
                             <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleSubmitApplicationReq()} >CONTINUE</div>
                         </div>
                     </div>
@@ -278,7 +286,7 @@ const CodeOfConduct = ({ acknowledgementForm, dateFormat, name, basicForm, getPr
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                     <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => handleDownload()}>SAVE IN PROGRESS</div>
                     <div className={style.twoColForButton}>
-                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
+                        <div className={`${style.continue} ${style.marginTop10}`} onClick={handleBackClick}>BACK</div>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleSubmitApplicationReq()} >CONTINUE</div>
                     </div>
                 </div>

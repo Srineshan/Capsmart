@@ -569,7 +569,7 @@ const StaffApplicationTopTiles = (searchTermForTable, totalCount, showBulkApprov
   const getTitleCounts = async (type) => {
     try {
       setIsLoading(true);
-      const positionTypeParam = applicationType === "LOCUM" ? `&positionType=${applicationType}` : applicationType === "NEW" ? "" : "&positionType=PERMANENT";
+      const positionTypeParam = type === "LOCUM" ? `&positionType=${applicationType}` : type === "NEW" ? "" : "&positionType=PERMANENT";
       let role = workModeType === "Credentialing Committee User" ? "Staff Manager" : workModeType;
       const response = await GET(
         `application-management-service/application/workflowUser/meta?applicationCreationType=${type === "LOCUM" ? "REAPPOINTMENT" : type}&role=${role}&searchText=${searchTermForTable?.searchTermForTable}${positionTypeParam}`

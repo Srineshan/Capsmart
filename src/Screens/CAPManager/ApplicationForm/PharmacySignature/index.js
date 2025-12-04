@@ -29,6 +29,7 @@ const PharmacySignature = ({
   const [dateTime, setDateTime] = useState(new Date().toISOString());
   const [formContent, setFormContent] = useState();
   const [navigateURL, setNavigateURL] = useState();
+  const [navigateBackURL, setNavigateBackURL] = useState();
   const [formIndex, setFormIndex] = useState();
   const [initialArray, setInitialArray] = useState([])
   const [encryptedText, setEncryptedText] = useState("");
@@ -64,6 +65,11 @@ const PharmacySignature = ({
     setIsSigned((basicForm?.forms?.[formIndex]?.esign?.esign !== undefined && basicForm?.forms?.[formIndex]?.acknowledged) ? true : false);
     if (basicForm !== undefined && formIndex !== undefined) {
       setNavigateURL((basicForm?.forms?.length === (formIndex + 1)) ? `/applicationForm/${applicationId}/Acknowledgement/${btoa('AcknowledgementCheck')}` : `/applicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
+      if (formIndex > 0) {
+        setNavigateBackURL(`/applicationForm/${applicationId}/${basicForm?.forms[formIndex - 1]?.formCategory}/${btoa(basicForm?.forms[formIndex - 1]?.schemaCategory)}`)
+      } else {
+        setNavigateBackURL(`/applicationForm/${applicationId}/${basicForm?.forms[0]?.formCategory}/${btoa(basicForm?.forms[0]?.schemaCategory)}`)
+      }
     }
   }, [basicForm, formIndex]);
 
@@ -268,6 +274,10 @@ const PharmacySignature = ({
     // }
   }
 
+  const handleBackClick = () => {
+    navigate(navigateBackURL)
+  }
+
   const renderPdfContent = () => {
     return (
       <div>
@@ -289,7 +299,7 @@ const PharmacySignature = ({
   return (
     <div>
       <div className={style.applicationScreenGrid}>
-        <ProgressCard step={'STEP 9'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={30} timeText={'Min'} />
+        <ProgressCard step={'STEP 9'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={30} timeText={'Min'} applicationId={applicationId} />
         <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
       </div>
       <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
@@ -303,8 +313,6 @@ const PharmacySignature = ({
             <CommonDivider />
             <div className={`${style.cardTitle} ${style.marginTop}  ${style.justifyCenter}`}>{formSchema?.title}</div>
             <CommonDivider />
-            <div className={`${style.labelText} ${style.marginTop}`}>My making of this application and signature below indicate my understanding of and consent to the following (please note that references to Public Hospitals Act are not applicable to Homewood):</div>
-            <CommonDivider />
             {renderPdfContent()}
 
           </div>
@@ -314,7 +322,7 @@ const PharmacySignature = ({
           <div className={style.stickyContainer}>
             <div className={`${style.saveInProgress} ${style.marginTop}`} >SAVE IN PROGRESS</div>
             <div className={style.twoColForButton}>
-              <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
+              <div className={`${style.continue} ${style.marginTop10}`} onClick={handleBackClick}>BACK</div>
               <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleSubmitApplicationReq()} >CONTINUE</div>
             </div>
           </div>

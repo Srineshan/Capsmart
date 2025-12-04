@@ -41,6 +41,7 @@ const OffenceDeclaration = ({ acknowledgementForm, dateFormat, name, basicForm, 
     ];
     const [tableData, setTableData] = useState(initialData);
     const [navigateURL, setNavigateURL] = useState();
+    const [navigateBackURL, setNavigateBackURL] = useState();
     const { section, step } = useParams()
     const [formIndex, setFormIndex] = useState();
     const [isSaveInProgressOpen, setIsSaveInProgressOpen] = useState(false);
@@ -69,6 +70,11 @@ const OffenceDeclaration = ({ acknowledgementForm, dateFormat, name, basicForm, 
         // setDecryptedText(CryptoJS.AES.decrypt(basicForm?.forms?.[formIndex]?.esign?.esign, publicKey).toString(CryptoJS.enc.Utf8))
         if (basicForm !== undefined && formIndex !== undefined) {
             setNavigateURL((basicForm?.forms?.length === (formIndex + 1)) ? `/applicationForm/${applicationId}/Acknowledgement/${btoa('AcknowledgementCheck')}` : `/applicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
+            if (formIndex > 0) {
+                setNavigateBackURL(`/applicationForm/${applicationId}/${basicForm?.forms[formIndex - 1]?.formCategory}/${btoa(basicForm?.forms[formIndex - 1]?.schemaCategory)}`)
+            } else {
+                setNavigateBackURL(`/applicationForm/${applicationId}/${basicForm?.forms[0]?.formCategory}/${btoa(basicForm?.forms[0]?.schemaCategory)}`)
+            }
         }
     }, [basicForm, formIndex])
 
@@ -224,10 +230,14 @@ const OffenceDeclaration = ({ acknowledgementForm, dateFormat, name, basicForm, 
 
     console.log(formContent)
 
+    const handleBackClick = () => {
+        navigate(navigateBackURL)
+    }
+
     return (
         <div>
             <div className={style.applicationScreenGrid}>
-                <ProgressCard step={'STEP 8'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={38} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
+                <ProgressCard step={'STEP 8'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={38} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} applicationId={applicationId} />
                 <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
             </div>
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
@@ -333,7 +343,7 @@ const OffenceDeclaration = ({ acknowledgementForm, dateFormat, name, basicForm, 
                     <div className={style.stickyContainer}>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                         <div className={style.twoColForButton}>
-                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
+                            <div className={`${style.continue} ${style.marginTop10}`} onClick={handleBackClick}>BACK</div>
                             <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleSubmitApplicationReq()} >CONTINUE</div>
                         </div>
                     </div>

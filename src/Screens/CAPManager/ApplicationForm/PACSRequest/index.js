@@ -31,6 +31,7 @@ const PACSRequest = ({
   const [dateTime, setDateTime] = useState(new Date().toISOString());
   const [formContent, setFormContent] = useState();
   const [navigateURL, setNavigateURL] = useState();
+  const [navigateBackURL, setNavigateBackURL] = useState();
   const [formIndex, setFormIndex] = useState();
   const [initialArray, setInitialArray] = useState([])
   const [encryptedText, setEncryptedText] = useState("");
@@ -70,6 +71,11 @@ const PACSRequest = ({
     setIsSigned((basicForm?.forms?.[formIndex]?.esign?.esign !== undefined && basicForm?.forms?.[formIndex]?.acknowledged) ? true : false);
     if (basicForm !== undefined && formIndex !== undefined) {
       setNavigateURL((basicForm?.forms?.length === (formIndex + 1)) ? `/applicationForm/${applicationId}/Acknowledgement/${btoa('AcknowledgementCheck')}` : `/applicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
+      if (formIndex > 0) {
+        setNavigateBackURL(`/applicationForm/${applicationId}/${basicForm?.forms[formIndex - 1]?.formCategory}/${btoa(basicForm?.forms[formIndex - 1]?.schemaCategory)}`)
+      } else {
+        setNavigateBackURL(`/applicationForm/${applicationId}/${basicForm?.forms[0]?.formCategory}/${btoa(basicForm?.forms[0]?.schemaCategory)}`)
+      }
     }
   }, [basicForm, formIndex]);
 
@@ -97,7 +103,7 @@ const PACSRequest = ({
 
   useEffect(() => {
     populatePdfWithProfileData(applicantProfile);
-  }, [applicantProfile, accessType, otherAccessType])
+  }, [applicantProfile])
 
   const getFormSchema = async () => {
     const { data: form } = await GET(
@@ -192,7 +198,7 @@ const PACSRequest = ({
       }
 
       form.getTextField("Text140").setText(otherAccessType);
-      const formattedDate = format(new Date(), 'dd/MM/yyyy');
+      const formattedDate = format(new Date(), 'MMM dd, yyyy');
       form.getTextField("Text144").setText(formattedDate || "");
       form.getTextField("Text150").setText(formattedDate || "");
 
@@ -231,6 +237,12 @@ const PACSRequest = ({
       // }
 
       // Save and display updated PDF
+      form.getFields().forEach(field => {
+        if (field.constructor.name === 'PDFCheckBox') {
+          field.updateAppearances();  // fixes display
+        }
+      });
+      form.flatten();
       const pdfBytes = await pdfDoc.save();
       const blob = new Blob([pdfBytes], { type: "application/pdf" });
       console.log('indexCheck')
@@ -340,10 +352,14 @@ const PACSRequest = ({
     );
   };
 
+  const handleBackClick = () => {
+    navigate(navigateBackURL)
+  }
+
   return (
     <div>
       <div className={style.applicationScreenGrid}>
-        <ProgressCard step={'STEP 9'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={30} timeText={'Min'} />
+        <ProgressCard step={'STEP 9'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={30} timeText={'Min'} applicationId={applicationId} />
         <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
       </div>
       <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
@@ -355,10 +371,8 @@ const PACSRequest = ({
             <CommonDivider />
             <div className={`${style.cardTitle} ${style.marginTop}  ${style.justifyCenter}`}>{formSchema?.title}</div>
             <CommonDivider />
-            <div className={`${style.labelText} ${style.marginTop}`}>My making of this application and signature below indicate my understanding of and consent to the following (please note that references to Public Hospitals Act are not applicable to Homewood):</div>
-            <CommonDivider />
-            <div className={`${style.cardTitle} ${style.marginTop}  ${style.justifyCenter}`}>Access Type</div>
-            <div className={style.twoColForButton}>
+            <div className={`${style.cardTitle} ${style.marginTop}  ${style.justifyCenter}`}>Access Type Required</div>
+            <div className={style.threeCol}>
               <CommonCheckBox
                 value="Radiologist"
                 className={style.marginLeft20}
@@ -443,7 +457,15 @@ const PACSRequest = ({
               </div>
 
             </div>
-            {renderPdfContent()}
+            <div>
+              <div className={`${style.continue} ${style.marginTop10}`} onClick={() => populatePdfWithProfileData(applicantProfile)} >UPDATE</div>
+            </div>
+            <div className={style.marginTop10}>
+              <div className={`${style.cardTitle} ${style.marginTop}  ${style.justifyCenter}`}>Form filled based on the data</div>
+              <div className={style.marginTop10}>
+                {renderPdfContent()}
+              </div>
+            </div>
 
           </div>
         </div>
@@ -452,13 +474,13 @@ const PACSRequest = ({
           <div className={style.stickyContainer}>
             <div className={`${style.saveInProgress} ${style.marginTop}`} >SAVE IN PROGRESS</div>
             <div className={style.twoColForButton}>
-              <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
+              <div className={`${style.continue} ${style.marginTop10}`} onClick={handleBackClick}>BACK</div>
               <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleSubmitApplicationReq()} >CONTINUE</div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </div >
   );
 };
 

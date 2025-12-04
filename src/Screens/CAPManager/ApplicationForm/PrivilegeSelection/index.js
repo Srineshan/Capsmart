@@ -58,6 +58,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, applicationId, getPreAppl
     const [formIndex, setFormIndex] = useState();
     const navigate = useNavigate()
     const [navigateURL, setNavigateURL] = useState();
+    const [navigateBackURL, setNavigateBackURL] = useState();
     const title = sessionStorage.getItem('title')
     const [isSaveInProgressOpen, setIsSaveInProgressOpen] = useState(false);
     useEffect(() => {
@@ -81,6 +82,11 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, applicationId, getPreAppl
         }
         if (basicForm !== undefined && formIndex !== undefined) {
             setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form')?.length === (formIndex + 1)) ? `/applicationForm/${applicationId}/Form/${btoa('PODCheck')}` : `/applicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
+            if (formIndex > 0) {
+                setNavigateBackURL(`/applicationForm/${applicationId}/${basicForm?.forms[formIndex - 1]?.formCategory}/${btoa(basicForm?.forms[formIndex - 1]?.schemaCategory)}`)
+            } else {
+                setNavigateBackURL(`/applicationForm/${applicationId}/${basicForm?.forms[0]?.formCategory}/${btoa(basicForm?.forms[0]?.schemaCategory)}`)
+            }
         }
         setSelectedAdditionalPrivilegeForDisplay(basicForm?.privileges?.additionalPrivileges)
         setSelectedPrivilegeForDisplay(basicForm?.privileges?.obligatedPrivileges)
@@ -647,10 +653,14 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, applicationId, getPreAppl
 
     console.log('collapsibleIndexes', openIndex, selectedPrivilegeForDisplay, selectedPrivilege)
 
+    const handleBackClick = () => {
+        navigate(navigateBackURL)
+    }
+
     return (
         <div>
             <div className={style.applicationScreenGrid}>
-                <ProgressCard step={'STEP 6'} title={'Details of request for privileges'} dataType={'Step 7'} timeNumber={20} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
+                <ProgressCard step={'STEP 6'} title={'Details of request for privileges'} dataType={'Step 7'} timeNumber={20} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} applicationId={applicationId} />
                 <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
             </div>
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
@@ -1017,7 +1027,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, applicationId, getPreAppl
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                         <div className={`${style.saveInProgress} ${style.marginTop10} `} onClick={() => handleContinue(true)} > SKIP FOR NOW </div>
                         <div className={style.twoColForButton}>
-                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
+                            <div className={`${style.continue} ${style.marginTop10}`} onClick={handleBackClick}>BACK</div>
                             <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue(true)}>CONTINUE</div>
                         </div>
                     </div>

@@ -62,6 +62,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
   const [isLoadingDocs, setIsLoadingDocs] = useState(false);
   const [isShowUploadValidation, setIsShowUploadValidation] = useState(false);
   const [navigateURL, setNavigateURL] = useState();
+  const [navigateBackURL, setNavigateBackURL] = useState();
   const [isSaveInProgressOpen, setIsSaveInProgressOpen] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
@@ -117,6 +118,11 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
           basicForm?.forms[formIndex + 1]?.schemaCategory,
         )}`,
     );
+    if (formIndex > 0) {
+      setNavigateBackURL(`/applicationForm/${applicationId}/${basicForm?.forms[formIndex - 1]?.formCategory}/${btoa(basicForm?.forms[formIndex - 1]?.schemaCategory)}`)
+    } else {
+      setNavigateBackURL(`/applicationForm/${applicationId}/Form/${btoa('BasicInformation')}`)
+    }
   }, [basicForm, formIndex, applicationId]);
 
   useEffect(() => {
@@ -454,7 +460,9 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
     }
   };
 
-  const handleBackClick = () => navigate(-1);
+  const handleBackClick = () => {
+    navigate(navigateBackURL)
+  };
 
   const getIsSaveInProgressOpen = (value) => {
     if (value) {
@@ -660,6 +668,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
             timeNumber={1}
             timeText="Min"
             progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`}
+            applicationId={applicationId}
           />
           <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
             {formSchema?.properties?.uploadTheDocument && (
@@ -721,7 +730,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                         <div
                           className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}
                         >
-                          {data?.document?.name}
+                          {data?.document?.shortName}
                         </div>
                         <InfoOutlinedIcon
                           sx={{ fontSize: 14, marginLeft: "10px" }}
