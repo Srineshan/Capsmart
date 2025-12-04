@@ -57,6 +57,11 @@
     gap: 20px;
 }
 
+.threeCol {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+}
+
 .twoColForButton {
     display: grid;
     grid-template-columns: repeat(2, 1fr);

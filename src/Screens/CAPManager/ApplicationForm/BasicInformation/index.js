@@ -203,6 +203,10 @@ const BasicInformation = ({ basicForm, setBasicForm, applicationId, getPreApplic
       });
   };
 
+  const handleBackClick = () => {
+    navigate(`/applicationForm/${applicationId}`)
+  }
+
   const addPath = (newPath) => {
     setFieldPaths((prevPaths) => {
       // Use spread operator to append new paths to existing array
@@ -243,6 +247,7 @@ const BasicInformation = ({ basicForm, setBasicForm, applicationId, getPreApplic
             timeNumber={1}
             timeText={"Min"}
             progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`}
+            applicationId={applicationId}
           />
           <div className={`${style.applicationCardStyle}  ${style.marginTop}`}>
             {/* <CommonMailingAddress label={'Business Mailing Address*'} onChangeAddressLine1={() => { }} placeholderAddressLine1={'123 Street'} maxLengthAddressLine1={25} valueAddressLine1={''}
@@ -383,7 +388,7 @@ const BasicInformation = ({ basicForm, setBasicForm, applicationId, getPreApplic
             <div className={style.twoColForButton}>
               <div
                 className={`${style.continue} ${style.marginTop10}`}
-                onClick={() => navigate(-1)}
+                onClick={() => handleBackClick()}
               >
                 BACK
               </div>
