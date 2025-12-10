@@ -28,6 +28,8 @@ const Education = ({ basicForm, setBasicForm, applicationId, getPreApplication }
     const navigate = useNavigate()
     const [navigateURL, setNavigateURL] = useState();
     const [navigateBackURL, setNavigateBackURL] = useState();
+    const isDataAvailable = basicForm?.forms?.[formIndex]?.data?.graduation?.length > 0;
+
     useEffect(() => {
         if (basicForm && !formSchema) {
             getFormSchema()
@@ -188,7 +190,7 @@ const Education = ({ basicForm, setBasicForm, applicationId, getPreApplication }
     return (
         <div>
             <div className={style.applicationScreenGrid}>
-                <ProgressCard step={'STEP 4'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={8} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} applicationId={applicationId} />
+                <ProgressCard step={'STEP 4'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={8} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} applicationId={applicationId} basicForm={basicForm} />
                 <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
             </div>
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
@@ -213,7 +215,7 @@ const Education = ({ basicForm, setBasicForm, applicationId, getPreApplication }
                         <div className={`${style.saveInProgress} ${style.marginTop10} `} onClick={() => handleContinue()} > SKIP FOR NOW </div>
                         <div className={style.twoColForButton}>
                             <div className={`${style.continue} ${style.marginTop10}`} onClick={handleBackClick}>BACK</div>
-                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue()}>CONTINUE</div>
+                            <div className={`${style.continue} ${style.marginTop10} ${isDataAvailable ? '' : style.disabledButton}`} onClick={isDataAvailable ? () => handleContinue() : () => { }}>CONTINUE</div>
                         </div>
                     </div>
                     <div className={style.marginTop}>

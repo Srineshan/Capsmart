@@ -21,6 +21,7 @@ import ApplicationFieldCard from '../../../../Components/ApplicationFieldCard';
 import Cookie from "universal-cookie";
 import { differenceInDays, format } from 'date-fns';
 import DoItLaterDialog from '../../../../Components/DoItLaterDialog';
+import { Tooltip } from '@material-ui/core';
 // import { Logout } from '../../../utils/auth';
 
 const ApplicationFormRequirement = () => {
@@ -161,7 +162,13 @@ const ApplicationFormRequirement = () => {
                                             <div className={`${style.requiredDocumentCard} ${style.tableGrid} ${index % 2 === 0 ? style.requiredDocumentCardAlternativeColor : ''}  ${style.marginTop5}`}>
                                                 <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
                                                     <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.document?.shortName}</div>
-                                                    <InfoOutlinedIcon sx={{ fontSize: 14, marginLeft: '10px' }} className={style.info} />
+                                                    {data?.instruction ? (
+                                                        <Tooltip title={data?.instruction} arrow>
+                                                            <InfoOutlinedIcon sx={{ fontSize: 14, marginLeft: '10px' }} className={style.info} />
+                                                        </Tooltip>
+                                                    ) : (
+                                                        <div></div>
+                                                    )}
                                                 </div>
                                                 <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.required ? 'Required' : 'Recommended'}</div>
                                                 <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.instruction}</div>
@@ -176,13 +183,13 @@ const ApplicationFormRequirement = () => {
                                         )}
                                     </WelcomeCard>
                                 </div>
-                                <div className={style.marginTop}>
+                                {/* <div className={style.marginTop}>
                                     <WelcomeCard title={''} description={''} >
                                         {applicantTypeForm !== undefined && 'fitTest' in applicantTypeForm?.properties && (
                                             <ApplicationFieldCard object={applicantTypeForm?.properties?.fitTest} gridStyle={style.twoCol} baseKey={'fitTest'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
                                         )}
                                     </WelcomeCard>
-                                </div>
+                                </div> */}
                             </div>
                             <div>
                                 {/* <ApplicationUserCard user={'Guest User'} applyingFor={'Contact'} /> */}

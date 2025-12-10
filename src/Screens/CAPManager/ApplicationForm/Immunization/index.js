@@ -442,7 +442,7 @@ const Immunization = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
     return (
         <div>
             <div className={style.applicationScreenGrid}>
-                <ProgressCard step={'STEP 15'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={2} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} applicationId={applicationId} />
+                <ProgressCard step={'STEP 15'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={2} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} applicationId={applicationId} basicForm={basicForm} />
                 <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
             </div>
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
@@ -632,7 +632,7 @@ const Immunization = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
                                     tableData={applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "TUBERCULIN")?.[0]?.testDetails}
                                     gridStyle={style.testGrid}
                                     tableSortValues={[]}
-                                    heading={"There are no record to display"}
+                                    heading={"There are no records to display"}
                                     className={`${style.tableRow} ${style.reportSection}`}
                                     hidePagination={true}
                                 />
@@ -647,7 +647,7 @@ const Immunization = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
                                     tableData={applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "MEASLES_MUMPS_RUBELLA")?.[0]?.testDetails}
                                     gridStyle={style.testGrid}
                                     tableSortValues={[]}
-                                    heading={"There are no record to display"}
+                                    heading={"There are no records to display"}
                                     className={`${style.tableRow} ${style.reportSection}`}
                                     hidePagination={true}
                                 />
@@ -662,7 +662,7 @@ const Immunization = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
                                     tableData={applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "HEPATITIS_B")}
                                     gridStyle={style.testGrid}
                                     tableSortValues={[]}
-                                    heading={"There are no record to display"}
+                                    heading={"There are no records to display"}
                                     className={`${style.tableRow} ${style.reportSection}`}
                                     hidePagination={true}
                                 />
@@ -677,7 +677,7 @@ const Immunization = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
                                     tableData={applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "VARICELLA")?.[0]?.testDetails}
                                     gridStyle={style.testGrid}
                                     tableSortValues={[]}
-                                    heading={"There are no record to display"}
+                                    heading={"There are no records to display"}
                                     className={`${style.tableRow} ${style.reportSection}`}
                                     hidePagination={true}
                                 />
@@ -692,7 +692,7 @@ const Immunization = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
                                     tableData={applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "TETANUS_DIPHTHERIA_PERTUSSIS_OR_TETANUS_DIPHTHERIA")?.[0]?.testDetails}
                                     gridStyle={style.testGrid}
                                     tableSortValues={[]}
-                                    heading={"There are no record to display"}
+                                    heading={"There are no records to display"}
                                     className={`${style.tableRow} ${style.reportSection}`}
                                     hidePagination={true}
                                 />
@@ -707,7 +707,7 @@ const Immunization = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
                                     tableData={applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "INFLUENZA")?.[0]?.testDetails}
                                     gridStyle={style.testGrid}
                                     tableSortValues={[]}
-                                    heading={"There are no record to display"}
+                                    heading={"There are no records to display"}
                                     className={`${style.tableRow} ${style.reportSection}`}
                                     hidePagination={true}
                                 />

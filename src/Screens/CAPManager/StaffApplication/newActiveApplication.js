@@ -3627,6 +3627,7 @@ const NewActiveApplication = ({
           }`}
         close={true}
         closeClick={onClose}
+        isNotLogout={true}
       />
 
       <div className={style.welcomeBorder}></div>

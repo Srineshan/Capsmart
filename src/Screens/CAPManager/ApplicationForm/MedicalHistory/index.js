@@ -99,11 +99,13 @@ const MedicalHistory = ({ basicForm, setBasicForm, applicationId, getPreApplicat
 
     metadata?.forEach((data, index) => {
       console.log("datastep13metadata", data);
-      keyValuePair.push({
-        key: data,
-        value: getValueByPath(basicForm, data),
-        label: labels[index]?.label,
-      });
+      if (labels[index]?.mandatory) {
+        keyValuePair.push({
+          key: data,
+          value: getValueByPath(basicForm, data),
+          label: labels[index]?.label,
+        });
+      }
     });
 
     const validateBusinessPhone = (phone) => {
@@ -116,21 +118,21 @@ const MedicalHistory = ({ basicForm, setBasicForm, applicationId, getPreApplicat
     const isCellPhoneInvalid = !validateBusinessPhone(cellPhone);
     const isEmailInvalid = !emailRegex.test(emailId);
 
-    // if (isCellPhoneInvalid) {
-    //   missingKeys.push({
-    //     key: "cellPhone",
-    //     value: cellPhone,
-    //     label: "Cell Phone is invalid",
-    //   });
-    // }
+    if (isCellPhoneInvalid && cellPhone && cellPhone !== "") {
+      missingKeys.push({
+        key: "cellPhone",
+        value: cellPhone,
+        label: "Cell Phone is invalid",
+      });
+    }
 
-    // if (isEmailInvalid) {
-    //   missingKeys.push({
-    //     key: "emailId",
-    //     value: emailId,
-    //     label: "Email ID is invalid",
-    //   });
-    // }
+    if (isEmailInvalid && emailId && emailId !== "") {
+      missingKeys.push({
+        key: "emailId",
+        value: emailId,
+        label: "Email ID is invalid",
+      });
+    }
 
     // Check other fields for missing values
     keyValuePair?.forEach((data) => {
@@ -145,53 +147,53 @@ const MedicalHistory = ({ basicForm, setBasicForm, applicationId, getPreApplicat
     });
 
     // Reset fields if invalid
-    // if (isCellPhoneInvalid) {
-    //   setBasicForm((prevForm) => ({
-    //     ...prevForm,
-    //     forms: prevForm.forms.map((form) => {
-    //       if (form.schemaId === basicForm.forms[formIndex].schemaId) {
-    //         return {
-    //           ...form,
-    //           data: {
-    //             ...form.data,
-    //             impactingPractice: {
-    //               ...form.data.impactingPractice,
-    //               medicalHistory: {
-    //                 ...form.data.impactingPractice.medicalHistory,
-    //                 cellPhone: "",
-    //               },
-    //             },
-    //           },
-    //         };
-    //       }
-    //       return form;
-    //     }),
-    //   }));
-    // }
+    if (isCellPhoneInvalid) {
+      setBasicForm((prevForm) => ({
+        ...prevForm,
+        forms: prevForm.forms.map((form) => {
+          if (form.schemaId === basicForm.forms[formIndex].schemaId) {
+            return {
+              ...form,
+              data: {
+                ...form.data,
+                impactingPractice: {
+                  ...form.data.impactingPractice,
+                  medicalHistory: {
+                    ...form.data.impactingPractice.medicalHistory,
+                    cellPhone: "",
+                  },
+                },
+              },
+            };
+          }
+          return form;
+        }),
+      }));
+    }
 
-    // if (isEmailInvalid) {
-    //   setBasicForm((prevForm) => ({
-    //     ...prevForm,
-    //     forms: prevForm.forms.map((form) => {
-    //       if (form.schemaId === basicForm.forms[formIndex].schemaId) {
-    //         return {
-    //           ...form,
-    //           data: {
-    //             ...form.data,
-    //             impactingPractice: {
-    //               ...form.data.impactingPractice,
-    //               medicalHistory: {
-    //                 ...form.data.impactingPractice.medicalHistory,
-    //                 emailId: "",
-    //               },
-    //             },
-    //           },
-    //         };
-    //       }
-    //       return form;
-    //     }),
-    //   }));
-    // }
+    if (isEmailInvalid) {
+      setBasicForm((prevForm) => ({
+        ...prevForm,
+        forms: prevForm.forms.map((form) => {
+          if (form.schemaId === basicForm.forms[formIndex].schemaId) {
+            return {
+              ...form,
+              data: {
+                ...form.data,
+                impactingPractice: {
+                  ...form.data.impactingPractice,
+                  medicalHistory: {
+                    ...form.data.impactingPractice.medicalHistory,
+                    emailId: "",
+                  },
+                },
+              },
+            };
+          }
+          return form;
+        }),
+      }));
+    }
 
     if (getValueByPath(basicForm, `forms[${formIndex}].data.impactingPractice.medicalHistory.abilityToPractice`) === 'No' && getValueByPath(basicForm, `forms[${formIndex}].data.impactingPractice.medicalHistory.abilityToPractice`) !== undefined && getValueByPath(basicForm, `forms[${formIndex}].data.impactingPractice.medicalHistory.abilityToPractice`) !== null) {
       let medicalHistoryRequiredKeys = [`forms[${formIndex}].data.impactingPractice.medicalHistory.nameOfFacility`, `forms[${formIndex}].data.impactingPractice.medicalHistory.treatingPhysicianOrProvider`, `forms[${formIndex}].data.impactingPractice.medicalHistory.emailId`, `forms[${formIndex}].data.impactingPractice.medicalHistory.cellPhone`]
@@ -271,7 +273,7 @@ const MedicalHistory = ({ basicForm, setBasicForm, applicationId, getPreApplicat
   return (
     <div>
       <div className={style.applicationScreenGrid}>
-        <ProgressCard step={'STEP 13'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={26} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} applicationId={applicationId} />
+        <ProgressCard step={'STEP 13'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={26} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} applicationId={applicationId} basicForm={basicForm} />
         <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
       </div>
       <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>

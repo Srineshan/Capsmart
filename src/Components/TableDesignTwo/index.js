@@ -140,6 +140,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         STAFF_COUNT: ['Total Count'],
         PARTIALLY_ATTESTED_COUNT: ['Some Attested'],
         GROUP_NAME: ['Attestation Group'],
+        APPROVER_LAST_NAME: ['Assigned CC Member(s)']
     }
 
     const availableSortValueEnum = {
@@ -186,7 +187,8 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         'Name': 'USER_NAME',
         'Total Count': 'STAFF_COUNT',
         'Some Attested': 'PARTIALLY_ATTESTED_COUNT',
-        'Attestation Group': 'GROUP_NAME'
+        'Attestation Group': 'GROUP_NAME',
+        'Assigned CC Member(s)': 'APPROVER_LAST_NAME'
     }
 
 

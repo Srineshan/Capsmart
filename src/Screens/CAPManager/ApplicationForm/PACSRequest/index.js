@@ -13,6 +13,7 @@ import CryptoJS from 'crypto-js';
 import { format } from 'date-fns';
 import CommonCheckBox from "../../../../Components/CommonFields/CommonCheckBox";
 import CommonInputField from "../../../../Components/CommonFields/CommonInputField";
+import SaveInProgressDialog from "../../../../Components/SaveInProgressDialog";
 
 const PACSRequest = ({
   basicForm,
@@ -39,10 +40,10 @@ const PACSRequest = ({
   const [isSigned, setIsSigned] = useState(false);
   const [accessType, setAccessType] = useState([]);
   const [otherAccessType, setOtherAccessType] = useState("")
+  const [isSaveInProgressOpen, setIsSaveInProgressOpen] = useState(false);
   console.log(initialArray)
   const publicKey = "-----BEGIN PUBLIC KEY-----MIGeMA0GCSqGSIb3DQEBAQUAA4GMADCBiAKBgHA5SDu30/8uQAqqkQE0NuY4ePBptMGufG6AWnC/88YVLXi4thh7M8VU6kElVJkfXL5DwlfVnwPb08+PK1EcaOWWtp2gdQitkohjZLB9zVE+0OtRrzSc33wItf7Iwisi5dHPggHvfOp5fr+QYWFMa/kKYl3SgNo8fryeLbKKalmdAgMBAAE=-----END PUBLIC KEY-----";
-  const fixedPdfUrl =
-    "https://development-application-mgmt-service.s3.us-east-1.amazonaws.com/PACS_Req_Fillable.pdf";
+  const fixedPdfUrl = formSchema?.file?.fileURL;
 
   const proxyUrl = "https://app.timesmartai.com/cors/"
 
@@ -131,10 +132,28 @@ const PACSRequest = ({
       const existingPdfBytes = await fetch(`${proxyUrl}${fixedPdfUrl}`).then((res) =>
         res.arrayBuffer()
       );
+      // const existingPdfBytes = await fetch(pdf).then((res) =>
+      //   res.arrayBuffer()
+      // );
 
       const pdfDoc = await PDFDocument.load(existingPdfBytes);
       const form = pdfDoc.getForm();
       const pages = pdfDoc.getPages();
+
+      const image = `${proxyUrl}${basicForm?.forms?.[basicForm?.forms?.findIndex(data => data?.schemaCategory === "UploadYourDoc")]?.data?.setUpYourSignature?.file?.fileURL}`;
+      let imageBytes
+      if (image)
+        imageBytes = await fetch(image).then(res => res.arrayBuffer());
+
+      const isPng = image.toLowerCase().endsWith(".png");
+      const signatureImg = isPng
+        ? await pdfDoc.embedPng(imageBytes)
+        : await pdfDoc.embedJpg(imageBytes);
+
+      const sigField = form.getButton("eSignature");
+
+      // Set the image into the image field
+      sigField.setImage(signatureImg);
 
       // Extract and log fields for debugging
       const fields = form.getFields();
@@ -146,69 +165,122 @@ const PACSRequest = ({
         name?.split("").join(" ") || ""; // Single space between letters
       const formattedFullName = `${formatNameWithSpacing(profileData?.name?.lastName || "")}  ${formatNameWithSpacing(profileData?.name?.firstName || "")}`;
       // Fill text fields with profile data
-      form.getTextField("Text35").setText(formattedFullName);
-      form.getTextField("Text73").setText(profileData.department || "");
-      form.getTextField("Text107").setText(profileData.jobTitle || "");
-      form.getTextField("Text108").setText(profileData.managerName || "");
-      form.getTextField("Text109").setText(profileData.email?.officialEmail || "")
-      form.getTextField("Text110").setText(profileData.extension || "");
+      // form.getTextField("Text35").setText(formattedFullName);
+      // form.getTextField("Text73").setText(profileData.department || "");
+      // form.getTextField("Text107").setText(profileData.jobTitle || "");
+      // form.getTextField("Text108").setText(profileData.managerName || "");
+      // form.getTextField("Text109").setText(profileData.email?.officialEmail || "")
+      // form.getTextField("Text110").setText(profileData.extension || "");
+
+      form.getTextField("First Name / Last Name").setText(formattedFullName);
+      form.getTextField("Department / Nursing Unit").setText(profileData.department?.name || "");
+      form.getTextField("Job Title / Position").setText(profileData.jobTitle || "");
+      form.getTextField("Manager's Name").setText(profileData.managerName || "");
+      form.getTextField("Email").setText(profileData.email?.officialEmail || "")
+      form.getTextField("Extension").setText(profileData.extension || "");
 
 
       // Fill checkboxes
-      form.getCheckBox("Check Box131").check();
+      // form.getCheckBox("Check Box131").check();
+      // if (accessType?.includes('Radiologist')) {
+      //   form.getCheckBox("Check Box132").check();
+      // } else {
+      //   form.getCheckBox("Check Box132").uncheck();
+      // }
+      // if (accessType?.includes('Physician')) {
+      //   form.getCheckBox("Check Box133").check();
+      // } else {
+      //   form.getCheckBox("Check Box133").uncheck();
+      // }
+      // if (accessType?.includes('ER Physician')) {
+      //   form.getCheckBox("Check Box134").check();
+      // } else {
+      //   form.getCheckBox("Check Box134").uncheck();
+      // }
+      // if (accessType?.includes('DI Technologist')) {
+      //   form.getCheckBox("Check Box135").check();
+      // } else {
+      //   form.getCheckBox("Check Box135").uncheck();
+      // }
+      // if (accessType?.includes('Orthopedic Surgeon')) {
+      //   form.getCheckBox("Check Box136").check();
+      // } else {
+      //   form.getCheckBox("Check Box136").uncheck();
+      // }
+      // if (accessType?.includes('Super User')) {
+      //   form.getCheckBox("Check Box137").check();
+      // } else {
+      //   form.getCheckBox("Check Box137").uncheck();
+      // }
+      // if (accessType?.includes('Cleirical')) {
+      //   form.getCheckBox("Check Box138").check();
+      // } else {
+      //   form.getCheckBox("Check Box138").uncheck();
+      // }
+      // if (accessType?.includes('Other')) {
+      //   form.getCheckBox("Check Box139").check();
+      // } else {
+      //   form.getCheckBox("Check Box139").uncheck();
+      // }
+
+      // form.getCheckBox("Check Box25").check();
+
       if (accessType?.includes('Radiologist')) {
-        form.getCheckBox("Check Box132").check();
+        form.getCheckBox("Radiologist").check();
       } else {
-        form.getCheckBox("Check Box132").uncheck();
+        form.getCheckBox("Radiologist").uncheck();
       }
       if (accessType?.includes('Physician')) {
-        form.getCheckBox("Check Box133").check();
+        form.getCheckBox("Physician").check();
       } else {
-        form.getCheckBox("Check Box133").uncheck();
+        form.getCheckBox("Physician").uncheck();
       }
       if (accessType?.includes('ER Physician')) {
-        form.getCheckBox("Check Box134").check();
+        form.getCheckBox("ER Physician").check();
       } else {
-        form.getCheckBox("Check Box134").uncheck();
+        form.getCheckBox("ER Physician").uncheck();
       }
       if (accessType?.includes('DI Technologist')) {
-        form.getCheckBox("Check Box135").check();
+        form.getCheckBox("DI Technologist").check();
       } else {
-        form.getCheckBox("Check Box135").uncheck();
-      }
-      if (accessType?.includes('Orthopedic Surgeon')) {
-        form.getCheckBox("Check Box136").check();
-      } else {
-        form.getCheckBox("Check Box136").uncheck();
-      }
-      if (accessType?.includes('Super User')) {
-        form.getCheckBox("Check Box137").check();
-      } else {
-        form.getCheckBox("Check Box137").uncheck();
+        form.getCheckBox("DI Technologist").uncheck();
       }
       if (accessType?.includes('Cleirical')) {
-        form.getCheckBox("Check Box138").check();
+        form.getCheckBox("Clerical").check();
       } else {
-        form.getCheckBox("Check Box138").uncheck();
+        form.getCheckBox("Clerical").uncheck();
       }
+      if (accessType?.includes('Super User')) {
+        form.getCheckBox("Super User").check();
+      } else {
+        form.getCheckBox("Super User").uncheck();
+      }
+      if (accessType?.includes('Orthopedic Surgeon')) {
+        form.getCheckBox("Orthopedic Surgeon").check();
+      } else {
+        form.getCheckBox("Orthopedic Surgeon").uncheck();
+      }
+
+
       if (accessType?.includes('Other')) {
-        form.getCheckBox("Check Box139").check();
+        form.getCheckBox("Other").check();
       } else {
-        form.getCheckBox("Check Box139").uncheck();
+        form.getCheckBox("Other").uncheck();
       }
 
-      form.getTextField("Text140").setText(otherAccessType);
+      // form.getTextField("Text140").setText(otherAccessType);
+      form.getTextField("Other Text").setText(otherAccessType);
       const formattedDate = format(new Date(), 'MMM dd, yyyy');
-      form.getTextField("Text144").setText(formattedDate || "");
-      form.getTextField("Text150").setText(formattedDate || "");
-
+      // form.getTextField("Text144").setText(formattedDate || "");
+      // form.getTextField("Text150").setText(formattedDate || "");
+      form.getTextField("Date").setText(formattedDate || "");
 
 
       // Signature field on the first page
       const esignText = basicForm?.forms?.[formIndex]?.esign?.esign || "";
 
       // Signature field on the first page
-      const signatureField1 = form.getField("Signature141");
+      // const signatureField1 = form.getField("Signature141");
       // if (esignText) {
       //   const { x: x1, y: y1, width: width1, height: height1 } =
       //     signatureField1.getWidgets()[0].getRectangle();
@@ -222,7 +294,7 @@ const PACSRequest = ({
 
       // }
 
-      const signatureField2 = form.getField("Signature151");
+      // const signatureField2 = form.getField("Signature151");
       // if (esignText) {
       //   const { x: x2, y: y2, width: width2, height: height2 } =
       //     signatureField2.getWidgets()[0].getRectangle();
@@ -268,6 +340,28 @@ const PACSRequest = ({
         uploadedFile = response?.data?.file;
         console.log(response?.data)
         setPdfUrl(uploadedFile?.fileURL)
+      } catch (error) {
+        console.error(error);
+        return null;
+      }
+
+      try {
+        let temp = {
+          schemaId: basicForm?.forms?.[formIndex]?.schemaId,
+          completedFormAsFile: uploadedFile,
+          data: basicForm?.forms?.[formIndex]?.data,
+          unFilledFields: basicForm?.forms?.[formIndex]?.unFilledFields,
+          acknowledged: basicForm?.forms?.[formIndex]?.acknowledged
+        }
+        await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
+          .then(response => {
+            console.log(response)
+            SuccessToaster("Application Updated Successfully");
+          })
+          .catch((error) => {
+            console.log(error)
+            ErrorToaster("Unexpected Error Updating Application");
+          });
       } catch (error) {
         console.error(error);
         return null;
@@ -341,7 +435,7 @@ const PACSRequest = ({
           <iframe
             src={pdfUrl}
             width="100%"
-            height="1600px"
+            height="1100px"
             title="PDF Viewer"
             style={{ border: 'none', overflow: 'hidden' }}
           />
@@ -352,6 +446,10 @@ const PACSRequest = ({
     );
   };
 
+  const getIsSaveInProgressOpen = (value) => {
+    setIsSaveInProgressOpen(value);
+  }
+
   const handleBackClick = () => {
     navigate(navigateBackURL)
   }
@@ -359,7 +457,7 @@ const PACSRequest = ({
   return (
     <div>
       <div className={style.applicationScreenGrid}>
-        <ProgressCard step={'STEP 9'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={30} timeText={'Min'} applicationId={applicationId} />
+        <ProgressCard step={'STEP 9'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={30} timeText={'Min'} applicationId={applicationId} basicForm={basicForm} />
         <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
       </div>
       <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
@@ -371,7 +469,7 @@ const PACSRequest = ({
             <CommonDivider />
             <div className={`${style.cardTitle} ${style.marginTop}  ${style.justifyCenter}`}>{formSchema?.title}</div>
             <CommonDivider />
-            <div className={`${style.cardTitle} ${style.marginTop}  ${style.justifyCenter}`}>Access Type Required</div>
+            <div className={`${style.cardTitle} ${style.marginTop}  ${style.justifyCenter}`}>Access Type Required (Select to show on the form below)</div>
             <div className={style.threeCol}>
               <CommonCheckBox
                 value="Radiologist"
@@ -461,10 +559,7 @@ const PACSRequest = ({
               <div className={`${style.continue} ${style.marginTop10}`} onClick={() => populatePdfWithProfileData(applicantProfile)} >UPDATE</div>
             </div>
             <div className={style.marginTop10}>
-              <div className={`${style.cardTitle} ${style.marginTop}  ${style.justifyCenter}`}>Form filled based on the data</div>
-              <div className={style.marginTop10}>
-                {renderPdfContent()}
-              </div>
+              {renderPdfContent()}
             </div>
 
           </div>
@@ -472,7 +567,7 @@ const PACSRequest = ({
         <div>
           <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
           <div className={style.stickyContainer}>
-            <div className={`${style.saveInProgress} ${style.marginTop}`} >SAVE IN PROGRESS</div>
+            <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
             <div className={style.twoColForButton}>
               <div className={`${style.continue} ${style.marginTop10}`} onClick={handleBackClick}>BACK</div>
               <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleSubmitApplicationReq()} >CONTINUE</div>
@@ -480,6 +575,9 @@ const PACSRequest = ({
           </div>
         </div>
       </div>
+      {isSaveInProgressOpen && (
+        <SaveInProgressDialog getIsOpen={getIsSaveInProgressOpen} />
+      )}
     </div >
   );
 };

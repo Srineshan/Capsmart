@@ -563,8 +563,12 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
     getPreApplication();
     getPreApplicationDocuments();
     getPreApplicationDetails();
-    getPreApplicationMedicalDirectives();
   }, [applicationId]);
+
+  useEffect(() => {
+    if (form?.applicant?.id)
+      getPreApplicationMedicalDirectives();
+  }, [form?.applicant?.id]);
 
 
   useEffect(() => {
@@ -625,7 +629,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
 
   const getPreApplicationMedicalDirectives = async () => {
     try {
-      const { data: applicationsMedicalDirectivesDetails } = await GET(`medical-directive-service/medicalDirectives/byUser?userId=${users?.id}`);
+      const { data: applicationsMedicalDirectivesDetails } = await GET(`medical-directive-service/medicalDirectives/byUser?userId=${form?.applicant?.id}`);
       setApplicationsMedicalDirectives(applicationsMedicalDirectivesDetails);
       setAttestedMDCount(applicationsMedicalDirectivesDetails?.completed?.length || 0)
       setPastDueMDCount(applicationsMedicalDirectivesDetails?.pastDue?.length || 0)
@@ -771,6 +775,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
           title={`Credentialing & Privileging ${form?.basicDetailReferences?.credentialingAndPrivilegingCategory?.type === "LOCUM" ? 'Locum' : 'Permanent'} Staff Details`}
           close={true}
           closeClick={onClose}
+          isNotLogout={true}
         />
         <div className={`${style.marginLeftRight50} ${style.marginTop10}`}>
           <div

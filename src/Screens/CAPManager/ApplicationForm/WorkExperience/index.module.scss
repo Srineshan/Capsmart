@@ -244,3 +244,8 @@
     opacity: 0;
     pointer-events: none;
 }
+
+.disabledButton {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

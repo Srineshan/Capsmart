@@ -60,6 +60,9 @@ const BasicInformation = ({ basicForm, setBasicForm, applicationId, getPreApplic
   };
 
   const getIsSaveInProgressOpen = (value) => {
+    if (value) {
+      handleSubmitApplicationReq(true);
+    }
     setIsSaveInProgressOpen(value);
   };
 
@@ -177,7 +180,7 @@ const BasicInformation = ({ basicForm, setBasicForm, applicationId, getPreApplic
     setWarningFields(missingKeys);
   };
 
-  const handleSubmitApplicationReq = async () => {
+  const handleSubmitApplicationReq = async (saveInProgress) => {
     // const errors = validateSchema(form1, basicForm?.basicDetails);
     // console.log(errors)
     let data = basicForm;
@@ -191,10 +194,12 @@ const BasicInformation = ({ basicForm, setBasicForm, applicationId, getPreApplic
         setBasicForm(response?.data);
         SuccessToaster("Staff Member Application Updated Successfully");
         getPreApplication();
-        if (sessionStorage.getItem("fromSummary") === "true") {
-          navigate(-1);
-        } else {
-          navigate(`/applicationForm/${applicationId}/${data?.forms[0]?.formCategory}/${btoa(data?.forms[0]?.schemaCategory)}`)
+        if (!saveInProgress) {
+          if (sessionStorage.getItem("fromSummary") === "true") {
+            navigate(-1);
+          } else {
+            navigate(`/applicationForm/${applicationId}/${data?.forms[0]?.formCategory}/${btoa(data?.forms[0]?.schemaCategory)}`)
+          }
         }
       })
       .catch((error) => {
@@ -248,6 +253,7 @@ const BasicInformation = ({ basicForm, setBasicForm, applicationId, getPreApplic
             timeText={"Min"}
             progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`}
             applicationId={applicationId}
+            basicForm={basicForm}
           />
           <div className={`${style.applicationCardStyle}  ${style.marginTop}`}>
             {/* <CommonMailingAddress label={'Business Mailing Address*'} onChangeAddressLine1={() => { }} placeholderAddressLine1={'123 Street'} maxLengthAddressLine1={25} valueAddressLine1={''}
@@ -283,7 +289,7 @@ const BasicInformation = ({ basicForm, setBasicForm, applicationId, getPreApplic
                   formSchema={formSchemaWholeObject}
                 />
               )}
-            <CommonDivider />
+            {/* <CommonDivider /> */}
             {form1 !== undefined &&
               "departmentSpecialty" in form1?.properties && (
                 <ApplicationFieldCard

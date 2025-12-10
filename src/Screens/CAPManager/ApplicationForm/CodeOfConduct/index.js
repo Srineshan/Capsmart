@@ -9,6 +9,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import html2pdf from "html2pdf.js";
 import CryptoJS from 'crypto-js';
 import style from './index.module.scss';
+import { PDFDocument } from "pdf-lib";
 import CommonCheckBox from '../../../../Components/CommonFields/CommonCheckBox';
 import ESign from '../../../../Components/ESign';
 import { format } from 'date-fns';
@@ -45,6 +46,7 @@ const CodeOfConduct = ({ acknowledgementForm, dateFormat, name, basicForm, getPr
     const [isSaveInProgressOpen, setIsSaveInProgressOpen] = useState(false);
     const [signText, setSignText] = useState(name + " " + currentDate);
     const [initialArray, setInitialArray] = useState([])
+    const proxyUrl = "https://app.timesmartai.com/cors/"
 
     console.log(initialArray)
 
@@ -84,6 +86,12 @@ const CodeOfConduct = ({ acknowledgementForm, dateFormat, name, basicForm, getPr
         }
     }, [basicForm?.forms?.[formIndex]?.id])
 
+    useEffect(() => {
+        if (formSchema && !basicForm?.forms?.[formIndex]?.completedFormAsFile?.fileURL) {
+            populatePdfWithProfileData()
+        }
+    }, [formSchema])
+
     const getFormSchema = async () => {
         const { data: form } = await GET(
             `application-management-service/formSchema/${basicForm?.formSchemas?.[formIndex]?.id}`
@@ -101,6 +109,112 @@ const CodeOfConduct = ({ acknowledgementForm, dateFormat, name, basicForm, getPr
     const getIsSaveInProgressOpen = (value) => {
         setIsSaveInProgressOpen(value);
     };
+
+    const populatePdfWithProfileData = async () => {
+        console.log('Field Name')
+        try {
+            console.log('Field Name')
+            const existingPdfBytes = await fetch(`${proxyUrl}${formSchema?.file?.fileURL}`).then((res) =>
+                res.arrayBuffer()
+            );
+
+            const pdfDoc = await PDFDocument.load(existingPdfBytes);
+            const form = pdfDoc.getForm();
+
+            const image = `${proxyUrl}${basicForm?.forms?.[basicForm?.forms?.findIndex(data => data?.schemaCategory === "UploadYourDoc")]?.data?.setUpYourSignature?.file?.fileURL}`;
+            let imageBytes
+            if (image)
+                imageBytes = await fetch(image).then(res => res.arrayBuffer());
+
+            const isPng = image.toLowerCase().endsWith(".png");
+            const signatureImg = isPng
+                ? await pdfDoc.embedPng(imageBytes)
+                : await pdfDoc.embedJpg(imageBytes);
+
+
+            const fields = form.getFields();
+            fields.forEach((field) => {
+                console.log(`Field Name: ${field.getName()}`);
+            });
+
+            const sigField = form.getButton("Signature");
+
+            sigField.setImage(signatureImg);
+
+            const formatNameWithSpacing = (name) =>
+                name?.split("").join(" ") || "";
+            const formattedFullName = `${formatNameWithSpacing(basicForm?.applicant?.name?.lastName || "")}  ${formatNameWithSpacing(basicForm?.applicant?.name?.firstName || "")}`;
+
+            form.getTextField("Print Name").setText(formattedFullName);
+
+            const formattedDate = format(new Date(), 'MMM dd, yyyy');
+            form.getTextField("Date").setText(formattedDate || "");
+
+
+            form.getFields().forEach(field => {
+                if (field.constructor.name === 'PDFCheckBox') {
+                    field.updateAppearances();  // fixes display
+                }
+            });
+            form.flatten();
+            const pdfBytes = await pdfDoc.save();
+            const blob = new Blob([pdfBytes], { type: "application/pdf" });
+            console.log('indexCheck')
+            await addNewDocumentWithFilledValues(blob);
+        } catch (error) {
+            console.log('indexCheck')
+            console.error("Error populating PDF:", error);
+            ErrorToaster("Failed to populate PDF");
+        }
+    };
+
+    const addNewDocumentWithFilledValues = async (file) => {
+        console.log(file, file?.name, 'Test')
+        let fileName = {
+            "fileName": 'codeOfConductFilled.pdf'
+        };
+        const formData = new FormData();
+
+        if (file !== null) {
+            const blob = new Blob([file], { type: `application/pdf` });
+            formData.append('files', new Blob([JSON.stringify(fileName)], {
+                type: "application/json"
+            }));
+            formData.append('documents', blob, fileName?.fileName);
+
+            let uploadedFile = {};
+            try {
+                const response = await POST(`application-management-service/application/${applicationId}/files`, formData);
+                console.log(response?.data);
+                uploadedFile = response?.data?.file;
+            } catch (error) {
+                console.error(error);
+                return null;
+            }
+
+            try {
+                let temp = {
+                    schemaId: basicForm?.forms?.[formIndex]?.schemaId,
+                    completedFormAsFile: uploadedFile,
+                    data: basicForm?.forms?.[formIndex]?.data,
+                    unFilledFields: basicForm?.forms?.[formIndex]?.unFilledFields,
+                    acknowledged: basicForm?.forms?.[formIndex]?.acknowledged
+                }
+                await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
+                    .then(response => {
+                        console.log(response)
+                        SuccessToaster("Application Updated Successfully");
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                        ErrorToaster("Unexpected Error Updating Application");
+                    });
+            } catch (error) {
+                console.error(error);
+                return null;
+            }
+        }
+    }
 
     const addNewDocument = async (file) => {
         console.log(file, file?.name, 'Test')
@@ -202,7 +316,7 @@ const CodeOfConduct = ({ acknowledgementForm, dateFormat, name, basicForm, getPr
     return (
         <div>
             <div className={style.applicationScreenGrid}>
-                <ProgressCard step={'STEP 4'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={34} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} applicationId={applicationId} />
+                <ProgressCard step={'STEP 4'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={34} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} applicationId={applicationId} basicForm={basicForm} />
                 <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
             </div>
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
@@ -228,7 +342,7 @@ const CodeOfConduct = ({ acknowledgementForm, dateFormat, name, basicForm, getPr
                         <ESign />
                         <img src={pdf7} alt="" className={style.pdfStyle} />
                         <ESign /> */}
-                        <PdfViewer pdfurl={formSchema?.file?.fileURL} name={name} currentDate={currentDate} initialArray={initialArray} setInitialArray={setInitialArray} isSigned={isSigned} setIsSigned={setIsSigned} formData={basicForm} />
+                        <PdfViewer pdfurl={basicForm?.forms?.[formIndex]?.completedFormAsFile?.fileURL || formSchema?.file?.fileURL} name={name} currentDate={currentDate} initialArray={initialArray} setInitialArray={setInitialArray} isSigned={isSigned} setIsSigned={setIsSigned} formData={basicForm} />
                     </div>
                 </div>
                 <div>

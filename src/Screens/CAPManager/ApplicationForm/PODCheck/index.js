@@ -63,7 +63,7 @@ const PODCheck = ({ basicForm, setBasicForm, applicationId }) => {
           <div className={`${style.displayInRow}${style.marginTop20}`}>
             <div className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}>
               <span className={`${style.tableHeaderHeadingTextStyle}`}>Overall Status Of Data & Documents Required For This Application</span>
-              <div className={`${style.greyDotStyle}`}></div>
+              <div className={form?.forms.every(item => item.acknowledged === true) ? style.greenDotStyle : style.yellowDotStyle}></div>
             </div>
           </div>
           <div className={` ${style.tableTopHeaderStyle} ${style.marginTop10} ${style.tableHeaderGridStyle} `}>
@@ -112,15 +112,15 @@ const PODCheck = ({ basicForm, setBasicForm, applicationId }) => {
             </div>
             <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
               <div className={`${style.tableDataFontStyle1}`}> Applicant Profile Information</div>
+            </div>
+            <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
+              <div className={`${style.greenDotStyle} `}></div>
+            </div>
+            <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
+              <div className={`${style.greenDotStyle} `}></div>
+            </div>
+            <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
               <img src={Pencil} alt="" className={`${style.pencilImgStyle} ${style.justifyCenter} ${style.cursorPointer}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/applicationForm/${applicationId}/Form/${btoa('BasicInformation')}`); }} />
-            </div>
-            <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-              <div className={`${style.greenDotStyle} `}></div>
-            </div>
-            <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-              <div className={`${style.greenDotStyle} `}></div>
-            </div>
-            <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
             </div>
           </div>
           <div>
@@ -135,7 +135,6 @@ const PODCheck = ({ basicForm, setBasicForm, applicationId }) => {
                   </div>
                   <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
                     <div className={`${style.tableDataFontStyle1}`}>{data?.title}</div>
-                    <img src={Pencil} alt="" className={`${style.pencilImgStyle} ${style.justifyCenter} ${style.cursorPointer}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/applicationForm/${applicationId}/${data?.formCategory}/${btoa(data?.schemaCategory)}`) }} />
                   </div>
                   <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
                     <div className={`${form?.forms[index]?.acknowledged === true ? style.greenDotStyle : style.yellowDotStyle}`}></div>
@@ -143,6 +142,9 @@ const PODCheck = ({ basicForm, setBasicForm, applicationId }) => {
                   </div>
                   <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
                     <div className={`${form?.forms[index]?.acknowledged === true ? style.greenDotStyle : style.yellowDotStyle}`}></div>
+                  </div>
+                  <div className={`${style.displayInRow} ${style.verticalAlignCenter} `}>
+                    <img src={Pencil} alt="" className={`${style.pencilImgStyle} ${style.justifyCenter} ${style.cursorPointer}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/applicationForm/${applicationId}/${data?.formCategory}/${btoa(data?.schemaCategory)}`) }} />
                   </div>
                   {/* <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
                     <div className={`${style.marginLeft5} ${style.tableDataFontDisabledStyle1}`}>

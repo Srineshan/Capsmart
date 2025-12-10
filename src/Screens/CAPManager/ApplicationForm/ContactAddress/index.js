@@ -92,6 +92,9 @@ const ContactAddress = ({ basicForm, setBasicForm, applicationId, getPreApplicat
   }
 
   const getIsSaveInProgressOpen = (value) => {
+    if (value) {
+      handleSubmitApplicationReq('', true);
+    }
     setIsSaveInProgressOpen(value);
   }
 
@@ -244,13 +247,13 @@ const ContactAddress = ({ basicForm, setBasicForm, applicationId, getPreApplicat
   }
 
 
-  const handleSubmitApplicationReq = async (skip) => {
-    if (isEdited) {
+  const handleSubmitApplicationReq = async (skip, save) => {
+    if (isEdited || save) {
       let temp = {
         schemaId: basicForm?.forms?.[formIndex]?.schemaId,
         data: basicForm?.forms?.[formIndex]?.data,
         unFilledFields: warningFields?.map(data => data?.label),
-        acknowledged: skip === "skipped" ? false : true
+        acknowledged: save ? basicForm?.forms?.[formIndex]?.acknowledged : skip === "skipped" ? false : true
       }
       await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
         .then(response => {
@@ -258,12 +261,13 @@ const ContactAddress = ({ basicForm, setBasicForm, applicationId, getPreApplicat
           setBasicForm(response?.data)
           SuccessToaster("Application Updated Successfully");
           getPreApplication()
-          if (sessionStorage.getItem('fromSummary') === "true") {
-            navigate(-1);
-          }
-          else {
-            navigate(navigateURL)
-
+          if (!save) {
+            if (sessionStorage.getItem('fromSummary') === "true") {
+              navigate(-1);
+            }
+            else {
+              navigate(navigateURL)
+            }
           }
         })
         .catch((error) => {
@@ -308,7 +312,7 @@ const ContactAddress = ({ basicForm, setBasicForm, applicationId, getPreApplicat
   return (
     <div>
       <div className={style.applicationScreenGrid}>
-        <ProgressCard step={'STEP 1'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={1} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} applicationId={applicationId} />
+        <ProgressCard step={'STEP 1'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={1} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} applicationId={applicationId} basicForm={basicForm} />
         <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
       </div>
       <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>

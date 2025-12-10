@@ -275,7 +275,7 @@ const PNPMECApproval = () => {
     return (
         <div className={style.screenBackground}>
             <div className={style.welcomeText}>
-                <ApplicationHeader title={`${policyAndProcedures?.mdID}: ${policyAndProcedures?.title}`} close={true} closeClick={handleClose} />
+                <ApplicationHeader title={`${policyAndProcedures?.mdID}: ${policyAndProcedures?.title}`} close={true} closeClick={handleClose} isNotLogout={true} />
             </div>
             <div className={style.headerData}>
                 <span style={{ marginLeft: '20px' }}>Ordering Of Laboratory Investigations - IPAC</span>

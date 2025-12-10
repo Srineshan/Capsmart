@@ -21,6 +21,9 @@ const CommonTextField = ({
   warning,
   inputRef,
   normalLabel,
+  onBlur,
+  onFocus,
+  inputProps: externalInputProps = {}
 }) => {
   const warningCheck =
     type === "number"
@@ -55,6 +58,7 @@ const CommonTextField = ({
           style: {
             height: 15,
           },
+          ...externalInputProps,
         }}
         placeholder={placeholder}
         className={`${className} ${style.marginTop}`}
@@ -62,11 +66,12 @@ const CommonTextField = ({
         key={key}
         defaultValue={defaultValue}
         onKeyDown={
-          type === "number" || type === "tel" ? preventNegativeValues : () => {}
+          type === "number" || type === "tel" ? preventNegativeValues : () => { }
         }
         color={shouldShowWarning ? "error" : ""}
         focused={shouldShowWarning}
-        onBlur={handleBlur}
+        onBlur={onBlur ? onBlur : handleBlur}
+        onFocus={onFocus ? onFocus : () => { }}
       />
     </div>
   );

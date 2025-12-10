@@ -205,7 +205,7 @@
 
 .tableGrid {
     display: grid;
-    grid-template-columns: 20% 20% 21% 20% 10% 3%;
+    grid-template-columns: 20% 20% 15% 20% 16% 3%;
     gap: 1%;
 }
 
@@ -239,4 +239,9 @@
 .hiddenStickyContainer {
     opacity: 0;
     pointer-events: none;
+}
+
+.disabledButton {
+    opacity: 0.5;
+    cursor: not-allowed;
 }

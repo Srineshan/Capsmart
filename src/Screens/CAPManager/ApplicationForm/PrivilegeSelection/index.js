@@ -63,7 +63,8 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, applicationId, getPreAppl
     const [isSaveInProgressOpen, setIsSaveInProgressOpen] = useState(false);
     useEffect(() => {
         getApplication();
-    }, [])
+        sessionStorage.setItem("applicationId", applicationId);
+    }, [applicationId])
 
     useEffect(() => {
         getFields()
@@ -660,7 +661,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, applicationId, getPreAppl
     return (
         <div>
             <div className={style.applicationScreenGrid}>
-                <ProgressCard step={'STEP 6'} title={'Details of request for privileges'} dataType={'Step 7'} timeNumber={20} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} applicationId={applicationId} />
+                <ProgressCard step={'STEP 6'} title={'Details of request for privileges'} dataType={'Step 7'} timeNumber={20} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} applicationId={applicationId} basicForm={basicForm} />
                 <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
             </div>
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>

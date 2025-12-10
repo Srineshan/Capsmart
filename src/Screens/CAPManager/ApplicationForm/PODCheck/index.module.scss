@@ -919,7 +919,7 @@ body::-webkit-scrollbar {
 
 .tableHeaderGridStyle {
     display: grid;
-    grid-template-columns: 10% 66% 10% 10%;
+    grid-template-columns: 10% 60% 10% 10% 5%;
     grid-gap: 1%;
 }
 
@@ -931,7 +931,7 @@ body::-webkit-scrollbar {
 
 .tableValueGridStyle {
     display: grid;
-    grid-template-columns: 10% 66% 10% 10%;
+    grid-template-columns: 10% 60% 10% 10% 5%;
     grid-gap: 1%;
 }
 

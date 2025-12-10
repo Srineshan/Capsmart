@@ -363,7 +363,6 @@ const App = ({ props }) => {
   let userFromCookie = cookie.get("user");
   let entityIdFromCookie = cookie.get('entityId');
   let errorInfo = sessionStorage.getItem('errorInfo');
-  console.log(authorization, 'authorization', TenantID, isAuthenticated, loggedInUser?.id, entityIdFromCookie, document.cookie, cookie.get("authorization") === 'undefined', cookie.get("authorization") !== undefined)
   const [showDialog, setShowDialog] = useState(false);
   const refreshTimeoutRef = useRef(null);
   // useEffect(() => {
@@ -854,7 +853,7 @@ const App = ({ props }) => {
         method: "GET",
         headers: {
           "Authorization": `Bearer ${authorization}`,
-          "X-subdomain": 'master',
+          "X-subdomain": 'cmh-hospital',
         },
       };
     console.log(requestHeader, 'requestHeader')
@@ -897,7 +896,7 @@ const App = ({ props }) => {
         "Content-Type": "application/json",
         "X-tenantID": id,
         "Authorization": `Bearer ${authorization}`,
-        "X-subdomain": 'master',
+        "X-subdomain": 'cmh-hospital',
       },
     }
     fetch(`${baseUrl()}/user-management-service/auth/login`, requestOptions)

@@ -66,6 +66,9 @@ const MalpracticeInfo = ({ basicForm, setBasicForm, applicationId, getPreApplica
     };
 
     const getIsSaveInProgressOpen = (value) => {
+        if (value) {
+            handleSubmitApplicationReq('', true);
+        }
         setIsSaveInProgressOpen(value);
     }
 
@@ -112,25 +115,26 @@ const MalpracticeInfo = ({ basicForm, setBasicForm, applicationId, getPreApplica
     }
 
 
-    const handleSubmitApplicationReq = async (data) => {
-        if (isEdited) {
+    const handleSubmitApplicationReq = async (data, save) => {
+        if (isEdited || save) {
             let temp = {
                 schemaId: basicForm?.forms?.[formIndex]?.schemaId,
                 data: basicForm?.forms?.[formIndex]?.data,
                 unFilledFields: warningFields?.map(data => data?.label),
-                acknowledged: data === "skipped" ? false : true
+                acknowledged: save ? basicForm?.forms?.[formIndex]?.acknowledged : data === "skipped" ? false : true
             }
             await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
                 .then(response => {
                     console.log(response)
                     SuccessToaster("Application Updated Successfully");
                     getPreApplication();
-                    if (sessionStorage.getItem('fromSummary') === "true") {
-                        navigate(-1);
-                    }
-                    else {
-                        navigate(navigateURL)
-
+                    if (!save) {
+                        if (sessionStorage.getItem('fromSummary') === "true") {
+                            navigate(-1);
+                        }
+                        else {
+                            navigate(navigateURL)
+                        }
                     }
                 })
                 .catch((error) => {
@@ -165,7 +169,7 @@ const MalpracticeInfo = ({ basicForm, setBasicForm, applicationId, getPreApplica
     return (
         <div>
             <div className={style.applicationScreenGrid}>
-                <ProgressCard step={'STEP 3'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={2} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} applicationId={applicationId} />
+                <ProgressCard step={'STEP 3'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={2} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} applicationId={applicationId} basicForm={basicForm} />
                 <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
             </div>
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>

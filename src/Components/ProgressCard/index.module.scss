@@ -95,9 +95,9 @@
 }
 
 .progressStyle {
-    height: 10px;
+    height: 6px;
     width: 100%;
-    background: transparent linear-gradient(90deg, var(--primary-color) 0%, var(--primary-color) 10%, #E9E9F0 11%, #E9E9F0 100%) 0% 0% no-repeat padding-box;
+    // background: transparent linear-gradient(90deg, var(--primary-color) 0%, var(--primary-color) 10%, #E9E9F0 11%, #E9E9F0 100%) 0% 0% no-repeat padding-box;
     opacity: 1;
 }
 
@@ -114,4 +114,51 @@
     display: grid;
     grid-auto-flow: column;
     grid-template-columns: 10% 40% 40% 10%;
+}
+
+.dotStyle {
+    height: 12px;
+    width: 12px;
+    border-radius: 4px;
+    border: 1px solid var(--primary-color);
+    background-color: $acknowledgmentgreen;
+    margin-top: -3px;
+    cursor: pointer;
+}
+
+.reddotStyle {
+    height: 12px;
+    width: 12px;
+    border-radius: 4px;
+    border: 1px solid var(--primary-color);
+    background-color: $statusred;
+    margin-top: -3px;
+    cursor: pointer;
+}
+
+.yellowdotStyle {
+    height: 12px;
+    width: 12px;
+    border-radius: 4px;
+    border: 1px solid var(--primary-color);
+    background-color: $acknowledgmentyellow;
+    margin-top: -3px;
+    cursor: pointer;
+}
+
+.disabledDotStyle {
+    height: 12px;
+    width: 12px;
+    border-radius: 4px;
+    background-color: $statusgrey;
+    margin-top: -3px;
+    border: 1px solid var(--primary-color);
+}
+
+.disabled {
+    cursor: not-allowed;
+}
+
+.cursorPointer {
+    cursor: pointer;
 }
