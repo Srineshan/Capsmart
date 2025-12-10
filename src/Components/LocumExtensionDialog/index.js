@@ -217,7 +217,6 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab, requestedType }) => {
 
 
   useEffect(() => {
-    getPreApplicationStaff();
     getActiveUserData();
     setSelectedPrivilegesForDisplayMultiple(
       formDetails?.privileges?.obligatedPrivileges
@@ -226,6 +225,10 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab, requestedType }) => {
     // departmentName = selectDataLocum?.basicDetailReferences?.department?.name
     console.log("staffLocumId", staffLocumId, departmentName)
   }, []);
+
+  useEffect(() => {
+    getPreApplicationStaff();
+  }, [selectDataLocum?.id])
 
   useEffect(() => {
     getStaffPrivilege();
