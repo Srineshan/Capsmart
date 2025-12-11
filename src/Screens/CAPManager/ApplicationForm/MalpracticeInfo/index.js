@@ -131,6 +131,7 @@ const MalpracticeInfo = ({ basicForm, setBasicForm, applicationId, getPreApplica
                     if (!save) {
                         if (sessionStorage.getItem('fromSummary') === "true") {
                             navigate(-1);
+                            sessionStorage.setItem('fromSummary', false)
                         }
                         else {
                             navigate(navigateURL)
@@ -144,6 +145,7 @@ const MalpracticeInfo = ({ basicForm, setBasicForm, applicationId, getPreApplica
         } else {
             if (sessionStorage.getItem('fromSummary') === "true") {
                 navigate(-1);
+                sessionStorage.setItem('fromSummary', false)
             }
             else {
                 navigate(navigateURL)

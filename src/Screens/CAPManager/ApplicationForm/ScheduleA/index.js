@@ -171,6 +171,7 @@ const ScheduleA = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
           getFormSchema();
           if (sessionStorage.getItem('fromSummary') === 'true') {
             navigate(-1);
+            sessionStorage.setItem('fromSummary', false)
           } else {
             navigate(navigateURL)
           }
@@ -183,6 +184,7 @@ const ScheduleA = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
     else {
       if (sessionStorage.getItem('fromSummary') === 'true') {
         navigate(-1);
+        sessionStorage.setItem('fromSummary', false)
       } else {
         navigate(navigateURL)
       }
@@ -192,6 +194,7 @@ const ScheduleA = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
   const handleContinue = () => {
     if (sessionStorage.getItem('fromSummary') === 'true') {
       navigate(-1);
+      sessionStorage.setItem('fromSummary', false)
     } else {
       navigate(navigateURL)
     }

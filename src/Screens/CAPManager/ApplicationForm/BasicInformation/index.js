@@ -172,6 +172,16 @@ const BasicInformation = ({ basicForm, setBasicForm, applicationId, getPreApplic
       );
       missingKeys = temp;
     }
+    console.log(missingKeys, 'missingKeys')
+    if (!formSchemaWholeObject?.schema?.if?.properties?.departmentSpecialty?.properties?.specialty?.enum?.includes(getValueByPath(
+      basicForm,
+      "basicDetails.departmentSpecialty.specialty"
+    ))) {
+      let filterKeys = [`basicDetails.regionalCallResponsibilities.regionalCallResponsibilities`]
+      let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+      missingKeys = temp;
+    }
+    console.log(missingKeys, 'missingKeys')
     if (missingKeys?.length !== 0) {
       setShowValidationDialog(true);
     } else {
@@ -197,6 +207,7 @@ const BasicInformation = ({ basicForm, setBasicForm, applicationId, getPreApplic
         if (!saveInProgress) {
           if (sessionStorage.getItem("fromSummary") === "true") {
             navigate(-1);
+            sessionStorage.setItem('fromSummary', false)
           } else {
             navigate(`/applicationForm/${applicationId}/${data?.forms[0]?.formCategory}/${btoa(data?.forms[0]?.schemaCategory)}`)
           }

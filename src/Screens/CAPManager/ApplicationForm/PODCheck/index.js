@@ -9,7 +9,7 @@ import CommonCheckBox from '../../../../Components/CommonFields/CommonCheckBox';
 import DataStatusIcon from '../../../../images/dqStatus.png';
 import DocumentIcon from '../../../../images/document.png';
 import { GET, PUT } from '../../../dataSaver';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Pencil from "../../../../images/pencil.png";
 import EditIcon from '@mui/icons-material/Edit';
 import { ErrorToaster, SuccessToaster } from '../../../../utils/toaster';
@@ -18,14 +18,15 @@ import style from './index.module.scss';
 import AIAssistantDialog from '../../../../Components/AIAssistantDialog';
 import SaveInProgressDialog from '../../../../Components/SaveInProgressDialog';
 
-const PODCheck = ({ basicForm, setBasicForm, applicationId }) => {
+const PODCheck = ({ basicForm, setBasicForm }) => {
   const [form, setForm] = useState();
   const [form2, setForm2] = useState();
   const navigate = useNavigate()
   const [isOpen, setIsOpen] = useState(true);
   const itemsToProcessConditionCheckCategories = ['Education', 'WorkExperience', 'References']
   const [isSaveInProgressOpen, setIsSaveInProgressOpen] = useState(false);
-  const id = sessionStorage.getItem('applicationId');
+  const { applicationId, section, step } = useParams();
+  // const id = sessionStorage.getItem('applicationId');
   useEffect(() => {
     sessionStorage.setItem('fromSummary', false);
     getPreApplication();
@@ -41,7 +42,7 @@ const PODCheck = ({ basicForm, setBasicForm, applicationId }) => {
 
   const getPreApplication = async () => {
     const { data: basicForm } = await GET(
-      `application-management-service/application/${id}`
+      `application-management-service/application/${applicationId}`
     );
     setForm(basicForm)
   }

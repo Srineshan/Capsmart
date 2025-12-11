@@ -173,6 +173,7 @@ const ConfidentialityAgreement = ({ acknowledgementForm, dateFormat, name, basic
                     getFormSchema();
                     if (sessionStorage.getItem('fromSummary') === 'true') {
                         navigate(-1);
+                        sessionStorage.setItem('fromSummary', false)
                     }
                     else {
                         navigate(navigateURL)
@@ -186,6 +187,7 @@ const ConfidentialityAgreement = ({ acknowledgementForm, dateFormat, name, basic
         else {
             if (sessionStorage.getItem('fromSummary') === 'true') {
                 navigate(-1);
+                sessionStorage.setItem('fromSummary', false)
             } else {
                 navigate(navigateURL)
             }
@@ -194,6 +196,7 @@ const ConfidentialityAgreement = ({ acknowledgementForm, dateFormat, name, basic
     const handleContinue = () => {
         if (sessionStorage.getItem('fromSummary') === 'true') {
             navigate(-1);
+            sessionStorage.setItem('fromSummary', false)
         } else {
             navigate(navigateURL)
         }

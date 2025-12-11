@@ -400,6 +400,7 @@ const PACSRequest = ({
         SuccessToaster("Application Updated Successfully");
         if (sessionStorage.getItem('fromSummary') === 'true') {
           navigate(-1);
+          sessionStorage.setItem('fromSummary', false)
         }
         else {
           navigate(navigateURL)

@@ -290,6 +290,7 @@ const CodeOfConduct = ({ acknowledgementForm, dateFormat, name, basicForm, getPr
                     handleDownload();
                     if (sessionStorage.getItem('fromSummary') === 'true') {
                         navigate(-1);
+                        sessionStorage.setItem('fromSummary', false)
                     }
                     else {
                         navigate(navigateURL)
@@ -303,6 +304,7 @@ const CodeOfConduct = ({ acknowledgementForm, dateFormat, name, basicForm, getPr
         else {
             if (sessionStorage.getItem('fromSummary') === 'true') {
                 navigate(-1);
+                sessionStorage.setItem('fromSummary', false)
             } else {
                 navigate(navigateURL)
             }

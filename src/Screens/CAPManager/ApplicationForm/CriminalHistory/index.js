@@ -143,6 +143,7 @@ const CriminalHistory = ({ basicForm, setBasicForm, applicationId, getPreApplica
                     getPreApplication()
                     if (sessionStorage.getItem('fromSummary') === "true") {
                         navigate(-1);
+                        sessionStorage.setItem('fromSummary', false)
                     }
                     else {
                         navigate(navigateURL)
@@ -156,6 +157,7 @@ const CriminalHistory = ({ basicForm, setBasicForm, applicationId, getPreApplica
         } else {
             if (sessionStorage.getItem('fromSummary') === "true") {
                 navigate(-1);
+                sessionStorage.setItem('fromSummary', false)
             }
             else {
                 navigate(navigateURL)

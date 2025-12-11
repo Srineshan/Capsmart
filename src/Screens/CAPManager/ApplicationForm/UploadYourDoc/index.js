@@ -448,6 +448,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
       if (action === 'continue') {
         if (sessionStorage.getItem('fromSummary') === 'true') {
           navigate(-1);
+          sessionStorage.setItem('fromSummary', false)
         } else {
           navigate(navigateURL);
         }

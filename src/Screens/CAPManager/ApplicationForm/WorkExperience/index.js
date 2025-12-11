@@ -226,6 +226,7 @@ const WorkExperience = ({ basicForm, setBasicForm, applicationId, getPreApplicat
     const handleContinue = () => {
         if (sessionStorage.getItem('fromSummary') === "true") {
             navigate(-1);
+            sessionStorage.setItem('fromSummary', false)
         }
         else {
             navigate(navigateURL)

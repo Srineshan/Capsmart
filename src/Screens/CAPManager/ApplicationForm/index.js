@@ -82,6 +82,10 @@ const ApplicationForm = () => {
         setUserDetails();
     }, [user?.id])
 
+    useEffect(() => {
+        sessionStorage.setItem('applicationId', applicationId)
+    }, [applicationId])
+
     // const Logout = async () => {
     //     logout()
     //         .then(() => {

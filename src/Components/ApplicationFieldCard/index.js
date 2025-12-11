@@ -2846,7 +2846,14 @@ const ApplicationFieldCard = ({
                       />
                     ) : (
                       <img
-                        src={NotVerifiedImage}
+                        src={(
+                          isLableEmpty(fieldData.label)
+                            ? false
+                            : object.required?.includes(fieldKey) ||
+                            (parentData !== null
+                              ? parentData.required?.includes(fieldKey)
+                              : false)
+                        ) ? ToBeVerifiedImage : NotVerifiedImage}
                         alt=""
                         className={style.imgIcon}
                       />
@@ -3354,10 +3361,10 @@ const ApplicationFieldCard = ({
     ) {
       Object.keys(object?.tableHeaders)?.map((data, index) => {
         if (data === "data") {
-          temp.push({ type: "dot", value: array?.map((innerData) => "grey") });
+          temp.push({ type: "dot", value: array?.map((innerData) => innerData[data] === "ACCEPTED" ? "darkgreen" : innerData[data] === "REJECTED" ? "red" : innerData[data] === "PENDING" ? "yellow" : "grey") });
           // temp.push({ "type": "icon", "icon": array?.map(innerData => <CheckCircleIcon style={{ fontSize: 25, color: '#25BF6A' }} onClick={() => { window.open(innerData?.file?.fileURL, '_blank'); }} />), 'isShowHoverText': false })
         } else if (data === "pod") {
-          temp.push({ type: "dot", value: array?.map((innerData) => "grey") });
+          temp.push({ type: "dot", value: array?.map((innerData) => innerData[data] === "ACCEPTED" ? "darkgreen" : innerData[data] === "REJECTED" ? "red" : innerData[data] === "PENDING" ? "yellow" : "grey") });
           // temp.push({ "type": "icon", "icon": array?.map(innerData => <CheckCircleIcon style={{ fontSize: 25, color: '#25BF6A' }} onClick={() => { window.open(innerData?.file?.fileURL, '_blank'); }} />), 'isShowHoverText': false })
         } else if (data !== "file") {
           temp.push({

@@ -177,6 +177,7 @@ const PoliceVulnerableCheck = ({ acknowledgementForm, dateFormat, name, basicFor
             });
         if (sessionStorage.getItem('fromSummary') === 'true') {
             navigate(-1);
+            sessionStorage.setItem('fromSummary', false)
         } else {
             navigate(navigateURL)
         }
@@ -185,6 +186,7 @@ const PoliceVulnerableCheck = ({ acknowledgementForm, dateFormat, name, basicFor
     const handleContinue = () => {
         if (sessionStorage.getItem('fromSummary') === 'true') {
             navigate(-1);
+            sessionStorage.setItem('fromSummary', false)
         } else {
             navigate(navigateURL)
         }

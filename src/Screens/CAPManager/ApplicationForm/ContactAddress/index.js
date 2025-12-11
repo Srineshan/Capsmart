@@ -148,7 +148,7 @@ const ContactAddress = ({ basicForm, setBasicForm, applicationId, getPreApplicat
         /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}([\/\w .-]*)*\/?$/; // Simple URL validation
       return websiteRegex.test(website);
     };
-
+    console.log(keyValuePair, 'keyValuePair', metadata, labels)
     keyValuePair?.map(data => {
       if (data?.value === "" || data?.value === null || data?.value === undefined || data?.value === 0
         // || (data?.key === `forms[${formIndex}].data.contactAddress3.business.businessPhone` &&
@@ -264,6 +264,7 @@ const ContactAddress = ({ basicForm, setBasicForm, applicationId, getPreApplicat
           if (!save) {
             if (sessionStorage.getItem('fromSummary') === "true") {
               navigate(-1);
+              sessionStorage.setItem('fromSummary', false)
             }
             else {
               navigate(navigateURL)
@@ -287,6 +288,7 @@ const ContactAddress = ({ basicForm, setBasicForm, applicationId, getPreApplicat
     } else {
       if (sessionStorage.getItem('fromSummary') === "true") {
         navigate(-1);
+        sessionStorage.setItem('fromSummary', false)
       }
       else {
         navigate(navigateURL)

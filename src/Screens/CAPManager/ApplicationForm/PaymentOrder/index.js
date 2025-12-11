@@ -112,15 +112,90 @@ const PaymentOrder = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
     const getMissingFields = () => {
         let missingKeys = [];
         let keyValuePair = [];
+        const cellPhone = getValueByPath(
+            basicForm,
+            `forms[${formIndex}].data.personalInformation.phone`
+        );
+        const emailId = getValueByPath(
+            basicForm,
+            `forms[${formIndex}].data.personalInformation.emailAddress`
+        );
         metadata?.map((data, index) => {
             if (labels[index]?.mandatory)
                 keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: labels[index]?.label })
         })
+        const validateBusinessPhone = (phone) => {
+            const cleaned = phone.replace(/\D/g, "");
+            const phoneRegex = /^[0-9]{10}$/;
+            return phoneRegex.test(cleaned);
+        };
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        const isCellPhoneInvalid = !validateBusinessPhone(cellPhone);
+        const isEmailInvalid = !emailRegex.test(emailId);
+
+        if (isCellPhoneInvalid && cellPhone && cellPhone !== "") {
+            missingKeys.push({
+                key: "cellPhone",
+                value: cellPhone,
+                label: "Cell Phone is invalid",
+            });
+        }
+
+        if (isEmailInvalid && emailId && emailId !== "") {
+            missingKeys.push({
+                key: "emailId",
+                value: emailId,
+                label: "Email ID is invalid",
+            });
+        }
         keyValuePair?.map(data => {
             if (data?.value === "" || data?.value === null || data?.value === undefined || data?.value === 0) {
                 missingKeys.push(data)
             }
         })
+        if (isCellPhoneInvalid) {
+            setBasicForm((prevForm) => ({
+                ...prevForm,
+                forms: prevForm.forms.map((form) => {
+                    if (form.schemaId === basicForm.forms[formIndex].schemaId) {
+                        return {
+                            ...form,
+                            data: {
+                                ...form.data,
+                                personalInformation: {
+                                    ...form.data.personalInformation,
+                                    phone: "",
+                                },
+                            },
+                        };
+                    }
+                    return form;
+                }),
+            }));
+        }
+
+        if (isEmailInvalid) {
+            setBasicForm((prevForm) => ({
+                ...prevForm,
+                forms: prevForm.forms.map((form) => {
+                    if (form.schemaId === basicForm.forms[formIndex].schemaId) {
+                        return {
+                            ...form,
+                            data: {
+                                ...form.data,
+                                personalInformation: {
+                                    ...form.data.personalInformation,
+                                    emailAddress: "",
+                                },
+                            },
+                        };
+                    }
+                    return form;
+                }),
+            }));
+        }
         if (missingKeys?.length !== 0) {
             setShowValidationDialog(true)
         } else {
@@ -147,6 +222,7 @@ const PaymentOrder = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
                     handleDownload();
                     if (sessionStorage.getItem('fromSummary') === "true") {
                         navigate(-1);
+                        sessionStorage.setItem('fromSummary', false)
                     }
                     else {
                         navigate(navigateURL)
@@ -160,6 +236,7 @@ const PaymentOrder = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
         } else {
             if (sessionStorage.getItem('fromSummary') === "true") {
                 navigate(-1);
+                sessionStorage.setItem('fromSummary', false)
             }
             else {
                 navigate(navigateURL)
@@ -171,6 +248,7 @@ const PaymentOrder = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
     const handleContinue = () => {
         if (sessionStorage.getItem('fromSummary') === "true") {
             navigate(-1);
+            sessionStorage.setItem('fromSummary', false)
         }
         else {
             navigate(navigateURL)
@@ -226,6 +304,7 @@ const PaymentOrder = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
                     getPreApplication();
                     if (sessionStorage.getItem('fromSummary') === "true") {
                         navigate(-1);
+                        sessionStorage.setItem('fromSummary', false)
                     }
                     else {
                         navigate(navigateURL)

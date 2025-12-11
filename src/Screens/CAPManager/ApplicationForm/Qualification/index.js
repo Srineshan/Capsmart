@@ -140,6 +140,7 @@ const Qualification = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                     if (!save) {
                         if (sessionStorage.getItem('fromSummary') === "true") {
                             navigate(-1);
+                            sessionStorage.setItem('fromSummary', false)
                         }
                         else {
                             navigate(navigateURL)
@@ -163,6 +164,7 @@ const Qualification = ({ basicForm, setBasicForm, applicationId, getPreApplicati
         } else {
             if (sessionStorage.getItem('fromSummary') === "true") {
                 navigate(-1);
+                sessionStorage.setItem('fromSummary', false)
             }
             else {
                 navigate(navigateURL)

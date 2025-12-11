@@ -96,7 +96,7 @@ const MedicalHistory = ({ basicForm, setBasicForm, applicationId, getPreApplicat
       basicForm,
       `forms[${formIndex}].data.impactingPractice.medicalHistory.emailId`
     );
-
+    console.log(cellPhone, 'cellPhone')
     metadata?.forEach((data, index) => {
       console.log("datastep13metadata", data);
       if (labels[index]?.mandatory) {
@@ -109,8 +109,9 @@ const MedicalHistory = ({ basicForm, setBasicForm, applicationId, getPreApplicat
     });
 
     const validateBusinessPhone = (phone) => {
+      const cleaned = phone.replace(/\D/g, "");
       const phoneRegex = /^[0-9]{10}$/;
-      return phoneRegex.test(phone);
+      return phoneRegex.test(cleaned);
     };
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

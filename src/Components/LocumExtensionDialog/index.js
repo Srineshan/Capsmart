@@ -281,8 +281,8 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab, requestedType }) => {
   const userDetailsFetchOption = (sessionStorage.getItem('user') !== "undefined" && sessionStorage.getItem('user')) ? JSON.parse(sessionStorage.getItem('user')) : {};
 
   useEffect(() => {
-    userDepartmentList = userDetailsFetchOption?.sites?.sites[0]?.departmentList?.departments[0]?.id;
-    userSpecialty = userDetailsFetchOption?.sites?.sites[0]?.departmentList?.departments[0]?.serviceAreas[0]?.id;
+    userDepartmentList = userDetailsFetchOption?.sites?.sites[0]?.departmentList?.departments?.[0]?.id;
+    userSpecialty = userDetailsFetchOption?.sites?.sites[0]?.departmentList?.departments?.[0]?.serviceAreas?.[0]?.id;
     console.log("userSpecialty", userDepartmentList, userSpecialty)
   }, [])
 

@@ -173,6 +173,7 @@ const DisabilitiesAct = ({ acknowledgementForm, dateFormat, name, basicForm, get
                     getFormSchema();
                     if (sessionStorage.getItem('fromSummary') === 'true') {
                         navigate(-1);
+                        sessionStorage.setItem('fromSummary', false)
                     }
                     else {
                         navigate(navigateURL)
@@ -186,6 +187,7 @@ const DisabilitiesAct = ({ acknowledgementForm, dateFormat, name, basicForm, get
         else {
             if (sessionStorage.getItem('fromSummary') === 'true') {
                 navigate(-1);
+                sessionStorage.setItem('fromSummary', false)
             } else {
                 navigate(navigateURL)
             }

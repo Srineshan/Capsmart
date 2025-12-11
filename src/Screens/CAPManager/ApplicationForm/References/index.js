@@ -264,6 +264,7 @@ const References = ({ basicForm, setBasicForm, applicationId, getPreApplication 
   const handleContinue = () => {
     if (sessionStorage.getItem('fromSummary') === "true") {
       navigate(-1);
+      sessionStorage.setItem('fromSummary', false)
     }
     else {
       navigate(navigateURL)

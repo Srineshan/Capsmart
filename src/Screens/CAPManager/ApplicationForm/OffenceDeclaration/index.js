@@ -271,6 +271,7 @@ const OffenceDeclaration = ({ acknowledgementForm, dateFormat, name, basicForm, 
                     getFormSchema();
                     if (sessionStorage.getItem('fromSummary') === 'true') {
                         navigate(-1);
+                        sessionStorage.setItem('fromSummary', false)
                     }
                     else {
                         navigate(navigateURL)
@@ -284,6 +285,7 @@ const OffenceDeclaration = ({ acknowledgementForm, dateFormat, name, basicForm, 
         else {
             if (sessionStorage.getItem('fromSummary') === 'true') {
                 navigate(-1);
+                sessionStorage.setItem('fromSummary', false)
             } else {
                 navigate(navigateURL)
             }
@@ -292,6 +294,7 @@ const OffenceDeclaration = ({ acknowledgementForm, dateFormat, name, basicForm, 
     const handleContinue = () => {
         if (sessionStorage.getItem('fromSummary') === 'true') {
             navigate(-1);
+            sessionStorage.setItem('fromSummary', false)
         } else {
             navigate(navigateURL)
         }

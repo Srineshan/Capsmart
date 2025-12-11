@@ -147,6 +147,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                 getPreApplication();
                 if (sessionStorage.getItem('fromSummary') === "true") {
                     navigate(-1);
+                    sessionStorage.setItem('fromSummary', false)
                 }
                 else {
                     navigate(navigateURL)
