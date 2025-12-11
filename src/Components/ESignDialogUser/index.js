@@ -352,8 +352,8 @@ const ESignDialogUser = ({ getIsOpen, tempValue, baseKey, applicationId, basicFo
                     <div className={`${style.justifyCenter} ${style.displayInRow} ${style.marginTop}`}>
                         <Tooltip title={"Click to Cancel Changes"} arrow>
                             <div className={`${style.saveInProgress}`} onClick={() => { setIsContinue(true); getIsOpen(false) }}>CANCEL</div></Tooltip>
-                        <Tooltip title={"Click to Adopt for E-signature"} arrow>
-                            <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { setIsContinue(true); saveSignature() }}>ADOPT FOR e-SIGN</div></Tooltip>
+                        <Tooltip title={(selectedESignFormat === 'DRAW' && !isShowDrawCanvas) ? "" : "Click to Adopt for E-signature"} arrow>
+                            <div className={`${style.marginLeft} ${(selectedESignFormat === 'DRAW' && !isShowDrawCanvas) ? style.disabledContinue : style.continue}`} onClick={(selectedESignFormat === 'DRAW' && !isShowDrawCanvas) ? () => { } : () => { setIsContinue(true); saveSignature() }}>ADOPT FOR e-SIGN</div></Tooltip>
                     </div>
                 </div>
 

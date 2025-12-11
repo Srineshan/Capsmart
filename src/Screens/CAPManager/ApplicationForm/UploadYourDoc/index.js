@@ -448,6 +448,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
       if (action === 'continue') {
         if (sessionStorage.getItem('fromSummary') === 'true') {
           navigate(-1);
+          sessionStorage.setItem('fromSummary', false)
         } else {
           navigate(navigateURL);
         }
@@ -669,6 +670,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
             timeText="Min"
             progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`}
             applicationId={applicationId}
+            basicForm={basicForm}
           />
           <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
             {formSchema?.properties?.uploadTheDocument && (
@@ -681,6 +683,27 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                 stepPath={`forms[${formIndex}].data`}
               />
             )}
+
+            <div className={`${style.twoCol} ${style.marginTop10}`}>
+              <Tooltip title="Click to Upload Documents" arrow>
+                <CommonDropZone
+                  title="Upload Your Documents"
+                  description="Upload your files or drag & drop from your file cabinet"
+                  changeHandler={changeHandler}
+                  files={files}
+                />
+              </Tooltip>
+              <Tooltip title="Click to Upload Photo" arrow>
+                <CommonDropZone
+                  title="Upload A Photo"
+                  description="Take a picture or upload from your gallery"
+                  changeHandler={changeHandler}
+                  files={files}
+                  accept="image/*"
+                />
+              </Tooltip>
+            </div>
+
             <div className={`${style.addMoreBorder} ${style.marginTop}`}>
               <div className={style.padding20}>
                 <div className={style.spaceBetween}>
@@ -752,26 +775,6 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                 ))}
               </div>
             </div>
-
-            <div className={`${style.twoCol} ${style.marginTop10}`}>
-              <Tooltip title="Click to Upload Documents" arrow>
-                <CommonDropZone
-                  title="Upload Your Documents"
-                  description="Upload your files or drag & drop from your file cabinet"
-                  changeHandler={changeHandler}
-                  files={files}
-                />
-              </Tooltip>
-              <Tooltip title="Click to Upload Photo" arrow>
-                <CommonDropZone
-                  title="Upload A Photo"
-                  description="Take a picture or upload from your gallery"
-                  changeHandler={changeHandler}
-                  files={files}
-                  accept="image/*"
-                />
-              </Tooltip>
-            </div>
             <div ref={tableRef} className={style.tableContainer}>
               {tableValues.length > 0 && (
                 <TableTwo
@@ -808,13 +811,13 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                   </div>
                 </div> */}
                 <div className={`${style.eSignatureOnFileCard} ${style.marginTop10}`}>
-                  <div className={style.eSignatureOnFileTitle}>Your eSignature On File</div>
+                  <div className={style.eSignatureOnFileTitle}>Establish your eSignature</div>
                   <div className={style.eSignGrid}>
                     <ESignature userName={applicantName} encData={encryptedText} showData showDatais />
                     <div className={style.verticalAlignCenter}>
                       <div className={style.displayInRow}>
-                        <div className={style.dateTitle}>Date:</div>
-                        <div className={`${style.date} ${style.marginLeft}`}>{currentDate}</div>
+                        <div className={style.dateTitle}>Initial:</div>
+                        <div className={`${style.date} ${style.marginLeft}`}>{eSignInitial}</div>
                       </div>
                     </div>
                     <div className={style.verticalAlignCenter}>

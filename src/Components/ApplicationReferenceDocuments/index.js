@@ -90,7 +90,7 @@ const ApplicationReferenceDocuments = ({ refetchRefDoc, getResetRefetch }) => {
                         <div
                           className={style.documentNameStyle}
                         >
-                          {document?.documentType}
+                          {document?.fileUploaded}
                         </div>
                       </div>
                       {/* <div

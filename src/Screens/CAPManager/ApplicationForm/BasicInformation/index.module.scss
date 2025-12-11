@@ -172,6 +172,10 @@
     z-index: 10;
 }
 
+.alignRight {
+    text-align: right;
+}
+
 @media (max-width: 948px) {
     .stickyContainer {
         position: fixed;

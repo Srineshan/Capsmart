@@ -46,7 +46,7 @@ const ApplicationHeaders = ({ title, close, closeClick, print, printPage }) => {
                 {close && (
                     <div className={style.verticalAlignCenter}>
                         {print && (
-                          <PrintOutlinedIcon className={style.marginRight20} sx={{ fontSize: 40, color: '#06617A', cursor: 'pointer' }} onClick={printPage} />
+                            <PrintOutlinedIcon className={style.marginRight20} sx={{ fontSize: 40, color: '#06617A', cursor: 'pointer' }} onClick={printPage} />
                         )}
                         {/* <img
                             src={CrossPink}

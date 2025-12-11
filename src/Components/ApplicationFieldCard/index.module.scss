@@ -385,6 +385,11 @@
     justify-self: end;
 }
 
+.disclosureLabelGrid {
+    display: grid;
+    grid-template-columns: 30px calc(100% - 30px);
+}
+
 .lableReadOnlyStyle {
     text-align: left;
     font: normal normal 500 17px/20px var(--font-style);

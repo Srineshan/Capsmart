@@ -5631,25 +5631,25 @@ input[type="number"] {
 .PaymentGrid {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
-  gap: 20px;
+  gap: 10px;
 }
 
 .PaymentGrid2 {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
-  gap: 20px;
+  gap: 10px;
 }
 
 .PaymentGrid3 {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
-  gap: 20px;
+  gap: 10px;
 }
 
 .PaymentGrid4 {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
-  gap: 20px;
+  gap: 10px;
 }
 
 .PaymentGrid> :nth-child(1) {
@@ -5661,6 +5661,18 @@ input[type="number"] {
 }
 
 .PaymentGrid> :nth-child(3) {
+  grid-column: span 3;
+}
+
+.PaymentGrid> :nth-child(4) {
+  grid-column: span 3;
+}
+
+.PaymentGrid> :nth-child(5) {
+  grid-column: span 3;
+}
+
+.PaymentGrid> :nth-child(6) {
   grid-column: span 3;
 }
 
@@ -5677,7 +5689,7 @@ input[type="number"] {
 }
 
 .PaymentGrid3> :nth-child(2) {
-  grid-column: span 6;
+  grid-column: span 2;
 }
 
 .PaymentGrid3> :nth-child(3) {
@@ -5709,7 +5721,7 @@ input[type="number"] {
 }
 
 .PaymentGrid4> :nth-child(3) {
-  grid-column: span 6;
+  grid-column: span 2;
 }
 
 .PaymentGrid4> :nth-child(4) {
@@ -5721,7 +5733,7 @@ input[type="number"] {
 }
 
 .PaymentGrid4> :nth-child(6) {
-  grid-column: span 2;
+  grid-column: span 3;
 }
 
 .PaymentGrid4> :nth-child(7) {
@@ -5729,17 +5741,9 @@ input[type="number"] {
 }
 
 .PaymentGrid4> :nth-child(8) {
-  grid-column: span 3;
+  grid-column: span 6;
 }
 
 .PaymentGrid4> :nth-child(9) {
-  grid-column: span 3;
-}
-
-.PaymentGrid4> :nth-child(10) {
-  grid-column: span 3;
-}
-
-.PaymentGrid4> :nth-child(11) {
   grid-column: span 6;
 }

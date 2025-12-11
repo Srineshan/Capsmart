@@ -173,6 +173,7 @@ const ConflictOfInterest = ({ acknowledgementForm, dateFormat, name, basicForm, 
                     getFormSchema();
                     if (sessionStorage.getItem('fromSummary') === 'true') {
                         navigate(-1);
+                        sessionStorage.setItem('fromSummary', false)
                     }
                     else {
                         navigate(navigateURL)
@@ -186,6 +187,7 @@ const ConflictOfInterest = ({ acknowledgementForm, dateFormat, name, basicForm, 
         else {
             if (sessionStorage.getItem('fromSummary') === 'true') {
                 navigate(-1);
+                sessionStorage.setItem('fromSummary', false)
             } else {
                 navigate(navigateURL)
             }
@@ -195,6 +197,7 @@ const ConflictOfInterest = ({ acknowledgementForm, dateFormat, name, basicForm, 
     const handleContinue = () => {
         if (sessionStorage.getItem('fromSummary') === 'true') {
             navigate(-1);
+            sessionStorage.setItem('fromSummary', false)
         } else {
             navigate(navigateURL)
         }
@@ -207,7 +210,7 @@ const ConflictOfInterest = ({ acknowledgementForm, dateFormat, name, basicForm, 
     return (
         <div>
             <div className={style.applicationScreenGrid}>
-                <ProgressCard step={'STEP 7'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={37} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} applicationId={applicationId} />
+                <ProgressCard step={'STEP 7'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={37} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} applicationId={applicationId} basicForm={basicForm} />
                 <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
             </div>
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>

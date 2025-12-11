@@ -7,7 +7,7 @@ import CommonSelectField from "../CommonFields/CommonSelectField";
 import CommonDateField from "../CommonFields/CommonDateField";
 import TextSnippetOutlinedIcon from "@mui/icons-material/TextSnippetOutlined";
 import { TextField, Tooltip } from "@mui/material";
-import { add, format, isValid, parse, sub } from "date-fns";
+import { add, format, isValid, parse, parseISO, sub } from "date-fns";
 import { fileLoadingURL, FormatPhoneNumber, FormatPostalCode } from "../../utils/formatting";
 import CommonRadio from "../CommonFields/CommonRadio";
 import CommonSwitch from "../CommonFields/CommonSwitch";
@@ -102,6 +102,7 @@ const ApplicationFieldCard = ({
   const [disclosureBaseKey, setDisclosureBaseKey] = useState('');
   const [disclosureFieldKey, setDisclosureFieldKey] = useState('');
   const [disclosurSchema, setDisclosureSchema] = useState({});
+  const [isMasked, setIsMasked] = useState(true);
   const { setValue, value } = useComboboxControls({ initialValue: "" });
   const canadaData = JSON.parse(sessionStorage.getItem("canadaData")) || {};
   let user = JSON.parse(sessionStorage.getItem("user"));
@@ -1779,18 +1780,18 @@ const ApplicationFieldCard = ({
                       arrow
                     >
                       <div className={style.lableReadOnlyStyle}>
-                        {getValueByPath(
+                        <strong>{getValueByPath(
                           basicForm,
                           `${basicpath}.${baseKey}.${fieldKey}`
-                        ) || ""}
+                        ) || ""}</strong>
                       </div>
                     </Tooltip>
                   ) : (
                     <div className={style.lableReadOnlyStyle}>
-                      {getValueByPath(
+                      <strong>{getValueByPath(
                         basicForm,
                         `${basicpath}.${baseKey}.${fieldKey}`
-                      ) || ""}
+                      ) || ""}</strong>
                     </div>
                   )}
                 </div>
@@ -1856,6 +1857,86 @@ const ApplicationFieldCard = ({
                   />
                 </div>
               )
+            );
+          }
+        case "maskedtextbox":
+          if (isPOD) {
+            return (
+              <div>
+                <div className={`${style.lableStylePOD}`}>
+                  {fieldData.label}
+                  {isLableEmpty(fieldData.label)
+                    ? false
+                    : (object.required?.includes(fieldKey) ||
+                      (parentData !== null
+                        ? parentData.required?.includes(fieldKey)
+                        : false)) &&
+                    "*"}
+                </div>
+                <hr className={style.borderLine} />
+                <div className={style.lableReadOnlyStyleInPOD}>
+                  {isMasked ? String(getValueByPath(
+                    basicForm,
+                    `${basicpath}.${baseKey}.${fieldKey}`
+                  ) || "").replace(/\d(?=\d{4})/g, "X") : getValueByPath(
+                    basicForm,
+                    `${basicpath}.${baseKey}.${fieldKey}`
+                  ) || "-"}
+                </div>
+              </div>
+            );
+          } else {
+            return (
+              <div key={fieldKey}>
+                <CommonTextField
+                  value={
+                    isMasked ? String(getValueByPath(
+                      basicForm,
+                      `${basicpath}.${baseKey}.${fieldKey}`
+                    ) || "").replace(/\d(?=\d{4})/g, "X") : getValueByPath(
+                      basicForm,
+                      `${basicpath}.${baseKey}.${fieldKey}`
+                    ) || ""
+                  }
+                  className={style.fullWidth}
+                  onChange={(e) =>
+                    handleChange(
+                      fieldKey,
+                      e.target.value.replace(/\s+/g, ""),
+                      baseKey
+                    )
+                  }
+                  maxLength={TEXTFIELDLEN50}
+                  placeholder={
+                    fieldData.placeHolder !== null
+                      ? fieldData.placeHolder
+                      : fieldData.label !== null
+                        ? `Enter ${fieldData.label}`
+                        : null
+                  }
+                  label={fieldData.label}
+                  required={
+                    isLableEmpty(fieldData.label)
+                      ? false
+                      : object.required?.includes(fieldKey) ||
+                      (parentData !== null
+                        ? parentData.required?.includes(fieldKey)
+                        : false)
+                  }
+                  type={fieldData.type}
+                  min={fieldData.minimum}
+                  warning={warningFields
+                    ?.map((data) => data?.key)
+                    ?.includes(`${basicpath}.${baseKey}.${fieldKey}`)}
+                  inputProps={{
+                    pattern: "^[0-9]*$",
+                    maxLength: 18,
+                    onlyDigits: true,
+                  }}
+                  onBlur={() => setIsMasked(true)}
+                  onFocus={() => setIsMasked(false)}
+                />
+              </div>
             );
           }
         case "textArea":
@@ -2396,7 +2477,7 @@ const ApplicationFieldCard = ({
             <div
               className={`${style.disclosureGrid} ${style.verticalAlignCenter}`}
             >
-              <div className={style.displayInRow}>
+              <div className={!isPOD ? style.disclosureLabelGrid : style.displayInRow}>
                 {!isPOD && (
                   <div className={`${style.lableRadioSerialNumberStyle}`}>
                     {fieldData.serialNumber !== null
@@ -2765,7 +2846,14 @@ const ApplicationFieldCard = ({
                       />
                     ) : (
                       <img
-                        src={NotVerifiedImage}
+                        src={(
+                          isLableEmpty(fieldData.label)
+                            ? false
+                            : object.required?.includes(fieldKey) ||
+                            (parentData !== null
+                              ? parentData.required?.includes(fieldKey)
+                              : false)
+                        ) ? ToBeVerifiedImage : NotVerifiedImage}
                         alt=""
                         className={style.imgIcon}
                       />
@@ -3256,8 +3344,12 @@ const ApplicationFieldCard = ({
   };
 
   const isValidDate = (value) => {
-    const d = new Date(value);
-    return !isNaN(d);
+    if (typeof value !== "string") return false;
+    const regex = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}(:\d{2}(\.\d{1,3})?)?)?$/;
+
+    if (!regex.test(value)) return false;
+    const parsed = parseISO(value);
+    return isValid(parsed);
   };
 
   const getApplicantValues = (array) => {
@@ -3269,10 +3361,10 @@ const ApplicationFieldCard = ({
     ) {
       Object.keys(object?.tableHeaders)?.map((data, index) => {
         if (data === "data") {
-          temp.push({ type: "dot", value: array?.map((innerData) => "grey") });
+          temp.push({ type: "dot", value: array?.map((innerData) => innerData[data] === "ACCEPTED" ? "darkgreen" : innerData[data] === "REJECTED" ? "red" : innerData[data] === "PENDING" ? "yellow" : "grey") });
           // temp.push({ "type": "icon", "icon": array?.map(innerData => <CheckCircleIcon style={{ fontSize: 25, color: '#25BF6A' }} onClick={() => { window.open(innerData?.file?.fileURL, '_blank'); }} />), 'isShowHoverText': false })
         } else if (data === "pod") {
-          temp.push({ type: "dot", value: array?.map((innerData) => "grey") });
+          temp.push({ type: "dot", value: array?.map((innerData) => innerData[data] === "ACCEPTED" ? "darkgreen" : innerData[data] === "REJECTED" ? "red" : innerData[data] === "PENDING" ? "yellow" : "grey") });
           // temp.push({ "type": "icon", "icon": array?.map(innerData => <CheckCircleIcon style={{ fontSize: 25, color: '#25BF6A' }} onClick={() => { window.open(innerData?.file?.fileURL, '_blank'); }} />), 'isShowHoverText': false })
         } else if (data !== "file") {
           temp.push({

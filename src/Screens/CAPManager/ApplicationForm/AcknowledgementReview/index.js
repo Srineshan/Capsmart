@@ -8,7 +8,7 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import ApplicationFieldCard from "../../../../Components/ApplicationFieldCard";
 import CommonCheckBox from "../../../../Components/CommonFields/CommonCheckBox";
 import { GET, PUT, POST } from "../../../dataSaver";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import EditIcon from "@mui/icons-material/Edit";
 import { ErrorToaster, SuccessToaster } from "../../../../utils/toaster";
 import WelcomeCard from "../../../../Components/WelcomeCard";
@@ -17,13 +17,13 @@ import AIAssistantDialog from "../../../../Components/AIAssistantDialog";
 import ApplicationHeader from "../../../../Components/ApplicationHeader";
 import ApplicationSubmitDialog from "../../../../Components/ApplicationSubmitDialog";
 
-const AcknowledgementReview = ({ basicForm, setBasicForm, applicationId }) => {
+const AcknowledgementReview = ({ basicForm, setBasicForm }) => {
   const [form, setForm] = useState();
   const [form2, setForm2] = useState();
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
-
-  const id = sessionStorage.getItem("applicationId");
+  const { applicationId, section, step } = useParams();
+  // const id = sessionStorage.getItem("applicationId");
 
   useEffect(() => {
     getPreApplication();
@@ -36,7 +36,7 @@ const AcknowledgementReview = ({ basicForm, setBasicForm, applicationId }) => {
 
   const getPreApplication = async () => {
     const { data: basicForm } = await GET(
-      `application-management-service/application/${id}`
+      `application-management-service/application/${applicationId}`
     );
     setForm(basicForm);
   };

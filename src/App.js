@@ -363,7 +363,6 @@ const App = ({ props }) => {
   let userFromCookie = cookie.get("user");
   let entityIdFromCookie = cookie.get('entityId');
   let errorInfo = sessionStorage.getItem('errorInfo');
-  console.log(authorization, 'authorization', TenantID, isAuthenticated, loggedInUser?.id, entityIdFromCookie, document.cookie, cookie.get("authorization") === 'undefined', cookie.get("authorization") !== undefined)
   const [showDialog, setShowDialog] = useState(false);
   const refreshTimeoutRef = useRef(null);
   // useEffect(() => {
@@ -914,15 +913,15 @@ const App = ({ props }) => {
       })
       .catch((error) => {
         ErrorToaster2("Login failed. Please try again. If the issue persists, please contact the administrator.")
-        cookie.remove("authorization", {
-          path: "/",
-          domain: window.location.hostname?.split('.')?.length >= 3 ? `.${window.location.hostname?.split('.')?.slice(-2)?.join('.')}` : window.location.hostname,
-          secure: true,
-          sameSite: 'none',
-        });
-        cookie.remove("user", { path: "/" });
-        cookie.remove("entityId", { path: "/" });
-        logout();
+        // cookie.remove("authorization", {
+        //   path: "/",
+        //   domain: window.location.hostname?.split('.')?.length >= 3 ? `.${window.location.hostname?.split('.')?.slice(-2)?.join('.')}` : window.location.hostname,
+        //   secure: true,
+        //   sameSite: 'none',
+        // });
+        // cookie.remove("user", { path: "/" });
+        // cookie.remove("entityId", { path: "/" });
+        // logout();
       });
     console.log('entered')
     if (cookie.get("authorization") && cookie.get("authorization") !== 'undefined') {

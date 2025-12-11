@@ -16,9 +16,16 @@ import { TextField } from "@mui/material";
 import { SuccessToaster, ErrorToaster } from '../../../../utils/toaster';
 import ESignature from '../../../../Components/ESignature';
 import SaveInProgressDialog from '../../../../Components/SaveInProgressDialog';
+import ApplicationFieldCard from '../../../../Components/ApplicationFieldCard';
 
-const OffenceDeclaration = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApplication, applicationId }) => {
+const OffenceDeclaration = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApplication, applicationId, setBasicForm }) => {
     const [isChecked, setIsChecked] = useState(false);
+    const [metadata, setMetadata] = useState([]);
+    const [labels, setLabels] = useState([]);
+    const [warningFields, setWarningFields] = useState([]);
+    const [isAddMore, setIsAddMore] = useState(false)
+    const [formSchemaWholeObject, setFormSchemaWholeObject] = useState();
+    const [showValidationDialog, setShowValidationDialog] = useState(false);
     const navigate = useNavigate()
     const targetRef = useRef();
     const [isSigned, setIsSigned] = useState(false);
@@ -58,7 +65,7 @@ const OffenceDeclaration = ({ acknowledgementForm, dateFormat, name, basicForm, 
     }, [isChecked]);
 
     useEffect(() => {
-        if (basicForm && !formSchema) {
+        if (basicForm && !formSchemaWholeObject) {
             getFormSchema()
         }
         setIsChecked(basicForm?.forms?.[formIndex]?.acknowledged);
@@ -66,7 +73,9 @@ const OffenceDeclaration = ({ acknowledgementForm, dateFormat, name, basicForm, 
         setSignText(basicForm?.forms?.[formIndex]?.acknowledged ? basicForm?.forms?.[formIndex]?.esign?.esign : '');
         setIsSigned((basicForm?.forms?.[formIndex]?.esign?.esign !== undefined && basicForm?.forms?.[formIndex]?.acknowledged) ? true : false);
         setTableData(basicForm?.forms?.[formIndex]?.data !== null ? basicForm?.forms?.[formIndex]?.data?.tableData : initialData)
-        setCheckedDisclaimer(basicForm?.forms?.[formIndex]?.data !== null ? basicForm?.forms?.[formIndex]?.data?.checkedDisclaimer : checkedDisclaimer)
+        if (!isEdited) {
+            setCheckedDisclaimer(basicForm?.forms?.[formIndex]?.data !== null ? basicForm?.forms?.[formIndex]?.data?.checkedDisclaimer : checkedDisclaimer)
+        }
         // setDecryptedText(CryptoJS.AES.decrypt(basicForm?.forms?.[formIndex]?.esign?.esign, publicKey).toString(CryptoJS.enc.Utf8))
         if (basicForm !== undefined && formIndex !== undefined) {
             setNavigateURL((basicForm?.forms?.length === (formIndex + 1)) ? `/applicationForm/${applicationId}/Acknowledgement/${btoa('AcknowledgementCheck')}` : `/applicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
@@ -88,12 +97,29 @@ const OffenceDeclaration = ({ acknowledgementForm, dateFormat, name, basicForm, 
         }
     }, [basicForm?.forms?.[formIndex]?.id])
 
+    const getAllPath = (data) => {
+        let temp = metadata;
+        if (!temp?.includes(data)) {
+            console.log(temp, data, "Metadata");
+            temp.push(data);
+        }
+        setMetadata(temp);
+    };
+
+    const getAllLabels = (data) => {
+        setLabels(prev => {
+            const exists = prev.some(item => JSON.stringify(item) === JSON.stringify(data));
+            return exists ? prev : [...prev, data];
+        });
+    };
+
     const getFormSchema = async () => {
         if (basicForm?.formSchemas?.[formIndex]?.id !== undefined) {
             const { data: form } = await GET(
                 `application-management-service/formSchema/${basicForm?.formSchemas?.[formIndex]?.id}`
             );
-            setFormSchema(form)
+            setFormSchema(form?.schema)
+            setFormSchemaWholeObject(form)
         }
     }
 
@@ -177,19 +203,62 @@ const OffenceDeclaration = ({ acknowledgementForm, dateFormat, name, basicForm, 
         });
     };
 
-    const handleIsChecked = (value) => {
+    const getValueByPath = (obj, path) => {
+        const keys = path.split(/[\.\[\]]+/).filter(Boolean);
+        console.log(path, keys.reduce((acc, key) => acc && acc[isNaN(key) ? key : Number(key)], basicForm), basicForm, 'if')
+        return keys.reduce((acc, key) => acc && acc[isNaN(key) ? key : Number(key)], basicForm);
+    };
+
+    const getMissingFields = () => {
+        let missingKeys = [];
+        let keyValuePair = [];
+        metadata?.map((data, index) => {
+            keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: labels[index]?.label })
+        })
+        keyValuePair?.map(data => {
+            if (data?.value === "" || data?.value === null || data?.value === undefined || data?.value === 0) {
+                missingKeys.push(data)
+            }
+        })
+        setWarningFields(missingKeys)
+        console.log(keyValuePair, 'Metadata', missingKeys)
+        return missingKeys;
+    }
+
+    const handleIsChecked = (value, disclaimerValue) => {
         setIsEdited(true)
         setIsChecked(value)
         if (!value) {
             setIsSigned(false)
         }
+        setCheckedDisclaimer(disclaimerValue)
+    }
+
+    const handleSubmitTableData = async (data) => {
+        let temp = {
+            schemaId: basicForm?.forms?.[formIndex]?.schemaId,
+            data: data?.forms?.[formIndex]?.data,
+            acknowledged: isChecked,
+            esign: { esign: isChecked ? encryptedText : '', name: isChecked ? name : '', signedDate: isChecked ? currentDate : '' }
+        }
+        await PUT(`application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
+            .then(response => {
+                console.log(response)
+                getPreApplication()
+                SuccessToaster("Application Updated Successfully");
+                getFormSchema();
+            })
+            .catch((error) => {
+                console.log(error)
+                ErrorToaster("Unexpected Error Updating Application");
+            });
     }
 
     const handleSubmitApplicationReq = async () => {
         if (isSigned) {
             let temp = {
                 schemaId: basicForm?.forms?.[formIndex]?.schemaId,
-                data: !isEdited ? basicForm?.forms?.[formIndex]?.data : { esignDate: isChecked ? name + " " + currentDate : '', checkedDisclaimer: checkedDisclaimer, tableData: tableData },
+                data: !isEdited ? basicForm?.forms?.[formIndex]?.data : { esignDate: isChecked ? name + " " + currentDate : '', checkedDisclaimer: checkedDisclaimer, tableData: tableData, offenceDeclaration: basicForm?.forms?.[formIndex]?.data },
                 acknowledged: isChecked,
                 esign: { esign: isChecked ? encryptedText : '', name: isChecked ? name : '', signedDate: isChecked ? currentDate : '' }
             }
@@ -202,6 +271,7 @@ const OffenceDeclaration = ({ acknowledgementForm, dateFormat, name, basicForm, 
                     getFormSchema();
                     if (sessionStorage.getItem('fromSummary') === 'true') {
                         navigate(-1);
+                        sessionStorage.setItem('fromSummary', false)
                     }
                     else {
                         navigate(navigateURL)
@@ -215,6 +285,7 @@ const OffenceDeclaration = ({ acknowledgementForm, dateFormat, name, basicForm, 
         else {
             if (sessionStorage.getItem('fromSummary') === 'true') {
                 navigate(-1);
+                sessionStorage.setItem('fromSummary', false)
             } else {
                 navigate(navigateURL)
             }
@@ -223,21 +294,28 @@ const OffenceDeclaration = ({ acknowledgementForm, dateFormat, name, basicForm, 
     const handleContinue = () => {
         if (sessionStorage.getItem('fromSummary') === 'true') {
             navigate(-1);
+            sessionStorage.setItem('fromSummary', false)
         } else {
             navigate(navigateURL)
         }
     }
 
-    console.log(formContent)
+    console.log(formContent, isChecked, checkedDisclaimer, (isChecked && checkedDisclaimer === 'disclaimer1'))
 
     const handleBackClick = () => {
         navigate(navigateBackURL)
     }
 
+    const getIsSubmitClicked = (value, data) => {
+        if (value) {
+            handleSubmitTableData(data)
+        }
+    }
+
     return (
         <div>
             <div className={style.applicationScreenGrid}>
-                <ProgressCard step={'STEP 8'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={38} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} applicationId={applicationId} />
+                <ProgressCard step={'STEP 8'} dataType={formSchemaWholeObject?.description} title={formSchemaWholeObject?.title} timeNumber={38} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} applicationId={applicationId} basicForm={basicForm} />
                 <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
             </div>
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
@@ -247,21 +325,21 @@ const OffenceDeclaration = ({ acknowledgementForm, dateFormat, name, basicForm, 
                             <img src={logo} alt="Hospital Logo" className={`${style.logo}`} />
                         </div>
                         <CommonDivider />
-                        <div className={`${style.cardTitle} ${style.marginTop}  ${style.justifyCenter}`}>{formSchema?.title}</div>
+                        <div className={`${style.cardTitle} ${style.marginTop}  ${style.justifyCenter}`}>{formSchemaWholeObject?.title}</div>
                         <CommonDivider />
-                        {formSchema?.content?.title !== null && (
-                            <div className={`${style.cardTitle} ${style.marginTop}`}>{formSchema?.content?.title}</div>
+                        {formSchemaWholeObject?.content?.title !== null && (
+                            <div className={`${style.cardTitle} ${style.marginTop}`}>{formSchemaWholeObject?.content?.title}</div>
                         )}
                         <div
                             className={`${style.leftAlign} ${style.marginTop} ${style.descriptionStyle}`}
                             dangerouslySetInnerHTML={{ __html: formContent?.content?.content }}
                         />
-                        {formSchema?.disclaimer?.title !== null && (
-                            <div className={style.cardTitle}>{formSchema?.disclaimer?.title}</div>
+                        {formSchemaWholeObject?.disclaimer?.title !== null && (
+                            <div className={style.cardTitle}>{formSchemaWholeObject?.disclaimer?.title}</div>
                         )}
                         {formContent?.disclaimer !== null && formContent?.disclaimer?.content !== null && (
                             <div className={`${style.checkGrid} ${style.marginTop}`}>
-                                <CommonCheckBox checked={isChecked && checkedDisclaimer === 'disclaimer'} onChange={(e) => { handleIsChecked(e.target.checked); setCheckedDisclaimer('disclaimer') }} bigCheckbox={true} />
+                                <CommonCheckBox checked={isChecked && checkedDisclaimer === 'disclaimer'} onChange={(e) => { handleIsChecked(e.target.checked, 'disclaimer') }} bigCheckbox={true} />
                                 <div
                                     className={`${style.leftAlign} ${style.marginTop10} ${style.descriptionStyle}`}
                                     dangerouslySetInnerHTML={{ __html: formContent?.disclaimer?.content }}
@@ -271,16 +349,23 @@ const OffenceDeclaration = ({ acknowledgementForm, dateFormat, name, basicForm, 
 
                         <div className={`${style.descriptionStyle} ${style.justifyCenter} ${style.marginTop}`}>OR</div>
 
-                        {formSchema?.disclaimer1 !== null && formSchema?.disclaimer1?.content !== null && (
+                        {formSchemaWholeObject?.disclaimer1 !== null && formSchemaWholeObject?.disclaimer1?.content !== null && (
                             <div className={`${style.checkGrid} ${style.marginTop}`}>
-                                <CommonCheckBox checked={isChecked && checkedDisclaimer === 'disclaimer1'} onChange={(e) => { handleIsChecked(e.target.checked); setCheckedDisclaimer('disclaimer1') }} bigCheckbox={true} />
+                                <CommonCheckBox checked={isChecked && checkedDisclaimer === 'disclaimer1'} onChange={(e) => { handleIsChecked(e.target.checked, 'disclaimer1') }} bigCheckbox={true} />
                                 <div
                                     className={`${style.leftAlign} ${style.marginTop10} ${style.descriptionStyle}`}
-                                    dangerouslySetInnerHTML={{ __html: formSchema?.disclaimer1?.content }}
+                                    dangerouslySetInnerHTML={{ __html: formSchemaWholeObject?.disclaimer1?.content }}
                                 />
                             </div>
                         )}
-                        <div className={style.justifyCenter}>
+                        {(isChecked && checkedDisclaimer === 'disclaimer1') && (
+                            <>
+                                {formSchema !== undefined && 'offenceDeclaration' in formSchema?.properties && (
+                                    <ApplicationFieldCard object={formSchema?.properties?.offenceDeclaration} gridStyle={style.twoCol} baseKey={'offenceDeclaration'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} addMoreType={true} formId={basicForm?.forms?.[formIndex]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} warningFields={warningFields} getMissingFields={getMissingFields} showValidationDialog={showValidationDialog} setShowValidationDialog={setShowValidationDialog} isAddMore={isAddMore} setIsAddMore={setIsAddMore} formSchema={formSchemaWholeObject} />
+                                )}
+                            </>
+                        )}
+                        {/* <div className={style.justifyCenter}>
                             <table cellPadding="10" >
                                 <thead>
                                     <tr>
@@ -317,8 +402,8 @@ const OffenceDeclaration = ({ acknowledgementForm, dateFormat, name, basicForm, 
                                     ))}
                                 </tbody>
                             </table>
-                        </div>
-                        {formSchema?.esignatureRequired && (
+                        </div> */}
+                        {formSchemaWholeObject?.esignatureRequired && (
                             <div className={style.twoCol}>
                                 <div onClick={isChecked ? () => { setIsSigned(!isSigned); setIsEdited(true) } : () => { }} className={!isChecked ? style.disabled : ''}>
                                     <ESignature

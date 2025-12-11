@@ -63,7 +63,8 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, applicationId, getPreAppl
     const [isSaveInProgressOpen, setIsSaveInProgressOpen] = useState(false);
     useEffect(() => {
         getApplication();
-    }, [])
+        sessionStorage.setItem("applicationId", applicationId);
+    }, [applicationId])
 
     useEffect(() => {
         getFields()
@@ -212,6 +213,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, applicationId, getPreAppl
         if (navigation) {
             if (sessionStorage.getItem('fromSummary') === "true") {
                 navigate(-1);
+                sessionStorage.setItem('fromSummary', false)
             }
             else {
                 navigate(navigateURL)
@@ -660,7 +662,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, applicationId, getPreAppl
     return (
         <div>
             <div className={style.applicationScreenGrid}>
-                <ProgressCard step={'STEP 6'} title={'Details of request for privileges'} dataType={'Step 7'} timeNumber={20} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} applicationId={applicationId} />
+                <ProgressCard step={'STEP 6'} title={formSchemaWholeObject?.title} dataType={formSchemaWholeObject?.description} timeNumber={20} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} applicationId={applicationId} basicForm={basicForm} />
                 <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
             </div>
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
@@ -991,18 +993,16 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, applicationId, getPreAppl
                                 </div>
                             </div>
 
+                            <div className={`${style.marginTop} `}></div>
 
-                            <div className={`${style.applicationCardStyle} ${style.marginTop40}`} >
+                            {/* <div className={`${style.applicationCardStyle} ${style.marginTop40}`} >
                                 <div className={style.padding}>
                                     <div className={style.cardDescription}>{'For specialties recognized by the Royal College of Physicians and Surgeons of Canada please attach a copy of a Royal College Certificate or a College Certificate of Registration permitting the practice of that sub-specialty.'}</div>
                                     <div className={style.marginTop10}>
                                         <div className={`${style.uploadButton}`}>
                                             <div className={style.uploadGrid}>
-                                                {/* {privileges?.file !== undefined ? (
-                                                    <img src={VerifiedImage} alt="" className={`${style.imgIcon} ${style.cursorPointer}`} onClick={window.open(privileges?.file?.fileURL, '_blank')} />
-                                                ) : ( */}
+                                                
                                                 <img src={ToBeVerifiedImage} alt="" className={style.imgIcon} />
-                                                {/* )} */}
                                                 <div className={`${style.uploadText} ${style.verticalAlignCenter}`}>
                                                     Upload any supporting documents for evidence of qualification and competence
                                                 </div>
@@ -1015,7 +1015,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, applicationId, getPreAppl
                                     </div>
                                 </div>
 
-                            </div>
+                            </div> */}
                         </>
                     )}
 

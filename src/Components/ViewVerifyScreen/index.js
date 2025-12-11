@@ -5273,6 +5273,7 @@ const NewActiveApplication = ({
             }`}
           close={true}
           closeClick={onClose}
+          isNotLogout={true}
         />
 
         {/* <div className={style.marginBottom10}></div> */}

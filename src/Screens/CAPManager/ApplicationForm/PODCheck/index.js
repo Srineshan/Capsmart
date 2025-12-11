@@ -9,7 +9,7 @@ import CommonCheckBox from '../../../../Components/CommonFields/CommonCheckBox';
 import DataStatusIcon from '../../../../images/dqStatus.png';
 import DocumentIcon from '../../../../images/document.png';
 import { GET, PUT } from '../../../dataSaver';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Pencil from "../../../../images/pencil.png";
 import EditIcon from '@mui/icons-material/Edit';
 import { ErrorToaster, SuccessToaster } from '../../../../utils/toaster';
@@ -18,14 +18,15 @@ import style from './index.module.scss';
 import AIAssistantDialog from '../../../../Components/AIAssistantDialog';
 import SaveInProgressDialog from '../../../../Components/SaveInProgressDialog';
 
-const PODCheck = ({ basicForm, setBasicForm, applicationId }) => {
+const PODCheck = ({ basicForm, setBasicForm }) => {
   const [form, setForm] = useState();
   const [form2, setForm2] = useState();
   const navigate = useNavigate()
   const [isOpen, setIsOpen] = useState(true);
   const itemsToProcessConditionCheckCategories = ['Education', 'WorkExperience', 'References']
   const [isSaveInProgressOpen, setIsSaveInProgressOpen] = useState(false);
-  const id = sessionStorage.getItem('applicationId');
+  const { applicationId, section, step } = useParams();
+  // const id = sessionStorage.getItem('applicationId');
   useEffect(() => {
     sessionStorage.setItem('fromSummary', false);
     getPreApplication();
@@ -41,7 +42,7 @@ const PODCheck = ({ basicForm, setBasicForm, applicationId }) => {
 
   const getPreApplication = async () => {
     const { data: basicForm } = await GET(
-      `application-management-service/application/${id}`
+      `application-management-service/application/${applicationId}`
     );
     setForm(basicForm)
   }
@@ -63,7 +64,7 @@ const PODCheck = ({ basicForm, setBasicForm, applicationId }) => {
           <div className={`${style.displayInRow}${style.marginTop20}`}>
             <div className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}>
               <span className={`${style.tableHeaderHeadingTextStyle}`}>Overall Status Of Data & Documents Required For This Application</span>
-              <div className={`${style.greyDotStyle}`}></div>
+              <div className={form?.forms.every(item => item.acknowledged === true) ? style.greenDotStyle : style.yellowDotStyle}></div>
             </div>
           </div>
           <div className={` ${style.tableTopHeaderStyle} ${style.marginTop10} ${style.tableHeaderGridStyle} `}>
@@ -112,15 +113,15 @@ const PODCheck = ({ basicForm, setBasicForm, applicationId }) => {
             </div>
             <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
               <div className={`${style.tableDataFontStyle1}`}> Applicant Profile Information</div>
+            </div>
+            <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
+              <div className={`${style.greenDotStyle} `}></div>
+            </div>
+            <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
+              <div className={`${style.greenDotStyle} `}></div>
+            </div>
+            <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
               <img src={Pencil} alt="" className={`${style.pencilImgStyle} ${style.justifyCenter} ${style.cursorPointer}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/applicationForm/${applicationId}/Form/${btoa('BasicInformation')}`); }} />
-            </div>
-            <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-              <div className={`${style.greenDotStyle} `}></div>
-            </div>
-            <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-              <div className={`${style.greenDotStyle} `}></div>
-            </div>
-            <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
             </div>
           </div>
           <div>
@@ -135,7 +136,6 @@ const PODCheck = ({ basicForm, setBasicForm, applicationId }) => {
                   </div>
                   <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
                     <div className={`${style.tableDataFontStyle1}`}>{data?.title}</div>
-                    <img src={Pencil} alt="" className={`${style.pencilImgStyle} ${style.justifyCenter} ${style.cursorPointer}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/applicationForm/${applicationId}/${data?.formCategory}/${btoa(data?.schemaCategory)}`) }} />
                   </div>
                   <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
                     <div className={`${form?.forms[index]?.acknowledged === true ? style.greenDotStyle : style.yellowDotStyle}`}></div>
@@ -143,6 +143,9 @@ const PODCheck = ({ basicForm, setBasicForm, applicationId }) => {
                   </div>
                   <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
                     <div className={`${form?.forms[index]?.acknowledged === true ? style.greenDotStyle : style.yellowDotStyle}`}></div>
+                  </div>
+                  <div className={`${style.displayInRow} ${style.verticalAlignCenter} `}>
+                    <img src={Pencil} alt="" className={`${style.pencilImgStyle} ${style.justifyCenter} ${style.cursorPointer}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/applicationForm/${applicationId}/${data?.formCategory}/${btoa(data?.schemaCategory)}`) }} />
                   </div>
                   {/* <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
                     <div className={`${style.marginLeft5} ${style.tableDataFontDisabledStyle1}`}>

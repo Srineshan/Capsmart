@@ -103,6 +103,18 @@
     grid-column: span 3;
 }
 
+.PaymentGrid> :nth-child(4) {
+    grid-column: span 3;
+}
+
+.PaymentGrid> :nth-child(5) {
+    grid-column: span 3;
+}
+
+.PaymentGrid> :nth-child(6) {
+    grid-column: span 3;
+}
+
 .PaymentGrid2> :nth-child(1) {
     grid-column: span 6;
 }
@@ -116,7 +128,7 @@
 }
 
 .PaymentGrid3> :nth-child(2) {
-    grid-column: span 6;
+    grid-column: span 2;
 }
 
 .PaymentGrid3> :nth-child(3) {
@@ -148,7 +160,7 @@
 }
 
 .PaymentGrid4> :nth-child(3) {
-    grid-column: span 6;
+    grid-column: span 2;
 }
 
 .PaymentGrid4> :nth-child(4) {
@@ -160,7 +172,7 @@
 }
 
 .PaymentGrid4> :nth-child(6) {
-    grid-column: span 2;
+    grid-column: span 3;
 }
 
 .PaymentGrid4> :nth-child(7) {
@@ -168,18 +180,10 @@
 }
 
 .PaymentGrid4> :nth-child(8) {
-    grid-column: span 3;
+    grid-column: span 6;
 }
 
 .PaymentGrid4> :nth-child(9) {
-    grid-column: span 3;
-}
-
-.PaymentGrid4> :nth-child(10) {
-    grid-column: span 3;
-}
-
-.PaymentGrid4> :nth-child(11) {
     grid-column: span 6;
 }
 
@@ -190,7 +194,7 @@
 }
 
 .progressStyleBackground {
-    background: transparent linear-gradient(90deg, var(--primary-color) 0%, var(--primary-color) 21%, #E9E9F0 25%, #E9E9F0 100%) 0% 0% no-repeat padding-box;
+    background: transparent linear-gradient(90deg, var(--primary-color) 0%, var(--primary-color) 65%, #E9E9F0 69%, #E9E9F0 100%) 0% 0% no-repeat padding-box;
 }
 
 .siteDisplayCard {

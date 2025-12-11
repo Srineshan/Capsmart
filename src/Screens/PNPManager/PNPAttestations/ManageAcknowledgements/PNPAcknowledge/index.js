@@ -260,7 +260,7 @@ const ManagePNPAcknowledgement = () => {
     return (
         <div className={style.screenBackground}>
             <div className={style.welcomeText}>
-                <ApplicationHeader title={`${policyAndProcedures?.title}`} close={true} closeClick={handleClose} print={true} printPage={handlePrintClick} />
+                <ApplicationHeader title={`${policyAndProcedures?.title}`} close={true} closeClick={handleClose} print={true} printPage={handlePrintClick} isNotLogout={true} />
             </div>
             <div className={style.headerData}>
                 <span style={{ marginLeft: '20px' }}>Ordering Of Laboratory Investigations - IPAC</span>

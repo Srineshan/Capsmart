@@ -177,6 +177,7 @@ const PoliceVulnerableCheck = ({ acknowledgementForm, dateFormat, name, basicFor
             });
         if (sessionStorage.getItem('fromSummary') === 'true') {
             navigate(-1);
+            sessionStorage.setItem('fromSummary', false)
         } else {
             navigate(navigateURL)
         }
@@ -185,6 +186,7 @@ const PoliceVulnerableCheck = ({ acknowledgementForm, dateFormat, name, basicFor
     const handleContinue = () => {
         if (sessionStorage.getItem('fromSummary') === 'true') {
             navigate(-1);
+            sessionStorage.setItem('fromSummary', false)
         } else {
             navigate(navigateURL)
         }
@@ -197,7 +199,7 @@ const PoliceVulnerableCheck = ({ acknowledgementForm, dateFormat, name, basicFor
     return (
         <div>
             <div className={style.applicationScreenGrid}>
-                <ProgressCard step={'STEP 5'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={35} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} applicationId={applicationId} />
+                <ProgressCard step={'STEP 5'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={35} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} applicationId={applicationId} basicForm={basicForm} />
                 <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
             </div>
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>

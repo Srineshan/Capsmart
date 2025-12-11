@@ -173,7 +173,7 @@ const MedicalDirectivesAttest = () => {
     return (
         <div className={style.screenBackground}>
             <div className={style.welcomeText}>
-                <ApplicationHeader title={`${medicalDirectives?.title}`} close={true} closeClick={handleClose} />
+                <ApplicationHeader title={`${medicalDirectives?.title}`} close={true} closeClick={handleClose} isNotLogout={true} />
             </div>
             <div className={style.headerData}>
                 <span style={{ marginLeft: '20px' }}>Ordering Of Laboratory Investigations - IPAC</span>

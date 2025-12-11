@@ -70,6 +70,10 @@
     margin-top: 20px;
 }
 
+.marginLeft {
+    margin-left: 20px;
+}
+
 .signature {
     display: flex;
     flex-direction: column;
@@ -121,6 +125,11 @@
     font-size: 16px;
     color: gray;
     padding-left: 30px;
+}
+
+.displayInRow {
+    display: flex;
+    flex-direction: row;
 }
 
 .signatureData {

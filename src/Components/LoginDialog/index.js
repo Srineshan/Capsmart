@@ -38,6 +38,7 @@ const LoginDialog = ({ getIsOpen, days }) => {
   const [showAlert, setShowAlert] = useState(false);
   const [logo, setLogo] = useState(null);
   let cookie = new Cookies();
+  const title = sessionStorage.getItem('title')
   useEffect(() => {
     const getLogo = async () => {
       try {
@@ -229,19 +230,18 @@ const LoginDialog = ({ getIsOpen, days }) => {
             <img src={logo} alt="Hospital Logo" className={`${style.logo}`} />
             <img src={'https://capmanager-dev.s3.us-east-1.amazonaws.com/CAP_Manager.png'} alt="CAPManager Logo" className={`${style.CAPSmartLogo}`} />
           </div>
-          <div className={style.welcomeText}>Welcome!</div>
+          <div className={style.welcomeText}>Welcome to {title ? title : ''}!</div>
           <div className={`${style.descriptionStyle} ${style.marginTop10}`}>
-            Cambridge Memorial Hospital (CMH) is a thriving 180-bed community hospital with over 1300 staff, 250
-            Medical / Professional Staff and over 500 volunteers. CMH has recently completed an exciting Capital
-            Redevelopment Project with brand new facilities in Emergency, Critical Care, Inpatient Medicine, Surgery,
-            Obstetrics, Pediatrics and Mental Health.
+            We are thrilled to have you join our dedicated team of healthcare professionals. Today, CMH is a modern, full-service hospital with over 200 inpatient beds and a committed team of more than 1,600 staff and physicians, all working together to provide exceptional care.
           </div>
           <div className={`${style.descriptionStyle} ${style.marginTop}`}>
-            Located 1 hour from each Toronto, London and Hamilton, Cambridge is a family friendly city where one can
-            enjoy the benefits of a small town with the perks of a big city. Our business-friendly environment and appealing
-            lifestyle have made us one of the fastest growing cities in Canada. Cambridge enjoys an excellent standard of
-            living with access to parks, rivers, recreational facilities, universities, colleges and high-tech jobs all within the
-            region.
+            Your decision to join our team reflects a shared commitment to excellence, compassion, and innovation in patient care. At CMH, we pride ourselves on delivering compassionate, patient-centred care while fostering a collaborative and supportive work environment.
+          </div>
+          <div className={`${style.descriptionStyle} ${style.marginTop}`}>
+            As part of our community-focused hospital, you’ll play an essential role in improving the health and well-being of those we serve. We encourage you to embrace our values of caring, collaboration, accountability, innovation and respect, as we work together to make a positive impact every day.
+          </div>
+          <div className={`${style.descriptionStyle} ${style.marginTop}`}>
+            <strong> Welcome aboard—we’re excited to grow and succeed with you!</strong>
           </div>
           <div className={style.alignCenter}>
             <div
