@@ -27,6 +27,7 @@ const BasicInformation = ({ basicForm, setBasicForm, applicationId, getPreApplic
   const [metadata, setMetadata] = useState([]);
   const [labels, setLabels] = useState([]);
   const [warningFields, setWarningFields] = useState([]);
+  const [formPermission, setFormPermission] = useState();
   const [showValidationDialog, setShowValidationDialog] = useState(false);
 
   console.log("basicForm", basicForm);
@@ -81,6 +82,10 @@ const BasicInformation = ({ basicForm, setBasicForm, applicationId, getPreApplic
       }
       setForm1(form1?.schema);
       setFormSchemaWholeObject(form1);
+      const { data: formPermission } = await GET(
+        `application-management-service/formPermission?schemaId=${basicForm?.generalSchemas?.[1]?.id}`
+      );
+      setFormPermission(formPermission)
     }
   };
 
