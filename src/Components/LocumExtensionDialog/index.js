@@ -281,8 +281,8 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab, requestedType }) => {
   const userDetailsFetchOption = (sessionStorage.getItem('user') !== "undefined" && sessionStorage.getItem('user')) ? JSON.parse(sessionStorage.getItem('user')) : {};
 
   useEffect(() => {
-    userDepartmentList = userDetailsFetchOption?.sites?.sites[0]?.departmentList?.departments?.[0]?.id;
-    userSpecialty = userDetailsFetchOption?.sites?.sites[0]?.departmentList?.departments?.[0]?.serviceAreas?.[0]?.id;
+    userDepartmentList = userDetailsFetchOption?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.id;
+    userSpecialty = userDetailsFetchOption?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.serviceAreas?.[0]?.id;
     console.log("userSpecialty", userDepartmentList, userSpecialty)
   }, [])
 
@@ -1408,10 +1408,10 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab, requestedType }) => {
 
           {selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
             ?.restrictedPrivileges?.privilegesByCategories?.length > 0 &&
-            selectedAdditionalPrivilegeForDisplay[0]?.privilegeDetails
+            selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
               ?.restrictedPrivileges?.privilegesByCategories?.[0]?.privileges
               ?.length !== 0 &&
-            selectedAdditionalPrivilegeForDisplay[0]?.privilegeDetails
+            selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
               ?.restrictedPrivileges?.privilegesByCategories?.[0]?.privileges
               ?.length !== undefined && (
               <div className={style.padding}>
@@ -4577,7 +4577,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab, requestedType }) => {
                   onClick={() => {
                     setShowAdditionalPrivileges(false);
                     handleSelectedAdditionalPrivilegesForDisplayMultiple(
-                      selectedAdditionalPrivilegeForDisplay[0]
+                      selectedAdditionalPrivilegeForDisplay?.[0]
                     );
                   }
                   }
@@ -4622,7 +4622,7 @@ const LocumExtensiveDialog = ({ getIsOpen, selectedTab, requestedType }) => {
                     () => {
                       setShowPrivileges(false);
                       handleSelectedPrivilegesForDisplayMultiple(
-                        selectedPrivilegeForDisplay[0]
+                        selectedPrivilegeForDisplay?.[0]
                       );
                     }
                   }
