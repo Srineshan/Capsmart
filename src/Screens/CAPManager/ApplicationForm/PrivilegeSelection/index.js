@@ -24,6 +24,7 @@ import style from './index.module.scss';
 import DeleteIcon from './../../../../images/deleteHcRow.png';
 
 import VerifiedImage from "./../../../../images/verifiedImage.png";
+import NotVerifiedImage from "./../../../../images/notVerifiedImage.png";
 import ToBeVerifiedImage from "./../../../../images/toBeVerifiedImage.png";
 import CommonSelectField from '../../../../Components/CommonFields/CommonSelectField';
 import ESignature from '../../../../Components/ESignature';
@@ -576,7 +577,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, applicationId, getPreAppl
                                                                             {(privileges?.file !== undefined && privileges?.file !== null) ? (
                                                                                 <img src={VerifiedImage} alt="" className={`${style.imgIcon} `} />
                                                                             ) : (
-                                                                                <img src={ToBeVerifiedImage} alt="" className={style.imgIcon} />
+                                                                                <img src={NotVerifiedImage} alt="" className={style.imgIcon} />
                                                                             )}
                                                                             <div className={`${style.uploadText} ${style.verticalAlignCenter}`}>
                                                                                 Upload any supporting documents for evidence of qualification and competence
@@ -669,7 +670,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, applicationId, getPreAppl
                 <div>
                     <div className={style.applicationCardStyle}>
                         <div className={style.padding}>
-                            <div className={style.cardTitle}>{`Indicate the Privileges you are seeking as ${startsWithVowel(applicationData?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory ? applicationData?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory : '') ? 'an' : 'a'} ${applicationData?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory ? applicationData?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory : ''} for ${applicationData?.basicDetails?.departmentSpecialty?.department || ''} ${applicationData?.basicDetails?.departmentSpecialty?.specialty ? '/' : ''} ${applicationData?.basicDetails?.departmentSpecialty?.specialty || ''}`}</div>
+                            <div className={style.cardTitle}>{`Indicate the Privileges you are seeking as  a ${basicForm?.basicDetails?.applicant?.applicantType ? basicForm?.basicDetails?.applicant?.applicantType : ''} for ${applicationData?.basicDetails?.departmentSpecialty?.department || ''} ${applicationData?.basicDetails?.departmentSpecialty?.specialty ? '/' : ''} ${applicationData?.basicDetails?.departmentSpecialty?.specialty || ''}`}</div>
                             <div className={style.marginTop}>
                                 {/* <CommonSelectField
                                     value={selectedPrivilege}
@@ -831,7 +832,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, applicationId, getPreAppl
                                                                                                     {(privileges?.file !== undefined && privileges?.file !== null) ? (
                                                                                                         <img src={VerifiedImage} alt="" className={`${style.imgIcon}`} />
                                                                                                     ) : (
-                                                                                                        <img src={ToBeVerifiedImage} alt="" className={style.imgIcon} />
+                                                                                                        <img src={NotVerifiedImage} alt="" className={style.imgIcon} />
                                                                                                     )}
                                                                                                     <div className={`${style.uploadText} ${style.verticalAlignCenter}`}>
                                                                                                         Upload any supporting documents for evidence of qualification and competence

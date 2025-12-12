@@ -68,13 +68,13 @@ const OffenceDeclaration = ({ acknowledgementForm, dateFormat, name, basicForm, 
         if (basicForm && !formSchemaWholeObject) {
             getFormSchema()
         }
-        setIsChecked(basicForm?.forms?.[formIndex]?.acknowledged);
         // setEncryptedText(basicForm?.forms?.[formIndex]?.esign?.esign)
         setSignText(basicForm?.forms?.[formIndex]?.acknowledged ? basicForm?.forms?.[formIndex]?.esign?.esign : '');
         setIsSigned((basicForm?.forms?.[formIndex]?.esign?.esign !== undefined && basicForm?.forms?.[formIndex]?.acknowledged) ? true : false);
         setTableData(basicForm?.forms?.[formIndex]?.data !== null ? basicForm?.forms?.[formIndex]?.data?.tableData : initialData)
         if (!isEdited) {
             setCheckedDisclaimer(basicForm?.forms?.[formIndex]?.data !== null ? basicForm?.forms?.[formIndex]?.data?.checkedDisclaimer : checkedDisclaimer)
+            setIsChecked(basicForm?.forms?.[formIndex]?.acknowledged);
         }
         // setDecryptedText(CryptoJS.AES.decrypt(basicForm?.forms?.[formIndex]?.esign?.esign, publicKey).toString(CryptoJS.enc.Utf8))
         if (basicForm !== undefined && formIndex !== undefined) {
@@ -258,7 +258,7 @@ const OffenceDeclaration = ({ acknowledgementForm, dateFormat, name, basicForm, 
         if (isSigned) {
             let temp = {
                 schemaId: basicForm?.forms?.[formIndex]?.schemaId,
-                data: !isEdited ? basicForm?.forms?.[formIndex]?.data : { esignDate: isChecked ? name + " " + currentDate : '', checkedDisclaimer: checkedDisclaimer, tableData: tableData, offenceDeclaration: basicForm?.forms?.[formIndex]?.data },
+                data: !isEdited ? basicForm?.forms?.[formIndex]?.data : { esignDate: isChecked ? name + " " + currentDate : '', checkedDisclaimer: checkedDisclaimer, tableData: tableData, offenceDeclaration: basicForm?.forms?.[formIndex]?.data?.offenceDeclaration },
                 acknowledged: isChecked,
                 esign: { esign: isChecked ? encryptedText : '', name: isChecked ? name : '', signedDate: isChecked ? currentDate : '' }
             }

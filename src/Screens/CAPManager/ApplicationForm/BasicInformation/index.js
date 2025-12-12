@@ -270,6 +270,7 @@ const BasicInformation = ({ basicForm, setBasicForm, applicationId, getPreApplic
             progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`}
             applicationId={applicationId}
             basicForm={basicForm}
+            hideProgress={true}
           />
           <div className={`${style.applicationCardStyle}  ${style.marginTop}`}>
             {/* <CommonMailingAddress label={'Business Mailing Address*'} onChangeAddressLine1={() => { }} placeholderAddressLine1={'123 Street'} maxLengthAddressLine1={25} valueAddressLine1={''}
@@ -303,6 +304,7 @@ const BasicInformation = ({ basicForm, setBasicForm, applicationId, getPreApplic
                   getAllLabels={getAllLabels}
                   warningFields={warningFields}
                   formSchema={formSchemaWholeObject}
+                  formPermission={formPermission}
                 />
               )}
             {/* <CommonDivider /> */}
@@ -319,6 +321,7 @@ const BasicInformation = ({ basicForm, setBasicForm, applicationId, getPreApplic
                   getAllLabels={getAllLabels}
                   warningFields={warningFields}
                   formSchema={formSchemaWholeObject}
+                  formPermission={formPermission}
                 />
               )}
             {form1 !== undefined &&

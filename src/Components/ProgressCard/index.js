@@ -3,7 +3,7 @@ import style from './index.module.scss'
 import { useNavigate, useParams } from 'react-router-dom';
 import { Tooltip } from '@mui/material';
 
-const ProgressCard = ({ dataType, title, timeNumber, timeText, progressStyle, basicForm }) => {
+const ProgressCard = ({ dataType, title, timeNumber, timeText, progressStyle, basicForm, hideProgress }) => {
     const [startTime, setStartTime] = useState(0);
     const navigate = useNavigate()
     const [displayTime, setDisplayTime] = useState(0);
@@ -195,6 +195,57 @@ const ProgressCard = ({ dataType, title, timeNumber, timeText, progressStyle, ba
         }
     }
 
+    const checkPrivileges = (privilegeList = []) => {
+        console.log(privilegeList, 'hasPrivileges')
+        for (const item of privilegeList) {
+            // Only for DISCRETE type
+            if (item.privilegeSpecificationType !== "DISCRETE") continue;
+
+            const details = item.privilegeDetails;
+            if (!details) continue;
+
+            const sectionsToCheck = [
+                details.corePrivileges,
+                details.restrictedPrivileges,
+            ];
+            console.log(sectionsToCheck, 'hasPrivileges')
+            for (const section of sectionsToCheck) {
+                if (!section) continue;
+
+                const hasPrivileges =
+                    Array.isArray(section.privilegesByCategories) &&
+                    section.privilegesByCategories.some(
+                        (cat) =>
+                            cat &&
+                            Array.isArray(cat.privileges) &&
+                            cat.privileges.length > 0
+                    );
+                console.log(hasPrivileges, 'hasPrivileges')
+                if (hasPrivileges) {
+                    const esign = section.esign;
+
+                    const validESign =
+                        esign &&
+                        typeof esign.esign === "string" &&
+                        esign.esign.trim() !== "" &&
+                        typeof esign.name === "string" &&
+                        esign.name.trim() !== "" &&
+                        typeof esign.signedDate === "string" &&
+                        esign.signedDate.trim() !== "";
+                    console.log(validESign, 'hasPrivileges', section.esign)
+                    if (!validESign) {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        return true;
+    };
+
+    console.log(checkPrivileges(basicForm?.privileges?.obligatedPrivileges) &&
+        checkPrivileges(basicForm?.privileges?.additionalPrivileges), 'hasPrivileges')
+
     return (
         <div className={style.progressCard}>
             <div className={style.spaceBetween}>
@@ -202,7 +253,11 @@ const ProgressCard = ({ dataType, title, timeNumber, timeText, progressStyle, ba
                     <div className={style.stepTextStyle}>{dataType}</div>
                     {/* <div className={`${style.dataTypeCollectionsTextStyle}  ${step !== '' ? style.marginLeft : ''}`}>{dataType}</div> */}
                 </div>
-                <div className={style.timeSpentText}>Time spent</div>
+                <div className={style.displayInRow}>
+                    <div className={style.timeSpentText}>* Mandatory Data Fields</div>
+                    <div className={`${style.marginLeft} ${style.verticalDivider}`}></div>
+                    <div className={`${style.timeSpentText} ${style.marginLeft}`}>Time spent</div>
+                </div>
             </div>
             <div className={`${style.spaceBetween} ${style.marginTop10}`}>
                 <div className={style.titleTextStyle}>{title}</div>
@@ -215,378 +270,379 @@ const ProgressCard = ({ dataType, title, timeNumber, timeText, progressStyle, ba
                     <div className={style.sectionSplit}></div>
                     <div className={style.sectionSplit}></div>
                 </div> */}
-                <div className={`${style.progressStyle} ${style.marginTop10}  ${style.spaceBetween}`}
-                    style={{ background: `transparent linear-gradient(90deg, #06617A 0%, #06617A ${(formIndex / (basicForm?.forms?.length - 1)) * 100}%, #E9E9F0 ${((formIndex / (basicForm?.forms?.length)) * 100) + (100 / basicForm?.forms?.length)}%, #E9E9F0 100%) 0% 0% no-repeat padding-box` }}
-                >
+                {!hideProgress && (
+                    <div className={`${style.progressStyle} ${style.marginTop10}  ${style.spaceBetween}`}
+                        style={{ background: `transparent linear-gradient(90deg, #06617A 0%, #06617A ${(formIndex / (basicForm?.forms?.length - 1)) * 100}%, #E9E9F0 ${((formIndex / (basicForm?.forms?.length)) * 100) + (100 / basicForm?.forms?.length)}%, #E9E9F0 100%) 0% 0% no-repeat padding-box` }}
+                    >
 
-                    {(basicForm?.forms ?? []).map((data, index) => {
-                        let dotClass = `${style.disabledDotStyle} ${style.disabled}`;
-                        if (data?.acknowledged) {
-                            const uploadDocForm = basicForm?.forms?.find(form => form?.schemaCategory === 'UploadYourDoc');
-                            const contactAddress = basicForm?.forms?.find(form => form?.schemaCategory === 'ContactAddress');
-                            const qualification = basicForm?.forms?.find(form => form?.schemaCategory === 'Qualification');
-                            const malpracticeInfo = basicForm?.forms?.find(form => form?.schemaCategory === 'MalpracticeInfo');
-                            const education = basicForm?.forms?.find(form => form?.schemaCategory === 'Education');
-                            const workExperience = basicForm?.forms?.find(form => form?.schemaCategory === 'WorkExperience');
-                            const privilegeSelection = basicForm?.forms?.find(form => form?.schemaCategory === 'PrivilegeSelection');
-                            const references = basicForm?.forms?.find(form => form?.schemaCategory === 'References');
-                            const professionalConduct = basicForm?.forms?.find(form => form?.schemaCategory === 'ProfessionalConduct');
-                            const criminalHistory = basicForm?.forms?.find(form => form?.schemaCategory === 'CriminalHistory');
-                            const medicalHistory = basicForm?.forms?.find(form => form?.schemaCategory === 'MedicalHistory');
-                            const miscellaneousQuestion = basicForm?.forms?.find(form => form?.schemaCategory === 'MISCELLANEOUS_QUESTIONS');
-                            const applicantAcknowledgement = basicForm?.forms?.find(form => form?.schemaCategory === 'ApplicantAcknowledgement');
-                            const scheduleA = basicForm?.forms?.find(form => form?.schemaCategory === 'ScheduleA');
-                            const scheduleB = basicForm?.forms?.find(form => form?.schemaCategory === 'ScheduleB');
-                            const immunization = basicForm?.forms?.find(form => form?.schemaCategory === 'Immunization');
-                            const policeVulnerableCheck = basicForm?.forms?.find(form => form?.schemaCategory === 'PoliceVulnerableCheck');
-                            const codeOfConduct = basicForm?.forms?.find(form => form?.schemaCategory === 'CodeOfConduct');
-                            const confidentialityAgreement = basicForm?.forms?.find(form => form?.schemaCategory === 'ConfidentialityAgreement');
-                            const conflictOfInterest = basicForm?.forms?.find(form => form?.schemaCategory === 'ConflictOfInterest');
-                            const offenceDeclaration = basicForm?.forms?.find(form => form?.schemaCategory === 'OffenceDeclaration');
-                            const disabilitiesAct = basicForm?.forms?.find(form => form?.schemaCategory === 'DisabilitiesAct');
-                            const pharmacySignature = basicForm?.forms?.find(form => form?.schemaCategory === 'PharmacySignature');
-                            const pacsRequest = basicForm?.forms?.find(form => form?.schemaCategory === 'PACS_Request');
+                        {(basicForm?.forms ?? []).map((data, index) => {
+                            let dotClass = `${style.disabledDotStyle} ${style.disabled}`;
+                            if (data?.schemaCategory === "Immunization" ? basicForm?.immunizationData?.immunizationDetails : data?.schemaCategory === "PrivilegeSelection" ? (basicForm?.privileges?.obligatedPrivileges?.length > 0 || basicForm?.privileges?.additionalPrivileges?.length > 0) : (data?.acknowledged || data?.data)) {
+                                const uploadDocForm = basicForm?.forms?.find(form => form?.schemaCategory === 'UploadYourDoc');
+                                const contactAddress = basicForm?.forms?.find(form => form?.schemaCategory === 'ContactAddress');
+                                const qualification = basicForm?.forms?.find(form => form?.schemaCategory === 'Qualification');
+                                const malpracticeInfo = basicForm?.forms?.find(form => form?.schemaCategory === 'MalpracticeInfo');
+                                const education = basicForm?.forms?.find(form => form?.schemaCategory === 'Education');
+                                const workExperience = basicForm?.forms?.find(form => form?.schemaCategory === 'WorkExperience');
+                                const privilegeSelection = basicForm?.forms?.find(form => form?.schemaCategory === 'PrivilegeSelection');
+                                const references = basicForm?.forms?.find(form => form?.schemaCategory === 'References');
+                                const professionalConduct = basicForm?.forms?.find(form => form?.schemaCategory === 'ProfessionalConduct');
+                                const criminalHistory = basicForm?.forms?.find(form => form?.schemaCategory === 'CriminalHistory');
+                                const medicalHistory = basicForm?.forms?.find(form => form?.schemaCategory === 'MedicalHistory');
+                                const miscellaneousQuestion = basicForm?.forms?.find(form => form?.schemaCategory === 'MISCELLANEOUS_QUESTIONS');
+                                const applicantAcknowledgement = basicForm?.forms?.find(form => form?.schemaCategory === 'ApplicantAcknowledgement');
+                                const scheduleA = basicForm?.forms?.find(form => form?.schemaCategory === 'ScheduleA');
+                                const scheduleB = basicForm?.forms?.find(form => form?.schemaCategory === 'ScheduleB');
+                                const immunization = basicForm?.forms?.find(form => form?.schemaCategory === 'Immunization');
+                                const policeVulnerableCheck = basicForm?.forms?.find(form => form?.schemaCategory === 'PoliceVulnerableCheck');
+                                const codeOfConduct = basicForm?.forms?.find(form => form?.schemaCategory === 'CodeOfConduct');
+                                const confidentialityAgreement = basicForm?.forms?.find(form => form?.schemaCategory === 'ConfidentialityAgreement');
+                                const conflictOfInterest = basicForm?.forms?.find(form => form?.schemaCategory === 'ConflictOfInterest');
+                                const offenceDeclaration = basicForm?.forms?.find(form => form?.schemaCategory === 'OffenceDeclaration');
+                                const disabilitiesAct = basicForm?.forms?.find(form => form?.schemaCategory === 'DisabilitiesAct');
+                                const pharmacySignature = basicForm?.forms?.find(form => form?.schemaCategory === 'PharmacySignature');
+                                const pacsRequest = basicForm?.forms?.find(form => form?.schemaCategory === 'PACS_Request');
 
-                            const unFilledFields = uploadDocForm?.unFilledFields ?? [];
-                            const documentsRequired = basicForm?.documentsRequired ?? [];
-                            const contactAddressUnfilledFields = contactAddress?.unFilledFields ?? [];
-                            const qualificationUnfilledFields = qualification?.unFilledFields ?? [];
-                            const malpracticeInfoUnfilledFields = malpracticeInfo?.unFilledFields ?? [];
-                            const educationUnfilledFields = education?.unFilledFields ?? [];
-                            const workExperienceUnfilledFields = workExperience?.unFilledFields ?? [];
-                            const privilegeSelectionUnfilledFields = privilegeSelection?.unFilledFields ?? [];
-                            const referencesUnfilledFields = references?.unFilledFields ?? [];
-                            const professionalConductUnfilledFields = professionalConduct?.unFilledFields ?? [];
-                            const criminalHistoryUnfilledFields = criminalHistory?.unFilledFields ?? [];
-                            const medicalHistoryUnfilledFields = medicalHistory?.unFilledFields ?? [];
-                            const miscellaneousQuestionUnfilledFields = miscellaneousQuestion?.unFilledFields ?? [];
-                            const applicantAcknowledgementUpdate = applicantAcknowledgement?.acknowledged ?? "";
-                            const scheduleAUpdate = scheduleA?.unFilledFields ?? [];
-                            const scheduleBUpdate = scheduleB?.unFilledFields ?? [];
-                            const immunizationUpdate = immunization?.unFilledFields ?? [];
-                            const policeVulnerableCheckUpdate = policeVulnerableCheck?.unFilledFields ?? [];
-                            const codeOfConductUpdate = codeOfConduct?.unFilledFields ?? [];
-                            const confidentialityAgreementUpdate = confidentialityAgreement?.unFilledFields ?? [];
-                            const conflictOfInterestUpdate = conflictOfInterest?.unFilledFields ?? [];
-                            const offenceDeclarationUpdate = offenceDeclaration?.unFilledFields ?? [];
-                            const disabilitiesActUpdate = disabilitiesAct?.unFilledFields ?? [];
-                            const pharmacySignatureUpdate = pharmacySignature?.unFilledFields ?? [];
-                            const pacsRequestUpdate = pacsRequest?.unFilledFields ?? [];
+                                const unFilledFields = uploadDocForm?.unFilledFields ?? [];
+                                const documentsRequired = basicForm?.documentsRequired ?? [];
+                                const contactAddressUnfilledFields = contactAddress?.unFilledFields ?? [];
+                                const qualificationUnfilledFields = qualification?.unFilledFields ?? [];
+                                const malpracticeInfoUnfilledFields = malpracticeInfo?.unFilledFields ?? [];
+                                const educationUnfilledFields = education?.unFilledFields ?? [];
+                                const workExperienceUnfilledFields = workExperience?.unFilledFields ?? [];
+                                const privilegeSelectionUnfilledFields = privilegeSelection?.unFilledFields ?? [];
+                                const referencesUnfilledFields = references?.unFilledFields ?? [];
+                                const professionalConductUnfilledFields = professionalConduct?.unFilledFields ?? [];
+                                const criminalHistoryUnfilledFields = criminalHistory?.unFilledFields ?? [];
+                                const medicalHistoryUnfilledFields = medicalHistory?.unFilledFields ?? [];
+                                const miscellaneousQuestionUnfilledFields = miscellaneousQuestion?.unFilledFields ?? [];
+                                const applicantAcknowledgementUpdate = applicantAcknowledgement?.acknowledged ?? "";
+                                const scheduleAUpdate = scheduleA?.unFilledFields ?? [];
+                                const scheduleBUpdate = scheduleB?.unFilledFields ?? [];
+                                const immunizationUpdate = immunization?.unFilledFields ?? [];
+                                const policeVulnerableCheckUpdate = policeVulnerableCheck?.unFilledFields ?? [];
+                                const codeOfConductUpdate = codeOfConduct?.unFilledFields ?? [];
+                                const confidentialityAgreementUpdate = confidentialityAgreement?.unFilledFields ?? [];
+                                const conflictOfInterestUpdate = conflictOfInterest?.unFilledFields ?? [];
+                                const offenceDeclarationUpdate = offenceDeclaration?.unFilledFields ?? [];
+                                const disabilitiesActUpdate = disabilitiesAct?.unFilledFields ?? [];
+                                const pharmacySignatureUpdate = pharmacySignature?.unFilledFields ?? [];
+                                const pacsRequestUpdate = pacsRequest?.unFilledFields ?? [];
 
 
-                            dotClass = style.dotStyle;
+                                dotClass = style.dotStyle;
 
-                            if (data?.schemaCategory === 'UploadYourDoc') {
-                                // const requiredDocNames = documentsRequired?.filter(doc => doc?.required).map(doc => doc?.document?.shortName);
-                                const requiredDocNames = documentsRequired?.filter(doc => getIsDocRequired(doc?.document?.shortName) === "Required")?.map(doc => doc?.document?.shortName);
-                                const missingRequiredDocs = requiredDocNames?.some(name => unFilledFields?.includes(name));
-                                const unfilledOptionalDocs = unFilledFields?.filter(name => documentsRequired?.some(doc => doc?.document?.shortName === name && !doc?.required));
+                                if (data?.schemaCategory === 'UploadYourDoc') {
+                                    // const requiredDocNames = documentsRequired?.filter(doc => doc?.required).map(doc => doc?.document?.shortName);
+                                    const requiredDocNames = documentsRequired?.filter(doc => getIsDocRequired(doc?.document?.shortName) === "Required")?.map(doc => doc?.document?.shortName);
+                                    const missingRequiredDocs = requiredDocNames?.some(name => unFilledFields?.includes(name));
+                                    const unfilledOptionalDocs = unFilledFields?.filter(name => documentsRequired?.some(doc => doc?.document?.shortName === name && !doc?.required));
 
-                                // const missingRequiredDocs = requiredDocNames?.filter(name => unFilledFields?.includes(name));
+                                    // const missingRequiredDocs = requiredDocNames?.filter(name => unFilledFields?.includes(name));
+                                    console.log(missingRequiredDocs, 'missingRequiredDocs')
+                                    dotClass = missingRequiredDocs ? style.reddotStyle : unfilledOptionalDocs?.length > 0 ? style.yellowdotStyle : style.dotStyle;
+                                } else if (data?.schemaCategory === 'ContactAddress') {
+                                    let hasMandatoryTrue = contactAddressUnfilledFields?.some(field => {
+                                        try {
+                                            const parsed = JSON.parse(field);
+                                            return parsed?.label?.mandatory === true;
+                                        } catch (e) {
+                                            // field is just a plain string or invalid JSON → ignore it
+                                            return false;
+                                        }
+                                    });
+                                    let hasMandatoryFalse = contactAddressUnfilledFields?.some(field => {
+                                        try {
+                                            const parsed = JSON.parse(field);
+                                            return parsed?.label?.mandatory !== true;
+                                        } catch (e) {
+                                            // field is just a plain string or invalid JSON → ignore it
+                                            return false;
+                                        }
+                                    });
 
-                                dotClass = missingRequiredDocs ? style.reddotStyle : unfilledOptionalDocs?.length > 0 ? style.yellowdotStyle : style.dotStyle;
-                            } else if (data?.schemaCategory === 'ContactAddress') {
-                                let hasMandatoryTrue = contactAddressUnfilledFields?.some(field => {
-                                    try {
-                                        const parsed = JSON.parse(field);
-                                        return parsed?.label?.mandatory === true;
-                                    } catch (e) {
-                                        // field is just a plain string or invalid JSON → ignore it
-                                        return false;
-                                    }
-                                });
-                                let hasMandatoryFalse = contactAddressUnfilledFields?.some(field => {
-                                    try {
-                                        const parsed = JSON.parse(field);
-                                        return parsed?.label?.mandatory !== true;
-                                    } catch (e) {
-                                        // field is just a plain string or invalid JSON → ignore it
-                                        return false;
-                                    }
-                                });
+                                    dotClass = hasMandatoryTrue ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
+                                } else if (data?.schemaCategory === 'Qualification') {
+                                    let hasMandatoryTrue = qualificationUnfilledFields?.some(field => {
+                                        try {
+                                            const parsed = JSON.parse(field);
+                                            return parsed?.label?.mandatory === true;
+                                        } catch (e) {
+                                            // field is just a plain string or invalid JSON → ignore it
+                                            return false;
+                                        }
+                                    });
+                                    let hasMandatoryFalse = qualificationUnfilledFields?.some(field => {
+                                        try {
+                                            const parsed = JSON.parse(field);
+                                            return parsed?.label?.mandatory !== true;
+                                        } catch (e) {
+                                            // field is just a plain string or invalid JSON → ignore it
+                                            return false;
+                                        }
+                                    });
 
-                                dotClass = hasMandatoryTrue ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
-                            } else if (data?.schemaCategory === 'Qualification') {
-                                let hasMandatoryTrue = qualificationUnfilledFields?.some(field => {
-                                    try {
-                                        const parsed = JSON.parse(field);
-                                        return parsed?.label?.mandatory === true;
-                                    } catch (e) {
-                                        // field is just a plain string or invalid JSON → ignore it
-                                        return false;
-                                    }
-                                });
-                                let hasMandatoryFalse = qualificationUnfilledFields?.some(field => {
-                                    try {
-                                        const parsed = JSON.parse(field);
-                                        return parsed?.label?.mandatory !== true;
-                                    } catch (e) {
-                                        // field is just a plain string or invalid JSON → ignore it
-                                        return false;
-                                    }
-                                });
+                                    dotClass = hasMandatoryTrue ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
+                                } else if (data?.schemaCategory === 'MalpracticeInfo') {
+                                    let hasMandatoryTrue = malpracticeInfoUnfilledFields?.some(field => {
+                                        try {
+                                            const parsed = JSON.parse(field);
+                                            return parsed?.label?.mandatory === true;
+                                        } catch (e) {
+                                            // field is just a plain string or invalid JSON → ignore it
+                                            return false;
+                                        }
+                                    });
+                                    let hasMandatoryFalse = malpracticeInfoUnfilledFields?.some(field => {
+                                        try {
+                                            const parsed = JSON.parse(field);
+                                            return parsed?.label?.mandatory !== true;
+                                        } catch (e) {
+                                            // field is just a plain string or invalid JSON → ignore it
+                                            return false;
+                                        }
+                                    });
 
-                                dotClass = hasMandatoryTrue ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
-                            } else if (data?.schemaCategory === 'MalpracticeInfo') {
-                                let hasMandatoryTrue = malpracticeInfoUnfilledFields?.some(field => {
-                                    try {
-                                        const parsed = JSON.parse(field);
-                                        return parsed?.label?.mandatory === true;
-                                    } catch (e) {
-                                        // field is just a plain string or invalid JSON → ignore it
-                                        return false;
-                                    }
-                                });
-                                let hasMandatoryFalse = malpracticeInfoUnfilledFields?.some(field => {
-                                    try {
-                                        const parsed = JSON.parse(field);
-                                        return parsed?.label?.mandatory !== true;
-                                    } catch (e) {
-                                        // field is just a plain string or invalid JSON → ignore it
-                                        return false;
-                                    }
-                                });
+                                    dotClass = hasMandatoryTrue ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
+                                } else if (data?.schemaCategory === 'Education') {
+                                    let hasMandatoryTrue = educationUnfilledFields?.some(field => {
+                                        try {
+                                            const parsed = JSON.parse(field);
+                                            return parsed?.label?.mandatory === true;
+                                        } catch (e) {
+                                            // field is just a plain string or invalid JSON → ignore it
+                                            return false;
+                                        }
+                                    });
+                                    let hasMandatoryFalse = educationUnfilledFields?.some(field => {
+                                        try {
+                                            const parsed = JSON.parse(field);
+                                            return parsed?.label?.mandatory !== true;
+                                        } catch (e) {
+                                            // field is just a plain string or invalid JSON → ignore it
+                                            return false;
+                                        }
+                                    });
 
-                                dotClass = hasMandatoryTrue ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
-                            } else if (data?.schemaCategory === 'Education') {
-                                let hasMandatoryTrue = educationUnfilledFields?.some(field => {
-                                    try {
-                                        const parsed = JSON.parse(field);
-                                        return parsed?.label?.mandatory === true;
-                                    } catch (e) {
-                                        // field is just a plain string or invalid JSON → ignore it
-                                        return false;
-                                    }
-                                });
-                                let hasMandatoryFalse = educationUnfilledFields?.some(field => {
-                                    try {
-                                        const parsed = JSON.parse(field);
-                                        return parsed?.label?.mandatory !== true;
-                                    } catch (e) {
-                                        // field is just a plain string or invalid JSON → ignore it
-                                        return false;
-                                    }
-                                });
+                                    dotClass = (education?.data?.graduation?.length > 0) ? style.dotStyle : style.yellowdotStyle;
+                                } else if (data?.schemaCategory === 'WorkExperience') {
+                                    let hasMandatoryTrue = workExperienceUnfilledFields?.some(field => {
+                                        try {
+                                            const parsed = JSON.parse(field);
+                                            return parsed?.label?.mandatory === true;
+                                        } catch (e) {
+                                            // field is just a plain string or invalid JSON → ignore it
+                                            return false;
+                                        }
+                                    });
+                                    let hasMandatoryFalse = workExperienceUnfilledFields?.some(field => {
+                                        try {
+                                            const parsed = JSON.parse(field);
+                                            return parsed?.label?.mandatory !== true;
+                                        } catch (e) {
+                                            // field is just a plain string or invalid JSON → ignore it
+                                            return false;
+                                        }
+                                    });
 
-                                dotClass = hasMandatoryTrue ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
-                            } else if (data?.schemaCategory === 'WorkExperience') {
-                                let hasMandatoryTrue = workExperienceUnfilledFields?.some(field => {
-                                    try {
-                                        const parsed = JSON.parse(field);
-                                        return parsed?.label?.mandatory === true;
-                                    } catch (e) {
-                                        // field is just a plain string or invalid JSON → ignore it
-                                        return false;
-                                    }
-                                });
-                                let hasMandatoryFalse = workExperienceUnfilledFields?.some(field => {
-                                    try {
-                                        const parsed = JSON.parse(field);
-                                        return parsed?.label?.mandatory !== true;
-                                    } catch (e) {
-                                        // field is just a plain string or invalid JSON → ignore it
-                                        return false;
-                                    }
-                                });
+                                    dotClass = (workExperience?.data?.healthcareFacilityAppointments?.length > 0 && references?.data?.trainingAndWorkingExperience?.length > 0) ? style.dotStyle : style.yellowdotStyle;
+                                } else if (data?.schemaCategory === 'PrivilegeSelection') {
+                                    // let hasMandatoryTrue = privilegeSelectionUnfilledFields?.some(field => {
+                                    //     try {
+                                    //         const parsed = JSON.parse(field);
+                                    //         return parsed?.label?.mandatory === true;
+                                    //     } catch (e) {
+                                    //         return false;
+                                    //     }
+                                    // });
+                                    // let hasMandatoryFalse = privilegeSelectionUnfilledFields?.some(field => {
+                                    //     try {
+                                    //         const parsed = JSON.parse(field);
+                                    //         return parsed?.label?.mandatory !== true;
+                                    //     } catch (e) {
+                                    //         return false;
+                                    //     }
+                                    // });
 
-                                dotClass = hasMandatoryTrue ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
-                            } else if (data?.schemaCategory === 'PrivilegeSelection') {
-                                let hasMandatoryTrue = privilegeSelectionUnfilledFields?.some(field => {
-                                    try {
-                                        const parsed = JSON.parse(field);
-                                        return parsed?.label?.mandatory === true;
-                                    } catch (e) {
-                                        // field is just a plain string or invalid JSON → ignore it
-                                        return false;
-                                    }
-                                });
-                                let hasMandatoryFalse = privilegeSelectionUnfilledFields?.some(field => {
-                                    try {
-                                        const parsed = JSON.parse(field);
-                                        return parsed?.label?.mandatory !== true;
-                                    } catch (e) {
-                                        // field is just a plain string or invalid JSON → ignore it
-                                        return false;
-                                    }
-                                });
+                                    dotClass = (checkPrivileges(basicForm?.privileges?.obligatedPrivileges) &&
+                                        checkPrivileges(basicForm?.privileges?.additionalPrivileges)) ? style.dotStyle : style.reddotStyle;
+                                } else if (data?.schemaCategory === 'References') {
+                                    let hasMandatoryTrue = referencesUnfilledFields?.some(field => {
+                                        try {
+                                            const parsed = JSON.parse(field);
+                                            return parsed?.label?.mandatory === true;
+                                        } catch (e) {
+                                            // field is just a plain string or invalid JSON → ignore it
+                                            return false;
+                                        }
+                                    });
+                                    let hasMandatoryFalse = referencesUnfilledFields?.some(field => {
+                                        try {
+                                            const parsed = JSON.parse(field);
+                                            return parsed?.label?.mandatory !== true;
+                                        } catch (e) {
+                                            // field is just a plain string or invalid JSON → ignore it
+                                            return false;
+                                        }
+                                    });
 
-                                dotClass = hasMandatoryTrue ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
-                            } else if (data?.schemaCategory === 'References') {
-                                let hasMandatoryTrue = referencesUnfilledFields?.some(field => {
-                                    try {
-                                        const parsed = JSON.parse(field);
-                                        return parsed?.label?.mandatory === true;
-                                    } catch (e) {
-                                        // field is just a plain string or invalid JSON → ignore it
-                                        return false;
-                                    }
-                                });
-                                let hasMandatoryFalse = referencesUnfilledFields?.some(field => {
-                                    try {
-                                        const parsed = JSON.parse(field);
-                                        return parsed?.label?.mandatory !== true;
-                                    } catch (e) {
-                                        // field is just a plain string or invalid JSON → ignore it
-                                        return false;
-                                    }
-                                });
+                                    dotClass = (references?.data?.references?.length > 0 && references?.data?.privilegeReferences?.length > 0) ? style.dotStyle : style.yellowdotStyle;
+                                } else if (data?.schemaCategory === 'ProfessionalConduct') {
+                                    let hasMandatoryTrue = professionalConductUnfilledFields?.some(field => {
+                                        try {
+                                            const parsed = JSON.parse(field);
+                                            return parsed?.label?.mandatory === true;
+                                        } catch (e) {
+                                            // field is just a plain string or invalid JSON → ignore it
+                                            return false;
+                                        }
+                                    });
+                                    let hasMandatoryFalse = professionalConductUnfilledFields?.some(field => {
+                                        try {
+                                            const parsed = JSON.parse(field);
+                                            return parsed?.label?.mandatory !== true;
+                                        } catch (e) {
+                                            // field is just a plain string or invalid JSON → ignore it
+                                            return false;
+                                        }
+                                    });
 
-                                dotClass = hasMandatoryTrue ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
-                            } else if (data?.schemaCategory === 'ProfessionalConduct') {
-                                let hasMandatoryTrue = professionalConductUnfilledFields?.some(field => {
-                                    try {
-                                        const parsed = JSON.parse(field);
-                                        return parsed?.label?.mandatory === true;
-                                    } catch (e) {
-                                        // field is just a plain string or invalid JSON → ignore it
-                                        return false;
-                                    }
-                                });
-                                let hasMandatoryFalse = professionalConductUnfilledFields?.some(field => {
-                                    try {
-                                        const parsed = JSON.parse(field);
-                                        return parsed?.label?.mandatory !== true;
-                                    } catch (e) {
-                                        // field is just a plain string or invalid JSON → ignore it
-                                        return false;
-                                    }
-                                });
+                                    dotClass = hasMandatoryTrue ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
+                                } else if (data?.schemaCategory === 'CriminalHistory') {
+                                    let hasMandatoryTrue = criminalHistoryUnfilledFields?.some(field => {
+                                        try {
+                                            const parsed = JSON.parse(field);
+                                            return parsed?.label?.mandatory === true;
+                                        } catch (e) {
+                                            // field is just a plain string or invalid JSON → ignore it
+                                            return false;
+                                        }
+                                    });
+                                    let hasMandatoryFalse = criminalHistoryUnfilledFields?.some(field => {
+                                        try {
+                                            const parsed = JSON.parse(field);
+                                            return parsed?.label?.mandatory !== true;
+                                        } catch (e) {
+                                            // field is just a plain string or invalid JSON → ignore it
+                                            return false;
+                                        }
+                                    });
 
-                                dotClass = hasMandatoryTrue ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
-                            } else if (data?.schemaCategory === 'CriminalHistory') {
-                                let hasMandatoryTrue = criminalHistoryUnfilledFields?.some(field => {
-                                    try {
-                                        const parsed = JSON.parse(field);
-                                        return parsed?.label?.mandatory === true;
-                                    } catch (e) {
-                                        // field is just a plain string or invalid JSON → ignore it
-                                        return false;
-                                    }
-                                });
-                                let hasMandatoryFalse = criminalHistoryUnfilledFields?.some(field => {
-                                    try {
-                                        const parsed = JSON.parse(field);
-                                        return parsed?.label?.mandatory !== true;
-                                    } catch (e) {
-                                        // field is just a plain string or invalid JSON → ignore it
-                                        return false;
-                                    }
-                                });
+                                    dotClass = hasMandatoryTrue ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
+                                } else if (data?.schemaCategory === 'MedicalHistory') {
+                                    let hasMandatoryTrue = medicalHistoryUnfilledFields?.some(field => {
+                                        try {
+                                            const parsed = JSON.parse(field);
+                                            return parsed?.label?.mandatory === true;
+                                        } catch (e) {
+                                            // field is just a plain string or invalid JSON → ignore it
+                                            return false;
+                                        }
+                                    });
+                                    let hasMandatoryFalse = medicalHistoryUnfilledFields?.some(field => {
+                                        try {
+                                            const parsed = JSON.parse(field);
+                                            return parsed?.label?.mandatory !== true;
+                                        } catch (e) {
+                                            // field is just a plain string or invalid JSON → ignore it
+                                            return false;
+                                        }
+                                    });
 
-                                dotClass = hasMandatoryTrue ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
-                            } else if (data?.schemaCategory === 'MedicalHistory') {
-                                let hasMandatoryTrue = medicalHistoryUnfilledFields?.some(field => {
-                                    try {
-                                        const parsed = JSON.parse(field);
-                                        return parsed?.label?.mandatory === true;
-                                    } catch (e) {
-                                        // field is just a plain string or invalid JSON → ignore it
-                                        return false;
-                                    }
-                                });
-                                let hasMandatoryFalse = medicalHistoryUnfilledFields?.some(field => {
-                                    try {
-                                        const parsed = JSON.parse(field);
-                                        return parsed?.label?.mandatory !== true;
-                                    } catch (e) {
-                                        // field is just a plain string or invalid JSON → ignore it
-                                        return false;
-                                    }
-                                });
+                                    dotClass = hasMandatoryTrue ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
+                                } else if (data?.schemaCategory === 'MISCELLANEOUS_QUESTIONS') {
+                                    let hasMandatoryTrue = miscellaneousQuestionUnfilledFields?.some(field => {
+                                        try {
+                                            const parsed = JSON.parse(field);
+                                            return parsed?.label?.mandatory === true;
+                                        } catch (e) {
+                                            // field is just a plain string or invalid JSON → ignore it
+                                            return false;
+                                        }
+                                    });
+                                    let hasMandatoryFalse = miscellaneousQuestionUnfilledFields?.some(field => {
+                                        try {
+                                            const parsed = JSON.parse(field);
+                                            return parsed?.label?.mandatory !== true;
+                                        } catch (e) {
+                                            // field is just a plain string or invalid JSON → ignore it
+                                            return false;
+                                        }
+                                    });
 
-                                dotClass = hasMandatoryTrue ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
-                            } else if (data?.schemaCategory === 'MISCELLANEOUS_QUESTIONS') {
-                                let hasMandatoryTrue = miscellaneousQuestionUnfilledFields?.some(field => {
-                                    try {
-                                        const parsed = JSON.parse(field);
-                                        return parsed?.label?.mandatory === true;
-                                    } catch (e) {
-                                        // field is just a plain string or invalid JSON → ignore it
-                                        return false;
-                                    }
-                                });
-                                let hasMandatoryFalse = miscellaneousQuestionUnfilledFields?.some(field => {
-                                    try {
-                                        const parsed = JSON.parse(field);
-                                        return parsed?.label?.mandatory !== true;
-                                    } catch (e) {
-                                        // field is just a plain string or invalid JSON → ignore it
-                                        return false;
-                                    }
-                                });
+                                    dotClass = hasMandatoryTrue ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
+                                } else if (data?.schemaCategory === 'ScheduleA') {
+                                    let hasMandatoryTrue = scheduleAUpdate?.includes("skipped");
 
-                                dotClass = hasMandatoryTrue ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
-                            } else if (data?.schemaCategory === 'ScheduleA') {
-                                let hasMandatoryTrue = scheduleAUpdate?.includes("skipped");
+                                    dotClass = hasMandatoryTrue ? style.reddotStyle : style.dotStyle;
+                                } else if (data?.schemaCategory === 'ScheduleB') {
+                                    let hasMandatoryTrue = scheduleBUpdate?.includes("skipped");
 
-                                dotClass = hasMandatoryTrue ? style.reddotStyle : style.dotStyle;
-                            } else if (data?.schemaCategory === 'ScheduleB') {
-                                let hasMandatoryTrue = scheduleBUpdate?.includes("skipped");
+                                    dotClass = hasMandatoryTrue ? style.reddotStyle : style.dotStyle;
+                                } else if (data?.schemaCategory === 'Immunization') {
+                                    let hasMandatoryFalse = basicForm?.immunizationData?.immunizationDetails?.length > 0 && basicForm?.immunizationData?.esign?.esign;
 
-                                dotClass = hasMandatoryTrue ? style.reddotStyle : style.dotStyle;
-                            } else if (data?.schemaCategory === 'Immunization') {
-                                let hasMandatoryTrue = immunizationUpdate?.includes("skipped");
+                                    dotClass = hasMandatoryFalse ? style.dotStyle : style.reddotStyle;
+                                } else if (data?.schemaCategory === 'PoliceVulnerableCheck') {
+                                    let hasMandatoryTrue = policeVulnerableCheckUpdate?.includes("skipped");
 
-                                dotClass = hasMandatoryTrue ? style.reddotStyle : style.dotStyle;
-                            } else if (data?.schemaCategory === 'PoliceVulnerableCheck') {
-                                let hasMandatoryTrue = policeVulnerableCheckUpdate?.includes("skipped");
+                                    dotClass = hasMandatoryTrue ? style.reddotStyle : style.dotStyle;
+                                } else if (data?.schemaCategory === 'CodeOfConduct') {
+                                    let hasMandatoryTrue = codeOfConductUpdate?.includes("skipped");
 
-                                dotClass = hasMandatoryTrue ? style.reddotStyle : style.dotStyle;
-                            } else if (data?.schemaCategory === 'CodeOfConduct') {
-                                let hasMandatoryTrue = codeOfConductUpdate?.includes("skipped");
+                                    dotClass = hasMandatoryTrue ? style.reddotStyle : style.dotStyle;
+                                } else if (data?.schemaCategory === 'ConfidentialityAgreement') {
+                                    let hasMandatoryTrue = confidentialityAgreementUpdate?.includes("skipped");
 
-                                dotClass = hasMandatoryTrue ? style.reddotStyle : style.dotStyle;
-                            } else if (data?.schemaCategory === 'ConfidentialityAgreement') {
-                                let hasMandatoryTrue = confidentialityAgreementUpdate?.includes("skipped");
+                                    dotClass = hasMandatoryTrue ? style.reddotStyle : style.dotStyle;
+                                } else if (data?.schemaCategory === 'ConflictOfInterest') {
+                                    let hasMandatoryTrue = conflictOfInterestUpdate?.includes("skipped");
 
-                                dotClass = hasMandatoryTrue ? style.reddotStyle : style.dotStyle;
-                            } else if (data?.schemaCategory === 'ConflictOfInterest') {
-                                let hasMandatoryTrue = conflictOfInterestUpdate?.includes("skipped");
+                                    dotClass = hasMandatoryTrue ? style.reddotStyle : style.dotStyle;
+                                } else if (data?.schemaCategory === 'OffenceDeclaration') {
+                                    let hasMandatoryTrue = offenceDeclarationUpdate?.includes("skipped");
 
-                                dotClass = hasMandatoryTrue ? style.reddotStyle : style.dotStyle;
-                            } else if (data?.schemaCategory === 'OffenceDeclaration') {
-                                let hasMandatoryTrue = offenceDeclarationUpdate?.includes("skipped");
+                                    dotClass = hasMandatoryTrue ? style.reddotStyle : style.dotStyle;
+                                } else if (data?.schemaCategory === 'DisabilitiesAct') {
+                                    let hasMandatoryTrue = disabilitiesActUpdate?.includes("skipped");
 
-                                dotClass = hasMandatoryTrue ? style.reddotStyle : style.dotStyle;
-                            } else if (data?.schemaCategory === 'DisabilitiesAct') {
-                                let hasMandatoryTrue = disabilitiesActUpdate?.includes("skipped");
+                                    dotClass = hasMandatoryTrue ? style.reddotStyle : style.dotStyle;
+                                } else if (data?.schemaCategory === 'PharmacySignature') {
+                                    let hasMandatoryTrue = pharmacySignatureUpdate?.includes("skipped");
 
-                                dotClass = hasMandatoryTrue ? style.reddotStyle : style.dotStyle;
-                            } else if (data?.schemaCategory === 'PharmacySignature') {
-                                let hasMandatoryTrue = pharmacySignatureUpdate?.includes("skipped");
+                                    dotClass = hasMandatoryTrue ? style.reddotStyle : style.dotStyle;
+                                } else if (data?.schemaCategory === 'PACS_Request') {
+                                    let hasMandatoryTrue = pacsRequestUpdate?.includes("skipped");
 
-                                dotClass = hasMandatoryTrue ? style.reddotStyle : style.dotStyle;
-                            } else if (data?.schemaCategory === 'PACS_Request') {
-                                let hasMandatoryTrue = pacsRequestUpdate?.includes("skipped");
-
-                                dotClass = hasMandatoryTrue ? style.reddotStyle : style.dotStyle;
-                            } else if (data?.schemaCategory === 'ApplicantAcknowledgement') {
-                                dotClass = applicantAcknowledgementUpdate === true ? style.dotStyle : style.reddotStyle;
+                                    dotClass = hasMandatoryTrue ? style.reddotStyle : style.dotStyle;
+                                } else if (data?.schemaCategory === 'ApplicantAcknowledgement') {
+                                    dotClass = applicantAcknowledgementUpdate === true ? style.dotStyle : style.reddotStyle;
+                                }
                             }
-                        }
 
-                        const handleClick = () => {
-                            if (data?.acknowledged) {
-                                navigate(`/applicationForm/${applicationId}/${data?.formCategory}/${btoa(data?.schemaCategory)}`);
-                            }
-                        };
+                            const handleClick = () => {
+                                if (data?.schemaCategory === "Immunization" ? basicForm?.immunizationData?.immunizationDetails : data?.schemaCategory === "PrivilegeSelection" ? (basicForm?.privileges?.obligatedPrivileges?.length > 0 || basicForm?.privileges?.additionalPrivileges?.length > 0) : (data?.acknowledged || data?.data)) {
+                                    navigate(`/applicationForm/${applicationId}/${data?.formCategory}/${btoa(data?.schemaCategory)}`);
+                                }
+                            };
 
-                        return (
-                            <Tooltip title={data?.title} arrow key={index}>
-                                <div
-                                    className={dotClass}
-                                    onClick={handleClick}
-                                ></div>
-                            </Tooltip>
-                        );
-                    })}
-                    {/* {basicForm?.forms?.map((data, index) => (
+                            return (
+                                <Tooltip title={data?.title} arrow key={index}>
+                                    <div
+                                        className={dotClass}
+                                        onClick={handleClick}
+                                    ></div>
+                                </Tooltip>
+                            );
+                        })}
+                        {/* {basicForm?.forms?.map((data, index) => (
                         <Tooltip title={data?.title} arrow>
                             <div className={data?.acknowledged ? style.dotStyle : (index < basicForm?.forms?.reduce((maxIndex, step, index) => (step?.acknowledged ? index : maxIndex), -1)) ? `${style.disabledDotStyle} ${style.cursorPointer}` : `${style.disabledDotStyle} ${style.disabled}`} onClick={(data?.acknowledged || index < basicForm?.forms?.reduce((maxIndex, step, index) => (step?.acknowledged ? index : maxIndex), -1)) ? () => navigate(`/reappointmentApplicationForm/${applicationId}/${data?.formCategory}/${btoa(data?.schemaCategory)}`) : () => { }}></div>
                         </Tooltip>
                     ))} */}
 
-                </div>
+                    </div>
+                )}
             </div>
         </div>
     )

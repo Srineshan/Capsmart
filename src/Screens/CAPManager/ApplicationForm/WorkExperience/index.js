@@ -223,7 +223,25 @@ const WorkExperience = ({ basicForm, setBasicForm, applicationId, getPreApplicat
             });
     }
 
-    const handleContinue = () => {
+    const handleContinue = async (skip) => {
+        if (skip) {
+            let temp = {
+                schemaId: basicForm?.forms?.[formIndex]?.schemaId,
+                data: basicForm?.forms?.[formIndex]?.data,
+                unFilledFields: basicForm?.forms?.[formIndex]?.unFilledFields,
+                acknowledged: true
+            }
+            await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
+                .then(response => {
+                    console.log(response)
+                    SuccessToaster("Application Updated Successfully");
+                    getPreApplication();
+                })
+                .catch((error) => {
+                    console.log(error)
+                    ErrorToaster("Unexpected Error Updating Application");
+                });
+        }
         if (sessionStorage.getItem('fromSummary') === "true") {
             navigate(-1);
             sessionStorage.setItem('fromSummary', false)
@@ -266,7 +284,7 @@ const WorkExperience = ({ basicForm, setBasicForm, applicationId, getPreApplicat
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                     <div className={style.stickyContainer}>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
-                        <div className={`${style.saveInProgress} ${style.marginTop10} `} onClick={() => handleContinue()} > SKIP FOR NOW </div>
+                        <div className={`${style.saveInProgress} ${style.marginTop10} `} onClick={() => handleContinue(true)} > SKIP FOR NOW </div>
                         <div className={style.twoColForButton}>
                             <div className={`${style.continue} ${style.marginTop10}`} onClick={handleBackClick}>BACK</div>
                             <div className={`${style.continue} ${style.marginTop10} ${isDataAvailable ? '' : style.disabledButton}`} onClick={isDataAvailable ? () => handleContinue() : () => { }}>CONTINUE</div>
