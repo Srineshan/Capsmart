@@ -28,7 +28,7 @@ const AIAssistantDialog = ({ getIsOpen }) => {
                             onClick={() => { getIsOpen(false) }}
                         />
                     </div>
-                    <div className={`${style.featureTextStyle} ${style.marginTop}`}>Our inbuilt <span className={style.featureTextHighlight}> AI assistant, Poppy,</span> shortens your time to complete this application to just a few minutes.</div>
+                    <div className={`${style.featureTextStyle} ${style.marginTop}`}>Our inbuilt <span className={style.featureTextHighlight}> AI Assistant, Poppy,</span> shortens your time to complete this application to just a few minutes.</div>
                     {/* <div className={`${style.featureGrid} ${style.marginTop40}`}>
                         <div className={style.alignCenter}>
                             <div>

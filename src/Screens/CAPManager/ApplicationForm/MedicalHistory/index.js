@@ -109,7 +109,7 @@ const MedicalHistory = ({ basicForm, setBasicForm, applicationId, getPreApplicat
     });
 
     const validateBusinessPhone = (phone) => {
-      const cleaned = phone.replace(/\D/g, "");
+      const cleaned = phone?.replace(/\D/g, "");
       const phoneRegex = /^[0-9]{10}$/;
       return phoneRegex.test(cleaned);
     };

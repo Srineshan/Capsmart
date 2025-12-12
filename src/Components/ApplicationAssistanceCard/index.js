@@ -20,8 +20,8 @@ const ApplicationAssistanceCard = ({ user, designation, contactNumber, email }) 
     }
     return (
         <div>
-            <div className={`${style.forAssistance} ${style.alignRight}`}><strong>* - Mandatory Data Fields</strong></div>
-            <div className={`${style.applicationAssistanceCard} ${style.marginTop}`}>
+            {/* <div className={`${style.forAssistance} ${style.alignRight}`}><strong>* - Mandatory Data Fields</strong></div> */}
+            <div className={`${style.applicationAssistanceCard} `}>
                 <div className={style.forAssistance}>For Assistance Contact:</div>
                 <div className={`${style.displayInRow} ${style.marginTop}`}><span className={style.nameStyle}> {`${smDetails?.name?.firstName ? `${smDetails?.name?.firstName}` : ''} ${smDetails?.name?.lastName ? `${smDetails?.name?.lastName}` : ''}`}</span></div>
                 <div className={`${style.displayInRow} ${style.marginTop}`}><span className={style.contactStyle}> Admin Asst, Medical Affairs & Chief of Staff Office</span> </div>

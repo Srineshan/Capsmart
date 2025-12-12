@@ -83,7 +83,8 @@ const ApplicationFieldCard = ({
   setIsView,
   isEdited,
   yesOrNoDemographic,
-  setYesOrNoDemographic
+  setYesOrNoDemographic,
+  formPermission
 }) => {
   const [calendarStart, setCalendarStart] = useState(false);
   const { section, step } = useParams();
@@ -1591,6 +1592,8 @@ const ApplicationFieldCard = ({
               </div>
             );
           } else {
+            console.log(formPermission?.permissions?.filter(data => data?.role === sessionStorage.getItem('workModeType'))?.[0]?.fieldLevelPermissions?.filter(data => data?.level === fieldData?.permissionLevel?.toString())?.[0]?.accessPermissions?.includes('Write') ? true : false, formPermission?.permissions?.filter(data => data?.role === sessionStorage.getItem('workModeType'))?.[0]?.fieldLevelPermissions?.filter(data => data?.level === fieldData?.permissionLevel?.toString())?.[0]?.accessPermissions?.includes('Write'), 'Dropdowncheck')
+
             const specialityValues =
               fieldKey === "specialty"
                 ? getSpecialityValues(object)
@@ -1629,6 +1632,7 @@ const ApplicationFieldCard = ({
                     ?.map((data) => data?.key)
                     ?.includes(`${basicpath}.${baseKey}.${fieldKey}`)
                 }
+                disabledSelect={!formPermission ? false : formPermission?.permissions?.filter(data => data?.role === sessionStorage.getItem('workModeType'))?.[0]?.fieldLevelPermissions?.filter(data => data?.level === fieldData?.permissionLevel?.toString())?.[0]?.accessPermissions?.includes('Write') ? false : true}
               />
             );
           }
@@ -2170,6 +2174,28 @@ const ApplicationFieldCard = ({
             return !!validation; // Return true if validation exists
           })();
 
+          const shouldSetMaxDateToToday = (() => {
+            const customValidations = (object?.type === 'object') ? object?.customValidations : object?.items?.customValidations;
+            const validation = customValidations?.find((validation) => {
+              const validationDate1 = validation.parameters.date1;
+              const fieldPath = `${baseKey}.${fieldKey}`;
+              return (
+                validation.condition === "Date1LesserThanCurrentDate" &&
+                (validationDate1 === fieldPath || validationDate1 === fieldKey) // Match with or without prefix
+              );
+            });
+
+            console.log(
+              "Validation for Date1LesserThanCurrentDate:",
+              validation,
+              "Expected:",
+              `${baseKey}.${fieldKey}`,
+              object
+            );
+
+            return !!validation; // Return true if validation exists
+          })();
+
           // Check if Date2 is greater than Date1
           const minDateForDate2 = (() => {
             const validation = object?.customValidations?.find((validation) =>
@@ -2218,13 +2244,14 @@ const ApplicationFieldCard = ({
             return null; // Default
           })();
 
-          const maxDate = shouldSetMaxDateForBirthday ? maxDateForBirthday : null;
+          const maxDate = shouldSetMaxDateForBirthday ? maxDateForBirthday : shouldSetMaxDateToToday ? new Date() : null;
 
 
 
           console.log("shouldSetMinDateToToday:", shouldSetMinDateToToday);
+          console.log("shouldSetMaxDateToToday:", shouldSetMaxDateToToday);
           console.log("minDateForDate2:", minDateForDate2);
-          console.log("Final minDate:", minDate);
+          console.log("Final minDate:", minDate, maxDate);
 
           console.log(
             getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`),
@@ -3367,6 +3394,7 @@ const ApplicationFieldCard = ({
           temp.push({ type: "dot", value: array?.map((innerData) => innerData[data] === "ACCEPTED" ? "darkgreen" : innerData[data] === "REJECTED" ? "red" : innerData[data] === "PENDING" ? "yellow" : "grey") });
           // temp.push({ "type": "icon", "icon": array?.map(innerData => <CheckCircleIcon style={{ fontSize: 25, color: '#25BF6A' }} onClick={() => { window.open(innerData?.file?.fileURL, '_blank'); }} />), 'isShowHoverText': false })
         } else if (data !== "file") {
+          console.log(array, 'arraycheck')
           temp.push({
             type: "text",
             value: array?.map((innerData) =>
@@ -3379,6 +3407,7 @@ const ApplicationFieldCard = ({
                   : innerData[data]
                 : ""
             ),
+            tooltipValueText: ["Click to Edit"],
             onClickFunction: handleEdit,
           });
         } else {

@@ -176,13 +176,13 @@ const ApplicationFormRequirement = () => {
                                         </div>
                                     ))}
                                 </div>
-                                <div className={style.marginTop}>
+                                {/* <div className={style.marginTop}>
                                     <WelcomeCard title={''} description={''} >
                                         {applicantTypeForm !== undefined && 'immunizationHistory' in applicantTypeForm?.properties && (
                                             <ApplicationFieldCard object={applicantTypeForm?.properties?.immunizationHistory} gridStyle={style.twoCol} baseKey={'immunizationHistory'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
                                         )}
                                     </WelcomeCard>
-                                </div>
+                                </div> */}
                                 {/* <div className={style.marginTop}>
                                     <WelcomeCard title={''} description={''} >
                                         {applicantTypeForm !== undefined && 'fitTest' in applicantTypeForm?.properties && (

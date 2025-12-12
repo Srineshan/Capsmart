@@ -59,9 +59,9 @@ const CommonSelectField = ({ value, onChange, className, firstOptionLabel, first
                             color={(warning && warningCheck) || (touched && warningCheck) ? 'error' : ''}
                             focused={(warning && warningCheck) || (touched && warningCheck) ? true : false}
                             onBlur={handleBlur}
-                        // helperText={warningCheck ? (<div className={`${style.helperText} ${required ? style.errorColor : style.warningColor}`}>Could not find data</div>) : ''}
+                            // helperText={warningCheck ? (<div className={`${style.helperText} ${required ? style.errorColor : style.warningColor}`}>Could not find data</div>) : ''}
 
-                        // disabled={disabledSelect ? disabledSelect : false}
+                            disabled={disabledSelect ? disabledSelect : false}
                         >
                             {firstOptionLabel !== '' && firstOptionLabel && (
                                 <MenuItem className={style.fontStyle} value={firstOptionValue}>{firstOptionLabel}</MenuItem>
