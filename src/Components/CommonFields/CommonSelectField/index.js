@@ -32,6 +32,7 @@ const CommonSelectField = ({ value, onChange, className, firstOptionLabel, first
             },
         },
     });
+    console.log('warningCheck', warning, warningCheck, touched, label, required)
     return (
         <div>
             <div className={`${style.lableStyle}`}>{label}{required && '*'}</div>
@@ -42,7 +43,7 @@ const CommonSelectField = ({ value, onChange, className, firstOptionLabel, first
                             color: warningCheck ? !required ? theme.palette.error.main : theme.palette.warning.main : '',
                         },
                     }}`}
-                        error={(warningCheck && warning) || (touched && warningCheck)}
+                        error={(warningCheck && warning) || (touched && warningCheck && required)}
                     >
                         <Select
                             labelId="demo-simple-select-error-label"
@@ -56,8 +57,8 @@ const CommonSelectField = ({ value, onChange, className, firstOptionLabel, first
                             className={className}
                             error={error}
                             inputProps={{ style: { textAlign: "right" } }}
-                            color={(warning && warningCheck) || (touched && warningCheck) ? 'error' : ''}
-                            focused={(warning && warningCheck) || (touched && warningCheck) ? true : false}
+                            color={(warning && warningCheck) || (touched && warningCheck && required) ? 'error' : ''}
+                            focused={(warning && warningCheck) || (touched && warningCheck && required) ? true : false}
                             onBlur={handleBlur}
                             // helperText={warningCheck ? (<div className={`${style.helperText} ${required ? style.errorColor : style.warningColor}`}>Could not find data</div>) : ''}
 
