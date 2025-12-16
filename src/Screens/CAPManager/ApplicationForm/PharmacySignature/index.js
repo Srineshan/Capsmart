@@ -3,6 +3,7 @@ import ProgressCard from "../../../../Components/ProgressCard";
 import ApplicationUserCard from "../../../../Components/ApplicationUserCard";
 import ApplicationAssistanceCard from "../../../../Components/ApplicationAssistanceCard";
 import logo from "../../../../images/cambridgeHospital.png";
+import pdf from "../../../../images/Pharmacy Signature Template.pdf"
 import CommonDivider from "../../../../Components/CommonFields/CommonDivider";
 import { GET, PUT, POST } from "../../../dataSaver";
 import { ErrorToaster, SuccessToaster } from "../../../../utils/toaster";
@@ -10,10 +11,16 @@ import { useNavigate, useParams } from "react-router-dom";
 import style from "./index.module.scss";
 import { PDFDocument } from "pdf-lib";
 import CryptoJS from 'crypto-js';
+import SaveInProgressDialog from "../../../../Components/SaveInProgressDialog";
 import { format } from 'date-fns';
+import ApplicationFieldCard from "../../../../Components/ApplicationFieldCard";
+import ESignDialog from "../../../../Components/ESignDialog";
+import ESignature from "../../../../Components/ESignature";
+import { getValueByPath } from "../../../../utils/formatting";
 
 const PharmacySignature = ({
   basicForm,
+  setBasicForm,
   getPreApplication,
   applicationId,
   dateFormat,
@@ -26,19 +33,30 @@ const PharmacySignature = ({
   const targetRef = useRef();
   const [currentDate, setCurrentDate] = useState();
   const [formSchema, setFormSchema] = useState();
+  const [uploadFormSchema, setUploadFormSchema] = useState();
   const [dateTime, setDateTime] = useState(new Date().toISOString());
   const [formContent, setFormContent] = useState();
   const [navigateURL, setNavigateURL] = useState();
+  const [navigateBackURL, setNavigateBackURL] = useState();
   const [formIndex, setFormIndex] = useState();
+  const [formUploadIndex, setFormUploadIndex] = useState();
   const [initialArray, setInitialArray] = useState([])
   const [encryptedText, setEncryptedText] = useState("");
   const [signText, setSignText] = useState("")
   const [isSigned, setIsSigned] = useState(false);
+  const [isShowESignDialog, setIsShowESignDialog] = useState(false);
+  const [isSaveInProgressOpen, setIsSaveInProgressOpen] = useState(false);
+
+  const eSignTitle = getValueByPath(basicForm, `forms[${formUploadIndex}].data.setUpYourSignature.title`);
+  const eSignInitial = getValueByPath(basicForm, `forms[${formUploadIndex}].data.setUpYourSignature.initial`);
+  const eSignImg = getValueByPath(basicForm, `forms[${formUploadIndex}].data.setUpYourSignature.file`);
+  const eSignTypeContent = getValueByPath(basicForm, `forms[${formUploadIndex}].data.setUpYourSignature.type.text`);
+  const eSignTypeContentStyle = getValueByPath(basicForm, `forms[${formUploadIndex}].data.setUpYourSignature.type.style`);
+  const showRedBorderForESign = ((!eSignTypeContent || !eSignTypeContentStyle) && !eSignImg);
   console.log(initialArray)
   const publicKey = "-----BEGIN PUBLIC KEY-----MIGeMA0GCSqGSIb3DQEBAQUAA4GMADCBiAKBgHA5SDu30/8uQAqqkQE0NuY4ePBptMGufG6AWnC/88YVLXi4thh7M8VU6kElVJkfXL5DwlfVnwPb08+PK1EcaOWWtp2gdQitkohjZLB9zVE+0OtRrzSc33wItf7Iwisi5dHPggHvfOp5fr+QYWFMa/kKYl3SgNo8fryeLbKKalmdAgMBAAE=-----END PUBLIC KEY-----";
-  const fixedPdfUrl =
-    "https://development-application-mgmt-service.s3.us-east-1.amazonaws.com/PACS_Req_Fillable.pdf";
-
+  // const fixedPdfUrl = formSchema?.file?.fileURL;
+  const fixedPdfUrl = "https://capm-prod-application-mgmt-service.s3.ca-central-1.amazonaws.com/64246d491b70b07241d37aa1/Pharmacy+Signature+Template.pdf"
   const proxyUrl = "https://app.timesmartai.com/cors/"
 
   useEffect(() => {
@@ -58,17 +76,24 @@ const PharmacySignature = ({
   useEffect(() => {
     if (basicForm && !formSchema && formIndex) {
       getFormSchema()
+      getUploadFormSchema()
     }
     setInitialArray(basicForm?.forms?.[formIndex]?.data ? basicForm?.forms?.[formIndex]?.data?.initials : []);
     setSignText(basicForm?.forms?.[formIndex]?.acknowledged ? basicForm?.forms?.[formIndex]?.esign?.esign : '');
     setIsSigned((basicForm?.forms?.[formIndex]?.esign?.esign !== undefined && basicForm?.forms?.[formIndex]?.acknowledged) ? true : false);
     if (basicForm !== undefined && formIndex !== undefined) {
       setNavigateURL((basicForm?.forms?.length === (formIndex + 1)) ? `/applicationForm/${applicationId}/Acknowledgement/${btoa('AcknowledgementCheck')}` : `/applicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
+      if (formIndex > 0) {
+        setNavigateBackURL(`/applicationForm/${applicationId}/${basicForm?.forms[formIndex - 1]?.formCategory}/${btoa(basicForm?.forms[formIndex - 1]?.schemaCategory)}`)
+      } else {
+        setNavigateBackURL(`/applicationForm/${applicationId}/${basicForm?.forms[0]?.formCategory}/${btoa(basicForm?.forms[0]?.schemaCategory)}`)
+      }
     }
   }, [basicForm, formIndex]);
 
   useEffect(() => {
     setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === atob(step)))
+    setFormUploadIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === "UploadYourDoc"))
     console.log(basicForm?.forms?.findIndex(data => data?.schemaCategory === atob(step)), 'indexCheck', basicForm)
   }, [basicForm, step]);
 
@@ -78,7 +103,12 @@ const PharmacySignature = ({
     }
   }, [basicForm?.forms?.[formIndex]?.id]);
 
+  const tempValue =
+    basicForm?.forms?.[formUploadIndex]?.data === null
+      ? { setUpYourSignature: {}, table: [] }
+      : basicForm?.forms?.[formUploadIndex]?.data;
 
+  const getIsOpen = (value) => setIsShowESignDialog(value);
   const getRenderedContent = async () => {
     const { data: content } = await GET(
       `application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[formIndex]?.id}/render`
@@ -95,6 +125,15 @@ const PharmacySignature = ({
     );
     setFormSchema(form)
   }
+
+  const getUploadFormSchema = async () => {
+    const { data: form } = await GET(
+      `application-management-service/formSchema/${basicForm?.formSchemas?.[formUploadIndex]?.id}`
+    );
+    setUploadFormSchema(form?.schema)
+  }
+
+  console.log(uploadFormSchema, 'uploadFormSchema')
 
   const getApplicantProfile = async () => {
     try {
@@ -113,10 +152,28 @@ const PharmacySignature = ({
       const existingPdfBytes = await fetch(`${proxyUrl}${fixedPdfUrl}`).then((res) =>
         res.arrayBuffer()
       );
+      // const existingPdfBytes = await fetch(pdf).then((res) =>
+      //   res.arrayBuffer()
+      // );
 
       const pdfDoc = await PDFDocument.load(existingPdfBytes);
       const form = pdfDoc.getForm();
       const pages = pdfDoc.getPages();
+
+      const image = `${proxyUrl}${basicForm?.forms?.[basicForm?.forms?.findIndex(data => data?.schemaCategory === "UploadYourDoc")]?.data?.setUpYourSignature?.file?.fileURL}`;
+      let imageBytes
+      if (image)
+        imageBytes = await fetch(image).then(res => res.arrayBuffer());
+
+      const isPng = image.toLowerCase().endsWith(".png");
+      const signatureImg = isPng
+        ? await pdfDoc.embedPng(imageBytes)
+        : await pdfDoc.embedJpg(imageBytes);
+
+      const sigField = form.getButton("eSignature_af_image");
+
+      // Set the image into the image field
+      sigField.setImage(signatureImg);
 
       // Extract and log fields for debugging
       const fields = form.getFields();
@@ -127,74 +184,26 @@ const PharmacySignature = ({
       const formatNameWithSpacing = (name) =>
         name?.split("").join(" ") || ""; // Single space between letters
       const formattedFullName = `${formatNameWithSpacing(profileData?.name?.lastName || "")}  ${formatNameWithSpacing(profileData?.name?.firstName || "")}`;
-      // Fill text fields with profile data
-      form.getTextField("Text35").setText(formattedFullName);
-      form.getTextField("Text73").setText(profileData.department || "");
-      form.getTextField("Text107").setText(profileData.jobTitle || "");
-      form.getTextField("Text108").setText(profileData.managerName || "");
-      form.getTextField("Text109").setText(profileData.email?.officialEmail || "")
-      form.getTextField("Text110").setText(profileData.extension || "");
 
-
-      // Fill checkboxes
-      form.getCheckBox("Check Box131").check(profileData.option1 || false);
-      form.getCheckBox("Check Box132").check(profileData.option2 || false);
-      form.getCheckBox("Check Box133").check(profileData.option3 || false);
-      form.getCheckBox("Check Box134").check(profileData.option4 || false);
-      form.getCheckBox("Check Box135").check(profileData.option5 || false);
-      form.getCheckBox("Check Box136").check(profileData.option6 || false);
-      form.getCheckBox("Check Box137").check(profileData.option7 || false);
-      form.getCheckBox("Check Box138").check(profileData.option8 || false);
-      form.getCheckBox("Check Box139").check(profileData.option9 || false);
-
-      // Fill additional fields
-      form.getTextField("Text140").setText(profileData.other || "");
-      const formattedDate = format(new Date(), 'dd/MM/yyyy');
-      form.getTextField("Text144").setText(formattedDate || "");
-      form.getTextField("Text150").setText(formattedDate || "");
+      form.getTextField("Surname").setText(formattedFullName);
+      form.getTextField("Initials").setText(basicForm?.forms?.[basicForm?.forms?.findIndex(data => data?.schemaCategory === "UploadYourDoc")]?.data?.setUpYourSignature?.initial || "");
+      form.getTextField("Office Address").setText(`${profileData?.contactAddress2?.mailingAddress?.streetName || ""}, ${profileData?.contactAddress2?.mailingAddress?.city || ""}, ${profileData?.contactAddress2?.mailingAddress?.province || ""}, ${profileData?.contactAddress2?.mailingAddress?.pinCode || ""}`);
+      form.getTextField("Phone Number").setText(profileData?.mobileNumber || "");
 
 
 
-      // Signature field on the first page
-      const esignText = basicForm?.forms?.[formIndex]?.esign?.esign || "";
+      const formattedDate = format(new Date(), 'MMM dd, yyyy');
 
-      // Signature field on the first page
-      const signatureField1 = form.getField("Signature141");
-      if (esignText) {
-        const { x: x1, y: y1, width: width1, height: height1 } =
-          signatureField1.getWidgets()[0].getRectangle();
+      // form.getTextField("Date9_af_date").setText(formattedDate || "");
 
-        // Draw the text (esign)
-        pages[0].drawText(esignText, {
-          x: x1,
-          y: y1 - 15, // Adjust positioning slightly below the field rectangle
-          size: 12,
-        });
-      } else {
 
-      }
-
-      // Signature field on the second page
-      const signatureField2 = form.getField("Signature151");
-      if (esignText) {
-        const { x: x2, y: y2, width: width2, height: height2 } =
-          signatureField2.getWidgets()[0].getRectangle();
-
-        // Draw the text (esign)
-        pages[1].drawText(esignText, {
-          x: x2,
-          y: y2 - 15, // Adjust positioning slightly below the field rectangle
-          size: 12,
-        });
-      } else {
-
-      }
-
-      // Save and display updated PDF
+      form.flatten();
       const pdfBytes = await pdfDoc.save();
       const blob = new Blob([pdfBytes], { type: "application/pdf" });
+      console.log('indexCheck')
       await addNewDocument(blob);
     } catch (error) {
+      console.log('indexCheck')
       console.error("Error populating PDF:", error);
       ErrorToaster("Failed to populate PDF");
     }
@@ -214,6 +223,28 @@ const PharmacySignature = ({
         uploadedFile = response?.data?.file;
         console.log(response?.data)
         setPdfUrl(uploadedFile?.fileURL)
+      } catch (error) {
+        console.error(error);
+        return null;
+      }
+
+      try {
+        let temp = {
+          schemaId: basicForm?.forms?.[formIndex]?.schemaId,
+          completedFormAsFile: uploadedFile,
+          data: basicForm?.forms?.[formIndex]?.data,
+          unFilledFields: basicForm?.forms?.[formIndex]?.unFilledFields,
+          acknowledged: basicForm?.forms?.[formIndex]?.acknowledged
+        }
+        await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
+          .then(response => {
+            console.log(response)
+            SuccessToaster("Application Updated Successfully");
+          })
+          .catch((error) => {
+            console.log(error)
+            ErrorToaster("Unexpected Error Updating Application");
+          });
       } catch (error) {
         console.error(error);
         return null;
@@ -249,6 +280,7 @@ const PharmacySignature = ({
         SuccessToaster("Application Updated Successfully");
         if (sessionStorage.getItem('fromSummary') === 'true') {
           navigate(-1);
+          sessionStorage.setItem('fromSummary', false)
         }
         else {
           navigate(navigateURL)
@@ -268,6 +300,10 @@ const PharmacySignature = ({
     // }
   }
 
+  const handleBackClick = () => {
+    navigate(navigateBackURL)
+  }
+
   const renderPdfContent = () => {
     return (
       <div>
@@ -275,7 +311,7 @@ const PharmacySignature = ({
           <iframe
             src={pdfUrl}
             width="100%"
-            height="1600px"
+            height="1100px"
             title="PDF Viewer"
             style={{ border: 'none', overflow: 'hidden' }}
           />
@@ -286,16 +322,20 @@ const PharmacySignature = ({
     );
   };
 
+  const getIsSaveInProgressOpen = (value) => {
+    setIsSaveInProgressOpen(value);
+  }
+
   return (
     <div>
       <div className={style.applicationScreenGrid}>
-        <ProgressCard step={'STEP 9'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={30} timeText={'Min'} />
+        <ProgressCard step={'STEP 9'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={30} timeText={'Min'} applicationId={applicationId} basicForm={basicForm} />
         <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
       </div>
       <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
         <div>
           <div className={style.applicationCardStyle} ref={targetRef} style={
-            { height: "2000px" }
+            { height: "1350px" }
           }>
             <div className={`${style.marginTop} ${style.justifyCenter}`}>
               <img src={logo} alt="Hospital Logo" className={`${style.logo}`} />
@@ -303,23 +343,91 @@ const PharmacySignature = ({
             <CommonDivider />
             <div className={`${style.cardTitle} ${style.marginTop}  ${style.justifyCenter}`}>{formSchema?.title}</div>
             <CommonDivider />
-            <div className={`${style.labelText} ${style.marginTop}`}>My making of this application and signature below indicate my understanding of and consent to the following (please note that references to Public Hospitals Act are not applicable to Homewood):</div>
-            <CommonDivider />
-            {renderPdfContent()}
+            {!eSignImg && (
+              <div>
+
+                {(basicForm?.forms?.[formIndex]?.data !== null && !showRedBorderForESign) ||
+                  applicantProfile?.signature?.updated ? (
+                  <>
+                    <div className={`${style.eSignatureOnFileCard} ${style.marginTop10}`}>
+                      <div className={style.eSignatureOnFileTitle}>Establish your eSignature</div>
+                      <div className={style.eSignGrid}>
+                        <ESignature userName={''} encData={encryptedText} showData showDatais isUpdated={isShowESignDialog} />
+                        <div className={style.verticalAlignCenter}>
+                          <div className={style.displayInRow}>
+                            <div className={style.dateTitle}>Initial:</div>
+                            <div className={`${style.date} ${style.marginLeft}`}>{eSignInitial}</div>
+                          </div>
+                        </div>
+                        <div className={style.verticalAlignCenter}>
+                          <div className={style.dateTitle}>{eSignTitle}</div>
+                        </div>
+                      </div>
+                      <div className={style.eSignatureOnFileButton}>
+                        <div className={`${style.continue} ${style.eSignatureOnFileButtonPadding}`} onClick={() => setIsShowESignDialog(true)}>
+                          CLICK TO UPDATE
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <div className={style.marginTop} onClick={() => setIsShowESignDialog(true)}>
+                    <div className={`${style.uploadBorderStyle} ${showRedBorderForESign ? style.redBorder : ''}`}>
+                      <p className={style.uploadTextStyle}>Add Your eSignature</p>
+                      <p className={style.uploadDescriptionText}>
+                        Our paperless automated application submission uses electronic signatures with digital fingerprinting.
+                      </p>
+                    </div>
+                  </div>
+                )}
+                <CommonDivider />
+              </div>
+            )}
+            <div className={style.marginTop10}>
+              {renderPdfContent()}
+            </div>
 
           </div>
         </div>
         <div>
           <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
           <div className={style.stickyContainer}>
-            <div className={`${style.saveInProgress} ${style.marginTop}`} >SAVE IN PROGRESS</div>
+            <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
             <div className={style.twoColForButton}>
-              <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
+              <div className={`${style.continue} ${style.marginTop10}`} onClick={handleBackClick}>BACK</div>
               <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleSubmitApplicationReq()} >CONTINUE</div>
             </div>
           </div>
         </div>
       </div>
+      {isSaveInProgressOpen && (
+        <SaveInProgressDialog getIsOpen={getIsSaveInProgressOpen} />
+      )}
+      {isShowESignDialog && (
+        <ESignDialog
+          getIsOpen={getIsOpen}
+          tempValue={tempValue}
+          baseKey="setUpYourSignature"
+          applicationId={applicationId}
+          basicForm={basicForm}
+          setBasicForm={setBasicForm}
+          getPreApplication={getPreApplication}
+          isHideTypeStyle={true}
+        >
+          {uploadFormSchema &&
+            'setUpYourSignature' in uploadFormSchema?.properties && (
+              <ApplicationFieldCard
+                object={uploadFormSchema?.properties?.setUpYourSignature}
+                gridStyle={style.twoCol}
+                baseKey="setUpYourSignature"
+                basicForm={basicForm}
+                setBasicForm={setBasicForm}
+                stepPath={`forms[${formUploadIndex}].data`}
+                setIsEdited={() => { }}
+              />
+            )}
+        </ESignDialog>
+      )}
     </div>
   );
 };

@@ -571,24 +571,45 @@ const LocumApplicationFormRequirement = () => {
     };
 
     const handleSign = (type, basicOrAdditional, index, isPrivilegeSpecificationType) => {
-        console.log('handleSignCheck', type, basicOrAdditional, index, isPrivilegeSpecificationType, indexForSign)
+        console.log('handleSignCheck', type, basicOrAdditional, index, isPrivilegeSpecificationType, indexForSign, selectedPrivilegeForDisplay)
         if (isPrivilegeSpecificationType) {
-            setSelectedPrivilegeForDisplay((prevData) => {
-                const temp = [...prevData];
-                if ((temp?.[index]?.descriptiveContent === null || temp?.[index]?.descriptiveContent?.esign === null ||
-                    temp?.[index]?.descriptiveContent?.esign === undefined)
-                ) {
-                    temp[index].descriptiveContent.esign = {
-                        esign: CryptoJS.AES.encrypt(
-                            name + new Date().toISOString(),
-                            publicKey
-                        ).toString(),
-                        name: name,
-                        signedDate: currentDate,
-                    };
-                }
-                return temp;
-            });
+            if (basicOrAdditional === "Basic") {
+                setSelectedPrivilegeForDisplay((prevData) => {
+                    const temp = [...prevData];
+                    console.log(temp?.[index], 'handleSignCheck', selectedPrivilegeForDisplay)
+                    if ((temp?.[index]?.descriptiveContent === null || temp?.[index]?.descriptiveContent?.esign === null ||
+                        temp?.[index]?.descriptiveContent?.esign === undefined)
+                    ) {
+                        temp[index].descriptiveContent.esign = {
+                            esign: CryptoJS.AES.encrypt(
+                                name + new Date().toISOString(),
+                                publicKey
+                            ).toString(),
+                            name: name,
+                            signedDate: currentDate,
+                        };
+                    }
+                    return temp;
+                });
+            } else {
+                setSelectedAdditionalPrivilegeForDisplay((prevData) => {
+                    const temp = [...prevData];
+                    console.log(temp?.[index], 'handleSignCheck', selectedPrivilegeForDisplay)
+                    if ((temp?.[index]?.descriptiveContent === null || temp?.[index]?.descriptiveContent?.esign === null ||
+                        temp?.[index]?.descriptiveContent?.esign === undefined)
+                    ) {
+                        temp[index].descriptiveContent.esign = {
+                            esign: CryptoJS.AES.encrypt(
+                                name + new Date().toISOString(),
+                                publicKey
+                            ).toString(),
+                            name: name,
+                            signedDate: currentDate,
+                        };
+                    }
+                    return temp;
+                });
+            }
         } else {
             if (basicOrAdditional === "Basic") {
                 setSelectedPrivilegeForDisplay((prevData) => {

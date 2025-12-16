@@ -7,7 +7,7 @@ import CommonSelectField from "../CommonFields/CommonSelectField";
 import CommonDateField from "../CommonFields/CommonDateField";
 import TextSnippetOutlinedIcon from "@mui/icons-material/TextSnippetOutlined";
 import { TextField, Tooltip } from "@mui/material";
-import { add, format, isValid, parse, sub } from "date-fns";
+import { add, format, isValid, parse, parseISO, sub } from "date-fns";
 import { fileLoadingURL, FormatPhoneNumber, FormatPostalCode } from "../../utils/formatting";
 import CommonRadio from "../CommonFields/CommonRadio";
 import CommonSwitch from "../CommonFields/CommonSwitch";
@@ -16,6 +16,7 @@ import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
 import CheckIcon from "@mui/icons-material/Check";
 import VerifiedImage from "../../images/verifiedImage.png";
+import FileUploadOutlinedIcon from '@mui/icons-material/FileUploadOutlined';
 import ToBeVerifiedImage from "../../images/toBeVerifiedImage.png";
 import NotVerifiedImage from "../../images/notVerifiedImage.png";
 import DeleteIcon from "../../images/deleteHcRow.png";
@@ -39,6 +40,7 @@ import axios from "axios";
 import ValidationDialog from "../validationDialog";
 import FileDisplayDialog from "../fileDisplayDialog";
 import PriorDataDialog from "../PriorDataDialog"
+import DeleteConfirmation from "../DeleteConfirmation";
 
 
 const TEXTFIELDLEN50 = 50;
@@ -83,7 +85,8 @@ const ApplicationFieldCard = ({
   setIsView,
   isEdited,
   yesOrNoDemographic,
-  setYesOrNoDemographic
+  setYesOrNoDemographic,
+  formPermission
 }) => {
   const [calendarStart, setCalendarStart] = useState(false);
   const { section, step } = useParams();
@@ -102,12 +105,16 @@ const ApplicationFieldCard = ({
   const [disclosureBaseKey, setDisclosureBaseKey] = useState('');
   const [disclosureFieldKey, setDisclosureFieldKey] = useState('');
   const [disclosurSchema, setDisclosureSchema] = useState({});
+  const [isMasked, setIsMasked] = useState(true);
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const toDelete = useRef(null);;
   const { setValue, value } = useComboboxControls({ initialValue: "" });
   const canadaData = JSON.parse(sessionStorage.getItem("canadaData")) || {};
   let user = JSON.parse(sessionStorage.getItem("user"));
   const hometimeoutRef = useRef(null);
   const mailingTimeoutRef = useRef(null);
   const businessTimeoutRef = useRef(null);
+  const addMoreRef = useRef(null);
 
   console.log(user);
   useEffect(() => {
@@ -120,6 +127,14 @@ const ApplicationFieldCard = ({
       setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === atob(step)))
     }
   }, [step])
+
+  const getShowDeleteConfirmation = (value) => {
+    setShowDeleteConfirmation(value)
+  }
+
+  const getDeleteConfirmation = () => {
+    handleDelete(toDelete.current)
+  }
 
   const getValueByPath = (obj, path) => {
     const keys = path.split(/[\.\[\]]+/).filter(Boolean);
@@ -1310,7 +1325,7 @@ const ApplicationFieldCard = ({
       console.log("skip clicked", baseKey);
       // setIsAddMore(false);
       setShowValidationDialog(false);
-      handleAddMore("close", "skipped");
+      handleAddMore(addMoreRef.current, "skipped");
     }
   };
 
@@ -1590,6 +1605,8 @@ const ApplicationFieldCard = ({
               </div>
             );
           } else {
+            console.log(formPermission?.permissions?.filter(data => data?.role === sessionStorage.getItem('workModeType'))?.[0]?.fieldLevelPermissions?.filter(data => data?.level === fieldData?.permissionLevel?.toString())?.[0]?.accessPermissions?.includes('Write') ? true : false, formPermission?.permissions?.filter(data => data?.role === sessionStorage.getItem('workModeType'))?.[0]?.fieldLevelPermissions?.filter(data => data?.level === fieldData?.permissionLevel?.toString())?.[0]?.accessPermissions?.includes('Write'), 'Dropdowncheck')
+
             const specialityValues =
               fieldKey === "specialty"
                 ? getSpecialityValues(object)
@@ -1628,6 +1645,7 @@ const ApplicationFieldCard = ({
                     ?.map((data) => data?.key)
                     ?.includes(`${basicpath}.${baseKey}.${fieldKey}`)
                 }
+                disabledSelect={!formPermission ? false : formPermission?.permissions?.filter(data => data?.role === sessionStorage.getItem('workModeType'))?.[0]?.fieldLevelPermissions?.filter(data => data?.level === fieldData?.permissionLevel?.toString())?.[0]?.accessPermissions?.includes('Write') ? false : true}
               />
             );
           }
@@ -1779,18 +1797,18 @@ const ApplicationFieldCard = ({
                       arrow
                     >
                       <div className={style.lableReadOnlyStyle}>
-                        {getValueByPath(
+                        <strong>{getValueByPath(
                           basicForm,
                           `${basicpath}.${baseKey}.${fieldKey}`
-                        ) || ""}
+                        ) || ""}</strong>
                       </div>
                     </Tooltip>
                   ) : (
                     <div className={style.lableReadOnlyStyle}>
-                      {getValueByPath(
+                      <strong>{getValueByPath(
                         basicForm,
                         `${basicpath}.${baseKey}.${fieldKey}`
-                      ) || ""}
+                      ) || ""}</strong>
                     </div>
                   )}
                 </div>
@@ -1856,6 +1874,86 @@ const ApplicationFieldCard = ({
                   />
                 </div>
               )
+            );
+          }
+        case "maskedtextbox":
+          if (isPOD) {
+            return (
+              <div>
+                <div className={`${style.lableStylePOD}`}>
+                  {fieldData.label}
+                  {isLableEmpty(fieldData.label)
+                    ? false
+                    : (object.required?.includes(fieldKey) ||
+                      (parentData !== null
+                        ? parentData.required?.includes(fieldKey)
+                        : false)) &&
+                    "*"}
+                </div>
+                <hr className={style.borderLine} />
+                <div className={style.lableReadOnlyStyleInPOD}>
+                  {isMasked ? String(getValueByPath(
+                    basicForm,
+                    `${basicpath}.${baseKey}.${fieldKey}`
+                  ) || "").replace(/\d(?=\d{4})/g, "X") : getValueByPath(
+                    basicForm,
+                    `${basicpath}.${baseKey}.${fieldKey}`
+                  ) || "-"}
+                </div>
+              </div>
+            );
+          } else {
+            return (
+              <div key={fieldKey}>
+                <CommonTextField
+                  value={
+                    isMasked ? String(getValueByPath(
+                      basicForm,
+                      `${basicpath}.${baseKey}.${fieldKey}`
+                    ) || "").replace(/\d(?=\d{4})/g, "X") : getValueByPath(
+                      basicForm,
+                      `${basicpath}.${baseKey}.${fieldKey}`
+                    ) || ""
+                  }
+                  className={style.fullWidth}
+                  onChange={(e) =>
+                    handleChange(
+                      fieldKey,
+                      e.target.value.replace(/\s+/g, ""),
+                      baseKey
+                    )
+                  }
+                  maxLength={TEXTFIELDLEN50}
+                  placeholder={
+                    fieldData.placeHolder !== null
+                      ? fieldData.placeHolder
+                      : fieldData.label !== null
+                        ? `Enter ${fieldData.label}`
+                        : null
+                  }
+                  label={fieldData.label}
+                  required={
+                    isLableEmpty(fieldData.label)
+                      ? false
+                      : object.required?.includes(fieldKey) ||
+                      (parentData !== null
+                        ? parentData.required?.includes(fieldKey)
+                        : false)
+                  }
+                  type={fieldData.type}
+                  min={fieldData.minimum}
+                  warning={warningFields
+                    ?.map((data) => data?.key)
+                    ?.includes(`${basicpath}.${baseKey}.${fieldKey}`)}
+                  inputProps={{
+                    pattern: "^[0-9]*$",
+                    maxLength: 18,
+                    onlyDigits: true,
+                  }}
+                  onBlur={() => setIsMasked(true)}
+                  onFocus={() => setIsMasked(false)}
+                />
+              </div>
             );
           }
         case "textArea":
@@ -2089,6 +2187,28 @@ const ApplicationFieldCard = ({
             return !!validation; // Return true if validation exists
           })();
 
+          const shouldSetMaxDateToToday = (() => {
+            const customValidations = (object?.type === 'object') ? object?.customValidations : object?.items?.customValidations;
+            const validation = customValidations?.find((validation) => {
+              const validationDate1 = validation.parameters.date1;
+              const fieldPath = `${baseKey}.${fieldKey}`;
+              return (
+                validation.condition === "Date1LesserThanCurrentDate" &&
+                (validationDate1 === fieldPath || validationDate1 === fieldKey) // Match with or without prefix
+              );
+            });
+
+            console.log(
+              "Validation for Date1LesserThanCurrentDate:",
+              validation,
+              "Expected:",
+              `${baseKey}.${fieldKey}`,
+              object
+            );
+
+            return !!validation; // Return true if validation exists
+          })();
+
           // Check if Date2 is greater than Date1
           const minDateForDate2 = (() => {
             const validation = object?.customValidations?.find((validation) =>
@@ -2137,13 +2257,14 @@ const ApplicationFieldCard = ({
             return null; // Default
           })();
 
-          const maxDate = shouldSetMaxDateForBirthday ? maxDateForBirthday : null;
+          const maxDate = shouldSetMaxDateForBirthday ? maxDateForBirthday : shouldSetMaxDateToToday ? new Date() : null;
 
 
 
           console.log("shouldSetMinDateToToday:", shouldSetMinDateToToday);
+          console.log("shouldSetMaxDateToToday:", shouldSetMaxDateToToday);
           console.log("minDateForDate2:", minDateForDate2);
-          console.log("Final minDate:", minDate);
+          console.log("Final minDate:", minDate, maxDate);
 
           console.log(
             getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`),
@@ -2396,7 +2517,7 @@ const ApplicationFieldCard = ({
             <div
               className={`${style.disclosureGrid} ${style.verticalAlignCenter}`}
             >
-              <div className={style.displayInRow}>
+              <div className={!isPOD ? style.disclosureLabelGrid : style.displayInRow}>
                 {!isPOD && (
                   <div className={`${style.lableRadioSerialNumberStyle}`}>
                     {fieldData.serialNumber !== null
@@ -2568,72 +2689,72 @@ const ApplicationFieldCard = ({
           if (isPOD) {
             return <div></div>;
           } else {
-            console.log(
-              getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`),
-              getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`),
+            let isDocAvailable = (getValueByPath(
+              basicForm,
+              `${basicpath}.${baseKey}.${fieldKey}`
+            ) !== undefined &&
+              getValueByPath(
+                basicForm,
+                `${basicpath}.${baseKey}.${fieldKey}`
+              ) !== null &&
+              getValueByPath(
+                basicForm,
+                `${basicpath}.${baseKey}.${fieldKey}`
+              ) !== "" &&
               getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)
-                ?.fileURL !== undefined,
-              "checkstring"
-            );
+                ?.fileURL !== null);
+            console.log(isDocAvailable, "checkstring");
             return (
-              <div
-                className={`${style.addMoreUpload} ${style.addMoreUploadMargin}`}
-              >
-                {getValueByPath(
-                  basicForm,
-                  `${basicpath}.${baseKey}.${fieldKey}`
-                ) !== undefined &&
-                  getValueByPath(
-                    basicForm,
-                    `${basicpath}.${baseKey}.${fieldKey}`
-                  ) !== null &&
-                  getValueByPath(
-                    basicForm,
-                    `${basicpath}.${baseKey}.${fieldKey}`
-                  ) !== "" &&
-                  getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)
-                    ?.fileURL !== null ? (
-                  <div
-                    onClick={() => {
-                      setShowFileDisplayDialog(true);
-                      setselectedFile(
-                        getValueByPath(
-                          basicForm,
-                          `${basicpath}.${baseKey}.${fieldKey}`
-                        )
-                      );
-                    }}
+              <div className={`${style.addMoreUpload} ${style.addMoreUploadMargin}`}>
+                <div className={style.marginLeft10}>
+                  <label
+                    for={`addMore-file-upload-dynamic-${fieldKey}`}
+                    className={`${style.displayInRow} ${style.cursorPointer} `}
                   >
-                    <img
-                      src={VerifiedImage}
-                      alt=""
-                      className={`${style.imgIcon} ${style.cursorPointer}`}
-                    />
-                  </div>
-                ) : (
-                  <>
-                    <div>
-                      <label
-                        for={`addMore-file-upload-dynamic-${fieldKey}`}
-                        className={`${style.displayInRow} ${style.cursorPointer} `}
-                      >
+                    <Tooltip title={isDocAvailable ? "Click to replace" : "Click to upload"}>
+                      <FileUploadOutlinedIcon sx={{ color: '#000' }} />
+                    </Tooltip>
+                  </label>
+                </div>
+                <input
+                  id={`addMore-file-upload-dynamic-${fieldKey}`}
+                  type="file"
+                  accept=".pdf,.doc,.png,.xls,.xlsx,.jpeg,.gif,.docx"
+                  onChange={(e) => {
+                    handleChange(fieldKey, e.target.files[0], baseKey);
+                  }}
+                />
+                <div>
+                  {isDocAvailable ? (
+                    <div
+                      onClick={() => {
+                        setShowFileDisplayDialog(true);
+                        setselectedFile(
+                          getValueByPath(
+                            basicForm,
+                            `${basicpath}.${baseKey}.${fieldKey}`
+                          )
+                        );
+                      }}
+                    >
+                      <img
+                        src={VerifiedImage}
+                        alt=""
+                        className={`${style.imgIcon} ${style.cursorPointer}`}
+                      />
+                    </div>
+                  ) : (
+                    <>
+                      <div>
                         <img
                           src={ToBeVerifiedImage}
                           alt=""
                           className={style.imgIcon}
                         />
-                      </label>
-                    </div>
-                    <input
-                      id={`addMore-file-upload-dynamic-${fieldKey}`}
-                      type="file"
-                      accept=".pdf,.doc,.png,.xls,.xlsx,.jpeg,.gif,.docx"
-                      onChange={(e) => {
-                        handleChange(fieldKey, e.target.files[0], baseKey);
-                      }}
-                    />
-                  </>
-                )}
+                      </div>
+                    </>
+                  )}
+                </div>
               </div>
             );
           }
@@ -2765,7 +2886,14 @@ const ApplicationFieldCard = ({
                       />
                     ) : (
                       <img
-                        src={NotVerifiedImage}
+                        src={(
+                          isLableEmpty(fieldData.label)
+                            ? false
+                            : object.required?.includes(fieldKey) ||
+                            (parentData !== null
+                              ? parentData.required?.includes(fieldKey)
+                              : false)
+                        ) ? ToBeVerifiedImage : NotVerifiedImage}
                         alt=""
                         className={style.imgIcon}
                       />
@@ -3207,7 +3335,7 @@ const ApplicationFieldCard = ({
       delete basicForm[baseKey];
       delete basicForm.undefined;
       setBasicForm(temp);
-      if ((type === "close" || skip === "skipped") && !isPOD) {
+      if ((type === "close") && !isPOD) {
         setIsAddMore(false);
       }
       getIsSubmitClicked(true, temp, skip);
@@ -3256,8 +3384,12 @@ const ApplicationFieldCard = ({
   };
 
   const isValidDate = (value) => {
-    const d = new Date(value);
-    return !isNaN(d);
+    if (typeof value !== "string") return false;
+    const regex = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}(:\d{2}(\.\d{1,3})?)?)?$/;
+
+    if (!regex.test(value)) return false;
+    const parsed = parseISO(value);
+    return isValid(parsed);
   };
 
   const getApplicantValues = (array) => {
@@ -3269,12 +3401,13 @@ const ApplicationFieldCard = ({
     ) {
       Object.keys(object?.tableHeaders)?.map((data, index) => {
         if (data === "data") {
-          temp.push({ type: "dot", value: array?.map((innerData) => "grey") });
+          temp.push({ type: "dot", value: array?.map((innerData) => innerData[data] === "ACCEPTED" ? "darkgreen" : innerData[data] === "REJECTED" ? "red" : innerData[data] === "PENDING" ? "yellow" : "grey") });
           // temp.push({ "type": "icon", "icon": array?.map(innerData => <CheckCircleIcon style={{ fontSize: 25, color: '#25BF6A' }} onClick={() => { window.open(innerData?.file?.fileURL, '_blank'); }} />), 'isShowHoverText': false })
         } else if (data === "pod") {
-          temp.push({ type: "dot", value: array?.map((innerData) => "grey") });
+          temp.push({ type: "dot", value: array?.map((innerData) => innerData[data] === "ACCEPTED" ? "darkgreen" : innerData[data] === "REJECTED" ? "red" : innerData[data] === "PENDING" ? "yellow" : "grey") });
           // temp.push({ "type": "icon", "icon": array?.map(innerData => <CheckCircleIcon style={{ fontSize: 25, color: '#25BF6A' }} onClick={() => { window.open(innerData?.file?.fileURL, '_blank'); }} />), 'isShowHoverText': false })
         } else if (data !== "file") {
+          console.log(array, 'arraycheck')
           temp.push({
             type: "text",
             value: array?.map((innerData) =>
@@ -3287,6 +3420,7 @@ const ApplicationFieldCard = ({
                   : innerData[data]
                 : ""
             ),
+            tooltipValueText: ["Click to Edit"],
             onClickFunction: handleEdit,
           });
         } else {
@@ -3310,9 +3444,11 @@ const ApplicationFieldCard = ({
               <img
                 src={DeleteIcon}
                 alt=""
-                className={style.docTypeImgStyle}
+                className={`${style.docTypeImgStyle} ${style.cursorPointer}`}
                 onClick={() => {
-                  handleDelete(innerData);
+                  toDelete.current = innerData;
+                  setShowDeleteConfirmation(true);
+                  // handleDelete(innerData);
                 }}
               />
             )),
@@ -3341,12 +3477,12 @@ const ApplicationFieldCard = ({
 
   const handleDelete = (data) => {
     let index = basicForm?.forms?.findIndex((data) => data?.id === formId);
-    console.log(stepPath, basicForm);
+    console.log(stepPath, basicForm, 'deleteCheck');
     let temp = basicForm;
     temp.forms[index].data[baseKey] = temp.forms[index].data[baseKey].filter(
       (obj) => !isEqual(obj, data)
     );
-    console.log(temp);
+    console.log(temp, 'deleteCheck', data, toDelete.current);
     getIsSubmitClicked(true, temp);
   };
 
@@ -3428,6 +3564,7 @@ const ApplicationFieldCard = ({
                           <div
                             className={`${style.addMoreButton}`}
                             onClick={() => {
+                              addMoreRef.current = "close"
                               handleAddMore("close");
                             }}
                           >
@@ -3440,6 +3577,7 @@ const ApplicationFieldCard = ({
                           <div
                             className={`${style.addMoreButtonOutlined}`}
                             onClick={() => {
+                              addMoreRef.current = ""
                               handleAddMore("");
                             }}
                           >
@@ -3698,6 +3836,13 @@ const ApplicationFieldCard = ({
               basicForm={basicForm} setBasicForm={setBasicForm} disclosureBaseKey={disclosureBaseKey} disclosureFieldKey={disclosureFieldKey} disclosurSchema={disclosurSchema} />
           )
         }
+        {showDeleteConfirmation && (
+          <DeleteConfirmation
+            getShowDeleteConfirmation={getShowDeleteConfirmation}
+            getDeleteConfirmation={getDeleteConfirmation}
+            confirmationText="Do you want to delete this record?"
+          />
+        )}
       </div>
     </>
   );

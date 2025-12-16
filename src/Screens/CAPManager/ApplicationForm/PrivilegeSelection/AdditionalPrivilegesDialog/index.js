@@ -13,6 +13,7 @@ import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 import CryptoJS from 'crypto-js';
 
 import VerifiedImage from "./../../../../../images/verifiedImage.png";
+import NotVerifiedImage from "./../../../../../images/notVerifiedImage.png";
 import ToBeVerifiedImage from "./../../../../../images/toBeVerifiedImage.png";
 import { ErrorToaster, SuccessToaster } from '../../../../../utils/toaster';
 import DatalistInput, { useComboboxControls } from "react-datalist-input";
@@ -177,7 +178,7 @@ const AdditionalPrivileges = ({ getIsOpen, primaryPrivilege, getSelectedPrivileg
                         </div>
                     </div>
                     <div>
-                        <div className={style.cardTitle}>{`Indicate the Privileges you are seeking as ${startsWithVowel(basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory ? basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory : '') ? 'an' : 'a'} ${basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory ? basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory : ''} for ${basicForm?.basicDetails?.departmentSpecialty?.department || ''} ${basicForm?.basicDetails?.departmentSpecialty?.specialty ? '/' : ''} ${basicForm?.basicDetails?.departmentSpecialty?.specialty || ''}`}</div>
+                        <div className={style.cardTitle}>{`Indicate the Privileges you are seeking as a ${basicForm?.basicDetails?.applicant?.applicantType ? basicForm?.basicDetails?.applicant?.applicantType : ''} for ${basicForm?.basicDetails?.departmentSpecialty?.department || ''} ${basicForm?.basicDetails?.departmentSpecialty?.specialty ? '/' : ''} ${basicForm?.basicDetails?.departmentSpecialty?.specialty || ''}`}</div>
                     </div>
                     {/* <CommonSelectField
                         value={selectedPrivilege}
@@ -339,7 +340,7 @@ const AdditionalPrivileges = ({ getIsOpen, primaryPrivilege, getSelectedPrivileg
                                                                                         {(privileges?.file !== undefined && privileges?.file !== null) ? (
                                                                                             <img src={VerifiedImage} alt="" className={`${style.imgIcon} ${style.cursorPointer}`} />
                                                                                         ) : (
-                                                                                            <img src={ToBeVerifiedImage} alt="" className={style.imgIcon} />
+                                                                                            <img src={NotVerifiedImage} alt="" className={style.imgIcon} />
                                                                                         )}
                                                                                         <div className={`${style.uploadText} ${style.verticalAlignCenter}`}>
                                                                                             Upload any supporting documents for evidence of qualification and competence

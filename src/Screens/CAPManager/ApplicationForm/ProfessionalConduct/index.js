@@ -26,12 +26,18 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, applicationId, getPreApp
     const navigate = useNavigate()
     const [isEdited, setIsEdited] = useState(false);
     const [navigateURL, setNavigateURL] = useState();
+    const [navigateBackURL, setNavigateBackURL] = useState();
     useEffect(() => {
         if (basicForm && !formSchema) {
             getFormSchema()
         }
         if (basicForm !== undefined && formIndex !== undefined) {
             setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form' || data?.formCategory === 'Disclosure')?.length === (formIndex + 1)) ? `/applicationForm/${applicationId}/Form/${btoa('PODCheck')}` : `/applicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
+            if (formIndex > 0) {
+                setNavigateBackURL(`/applicationForm/${applicationId}/${basicForm?.forms[formIndex - 1]?.formCategory}/${btoa(basicForm?.forms[formIndex - 1]?.schemaCategory)}`)
+            } else {
+                setNavigateBackURL(`/applicationForm/${applicationId}/${basicForm?.forms[0]?.formCategory}/${btoa(basicForm?.forms[0]?.schemaCategory)}`)
+            }
         }
     }, [basicForm, formIndex])
 
@@ -200,12 +206,12 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, applicationId, getPreApp
     }
 
     const handleSubmitApplicationReq = async (data) => {
-        if (isEdited) {
+        if (isEdited || data) {
             let temp = {
                 schemaId: basicForm?.forms?.[formIndex]?.schemaId,
                 data: basicForm?.forms?.[formIndex]?.data,
                 unFilledFields: warningFields?.map(data => data?.label),
-                acknowledged: data === "skipped" ? false : true
+                acknowledged: true
             }
             await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
                 .then(response => {
@@ -215,6 +221,7 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, applicationId, getPreApp
                     getPreApplication();
                     if (sessionStorage.getItem('fromSummary') === "true") {
                         navigate(-1);
+                        sessionStorage.setItem('fromSummary', false)
                     }
                     else {
                         navigate(navigateURL)
@@ -228,6 +235,7 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, applicationId, getPreApp
         } else {
             if (sessionStorage.getItem('fromSummary') === "true") {
                 navigate(-1);
+                sessionStorage.setItem('fromSummary', false)
             }
             else {
                 navigate(navigateURL)
@@ -245,10 +253,15 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, applicationId, getPreApp
     const getIsEdited = (value) => {
         setIsEdited(value)
     }
+
+    const handleBackClick = () => {
+        navigate(navigateBackURL)
+    }
+
     return (
         <div>
             <div className={style.applicationScreenGrid}>
-                <ProgressCard step={'STEP 11'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={22} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
+                <ProgressCard step={'STEP 11'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={22} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} applicationId={applicationId} basicForm={basicForm} />
                 <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
             </div>
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
@@ -268,7 +281,7 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, applicationId, getPreApp
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                         <div className={`${style.saveInProgress} ${style.marginTop10} `} onClick={() => getSkipClicked(true)} > SKIP FOR NOW </div>
                         <div className={style.twoColForButton}>
-                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
+                            <div className={`${style.continue} ${style.marginTop10}`} onClick={handleBackClick}>BACK</div>
                             <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()}>CONTINUE</div>
                         </div>
                     </div>

@@ -27,6 +27,7 @@ const BasicInformation = ({ basicForm, setBasicForm, applicationId, getPreApplic
   const [metadata, setMetadata] = useState([]);
   const [labels, setLabels] = useState([]);
   const [warningFields, setWarningFields] = useState([]);
+  const [formPermission, setFormPermission] = useState();
   const [showValidationDialog, setShowValidationDialog] = useState(false);
 
   console.log("basicForm", basicForm);
@@ -60,6 +61,9 @@ const BasicInformation = ({ basicForm, setBasicForm, applicationId, getPreApplic
   };
 
   const getIsSaveInProgressOpen = (value) => {
+    if (value) {
+      handleSubmitApplicationReq(true);
+    }
     setIsSaveInProgressOpen(value);
   };
 
@@ -78,6 +82,10 @@ const BasicInformation = ({ basicForm, setBasicForm, applicationId, getPreApplic
       }
       setForm1(form1?.schema);
       setFormSchemaWholeObject(form1);
+      const { data: formPermission } = await GET(
+        `application-management-service/formPermission?schemaId=${basicForm?.generalSchemas?.[1]?.id}`
+      );
+      setFormPermission(formPermission)
     }
   };
 
@@ -169,6 +177,16 @@ const BasicInformation = ({ basicForm, setBasicForm, applicationId, getPreApplic
       );
       missingKeys = temp;
     }
+    console.log(missingKeys, 'missingKeys')
+    if (!formSchemaWholeObject?.schema?.if?.properties?.departmentSpecialty?.properties?.specialty?.enum?.includes(getValueByPath(
+      basicForm,
+      "basicDetails.departmentSpecialty.specialty"
+    ))) {
+      let filterKeys = [`basicDetails.regionalCallResponsibilities.regionalCallResponsibilities`]
+      let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+      missingKeys = temp;
+    }
+    console.log(missingKeys, 'missingKeys')
     if (missingKeys?.length !== 0) {
       setShowValidationDialog(true);
     } else {
@@ -177,7 +195,7 @@ const BasicInformation = ({ basicForm, setBasicForm, applicationId, getPreApplic
     setWarningFields(missingKeys);
   };
 
-  const handleSubmitApplicationReq = async () => {
+  const handleSubmitApplicationReq = async (saveInProgress) => {
     // const errors = validateSchema(form1, basicForm?.basicDetails);
     // console.log(errors)
     let data = basicForm;
@@ -191,10 +209,13 @@ const BasicInformation = ({ basicForm, setBasicForm, applicationId, getPreApplic
         setBasicForm(response?.data);
         SuccessToaster("Staff Member Application Updated Successfully");
         getPreApplication();
-        if (sessionStorage.getItem("fromSummary") === "true") {
-          navigate(-1);
-        } else {
-          navigate(`/applicationForm/${applicationId}/${data?.forms[0]?.formCategory}/${btoa(data?.forms[0]?.schemaCategory)}`)
+        if (!saveInProgress) {
+          if (sessionStorage.getItem("fromSummary") === "true") {
+            navigate(-1);
+            sessionStorage.setItem('fromSummary', false)
+          } else {
+            navigate(`/applicationForm/${applicationId}/${data?.forms[0]?.formCategory}/${btoa(data?.forms[0]?.schemaCategory)}`)
+          }
         }
       })
       .catch((error) => {
@@ -202,6 +223,10 @@ const BasicInformation = ({ basicForm, setBasicForm, applicationId, getPreApplic
         ErrorToaster("Unexpected Error Updating Staff Member Application");
       });
   };
+
+  const handleBackClick = () => {
+    navigate(`/applicationForm/${applicationId}`)
+  }
 
   const addPath = (newPath) => {
     setFieldPaths((prevPaths) => {
@@ -243,6 +268,9 @@ const BasicInformation = ({ basicForm, setBasicForm, applicationId, getPreApplic
             timeNumber={1}
             timeText={"Min"}
             progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`}
+            applicationId={applicationId}
+            basicForm={basicForm}
+            hideProgress={true}
           />
           <div className={`${style.applicationCardStyle}  ${style.marginTop}`}>
             {/* <CommonMailingAddress label={'Business Mailing Address*'} onChangeAddressLine1={() => { }} placeholderAddressLine1={'123 Street'} maxLengthAddressLine1={25} valueAddressLine1={''}
@@ -276,9 +304,10 @@ const BasicInformation = ({ basicForm, setBasicForm, applicationId, getPreApplic
                   getAllLabels={getAllLabels}
                   warningFields={warningFields}
                   formSchema={formSchemaWholeObject}
+                  formPermission={formPermission}
                 />
               )}
-            <CommonDivider />
+            {/* <CommonDivider /> */}
             {form1 !== undefined &&
               "departmentSpecialty" in form1?.properties && (
                 <ApplicationFieldCard
@@ -292,6 +321,7 @@ const BasicInformation = ({ basicForm, setBasicForm, applicationId, getPreApplic
                   getAllLabels={getAllLabels}
                   warningFields={warningFields}
                   formSchema={formSchemaWholeObject}
+                  formPermission={formPermission}
                 />
               )}
             {form1 !== undefined &&
@@ -383,7 +413,7 @@ const BasicInformation = ({ basicForm, setBasicForm, applicationId, getPreApplic
             <div className={style.twoColForButton}>
               <div
                 className={`${style.continue} ${style.marginTop10}`}
-                onClick={() => navigate(-1)}
+                onClick={() => handleBackClick()}
               >
                 BACK
               </div>

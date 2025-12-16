@@ -26,12 +26,18 @@ const MalpracticeInfo = ({ basicForm, setBasicForm, applicationId, getPreApplica
     const [formIndex, setFormIndex] = useState();
     const navigate = useNavigate()
     const [navigateURL, setNavigateURL] = useState();
+    const [navigateBackURL, setNavigateBackURL] = useState();
     useEffect(() => {
         if (basicForm && !formSchema) {
             getFormSchema()
         }
         if (basicForm !== undefined && formIndex !== undefined) {
             setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form')?.length === (formIndex + 1)) ? `/applicationForm/${applicationId}/Form/${btoa('PODCheck')}` : `/applicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
+            if (formIndex > 0) {
+                setNavigateBackURL(`/applicationForm/${applicationId}/${basicForm?.forms[formIndex - 1]?.formCategory}/${btoa(basicForm?.forms[formIndex - 1]?.schemaCategory)}`)
+            } else {
+                setNavigateBackURL(`/applicationForm/${applicationId}/${basicForm?.forms[0]?.formCategory}/${btoa(basicForm?.forms[0]?.schemaCategory)}`)
+            }
         }
     }, [basicForm, formIndex])
 
@@ -60,6 +66,9 @@ const MalpracticeInfo = ({ basicForm, setBasicForm, applicationId, getPreApplica
     };
 
     const getIsSaveInProgressOpen = (value) => {
+        if (value) {
+            handleSubmitApplicationReq('', true);
+        }
         setIsSaveInProgressOpen(value);
     }
 
@@ -89,7 +98,8 @@ const MalpracticeInfo = ({ basicForm, setBasicForm, applicationId, getPreApplica
         let missingKeys = [];
         let keyValuePair = [];
         metadata?.map((data, index) => {
-            keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: labels[index]?.label })
+            if (labels[index]?.mandatory)
+                keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: labels[index]?.label })
         })
         keyValuePair?.map(data => {
             if (data?.value === "" || data?.value === null || data?.value === undefined || data?.value === 0) {
@@ -106,25 +116,27 @@ const MalpracticeInfo = ({ basicForm, setBasicForm, applicationId, getPreApplica
     }
 
 
-    const handleSubmitApplicationReq = async (data) => {
-        if (isEdited) {
+    const handleSubmitApplicationReq = async (data, save) => {
+        if (isEdited || save) {
             let temp = {
                 schemaId: basicForm?.forms?.[formIndex]?.schemaId,
                 data: basicForm?.forms?.[formIndex]?.data,
                 unFilledFields: warningFields?.map(data => data?.label),
-                acknowledged: data === "skipped" ? false : true
+                acknowledged: save ? basicForm?.forms?.[formIndex]?.acknowledged : data === "skipped" ? false : true
             }
             await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
                 .then(response => {
                     console.log(response)
                     SuccessToaster("Application Updated Successfully");
                     getPreApplication();
-                    if (sessionStorage.getItem('fromSummary') === "true") {
-                        navigate(-1);
-                    }
-                    else {
-                        navigate(navigateURL)
-
+                    if (!save) {
+                        if (sessionStorage.getItem('fromSummary') === "true") {
+                            navigate(-1);
+                            sessionStorage.setItem('fromSummary', false)
+                        }
+                        else {
+                            navigate(navigateURL)
+                        }
                     }
                 })
                 .catch((error) => {
@@ -134,6 +146,7 @@ const MalpracticeInfo = ({ basicForm, setBasicForm, applicationId, getPreApplica
         } else {
             if (sessionStorage.getItem('fromSummary') === "true") {
                 navigate(-1);
+                sessionStorage.setItem('fromSummary', false)
             }
             else {
                 navigate(navigateURL)
@@ -151,10 +164,15 @@ const MalpracticeInfo = ({ basicForm, setBasicForm, applicationId, getPreApplica
     const getIsEdited = (value) => {
         setIsEdited(value)
     }
+
+    const handleBackClick = () => {
+        navigate(navigateBackURL)
+    }
+
     return (
         <div>
             <div className={style.applicationScreenGrid}>
-                <ProgressCard step={'STEP 3'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={2} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
+                <ProgressCard step={'STEP 3'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={2} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} applicationId={applicationId} basicForm={basicForm} />
                 <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
             </div>
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
@@ -176,7 +194,7 @@ const MalpracticeInfo = ({ basicForm, setBasicForm, applicationId, getPreApplica
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                         <div className={`${style.saveInProgress} ${style.marginTop10} `} onClick={() => getSkipClicked(true)} > SKIP FOR NOW </div>
                         <div className={style.twoColForButton}>
-                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
+                            <div className={`${style.continue} ${style.marginTop10}`} onClick={handleBackClick}>BACK</div>
                             <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()} >CONTINUE</div>
                         </div>
                     </div>

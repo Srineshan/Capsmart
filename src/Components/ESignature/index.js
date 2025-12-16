@@ -4,7 +4,7 @@ import { corsUrl, getValueByPath } from "../../utils/formatting";
 import { GET } from "../../Screens/dataSaver";
 import { useParams } from "react-router-dom";
 
-const ESignature = ({ userName, currentDate, encData, showData, showDatais = true, isInitial, removePadding, basicForm, alternateSignature, alternateDrawSignature }) => {
+const ESignature = ({ userName, currentDate, encData, showData, showDatais = true, isInitial, removePadding, basicForm, alternateSignature, alternateDrawSignature, isUpdated }) => {
   const [formIndex, setFormIndex] = useState();
   const [applicationId, setApplicationId] = useState(
     sessionStorage.getItem("applicationId")
@@ -21,7 +21,7 @@ const ESignature = ({ userName, currentDate, encData, showData, showDatais = tru
   useEffect(() => {
     // setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === "UploadYourDoc"))
     getPreApplication();
-  }, [])
+  }, [isUpdated])
 
   const getPreApplication = async () => {
     const { data: basicForm } = await GET(
@@ -34,7 +34,7 @@ const ESignature = ({ userName, currentDate, encData, showData, showDatais = tru
   //   basicForm,
   //   `forms[${formIndex}].data.setUpYourSignature.file`
   // );
-
+  let eSignInitial = getValueByPath(form, `forms[${formIndex}].data.setUpYourSignature.initial`);
   let eSignImg = form?.forms?.[formIndex]?.data?.setUpYourSignature?.file
   // let eSignTypeContent = getValueByPath(
   //   basicForm,
@@ -48,15 +48,15 @@ const ESignature = ({ userName, currentDate, encData, showData, showDatais = tru
   console.log("stylesign", eSignTypeContentStyle);
   console.log("textsign", eSignTypeContent);
   console.log("Esign", eSignImg);
-  console.log("formIndex", form)
+  console.log("formIndex", form, form)
   return (
     <>
       <div className={removePadding ? style.signatureWithoutPadding : style.signature}>
         <div className={style.text}>
           <span>
             {isInitial
-              ? "Electronically Initialed by"
-              : "e-Signed by"}
+              ? "Electronically Initialed By"
+              : "e-Signed By"}
           </span>
         </div>
         <div
@@ -69,18 +69,28 @@ const ESignature = ({ userName, currentDate, encData, showData, showDatais = tru
                   ? "Click To Electronically Initial"
                   : "Click To Electronically Sign"}
               </span>
+            ) : isInitial ? (
+              <span style={{ fontFamily: eSignTypeContentStyle }} className={style.userName}>
+                {eSignInitial || `${form?.applicant?.name?.firstName?.charAt(0) || ''}${form?.applicant?.name?.lastName?.charAt(0) || ''}`}
+              </span>
             ) : (eSignImg && !alternateSignature) ? (
-              <img
-                src={`${corsUrl}/${eSignImg?.fileURL}`}
-                alt="Signature"
-                className={style.eSignImg}
-              />
+              <div className={style.displayInRow}>
+                <img
+                  src={`${corsUrl}/${eSignImg?.fileURL}`}
+                  alt="Signature"
+                  className={style.eSignImg}
+                />
+                <div className={style.marginLeft}>{`${form?.applicant?.name?.firstName} ${form?.applicant?.name?.lastName}`}</div>
+              </div>
             ) : (alternateDrawSignature?.file) ? (
-              <img
-                src={`${corsUrl}/${alternateDrawSignature?.file?.fileURL}`}
-                alt="Signature"
-                className={style.eSignImg}
-              />
+              <div className={style.displayInRow}>
+                <img
+                  src={`${corsUrl}/${alternateDrawSignature?.file?.fileURL}`}
+                  alt="Signature"
+                  className={style.eSignImg}
+                />
+                <div>{`${form?.applicant?.name?.firstName} ${form?.applicant?.name?.lastName}`}</div>
+              </div>
             ) : (
               <span style={{ fontFamily: eSignTypeContentStyle }} className={style.userName}>
                 {(alternateSignature && alternateSignature !== 'undefined') ? alternateSignature : eSignTypeContent || ""}

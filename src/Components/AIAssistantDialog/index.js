@@ -16,7 +16,7 @@ const AIAssistantDialog = ({ getIsOpen }) => {
                     <div className={style.spaceBetween}>
                         <div></div>
                         <img
-                            src={CAPSmart}
+                            src={'https://capmanager-dev.s3.us-east-1.amazonaws.com/CAP_Manager.png'}
                             alt="cross"
                             className={`${style.logoStyle}  `}
                         />
@@ -28,7 +28,7 @@ const AIAssistantDialog = ({ getIsOpen }) => {
                             onClick={() => { getIsOpen(false) }}
                         />
                     </div>
-                    <div className={`${style.featureTextStyle} ${style.marginTop}`}>Our Smart features and inbuilt <span className={style.featureTextHighlight}> AI assistant</span> shortens your time to complete from hours to less than 30 mins.</div>
+                    <div className={`${style.featureTextStyle} ${style.marginTop}`}>Our inbuilt <span className={style.featureTextHighlight}> AI Assistant, Poppy,</span> shortens your time to complete this application to just a few minutes.</div>
                     {/* <div className={`${style.featureGrid} ${style.marginTop40}`}>
                         <div className={style.alignCenter}>
                             <div>
@@ -57,7 +57,7 @@ const AIAssistantDialog = ({ getIsOpen }) => {
                         <div className={style.advantagesCard}>
                             <img src={DataEntry} alt='' className={style.advantagesImageStyle} />
                             <div className={`${style.advantageHeading} ${style.marginTop}`}>Stay Updated</div>
-                            <div className={`${style.advantageDescription} ${style.marginTop10}`}>Get Alerts and Notifications when your application moves different stages of Review and Approvals.</div>
+                            <div className={`${style.advantageDescription} ${style.marginTop10}`}>Get Alerts and Notifications when your application moves through different stages of Review and Approvals.</div>
                         </div>
                     </div>
                 </div>

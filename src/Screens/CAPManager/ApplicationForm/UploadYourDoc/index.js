@@ -62,6 +62,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
   const [isLoadingDocs, setIsLoadingDocs] = useState(false);
   const [isShowUploadValidation, setIsShowUploadValidation] = useState(false);
   const [navigateURL, setNavigateURL] = useState();
+  const [navigateBackURL, setNavigateBackURL] = useState();
   const [isSaveInProgressOpen, setIsSaveInProgressOpen] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
@@ -79,7 +80,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
   const eSignImg = getValueByPath(basicForm, `forms[${formIndex}].data.setUpYourSignature.file`);
   const eSignTypeContent = getValueByPath(basicForm, `forms[${formIndex}].data.setUpYourSignature.type.text`);
   const eSignTypeContentStyle = getValueByPath(basicForm, `forms[${formIndex}].data.setUpYourSignature.type.style`);
-  const showRedBorderForESign = !eSignTitle || !eSignInitial;
+  const showRedBorderForESign = ((!eSignTypeContent || !eSignTypeContentStyle) && !eSignImg);
 
   const tempValue =
     basicForm?.forms?.[formIndex]?.data === null
@@ -117,6 +118,11 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
           basicForm?.forms[formIndex + 1]?.schemaCategory,
         )}`,
     );
+    if (formIndex > 0) {
+      setNavigateBackURL(`/applicationForm/${applicationId}/${basicForm?.forms[formIndex - 1]?.formCategory}/${btoa(basicForm?.forms[formIndex - 1]?.schemaCategory)}`)
+    } else {
+      setNavigateBackURL(`/applicationForm/${applicationId}/Form/${btoa('BasicInformation')}`)
+    }
   }, [basicForm, formIndex, applicationId]);
 
   useEffect(() => {
@@ -442,6 +448,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
       if (action === 'continue') {
         if (sessionStorage.getItem('fromSummary') === 'true') {
           navigate(-1);
+          sessionStorage.setItem('fromSummary', false)
         } else {
           navigate(navigateURL);
         }
@@ -454,7 +461,9 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
     }
   };
 
-  const handleBackClick = () => navigate(-1);
+  const handleBackClick = () => {
+    navigate(navigateBackURL)
+  };
 
   const getIsSaveInProgressOpen = (value) => {
     if (value) {
@@ -660,6 +669,8 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
             timeNumber={1}
             timeText="Min"
             progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`}
+            applicationId={applicationId}
+            basicForm={basicForm}
           />
           <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
             {formSchema?.properties?.uploadTheDocument && (
@@ -672,6 +683,27 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                 stepPath={`forms[${formIndex}].data`}
               />
             )}
+
+            <div className={`${style.twoCol} ${style.marginTop10}`}>
+              <Tooltip title="Click to Upload Documents" arrow>
+                <CommonDropZone
+                  title="Upload Your Documents"
+                  description="Upload your files or drag & drop from your file cabinet"
+                  changeHandler={changeHandler}
+                  files={files}
+                />
+              </Tooltip>
+              <Tooltip title="Click to Upload Photo" arrow>
+                <CommonDropZone
+                  title="Upload A Photo"
+                  description="Take a picture or upload from your gallery"
+                  changeHandler={changeHandler}
+                  files={files}
+                  accept="image/*"
+                />
+              </Tooltip>
+            </div>
+
             <div className={`${style.addMoreBorder} ${style.marginTop}`}>
               <div className={style.padding20}>
                 <div className={style.spaceBetween}>
@@ -702,11 +734,11 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                     <div
                       className={`${style.requiredDocumentCard} ${style.tableGrid
                         } ${basicForm?.forms?.[formIndex]?.data !== null &&
-                          tempValue?.table?.filter(
+                          (tempValue?.table?.filter(
                             (tableData) =>
                               tableData?.documentType ===
                               data?.document?.shortName
-                          )?.length === 0 &&
+                          )?.length === 0 || !(tempValue?.table?.filter((tableData) => tableData?.documentType === data?.document?.shortName)?.[0]?.verified && tempValue?.table?.filter((tableData) => tableData?.documentType === data?.document?.shortName)?.[0]?.valid)) &&
                           data?.required
                           ? style.redBorder
                           : ""
@@ -721,7 +753,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                         <div
                           className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}
                         >
-                          {data?.document?.name}
+                          {data?.document?.shortName}
                         </div>
                         <InfoOutlinedIcon
                           sx={{ fontSize: 14, marginLeft: "10px" }}
@@ -742,26 +774,6 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                   </div>
                 ))}
               </div>
-            </div>
-
-            <div className={`${style.twoCol} ${style.marginTop10}`}>
-              <Tooltip title="Click to Upload Documents" arrow>
-                <CommonDropZone
-                  title="Upload Your Documents"
-                  description="Upload your files or drag & drop from your file cabinet"
-                  changeHandler={changeHandler}
-                  files={files}
-                />
-              </Tooltip>
-              <Tooltip title="Click to Upload Photo" arrow>
-                <CommonDropZone
-                  title="Upload A Photo"
-                  description="Take a picture or upload from your gallery"
-                  changeHandler={changeHandler}
-                  files={files}
-                  accept="image/*"
-                />
-              </Tooltip>
             </div>
             <div ref={tableRef} className={style.tableContainer}>
               {tableValues.length > 0 && (
@@ -786,7 +798,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
             {(basicForm?.forms?.[formIndex]?.data !== null && !showRedBorderForESign) ||
               applicantProfile?.signature?.updated ? (
               <>
-                <div className={`${style.setupCompleteCard} ${style.setupCompleteGrid} ${style.marginTop}`}>
+                {/* <div className={`${style.setupCompleteCard} ${style.setupCompleteGrid} ${style.marginTop}`}>
                   <div></div>
                   <div className={`${style.displayInRow} ${style.justifyCenter}`}>
                     <DoneIcon sx={{ color: '#06617A', fontSize: 25 }} />
@@ -797,15 +809,15 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                   <div className={`${style.editOrUpdateESign} ${style.cursorPointer}`} onClick={() => setIsShowESignDialog(true)}>
                     Edit / Update
                   </div>
-                </div>
+                </div> */}
                 <div className={`${style.eSignatureOnFileCard} ${style.marginTop10}`}>
-                  <div className={style.eSignatureOnFileTitle}>Your eSignature On File</div>
+                  <div className={style.eSignatureOnFileTitle}>Establish your eSignature</div>
                   <div className={style.eSignGrid}>
-                    <ESignature userName={applicantName} encData={encryptedText} showData showDatais />
+                    <ESignature userName={applicantName} encData={encryptedText} showData showDatais isUpdated={isShowESignDialog} />
                     <div className={style.verticalAlignCenter}>
                       <div className={style.displayInRow}>
-                        <div className={style.dateTitle}>Date:</div>
-                        <div className={`${style.date} ${style.marginLeft}`}>{currentDate}</div>
+                        <div className={style.dateTitle}>Initial:</div>
+                        <div className={`${style.date} ${style.marginLeft}`}>{eSignInitial}</div>
                       </div>
                     </div>
                     <div className={style.verticalAlignCenter}>
@@ -820,9 +832,9 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                 </div>
               </>
             ) : (
-              <div className={style.marginTop} onClick={() => setIsShowESignConfirmationDialog(true)}>
+              <div className={style.marginTop} onClick={() => setIsShowESignDialog(true)}>
                 <div className={`${style.uploadBorderStyle} ${showRedBorderForESign ? style.redBorder : ''}`}>
-                  <p className={style.uploadTextStyle}>Confirm Your eSignature</p>
+                  <p className={style.uploadTextStyle}>Add Your eSignature</p>
                   <p className={style.uploadDescriptionText}>
                     Our paperless automated application submission uses electronic signatures with digital fingerprinting.
                   </p>

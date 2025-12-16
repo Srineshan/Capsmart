@@ -220,7 +220,7 @@ const MedicalDirectivesAttestDisplay = () => {
     return (
         <div className={style.screenBackground}>
             <div className={style.welcomeText}>
-                <ApplicationHeader title={`${medicalDirectives?.title}`} close={true} closeClick={handleClose} print={true} printPage={handlePrintClick} />
+                <ApplicationHeader title={`${medicalDirectives?.title}`} close={true} closeClick={handleClose} print={true} printPage={handlePrintClick} isNotLogout={true} />
             </div>
             <div className={style.headerData}>
                 <span style={{ marginLeft: '20px' }}>Ordering Of Laboratory Investigations - IPAC</span>

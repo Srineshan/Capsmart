@@ -229,3 +229,9 @@
     opacity: 0;
     pointer-events: none;
 }
+
+.tableGrid {
+    display: grid;
+    grid-template-columns: 20% 36% 36% 4%;
+    gap: 1%;
+}

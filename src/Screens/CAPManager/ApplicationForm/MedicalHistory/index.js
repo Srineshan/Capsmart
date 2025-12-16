@@ -25,6 +25,7 @@ const MedicalHistory = ({ basicForm, setBasicForm, applicationId, getPreApplicat
   const { section, step } = useParams()
   const [formIndex, setFormIndex] = useState();
   const [navigateURL, setNavigateURL] = useState();
+  const [navigateBackURL, setNavigateBackURL] = useState();
   const navigate = useNavigate()
   useEffect(() => {
     if (basicForm && !formSchema) {
@@ -32,6 +33,11 @@ const MedicalHistory = ({ basicForm, setBasicForm, applicationId, getPreApplicat
     }
     if (basicForm !== undefined && formIndex !== undefined) {
       setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form' || data?.formCategory === 'Disclosure')?.length === (formIndex + 1)) ? `/applicationForm/${applicationId}/Form/${btoa('PODCheck')}` : `/applicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
+      if (formIndex > 0) {
+        setNavigateBackURL(`/applicationForm/${applicationId}/${basicForm?.forms[formIndex - 1]?.formCategory}/${btoa(basicForm?.forms[formIndex - 1]?.schemaCategory)}`)
+      } else {
+        setNavigateBackURL(`/applicationForm/${applicationId}/${basicForm?.forms[0]?.formCategory}/${btoa(basicForm?.forms[0]?.schemaCategory)}`)
+      }
     }
   }, [basicForm, formIndex])
 
@@ -90,19 +96,22 @@ const MedicalHistory = ({ basicForm, setBasicForm, applicationId, getPreApplicat
       basicForm,
       `forms[${formIndex}].data.impactingPractice.medicalHistory.emailId`
     );
-
+    console.log(cellPhone, 'cellPhone')
     metadata?.forEach((data, index) => {
       console.log("datastep13metadata", data);
-      keyValuePair.push({
-        key: data,
-        value: getValueByPath(basicForm, data),
-        label: labels[index]?.label,
-      });
+      if (labels[index]?.mandatory) {
+        keyValuePair.push({
+          key: data,
+          value: getValueByPath(basicForm, data),
+          label: labels[index]?.label,
+        });
+      }
     });
 
     const validateBusinessPhone = (phone) => {
+      const cleaned = phone?.replace(/\D/g, "");
       const phoneRegex = /^[0-9]{10}$/;
-      return phoneRegex.test(phone);
+      return phoneRegex.test(cleaned);
     };
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -110,21 +119,21 @@ const MedicalHistory = ({ basicForm, setBasicForm, applicationId, getPreApplicat
     const isCellPhoneInvalid = !validateBusinessPhone(cellPhone);
     const isEmailInvalid = !emailRegex.test(emailId);
 
-    // if (isCellPhoneInvalid) {
-    //   missingKeys.push({
-    //     key: "cellPhone",
-    //     value: cellPhone,
-    //     label: "Cell Phone is invalid",
-    //   });
-    // }
+    if (isCellPhoneInvalid && cellPhone && cellPhone !== "") {
+      missingKeys.push({
+        key: "cellPhone",
+        value: cellPhone,
+        label: "Cell Phone is invalid",
+      });
+    }
 
-    // if (isEmailInvalid) {
-    //   missingKeys.push({
-    //     key: "emailId",
-    //     value: emailId,
-    //     label: "Email ID is invalid",
-    //   });
-    // }
+    if (isEmailInvalid && emailId && emailId !== "") {
+      missingKeys.push({
+        key: "emailId",
+        value: emailId,
+        label: "Email ID is invalid",
+      });
+    }
 
     // Check other fields for missing values
     keyValuePair?.forEach((data) => {
@@ -139,53 +148,53 @@ const MedicalHistory = ({ basicForm, setBasicForm, applicationId, getPreApplicat
     });
 
     // Reset fields if invalid
-    // if (isCellPhoneInvalid) {
-    //   setBasicForm((prevForm) => ({
-    //     ...prevForm,
-    //     forms: prevForm.forms.map((form) => {
-    //       if (form.schemaId === basicForm.forms[formIndex].schemaId) {
-    //         return {
-    //           ...form,
-    //           data: {
-    //             ...form.data,
-    //             impactingPractice: {
-    //               ...form.data.impactingPractice,
-    //               medicalHistory: {
-    //                 ...form.data.impactingPractice.medicalHistory,
-    //                 cellPhone: "",
-    //               },
-    //             },
-    //           },
-    //         };
-    //       }
-    //       return form;
-    //     }),
-    //   }));
-    // }
+    if (isCellPhoneInvalid) {
+      setBasicForm((prevForm) => ({
+        ...prevForm,
+        forms: prevForm.forms.map((form) => {
+          if (form?.schemaId === basicForm?.forms?.[formIndex]?.schemaId) {
+            return {
+              ...form,
+              data: {
+                ...form?.data,
+                impactingPractice: {
+                  ...form?.data?.impactingPractice,
+                  medicalHistory: {
+                    ...form?.data?.impactingPractice?.medicalHistory,
+                    cellPhone: "",
+                  },
+                },
+              },
+            };
+          }
+          return form;
+        }),
+      }));
+    }
 
-    // if (isEmailInvalid) {
-    //   setBasicForm((prevForm) => ({
-    //     ...prevForm,
-    //     forms: prevForm.forms.map((form) => {
-    //       if (form.schemaId === basicForm.forms[formIndex].schemaId) {
-    //         return {
-    //           ...form,
-    //           data: {
-    //             ...form.data,
-    //             impactingPractice: {
-    //               ...form.data.impactingPractice,
-    //               medicalHistory: {
-    //                 ...form.data.impactingPractice.medicalHistory,
-    //                 emailId: "",
-    //               },
-    //             },
-    //           },
-    //         };
-    //       }
-    //       return form;
-    //     }),
-    //   }));
-    // }
+    if (isEmailInvalid) {
+      setBasicForm((prevForm) => ({
+        ...prevForm,
+        forms: prevForm.forms.map((form) => {
+          if (form?.schemaId === basicForm?.forms?.[formIndex]?.schemaId) {
+            return {
+              ...form,
+              data: {
+                ...form?.data,
+                impactingPractice: {
+                  ...form?.data?.impactingPractice,
+                  medicalHistory: {
+                    ...form?.data?.impactingPractice?.medicalHistory,
+                    emailId: "",
+                  },
+                },
+              },
+            };
+          }
+          return form;
+        }),
+      }));
+    }
 
     if (getValueByPath(basicForm, `forms[${formIndex}].data.impactingPractice.medicalHistory.abilityToPractice`) === 'No' && getValueByPath(basicForm, `forms[${formIndex}].data.impactingPractice.medicalHistory.abilityToPractice`) !== undefined && getValueByPath(basicForm, `forms[${formIndex}].data.impactingPractice.medicalHistory.abilityToPractice`) !== null) {
       let medicalHistoryRequiredKeys = [`forms[${formIndex}].data.impactingPractice.medicalHistory.nameOfFacility`, `forms[${formIndex}].data.impactingPractice.medicalHistory.treatingPhysicianOrProvider`, `forms[${formIndex}].data.impactingPractice.medicalHistory.emailId`, `forms[${formIndex}].data.impactingPractice.medicalHistory.cellPhone`]
@@ -211,12 +220,12 @@ const MedicalHistory = ({ basicForm, setBasicForm, applicationId, getPreApplicat
 
 
   const handleSubmitApplicationReq = async (data) => {
-    if (isEdited) {
+    if (isEdited || data) {
       let temp = {
         schemaId: basicForm?.forms?.[formIndex]?.schemaId,
         data: basicForm?.forms?.[formIndex]?.data,
         unFilledFields: warningFields?.map(data => data?.label),
-        acknowledged: data === "skipped" ? false : true
+        acknowledged: true
       }
       await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
         .then(response => {
@@ -257,10 +266,15 @@ const MedicalHistory = ({ basicForm, setBasicForm, applicationId, getPreApplicat
   const getIsEdited = (value) => {
     setIsEdited(value)
   }
+
+  const handleBackClick = () => {
+    navigate(navigateBackURL)
+  }
+
   return (
     <div>
       <div className={style.applicationScreenGrid}>
-        <ProgressCard step={'STEP 13'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={26} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
+        <ProgressCard step={'STEP 13'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={26} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} applicationId={applicationId} basicForm={basicForm} />
         <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
       </div>
       <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
@@ -276,7 +290,7 @@ const MedicalHistory = ({ basicForm, setBasicForm, applicationId, getPreApplicat
           <div className={style.stickyContainer}>
             <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
             <div className={style.twoColForButton}>
-              <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
+              <div className={`${style.continue} ${style.marginTop10}`} onClick={handleBackClick}>BACK</div>
               <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()}>CONTINUE</div>
             </div>
           </div>

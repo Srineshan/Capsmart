@@ -28,12 +28,18 @@ const ContactAddress = ({ basicForm, setBasicForm, applicationId, getPreApplicat
   const { section, step } = useParams()
   const [formIndex, setFormIndex] = useState();
   const [navigateURL, setNavigateURL] = useState();
+  const [navigateBackURL, setNavigateBackURL] = useState();
   useEffect(() => {
     if (basicForm && !formSchema) {
       getFormSchema()
     }
     if (basicForm !== undefined && formIndex !== undefined) {
       setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form')?.length === (formIndex + 1)) ? `/applicationForm/${applicationId}/Form/${btoa('PODCheck')}` : `/applicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
+      if (formIndex > 0) {
+        setNavigateBackURL(`/applicationForm/${applicationId}/${basicForm?.forms[formIndex - 1]?.formCategory}/${btoa(basicForm?.forms[formIndex - 1]?.schemaCategory)}`)
+      } else {
+        setNavigateBackURL(`/applicationForm/${applicationId}/${basicForm?.forms[0]?.formCategory}/${btoa(basicForm?.forms[0]?.schemaCategory)}`)
+      }
     }
   }, [basicForm?.formSchemas?.[formIndex]?.id, formIndex])
 
@@ -86,6 +92,9 @@ const ContactAddress = ({ basicForm, setBasicForm, applicationId, getPreApplicat
   }
 
   const getIsSaveInProgressOpen = (value) => {
+    if (value) {
+      handleSubmitApplicationReq('', true);
+    }
     setIsSaveInProgressOpen(value);
   }
 
@@ -126,8 +135,8 @@ const ContactAddress = ({ basicForm, setBasicForm, applicationId, getPreApplicat
     let missingKeys = [];
     let keyValuePair = [];
     metadata?.map((data, index) => {
-      if (labels[index]?.mandatory) {
-        keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: labels[index]?.label })
+      if (uniqueLabels[index]?.mandatory) {
+        keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: uniqueLabels[index]?.label })
       }
     })
     const validateBusinessPhone = (phone) => {
@@ -139,7 +148,7 @@ const ContactAddress = ({ basicForm, setBasicForm, applicationId, getPreApplicat
         /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}([\/\w .-]*)*\/?$/; // Simple URL validation
       return websiteRegex.test(website);
     };
-
+    console.log(keyValuePair, 'keyValuePair', metadata, labels, uniqueLabels)
     keyValuePair?.map(data => {
       if (data?.value === "" || data?.value === null || data?.value === undefined || data?.value === 0
         // || (data?.key === `forms[${formIndex}].data.contactAddress3.business.businessPhone` &&
@@ -238,13 +247,13 @@ const ContactAddress = ({ basicForm, setBasicForm, applicationId, getPreApplicat
   }
 
 
-  const handleSubmitApplicationReq = async (skip) => {
-    if (isEdited) {
+  const handleSubmitApplicationReq = async (skip, save) => {
+    if (isEdited || save || skip) {
       let temp = {
         schemaId: basicForm?.forms?.[formIndex]?.schemaId,
         data: basicForm?.forms?.[formIndex]?.data,
         unFilledFields: warningFields?.map(data => data?.label),
-        acknowledged: skip === "skipped" ? false : true
+        acknowledged: save ? basicForm?.forms?.[formIndex]?.acknowledged : true
       }
       await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
         .then(response => {
@@ -252,12 +261,14 @@ const ContactAddress = ({ basicForm, setBasicForm, applicationId, getPreApplicat
           setBasicForm(response?.data)
           SuccessToaster("Application Updated Successfully");
           getPreApplication()
-          if (sessionStorage.getItem('fromSummary') === "true") {
-            navigate(-1);
-          }
-          else {
-            navigate(navigateURL)
-
+          if (!save) {
+            if (sessionStorage.getItem('fromSummary') === "true") {
+              navigate(-1);
+              sessionStorage.setItem('fromSummary', false)
+            }
+            else {
+              navigate(navigateURL)
+            }
           }
         })
         .catch((error) => {
@@ -265,8 +276,8 @@ const ContactAddress = ({ basicForm, setBasicForm, applicationId, getPreApplicat
           ErrorToaster("Unexpected Error Updating Application");
         });
       let addressData = applicantProfile;
-      addressData.contactAddress2 = basicForm?.forms?.[formIndex]?.data.contactAddress2 !== undefined ? basicForm?.forms?.[formIndex]?.data.contactAddress2 : null
-      addressData.contactAddress3 = basicForm?.forms?.[formIndex]?.data.contactAddress3 !== undefined ? basicForm?.forms?.[formIndex]?.data.contactAddress3 : null
+      addressData.contactAddress2 = basicForm?.forms?.[formIndex]?.data?.contactAddress2 !== undefined ? basicForm?.forms?.[formIndex]?.data?.contactAddress2 : null
+      addressData.contactAddress3 = basicForm?.forms?.[formIndex]?.data?.contactAddress3 !== undefined ? basicForm?.forms?.[formIndex]?.data?.contactAddress3 : null
       await PUT(`application-management-service/application/${applicationId}/profile`, addressData)
         .then(response => {
           console.log(response)
@@ -277,6 +288,7 @@ const ContactAddress = ({ basicForm, setBasicForm, applicationId, getPreApplicat
     } else {
       if (sessionStorage.getItem('fromSummary') === "true") {
         navigate(-1);
+        sessionStorage.setItem('fromSummary', false)
       }
       else {
         navigate(navigateURL)
@@ -295,10 +307,14 @@ const ContactAddress = ({ basicForm, setBasicForm, applicationId, getPreApplicat
     setIsEdited(value)
   }
 
+  const handleBackClick = () => {
+    navigate(navigateBackURL)
+  }
+
   return (
     <div>
       <div className={style.applicationScreenGrid}>
-        <ProgressCard step={'STEP 1'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={1} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
+        <ProgressCard step={'STEP 1'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={1} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} applicationId={applicationId} basicForm={basicForm} />
         <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
       </div>
       <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
@@ -326,7 +342,7 @@ const ContactAddress = ({ basicForm, setBasicForm, applicationId, getPreApplicat
             <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
             <div className={`${style.saveInProgress} ${style.marginTop10} `} onClick={() => getSkipClicked(true)} > SKIP FOR NOW </div>
             <div className={style.twoColForButton}>
-              <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
+              <div className={`${style.continue} ${style.marginTop10}`} onClick={handleBackClick}>BACK</div>
               <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()}>CONTINUE</div>
             </div>
           </div>

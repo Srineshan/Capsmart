@@ -321,7 +321,7 @@
 
 .uploadText2 {
     text-align: left !important;
-    font: normal normal bold 13px/20px var(--font-style);
+    font: normal normal bold 15px/20px var(--font-style);
     letter-spacing: 0px;
     color: $textgrey;
     margin-left: 28px;
@@ -373,4 +373,41 @@
 .hiddenStickyContainer {
     opacity: 0;
     pointer-events: none;
+}
+
+.justifyCenter {
+    display: flex;
+    justify-content: center;
+}
+
+.loadingOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.uploadContainer {
+    background-color: #fff;
+    padding: 40px;
+    border-radius: 20px;
+    text-align: center;
+}
+
+.fileImportingMsg {
+    font: normal normal bold 20px/28px var(--font-style);
+    color: var(--primary-color);
+    margin: 10px 0;
+}
+
+.fileLoadingStyle {
+    height: auto;
+    width: 40%;
+    object-fit: contain;
 }

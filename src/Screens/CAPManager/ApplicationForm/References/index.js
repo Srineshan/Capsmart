@@ -18,22 +18,32 @@ const References = ({ basicForm, setBasicForm, applicationId, getPreApplication 
   const [formSchemaWholeObject, setFormSchemaWholeObject] = useState();
   const [metadata, setMetadata] = useState([]);
   const [labels, setLabels] = useState([]);
+  const [metadata2, setMetadata2] = useState([]);
+  const [labels2, setLabels2] = useState([]);
   const [isSaveInProgressOpen, setIsSaveInProgressOpen] = useState(false);
   const [showValidationDialog, setShowValidationDialog] = useState(false);
   const [showValidationDialog2, setShowValidationDialog2] = useState(false);
   const [warningFields, setWarningFields] = useState([]);
+  const [warningFields2, setWarningFields2] = useState([]);
   const [isAddMore, setIsAddMore] = useState(false)
   const [isAddMore2, setIsAddMore2] = useState(false)
   const { section, step } = useParams()
   const [formIndex, setFormIndex] = useState();
   const navigate = useNavigate()
   const [navigateURL, setNavigateURL] = useState();
+  const [navigateBackURL, setNavigateBackURL] = useState();
+  const isDataAvailable = basicForm?.forms?.[formIndex]?.data?.privilegeReferences?.length > 0 && basicForm?.forms?.[formIndex]?.data?.references?.length > 0;
   useEffect(() => {
     if (basicForm && !formSchema) {
       getFormSchema()
     }
     if (basicForm !== undefined && formIndex !== undefined) {
-      setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form')?.length === (formIndex + 1)) ? `/applicationForm/${applicationId}/Form/${btoa('PODCheck')}` : `/applicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
+      setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form' || data?.formCategory === 'Disclosure')?.length === (formIndex + 1)) ? `/applicationForm/${applicationId}/Form/${btoa('PODCheck')}` : `/applicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
+      if (formIndex > 0) {
+        setNavigateBackURL(`/applicationForm/${applicationId}/${basicForm?.forms[formIndex - 1]?.formCategory}/${btoa(basicForm?.forms[formIndex - 1]?.schemaCategory)}`)
+      } else {
+        setNavigateBackURL(`/applicationForm/${applicationId}/${basicForm?.forms[0]?.formCategory}/${btoa(basicForm?.forms[0]?.schemaCategory)}`)
+      }
     }
   }, [basicForm, formIndex])
 
@@ -45,8 +55,8 @@ const References = ({ basicForm, setBasicForm, applicationId, getPreApplication 
   useEffect(() => {
     if (isAddMore) {
       setIsAddMore2(false)
-      setMetadata([])
-      setLabels([])
+      setMetadata2([])
+      setLabels2([])
     }
   }, [isAddMore])
 
@@ -79,6 +89,22 @@ const References = ({ basicForm, setBasicForm, applicationId, getPreApplication 
     });
   };
 
+  const getAllPath2 = (data) => {
+    let temp = metadata2;
+    if (!temp?.includes(data)) {
+      console.log(temp, data, 'Metadata')
+      temp.push(data);
+    }
+    setMetadata2(temp);
+  }
+
+  const getAllLabels2 = (data) => {
+    setLabels2(prev => {
+      const exists = prev.some(item => JSON.stringify(item) === JSON.stringify(data));
+      return exists ? prev : [...prev, data];
+    });
+  };
+
   const getIsSaveInProgressOpen = (value) => {
     setIsSaveInProgressOpen(value);
   }
@@ -96,8 +122,8 @@ const References = ({ basicForm, setBasicForm, applicationId, getPreApplication 
 
   const getIsSubmitClicked = (value, data, skip) => {
     if (value) {
-      setIsAddMore(false);
-      setIsAddMore2(false);
+      // setIsAddMore(false);
+      // setIsAddMore2(false);
       handleSubmitApplicationReq(data, skip)
     }
   }
@@ -113,13 +139,13 @@ const References = ({ basicForm, setBasicForm, applicationId, getPreApplication 
     let keyValuePair = [];
     metadata?.map((data, index) => {
       console.log("datadata", data, labels[index]?.mandatory);
-      // if (labels[index]?.mandatory) {
-      keyValuePair.push({
-        key: data,
-        value: getValueByPath(basicForm, data),
-        label: labels[index]?.label,
-      });
-      // }
+      if (labels[index]?.mandatory) {
+        keyValuePair.push({
+          key: data,
+          value: getValueByPath(basicForm, data),
+          label: labels[index]?.label,
+        });
+      }
     });
     keyValuePair?.map((data) => {
       console.log("keyValuePair", keyValuePair);
@@ -140,11 +166,52 @@ const References = ({ basicForm, setBasicForm, applicationId, getPreApplication 
       }
     });
     if (missingKeys?.length !== 0) {
-      setShowValidationDialog(true);
+      // setShowValidationDialog(true);
     } else {
       handleSubmitApplicationReq();
     }
     setWarningFields(missingKeys);
+    console.log(keyValuePair, "Metadata", missingKeys);
+    return missingKeys;
+  };
+
+  const getMissingFields2 = () => {
+    let missingKeys = [];
+    let keyValuePair = [];
+    metadata2?.map((data, index) => {
+      console.log("datadata", data, labels2[index]?.mandatory);
+      if (labels2[index]?.mandatory) {
+        keyValuePair.push({
+          key: data,
+          value: getValueByPath(basicForm, data),
+          label: labels2[index]?.label,
+        });
+      }
+    });
+    keyValuePair?.map((data) => {
+      console.log("keyValuePair", keyValuePair);
+      const phoneRegex = /^\(\d{3}\) \d{3}-\d{4}$/; // Example for formatted phone number
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      if (
+        data?.value === "" ||
+        data?.value === null ||
+        data?.value === undefined ||
+        data?.value === 0 ||
+        (data?.key === "undefined.references.emailAddress" &&
+          !emailRegex.test(data?.value)) ||
+        (data?.key === "undefined.references.contactNumber" &&
+          !phoneRegex.test(data?.value))
+      ) {
+        missingKeys.push(data);
+      }
+    });
+    if (missingKeys?.length !== 0) {
+      // setShowValidationDialog(true);
+    } else {
+      handleSubmitApplicationReq();
+    }
+    setWarningFields2(missingKeys);
     console.log(keyValuePair, "Metadata", missingKeys);
     return missingKeys;
   };
@@ -194,9 +261,28 @@ const References = ({ basicForm, setBasicForm, applicationId, getPreApplication 
       });
   }
 
-  const handleContinue = () => {
+  const handleContinue = async (skip) => {
+    if (skip) {
+      let temp = {
+        schemaId: basicForm?.forms?.[formIndex]?.schemaId,
+        data: basicForm?.forms?.[formIndex]?.data,
+        unFilledFields: basicForm?.forms?.[formIndex]?.unFilledFields,
+        acknowledged: true
+      }
+      await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
+        .then(response => {
+          console.log(response)
+          SuccessToaster("Application Updated Successfully");
+          getPreApplication();
+        })
+        .catch((error) => {
+          console.log(error)
+          ErrorToaster("Unexpected Error Updating Application");
+        });
+    }
     if (sessionStorage.getItem('fromSummary') === "true") {
       navigate(-1);
+      sessionStorage.setItem('fromSummary', false)
     }
     else {
       navigate(navigateURL)
@@ -209,10 +295,14 @@ const References = ({ basicForm, setBasicForm, applicationId, getPreApplication 
     return keys.reduce((acc, key) => acc && acc[isNaN(key) ? key : Number(key)], basicForm);
   };
 
+  const handleBackClick = () => {
+    navigate(navigateBackURL)
+  }
+
   return (
     <div>
       <div className={style.applicationScreenGrid}>
-        <ProgressCard step={'STEP 10'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={20} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
+        <ProgressCard step={'STEP 10'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={20} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} applicationId={applicationId} basicForm={basicForm} />
         <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
       </div>
       <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
@@ -223,7 +313,7 @@ const References = ({ basicForm, setBasicForm, applicationId, getPreApplication 
             )}
             <CommonDivider />
             {formSchema !== undefined && 'privilegeReferences' in formSchema?.properties && (
-              <ApplicationFieldCard object={formSchema?.properties?.privilegeReferences} gridStyle={style.twoCol} baseKey={'privilegeReferences'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} addMoreType={true} formId={basicForm?.forms?.[formIndex]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} warningFields={warningFields} getMissingFields={getMissingFields} showValidationDialog={showValidationDialog2} setShowValidationDialog={setShowValidationDialog2} isAddMore={isAddMore2} setIsAddMore={setIsAddMore2} formSchema={formSchemaWholeObject} />
+              <ApplicationFieldCard object={formSchema?.properties?.privilegeReferences} gridStyle={style.twoCol} baseKey={'privilegeReferences'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath2} getAllLabels={getAllLabels2} addMoreType={true} formId={basicForm?.forms?.[formIndex]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} warningFields={warningFields2} getMissingFields={getMissingFields2} showValidationDialog={showValidationDialog2} setShowValidationDialog={setShowValidationDialog2} isAddMore={isAddMore2} setIsAddMore={setIsAddMore2} formSchema={formSchemaWholeObject} />
             )}
           </div>
         </div>
@@ -231,10 +321,10 @@ const References = ({ basicForm, setBasicForm, applicationId, getPreApplication 
           <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
           <div className={style.stickyContainer}>
             <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
-            <div className={`${style.saveInProgress} ${style.marginTop10} `} onClick={() => handleContinue()} > SKIP FOR NOW </div>
+            <div className={`${style.saveInProgress} ${style.marginTop10} `} onClick={() => handleContinue(true)} > SKIP FOR NOW </div>
             <div className={style.twoColForButton}>
-              <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
-              <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue()}>CONTINUE</div>
+              <div className={`${style.continue} ${style.marginTop10}`} onClick={handleBackClick}>BACK</div>
+              <div className={`${style.continue} ${style.marginTop10} ${isDataAvailable ? '' : style.disabledButton}`} onClick={isDataAvailable ? () => handleContinue() : () => { }}>CONTINUE</div>
             </div>
           </div>
           <div className={style.marginTop}>

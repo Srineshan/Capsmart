@@ -24,6 +24,7 @@ import style from './index.module.scss';
 import DeleteIcon from './../../../../images/deleteHcRow.png';
 
 import VerifiedImage from "./../../../../images/verifiedImage.png";
+import NotVerifiedImage from "./../../../../images/notVerifiedImage.png";
 import ToBeVerifiedImage from "./../../../../images/toBeVerifiedImage.png";
 import CommonSelectField from '../../../../Components/CommonFields/CommonSelectField';
 import ESignature from '../../../../Components/ESignature';
@@ -58,11 +59,13 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, applicationId, getPreAppl
     const [formIndex, setFormIndex] = useState();
     const navigate = useNavigate()
     const [navigateURL, setNavigateURL] = useState();
+    const [navigateBackURL, setNavigateBackURL] = useState();
     const title = sessionStorage.getItem('title')
     const [isSaveInProgressOpen, setIsSaveInProgressOpen] = useState(false);
     useEffect(() => {
         getApplication();
-    }, [])
+        sessionStorage.setItem("applicationId", applicationId);
+    }, [applicationId])
 
     useEffect(() => {
         getFields()
@@ -81,6 +84,11 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, applicationId, getPreAppl
         }
         if (basicForm !== undefined && formIndex !== undefined) {
             setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form')?.length === (formIndex + 1)) ? `/applicationForm/${applicationId}/Form/${btoa('PODCheck')}` : `/applicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
+            if (formIndex > 0) {
+                setNavigateBackURL(`/applicationForm/${applicationId}/${basicForm?.forms[formIndex - 1]?.formCategory}/${btoa(basicForm?.forms[formIndex - 1]?.schemaCategory)}`)
+            } else {
+                setNavigateBackURL(`/applicationForm/${applicationId}/${basicForm?.forms[0]?.formCategory}/${btoa(basicForm?.forms[0]?.schemaCategory)}`)
+            }
         }
         setSelectedAdditionalPrivilegeForDisplay(basicForm?.privileges?.additionalPrivileges)
         setSelectedPrivilegeForDisplay(basicForm?.privileges?.obligatedPrivileges)
@@ -206,6 +214,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, applicationId, getPreAppl
         if (navigation) {
             if (sessionStorage.getItem('fromSummary') === "true") {
                 navigate(-1);
+                sessionStorage.setItem('fromSummary', false)
             }
             else {
                 navigate(navigateURL)
@@ -568,7 +577,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, applicationId, getPreAppl
                                                                             {(privileges?.file !== undefined && privileges?.file !== null) ? (
                                                                                 <img src={VerifiedImage} alt="" className={`${style.imgIcon} `} />
                                                                             ) : (
-                                                                                <img src={ToBeVerifiedImage} alt="" className={style.imgIcon} />
+                                                                                <img src={NotVerifiedImage} alt="" className={style.imgIcon} />
                                                                             )}
                                                                             <div className={`${style.uploadText} ${style.verticalAlignCenter}`}>
                                                                                 Upload any supporting documents for evidence of qualification and competence
@@ -647,17 +656,21 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, applicationId, getPreAppl
 
     console.log('collapsibleIndexes', openIndex, selectedPrivilegeForDisplay, selectedPrivilege)
 
+    const handleBackClick = () => {
+        navigate(navigateBackURL)
+    }
+
     return (
         <div>
             <div className={style.applicationScreenGrid}>
-                <ProgressCard step={'STEP 6'} title={'Details of request for privileges'} dataType={'Step 7'} timeNumber={20} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
+                <ProgressCard step={'STEP 6'} title={formSchemaWholeObject?.title} dataType={formSchemaWholeObject?.description} timeNumber={20} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} applicationId={applicationId} basicForm={basicForm} />
                 <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
             </div>
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
                 <div>
                     <div className={style.applicationCardStyle}>
                         <div className={style.padding}>
-                            <div className={style.cardTitle}>{`Indicate the Privileges you are seeking as ${startsWithVowel(applicationData?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory ? applicationData?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory : '') ? 'an' : 'a'} ${applicationData?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory ? applicationData?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory : ''} for ${applicationData?.basicDetails?.departmentSpecialty?.department || ''} ${applicationData?.basicDetails?.departmentSpecialty?.specialty ? '/' : ''} ${applicationData?.basicDetails?.departmentSpecialty?.specialty || ''}`}</div>
+                            <div className={style.cardTitle}>{`Indicate the Privileges you are seeking as  a ${basicForm?.basicDetails?.applicant?.applicantType ? basicForm?.basicDetails?.applicant?.applicantType : ''} for ${applicationData?.basicDetails?.departmentSpecialty?.department || ''} ${applicationData?.basicDetails?.departmentSpecialty?.specialty ? '/' : ''} ${applicationData?.basicDetails?.departmentSpecialty?.specialty || ''}`}</div>
                             <div className={style.marginTop}>
                                 {/* <CommonSelectField
                                     value={selectedPrivilege}
@@ -819,7 +832,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, applicationId, getPreAppl
                                                                                                     {(privileges?.file !== undefined && privileges?.file !== null) ? (
                                                                                                         <img src={VerifiedImage} alt="" className={`${style.imgIcon}`} />
                                                                                                     ) : (
-                                                                                                        <img src={ToBeVerifiedImage} alt="" className={style.imgIcon} />
+                                                                                                        <img src={NotVerifiedImage} alt="" className={style.imgIcon} />
                                                                                                     )}
                                                                                                     <div className={`${style.uploadText} ${style.verticalAlignCenter}`}>
                                                                                                         Upload any supporting documents for evidence of qualification and competence
@@ -981,18 +994,16 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, applicationId, getPreAppl
                                 </div>
                             </div>
 
+                            <div className={`${style.marginTop} `}></div>
 
-                            <div className={`${style.applicationCardStyle} ${style.marginTop40}`} >
+                            {/* <div className={`${style.applicationCardStyle} ${style.marginTop40}`} >
                                 <div className={style.padding}>
                                     <div className={style.cardDescription}>{'For specialties recognized by the Royal College of Physicians and Surgeons of Canada please attach a copy of a Royal College Certificate or a College Certificate of Registration permitting the practice of that sub-specialty.'}</div>
                                     <div className={style.marginTop10}>
                                         <div className={`${style.uploadButton}`}>
                                             <div className={style.uploadGrid}>
-                                                {/* {privileges?.file !== undefined ? (
-                                                    <img src={VerifiedImage} alt="" className={`${style.imgIcon} ${style.cursorPointer}`} onClick={window.open(privileges?.file?.fileURL, '_blank')} />
-                                                ) : ( */}
+                                                
                                                 <img src={ToBeVerifiedImage} alt="" className={style.imgIcon} />
-                                                {/* )} */}
                                                 <div className={`${style.uploadText} ${style.verticalAlignCenter}`}>
                                                     Upload any supporting documents for evidence of qualification and competence
                                                 </div>
@@ -1005,7 +1016,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, applicationId, getPreAppl
                                     </div>
                                 </div>
 
-                            </div>
+                            </div> */}
                         </>
                     )}
 
@@ -1017,7 +1028,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, applicationId, getPreAppl
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                         <div className={`${style.saveInProgress} ${style.marginTop10} `} onClick={() => handleContinue(true)} > SKIP FOR NOW </div>
                         <div className={style.twoColForButton}>
-                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
+                            <div className={`${style.continue} ${style.marginTop10}`} onClick={handleBackClick}>BACK</div>
                             <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue(true)}>CONTINUE</div>
                         </div>
                     </div>

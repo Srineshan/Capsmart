@@ -416,6 +416,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
             timeNumber={1}
             timeText={"Min"}
             progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`}
+            applicationId={applicationId}
           />
           <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
             {/* <div className={style.titleText}>{formSchema?.description}</div>

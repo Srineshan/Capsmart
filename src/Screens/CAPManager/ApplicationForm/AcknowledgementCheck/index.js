@@ -124,16 +124,16 @@ const AcknowledgementCheck = ({ basicForm, setBasicForm, applicationId }) => {
 
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
                 <div>
-                    <div className={style.marginTop}>
+                    {/* <div className={style.marginTop}>
                         <WelcomeCard title={'Your Application Is Complete, Submit It And Await Your Response!'} description={'There are a number of acknowledgement forms to be signed off. There is a application processing fee to be paid off magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus.'} >
                         </WelcomeCard>
-                    </div>
+                    </div> */}
 
                     <div className={`${style.applicationCardStyle}  ${style.marginTop10}`}>
 
                         <div className={`${style.displayInRow}${style.marginTop20}`}>
                             <div className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}>
-                                <span className={`${style.tableHeaderHeadingTextStyle}`}>Acknowledgements, Consents & Disclosures</span>
+                                <span className={`${style.tableHeaderHeadingTextStyle}`}>Acknowledgements & Consents</span>
                                 <div className={`${basicForm?.forms?.filter(data => data?.formCategory !== 'Form' && data?.formCategory !== 'Disclosure')?.every(item => item.acknowledged === true) ? style.greenDotStyle : style.yellowDotStyle}`}></div>
                             </div>
                         </div>
@@ -156,10 +156,10 @@ const AcknowledgementCheck = ({ basicForm, setBasicForm, applicationId }) => {
                                     </div>
                                     <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
                                         <div className={`${style.tableDataFontStyle1}`}>{data?.title}</div>
-                                        <img src={Pencil} alt="" className={`${style.pencilImgStyle} ${style.justifyCenter} ${style.cursorPointer}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/applicationForm/${applicationId}/${data?.formCategory}/${btoa(data?.schemaCategory)}`) }} />
                                     </div>
                                     <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
                                         <div className={`${basicForm?.forms?.filter(data => data?.formCategory !== 'Form' && data?.formCategory !== 'Disclosure')[index]?.acknowledged ? style.greenDotStyle : style.yellowDotStyle} `}></div>
+                                        <img src={Pencil} alt="" className={`${style.pencilImgStyle} ${style.justifyCenter} ${style.cursorPointer} ${style.marginLeft20}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/applicationForm/${applicationId}/${data?.formCategory}/${btoa(data?.schemaCategory)}`) }} />
                                     </div>
                                 </div>
                             ))
@@ -174,7 +174,7 @@ const AcknowledgementCheck = ({ basicForm, setBasicForm, applicationId }) => {
                         <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                     </div>
                     <div className={style.stickyContainer}>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`}>SAVE IN PROGRESS</div>
+                        {/* <div className={`${style.saveInProgress} ${style.marginTop}`}>SAVE IN PROGRESS</div> */}
                         <Tooltip title={isDisabled ? 'Payment is required to submit the application' : ''} arrow isDisabled={!isDisabled}>
                             <div className={`${isDisabled ? style.disabled : ''} ${style.continue} ${style.marginTop10}`} onClick={isDisabled ? () => { } : () => handleSubmitApplication()}>SUBMIT APPLICATION</div>
                         </Tooltip>

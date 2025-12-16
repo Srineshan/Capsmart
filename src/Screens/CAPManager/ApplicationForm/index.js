@@ -14,7 +14,7 @@ import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
 import style from './index.module.scss'
 import BasicInformation from './BasicInformation';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import UploadYourDoc from './UploadYourDoc';
 import ContactAddress from './ContactAddress';
 import Qualification from './Qualification';
@@ -55,6 +55,7 @@ import PaymentOrder from './PaymentOrder';
 const ApplicationForm = () => {
     let cookie = new Cookie();
     let userDetails = cookie.get('user');
+    const navigate = useNavigate()
     const user = jwt(userDetails);
     const { applicationId, section, step } = useParams();
     const { logout } = useDescope();
@@ -80,6 +81,10 @@ const ApplicationForm = () => {
     useEffect(() => {
         setUserDetails();
     }, [user?.id])
+
+    useEffect(() => {
+        sessionStorage.setItem('applicationId', applicationId)
+    }, [applicationId])
 
     // const Logout = async () => {
     //     logout()
@@ -117,6 +122,15 @@ const ApplicationForm = () => {
             `application-management-service/application/${applicationId}`
         );
         setBasicForm(basicForm)
+    }
+
+    const handleLogout = () => {
+        var cookies = new Cookie();
+        cookies.remove("user", { path: "/" });
+        cookies.remove("entityId", { path: "/" });
+        cookies.remove("authorization", { path: "/" });
+        logout()
+        navigate('/')
     }
 
     const StepDisplay = () => {
@@ -168,11 +182,11 @@ const ApplicationForm = () => {
             case 'ConflictOfInterest':
                 return <ConflictOfInterest acknowledgementForm={acknowledgementForms[0]} dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} basicForm={basicForm} getPreApplication={getPreApplication} applicationId={applicationId} />;
             case 'OffenceDeclaration':
-                return <OffenceDeclaration acknowledgementForm={acknowledgementForms[0]} dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} basicForm={basicForm} getPreApplication={getPreApplication} applicationId={applicationId} />;
+                return <OffenceDeclaration acknowledgementForm={acknowledgementForms[0]} dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} basicForm={basicForm} getPreApplication={getPreApplication} applicationId={applicationId} setBasicForm={setBasicForm} />;
             case 'PACS_Request':
                 return <PACSRequest acknowledgementForm={acknowledgementForms[0]} dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} basicForm={basicForm} getPreApplication={getPreApplication} applicationId={applicationId} />;
             case 'PharmacySignature':
-                return <PharmacySignature acknowledgementForm={acknowledgementForms[0]} dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} basicForm={basicForm} getPreApplication={getPreApplication} applicationId={applicationId} />;
+                return <PharmacySignature acknowledgementForm={acknowledgementForms[0]} dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} basicForm={basicForm} setBasicForm={setBasicForm} getPreApplication={getPreApplication} applicationId={applicationId} />;
             case 'acknowledgementStep11':
                 return <ApplicationAcknowledgementStep11 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
             case 'DisabilitiesAct':
@@ -204,7 +218,7 @@ const ApplicationForm = () => {
 
     return (
         <div className={style.screenBackground}>
-            <ApplicationHeader title={`New Medical Professional Staff Application For ${basicForm?.basicDetails?.applicant?.name?.firstName !== undefined ? basicForm?.basicDetails?.applicant?.name?.firstName : ''} ${basicForm?.basicDetails?.applicant?.name?.lastName !== undefined ? basicForm?.basicDetails?.applicant?.name?.lastName : ''}, ${(basicForm?.basicDetails?.applicant?.applicantType !== null) ? basicForm?.basicDetails?.applicant?.applicantType : ''}`} close={true} closeClick={() => logout()} />
+            <ApplicationHeader title={`New Medical Professional Staff Application For ${basicForm?.basicDetails?.applicant?.name?.firstName !== undefined ? basicForm?.basicDetails?.applicant?.name?.firstName : ''} ${basicForm?.basicDetails?.applicant?.name?.lastName !== undefined ? basicForm?.basicDetails?.applicant?.name?.lastName : ''}, ${(basicForm?.basicDetails?.applicant?.applicantType !== null) ? basicForm?.basicDetails?.applicant?.applicantType : ''}`} close={true} closeClick={handleLogout} />
             <div className={style.screenPadding}>
                 {/* <div className={style.applicationScreenGrid}> */}
                 {StepDisplay()}

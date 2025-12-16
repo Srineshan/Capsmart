@@ -2970,7 +2970,7 @@ const NewActiveApplication = ({
             <div>
               <div>
                 <div className={style.cardTitle}>
-                  {allFormSchemas?.[index]?.formSchema?.schema?.properties?.isModulesForReAppointmentCompleted?.label}
+                  {allFormSchemas?.[index]?.formSchema?.schema?.properties?.isModulesForReAppointmentCompleted?.properties?.response?.label}
                 </div>
                 {form?.forms?.[formIndex]?.data?.lms?.yesOrNo !== undefined && (
                   <div className={`${style.markedAsText} ${style.marginTop20}`}><strong>Marked as <span className={form?.forms?.[formIndex]?.data?.lms?.yesOrNo === 'Yes' ? style.yesText : style.noText}>{form?.forms?.[formIndex]?.data?.lms?.yesOrNo}</span></strong> on {format(new Date(form?.forms?.[formIndex]?.data?.lms?.updatedDate), dateFormat)}</div>
@@ -2978,7 +2978,7 @@ const NewActiveApplication = ({
               </div>
               <div className={`${style.marginTop20}`}>
                 <div className={style.cardTitle}>
-                  {allFormSchemas?.[index]?.formSchema?.schema?.properties?.doYouPrescribeSuboxone?.label}
+                  {allFormSchemas?.[index]?.formSchema?.schema?.properties?.doYouPrescribeSuboxone?.properties?.response?.label}
                 </div>
                 {form?.forms?.[formIndex]?.data?.suboxone?.yesOrNo !== undefined && (
                   <div className={`${style.markedAsText} ${style.marginTop20}`}><strong>Marked as <span className={form?.forms?.[formIndex]?.data?.suboxone?.yesOrNo === 'Yes' ? style.yesText : style.noText}>{form?.forms?.[formIndex]?.data?.suboxone?.yesOrNo}</span></strong> on {format(new Date(form?.forms?.[formIndex]?.data?.suboxone?.updatedDate), dateFormat)}</div>
@@ -2987,7 +2987,7 @@ const NewActiveApplication = ({
               {(form?.basicDetails?.departmentSpecialty?.department === 'Women & Children' && form?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics') && (
                 <div className={`${style.marginTop20}`}>
                   <div className={style.cardTitle}>
-                    {allFormSchemas?.[index]?.formSchema?.schema?.properties?.wishToBeMRP?.label}
+                    {allFormSchemas?.[index]?.formSchema?.schema?.properties?.wishToBeMRP?.properties?.response?.label}
                   </div>
                   {form?.forms?.[formIndex]?.data?.mrp?.yesOrNo !== undefined && (
                     <div className={`${style.markedAsText} ${style.marginTop20}`}><strong>Marked as <span className={form?.forms?.[formIndex]?.data?.mrp?.yesOrNo === 'Yes' ? style.yesText : style.noText}>{form?.forms?.[formIndex]?.data?.mrp?.yesOrNo}</span></strong> on {format(new Date(form?.forms?.[formIndex]?.data?.mrp?.updatedDate), dateFormat)}</div>
@@ -3077,14 +3077,56 @@ const NewActiveApplication = ({
             {allFormSchemas?.[index]?.formSchema?.schema !== undefined &&
               allFormSchemas?.[index]?.formSchema?.schema?.properties !== null &&
               allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined &&
-              "physicianPaymentOrder" in allFormSchemas?.[index]?.formSchema?.schema?.properties && (
+              "personalInformation" in allFormSchemas?.[index]?.formSchema?.schema?.properties && (
                 <ApplicationFieldCard
-                  object={allFormSchemas?.[index]?.formSchema?.schema?.properties?.physicianPaymentOrder}
+                  object={allFormSchemas?.[index]?.formSchema?.schema?.properties?.personalInformation}
                   basicForm={form}
                   setBasicForm={setForm}
                   stepPath={`forms[${formIndex}].data`}
                   gridStyle={style.PaymentGrid}
-                  baseKey={"physicianPaymentOrder"}
+                  baseKey={"personalInformation"}
+                  isPOD={true}
+                />
+              )}
+            {allFormSchemas?.[index]?.formSchema?.schema !== undefined &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== null &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined &&
+              "corporateInformation" in allFormSchemas?.[index]?.formSchema?.schema?.properties && (
+                <ApplicationFieldCard
+                  object={allFormSchemas?.[index]?.formSchema?.schema?.properties?.corporateInformation}
+                  basicForm={form}
+                  setBasicForm={setForm}
+                  stepPath={`forms[${formIndex}].data`}
+                  gridStyle={style.PaymentGrid2}
+                  baseKey={"corporateInformation"}
+                  isPOD={true}
+                />
+              )}
+            {allFormSchemas?.[index]?.formSchema?.schema !== undefined &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== null &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined &&
+              "contactInformation" in allFormSchemas?.[index]?.formSchema?.schema?.properties && (
+                <ApplicationFieldCard
+                  object={allFormSchemas?.[index]?.formSchema?.schema?.properties?.contactInformation}
+                  basicForm={form}
+                  setBasicForm={setForm}
+                  stepPath={`forms[${formIndex}].data`}
+                  gridStyle={style.PaymentGrid3}
+                  baseKey={"contactInformation"}
+                  isPOD={true}
+                />
+              )}
+            {allFormSchemas?.[index]?.formSchema?.schema !== undefined &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== null &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined &&
+              "methodOfPayment" in allFormSchemas?.[index]?.formSchema?.schema?.properties && (
+                <ApplicationFieldCard
+                  object={allFormSchemas?.[index]?.formSchema?.schema?.properties?.methodOfPayment}
+                  basicForm={form}
+                  setBasicForm={setForm}
+                  stepPath={`forms[${formIndex}].data`}
+                  gridStyle={style.PaymentGrid4}
+                  baseKey={"methodOfPayment"}
                   isPOD={true}
                 />
               )}
@@ -5231,6 +5273,7 @@ const NewActiveApplication = ({
             }`}
           close={true}
           closeClick={onClose}
+          isNotLogout={true}
         />
 
         {/* <div className={style.marginBottom10}></div> */}

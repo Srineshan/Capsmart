@@ -807,6 +807,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
         closeClick={handleCloseClick}
         handleNavigate={handleNavigate}
         isShowPrint={true}
+        isNotLogout={true}
       />
       <div className={` ${style.screenPadding}`}>
         <div className={style.bigCardStyle1}>

@@ -21,6 +21,7 @@ import ApplicationFieldCard from '../../../../Components/ApplicationFieldCard';
 import Cookie from "universal-cookie";
 import { differenceInDays, format } from 'date-fns';
 import DoItLaterDialog from '../../../../Components/DoItLaterDialog';
+import { Tooltip } from '@material-ui/core';
 // import { Logout } from '../../../utils/auth';
 
 const ApplicationFormRequirement = () => {
@@ -120,6 +121,15 @@ const ApplicationFormRequirement = () => {
     //     return remainingDays > 0 ? remainingDays : 0;
     // }
 
+    const handleLogout = () => {
+        var cookies = new Cookie();
+        cookies.remove("user", { path: "/" });
+        cookies.remove("entityId", { path: "/" });
+        cookies.remove("authorization", { path: "/" });
+        logout()
+        navigate('/')
+    }
+
     console.log(basicForm, '75')
 
     return (
@@ -128,7 +138,7 @@ const ApplicationFormRequirement = () => {
         ) : (
             <>
                 <div className={style.screenBackground}>
-                    <ApplicationHeader title={`New Medical Professional Staff Application For ${basicForm?.basicDetails?.applicant?.name?.firstName !== undefined ? basicForm?.basicDetails?.applicant?.name?.firstName : ''} ${basicForm?.basicDetails?.applicant?.name?.lastName !== undefined ? basicForm?.basicDetails?.applicant?.name?.lastName : ''}, ${(basicForm?.basicDetails?.applicant?.applicantType !== null) ? basicForm?.basicDetails?.applicant?.applicantType : ''}`} close={true} closeClick={logout} />
+                    <ApplicationHeader title={`New Medical Professional Staff Application For ${basicForm?.basicDetails?.applicant?.name?.firstName !== undefined ? basicForm?.basicDetails?.applicant?.name?.firstName : ''} ${basicForm?.basicDetails?.applicant?.name?.lastName !== undefined ? basicForm?.basicDetails?.applicant?.name?.lastName : ''}, ${(basicForm?.basicDetails?.applicant?.applicantType !== null) ? basicForm?.basicDetails?.applicant?.applicantType : ''}`} close={true} closeClick={handleLogout} />
                     <div className={style.screenPadding}>
                         <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
                             <div>
@@ -151,8 +161,14 @@ const ApplicationFormRequirement = () => {
                                         <div>
                                             <div className={`${style.requiredDocumentCard} ${style.tableGrid} ${index % 2 === 0 ? style.requiredDocumentCardAlternativeColor : ''}  ${style.marginTop5}`}>
                                                 <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
-                                                    <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.document?.name}</div>
-                                                    <InfoOutlinedIcon sx={{ fontSize: 14, marginLeft: '10px' }} className={style.info} />
+                                                    <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.document?.shortName}</div>
+                                                    {data?.instruction ? (
+                                                        <Tooltip title={data?.instruction} arrow>
+                                                            <InfoOutlinedIcon sx={{ fontSize: 14, marginLeft: '10px' }} className={style.info} />
+                                                        </Tooltip>
+                                                    ) : (
+                                                        <div></div>
+                                                    )}
                                                 </div>
                                                 <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.required ? 'Required' : 'Recommended'}</div>
                                                 <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.instruction}</div>
@@ -160,20 +176,20 @@ const ApplicationFormRequirement = () => {
                                         </div>
                                     ))}
                                 </div>
-                                <div className={style.marginTop}>
+                                {/* <div className={style.marginTop}>
                                     <WelcomeCard title={''} description={''} >
                                         {applicantTypeForm !== undefined && 'immunizationHistory' in applicantTypeForm?.properties && (
                                             <ApplicationFieldCard object={applicantTypeForm?.properties?.immunizationHistory} gridStyle={style.twoCol} baseKey={'immunizationHistory'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
                                         )}
                                     </WelcomeCard>
-                                </div>
-                                <div className={style.marginTop}>
+                                </div> */}
+                                {/* <div className={style.marginTop}>
                                     <WelcomeCard title={''} description={''} >
                                         {applicantTypeForm !== undefined && 'fitTest' in applicantTypeForm?.properties && (
                                             <ApplicationFieldCard object={applicantTypeForm?.properties?.fitTest} gridStyle={style.twoCol} baseKey={'fitTest'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
                                         )}
                                     </WelcomeCard>
-                                </div>
+                                </div> */}
                             </div>
                             <div>
                                 {/* <ApplicationUserCard user={'Guest User'} applyingFor={'Contact'} /> */}

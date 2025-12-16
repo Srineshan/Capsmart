@@ -59,32 +59,32 @@ const CommonSelectField = ({ value, onChange, className, firstOptionLabel, first
                             color={(warning && warningCheck) || (touched && warningCheck) ? 'error' : ''}
                             focused={(warning && warningCheck) || (touched && warningCheck) ? true : false}
                             onBlur={handleBlur}
-                        // helperText={warningCheck ? (<div className={`${style.helperText} ${required ? style.errorColor : style.warningColor}`}>Could not find data</div>) : ''}
+                            // helperText={warningCheck ? (<div className={`${style.helperText} ${required ? style.errorColor : style.warningColor}`}>Could not find data</div>) : ''}
 
-                        // disabled={(contractStatus === "ACTIVE" && !window.location.pathname.includes('moveToDraft')) ? true : disabledSelect || false}
+                            disabled={disabledSelect ? disabledSelect : false}
                         >
                             {firstOptionLabel !== '' && firstOptionLabel && (
-                                <MenuItem  className={style.fontStyle} value={firstOptionValue}>{firstOptionLabel}</MenuItem>
+                                <MenuItem className={style.fontStyle} value={firstOptionValue}>{firstOptionLabel}</MenuItem>
                             )}
                             {valueList?.map((data, index) => {
-                            const isSelected = multiple && value?.includes(data);
-                            const isDisabled = multiple && maxSelect && value?.length >= maxSelect && !isSelected;
-                            const bgColor = alternateColors[index % 2];
-                            return (
-                            <MenuItem
-                                key={index}
-                                value={data}
-                                disabled={disabledList[index] || isDisabled}
-                                style={{
-                                backgroundColor: menuColor ? menuColor[index] : "",
-                                opacity: disabledList[index] || isDisabled ? 0.4 : 1
-                                }}
-                                className={style.fontStyle}
-                            >
-                                {labelList[index]}
-                            </MenuItem>
-                            );
-                          })}
+                                const isSelected = multiple && value?.includes(data);
+                                const isDisabled = multiple && maxSelect && value?.length >= maxSelect && !isSelected;
+                                const bgColor = alternateColors[index % 2];
+                                return (
+                                    <MenuItem
+                                        key={index}
+                                        value={data}
+                                        disabled={disabledList[index] || isDisabled}
+                                        style={{
+                                            backgroundColor: menuColor ? menuColor[index] : "",
+                                            opacity: disabledList[index] || isDisabled ? 0.4 : 1
+                                        }}
+                                        className={style.fontStyle}
+                                    >
+                                        {labelList[index]}
+                                    </MenuItem>
+                                );
+                            })}
                         </Select>
                         {/* <div>
                             {warningCheck ? (<div className={`${style.helperText} ${required ? style.errorColor : style.warningColor}`}>Could not find data</div>) : ''}

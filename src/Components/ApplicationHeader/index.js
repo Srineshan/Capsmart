@@ -8,14 +8,16 @@ import { TenantID, GET } from '../../Screens/dataSaver';
 import Cookies from 'universal-cookie';
 import PrintOutlinedIcon from "@mui/icons-material/PrintOutlined";
 import { Tooltip } from '@mui/material';
+import LogoutConfirmation from '../LogoutConfirmation';
 
-const ApplicationHeader = ({ title, close, closeClick, handleNavigate, isShowPrint }) => {
+const ApplicationHeader = ({ title, close, closeClick, handleNavigate, isShowPrint, isNotLogout }) => {
     // const { logout } = useDescope();
     // const handleSignOut = () => {
     //     logout()
     // }
     let cookie = new Cookies();
     const [logo, setLogo] = useState(null);
+    const [showLogoutConfirmation, setShowLogoutConfirmation] = useState(false);
     useEffect(() => {
         const getLogo = async () => {
             try {
@@ -32,6 +34,10 @@ const ApplicationHeader = ({ title, close, closeClick, handleNavigate, isShowPri
             getLogo();
         }
     }, [cookie.get('entityId')]);
+
+    const getIsOpen = (value) => {
+        setShowLogoutConfirmation(value);
+    }
 
     return (
         <div className={`${style.headerCard}`}>
@@ -68,13 +74,16 @@ const ApplicationHeader = ({ title, close, closeClick, handleNavigate, isShowPri
                             onClick={closeClick}
                         /> */}
                             <Tooltip title={"Click to Close"} arrow>
-                                <CloseIcon sx={{ fontSize: 40, color: '#06617A', cursor: 'pointer' }} onClick={closeClick} />
+                                <CloseIcon sx={{ fontSize: 40, color: '#06617A', cursor: 'pointer' }} onClick={isNotLogout ? closeClick : () => setShowLogoutConfirmation(true)} />
                             </Tooltip>
                         </div>
 
                     )}
                 </div>
             </div>
+            {showLogoutConfirmation && (
+                <LogoutConfirmation getIsOpen={getIsOpen} closeClick={closeClick} />
+            )}
         </div>
     )
 }
