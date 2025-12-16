@@ -114,6 +114,7 @@ const ApplicationFieldCard = ({
   const hometimeoutRef = useRef(null);
   const mailingTimeoutRef = useRef(null);
   const businessTimeoutRef = useRef(null);
+  const addMoreRef = useRef(null);
 
   console.log(user);
   useEffect(() => {
@@ -1324,7 +1325,7 @@ const ApplicationFieldCard = ({
       console.log("skip clicked", baseKey);
       // setIsAddMore(false);
       setShowValidationDialog(false);
-      handleAddMore("close", "skipped");
+      handleAddMore(addMoreRef.current, "skipped");
     }
   };
 
@@ -3334,7 +3335,7 @@ const ApplicationFieldCard = ({
       delete basicForm[baseKey];
       delete basicForm.undefined;
       setBasicForm(temp);
-      if ((type === "close" || skip === "skipped") && !isPOD) {
+      if ((type === "close") && !isPOD) {
         setIsAddMore(false);
       }
       getIsSubmitClicked(true, temp, skip);
@@ -3563,6 +3564,7 @@ const ApplicationFieldCard = ({
                           <div
                             className={`${style.addMoreButton}`}
                             onClick={() => {
+                              addMoreRef.current = "close"
                               handleAddMore("close");
                             }}
                           >
@@ -3575,6 +3577,7 @@ const ApplicationFieldCard = ({
                           <div
                             className={`${style.addMoreButtonOutlined}`}
                             onClick={() => {
+                              addMoreRef.current = ""
                               handleAddMore("");
                             }}
                           >

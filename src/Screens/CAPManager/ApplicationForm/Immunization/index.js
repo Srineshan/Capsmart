@@ -701,7 +701,7 @@ const Immunization = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
                                     <TableTwo
                                         tableHeaderValues={tableHeader}
                                         tableDataValues={getTableValues(applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "HEPATITIS_B")?.[0]?.testDetails, "HEPATITIS_B")}
-                                        tableData={applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "HEPATITIS_B")}
+                                        tableData={applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "HEPATITIS_B")?.[0]?.testDetails}
                                         gridStyle={style.testGrid}
                                         tableSortValues={[]}
                                         heading={"There are no records to display"}
