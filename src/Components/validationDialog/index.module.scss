@@ -133,3 +133,8 @@
     display: grid;
     grid-template-columns: 20px 1fr;
 }
+
+.alignRight {
+    display: flex;
+    flex-direction: row-reverse;
+}

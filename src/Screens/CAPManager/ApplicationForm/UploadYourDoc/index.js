@@ -813,7 +813,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                 <div className={`${style.eSignatureOnFileCard} ${style.marginTop10}`}>
                   <div className={style.eSignatureOnFileTitle}>Establish your eSignature</div>
                   <div className={style.eSignGrid}>
-                    <ESignature userName={applicantName} encData={encryptedText} showData showDatais />
+                    <ESignature userName={applicantName} encData={encryptedText} showData showDatais isUpdated={isShowESignDialog} />
                     <div className={style.verticalAlignCenter}>
                       <div className={style.displayInRow}>
                         <div className={style.dateTitle}>Initial:</div>

@@ -135,8 +135,8 @@ const ContactAddress = ({ basicForm, setBasicForm, applicationId, getPreApplicat
     let missingKeys = [];
     let keyValuePair = [];
     metadata?.map((data, index) => {
-      if (labels[index]?.mandatory) {
-        keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: labels[index]?.label })
+      if (uniqueLabels[index]?.mandatory) {
+        keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: uniqueLabels[index]?.label })
       }
     })
     const validateBusinessPhone = (phone) => {
@@ -148,7 +148,7 @@ const ContactAddress = ({ basicForm, setBasicForm, applicationId, getPreApplicat
         /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}([\/\w .-]*)*\/?$/; // Simple URL validation
       return websiteRegex.test(website);
     };
-    console.log(keyValuePair, 'keyValuePair', metadata, labels)
+    console.log(keyValuePair, 'keyValuePair', metadata, labels, uniqueLabels)
     keyValuePair?.map(data => {
       if (data?.value === "" || data?.value === null || data?.value === undefined || data?.value === 0
         // || (data?.key === `forms[${formIndex}].data.contactAddress3.business.businessPhone` &&
@@ -248,12 +248,12 @@ const ContactAddress = ({ basicForm, setBasicForm, applicationId, getPreApplicat
 
 
   const handleSubmitApplicationReq = async (skip, save) => {
-    if (isEdited || save) {
+    if (isEdited || save || skip) {
       let temp = {
         schemaId: basicForm?.forms?.[formIndex]?.schemaId,
         data: basicForm?.forms?.[formIndex]?.data,
         unFilledFields: warningFields?.map(data => data?.label),
-        acknowledged: save ? basicForm?.forms?.[formIndex]?.acknowledged : skip === "skipped" ? false : true
+        acknowledged: save ? basicForm?.forms?.[formIndex]?.acknowledged : true
       }
       await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
         .then(response => {
@@ -276,8 +276,8 @@ const ContactAddress = ({ basicForm, setBasicForm, applicationId, getPreApplicat
           ErrorToaster("Unexpected Error Updating Application");
         });
       let addressData = applicantProfile;
-      addressData.contactAddress2 = basicForm?.forms?.[formIndex]?.data.contactAddress2 !== undefined ? basicForm?.forms?.[formIndex]?.data.contactAddress2 : null
-      addressData.contactAddress3 = basicForm?.forms?.[formIndex]?.data.contactAddress3 !== undefined ? basicForm?.forms?.[formIndex]?.data.contactAddress3 : null
+      addressData.contactAddress2 = basicForm?.forms?.[formIndex]?.data?.contactAddress2 !== undefined ? basicForm?.forms?.[formIndex]?.data?.contactAddress2 : null
+      addressData.contactAddress3 = basicForm?.forms?.[formIndex]?.data?.contactAddress3 !== undefined ? basicForm?.forms?.[formIndex]?.data?.contactAddress3 : null
       await PUT(`application-management-service/application/${applicationId}/profile`, addressData)
         .then(response => {
           console.log(response)

@@ -902,6 +902,9 @@ const StaffApplicationList = ({
   const [isApproved, setIsApproved] = useState([]);
   const [showFilter, setShowFilter] = useState(false);
   const [showAssignee, setShowAssignee] = useState(true);
+  const [ccMemberListForFilter, setCCMemberListForFilter] = useState([]);
+  const [ccMemberIdListForFilter, setCCMemberIdListForFilter] = useState([]);
+  const [selectedCCMemberFilter, setSelectedCCMemberFilter] = useState('');
   // const [applicationCreationType, setApplicationCreationType] = useState('NEW');
   // const [applicationType, setApplicationType] = useState(() => 
   //   sessionStorage.getItem('applicationCreationType') || 'NEW'
@@ -914,6 +917,36 @@ const StaffApplicationList = ({
   //   'level-1' :0,
   //   'level-2' :0,
   // });
+
+  useEffect(() => {
+
+    let tempCCNames = [];
+    let tempCCIds = [];
+    let temp = tableData?.map(data => data?.completedWorkflows?.find(
+      (workflow) => workflow?.role === "Credentialing Committee"
+    ))
+
+    temp?.map(data => {
+      if (Array.isArray(data?.approverDetails)) {
+        const names = data.approverDetails.map(detail => {
+          const name = detail?.approverDetail?.name;
+          const firstName = name?.firstName || "";
+          const lastName = name?.lastName || "";
+          if (!tempCCNames?.includes(`${firstName} ${lastName}`.trim()))
+            tempCCNames.push(`${firstName} ${lastName}`.trim())
+          if (!tempCCIds?.includes(detail?.approverDetail?.id))
+            tempCCIds.push(detail?.approverDetail?.id)
+          return `${firstName} ${lastName}`.trim();
+        });
+      }
+    })
+    setCCMemberListForFilter(tempCCNames)
+    setCCMemberIdListForFilter(tempCCIds)
+
+    console.log(temp, 'tableData', tempCCNames, tempCCIds)
+  }, [tableData])
+
+  console.log('tableData', ccMemberListForFilter, ccMemberIdListForFilter, selectedCCMemberFilter)
 
   const isValidSingleCheckedId = (id) => {
     const getFilteredIds = (role) =>
@@ -1664,7 +1697,7 @@ const StaffApplicationList = ({
   useEffect(() => {
     getWorkflowUserData(selectedTab);
     setCheckedIds([]);
-  }, [selectedTab, sortField, sortValue, page, totalCount, showAssignee, selectedDepartment, selectedServiceArea, applicationType]);
+  }, [selectedTab, sortField, sortValue, page, totalCount, showAssignee, selectedDepartment, selectedServiceArea, applicationType, selectedCCMemberFilter]);
 
   useEffect(() => {
     getWorkflowUserData();
@@ -1876,7 +1909,7 @@ const StaffApplicationList = ({
             (workModeType === "Department Head" ||
               workModeType === "Chief Of Staff" ||
               workModeType === "Credentialing Committee");
-          const assignedUserIdsParam = shouldIncludeAssignee ? `&assignedUserIds=${users?.id}` : "";
+          const assignedUserIdsParam = shouldIncludeAssignee ? `&assignedUserIds=${users?.id}` : selectedCCMemberFilter ? `&assignedUserIds=${selectedCCMemberFilter}` : "";
           const departmentParam = selectedDepartment || selectedServiceArea ? `&departmentSpecialties=${selectedDepartment}%23${selectedServiceArea}` : "";
           const positionTypeParam = applicationType === "LOCUM" ? `&positionType=${applicationType}` : applicationType === "NEW" ? "" : "&positionType=PERMANENT";
           const selectedTabFlow = selectedTab === "ReviewedApplications" ? "level-2" : selectedTab
@@ -8187,6 +8220,27 @@ const StaffApplicationList = ({
                       <div className={`${style.marginTop10} ${style.flexCenter}`}>
                         <CommonSwitch label={showAssignee ? 'YES' : 'NO'} checked={showAssignee} onChange={(e) => setShowAssignee(e.target.checked)} labelName={'See Only Assigned to Me'} />
                       </div>
+                    </div>
+                  )}
+                  {(workModeType === "Staff Manager" && selectedTab === "level-2" && applicationType === "LOCUM") && (
+                    <div>
+                      <CommonSelectField
+                        // value={
+                        //   selectedServiceArea 
+                        //     ? `${selectedDepartment}|${selectedServiceArea}` 
+                        //     : selectedDepartment
+                        // }  
+                        value={selectedCCMemberFilter}
+                        onChange={(e) => setSelectedCCMemberFilter(e.target.value)}
+                        className={style.fullWidth}
+                        firstOptionLabel={'All'}
+                        firstOptionValue={''}
+                        valueList={ccMemberIdListForFilter?.map(option => option)}
+                        labelList={ccMemberListForFilter?.map(option => option)}
+                        disabledList={ccMemberIdListForFilter?.map(() => false)}
+                        label={'Assigned CC Member'}
+                        required={false}
+                      />
                     </div>
                   )}
                   <div>

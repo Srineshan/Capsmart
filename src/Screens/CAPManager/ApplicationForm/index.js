@@ -186,7 +186,7 @@ const ApplicationForm = () => {
             case 'PACS_Request':
                 return <PACSRequest acknowledgementForm={acknowledgementForms[0]} dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} basicForm={basicForm} getPreApplication={getPreApplication} applicationId={applicationId} />;
             case 'PharmacySignature':
-                return <PharmacySignature acknowledgementForm={acknowledgementForms[0]} dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} basicForm={basicForm} getPreApplication={getPreApplication} applicationId={applicationId} />;
+                return <PharmacySignature acknowledgementForm={acknowledgementForms[0]} dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} basicForm={basicForm} setBasicForm={setBasicForm} getPreApplication={getPreApplication} applicationId={applicationId} />;
             case 'acknowledgementStep11':
                 return <ApplicationAcknowledgementStep11 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
             case 'DisabilitiesAct':

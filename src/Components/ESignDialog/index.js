@@ -11,7 +11,7 @@ import { getValueByPath } from '../../utils/formatting';
 import { useParams } from 'react-router-dom';
 import { Tooltip } from '@mui/material';
 
-const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, basicForm, setBasicForm, getPreApplication, hideCross }) => {
+const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, basicForm, setBasicForm, getPreApplication, hideCross, isHideTypeStyle }) => {
     const [isContinue, setIsContinue] = useState(false);
     const [selectedESignFormat, setSelectedESignFormat] = useState('DRAW');
     const [isShowDrawCanvas, setIsShowDrawCanvas] = useState(false);
@@ -205,10 +205,12 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
                             <div className={`${style.drawOrTypeTextStyle}`} onClick={() => { setSelectedESignFormat('DRAW') }}> DRAW</div>
                             <div className={selectedESignFormat === 'DRAW' ? style.drawOrTypeUnderline : ''}></div>
                         </div>
-                        <div>
-                            <div className={`${style.drawOrTypeTextStyle} ${style.marginLeft}`} onClick={() => { setSelectedESignFormat('TYPE') }}> TYPE</div>
-                            <div className={`${selectedESignFormat === 'TYPE' ? style.drawOrTypeUnderline : ''} ${style.marginLeft}`}></div>
-                        </div>
+                        {!isHideTypeStyle && (
+                            <div>
+                                <div className={`${style.drawOrTypeTextStyle} ${style.marginLeft}`} onClick={() => { setSelectedESignFormat('TYPE') }}> TYPE</div>
+                                <div className={`${selectedESignFormat === 'TYPE' ? style.drawOrTypeUnderline : ''} ${style.marginLeft}`}></div>
+                            </div>
+                        )}
                     </div>
                     {selectedESignFormat === 'DRAW' ? (
                         <div className={`${style.eSignBox} ${style.marginTop} ${style.cursorPointer}`} onClick={!isShowDrawCanvas ? () => setIsShowDrawCanvas(true) : () => { }}>

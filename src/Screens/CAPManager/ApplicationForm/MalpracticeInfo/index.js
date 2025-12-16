@@ -98,7 +98,8 @@ const MalpracticeInfo = ({ basicForm, setBasicForm, applicationId, getPreApplica
         let missingKeys = [];
         let keyValuePair = [];
         metadata?.map((data, index) => {
-            keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: labels[index]?.label })
+            if (labels[index]?.mandatory)
+                keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: labels[index]?.label })
         })
         keyValuePair?.map(data => {
             if (data?.value === "" || data?.value === null || data?.value === undefined || data?.value === 0) {

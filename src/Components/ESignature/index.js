@@ -4,7 +4,7 @@ import { corsUrl, getValueByPath } from "../../utils/formatting";
 import { GET } from "../../Screens/dataSaver";
 import { useParams } from "react-router-dom";
 
-const ESignature = ({ userName, currentDate, encData, showData, showDatais = true, isInitial, removePadding, basicForm, alternateSignature, alternateDrawSignature }) => {
+const ESignature = ({ userName, currentDate, encData, showData, showDatais = true, isInitial, removePadding, basicForm, alternateSignature, alternateDrawSignature, isUpdated }) => {
   const [formIndex, setFormIndex] = useState();
   const [applicationId, setApplicationId] = useState(
     sessionStorage.getItem("applicationId")
@@ -21,7 +21,7 @@ const ESignature = ({ userName, currentDate, encData, showData, showDatais = tru
   useEffect(() => {
     // setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === "UploadYourDoc"))
     getPreApplication();
-  }, [])
+  }, [isUpdated])
 
   const getPreApplication = async () => {
     const { data: basicForm } = await GET(

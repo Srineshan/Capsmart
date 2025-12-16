@@ -206,12 +206,12 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, applicationId, getPreApp
     }
 
     const handleSubmitApplicationReq = async (data) => {
-        if (isEdited) {
+        if (isEdited || data) {
             let temp = {
                 schemaId: basicForm?.forms?.[formIndex]?.schemaId,
                 data: basicForm?.forms?.[formIndex]?.data,
                 unFilledFields: warningFields?.map(data => data?.label),
-                acknowledged: data === "skipped" ? false : true
+                acknowledged: true
             }
             await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
                 .then(response => {

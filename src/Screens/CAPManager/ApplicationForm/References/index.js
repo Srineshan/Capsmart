@@ -122,8 +122,8 @@ const References = ({ basicForm, setBasicForm, applicationId, getPreApplication 
 
   const getIsSubmitClicked = (value, data, skip) => {
     if (value) {
-      setIsAddMore(false);
-      setIsAddMore2(false);
+      // setIsAddMore(false);
+      // setIsAddMore2(false);
       handleSubmitApplicationReq(data, skip)
     }
   }
