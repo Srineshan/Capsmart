@@ -5,7 +5,7 @@ import CrossPink from "../../images/crossPink.png";
 import style from './index.module.scss'
 import { Tooltip } from '@mui/material';
 
-const ValidationDialog = ({ getIsOpen, labelList, getSkipClicked }) => {
+const ValidationDialog = ({ getIsOpen, labelList, getSkipClicked, hideSkip }) => {
   console.log(labelList, 'Metadatarrrr')
   return (
     <Dialog isOpen={getIsOpen} onClose={() => getIsOpen(false)} className={`${style.eSignDialog} ${style.eSignDialogBackground}`} canOutsideClickClose={false} canEscapeKeyClose={false}>
@@ -49,12 +49,17 @@ const ValidationDialog = ({ getIsOpen, labelList, getSkipClicked }) => {
 
             </div>
           ))}
-          <p className={`${style.description} ${style.marginTop}`}>Do you want to skip or continue your data entry?</p>
-          <div className={`${style.displayInRow} ${style.marginTop}`}>
+          {!hideSkip && (
+            <p className={`${style.description} ${style.marginTop}`}>Do you want to skip or continue your data entry?</p>
+          )}
+          <div className={`${!hideSkip ? style.displayInRow : style.alignRight} ${style.marginTop}`}>
             <Tooltip title={"Click to Continue and Proceed"} arrow>
               <div className={`${style.saveInProgress}`} onClick={() => { getIsOpen(false); }}>CONTINUE</div> </Tooltip>
-            <Tooltip title={"Click to Skip and Move Forward"} arrow>
-              <div className={`${style.continue}`} onClick={() => { getIsOpen(false); getSkipClicked(true); }}>SKIP</div></Tooltip>
+            {!hideSkip && (
+              <Tooltip title={"Click to Skip and Move Forward"} arrow>
+                <div className={`${style.continue}`} onClick={() => { getIsOpen(false); getSkipClicked(true); }}>SKIP</div>
+              </Tooltip>
+            )}
           </div>
         </div>
 

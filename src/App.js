@@ -408,7 +408,7 @@ const App = ({ props }) => {
     if ((entityId !== undefined && entityId !== '' && cookie.get("authorization") !== undefined && isAuthenticated && !cookie.get("user")) || (entityId !== undefined && entityId !== '' && cookie.get("authorization") !== undefined && isAuthenticated && errorInfo === 'Invalid token specified' && !cookie.get("user"))) {
       login(entityId);
     }
-    console.log(isAuthenticated, 'isAuthenticated')
+    console.log(isAuthenticated, 'isAuthenticated', (entityId !== undefined && entityId !== '' && cookie.get("authorization") !== undefined && isAuthenticated && !cookie.get("user")), entityId !== undefined, entityId !== '', cookie.get("authorization") !== undefined, cookie.get("user"))
   }, [entityId, cookie.get("authorization"), isAuthenticated, errorInfo, cookie.get("user")])
 
   useEffect(() => {

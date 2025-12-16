@@ -57,6 +57,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
   const [showWorkModeSelectDialog, setShowWorkModeSelectDialog] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
   const [departmentList, setDepartmentList] = useState([]);
+  const [selectedApplicationType, setSelectedApplicationType] = useState('');
   const [selectedDepartment, setSelectedDepartment] = useState('');
   const [selectedServiceArea, setSelectedServiceArea] = useState("");
   const [applicantType, setApplicantType] = useState([]);
@@ -134,7 +135,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
         getMedicalDirectiveSummary()
       }
     }
-  }, [sortField, sortValue, page, totalCount, selectedDepartment, selectedServiceArea, selectedApplicantType, limit, searchTermForTable, currentTab, displayInnerList]);
+  }, [sortField, sortValue, page, totalCount, selectedDepartment, selectedServiceArea, selectedApplicantType, limit, searchTermForTable, currentTab, displayInnerList, selectedApplicationType]);
 
   useEffect(() => {
     getApplicantSummary()
@@ -218,8 +219,9 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
   const getMedicalDirectiveSummaryLevel2 = async (id) => {
     setIsLoadingImage(true);
     const departmentParam = selectedDepartment || selectedServiceArea ? `&siteDepartmentSpecialties=${selectedSite}%23${selectedDepartment}%23${selectedServiceArea}` : "";
+    const applicationTypeParam = selectedApplicationType ? `&positionType=${selectedApplicationType}` : ''
     const { data: medicalDirectiveSummaryLevel2 } = await GET(
-      `medical-directive-service/medicalDirectives/${id}/summary?sortBy=${sortValue}&sortByField=${sortField}&limit=${limit}&searchText=${searchTermForTable}&isPaginationRequired=${limit === 9999 ? false : true}&siteId=${selectedSite}&offset=${page - 1}&isNewAppointment=${applicationType === 'NEW' ? true : false}&isReAppointment=${applicationType === 'NEW' ? false : true}${departmentParam}`
+      `medical-directive-service/medicalDirectives/${id}/summary?sortBy=${sortValue}&sortByField=${sortField}&limit=${limit}&searchText=${searchTermForTable}&isPaginationRequired=${limit === 9999 ? false : true}&siteId=${selectedSite}&offset=${page - 1}&isNewAppointment=${applicationType === 'NEW' ? true : false}&isReAppointment=${applicationType === 'NEW' ? false : true}${departmentParam}${applicationTypeParam}`
     );
     setSelectedMedicalDirectiveList(medicalDirectiveSummaryLevel2);
     setTotalCount(medicalDirectiveSummaryLevel2?.allUsers?.length);
@@ -256,9 +258,10 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
   const getApplicantSummary = async () => {
     setIsLoadingImage(true);
     const departmentParam = selectedDepartment || selectedServiceArea ? `&siteDepartmentSpecialties=${selectedSite}%23${selectedDepartment}%23${selectedServiceArea}` : `&siteDepartmentSpecialties=${selectedSite}`;
+    const applicationTypeParam = selectedApplicationType ? `&positionType=${selectedApplicationType}` : ''
     const { data: applicantSummary } = await GET(
       // `application-management-service/staff/attestationSummaryByUser?sortBy=${sortValue}&sortByField=${sortField}&limit=${limit}&searchText=${searchTermForTable}&isPaginationRequired=${limit === 9999 ? false : true}&offset=${page - 1}${departmentParam}${selectedApplicantType ? `&applicantTypeId=${selectedApplicantType}` : ''}`
-      `medical-directive-service/medicalDirectives/attestationSummaryByUser?sortBy=${sortValue}&sortByField=${sortField}&limit=${limit}&searchText=${searchTermForTable}&isPaginationRequired=${limit === 9999 ? false : true}&offset=${page - 1}${departmentParam}`
+      `medical-directive-service/medicalDirectives/attestationSummaryByUser?sortBy=${sortValue}&sortByField=${sortField}&limit=${limit}&searchText=${searchTermForTable}&isPaginationRequired=${limit === 9999 ? false : true}&offset=${page - 1}${departmentParam}${applicationTypeParam}`
     );
     setApplicantSummary(applicantSummary?.users);
     setTotalCount(applicantSummary?.numberOfElements);
@@ -1019,6 +1022,21 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                       </Tooltip>
                     </div>
                   )}
+                  {selectedApplicationType && (
+                    <div className={`${style.filterBackground} ${style.displayInRow} ${style.marginLeft5}`}>
+                      <div className={`${style.filtertextStyle} ${style.marginRight5}`}>Filter by {selectedApplicationType === "PERMANENT" ? 'Permanent' : "Locum"}</div>
+                      <Tooltip title="Remove Filter" arrow>
+                        <CancelOutlinedIcon
+                          sx={{
+                            fontSize: 15,
+                            color: "#06617A",
+                          }}
+                          className={style.cursorPointer}
+                          onClick={() => setSelectedApplicationType("")}
+                        />
+                      </Tooltip>
+                    </div>
+                  )}
                   {selectedApplicantType && (
                     <div className={`${style.filterBackground} ${style.displayInRow} ${style.marginLeft5}`}>
                       <div className={`${style.filtertextStyle} ${style.marginRight5}`}>Filter by {selectedApplicantTypeName}</div>
@@ -1096,6 +1114,22 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                       required={false}
                     />
                   </div>
+                  {currentTab === "ByApplicants" && (
+                    <div>
+                      <CommonSelectField
+                        value={selectedApplicationType}
+                        onChange={(e) => setSelectedApplicationType(e.target.value)}
+                        className={style.fullWidth}
+                        firstOptionLabel={'All'}
+                        firstOptionValue={''}
+                        valueList={['PERMANENT', 'LOCUM']}
+                        labelList={['Permanent', 'Locum']}
+                        disabledList={['Permanent', 'Locum']?.map(() => false)}
+                        label={'Applicaion Type'}
+                        required={false}
+                      />
+                    </div>
+                  )}
                   {currentTab === "ByApplicants" && (
                     <div>
                       <CommonSelectField
@@ -1212,6 +1246,21 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                       </Tooltip>
                     </div>
                   )}
+                  {selectedApplicationType && (
+                    <div className={`${style.filterBackground} ${style.displayInRow} ${style.marginLeft5}`}>
+                      <div className={`${style.filtertextStyle} ${style.marginRight5}`}>Filter by {selectedApplicationType === "PERMANENT" ? 'Permanent' : "Locum"}</div>
+                      <Tooltip title="Remove Filter" arrow>
+                        <CancelOutlinedIcon
+                          sx={{
+                            fontSize: 15,
+                            color: "#06617A",
+                          }}
+                          className={style.cursorPointer}
+                          onClick={() => setSelectedApplicationType("")}
+                        />
+                      </Tooltip>
+                    </div>
+                  )}
                   {selectedApplicantType && (
                     <div className={`${style.filterBackground} ${style.displayInRow} ${style.marginLeft5}`}>
                       <div className={`${style.filtertextStyle} ${style.marginRight5}`}>Filter by {selectedApplicantTypeName}</div>
@@ -1289,6 +1338,22 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                       required={false}
                     />
                   </div>
+                  {currentTab === "ByMedicalDirective" && (
+                    <div>
+                      <CommonSelectField
+                        value={selectedApplicationType}
+                        onChange={(e) => setSelectedApplicationType(e.target.value)}
+                        className={style.fullWidth}
+                        firstOptionLabel={'All'}
+                        firstOptionValue={''}
+                        valueList={['PERMANENT', 'LOCUM']}
+                        labelList={['Permanent', 'Locum']}
+                        disabledList={['Permanent', 'Locum']?.map(() => false)}
+                        label={'Applicaion Type'}
+                        required={false}
+                      />
+                    </div>
+                  )}
                   {/* <div>
                     <CommonSelectField
                       value={selectedApplicantType}

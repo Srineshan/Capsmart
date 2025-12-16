@@ -3,7 +3,7 @@ import ApplicationHeader from "../../../Components/ApplicationHeader";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { GET, POST, PUT } from "../../dataSaver";
 import ApplicationFieldCard from "../../../Components/ApplicationFieldCard";
-import { ErrorToaster, SuccessToaster } from "../../../utils/toaster";
+import { ErrorToaster, ErrorToaster2, SuccessToaster } from "../../../utils/toaster";
 import Switch from "@mui/material/Switch";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -188,6 +188,30 @@ const CreateStaffMemberApplication = () => {
   console.log(requiredDocumentList);
 
   const getSkipClicked = (value) => {
+    // if (!basicForm?.applicant?.name?.firstName && basicForm?.applicant?.name?.firstName === '') {
+    //   ErrorToaster2(`First Name is mandatory to create the application.`)
+    //   return;
+    // }
+    // if (!basicForm?.applicant?.name?.lastName && basicForm?.applicant?.name?.lastName === '') {
+    //   ErrorToaster2('Last Name is mandatory to create the application')
+    //   return;
+    // }
+    // if (!basicForm?.applicant?.email?.officialEmail && basicForm?.applicant?.email?.officialEmail === '') {
+    //   ErrorToaster2('Email is mandatory to create the application')
+    //   return;
+    // }
+    // if (!basicForm?.applicant?.applicantType && basicForm?.applicant?.applicantType === '') {
+    //   ErrorToaster2(`Applicant Type is mandatory to create the application.`)
+    //   return;
+    // }
+    // if (!basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory && basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory === '') {
+    //   ErrorToaster2('Credentialing & Privileges Category is mandatory to create the application')
+    //   return;
+    // }
+    // if (!basicForm?.basicDetails?.departmentSpecialty?.department && basicForm?.basicDetails?.departmentSpecialty?.department === '') {
+    //   ErrorToaster2('Department is mandatory to create the application')
+    //   return;
+    // }
     if (value) {
       handleSubmitApplicationReq();
     }
@@ -227,12 +251,14 @@ const CreateStaffMemberApplication = () => {
       if (!refsMap.current[data]) {
         refsMap.current[data] = React.createRef(); // Create and store refs dynamically
       }
-      keyValuePair.push({
-        key: data,
-        value: getValueByPath(basicForm, data),
-        label: labels[index],
-        ref: refsMap.current[data], // Associate ref with field
-      });
+      if (labels[index]?.mandatory) {
+        keyValuePair.push({
+          key: data,
+          value: getValueByPath(basicForm, data),
+          label: labels[index],
+          ref: refsMap.current[data], // Associate ref with field
+        });
+      }
     });
     keyValuePair?.map((data) => {
       if (
@@ -612,6 +638,7 @@ const CreateStaffMemberApplication = () => {
             getIsOpen={getIsValidationDialogOpen}
             labelList={warningFields}
             getSkipClicked={getSkipClicked}
+            hideSkip={true}
           />
         )}
       </div>

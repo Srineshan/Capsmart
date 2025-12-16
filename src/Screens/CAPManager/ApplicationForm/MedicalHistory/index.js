@@ -152,15 +152,15 @@ const MedicalHistory = ({ basicForm, setBasicForm, applicationId, getPreApplicat
       setBasicForm((prevForm) => ({
         ...prevForm,
         forms: prevForm.forms.map((form) => {
-          if (form.schemaId === basicForm.forms[formIndex].schemaId) {
+          if (form?.schemaId === basicForm?.forms?.[formIndex]?.schemaId) {
             return {
               ...form,
               data: {
-                ...form.data,
+                ...form?.data,
                 impactingPractice: {
-                  ...form.data.impactingPractice,
+                  ...form?.data?.impactingPractice,
                   medicalHistory: {
-                    ...form.data.impactingPractice.medicalHistory,
+                    ...form?.data?.impactingPractice?.medicalHistory,
                     cellPhone: "",
                   },
                 },
@@ -176,15 +176,15 @@ const MedicalHistory = ({ basicForm, setBasicForm, applicationId, getPreApplicat
       setBasicForm((prevForm) => ({
         ...prevForm,
         forms: prevForm.forms.map((form) => {
-          if (form.schemaId === basicForm.forms[formIndex].schemaId) {
+          if (form?.schemaId === basicForm?.forms?.[formIndex]?.schemaId) {
             return {
               ...form,
               data: {
-                ...form.data,
+                ...form?.data,
                 impactingPractice: {
-                  ...form.data.impactingPractice,
+                  ...form?.data?.impactingPractice,
                   medicalHistory: {
-                    ...form.data.impactingPractice.medicalHistory,
+                    ...form?.data?.impactingPractice?.medicalHistory,
                     emailId: "",
                   },
                 },
@@ -220,12 +220,12 @@ const MedicalHistory = ({ basicForm, setBasicForm, applicationId, getPreApplicat
 
 
   const handleSubmitApplicationReq = async (data) => {
-    if (isEdited) {
+    if (isEdited || data) {
       let temp = {
         schemaId: basicForm?.forms?.[formIndex]?.schemaId,
         data: basicForm?.forms?.[formIndex]?.data,
         unFilledFields: warningFields?.map(data => data?.label),
-        acknowledged: data === "skipped" ? false : true
+        acknowledged: true
       }
       await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
         .then(response => {

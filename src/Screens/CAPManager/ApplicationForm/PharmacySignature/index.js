@@ -13,9 +13,14 @@ import { PDFDocument } from "pdf-lib";
 import CryptoJS from 'crypto-js';
 import SaveInProgressDialog from "../../../../Components/SaveInProgressDialog";
 import { format } from 'date-fns';
+import ApplicationFieldCard from "../../../../Components/ApplicationFieldCard";
+import ESignDialog from "../../../../Components/ESignDialog";
+import ESignature from "../../../../Components/ESignature";
+import { getValueByPath } from "../../../../utils/formatting";
 
 const PharmacySignature = ({
   basicForm,
+  setBasicForm,
   getPreApplication,
   applicationId,
   dateFormat,
@@ -28,17 +33,26 @@ const PharmacySignature = ({
   const targetRef = useRef();
   const [currentDate, setCurrentDate] = useState();
   const [formSchema, setFormSchema] = useState();
+  const [uploadFormSchema, setUploadFormSchema] = useState();
   const [dateTime, setDateTime] = useState(new Date().toISOString());
   const [formContent, setFormContent] = useState();
   const [navigateURL, setNavigateURL] = useState();
   const [navigateBackURL, setNavigateBackURL] = useState();
   const [formIndex, setFormIndex] = useState();
+  const [formUploadIndex, setFormUploadIndex] = useState();
   const [initialArray, setInitialArray] = useState([])
   const [encryptedText, setEncryptedText] = useState("");
   const [signText, setSignText] = useState("")
   const [isSigned, setIsSigned] = useState(false);
   const [isShowESignDialog, setIsShowESignDialog] = useState(false);
   const [isSaveInProgressOpen, setIsSaveInProgressOpen] = useState(false);
+
+  const eSignTitle = getValueByPath(basicForm, `forms[${formUploadIndex}].data.setUpYourSignature.title`);
+  const eSignInitial = getValueByPath(basicForm, `forms[${formUploadIndex}].data.setUpYourSignature.initial`);
+  const eSignImg = getValueByPath(basicForm, `forms[${formUploadIndex}].data.setUpYourSignature.file`);
+  const eSignTypeContent = getValueByPath(basicForm, `forms[${formUploadIndex}].data.setUpYourSignature.type.text`);
+  const eSignTypeContentStyle = getValueByPath(basicForm, `forms[${formUploadIndex}].data.setUpYourSignature.type.style`);
+  const showRedBorderForESign = ((!eSignTypeContent || !eSignTypeContentStyle) && !eSignImg);
   console.log(initialArray)
   const publicKey = "-----BEGIN PUBLIC KEY-----MIGeMA0GCSqGSIb3DQEBAQUAA4GMADCBiAKBgHA5SDu30/8uQAqqkQE0NuY4ePBptMGufG6AWnC/88YVLXi4thh7M8VU6kElVJkfXL5DwlfVnwPb08+PK1EcaOWWtp2gdQitkohjZLB9zVE+0OtRrzSc33wItf7Iwisi5dHPggHvfOp5fr+QYWFMa/kKYl3SgNo8fryeLbKKalmdAgMBAAE=-----END PUBLIC KEY-----";
   // const fixedPdfUrl = formSchema?.file?.fileURL;
@@ -62,6 +76,7 @@ const PharmacySignature = ({
   useEffect(() => {
     if (basicForm && !formSchema && formIndex) {
       getFormSchema()
+      getUploadFormSchema()
     }
     setInitialArray(basicForm?.forms?.[formIndex]?.data ? basicForm?.forms?.[formIndex]?.data?.initials : []);
     setSignText(basicForm?.forms?.[formIndex]?.acknowledged ? basicForm?.forms?.[formIndex]?.esign?.esign : '');
@@ -78,6 +93,7 @@ const PharmacySignature = ({
 
   useEffect(() => {
     setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === atob(step)))
+    setFormUploadIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === "UploadYourDoc"))
     console.log(basicForm?.forms?.findIndex(data => data?.schemaCategory === atob(step)), 'indexCheck', basicForm)
   }, [basicForm, step]);
 
@@ -87,7 +103,12 @@ const PharmacySignature = ({
     }
   }, [basicForm?.forms?.[formIndex]?.id]);
 
+  const tempValue =
+    basicForm?.forms?.[formUploadIndex]?.data === null
+      ? { setUpYourSignature: {}, table: [] }
+      : basicForm?.forms?.[formUploadIndex]?.data;
 
+  const getIsOpen = (value) => setIsShowESignDialog(value);
   const getRenderedContent = async () => {
     const { data: content } = await GET(
       `application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[formIndex]?.id}/render`
@@ -104,6 +125,15 @@ const PharmacySignature = ({
     );
     setFormSchema(form)
   }
+
+  const getUploadFormSchema = async () => {
+    const { data: form } = await GET(
+      `application-management-service/formSchema/${basicForm?.formSchemas?.[formUploadIndex]?.id}`
+    );
+    setUploadFormSchema(form?.schema)
+  }
+
+  console.log(uploadFormSchema, 'uploadFormSchema')
 
   const getApplicantProfile = async () => {
     try {
@@ -313,7 +343,49 @@ const PharmacySignature = ({
             <CommonDivider />
             <div className={`${style.cardTitle} ${style.marginTop}  ${style.justifyCenter}`}>{formSchema?.title}</div>
             <CommonDivider />
-            {renderPdfContent()}
+            {!eSignImg && (
+              <div>
+
+                {(basicForm?.forms?.[formIndex]?.data !== null && !showRedBorderForESign) ||
+                  applicantProfile?.signature?.updated ? (
+                  <>
+                    <div className={`${style.eSignatureOnFileCard} ${style.marginTop10}`}>
+                      <div className={style.eSignatureOnFileTitle}>Establish your eSignature</div>
+                      <div className={style.eSignGrid}>
+                        <ESignature userName={''} encData={encryptedText} showData showDatais isUpdated={isShowESignDialog} />
+                        <div className={style.verticalAlignCenter}>
+                          <div className={style.displayInRow}>
+                            <div className={style.dateTitle}>Initial:</div>
+                            <div className={`${style.date} ${style.marginLeft}`}>{eSignInitial}</div>
+                          </div>
+                        </div>
+                        <div className={style.verticalAlignCenter}>
+                          <div className={style.dateTitle}>{eSignTitle}</div>
+                        </div>
+                      </div>
+                      <div className={style.eSignatureOnFileButton}>
+                        <div className={`${style.continue} ${style.eSignatureOnFileButtonPadding}`} onClick={() => setIsShowESignDialog(true)}>
+                          CLICK TO UPDATE
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <div className={style.marginTop} onClick={() => setIsShowESignDialog(true)}>
+                    <div className={`${style.uploadBorderStyle} ${showRedBorderForESign ? style.redBorder : ''}`}>
+                      <p className={style.uploadTextStyle}>Add Your eSignature</p>
+                      <p className={style.uploadDescriptionText}>
+                        Our paperless automated application submission uses electronic signatures with digital fingerprinting.
+                      </p>
+                    </div>
+                  </div>
+                )}
+                <CommonDivider />
+              </div>
+            )}
+            <div className={style.marginTop10}>
+              {renderPdfContent()}
+            </div>
 
           </div>
         </div>
@@ -330,6 +402,31 @@ const PharmacySignature = ({
       </div>
       {isSaveInProgressOpen && (
         <SaveInProgressDialog getIsOpen={getIsSaveInProgressOpen} />
+      )}
+      {isShowESignDialog && (
+        <ESignDialog
+          getIsOpen={getIsOpen}
+          tempValue={tempValue}
+          baseKey="setUpYourSignature"
+          applicationId={applicationId}
+          basicForm={basicForm}
+          setBasicForm={setBasicForm}
+          getPreApplication={getPreApplication}
+          isHideTypeStyle={true}
+        >
+          {uploadFormSchema &&
+            'setUpYourSignature' in uploadFormSchema?.properties && (
+              <ApplicationFieldCard
+                object={uploadFormSchema?.properties?.setUpYourSignature}
+                gridStyle={style.twoCol}
+                baseKey="setUpYourSignature"
+                basicForm={basicForm}
+                setBasicForm={setBasicForm}
+                stepPath={`forms[${formUploadIndex}].data`}
+                setIsEdited={() => { }}
+              />
+            )}
+        </ESignDialog>
       )}
     </div>
   );

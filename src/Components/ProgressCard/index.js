@@ -196,7 +196,6 @@ const ProgressCard = ({ dataType, title, timeNumber, timeText, progressStyle, ba
     }
 
     const checkPrivileges = (privilegeList = []) => {
-        console.log(privilegeList, 'hasPrivileges')
         for (const item of privilegeList) {
             // Only for DISCRETE type
             if (item.privilegeSpecificationType !== "DISCRETE") continue;
@@ -208,7 +207,6 @@ const ProgressCard = ({ dataType, title, timeNumber, timeText, progressStyle, ba
                 details.corePrivileges,
                 details.restrictedPrivileges,
             ];
-            console.log(sectionsToCheck, 'hasPrivileges')
             for (const section of sectionsToCheck) {
                 if (!section) continue;
 
@@ -220,7 +218,6 @@ const ProgressCard = ({ dataType, title, timeNumber, timeText, progressStyle, ba
                             Array.isArray(cat.privileges) &&
                             cat.privileges.length > 0
                     );
-                console.log(hasPrivileges, 'hasPrivileges')
                 if (hasPrivileges) {
                     const esign = section.esign;
 
@@ -232,7 +229,6 @@ const ProgressCard = ({ dataType, title, timeNumber, timeText, progressStyle, ba
                         esign.name.trim() !== "" &&
                         typeof esign.signedDate === "string" &&
                         esign.signedDate.trim() !== "";
-                    console.log(validESign, 'hasPrivileges', section.esign)
                     if (!validESign) {
                         return false;
                     }
@@ -242,9 +238,6 @@ const ProgressCard = ({ dataType, title, timeNumber, timeText, progressStyle, ba
 
         return true;
     };
-
-    console.log(checkPrivileges(basicForm?.privileges?.obligatedPrivileges) &&
-        checkPrivileges(basicForm?.privileges?.additionalPrivileges), 'hasPrivileges')
 
     return (
         <div className={style.progressCard}>
@@ -339,7 +332,6 @@ const ProgressCard = ({ dataType, title, timeNumber, timeText, progressStyle, ba
                                     const unfilledOptionalDocs = unFilledFields?.filter(name => documentsRequired?.some(doc => doc?.document?.shortName === name && !doc?.required));
 
                                     // const missingRequiredDocs = requiredDocNames?.filter(name => unFilledFields?.includes(name));
-                                    console.log(missingRequiredDocs, 'missingRequiredDocs')
                                     dotClass = missingRequiredDocs ? style.reddotStyle : unfilledOptionalDocs?.length > 0 ? style.yellowdotStyle : style.dotStyle;
                                 } else if (data?.schemaCategory === 'ContactAddress') {
                                     let hasMandatoryTrue = contactAddressUnfilledFields?.some(field => {
@@ -347,7 +339,6 @@ const ProgressCard = ({ dataType, title, timeNumber, timeText, progressStyle, ba
                                             const parsed = JSON.parse(field);
                                             return parsed?.label?.mandatory === true;
                                         } catch (e) {
-                                            // field is just a plain string or invalid JSON → ignore it
                                             return false;
                                         }
                                     });
@@ -356,12 +347,11 @@ const ProgressCard = ({ dataType, title, timeNumber, timeText, progressStyle, ba
                                             const parsed = JSON.parse(field);
                                             return parsed?.label?.mandatory !== true;
                                         } catch (e) {
-                                            // field is just a plain string or invalid JSON → ignore it
                                             return false;
                                         }
                                     });
 
-                                    dotClass = hasMandatoryTrue ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
+                                    dotClass = contactAddressUnfilledFields?.length > 0 ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
                                 } else if (data?.schemaCategory === 'Qualification') {
                                     let hasMandatoryTrue = qualificationUnfilledFields?.some(field => {
                                         try {
@@ -382,7 +372,7 @@ const ProgressCard = ({ dataType, title, timeNumber, timeText, progressStyle, ba
                                         }
                                     });
 
-                                    dotClass = hasMandatoryTrue ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
+                                    dotClass = qualificationUnfilledFields?.length > 0 ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
                                 } else if (data?.schemaCategory === 'MalpracticeInfo') {
                                     let hasMandatoryTrue = malpracticeInfoUnfilledFields?.some(field => {
                                         try {
@@ -403,7 +393,7 @@ const ProgressCard = ({ dataType, title, timeNumber, timeText, progressStyle, ba
                                         }
                                     });
 
-                                    dotClass = hasMandatoryTrue ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
+                                    dotClass = malpracticeInfoUnfilledFields?.length > 0 ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
                                 } else if (data?.schemaCategory === 'Education') {
                                     let hasMandatoryTrue = educationUnfilledFields?.some(field => {
                                         try {
@@ -507,7 +497,7 @@ const ProgressCard = ({ dataType, title, timeNumber, timeText, progressStyle, ba
                                         }
                                     });
 
-                                    dotClass = hasMandatoryTrue ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
+                                    dotClass = professionalConductUnfilledFields?.length > 0 ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
                                 } else if (data?.schemaCategory === 'CriminalHistory') {
                                     let hasMandatoryTrue = criminalHistoryUnfilledFields?.some(field => {
                                         try {
@@ -528,7 +518,7 @@ const ProgressCard = ({ dataType, title, timeNumber, timeText, progressStyle, ba
                                         }
                                     });
 
-                                    dotClass = hasMandatoryTrue ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
+                                    dotClass = criminalHistoryUnfilledFields?.length > 0 ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
                                 } else if (data?.schemaCategory === 'MedicalHistory') {
                                     let hasMandatoryTrue = medicalHistoryUnfilledFields?.some(field => {
                                         try {
@@ -549,7 +539,7 @@ const ProgressCard = ({ dataType, title, timeNumber, timeText, progressStyle, ba
                                         }
                                     });
 
-                                    dotClass = hasMandatoryTrue ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
+                                    dotClass = medicalHistoryUnfilledFields?.length > 0 ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
                                 } else if (data?.schemaCategory === 'MISCELLANEOUS_QUESTIONS') {
                                     let hasMandatoryTrue = miscellaneousQuestionUnfilledFields?.some(field => {
                                         try {

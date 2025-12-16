@@ -288,3 +288,62 @@
     opacity: 0;
     pointer-events: none;
 }
+
+.eSignatureOnFileCard {
+    background: $secondarycolor 0% 0% no-repeat padding-box;
+    border: 1px dashed var(--primary-color);
+    border-radius: 8px;
+    padding: 20px 40px;
+}
+
+.eSignatureOnFileTitle {
+    text-align: center;
+    font: normal normal 600 23px/26px var(--font-style);
+    color: var(--primary-color);
+}
+
+.eSignatureOnFileButton {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.eSignatureOnFileButtonPadding {
+    padding: 5px 30px;
+}
+
+.dateTitle {
+    text-align: left;
+    font: normal normal bold 17px/26px var(--font-style);
+    color: #52575D;
+}
+
+.date {
+    text-align: left;
+    font: normal normal normal 17px/26px var(--font-style);
+    color: #52575D;
+}
+
+.eSignGrid {
+    display: grid;
+    grid-template-columns: 49% 24% 24%;
+    gap: 1%;
+
+    @media (max-width: 900px) {
+        grid-template-columns: 1fr;
+    }
+}
+
+.verticalAlignCenter {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.displayInRow {
+    display: flex;
+    flex-direction: row;
+}
+
+.marginLeft {
+    margin-left: 20px;
+}

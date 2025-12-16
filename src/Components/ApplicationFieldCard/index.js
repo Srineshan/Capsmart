@@ -16,6 +16,7 @@ import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
 import CheckIcon from "@mui/icons-material/Check";
 import VerifiedImage from "../../images/verifiedImage.png";
+import FileUploadOutlinedIcon from '@mui/icons-material/FileUploadOutlined';
 import ToBeVerifiedImage from "../../images/toBeVerifiedImage.png";
 import NotVerifiedImage from "../../images/notVerifiedImage.png";
 import DeleteIcon from "../../images/deleteHcRow.png";
@@ -39,6 +40,7 @@ import axios from "axios";
 import ValidationDialog from "../validationDialog";
 import FileDisplayDialog from "../fileDisplayDialog";
 import PriorDataDialog from "../PriorDataDialog"
+import DeleteConfirmation from "../DeleteConfirmation";
 
 
 const TEXTFIELDLEN50 = 50;
@@ -104,6 +106,8 @@ const ApplicationFieldCard = ({
   const [disclosureFieldKey, setDisclosureFieldKey] = useState('');
   const [disclosurSchema, setDisclosureSchema] = useState({});
   const [isMasked, setIsMasked] = useState(true);
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const toDelete = useRef(null);;
   const { setValue, value } = useComboboxControls({ initialValue: "" });
   const canadaData = JSON.parse(sessionStorage.getItem("canadaData")) || {};
   let user = JSON.parse(sessionStorage.getItem("user"));
@@ -122,6 +126,14 @@ const ApplicationFieldCard = ({
       setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === atob(step)))
     }
   }, [step])
+
+  const getShowDeleteConfirmation = (value) => {
+    setShowDeleteConfirmation(value)
+  }
+
+  const getDeleteConfirmation = () => {
+    handleDelete(toDelete.current)
+  }
 
   const getValueByPath = (obj, path) => {
     const keys = path.split(/[\.\[\]]+/).filter(Boolean);
@@ -2676,72 +2688,72 @@ const ApplicationFieldCard = ({
           if (isPOD) {
             return <div></div>;
           } else {
-            console.log(
-              getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`),
-              getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`),
+            let isDocAvailable = (getValueByPath(
+              basicForm,
+              `${basicpath}.${baseKey}.${fieldKey}`
+            ) !== undefined &&
+              getValueByPath(
+                basicForm,
+                `${basicpath}.${baseKey}.${fieldKey}`
+              ) !== null &&
+              getValueByPath(
+                basicForm,
+                `${basicpath}.${baseKey}.${fieldKey}`
+              ) !== "" &&
               getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)
-                ?.fileURL !== undefined,
-              "checkstring"
-            );
+                ?.fileURL !== null);
+            console.log(isDocAvailable, "checkstring");
             return (
-              <div
-                className={`${style.addMoreUpload} ${style.addMoreUploadMargin}`}
-              >
-                {getValueByPath(
-                  basicForm,
-                  `${basicpath}.${baseKey}.${fieldKey}`
-                ) !== undefined &&
-                  getValueByPath(
-                    basicForm,
-                    `${basicpath}.${baseKey}.${fieldKey}`
-                  ) !== null &&
-                  getValueByPath(
-                    basicForm,
-                    `${basicpath}.${baseKey}.${fieldKey}`
-                  ) !== "" &&
-                  getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)
-                    ?.fileURL !== null ? (
-                  <div
-                    onClick={() => {
-                      setShowFileDisplayDialog(true);
-                      setselectedFile(
-                        getValueByPath(
-                          basicForm,
-                          `${basicpath}.${baseKey}.${fieldKey}`
-                        )
-                      );
-                    }}
+              <div className={`${style.addMoreUpload} ${style.addMoreUploadMargin}`}>
+                <div className={style.marginLeft10}>
+                  <label
+                    for={`addMore-file-upload-dynamic-${fieldKey}`}
+                    className={`${style.displayInRow} ${style.cursorPointer} `}
                   >
-                    <img
-                      src={VerifiedImage}
-                      alt=""
-                      className={`${style.imgIcon} ${style.cursorPointer}`}
-                    />
-                  </div>
-                ) : (
-                  <>
-                    <div>
-                      <label
-                        for={`addMore-file-upload-dynamic-${fieldKey}`}
-                        className={`${style.displayInRow} ${style.cursorPointer} `}
-                      >
+                    <Tooltip title={isDocAvailable ? "Click to replace" : "Click to upload"}>
+                      <FileUploadOutlinedIcon sx={{ color: '#000' }} />
+                    </Tooltip>
+                  </label>
+                </div>
+                <input
+                  id={`addMore-file-upload-dynamic-${fieldKey}`}
+                  type="file"
+                  accept=".pdf,.doc,.png,.xls,.xlsx,.jpeg,.gif,.docx"
+                  onChange={(e) => {
+                    handleChange(fieldKey, e.target.files[0], baseKey);
+                  }}
+                />
+                <div>
+                  {isDocAvailable ? (
+                    <div
+                      onClick={() => {
+                        setShowFileDisplayDialog(true);
+                        setselectedFile(
+                          getValueByPath(
+                            basicForm,
+                            `${basicpath}.${baseKey}.${fieldKey}`
+                          )
+                        );
+                      }}
+                    >
+                      <img
+                        src={VerifiedImage}
+                        alt=""
+                        className={`${style.imgIcon} ${style.cursorPointer}`}
+                      />
+                    </div>
+                  ) : (
+                    <>
+                      <div>
                         <img
                           src={ToBeVerifiedImage}
                           alt=""
                           className={style.imgIcon}
                         />
-                      </label>
-                    </div>
-                    <input
-                      id={`addMore-file-upload-dynamic-${fieldKey}`}
-                      type="file"
-                      accept=".pdf,.doc,.png,.xls,.xlsx,.jpeg,.gif,.docx"
-                      onChange={(e) => {
-                        handleChange(fieldKey, e.target.files[0], baseKey);
-                      }}
-                    />
-                  </>
-                )}
+                      </div>
+                    </>
+                  )}
+                </div>
               </div>
             );
           }
@@ -3431,9 +3443,11 @@ const ApplicationFieldCard = ({
               <img
                 src={DeleteIcon}
                 alt=""
-                className={style.docTypeImgStyle}
+                className={`${style.docTypeImgStyle} ${style.cursorPointer}`}
                 onClick={() => {
-                  handleDelete(innerData);
+                  toDelete.current = innerData;
+                  setShowDeleteConfirmation(true);
+                  // handleDelete(innerData);
                 }}
               />
             )),
@@ -3462,12 +3476,12 @@ const ApplicationFieldCard = ({
 
   const handleDelete = (data) => {
     let index = basicForm?.forms?.findIndex((data) => data?.id === formId);
-    console.log(stepPath, basicForm);
+    console.log(stepPath, basicForm, 'deleteCheck');
     let temp = basicForm;
     temp.forms[index].data[baseKey] = temp.forms[index].data[baseKey].filter(
       (obj) => !isEqual(obj, data)
     );
-    console.log(temp);
+    console.log(temp, 'deleteCheck', data, toDelete.current);
     getIsSubmitClicked(true, temp);
   };
 
@@ -3819,6 +3833,13 @@ const ApplicationFieldCard = ({
               basicForm={basicForm} setBasicForm={setBasicForm} disclosureBaseKey={disclosureBaseKey} disclosureFieldKey={disclosureFieldKey} disclosurSchema={disclosurSchema} />
           )
         }
+        {showDeleteConfirmation && (
+          <DeleteConfirmation
+            getShowDeleteConfirmation={getShowDeleteConfirmation}
+            getDeleteConfirmation={getDeleteConfirmation}
+            confirmationText="Do you want to delete this record?"
+          />
+        )}
       </div>
     </>
   );

@@ -82,7 +82,19 @@ const PaymentOrder = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
             );
             setFormSchema(form?.schema)
             setFormSchemaWholeObject(form)
+            if (form?.preFillRequired) {
+                preFillData()
+            }
         }
+    }
+
+    const preFillData = async () => {
+        await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}/preFillData`)
+            .then(response => {
+                console.log(response)
+                SuccessToaster("Application Updated Successfully");
+                getPreApplication();
+            })
     }
 
     const getIsSubmitClicked = (value, data, skip) => {

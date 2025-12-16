@@ -30,6 +30,7 @@ import { fileLoadingURL } from '../../../../utils/formatting';
 const Immunization = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFormat, name }) => {
     const [formSchema, setFormSchema] = useState();
     const targetRef = useRef();
+    const tableRef = useRef(null);
     const [isChecked, setIsChecked] = useState(false);
     const [isEdited, setIsEdited] = useState(false);
     const [isSigned, setIsSigned] = useState(false);
@@ -125,6 +126,12 @@ const Immunization = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
     useEffect(() => {
         setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === atob(step)))
     }, [basicForm, step])
+
+    useEffect(() => {
+        if (uploadedFiles?.length > 0) {
+            tableRef.current?.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [uploadedFiles]);
 
     const getApplicationImmunization = async () => {
         const { data: immunization } = await GET(
@@ -506,7 +513,7 @@ const Immunization = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
                                 />
                             </div>
                             <div className={`${style.addMoreBorder} ${style.marginTop}`}>
-                                <div className={style.padding20}>
+                                <div className={style.padding20} ref={tableRef}>
                                     <div
                                         className={style.cardTitle}>
                                         {formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['enterTest/ImmunizationInformation']?.label}
@@ -620,7 +627,7 @@ const Immunization = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
                                             required={true}
                                         />
                                     </div>
-                                    <div>
+                                    <div className={style.marginTop}>
                                         {uploadedFiles?.map((data, index) => (
                                             <div className={style.uploadButton2}>
                                                 <span
