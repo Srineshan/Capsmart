@@ -1125,7 +1125,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                         valueList={['PERMANENT', 'LOCUM']}
                         labelList={['Permanent', 'Locum']}
                         disabledList={['Permanent', 'Locum']?.map(() => false)}
-                        label={'Applicaion Type'}
+                        label={'Application Type'}
                         required={false}
                       />
                     </div>
@@ -1349,7 +1349,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                         valueList={['PERMANENT', 'LOCUM']}
                         labelList={['Permanent', 'Locum']}
                         disabledList={['Permanent', 'Locum']?.map(() => false)}
-                        label={'Applicaion Type'}
+                        label={'Application Type'}
                         required={false}
                       />
                     </div>
