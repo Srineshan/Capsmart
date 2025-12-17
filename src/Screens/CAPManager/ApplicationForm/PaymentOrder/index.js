@@ -137,7 +137,7 @@ const PaymentOrder = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
                 keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: labels[index]?.label })
         })
         const validateBusinessPhone = (phone) => {
-            const cleaned = phone.replace(/\D/g, "");
+            const cleaned = phone?.replace(/\D/g, "");
             const phoneRegex = /^[0-9]{10}$/;
             return phoneRegex.test(cleaned);
         };
