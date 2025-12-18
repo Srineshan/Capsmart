@@ -203,30 +203,39 @@ const AdditionalPrivileges = ({ getIsOpen, primaryPrivilege, getSelectedPrivileg
                     />
 
                     {
-                        staffPrivilege?.filter(data => data?.id === selectedPrivilege)?.map((data) => data?.privilegeDetails?.corePrivileges?.privilegesByCategories?.map((categories, index) => (
-                            <div className={style.marginTop}>
-                                <div className={`${style.categoryGrid} `}>
-                                    {/* <div className={`${style.itemLeft} ${style.marginTop10}`}><CommonCheckBox
+                        staffPrivilege?.filter(data => data?.id === selectedPrivilege)?.map((data) =>
+                            data?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ?
+                                (
+                                    <div
+                                        className={` ${style.marginTop} ${style.descriptionStyle}`}
+                                        dangerouslySetInnerHTML={{ __html: data?.descriptiveContent?.content }}
+                                    />
+                                )
+                                :
+                                data?.privilegeDetails?.corePrivileges?.privilegesByCategories?.map((categories, index) => (
+                                    <div className={style.marginTop}>
+                                        <div className={`${style.categoryGrid} `}>
+                                            {/* <div className={`${style.itemLeft} ${style.marginTop10}`}><CommonCheckBox
                                     // checked={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || null}
                                     // onChange={(e) => handleChange(fieldKey, e.target.checked, baseKey)} label={`${fieldData.label}${(isLableEmpty(fieldData.label) ? false : (object.required?.includes(fieldKey) || (parentData !== null ? parentData.required?.includes(fieldKey) : false))) && '*'}`}
                                     /></div> */}
-                                    <div className={`${style.itemLeft} `}><strong>{categories?.category === null ? '' : categories?.category}</strong></div>
-                                </div>
-                                <>
-                                    {
-                                        categories?.privileges?.map(privileges => (
-                                            <div className={style.twoColGrid}>
-                                                <div className={style.itemLeft}><strong>{privileges?.privilegeId || ''}</strong></div>
-                                                <div className={style.itemLeft}>{privileges?.title || ''}</div>
-                                            </div>
+                                            <div className={`${style.itemLeft} `}><strong>{categories?.category === null ? '' : categories?.category}</strong></div>
+                                        </div>
+                                        <>
+                                            {
+                                                categories?.privileges?.map(privileges => (
+                                                    <div className={style.twoColGrid}>
+                                                        <div className={style.itemLeft}><strong>{privileges?.privilegeId || ''}</strong></div>
+                                                        <div className={style.itemLeft}>{privileges?.title || ''}</div>
+                                                    </div>
 
-                                        ))
-                                    }
-                                </>
-                            </div>
-                        )
+                                                ))
+                                            }
+                                        </>
+                                    </div>
+                                )
 
-                        )
+                                )
 
                         )
                     }

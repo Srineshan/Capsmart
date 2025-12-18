@@ -218,8 +218,9 @@ const Immunization = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
 
     const handleSubmitApplicationReq = async (data) => {
         let temp = {
-            schemaId: data?.forms?.[formIndex]?.schemaId,
-            data: data?.forms?.[formIndex]?.data
+            schemaId: basicForm?.forms?.[formIndex]?.schemaId,
+            data: basicForm?.forms?.[formIndex]?.data,
+            dataStatus: isSigned ? 'COMPLETED' : 'SKIPPED_MANDATORY_FIELD'
         }
         await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
             .then(response => {
@@ -368,6 +369,7 @@ const Immunization = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
                     handleClear();
                     handleDownload()
                     getApplicationImmunization();
+                    handleSubmitApplicationReq()
                     navigate(navigateURL)
                 })
                 .catch((error) => {
@@ -376,6 +378,7 @@ const Immunization = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
                 });
         } else {
             handleDownload()
+            handleSubmitApplicationReq()
             navigate(navigateURL)
         }
     };

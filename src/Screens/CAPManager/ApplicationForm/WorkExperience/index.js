@@ -208,7 +208,8 @@ const WorkExperience = ({ basicForm, setBasicForm, applicationId, getPreApplicat
             schemaId: data?.forms?.[formIndex]?.schemaId,
             data: data?.forms?.[formIndex]?.data,
             unFilledFields: missingFields,
-            acknowledged: missingFields?.length !== 0 ? false : true
+            acknowledged: missingFields?.length !== 0 ? false : true,
+            dataStatus: missingFields?.length > 0 ? 'SKIPPED_MANDATORY_FIELD' : 'COMPLETED'
         }
         console.log(missingFields, 'missingFields')
         await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
@@ -229,7 +230,8 @@ const WorkExperience = ({ basicForm, setBasicForm, applicationId, getPreApplicat
                 schemaId: basicForm?.forms?.[formIndex]?.schemaId,
                 data: basicForm?.forms?.[formIndex]?.data,
                 unFilledFields: basicForm?.forms?.[formIndex]?.unFilledFields,
-                acknowledged: true
+                acknowledged: true,
+                dataStatus: basicForm?.forms?.[formIndex]?.dataStatus
             }
             await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
                 .then(response => {

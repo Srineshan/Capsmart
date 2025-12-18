@@ -408,7 +408,7 @@ const App = ({ props }) => {
     if ((entityId !== undefined && entityId !== '' && cookie.get("authorization") !== undefined && isAuthenticated && !cookie.get("user")) || (entityId !== undefined && entityId !== '' && cookie.get("authorization") !== undefined && isAuthenticated && errorInfo === 'Invalid token specified' && !cookie.get("user"))) {
       login(entityId);
     }
-    console.log(isAuthenticated, 'isAuthenticated', (entityId !== undefined && entityId !== '' && cookie.get("authorization") !== undefined && isAuthenticated && !cookie.get("user")), entityId !== undefined, entityId !== '', cookie.get("authorization") !== undefined, cookie.get("user"))
+    console.log(isAuthenticated, 'isAuthenticated', (entityId !== undefined && entityId !== '' && cookie.get("authorization") !== undefined && isAuthenticated && !cookie.get("user")), entityId !== undefined, entityId !== '', cookie.get("authorization") !== undefined, !cookie.get("user"), cookie.get("user"))
   }, [entityId, cookie.get("authorization"), isAuthenticated, errorInfo, cookie.get("user")])
 
   useEffect(() => {
@@ -764,9 +764,9 @@ const App = ({ props }) => {
               secure: true,
               sameSite: 'none',
             });
-            cookie.remove("user", { path: "/" });
             console.log('Session refreshed and cookie updated!', refreshedSession);
           }
+          login(entityId)
         })
         .catch((error) => {
           console.error('Failed to refresh token:', error);
@@ -913,15 +913,15 @@ const App = ({ props }) => {
       })
       .catch((error) => {
         ErrorToaster2("Login failed. Please try again. If the issue persists, please contact the administrator.")
-        // cookie.remove("authorization", {
-        //   path: "/",
-        //   domain: window.location.hostname?.split('.')?.length >= 3 ? `.${window.location.hostname?.split('.')?.slice(-2)?.join('.')}` : window.location.hostname,
-        //   secure: true,
-        //   sameSite: 'none',
-        // });
-        // cookie.remove("user", { path: "/" });
-        // cookie.remove("entityId", { path: "/" });
-        // logout();
+        cookie.remove("authorization", {
+          path: "/",
+          domain: window.location.hostname?.split('.')?.length >= 3 ? `.${window.location.hostname?.split('.')?.slice(-2)?.join('.')}` : window.location.hostname,
+          secure: true,
+          sameSite: 'none',
+        });
+        cookie.remove("user", { path: "/" });
+        cookie.remove("entityId", { path: "/" });
+        logout();
       });
     console.log('entered')
     if (cookie.get("authorization") && cookie.get("authorization") !== 'undefined') {

@@ -127,13 +127,48 @@ const CriminalHistory = ({ basicForm, setBasicForm, applicationId, getPreApplica
         console.log(keyValuePair, 'Metadata', missingKeys)
     }
 
+    const getDataStatus = () => {
+        let missingItems = [];
+        let keyValuePair = [];
+        metadata?.map((data, index) => {
+            keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: labels[index]?.label, mandatory: labels[index]?.mandatory })
+        })
+        keyValuePair?.map(data => {
+            if (data?.value === "" || data?.value === null || data?.value === undefined || data?.value === 0) {
+                missingItems.push(data)
+            }
+        })
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.criminalData1.criminalHistory.haveYouBeenArrested`) === 'No' || getValueByPath(basicForm, `forms[${formIndex}].data.criminalData1.criminalHistory.haveYouBeenArrested`) === undefined) {
+            let filterKeys = [`forms[${formIndex}].data.criminalData1.criminalHistory.haveYouBeenArrestedText`, `forms[${formIndex}].data.criminalData1.criminalHistory.haveYouBeenArrestedFile`, `forms[${formIndex}].data.criminalData1.criminalHistory.haveYouBeenArrestedResponse`]
+            let temp = missingItems?.filter(data => !filterKeys?.includes(data?.key));
+            missingItems = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.criminalData1.criminalHistory.medicalPractice`) === 'No' || getValueByPath(basicForm, `forms[${formIndex}].data.criminalData1.criminalHistory.medicalPractice`) === undefined) {
+            let filterKeys = [`forms[${formIndex}].data.criminalData1.criminalHistory.medicalPracticeText`, `forms[${formIndex}].data.criminalData1.criminalHistory.medicalPracticeFile`, `forms[${formIndex}].data.criminalData1.criminalHistory.medicalPracticeResponse`]
+            let temp = missingItems?.filter(data => !filterKeys?.includes(data?.key));
+            missingItems = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.criminalData1.criminalHistory.haveYouBeenArrested`) === 'Yes') {
+            let filterKeys = [`forms[${formIndex}].data.criminalData1.criminalHistory.haveYouBeenArrestedResponse`]
+            let temp = missingItems?.filter(data => !filterKeys?.includes(data?.key));
+            missingItems = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.criminalData1.criminalHistory.medicalPractice`) === 'Yes') {
+            let filterKeys = [`forms[${formIndex}].data.criminalData1.criminalHistory.medicalPracticeResponse`]
+            let temp = missingItems?.filter(data => !filterKeys?.includes(data?.key));
+            missingItems = temp;
+        }
+        return missingItems;
+    }
+
     const handleSubmitApplicationReq = async (data) => {
         if (isEdited || data) {
             let temp = {
                 schemaId: basicForm?.forms?.[formIndex]?.schemaId,
                 data: basicForm?.forms?.[formIndex]?.data,
                 unFilledFields: warningFields?.map(data => data?.label),
-                acknowledged: true
+                acknowledged: true,
+                dataStatus: getDataStatus()?.filter(data => data?.mandatory)?.length > 0 ? 'SKIPPED_MANDATORY_FIELD' : getDataStatus()?.length > 0 ? 'SKIPPED_NON_MANDATORY_FIELD' : 'COMPLETED'
             }
             await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
                 .then(response => {
