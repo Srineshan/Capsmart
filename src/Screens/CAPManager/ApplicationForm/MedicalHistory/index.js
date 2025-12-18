@@ -218,6 +218,115 @@ const MedicalHistory = ({ basicForm, setBasicForm, applicationId, getPreApplicat
     console.log(keyValuePair, "Metadata", missingKeys);
   };
 
+  const getDataStatus = () => {
+    let missingItems = [];
+    let keyValuePair = [];
+
+    const cellPhone = getValueByPath(
+      basicForm,
+      `forms[${formIndex}].data.impactingPractice.medicalHistory.cellPhone`
+    );
+    const emailId = getValueByPath(
+      basicForm,
+      `forms[${formIndex}].data.impactingPractice.medicalHistory.emailId`
+    );
+    metadata?.map((data, index) => {
+      keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: labels[index]?.label, mandatory: labels[index]?.mandatory })
+    })
+
+    const validateBusinessPhone = (phone) => {
+      const cleaned = phone?.replace(/\D/g, "");
+      const phoneRegex = /^[0-9]{10}$/;
+      return phoneRegex.test(cleaned);
+    };
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    const isCellPhoneInvalid = !validateBusinessPhone(cellPhone);
+    const isEmailInvalid = !emailRegex.test(emailId);
+
+    if (isCellPhoneInvalid && cellPhone && cellPhone !== "") {
+      missingItems.push({
+        key: "cellPhone",
+        value: cellPhone,
+        label: "Cell Phone is invalid",
+      });
+    }
+
+    if (isEmailInvalid && emailId && emailId !== "") {
+      missingItems.push({
+        key: "emailId",
+        value: emailId,
+        label: "Email ID is invalid",
+      });
+    }
+    keyValuePair?.map(data => {
+      if (data?.value === "" || data?.value === null || data?.value === undefined || data?.value === 0) {
+        missingItems.push(data)
+      }
+    })
+    if (isCellPhoneInvalid) {
+      setBasicForm((prevForm) => ({
+        ...prevForm,
+        forms: prevForm.forms.map((form) => {
+          if (form?.schemaId === basicForm?.forms?.[formIndex]?.schemaId) {
+            return {
+              ...form,
+              data: {
+                ...form?.data,
+                impactingPractice: {
+                  ...form?.data?.impactingPractice,
+                  medicalHistory: {
+                    ...form?.data?.impactingPractice?.medicalHistory,
+                    cellPhone: "",
+                  },
+                },
+              },
+            };
+          }
+          return form;
+        }),
+      }));
+    }
+
+    if (isEmailInvalid) {
+      setBasicForm((prevForm) => ({
+        ...prevForm,
+        forms: prevForm.forms.map((form) => {
+          if (form?.schemaId === basicForm?.forms?.[formIndex]?.schemaId) {
+            return {
+              ...form,
+              data: {
+                ...form?.data,
+                impactingPractice: {
+                  ...form?.data?.impactingPractice,
+                  medicalHistory: {
+                    ...form?.data?.impactingPractice?.medicalHistory,
+                    emailId: "",
+                  },
+                },
+              },
+            };
+          }
+          return form;
+        }),
+      }));
+    }
+
+    if (getValueByPath(basicForm, `forms[${formIndex}].data.impactingPractice.medicalHistory.abilityToPractice`) === 'No' && getValueByPath(basicForm, `forms[${formIndex}].data.impactingPractice.medicalHistory.abilityToPractice`) !== undefined && getValueByPath(basicForm, `forms[${formIndex}].data.impactingPractice.medicalHistory.abilityToPractice`) !== null) {
+      let medicalHistoryRequiredKeys = [`forms[${formIndex}].data.impactingPractice.medicalHistory.nameOfFacility`, `forms[${formIndex}].data.impactingPractice.medicalHistory.treatingPhysicianOrProvider`, `forms[${formIndex}].data.impactingPractice.medicalHistory.emailId`, `forms[${formIndex}].data.impactingPractice.medicalHistory.cellPhone`]
+      let temp = missingItems?.filter(data => !medicalHistoryRequiredKeys?.includes(data?.key));
+      missingItems = temp;
+    }
+
+    if (getValueByPath(basicForm, `forms[${formIndex}].data.impactingPractice.medicalHistory.abilityToPractice`) === 'No' || getValueByPath(basicForm, `forms[${formIndex}].data.impactingPractice.medicalHistory.abilityToPractice`) === undefined) {
+      let filterKeys = [`forms[${formIndex}].data.impactingPractice.medicalHistory.text`, `forms[${formIndex}].data.impactingPractice.medicalHistory.file`]
+      let temp = missingItems?.filter(data => !filterKeys?.includes(data?.key));
+      missingItems = temp;
+    }
+    return missingItems;
+  }
+
 
   const handleSubmitApplicationReq = async (data) => {
     if (isEdited || data) {
@@ -225,7 +334,8 @@ const MedicalHistory = ({ basicForm, setBasicForm, applicationId, getPreApplicat
         schemaId: basicForm?.forms?.[formIndex]?.schemaId,
         data: basicForm?.forms?.[formIndex]?.data,
         unFilledFields: warningFields?.map(data => data?.label),
-        acknowledged: true
+        acknowledged: true,
+        dataStatus: getDataStatus()?.filter(data => data?.mandatory)?.length > 0 ? 'SKIPPED_MANDATORY_FIELD' : getDataStatus()?.length > 0 ? 'SKIPPED_NON_MANDATORY_FIELD' : 'COMPLETED'
       }
       await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
         .then(response => {
@@ -289,6 +399,7 @@ const MedicalHistory = ({ basicForm, setBasicForm, applicationId, getPreApplicat
           <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
           <div className={style.stickyContainer}>
             <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
+            <div className={`${style.saveInProgress} ${style.marginTop10} `} onClick={() => getSkipClicked(true)} > SKIP FOR NOW </div>
             <div className={style.twoColForButton}>
               <div className={`${style.continue} ${style.marginTop10}`} onClick={handleBackClick}>BACK</div>
               <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()}>CONTINUE</div>

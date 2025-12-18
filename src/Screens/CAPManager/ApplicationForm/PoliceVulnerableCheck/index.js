@@ -162,7 +162,8 @@ const PoliceVulnerableCheck = ({ acknowledgementForm, dateFormat, name, basicFor
             schemaId: basicForm?.forms?.[formIndex]?.schemaId,
             data: !isEdited ? basicForm?.forms?.[formIndex]?.data : { esignDate: isChecked && formSchema?.esignatureRequired ? name + " " + currentDate : '' },
             acknowledged: !formSchema?.esignatureRequired ? true : isChecked,
-            esign: { esign: isChecked && formSchema?.esignatureRequired ? encryptedText : '', name: isChecked && formSchema?.esignatureRequired ? name : '', signedDate: isChecked && formSchema?.esignatureRequired ? currentDate : '' }
+            esign: { esign: isChecked && formSchema?.esignatureRequired ? encryptedText : '', name: isChecked && formSchema?.esignatureRequired ? name : '', signedDate: isChecked && formSchema?.esignatureRequired ? currentDate : '' },
+            dataStatus: formSchema?.esignatureRequired ? isSigned ? 'COMPLETED' : 'SKIPPED_MANDATORY_FIELD' : 'COMPLETED'
         }
         await PUT(`application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
             .then(response => {

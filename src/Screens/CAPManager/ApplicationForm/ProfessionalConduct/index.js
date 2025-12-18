@@ -205,13 +205,128 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, applicationId, getPreApp
         console.log(keyValuePair, 'Metadata', missingKeys)
     }
 
+    const getDataStatus = () => {
+        let missingItems = [];
+        let keyValuePair = [];
+        metadata?.map((data, index) => {
+            keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: labels[index]?.label, mandatory: labels[index]?.mandatory })
+        })
+        keyValuePair?.map(data => {
+            if (data?.value === "" || data?.value === null || data?.value === undefined || data?.value === 0) {
+                missingItems.push(data)
+            }
+        })
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.disciplineCommittee`) === 'No' || getValueByPath(basicForm, `forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.disciplineCommittee`) === undefined) {
+            let filterKeys = [`forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.disciplineCommitteeText`, `forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.disciplineCommitteeFile`, `forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.disciplineCommitteeResponse`]
+            let temp = missingItems?.filter(data => !filterKeys?.includes(data?.key));
+            missingItems = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.complaintsAndReportCommittee`) === 'No' || getValueByPath(basicForm, `forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.complaintsAndReportCommittee`) === undefined) {
+            let filterKeys = [`forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.complaintsAndReportCommitteeText`, `forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.complaintsAndReportCommitteeFile`, `forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.complaintsAndReportCommitteeResponse`]
+            let temp = missingItems?.filter(data => !filterKeys?.includes(data?.key));
+            missingItems = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.investigation`) === 'No' || getValueByPath(basicForm, `forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.investigation`) === undefined) {
+            let filterKeys = [`forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.investigationText`, `forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.investigationFile`, `forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.investigationResponse`]
+            let temp = missingItems?.filter(data => !filterKeys?.includes(data?.key));
+            missingItems = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.randomReview`) === 'No' || getValueByPath(basicForm, `forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.randomReview`) === undefined) {
+            let filterKeys = [`forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.randomReviewText`, `forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.randomReviewFile`, `forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.randomReviewResponse`]
+            let temp = missingItems?.filter(data => !filterKeys?.includes(data?.key));
+            missingItems = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.resultOfQac`) === 'No' || getValueByPath(basicForm, `forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.resultOfQac`) === undefined) {
+            let filterKeys = [`forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.resultOfQacText`, `forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.resultOfQacFile`, `forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.resultOfQacResponse`]
+            let temp = missingItems?.filter(data => !filterKeys?.includes(data?.key));
+            missingItems = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.outcomeByTheCollege`) === 'No' || getValueByPath(basicForm, `forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.outcomeByTheCollege`) === undefined) {
+            let filterKeys = [`forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.outcomeByTheCollegeText`, `forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.outcomeByTheCollegeFile`, `forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.outcomeByTheCollegeResponse`]
+            let temp = missingItems?.filter(data => !filterKeys?.includes(data?.key));
+            missingItems = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.conductDisclosure2.hospitalMisconductHistory.advanceProceeding`) === 'No' || getValueByPath(basicForm, `forms[${formIndex}].data.conductDisclosure2.hospitalMisconductHistory.advanceProceeding`) === undefined) {
+            let filterKeys = [`forms[${formIndex}].data.conductDisclosure2.hospitalMisconductHistory.advanceProceedingText`, `forms[${formIndex}].data.conductDisclosure2.hospitalMisconductHistory.advanceProceedingFile`, `forms[${formIndex}].data.conductDisclosure2.hospitalMisconductHistory.advanceProceedingResponse`]
+            let temp = missingItems?.filter(data => !filterKeys?.includes(data?.key));
+            missingItems = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.conductDisclosure2.hospitalMisconductHistory.disciplinaryReviews`) === 'No' || getValueByPath(basicForm, `forms[${formIndex}].data.conductDisclosure2.hospitalMisconductHistory.disciplinaryReviews`) === undefined) {
+            let filterKeys = [`forms[${formIndex}].data.conductDisclosure2.hospitalMisconductHistory.disciplinaryReviewsText`, `forms[${formIndex}].data.conductDisclosure2.hospitalMisconductHistory.disciplinaryReviewsFile`, `forms[${formIndex}].data.conductDisclosure2.hospitalMisconductHistory.disciplinaryReviewsResponse`]
+            let temp = missingItems?.filter(data => !filterKeys?.includes(data?.key));
+            missingItems = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.conductDisclosure2.hospitalMisconductHistory.involuntaryRestriction`) === 'No' || getValueByPath(basicForm, `forms[${formIndex}].data.conductDisclosure2.hospitalMisconductHistory.involuntaryRestriction`) === undefined) {
+            let filterKeys = [`forms[${formIndex}].data.conductDisclosure2.hospitalMisconductHistory.involuntaryRestrictionText`, `forms[${formIndex}].data.conductDisclosure2.hospitalMisconductHistory.involuntaryRestrictionFile`, `forms[${formIndex}].data.conductDisclosure2.hospitalMisconductHistory.involuntaryRestrictionResponse`]
+            let temp = missingItems?.filter(data => !filterKeys?.includes(data?.key));
+            missingItems = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.conductDisclosure2.hospitalMisconductHistory.privilegeDisputes`) === 'No' || getValueByPath(basicForm, `forms[${formIndex}].data.conductDisclosure2.hospitalMisconductHistory.privilegeDisputes`) === undefined) {
+            let filterKeys = [`forms[${formIndex}].data.conductDisclosure2.hospitalMisconductHistory.privilegeDisputesText`, `forms[${formIndex}].data.conductDisclosure2.hospitalMisconductHistory.privilegeDisputesFile`, `forms[${formIndex}].data.conductDisclosure2.hospitalMisconductHistory.privilegeDisputesResponse`]
+            let temp = missingItems?.filter(data => !filterKeys?.includes(data?.key));
+            missingItems = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.disciplineCommittee`) === 'Yes') {
+            let filterKeys = [`forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.disciplineCommitteeResponse`]
+            let temp = missingItems?.filter(data => !filterKeys?.includes(data?.key));
+            missingItems = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.complaintsAndReportCommittee`) === 'Yes') {
+            let filterKeys = [`forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.complaintsAndReportCommitteeResponse`]
+            let temp = missingItems?.filter(data => !filterKeys?.includes(data?.key));
+            missingItems = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.investigation`) === 'Yes') {
+            let filterKeys = [`forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.investigationResponse`]
+            let temp = missingItems?.filter(data => !filterKeys?.includes(data?.key));
+            missingItems = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.randomReview`) === 'Yes') {
+            let filterKeys = [`forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.randomReviewResponse`]
+            let temp = missingItems?.filter(data => !filterKeys?.includes(data?.key));
+            missingItems = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.resultOfQac`) === 'Yes') {
+            let filterKeys = [`forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.resultOfQacResponse`]
+            let temp = missingItems?.filter(data => !filterKeys?.includes(data?.key));
+            missingItems = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.outcomeByTheCollege`) === 'Yes') {
+            let filterKeys = [`forms[${formIndex}].data.conductDisclosure1.professionalConductDisclosures.outcomeByTheCollegeResponse`]
+            let temp = missingItems?.filter(data => !filterKeys?.includes(data?.key));
+            missingItems = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.conductDisclosure2.hospitalMisconductHistory.advanceProceeding`) === 'Yes') {
+            let filterKeys = [`forms[${formIndex}].data.conductDisclosure2.hospitalMisconductHistory.advanceProceedingResponse`]
+            let temp = missingItems?.filter(data => !filterKeys?.includes(data?.key));
+            missingItems = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.conductDisclosure2.hospitalMisconductHistory.disciplinaryReviews`) === 'Yes') {
+            let filterKeys = [`forms[${formIndex}].data.conductDisclosure2.hospitalMisconductHistory.disciplinaryReviewsResponse`]
+            let temp = missingItems?.filter(data => !filterKeys?.includes(data?.key));
+            missingItems = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.conductDisclosure2.hospitalMisconductHistory.involuntaryRestriction`) === 'Yes') {
+            let filterKeys = [`forms[${formIndex}].data.conductDisclosure2.hospitalMisconductHistory.involuntaryRestrictionResponse`]
+            let temp = missingItems?.filter(data => !filterKeys?.includes(data?.key));
+            missingItems = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.conductDisclosure2.hospitalMisconductHistory.privilegeDisputes`) === 'Yes') {
+            let filterKeys = [`forms[${formIndex}].data.conductDisclosure2.hospitalMisconductHistory.privilegeDisputesResponse`]
+            let temp = missingItems?.filter(data => !filterKeys?.includes(data?.key));
+            missingItems = temp;
+        }
+        return missingItems;
+    }
+
     const handleSubmitApplicationReq = async (data) => {
         if (isEdited || data) {
             let temp = {
                 schemaId: basicForm?.forms?.[formIndex]?.schemaId,
                 data: basicForm?.forms?.[formIndex]?.data,
                 unFilledFields: warningFields?.map(data => data?.label),
-                acknowledged: true
+                acknowledged: true,
+                dataStatus: getDataStatus()?.filter(data => data?.mandatory)?.length > 0 ? 'SKIPPED_MANDATORY_FIELD' : getDataStatus()?.length > 0 ? 'SKIPPED_NON_MANDATORY_FIELD' : 'COMPLETED'
             }
             await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
                 .then(response => {

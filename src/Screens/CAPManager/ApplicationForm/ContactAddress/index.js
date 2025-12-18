@@ -131,6 +131,29 @@ const ContactAddress = ({ basicForm, setBasicForm, applicationId, getPreApplicat
     }
   }
 
+  const getValueByPath = (obj, path) => {
+    const keys = path.split(/[\.\[\]]+/).filter(Boolean);
+    console.log("path..........." + path, keys.reduce((acc, key) => acc && acc[isNaN(key) ? key : Number(key)], basicForm), basicForm, 'if')
+    return keys.reduce((acc, key) => acc && acc[isNaN(key) ? key : Number(key)], basicForm);
+  };
+
+  const getDataStatus = () => {
+    let missingItems = [];
+    let keyValuePair = [];
+    metadata?.map((data, index) => {
+      keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: uniqueLabels[index]?.label, mandatory: uniqueLabels[index]?.mandatory })
+    })
+    keyValuePair?.map(data => {
+      if (data?.value === "" || data?.value === null || data?.value === undefined || data?.value === 0) {
+        missingItems.push(data)
+      }
+    })
+
+    return missingItems;
+  }
+
+  console.log(getDataStatus(), 'check', getDataStatus()?.filter(data => data?.mandatory))
+
   const getMissingFields = () => {
     let missingKeys = [];
     let keyValuePair = [];
@@ -253,7 +276,8 @@ const ContactAddress = ({ basicForm, setBasicForm, applicationId, getPreApplicat
         schemaId: basicForm?.forms?.[formIndex]?.schemaId,
         data: basicForm?.forms?.[formIndex]?.data,
         unFilledFields: warningFields?.map(data => data?.label),
-        acknowledged: save ? basicForm?.forms?.[formIndex]?.acknowledged : true
+        acknowledged: save ? basicForm?.forms?.[formIndex]?.acknowledged : true,
+        dataStatus: getDataStatus()?.filter(data => data?.mandatory)?.length > 0 ? 'SKIPPED_MANDATORY_FIELD' : getDataStatus()?.length > 0 ? 'SKIPPED_NON_MANDATORY_FIELD' : 'COMPLETED'
       }
       await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
         .then(response => {
@@ -296,12 +320,6 @@ const ContactAddress = ({ basicForm, setBasicForm, applicationId, getPreApplicat
       }
     }
   }
-
-  const getValueByPath = (obj, path) => {
-    const keys = path.split(/[\.\[\]]+/).filter(Boolean);
-    console.log("path..........." + path, keys.reduce((acc, key) => acc && acc[isNaN(key) ? key : Number(key)], basicForm), basicForm, 'if')
-    return keys.reduce((acc, key) => acc && acc[isNaN(key) ? key : Number(key)], basicForm);
-  };
 
   const getIsEdited = (value) => {
     setIsEdited(value)

@@ -418,6 +418,21 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
     return missing;
   };
 
+  const getAllMissingDocs = () => {
+    const requiredDocs = basicForm?.documentsRequired || [];
+    const uploaded = tempValue?.table || [];
+    const missing = [];
+    requiredDocs.forEach((doc) => {
+      const label = docLabel(doc);
+      if (
+        uploaded.filter((row) => row.documentType === label && row.verified && row.valid).length === 0
+      ) {
+        missing.push(doc);
+      }
+    });
+    return missing;
+  };
+
   const handleContinue = async (action) => {
     if (
       tempValue?.table &&
@@ -432,6 +447,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
       data: basicForm?.forms?.[formIndex]?.data,
       unFilledFields: getMissingDocs()?.map((doc) => docLabel(doc)),
       acknowledged: getMissingDocs()?.map((doc) => docLabel(doc))?.length !== 0 ? false : true,
+      dataStatus: (getMissingDocs()?.map((doc) => docLabel(doc))?.length !== 0 || showRedBorderForESign) ? 'SKIPPED_MANDATORY_FIELD' : getAllMissingDocs()?.map((doc) => docLabel(doc))?.length !== 0 ? 'SKIPPED_NON_MANDATORY_FIELD' : 'COMPLETED'
     };
     try {
       const response = await PUT(

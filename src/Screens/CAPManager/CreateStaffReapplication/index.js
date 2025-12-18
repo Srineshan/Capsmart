@@ -234,9 +234,9 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
         queryParams.append('applicantTypeId', selectedApplicantType);
       }
 
-      if (applicationStatus && selectedReappointmentStatus !== 'NOT_SENT') {
-        queryParams.append('applicationStatus', applicationStatus);
-      }
+      // if (applicationStatus && selectedReappointmentStatus !== 'NOT_SENT') {
+      //   queryParams.append('applicationStatus', applicationStatus);
+      // }
 
       if (selectedReappointmentStatus) {
         queryParams.append('reappointmentStatus', selectedReappointmentStatus);
@@ -286,9 +286,9 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
         queryParams.append('applicantTypeId', selectedApplicantType);
       }
 
-      if (applicationStatus && selectedReappointmentStatus !== 'NOT_SENT') {
-        queryParams.append('applicationStatus', applicationStatus);
-      }
+      // if (applicationStatus && selectedReappointmentStatus !== 'NOT_SENT') {
+      //   queryParams.append('applicationStatus', applicationStatus);
+      // }
 
       if (selectedReappointmentStatus) {
         queryParams.append('reappointmentStatus', selectedReappointmentStatus);

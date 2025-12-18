@@ -391,7 +391,8 @@ const PACSRequest = ({
         otherAccessType: otherAccessType
       },
       acknowledged: true,
-      esign: { esign: isSigned ? encryptedText : '', name: isSigned ? name : '', signedDate: isSigned ? currentDate : '' }
+      esign: { esign: isSigned ? encryptedText : '', name: isSigned ? name : '', signedDate: isSigned ? currentDate : '' },
+      dataStatus: 'COMPLETED'
     }
     await PUT(`application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
       .then(response => {
