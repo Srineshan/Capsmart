@@ -101,6 +101,10 @@
     grid-column: 1/-1;
 }
 
+.licenseGrid> :nth-child(8) {
+    grid-column: 1/-1;
+}
+
 .progressStyle {
     height: 10px;
     width: 100%;

@@ -1480,7 +1480,26 @@ const ApplicationFieldCard = ({
       object?.then?.required?.includes(fieldKey),
       "275",
       parentData,
-      object
+      object,
+      getValueByPath(
+        basicForm,
+        `${basicpath}.${baseKey}.${getAllThenStrings(object)?.filter(
+          (data) => data?.value === fieldKey
+        )[0]?.key
+        }`
+      ) ==
+        getAllThenStrings(object)?.filter(
+          (data) => data?.value === fieldKey
+        )[0]?.checkValue == null ? null : getAllThenStrings(object)?.filter(
+          (data) => data?.value === fieldKey
+        )[0]?.checkValue,
+      getValueByPath(
+        basicForm,
+        `${basicpath}.${baseKey}.${getAllThenStrings(object)?.filter(
+          (data) => data?.value === fieldKey
+        )[0]?.key
+        }`
+      )
     );
     // if (object?.then?.required?.includes(fieldKey) !== undefined ? (!object?.then?.required?.includes(fieldKey) || object?.if?.properties !== undefined && getValueByPath(basicForm, `${basicpath}.${baseKey}.${Object.entries(object?.if?.properties)?.map(([key, data]) => key)}`) === Object.entries(object?.if?.properties)?.map(([key, data]) => data)[0]?.const) : getAllThenStrings(object)?.map(data => data?.value)?.includes(fieldKey) ? (getAllThenStrings(object)?.map(data => data?.value)?.includes(fieldKey) && (getAllThenStrings(object)?.map(data => data?.value)?.includes(fieldKey) && getValueByPath(basicForm, `${basicpath}.${baseKey}.${getAllThenStrings(object)?.filter(data => data?.value === fieldKey)[0]?.key}`) === getAllThenStrings(object)?.filter(data => data?.value === fieldKey)[0]?.checkValue)) : true && fieldData.fieldType) {
     let firstObject;
@@ -1500,7 +1519,7 @@ const ApplicationFieldCard = ({
             object?.if?.properties
           )?.map(([key, data]) => key)}`
         ),
-        dynamicValue
+        dynamicValue,
       );
     }
     console.log(dynamicValue);
@@ -1516,13 +1535,19 @@ const ApplicationFieldCard = ({
                 object?.if?.properties
               )?.map(([key, data]) => key)}`
             )
-          )
-          : getValueByPath(
-            basicForm,
-            `${basicpath}.${baseKey}.${Object.entries(
-              object?.if?.properties
-            )?.map(([key, data]) => key)}`
-          ) === firstObject[dynamicValue])
+          ) : firstObject[dynamicValue] == null ?
+            getValueByPath(
+              basicForm,
+              `${basicpath}.${baseKey}.${Object.entries(
+                object?.if?.properties
+              )?.map(([key, data]) => key)}`
+            ) == firstObject[dynamicValue]
+            : getValueByPath(
+              basicForm,
+              `${basicpath}.${baseKey}.${Object.entries(
+                object?.if?.properties
+              )?.map(([key, data]) => key)}`
+            ) === firstObject[dynamicValue])
         : getAllThenStrings(object)
           ?.map((data) => data?.value)
           ?.includes(fieldKey)
@@ -1532,16 +1557,19 @@ const ApplicationFieldCard = ({
           getAllThenStrings(object)
             ?.map((data) => data?.value)
             ?.includes(fieldKey) &&
-          getValueByPath(
+          (getValueByPath(
             basicForm,
             `${basicpath}.${baseKey}.${getAllThenStrings(object)?.filter(
               (data) => data?.value === fieldKey
             )[0]?.key
             }`
-          ) ===
-          getAllThenStrings(object)?.filter(
-            (data) => data?.value === fieldKey
-          )[0]?.checkValue
+          ) ==
+            (getAllThenStrings(object)?.filter(
+              (data) => data?.value === fieldKey
+            )[0]?.checkValue == null ? null :
+              getAllThenStrings(object)?.filter(
+                (data) => data?.value === fieldKey
+              )[0]?.checkValue))
           : true && fieldData.fieldType
     ) {
       if (
@@ -2168,7 +2196,8 @@ const ApplicationFieldCard = ({
         case "datepicker":
 
           const shouldSetMinDateToToday = (() => {
-            const validation = object?.customValidations?.find((validation) => {
+            const customValidations = (object?.type === 'object') ? object?.customValidations : object?.items?.customValidations;
+            const validation = customValidations?.find((validation) => {
               const validationDate1 = validation.parameters.date1;
               const fieldPath = `${baseKey}.${fieldKey}`;
               return (
@@ -2211,15 +2240,15 @@ const ApplicationFieldCard = ({
 
           // Check if Date2 is greater than Date1
           const minDateForDate2 = (() => {
-            const validation = object?.customValidations?.find((validation) =>
+            const customValidations = (object?.type === 'object') ? object?.customValidations : object?.items?.customValidations;
+            const validation = customValidations?.find((validation) =>
               validation.condition === "Date2GreaterThanDate1" &&
               validation.parameters.date2 === `${baseKey}.${fieldKey}`
             );
             if (validation) {
               const date1Path = `${basicpath}.${baseKey}.${validation.parameters.date1.split('.').pop()}`;
               const date1Value = getValueByPath(basicForm, date1Path);
-
-              if (isValidDateString(date1Value)) {
+              if (isValidDate(date1Value)) {
                 return new Date(date1Value);
               }
             }
@@ -2227,7 +2256,8 @@ const ApplicationFieldCard = ({
           })();
 
           // Check if the birthday should be less than today
-          const shouldSetMaxDateForBirthday = object?.customValidations?.some(
+          const customValidationsForBirthday = (object?.type === 'object') ? object?.customValidations : object?.items?.customValidations;
+          const shouldSetMaxDateForBirthday = customValidationsForBirthday?.some(
             (validation) =>
               validation.condition === "Age_GreaterThan25LessThan100" &&
               `${baseKey}.${fieldKey}` === validation.parameters.date1

@@ -91,6 +91,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
     '-----BEGIN PUBLIC KEY-----MIGeMA0GCSqGSIb3DQEBAQUAA4GMADCBiAKBgHA5SDu30/8uQAqqkQE0NuY4ePBptMGufG6AWnC/88YVLXi4thh7M8VU6kElVJkfXL5DwlfVnwPb08+PK1EcaOWWtp2gdQitkohjZLB9zVE+0OtRrzSc33wItf7Iwisi5dHPggHvfOp5fr+QYWFMa/kKYl3SgNo8fryeLbKKalmdAgMBAAE=-----END PUBLIC KEY-----';
   const [encryptedText, setEncryptedText] = useState('');
   const [currentDate] = useState(format(new Date(), dateFormat));
+  const [skipReason, setSkipReason] = useState();
 
   useEffect(() => {
     if (eSignTypeContent) {
@@ -109,6 +110,8 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
   useEffect(() => {
     if (!basicForm || formIndex === undefined) return;
     getFormSchema();
+    let tempSkipReason = basicForm?.forms?.[formIndex]?.data?.skipReason;
+    setSkipReason(tempSkipReason ? tempSkipReason : {})
     const isLastForm =
       basicForm?.forms?.filter((data) => data?.formCategory === 'Form')?.length === formIndex + 1;
     setNavigateURL(
@@ -406,12 +409,12 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
     const requiredDocs = basicForm?.documentsRequired || [];
     const uploaded = tempValue?.table || [];
     const missing = [];
-    requiredDocs.forEach((doc) => {
+    requiredDocs?.forEach((doc) => {
       const label = docLabel(doc);
-      if (
-        doc?.required &&
-        uploaded.filter((row) => row.documentType === label && row.verified && row.valid).length === 0
-      ) {
+      const key = normalizeKey(doc?.document?.shortName || label);
+      const hasSkipReason = Boolean(skipReason?.[key]);
+      const isUploadedAndValid = uploaded?.some((row) => row?.documentType === label && row?.verified && row?.valid);
+      if (doc?.required && !isUploadedAndValid && !hasSkipReason) {
         missing.push(doc);
       }
     });
@@ -422,11 +425,12 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
     const requiredDocs = basicForm?.documentsRequired || [];
     const uploaded = tempValue?.table || [];
     const missing = [];
-    requiredDocs.forEach((doc) => {
+    requiredDocs?.forEach((doc) => {
       const label = docLabel(doc);
-      if (
-        uploaded.filter((row) => row.documentType === label && row.verified && row.valid).length === 0
-      ) {
+      const key = normalizeKey(doc?.document?.shortName || label);
+      const hasSkipReason = Boolean(skipReason?.[key]);
+      const isUploadedAndValid = uploaded?.some((row) => row?.documentType === label && row?.verified && row?.valid);
+      if (!isUploadedAndValid && !hasSkipReason) {
         missing.push(doc);
       }
     });
@@ -652,6 +656,35 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
     return temp;
   };
 
+  const normalizeKey = (shortName) => shortName.trim().toLowerCase().replace(/\s+/g, "_");
+
+  const handleSkipReason = async (shortName, reason) => {
+    const key = normalizeKey(shortName);
+    let temp;
+    setSkipReason((prev) => {
+      const updated = {
+        ...prev,
+        [key]: reason,
+      };
+      temp = updated;
+      return updated;
+    });
+    tempValue.skipReason = temp;
+    const payload = {
+      schemaId: basicForm?.forms?.[formIndex]?.schemaId,
+      data: tempValue,
+    };
+    await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, payload,)
+      .then((response) => {
+        setBasicForm(response?.data);
+        SuccessToaster('Application Updated Successfully');
+      })
+      .catch((error) => {
+        console.error(error);
+        ErrorToaster('Unexpected Error Updating Application');
+      });
+  }
+
   const missingDocs = getMissingDocs();
   const tableValues = tempValue?.table || [];
 
@@ -749,13 +782,13 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                   <div>
                     <div
                       className={`${style.requiredDocumentCard} ${style.tableGrid
-                        } ${basicForm?.forms?.[formIndex]?.data !== null &&
+                        } ${skipReason?.[normalizeKey(data?.document?.shortName)] ? '' : (basicForm?.forms?.[formIndex]?.data !== null &&
                           (tempValue?.table?.filter(
                             (tableData) =>
                               tableData?.documentType ===
                               data?.document?.shortName
                           )?.length === 0 || !(tempValue?.table?.filter((tableData) => tableData?.documentType === data?.document?.shortName)?.[0]?.verified && tempValue?.table?.filter((tableData) => tableData?.documentType === data?.document?.shortName)?.[0]?.valid)) &&
-                          data?.required
+                          data?.required)
                           ? style.redBorder
                           : ""
                         } ${index % 2 === 0
@@ -781,11 +814,23 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                       >
                         {data?.required ? "Required" : "Recommended"}
                       </div>
-                      <div
-                        className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}
-                      >
-                        {data?.instruction}
-                      </div>
+                      {data?.required && (
+                        <div
+                          className={` ${style.fullWidth}`}
+                        >
+                          <CommonSelectField
+                            value={skipReason?.[normalizeKey(data?.document?.shortName)] ? skipReason?.[normalizeKey(data?.document?.shortName)] : ''}
+                            onChange={(e) => handleSkipReason(data?.document?.shortName, e.target.value)}
+                            className={`${style.fullWidth} ${style.verticalAlignCenter}`}
+                            firstOptionLabel={'Select A Reason For Skipping This Step'}
+                            firstOptionValue={''}
+                            valueList={['Current Document Not Received', 'Replacement Document Requested']}
+                            labelList={['Current Document Not Received', 'Replacement Document Requested']}
+                            disabledList={['Current Document Not Received', 'Replacement Document Requested'].map(() => false)}
+                          />
+                          {/* {data?.instruction} */}
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))}

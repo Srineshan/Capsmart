@@ -429,7 +429,7 @@ const App = ({ props }) => {
     if (cookie.get("authorization") === 'undefined') {
       cookie.remove("authorization", {
         path: "/",
-        domain: window.location.hostname?.split('.')?.length >= 3 ? `.${window.location.hostname?.split('.')?.slice(-2)?.join('.')}` : window.location.hostname,
+        domain: window.location.hostname?.split('.')?.length >= 3 ? window.location.hostname?.split('.')?.slice(-2)?.join('.') : window.location.hostname,
         secure: true,
         sameSite: 'none',
       });
@@ -446,7 +446,7 @@ const App = ({ props }) => {
       if (isSessionTokenExpired(cookie.get("authorization"))) {
         cookie.remove("authorization", {
           path: "/",
-          domain: window.location.hostname?.split('.')?.length >= 3 ? `.${window.location.hostname?.split('.')?.slice(-2)?.join('.')}` : window.location.hostname,
+          domain: window.location.hostname?.split('.')?.length >= 3 ? window.location.hostname?.split('.')?.slice(-2)?.join('.') : window.location.hostname,
           secure: true,
           sameSite: 'none',
         });
@@ -461,7 +461,7 @@ const App = ({ props }) => {
         console.log('sessionToken', Date.now() > decodedToken.exp * 1000, Date.now(), decodedToken.exp * 1000)
         cookie.remove("authorization", {
           path: "/",
-          domain: window.location.hostname?.split('.')?.length >= 3 ? `.${window.location.hostname?.split('.')?.slice(-2)?.join('.')}` : window.location.hostname,
+          domain: window.location.hostname?.split('.')?.length >= 3 ? window.location.hostname?.split('.')?.slice(-2)?.join('.') : window.location.hostname,
           secure: true,
           sameSite: 'none',
         });
@@ -772,7 +772,7 @@ const App = ({ props }) => {
           console.error('Failed to refresh token:', error);
           cookie.remove("authorization", {
             path: "/",
-            domain: window.location.hostname?.split('.')?.length >= 3 ? `.${window.location.hostname?.split('.')?.slice(-2)?.join('.')}` : window.location.hostname,
+            domain: window.location.hostname?.split('.')?.length >= 3 ? window.location.hostname?.split('.')?.slice(-2)?.join('.') : window.location.hostname,
             secure: true,
             sameSite: 'none',
           });
@@ -796,7 +796,7 @@ const App = ({ props }) => {
     } else {
       cookie.remove("authorization", {
         path: "/",
-        domain: window.location.hostname?.split('.')?.length >= 3 ? `.${window.location.hostname?.split('.')?.slice(-2)?.join('.')}` : window.location.hostname,
+        domain: window.location.hostname?.split('.')?.length >= 3 ? window.location.hostname?.split('.')?.slice(-2)?.join('.') : window.location.hostname,
         secure: true,
         sameSite: 'none',
       });
@@ -915,7 +915,7 @@ const App = ({ props }) => {
         ErrorToaster2("Login failed. Please try again. If the issue persists, please contact the administrator.")
         cookie.remove("authorization", {
           path: "/",
-          domain: window.location.hostname?.split('.')?.length >= 3 ? `.${window.location.hostname?.split('.')?.slice(-2)?.join('.')}` : window.location.hostname,
+          domain: window.location.hostname?.split('.')?.length >= 3 ? window.location.hostname?.split('.')?.slice(-2)?.join('.') : window.location.hostname,
           secure: true,
           sameSite: 'none',
         });

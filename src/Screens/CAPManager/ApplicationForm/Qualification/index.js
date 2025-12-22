@@ -115,6 +115,16 @@ const Qualification = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                 missingKeys.push(data)
             }
         })
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.certifications.file`)) {
+            let filterKeys = [`forms[${formIndex}].data.certifications.reasonForSkip`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.certifications.reasonForSkip`)) {
+            let filterKeys = [`forms[${formIndex}].data.certifications.file`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
         if (missingKeys?.length !== 0) {
             setShowValidationDialog(true)
         } else {

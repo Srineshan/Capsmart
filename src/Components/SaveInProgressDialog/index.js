@@ -41,12 +41,19 @@ const SaveInProgressDialog = ({ getIsOpen }) => {
         navigate('/');
     }
 
+    console.log(localStorage.getItem(`totalTime_${applicationId}`), 'totalTime', Math.floor(parseFloat(localStorage.getItem(`totalTime_${applicationId}`)) / 60000))
+
     const handleSubmit = async () => {
         if (taskId !== undefined && taskId !== 'undefined' && taskId !== null) {
             let tempTask = taskDetails;
             tempTask.details.application.lastSavedSection = `${section}/${step}`;
             await PUT(`task-management-service/task/${taskId}`, tempTask);
         }
+        let timeData = {
+            "value": Math.floor(parseFloat(localStorage.getItem(`totalTime_${applicationId}`)) / 60000),
+            "unit": "MINUTES"
+        }
+        await PUT(`application-management-service/application/${applicationId}/completionDuration`, timeData)
         await PUT(
             `application-management-service/application/${applicationId}/saveInprogress`,
             `${section}/${step}`

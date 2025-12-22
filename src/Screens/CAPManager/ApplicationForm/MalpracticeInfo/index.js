@@ -106,6 +106,16 @@ const MalpracticeInfo = ({ basicForm, setBasicForm, applicationId, getPreApplica
                 missingKeys.push(data)
             }
         })
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.insuranceCarrierInformation.file`)) {
+            let filterKeys = [`forms[${formIndex}].data.insuranceCarrierInformation.reasonForSkip`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.insuranceCarrierInformation.reasonForSkip`)) {
+            let filterKeys = [`forms[${formIndex}].data.insuranceCarrierInformation.file`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
         if (missingKeys?.length !== 0) {
             setShowValidationDialog(true)
         } else {

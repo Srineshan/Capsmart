@@ -18,7 +18,16 @@ const ProgressCard = ({ dataType, title, timeNumber, timeText, progressStyle, ba
         // Retrieve stored time from localStorage or initialize it to 0
         const key = applicationId ? `totalTime_${applicationId}` : 'totalTime';
         const savedTime = localStorage.getItem(key);
-        return savedTime ? parseFloat(savedTime) : 0;
+        if (savedTime) {
+            return parseFloat(savedTime);
+        }
+        // If not in localStorage, check basicForm?.completionDuration?.value
+        // This handles cases where user is on a different browser and time was saved in API
+        // completionDuration.value is in minutes, convert to milliseconds
+        if (basicForm?.completionDuration?.value) {
+            return parseFloat(basicForm.completionDuration.value) * 60000;
+        }
+        return 0;
     });
 
     // Use refs to avoid stale closures in intervals
@@ -50,11 +59,28 @@ const ProgressCard = ({ dataType, title, timeNumber, timeText, progressStyle, ba
             setDisplayTime(savedTimeValue);
         } else {
             // Reset to 0 if no saved time for new applicationId
+            // completionDuration will be checked separately when basicForm loads
             setTotalTime(0);
             totalTimeRef.current = 0;
             setDisplayTime(0);
         }
     }, [applicationId]);
+
+    // Check completionDuration when it becomes available (only if localStorage doesn't have the value)
+    // This handles cases where user is on a different browser and time was saved in API
+    useEffect(() => {
+        const key = applicationId ? `totalTime_${applicationId}` : 'totalTime';
+        const savedTime = localStorage.getItem(key);
+        
+        // Only check completionDuration if localStorage doesn't have the value
+        // completionDuration.value is in minutes, convert to milliseconds
+        if (savedTime === null && basicForm?.completionDuration?.value) {
+            const completionDurationValue = parseFloat(basicForm.completionDuration.value) * 60000;
+            setTotalTime(completionDurationValue);
+            totalTimeRef.current = completionDurationValue;
+            setDisplayTime(completionDurationValue);
+        }
+    }, [applicationId, basicForm?.completionDuration?.value]);
 
     // Sync refs with state (only update refs, don't trigger state updates)
     // This prevents stale closures in intervals

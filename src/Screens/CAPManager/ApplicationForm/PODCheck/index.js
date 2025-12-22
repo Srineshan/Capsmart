@@ -51,6 +51,10 @@ const PODCheck = ({ basicForm, setBasicForm }) => {
     navigate(`/applicationForm/${applicationId}/${basicForm?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[0]?.formCategory}/${btoa(basicForm?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[0]?.schemaCategory)}`);
   }
 
+  const handleBack = () => {
+    navigate(`/applicationForm/${applicationId}/${basicForm?.forms[basicForm?.forms?.filter(data => data?.formCategory === 'Form' || data?.formCategory === 'Disclosure')?.length - 1]?.formCategory}/${btoa(basicForm?.forms[basicForm?.forms?.filter(data => data?.formCategory === 'Form' || data?.formCategory === 'Disclosure')?.length - 1]?.schemaCategory)}`);
+  }
+
   const getIsSaveInProgressOpen = (value) => {
     setIsSaveInProgressOpen(value);
   };
@@ -167,7 +171,7 @@ const PODCheck = ({ basicForm, setBasicForm }) => {
           <div className={style.stickyContainer}>
             <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
             <div className={style.twoColForButton}>
-              <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
+              <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleBack()}>BACK</div>
               <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue()}>CONTINUE</div>
             </div>
           </div>

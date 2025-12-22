@@ -105,6 +105,26 @@ const Education = ({ basicForm, setBasicForm, applicationId, getPreApplication }
                 missingKeys.push(data)
             }
         })
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.graduation.file`)) {
+            let filterKeys = [`forms[${formIndex}].data.graduation.reasonForSkip`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.graduation.reasonForSkip`)) {
+            let filterKeys = [`forms[${formIndex}].data.graduation.file`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
+        if (getValueByPath(basicForm, `undefined.graduation.file`)) {
+            let filterKeys = [`undefined.graduation.reasonForSkip`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
+        if (getValueByPath(basicForm, `undefined.graduation.reasonForSkip`)) {
+            let filterKeys = [`undefined.graduation.file`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
         // if (missingKeys?.length !== 0) {
         //     setShowValidationDialog(true)
         // }
