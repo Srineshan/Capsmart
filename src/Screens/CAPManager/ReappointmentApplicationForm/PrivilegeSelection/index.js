@@ -1930,29 +1930,48 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                 :
                 data?.privilegeDetails?.corePrivileges?.privilegesByCategories?.map(
                   (categories, index) => (
-                    <div>
-                      <div className={style.categoryGrid}>
-                        <div className={style.itemLeft}>
-                          <strong>
-                            {categories?.category === null
-                              ? ""
-                              : categories?.category}
-                          </strong>
-                        </div>
-                      </div>
-                      <>
-                        {categories?.privileges?.map((privileges) => (
-                          <div className={style.privilegeCodeGrid}>
-                            <div className={style.itemLeft}>
-                              <strong>{privileges?.privilegeId || ""}</strong>
-                            </div>
-                            <div className={style.itemLeft}>
-                              {privileges?.title || ""}
-                            </div>
+                    <>
+                      <div>
+                        <div className={style.categoryGrid}>
+                          <div className={style.itemLeft}>
+                            <strong>
+                              {categories?.category === null
+                                ? ""
+                                : categories?.category}
+                            </strong>
                           </div>
-                        ))}
-                      </>
-                    </div>
+                        </div>
+                        <>
+                          {categories?.privileges?.map((privileges) => (
+                            <div className={style.privilegeCodeGrid}>
+                              <div className={style.itemLeft}>
+                                <strong>{privileges?.privilegeId || ""}</strong>
+                              </div>
+                              <div className={style.itemLeft}>
+                                {privileges?.title || ""}
+                              </div>
+                            </div>
+                          ))}
+                        </>
+                      </div>
+                      {categories?.subCategories?.map((subCategory, subIndex) => (
+                        <div className={style.marginLeft20}>
+                          <div className={style.categoryGrid}>
+                            <div className={style.itemLeft}><strong>{subCategory?.subCategory === null ? '' : subCategory?.subCategory}</strong></div>
+                          </div>
+                          <>{
+                            subCategory?.privileges?.map(privileges => (
+                              <div className={style.privilegeCodeGrid}>
+                                <div className={style.itemLeft}><strong>{privileges?.privilegeId || ''}</strong></div>
+                                <div className={style.itemLeft}>{privileges?.title || ''}</div>
+                              </div>
+
+                            ))
+                          }
+                          </>
+                        </div>
+                      ))}
+                    </>
                   )
                 )
             )}
@@ -2331,29 +2350,48 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                 :
                 data?.privilegeDetails?.corePrivileges?.privilegesByCategories?.map(
                   (categories, index) => (
-                    <div>
-                      <div className={style.categoryGrid}>
-                        <div className={style.itemLeft}>
-                          <strong>
-                            {categories?.category === null
-                              ? ""
-                              : categories?.category}
-                          </strong>
-                        </div>
-                      </div>
-                      <>
-                        {categories?.privileges?.map((privileges) => (
-                          <div className={style.privilegeCodeGrid}>
-                            <div className={style.itemLeft}>
-                              <strong>{privileges?.privilegeId || ""}</strong>
-                            </div>
-                            <div className={style.itemLeft}>
-                              {privileges?.title || ""}
-                            </div>
+                    <>
+                      <div>
+                        <div className={style.categoryGrid}>
+                          <div className={style.itemLeft}>
+                            <strong>
+                              {categories?.category === null
+                                ? ""
+                                : categories?.category}
+                            </strong>
                           </div>
-                        ))}
-                      </>
-                    </div>
+                        </div>
+                        <>
+                          {categories?.privileges?.map((privileges) => (
+                            <div className={style.privilegeCodeGrid}>
+                              <div className={style.itemLeft}>
+                                <strong>{privileges?.privilegeId || ""}</strong>
+                              </div>
+                              <div className={style.itemLeft}>
+                                {privileges?.title || ""}
+                              </div>
+                            </div>
+                          ))}
+                        </>
+                      </div>
+                      {categories?.subCategories?.map((subCategory, subIndex) => (
+                        <div className={style.marginLeft20}>
+                          <div className={style.categoryGrid}>
+                            <div className={style.itemLeft}><strong>{subCategory?.subCategory === null ? '' : subCategory?.subCategory}</strong></div>
+                          </div>
+                          <>{
+                            subCategory?.privileges?.map(privileges => (
+                              <div className={style.privilegeCodeGrid}>
+                                <div className={style.itemLeft}><strong>{privileges?.privilegeId || ''}</strong></div>
+                                <div className={style.itemLeft}>{privileges?.title || ''}</div>
+                              </div>
+
+                            ))
+                          }
+                          </>
+                        </div>
+                      ))}
+                    </>
                   )
                 )
             )}
@@ -2724,29 +2762,48 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
               )
               : privilegeData?.privilegeDetails?.corePrivileges?.privilegesByCategories?.map(
                 (categories, index) => (
-                  <div>
-                    <div className={style.categoryGrid}>
-                      <div className={style.itemLeft}>
-                        <strong>
-                          {categories?.category === null
-                            ? ""
-                            : categories?.category}
-                        </strong>
-                      </div>
-                    </div>
-                    <>
-                      {categories?.privileges?.map((privileges) => (
-                        <div className={style.privilegeCodeGrid}>
-                          <div className={style.itemLeft}>
-                            <strong>{privileges?.privilegeId || ""}</strong>
-                          </div>
-                          <div className={style.itemLeft}>
-                            {privileges?.title || ""}
-                          </div>
+                  <>
+                    <div>
+                      <div className={style.categoryGrid}>
+                        <div className={style.itemLeft}>
+                          <strong>
+                            {categories?.category === null
+                              ? ""
+                              : categories?.category}
+                          </strong>
                         </div>
-                      ))}
-                    </>
-                  </div>
+                      </div>
+                      <>
+                        {categories?.privileges?.map((privileges) => (
+                          <div className={style.privilegeCodeGrid}>
+                            <div className={style.itemLeft}>
+                              <strong>{privileges?.privilegeId || ""}</strong>
+                            </div>
+                            <div className={style.itemLeft}>
+                              {privileges?.title || ""}
+                            </div>
+                          </div>
+                        ))}
+                      </>
+                    </div>
+                    {categories?.subCategories?.map((subCategory, subIndex) => (
+                      <div className={style.marginLeft20}>
+                        <div className={style.categoryGrid}>
+                          <div className={style.itemLeft}><strong>{subCategory?.subCategory === null ? '' : subCategory?.subCategory}</strong></div>
+                        </div>
+                        <>{
+                          subCategory?.privileges?.map(privileges => (
+                            <div className={style.privilegeCodeGrid}>
+                              <div className={style.itemLeft}><strong>{privileges?.privilegeId || ''}</strong></div>
+                              <div className={style.itemLeft}>{privileges?.title || ''}</div>
+                            </div>
+
+                          ))
+                        }
+                        </>
+                      </div>
+                    ))}
+                  </>
                 )
               )}
             {privilegeData?.privilegeDetails?.corePrivileges

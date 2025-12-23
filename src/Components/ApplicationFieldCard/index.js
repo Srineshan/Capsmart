@@ -288,9 +288,9 @@ const ApplicationFieldCard = ({
       } else {
         file = await addNewDocument(value);
       }
-      console.log(file);
       current[lastKey] = file?.file;
       current['rowId'] = file?.id;
+      console.log(file, 'file', lastKey, current, basicForm);
       setIsLoading(false);
     } else {
       current[lastKey] = value;
@@ -1499,7 +1499,8 @@ const ApplicationFieldCard = ({
           (data) => data?.value === fieldKey
         )[0]?.key
         }`
-      )
+      ),
+      parentData?.required?.includes(fieldKey) || parentData?.then?.required?.includes(fieldKey) || object?.required?.includes(fieldKey) || object?.then?.required?.includes(fieldKey)
     );
     // if (object?.then?.required?.includes(fieldKey) !== undefined ? (!object?.then?.required?.includes(fieldKey) || object?.if?.properties !== undefined && getValueByPath(basicForm, `${basicpath}.${baseKey}.${Object.entries(object?.if?.properties)?.map(([key, data]) => key)}`) === Object.entries(object?.if?.properties)?.map(([key, data]) => data)[0]?.const) : getAllThenStrings(object)?.map(data => data?.value)?.includes(fieldKey) ? (getAllThenStrings(object)?.map(data => data?.value)?.includes(fieldKey) && (getAllThenStrings(object)?.map(data => data?.value)?.includes(fieldKey) && getValueByPath(basicForm, `${basicpath}.${baseKey}.${getAllThenStrings(object)?.filter(data => data?.value === fieldKey)[0]?.key}`) === getAllThenStrings(object)?.filter(data => data?.value === fieldKey)[0]?.checkValue)) : true && fieldData.fieldType) {
     let firstObject;
@@ -1604,7 +1605,7 @@ const ApplicationFieldCard = ({
           getAllLabels({
             label: fieldData?.label,
             path: `${basicpath}.${baseKey}.${fieldKey}`,
-            mandatory: parentData?.required?.includes(fieldKey) || object.required?.includes(fieldKey),
+            mandatory: parentData?.required?.includes(fieldKey) || parentData?.then?.required?.includes(fieldKey) || object?.required?.includes(fieldKey) || object?.then?.required?.includes(fieldKey),
           });
         }
       }
@@ -1617,9 +1618,9 @@ const ApplicationFieldCard = ({
                   {fieldData.label}
                   {isLableEmpty(fieldData.label)
                     ? false
-                    : (object.required?.includes(fieldKey) ||
+                    : (object?.required?.includes(fieldKey) || object?.then?.required?.includes(fieldKey) ||
                       (parentData !== null
-                        ? parentData.required?.includes(fieldKey)
+                        ? parentData?.required?.includes(fieldKey) || parentData?.then?.required?.includes(fieldKey)
                         : false)) &&
                     "*"}
                 </div>
@@ -1661,9 +1662,9 @@ const ApplicationFieldCard = ({
                 required={
                   isLableEmpty(fieldData.label)
                     ? false
-                    : object.required?.includes(fieldKey) ||
+                    : object.required?.includes(fieldKey) || object?.then?.required?.includes(fieldKey) ||
                     (parentData !== null
-                      ? parentData.required?.includes(fieldKey)
+                      ? parentData?.required?.includes(fieldKey) || parentData?.then?.required?.includes(fieldKey)
                       : false)
                 }
                 // Hide warning specifically for specialty field
@@ -1685,9 +1686,9 @@ const ApplicationFieldCard = ({
                   {fieldData.label}
                   {isLableEmpty(fieldData.label)
                     ? false
-                    : (object.required?.includes(fieldKey) ||
+                    : (object?.required?.includes(fieldKey) || object?.then?.required?.includes(fieldKey) ||
                       (parentData !== null
-                        ? parentData.required?.includes(fieldKey)
+                        ? parentData?.required?.includes(fieldKey) || parentData?.then?.required?.includes(fieldKey)
                         : false)) &&
                     "*"}
                 </div>
@@ -1705,9 +1706,9 @@ const ApplicationFieldCard = ({
               <div>
                 <div className={`${style.lableStyle}`}>
                   {fieldData.label}
-                  {(object.required?.includes(fieldKey) ||
+                  {(object?.required?.includes(fieldKey) || object?.then?.required?.includes(fieldKey) ||
                     (parentData !== null
-                      ? parentData.required?.includes(fieldKey)
+                      ? parentData?.required?.includes(fieldKey) || parentData?.then?.required?.includes(fieldKey)
                       : false)) &&
                     "*"}
                 </div>
@@ -1738,9 +1739,9 @@ const ApplicationFieldCard = ({
                   required={
                     isLableEmpty(fieldData.label)
                       ? false
-                      : object.required?.includes(fieldKey) ||
+                      : object?.required?.includes(fieldKey) || object?.then?.required?.includes(fieldKey) ||
                       (parentData !== null
-                        ? parentData.required?.includes(fieldKey)
+                        ? parentData.required?.includes(fieldKey) || parentData?.then?.required?.includes(fieldKey)
                         : false)
                   }
                   // warning={warningFields?.map(data => data?.key)?.includes(`${basicpath}.${baseKey}.${fieldKey}`)
@@ -1767,9 +1768,9 @@ const ApplicationFieldCard = ({
                   {fieldData.label}
                   {isLableEmpty(fieldData.label)
                     ? false
-                    : (object.required?.includes(fieldKey) ||
+                    : (object?.required?.includes(fieldKey) || object?.then?.required?.includes(fieldKey) ||
                       (parentData !== null
-                        ? parentData.required?.includes(fieldKey)
+                        ? parentData?.required?.includes(fieldKey) || parentData?.then?.required?.includes(fieldKey)
                         : false)) &&
                     "*"}
                 </div>
@@ -1807,9 +1808,9 @@ const ApplicationFieldCard = ({
                     {fieldData.label}
                     {isLableEmpty(fieldData.label)
                       ? false
-                      : (object.required?.includes(fieldKey) ||
+                      : (object?.required?.includes(fieldKey) || object?.then?.required?.includes(fieldKey) ||
                         (parentData !== null
-                          ? parentData.required?.includes(fieldKey)
+                          ? parentData?.required?.includes(fieldKey) || parentData?.then?.required?.includes(fieldKey)
                           : false)) &&
                       "*"}
                   </div>
@@ -1886,9 +1887,9 @@ const ApplicationFieldCard = ({
                     required={
                       isLableEmpty(fieldData.label)
                         ? false
-                        : object.required?.includes(fieldKey) ||
+                        : object?.required?.includes(fieldKey) || object?.then?.required?.includes(fieldKey) ||
                         (parentData !== null
-                          ? parentData.required?.includes(fieldKey)
+                          ? parentData?.required?.includes(fieldKey) || parentData?.then?.required?.includes(fieldKey)
                           : false)
                     }
                     type={fieldData.type}
@@ -1912,9 +1913,9 @@ const ApplicationFieldCard = ({
                   {fieldData.label}
                   {isLableEmpty(fieldData.label)
                     ? false
-                    : (object.required?.includes(fieldKey) ||
+                    : (object?.required?.includes(fieldKey) || object?.then?.required?.includes(fieldKey) ||
                       (parentData !== null
-                        ? parentData.required?.includes(fieldKey)
+                        ? parentData?.required?.includes(fieldKey) || parentData?.then?.required?.includes(fieldKey)
                         : false)) &&
                     "*"}
                 </div>
@@ -1963,9 +1964,9 @@ const ApplicationFieldCard = ({
                   required={
                     isLableEmpty(fieldData.label)
                       ? false
-                      : object.required?.includes(fieldKey) ||
+                      : object?.required?.includes(fieldKey) || object?.then?.required?.includes(fieldKey) ||
                       (parentData !== null
-                        ? parentData.required?.includes(fieldKey)
+                        ? parentData?.required?.includes(fieldKey) || parentData?.then?.required?.includes(fieldKey)
                         : false)
                   }
                   type={fieldData.type}
@@ -1992,9 +1993,9 @@ const ApplicationFieldCard = ({
                   {fieldData.label}
                   {isLableEmpty(fieldData.label)
                     ? false
-                    : (object.required?.includes(fieldKey) ||
+                    : (object?.required?.includes(fieldKey) || object?.then?.required?.includes(fieldKey) ||
                       (parentData !== null
-                        ? parentData.required?.includes(fieldKey)
+                        ? parentData?.required?.includes(fieldKey) || parentData?.then?.required?.includes(fieldKey)
                         : false)) &&
                     "*"}
                 </div>
@@ -2014,9 +2015,9 @@ const ApplicationFieldCard = ({
                   {fieldData.label}
                   {(isLableEmpty(fieldData.label)
                     ? false
-                    : object.required?.includes(fieldKey) ||
+                    : object?.required?.includes(fieldKey) || object?.then?.required?.includes(fieldKey) ||
                     (parentData !== null
-                      ? parentData.required?.includes(fieldKey)
+                      ? parentData?.required?.includes(fieldKey) || parentData?.then?.required?.includes(fieldKey)
                       : false)) && "*"}
                 </div>
                 <TextArea
@@ -2051,9 +2052,9 @@ const ApplicationFieldCard = ({
                   <strong>{fieldData.label}
                     {isLableEmpty(fieldData.label)
                       ? false
-                      : (object.required?.includes(fieldKey) ||
+                      : (object?.required?.includes(fieldKey) || object?.then?.required?.includes(fieldKey) ||
                         (parentData !== null
-                          ? parentData.required?.includes(fieldKey)
+                          ? parentData?.required?.includes(fieldKey) || parentData?.then?.required?.includes(fieldKey)
                           : false)) &&
                       "*"}
                   </strong>
@@ -2077,9 +2078,9 @@ const ApplicationFieldCard = ({
                   {fieldData.label}
                   {(isLableEmpty(fieldData.label)
                     ? false
-                    : object.required?.includes(fieldKey) ||
+                    : object?.required?.includes(fieldKey) || object?.then?.required?.includes(fieldKey) ||
                     (parentData !== null
-                      ? parentData.required?.includes(fieldKey)
+                      ? parentData?.required?.includes(fieldKey) || parentData?.then?.required?.includes(fieldKey)
                       : false)) && "*"}
                 </div>
                 <div className={style.marginTop10}>
@@ -2136,9 +2137,9 @@ const ApplicationFieldCard = ({
                   {fieldData.label}
                   {isLableEmpty(fieldData.label)
                     ? false
-                    : (object.required?.includes(fieldKey) ||
+                    : (object?.required?.includes(fieldKey) || object?.then?.required?.includes(fieldKey) ||
                       (parentData !== null
-                        ? parentData.required?.includes(fieldKey)
+                        ? parentData?.required?.includes(fieldKey) || parentData?.then?.required?.includes(fieldKey)
                         : false)) &&
                     "*"}
                 </div>
@@ -2182,9 +2183,9 @@ const ApplicationFieldCard = ({
                 required={
                   isLableEmpty(fieldData.label)
                     ? false
-                    : object.required?.includes(fieldKey) ||
+                    : object?.required?.includes(fieldKey) || object?.then?.required?.includes(fieldKey) ||
                     (parentData !== null
-                      ? parentData.required?.includes(fieldKey)
+                      ? parentData?.required?.includes(fieldKey) || parentData?.then?.required?.includes(fieldKey)
                       : false)
                 }
                 warning={warningFields
@@ -2310,9 +2311,9 @@ const ApplicationFieldCard = ({
                   {fieldData.label}
                   {isLableEmpty(fieldData.label)
                     ? false
-                    : (object.required?.includes(fieldKey) ||
+                    : (object?.required?.includes(fieldKey) || object?.then?.required?.includes(fieldKey) ||
                       (parentData !== null
-                        ? parentData.required?.includes(fieldKey)
+                        ? parentData?.required?.includes(fieldKey) || parentData?.then?.required?.includes(fieldKey)
                         : false)) &&
                     "*"}
                 </div>
@@ -2443,9 +2444,9 @@ const ApplicationFieldCard = ({
                 required={
                   isLableEmpty(fieldData.label)
                     ? false
-                    : object.required?.includes(fieldKey) ||
+                    : object?.required?.includes(fieldKey) || object?.then?.required?.includes(fieldKey) ||
                     (parentData !== null
-                      ? parentData.required?.includes(fieldKey)
+                      ? parentData?.required?.includes(fieldKey) || parentData?.then?.required?.includes(fieldKey)
                       : false)
                 }
               />
@@ -2466,9 +2467,9 @@ const ApplicationFieldCard = ({
                 {fieldData.label}
                 {(isLableEmpty(fieldData.label)
                   ? false
-                  : object.required?.includes(fieldKey) ||
+                  : object?.required?.includes(fieldKey) || object?.then?.required?.includes(fieldKey) ||
                   (parentData !== null
-                    ? parentData.required?.includes(fieldKey)
+                    ? parentData.required?.includes(fieldKey) || parentData?.then?.required?.includes(fieldKey)
                     : false)) && "*"}
               </div>
               <CommonRadio
@@ -2489,9 +2490,9 @@ const ApplicationFieldCard = ({
                 required={
                   isLableEmpty(fieldData.label)
                     ? false
-                    : object.required?.includes(fieldKey) ||
+                    : object.required?.includes(fieldKey) || object?.then?.required?.includes(fieldKey) ||
                     (parentData !== null
-                      ? parentData.required?.includes(fieldKey)
+                      ? parentData?.required?.includes(fieldKey) || parentData?.then?.required?.includes(fieldKey)
                       : false)
                 }
                 warning={warningFields
@@ -2526,8 +2527,8 @@ const ApplicationFieldCard = ({
 
           const isRequired =
             !isLableEmpty(fieldData.label) &&
-            (object.required?.includes(fieldKey) ||
-              (parentData?.required?.includes(fieldKey) ?? false));
+            (object?.required?.includes(fieldKey) || object?.then?.required?.includes(fieldKey) ||
+              ((parentData?.required?.includes(fieldKey) || parentData?.then?.required?.includes(fieldKey)) ?? false));
 
           const insertAsteriskBeforeClosingP = (html) => {
             return isRequired
@@ -2600,9 +2601,9 @@ const ApplicationFieldCard = ({
                   required={
                     isLableEmpty(fieldData.label)
                       ? false
-                      : object.required?.includes(fieldKey) ||
+                      : object?.required?.includes(fieldKey) || object?.then?.required?.includes(fieldKey) ||
                       (parentData !== null
-                        ? parentData.required?.includes(fieldKey)
+                        ? parentData?.required?.includes(fieldKey) || parentData?.then?.required?.includes(fieldKey)
                         : false)
                   }
                   warning={warningFields
@@ -2648,9 +2649,9 @@ const ApplicationFieldCard = ({
               required={
                 isLableEmpty(fieldData.label)
                   ? false
-                  : object.required?.includes(fieldKey) ||
+                  : object?.required?.includes(fieldKey) || object?.then?.required?.includes(fieldKey) ||
                   (parentData !== null
-                    ? parentData.required?.includes(fieldKey)
+                    ? parentData?.required?.includes(fieldKey) || parentData?.then?.required?.includes(fieldKey)
                     : false)
               }
             />
@@ -2674,9 +2675,9 @@ const ApplicationFieldCard = ({
                 label={`${fieldData.label}${(
                   isLableEmpty(fieldData.label)
                     ? false
-                    : object.required?.includes(fieldKey) ||
+                    : object?.required?.includes(fieldKey) || object?.then?.required?.includes(fieldKey) ||
                     (parentData !== null
-                      ? parentData.required?.includes(fieldKey)
+                      ? parentData.required?.includes(fieldKey) || parentData?.then?.required?.includes(fieldKey)
                       : false)
                 )
                   ? "*"
@@ -2733,7 +2734,7 @@ const ApplicationFieldCard = ({
               ) !== "" &&
               getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)
                 ?.fileURL !== null);
-            console.log(isDocAvailable, "checkstring");
+            console.log(isDocAvailable, "checkstring", getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)?.fileURL, basicForm, `${basicpath}.${baseKey}.${fieldKey}`);
             return (
               <div className={`${style.addMoreUpload} ${style.addMoreUploadMargin}`}>
                 <div className={style.marginLeft10}>
@@ -2751,7 +2752,19 @@ const ApplicationFieldCard = ({
                   type="file"
                   accept=".pdf,.doc,.png,.xls,.xlsx,.jpeg,.gif,.docx"
                   onChange={(e) => {
-                    handleChange(fieldKey, e.target.files[0], baseKey);
+                    const selectedFile = e.target.files[0];
+                    console.log(basicForm?.forms?.[formIndex]?.formCategory, 'Add More File Check')
+
+                    setBasicForm((prevData) => {
+                      const newData = { ...prevData };
+                      setNestedValue(newData, `${basicpath}.${baseKey}.${fieldKey}`, {
+                        fileName: selectedFile.name,
+                      });
+                      return newData;
+                    });
+
+
+                    handleChange(fieldKey, selectedFile, baseKey);
                   }}
                 />
                 <div>

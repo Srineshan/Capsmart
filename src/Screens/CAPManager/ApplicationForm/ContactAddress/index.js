@@ -148,9 +148,18 @@ const ContactAddress = ({ basicForm, setBasicForm, applicationId, getPreApplicat
         missingItems.push(data)
       }
     })
-
+    if (!getValueByPath(basicForm, `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`)) {
+      let registeredBusinessAddressKeys = [`forms[${formIndex}].data.contactAddress3.business.businessName`, `forms[${formIndex}].data.contactAddress3.business.businessAddress.streetName`, `forms[${formIndex}].data.contactAddress3.business.businessAddress.pinCode`, `forms[${formIndex}].data.contactAddress3.business.businessAddress.city`, `forms[${formIndex}].data.contactAddress3.business.businessAddress.province`, `forms[${formIndex}].data.contactAddress3.business.businessPhone`, `forms[${formIndex}].data.contactAddress3.business.businessWebsite`]
+      let temp = missingItems?.filter(data => !registeredBusinessAddressKeys?.includes(data?.key));
+      missingItems = temp;
+    }
+    let businessKeys = [`forms[${formIndex}].data.contactAddress3.business.b`]
+    let temp = missingItems?.filter(data => !businessKeys?.includes(data?.key));
+    missingItems = temp;
     return missingItems;
   }
+
+  const skipDisable = getDataStatus()?.filter(data => data?.mandatory)?.length === 0;
 
   console.log(getDataStatus(), 'check', getDataStatus()?.filter(data => data?.mandatory))
 
@@ -242,6 +251,9 @@ const ContactAddress = ({ basicForm, setBasicForm, applicationId, getPreApplicat
       let temp = missingKeys?.filter(data => !registeredBusinessAddressKeys?.includes(data?.key));
       missingKeys = temp;
     }
+    let businessKeys = [`forms[${formIndex}].data.contactAddress3.business.b`]
+    let temp = missingKeys?.filter(data => !businessKeys?.includes(data?.key));
+    missingKeys = temp;
     // const businessAddressKeys = [
     //   `forms[${formIndex}].data.contactAddress3.isBusinessAddressSameAsHomeAddressOrMailingAddress`,
     //   `forms[${formIndex}].data.contactAddress3.business.b`,
@@ -358,7 +370,7 @@ const ContactAddress = ({ basicForm, setBasicForm, applicationId, getPreApplicat
           <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
           <div className={style.stickyContainer}>
             <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
-            <div className={`${style.saveInProgress} ${style.marginTop10} `} onClick={() => getSkipClicked(true)} > SKIP FOR NOW </div>
+            <div className={`${style.saveInProgress} ${style.marginTop10} ${skipDisable ? style.disabledButton : ''} `} onClick={skipDisable ? () => { } : () => getSkipClicked(true)} > SKIP FOR NOW </div>
             <div className={style.twoColForButton}>
               <div className={`${style.continue} ${style.marginTop10}`} onClick={handleBackClick}>BACK</div>
               <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()}>CONTINUE</div>

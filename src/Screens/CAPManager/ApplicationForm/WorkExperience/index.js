@@ -144,6 +144,26 @@ const WorkExperience = ({ basicForm, setBasicForm, applicationId, getPreApplicat
                 missingKeys.push(data)
             }
         })
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.trainingAndWorkingExperience.file`)) {
+            let filterKeys = [`forms[${formIndex}].data.trainingAndWorkingExperience.reasonForSkip`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.trainingAndWorkingExperience.reasonForSkip`)) {
+            let filterKeys = [`forms[${formIndex}].data.trainingAndWorkingExperience.file`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
+        if (getValueByPath(basicForm, `undefined.trainingAndWorkingExperience.file`)) {
+            let filterKeys = [`undefined.trainingAndWorkingExperience.reasonForSkip`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
+        if (getValueByPath(basicForm, `undefined.trainingAndWorkingExperience.reasonForSkip`)) {
+            let filterKeys = [`undefined.trainingAndWorkingExperience.file`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
         // if (missingKeys?.length !== 0) {
         //     setShowValidationDialog(true)
         // } else {
@@ -167,6 +187,26 @@ const WorkExperience = ({ basicForm, setBasicForm, applicationId, getPreApplicat
                 missingKeys.push(data)
             }
         })
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.healthcareFacilityAppointments.file`)) {
+            let filterKeys = [`forms[${formIndex}].data.healthcareFacilityAppointments.reasonForSkip`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.healthcareFacilityAppointments.reasonForSkip`)) {
+            let filterKeys = [`forms[${formIndex}].data.healthcareFacilityAppointments.file`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
+        if (getValueByPath(basicForm, `undefined.healthcareFacilityAppointments.file`)) {
+            let filterKeys = [`undefined.healthcareFacilityAppointments.reasonForSkip`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
+        if (getValueByPath(basicForm, `undefined.healthcareFacilityAppointments.reasonForSkip`)) {
+            let filterKeys = [`undefined.healthcareFacilityAppointments.file`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
         // if (missingKeys?.length !== 0) {
         //     setShowValidationDialog(true)
         // } else {
