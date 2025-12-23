@@ -101,6 +101,10 @@
     grid-column: 1/-1;
 }
 
+.licenseGrid> :nth-child(8) {
+    grid-column: 1/-1;
+}
+
 .progressStyle {
     height: 10px;
     width: 100%;
@@ -219,4 +223,9 @@
 .hiddenStickyContainer {
     opacity: 0;
     pointer-events: none;
+}
+
+.disabledButton {
+    opacity: 0.5;
+    cursor: not-allowed;
 }

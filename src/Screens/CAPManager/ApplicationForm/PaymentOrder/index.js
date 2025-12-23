@@ -72,6 +72,9 @@ const PaymentOrder = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
     };
 
     const getIsSaveInProgressOpen = (value) => {
+        if (value) {
+            handleSubmitApplicationReq('', true)
+        }
         setIsSaveInProgressOpen(value);
     }
 
@@ -211,20 +214,112 @@ const PaymentOrder = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
         if (missingKeys?.length !== 0) {
             setShowValidationDialog(true)
         } else {
-            handleSubmitApplicationReq()
+            handleSubmitApplicationReq('')
         }
         setWarningFields(missingKeys)
         console.log(keyValuePair, 'Metadata', missingKeys)
     }
 
-    const handleSubmitApplicationReq = async (data) => {
-        if (isEdited) {
+    const getDataStatus = () => {
+        let missingItems = [];
+        let keyValuePair = [];
+        const cellPhone = getValueByPath(
+            basicForm,
+            `forms[${formIndex}].data.personalInformation.phone`
+        );
+        const emailId = getValueByPath(
+            basicForm,
+            `forms[${formIndex}].data.personalInformation.emailAddress`
+        );
+        metadata?.map((data, index) => {
+            keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: labels[index]?.label, mandatory: labels[index]?.mandatory })
+        })
+        const validateBusinessPhone = (phone) => {
+            const cleaned = phone?.replace(/\D/g, "");
+            const phoneRegex = /^[0-9]{10}$/;
+            return phoneRegex.test(cleaned);
+        };
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        const isCellPhoneInvalid = !validateBusinessPhone(cellPhone);
+        const isEmailInvalid = !emailRegex.test(emailId);
+
+        if (isCellPhoneInvalid && cellPhone && cellPhone !== "") {
+            missingItems.push({
+                key: "cellPhone",
+                value: cellPhone,
+                label: "Cell Phone is invalid",
+            });
+        }
+
+        if (isEmailInvalid && emailId && emailId !== "") {
+            missingItems.push({
+                key: "emailId",
+                value: emailId,
+                label: "Email ID is invalid",
+            });
+        }
+        keyValuePair?.map(data => {
+            if (data?.value === "" || data?.value === null || data?.value === undefined || data?.value === 0) {
+                missingItems.push(data)
+            }
+        })
+
+        if (isCellPhoneInvalid) {
+            setBasicForm((prevForm) => ({
+                ...prevForm,
+                forms: prevForm.forms.map((form) => {
+                    if (form.schemaId === basicForm.forms[formIndex].schemaId) {
+                        return {
+                            ...form,
+                            data: {
+                                ...form.data,
+                                personalInformation: {
+                                    ...form.data.personalInformation,
+                                    phone: "",
+                                },
+                            },
+                        };
+                    }
+                    return form;
+                }),
+            }));
+        }
+
+        if (isEmailInvalid) {
+            setBasicForm((prevForm) => ({
+                ...prevForm,
+                forms: prevForm.forms.map((form) => {
+                    if (form.schemaId === basicForm.forms[formIndex].schemaId) {
+                        return {
+                            ...form,
+                            data: {
+                                ...form.data,
+                                personalInformation: {
+                                    ...form.data.personalInformation,
+                                    emailAddress: "",
+                                },
+                            },
+                        };
+                    }
+                    return form;
+                }),
+            }));
+        }
+
+        return missingItems;
+    }
+
+    const handleSubmitApplicationReq = async (data, save) => {
+        if (isEdited || data || save) {
             console.log(basicForm?.forms?.[formIndex]?.data)
             let temp = {
                 schemaId: basicForm?.forms?.[formIndex]?.schemaId,
                 data: basicForm?.forms?.[formIndex]?.data,
                 unFilledFields: warningFields?.map(data => data?.label),
-                acknowledged: data === "skipped" ? false : true
+                acknowledged: data === "skipped" ? false : true,
+                dataStatus: getDataStatus()?.filter(data => data?.mandatory)?.length > 0 ? 'SKIPPED_MANDATORY_FIELD' : getDataStatus()?.length > 0 ? 'SKIPPED_NON_MANDATORY_FIELD' : 'COMPLETED'
             }
             await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
                 .then(response => {
@@ -232,13 +327,15 @@ const PaymentOrder = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
                     SuccessToaster("Application Updated Successfully");
                     getPreApplication();
                     handleDownload();
-                    if (sessionStorage.getItem('fromSummary') === "true") {
-                        navigate(-1);
-                        sessionStorage.setItem('fromSummary', false)
-                    }
-                    else {
-                        navigate(navigateURL)
+                    if (!save) {
+                        if (sessionStorage.getItem('fromSummary') === "true") {
+                            navigate(-1);
+                            sessionStorage.setItem('fromSummary', false)
+                        }
+                        else {
+                            navigate(navigateURL)
 
+                        }
                     }
                 })
                 .catch((error) => {
@@ -307,7 +404,8 @@ const PaymentOrder = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
                 completedFormAsFile: uploadedFile,
                 data: basicForm?.forms?.[formIndex]?.data,
                 unFilledFields: basicForm?.forms?.[formIndex]?.unFilledFields,
-                acknowledged: basicForm?.forms?.[formIndex]?.acknowledged
+                acknowledged: basicForm?.forms?.[formIndex]?.acknowledged,
+                dataStatus: getDataStatus()?.filter(data => data?.mandatory)?.length > 0 ? 'SKIPPED_MANDATORY_FIELD' : getDataStatus()?.length > 0 ? 'SKIPPED_NON_MANDATORY_FIELD' : 'COMPLETED'
             }
             await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
                 .then(response => {
@@ -386,7 +484,7 @@ const PaymentOrder = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                     <div className={style.stickyContainer}>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
-                        <div className={`${style.saveInProgress} ${style.marginTop10} `} onClick={() => handleContinue()} > SKIP FOR NOW </div>
+                        <div className={`${style.saveInProgress} ${style.marginTop10} `} onClick={() => handleSubmitApplicationReq("skipped")} > SKIP FOR NOW </div>
                         <div className={style.twoColForButton}>
                             <div className={`${style.continue} ${style.marginTop10}`} onClick={handleBackClick}>BACK</div>
                             <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()}>CONTINUE</div>

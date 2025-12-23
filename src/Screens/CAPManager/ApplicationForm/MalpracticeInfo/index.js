@@ -94,6 +94,12 @@ const MalpracticeInfo = ({ basicForm, setBasicForm, applicationId, getPreApplica
         }
     }
 
+    const getValueByPath = (obj, path) => {
+        const keys = path.split(/[\.\[\]]+/).filter(Boolean);
+        console.log(path, keys.reduce((acc, key) => acc && acc[isNaN(key) ? key : Number(key)], basicForm), basicForm, 'if')
+        return keys.reduce((acc, key) => acc && acc[isNaN(key) ? key : Number(key)], basicForm);
+    };
+
     const getMissingFields = () => {
         let missingKeys = [];
         let keyValuePair = [];
@@ -106,6 +112,16 @@ const MalpracticeInfo = ({ basicForm, setBasicForm, applicationId, getPreApplica
                 missingKeys.push(data)
             }
         })
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.insuranceCarrierInformation.file`)) {
+            let filterKeys = [`forms[${formIndex}].data.insuranceCarrierInformation.reasonForSkip`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.insuranceCarrierInformation.reasonForSkip`)) {
+            let filterKeys = [`forms[${formIndex}].data.insuranceCarrierInformation.file`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
         if (missingKeys?.length !== 0) {
             setShowValidationDialog(true)
         } else {
@@ -126,10 +142,20 @@ const MalpracticeInfo = ({ basicForm, setBasicForm, applicationId, getPreApplica
                 missingItems.push(data)
             }
         })
-
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.insuranceCarrierInformation.file`)) {
+            let filterKeys = [`forms[${formIndex}].data.insuranceCarrierInformation.reasonForSkip`]
+            let temp = missingItems?.filter(data => !filterKeys?.includes(data?.key));
+            missingItems = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.insuranceCarrierInformation.reasonForSkip`)) {
+            let filterKeys = [`forms[${formIndex}].data.insuranceCarrierInformation.file`]
+            let temp = missingItems?.filter(data => !filterKeys?.includes(data?.key));
+            missingItems = temp;
+        }
         return missingItems;
     }
 
+    const skipDisable = getDataStatus()?.filter(data => data?.mandatory)?.length === 0;
 
     const handleSubmitApplicationReq = async (data, save) => {
         if (isEdited || save || data) {
@@ -171,12 +197,6 @@ const MalpracticeInfo = ({ basicForm, setBasicForm, applicationId, getPreApplica
         }
     }
 
-    const getValueByPath = (obj, path) => {
-        const keys = path.split(/[\.\[\]]+/).filter(Boolean);
-        console.log(path, keys.reduce((acc, key) => acc && acc[isNaN(key) ? key : Number(key)], basicForm), basicForm, 'if')
-        return keys.reduce((acc, key) => acc && acc[isNaN(key) ? key : Number(key)], basicForm);
-    };
-
     const getIsEdited = (value) => {
         setIsEdited(value)
     }
@@ -208,7 +228,7 @@ const MalpracticeInfo = ({ basicForm, setBasicForm, applicationId, getPreApplica
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                     <div className={style.stickyContainer}>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
-                        <div className={`${style.saveInProgress} ${style.marginTop10} `} onClick={() => getSkipClicked(true)} > SKIP FOR NOW </div>
+                        <div className={`${style.saveInProgress} ${style.marginTop10}  ${skipDisable ? style.disabledButton : ''}`} onClick={skipDisable ? () => { } : () => getSkipClicked(true)} > SKIP FOR NOW </div>
                         <div className={style.twoColForButton}>
                             <div className={`${style.continue} ${style.marginTop10}`} onClick={handleBackClick}>BACK</div>
                             <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()} >CONTINUE</div>

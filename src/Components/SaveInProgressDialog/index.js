@@ -36,10 +36,12 @@ const SaveInProgressDialog = ({ getIsOpen }) => {
         var cookies = new Cookie();
         cookies.remove("user", { path: "/" });
         cookies.remove("entityId", { path: "/" });
-        cookies.remove("authorization", { path: "/" });
+        cookies.remove("authorization", { path: "/", domain: window.location.hostname?.split('.')?.length >= 3 ? window.location.hostname?.split('.')?.slice(-2)?.join('.') : window.location.hostname });
         logout()
         navigate('/');
     }
+
+    console.log(localStorage.getItem(`totalTime_${applicationId}`), 'totalTime', Math.floor(parseFloat(localStorage.getItem(`totalTime_${applicationId}`)) / 60000))
 
     const handleSubmit = async () => {
         if (taskId !== undefined && taskId !== 'undefined' && taskId !== null) {
@@ -47,6 +49,11 @@ const SaveInProgressDialog = ({ getIsOpen }) => {
             tempTask.details.application.lastSavedSection = `${section}/${step}`;
             await PUT(`task-management-service/task/${taskId}`, tempTask);
         }
+        let timeData = {
+            "value": Math.floor(parseFloat(localStorage.getItem(`totalTime_${applicationId}`)) / 60000),
+            "unit": "MINUTES"
+        }
+        await PUT(`application-management-service/application/${applicationId}/completionDuration`, timeData)
         await PUT(
             `application-management-service/application/${applicationId}/saveInprogress`,
             `${section}/${step}`

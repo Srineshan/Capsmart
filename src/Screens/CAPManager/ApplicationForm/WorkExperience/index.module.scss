@@ -93,6 +93,10 @@
     grid-column: span 2;
 }
 
+.healthCareGrid> :nth-child(8) {
+    grid-column: 1/-1;
+}
+
 .trainingGrid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -117,6 +121,10 @@
 
 .trainingGrid> :nth-child(5) {
     grid-column: span 2;
+}
+
+.trainingGrid> :nth-child(6) {
+    grid-column: 1/-1;
 }
 
 .progressStyle {
