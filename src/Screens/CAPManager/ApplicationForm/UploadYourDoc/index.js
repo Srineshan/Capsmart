@@ -804,33 +804,41 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                         >
                           {data?.document?.shortName}
                         </div>
-                        <InfoOutlinedIcon
-                          sx={{ fontSize: 14, marginLeft: "10px" }}
-                          className={style.info}
-                        />
+                        {data?.instruction ? (
+                          <Tooltip title={data?.instruction} arrow>
+                            <InfoOutlinedIcon sx={{ fontSize: 14, marginLeft: '10px' }} className={style.info} />
+                          </Tooltip>
+                        ) : (
+                          <div></div>
+                        )}
                       </div>
                       <div
                         className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}
                       >
                         {data?.required ? "Required" : "Recommended"}
                       </div>
-                      {data?.required && (
-                        <div
-                          className={` ${style.fullWidth}`}
-                        >
-                          <CommonSelectField
-                            value={skipReason?.[normalizeKey(data?.document?.shortName)] ? skipReason?.[normalizeKey(data?.document?.shortName)] : ''}
-                            onChange={(e) => handleSkipReason(data?.document?.shortName, e.target.value)}
-                            className={`${style.fullWidth} ${style.verticalAlignCenter}`}
-                            firstOptionLabel={'Select A Reason For Skipping This Step'}
-                            firstOptionValue={''}
-                            valueList={['Current Document Not Received', 'Replacement Document Requested']}
-                            labelList={['Current Document Not Received', 'Replacement Document Requested']}
-                            disabledList={['Current Document Not Received', 'Replacement Document Requested'].map(() => false)}
-                          />
-                          {/* {data?.instruction} */}
-                        </div>
-                      )}
+                      {((tempValue?.table?.filter(
+                        (tableData) =>
+                          tableData?.documentType ===
+                          data?.document?.shortName
+                      )?.length === 0 || !(tempValue?.table?.filter((tableData) => tableData?.documentType === data?.document?.shortName)?.[0]?.verified && tempValue?.table?.filter((tableData) => tableData?.documentType === data?.document?.shortName)?.[0]?.valid)) &&
+                        data?.required) && (
+                          <div
+                            className={` ${style.fullWidth}`}
+                          >
+                            <CommonSelectField
+                              value={skipReason?.[normalizeKey(data?.document?.shortName)] ? skipReason?.[normalizeKey(data?.document?.shortName)] : ''}
+                              onChange={(e) => handleSkipReason(data?.document?.shortName, e.target.value)}
+                              className={`${style.fullWidth} ${style.verticalAlignCenter}`}
+                              firstOptionLabel={'Select A Reason For Skipping This Step'}
+                              firstOptionValue={''}
+                              valueList={['Current Document Not Received', 'Replacement Document Requested']}
+                              labelList={['Current Document Not Received', 'Replacement Document Requested']}
+                              disabledList={['Current Document Not Received', 'Replacement Document Requested'].map(() => false)}
+                            />
+                            {/* {data?.instruction} */}
+                          </div>
+                        )}
                     </div>
                   </div>
                 ))}

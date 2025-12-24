@@ -57,13 +57,18 @@ export const currentUser = () => {
     let decoded;
     let user = {};
     if (accessToken) {
-      decoded = jwt(accessToken);
-      user.id = decoded?.id;
-      user.firstName = decoded?.userName?.split(' ')[0];
-      user.lastName = decoded?.userName?.split(' ')[1];
-      user.fullName = decoded?.userName;
-      user.email = decoded?.sub;
-      user.roles = decoded?.roles?.split(',');
+      try {
+        decoded = jwt(accessToken);
+        user.id = decoded?.id;
+        user.firstName = decoded?.userName?.split(' ')[0];
+        user.lastName = decoded?.userName?.split(' ')[1];
+        user.fullName = decoded?.userName;
+        user.email = decoded?.sub;
+        user.roles = decoded?.roles?.split(',');
+      } catch (e) {
+        console.warn('JWT decode failed in currentUser()', e);
+        // optional: clear user or trigger logout here
+      }
     }
     return user;
   }
@@ -75,7 +80,12 @@ export const GetRoles = () => {
   let token = cookie.get('user');
   let roles = [];
   if (token) {
-    roles = jwt(token)?.roles?.split(',');
+    try {
+      roles = jwt(token)?.roles?.split(',') || [];
+    } catch (e) {
+      console.warn('JWT decode failed in GetRoles()', e);
+      roles = [];
+    }
   }
   return roles;
 }

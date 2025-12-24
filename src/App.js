@@ -426,22 +426,10 @@ const App = ({ props }) => {
   // }, [sessionToken])
 
   useEffect(() => {
-    if (cookie.get("authorization") === 'undefined') {
-      cookie.remove("authorization", {
-        path: "/",
-        domain: window.location.hostname?.split('.')?.length >= 3 ? window.location.hostname?.split('.')?.slice(-2)?.join('.') : window.location.hostname
-      });
-      cookie.remove("user", { path: "/" });
-      cookie.remove("entityId", { path: "/" });
-      logout()
-    }
-    if (cookie.get("authorization") !== undefined) {
-      let token = cookie.get("authorization")
-      if (typeof token !== 'string') {
-        // If the token is not a string, make sure to convert it into a string
-        token = JSON.stringify(token);
-      }
-      if (isSessionTokenExpired(cookie.get("authorization"))) {
+    const authToken = cookie.get("authorization");
+
+    if (authToken === 'undefined' || authToken === undefined || authToken === null || authToken === '') {
+      if (authToken === 'undefined' || authToken === undefined || authToken === null) {
         cookie.remove("authorization", {
           path: "/",
           domain: window.location.hostname?.split('.')?.length >= 3 ? window.location.hostname?.split('.')?.slice(-2)?.join('.') : window.location.hostname
@@ -450,9 +438,43 @@ const App = ({ props }) => {
         cookie.remove("entityId", { path: "/" });
         logout()
       }
-      console.log('sessionToken', token, typeof token, JSON.stringify(token), isSessionTokenExpired(cookie.get("authorization")), isSessionTokenExpired(cookie.get("authorization")), JSON.parse(atob(cookie.get("authorization").split('.')[1])))
-      const decodedToken = jwt(cookie.get("authorization"));
-      console.log('sessionToken', Date.now() > decodedToken.exp * 1000, Date.now(), decodedToken.exp * 1000, cookie.get("authorization"))
+      return;
+    }
+
+    // Validate token is a string and not empty
+    let token = authToken;
+    if (typeof token !== 'string') {
+      // If the token is not a string, try to convert it (for backward compatibility)
+      // This shouldn't normally happen, but preserves original behavior
+      token = JSON.stringify(token);
+    }
+    if (token.trim() === '') {
+      cookie.remove("authorization", {
+        path: "/",
+        domain: window.location.hostname?.split('.')?.length >= 3 ? window.location.hostname?.split('.')?.slice(-2)?.join('.') : window.location.hostname
+      });
+      cookie.remove("user", { path: "/" });
+      cookie.remove("entityId", { path: "/" });
+      logout();
+      return;
+    }
+
+    // Check if token is expired using Descope function first
+    if (isSessionTokenExpired(token)) {
+      cookie.remove("authorization", {
+        path: "/",
+        domain: window.location.hostname?.split('.')?.length >= 3 ? window.location.hostname?.split('.')?.slice(-2)?.join('.') : window.location.hostname
+      });
+      cookie.remove("user", { path: "/" });
+      cookie.remove("entityId", { path: "/" });
+      logout();
+      return;
+    }
+
+    // Try to decode token with error handling
+    try {
+      const decodedToken = jwt(token);
+      console.log('sessionToken', Date.now() > decodedToken.exp * 1000, Date.now(), decodedToken.exp * 1000, token)
       if (Date.now() > decodedToken.exp * 1000) {
         console.log('sessionToken', Date.now() > decodedToken.exp * 1000, Date.now(), decodedToken.exp * 1000)
         cookie.remove("authorization", {
@@ -463,6 +485,16 @@ const App = ({ props }) => {
         cookie.remove("entityId", { path: "/" });
         logout()
       }
+    } catch (error) {
+      console.error('Invalid token specified - JWT decode failed:', error);
+      sessionStorage.setItem('errorInfo', 'Invalid token specified');
+      cookie.remove("authorization", {
+        path: "/",
+        domain: window.location.hostname?.split('.')?.length >= 3 ? window.location.hostname?.split('.')?.slice(-2)?.join('.') : window.location.hostname
+      });
+      cookie.remove("user", { path: "/" });
+      cookie.remove("entityId", { path: "/" });
+      logout();
     }
   }, [cookie.get("authorization")])
 
@@ -522,7 +554,15 @@ const App = ({ props }) => {
 
   useEffect(() => {
     if (isAuthenticated && cookie.get("authorization") && cookie.get("authorization") !== 'undefined') {
-      scheduleTokenRefresh(JSON.parse(atob(cookie.get("authorization").split('.')[1])))
+      try {
+        const authToken = cookie.get("authorization");
+        if (authToken && typeof authToken === 'string' && authToken.split('.').length === 3) {
+          scheduleTokenRefresh(JSON.parse(atob(authToken.split('.')[1])))
+        }
+      } catch (error) {
+        console.error('Failed to decode token for refresh scheduling:', error);
+        // Don't schedule refresh if token is invalid
+      }
     }
 
     return () => {
@@ -813,7 +853,14 @@ const App = ({ props }) => {
         try {
           await refreshToken(); // Refresh token
           if (cookie.get("authorization") && cookie.get("authorization") !== 'undefined') {
-            scheduleTokenRefresh(JSON.parse(atob(cookie.get("authorization").split('.')[1]))); // Re-run after successful refresh
+            try {
+              const authToken = cookie.get("authorization");
+              if (authToken && typeof authToken === 'string' && authToken.split('.').length === 3) {
+                scheduleTokenRefresh(JSON.parse(atob(authToken.split('.')[1]))); // Re-run after successful refresh
+              }
+            } catch (decodeError) {
+              console.error("Failed to decode refreshed token for scheduling:", decodeError);
+            }
           }
         } catch (err) {
           console.error("Token refresh failed", err);
@@ -843,7 +890,7 @@ const App = ({ props }) => {
         method: "GET",
         headers: {
           "Authorization": `Bearer ${authorization}`,
-          "X-subdomain": 'master',
+          "X-subdomain": 'cmh-hospital',
         },
       };
     console.log(requestHeader, 'requestHeader')
@@ -886,7 +933,7 @@ const App = ({ props }) => {
         "Content-Type": "application/json",
         "X-tenantID": id,
         "Authorization": `Bearer ${authorization}`,
-        "X-subdomain": 'master',
+        "X-subdomain": 'cmh-hospital',
       },
     }
     fetch(`${baseUrl()}/user-management-service/auth/login`, requestOptions)
@@ -913,7 +960,15 @@ const App = ({ props }) => {
       });
     console.log('entered')
     if (cookie.get("authorization") && cookie.get("authorization") !== 'undefined') {
-      scheduleTokenRefresh(JSON.parse(atob(cookie.get("authorization").split('.')[1])))
+      try {
+        const authToken = cookie.get("authorization");
+        if (authToken && typeof authToken === 'string' && authToken.split('.').length === 3) {
+          scheduleTokenRefresh(JSON.parse(atob(authToken.split('.')[1])))
+        }
+      } catch (error) {
+        console.error('Failed to decode token for refresh scheduling in login:', error);
+        // Don't schedule refresh if token is invalid
+      }
     }
     return true;
   };
@@ -987,8 +1042,24 @@ const App = ({ props }) => {
       isHapicareUser = isHapicareUser !== undefined ? isHapicareUser : sessionStorage.getItem('masterEntity') === 'true' ? true : sessionStorage.getItem('masterEntity') === 'false' ? false : undefined;
       organizations = organizations ? organizations : sessionStorage.getItem('organizations') ? JSON.parse(sessionStorage.getItem('organizations')) : []
       if (Auth() && isHapicareUser !== undefined) {
-        console.log('login route', isHapicareUser, organizations, jwt(Auth())?.id)
-        sessionStorage.setItem('userId', jwt(Auth())?.id)
+        let decodedAuth = null;
+        try {
+          decodedAuth = jwt(Auth());
+          console.log('login route', isHapicareUser, organizations, decodedAuth?.id)
+          sessionStorage.setItem('userId', decodedAuth?.id)
+        } catch (error) {
+          console.error('Failed to decode auth token in LoginRoute:', error);
+          // Handle error - could redirect to login or clear cookies
+          cookie.remove("authorization", {
+            path: "/",
+            domain: window.location.hostname?.split('.')?.length >= 3 ? window.location.hostname?.split('.')?.slice(-2)?.join('.') : window.location.hostname
+          });
+          cookie.remove("user", { path: "/" });
+          cookie.remove("entityId", { path: "/" });
+          window.location.pathname = "/loginPage";
+          return;
+        }
+
         if (isHapicareUser && organizations?.length > 1) {
           setShowDialog(true);
         } else if (isHapicareUser) {
@@ -998,10 +1069,10 @@ const App = ({ props }) => {
           // }
         }
         console.log('login route', isHapicareUser, organizations)
-        const roles = !isHapicareUser ? jwt(Auth())?.roles?.split(",")?.filter(s => s.trim() !== '') : organizations?.[0]?.roles?.map(data => data?.roleName);
-        const mdRoles = !isHapicareUser ? jwt(Auth())?.mdRoles?.split(",")?.filter(s => s.trim() !== '') : organizations?.[0]?.mdRoles?.map(data => data?.roleName);
-        const pnpRoles = !isHapicareUser ? jwt(Auth())?.pnpRoles?.split(",")?.filter(s => s.trim() !== '') : organizations?.[0]?.pnpRoles?.map(data => data?.roleName);
-        const lmsRoles = !isHapicareUser ? jwt(Auth())?.lmsRoles?.split(",")?.filter(s => s.trim() !== '') : organizations?.[0]?.lmsRoles?.map(data => data?.roleName);
+        const roles = !isHapicareUser ? decodedAuth?.roles?.split(",")?.filter(s => s.trim() !== '') : organizations?.[0]?.roles?.map(data => data?.roleName);
+        const mdRoles = !isHapicareUser ? decodedAuth?.mdRoles?.split(",")?.filter(s => s.trim() !== '') : organizations?.[0]?.mdRoles?.map(data => data?.roleName);
+        const pnpRoles = !isHapicareUser ? decodedAuth?.pnpRoles?.split(",")?.filter(s => s.trim() !== '') : organizations?.[0]?.pnpRoles?.map(data => data?.roleName);
+        const lmsRoles = !isHapicareUser ? decodedAuth?.lmsRoles?.split(",")?.filter(s => s.trim() !== '') : organizations?.[0]?.lmsRoles?.map(data => data?.roleName);
         console.log("LoginRole", roles, mdRoles, isHapicareUser, organizations)
         const count = [roles, mdRoles, pnpRoles, lmsRoles]?.filter(arr => arr?.length >= 1).length;
         if (roles?.length > 1 || mdRoles?.length > 1 || pnpRoles?.length > 1 || lmsRoles?.length > 1 || (count > 1)) {
