@@ -104,7 +104,7 @@ const PACSRequest = ({
 
   useEffect(() => {
     populatePdfWithProfileData(applicantProfile);
-  }, [applicantProfile])
+  }, [applicantProfile, formSchema])
 
   const getFormSchema = async () => {
     const { data: form } = await GET(

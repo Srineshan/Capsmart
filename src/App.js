@@ -365,6 +365,7 @@ const App = ({ props }) => {
   let errorInfo = sessionStorage.getItem('errorInfo');
   const [showDialog, setShowDialog] = useState(false);
   const refreshTimeoutRef = useRef(null);
+  const isRefreshingRef = useRef(false);
   // useEffect(() => {
   //   const handleVisibilityChange = () => {
   //     setVisibilityState(document.visibilityState); // Update state on visibility change
@@ -569,6 +570,90 @@ const App = ({ props }) => {
       if (refreshTimeoutRef.current) {
         clearTimeout(refreshTimeoutRef.current); // Cleanup on unmount
       }
+    };
+  }, [isAuthenticated, cookie.get("authorization")]);
+
+  // Check token expiration when tab becomes visible
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      console.log('Visibility changed:', document.visibilityState);
+
+      if (document.visibilityState === 'visible') {
+        console.log('Tab became visible, checking token...');
+        const authToken = cookie.get("authorization");
+        console.log('Auth token exists:', !!authToken, 'isAuthenticated:', isAuthenticated);
+
+        // Only check if token exists and user is authenticated
+        if (authToken && authToken !== 'undefined' && authToken !== undefined && authToken !== null && isAuthenticated) {
+          // Validate token is a string
+          if (typeof authToken !== 'string' || authToken.trim() === '') {
+            console.log('Token is not a valid string, skipping...');
+            return;
+          }
+
+          console.log('Token is valid, checking expiration...');
+
+          // Check if token is expired using Descope function
+          if (isSessionTokenExpired(authToken)) {
+            // Token expired - try to refresh
+            console.log('Token expired when tab became visible, attempting refresh...');
+            refreshToken();
+          } else {
+            // Token still valid, but check if it's close to expiry
+            try {
+              const decodedToken = jwt(authToken);
+              const currentTime = Date.now() / 1000;
+              const timeToExpiry = decodedToken.exp - currentTime;
+              console.log(`Token expires in ${Math.floor(timeToExpiry)} seconds`);
+
+              // If less than 1 minute remaining (matching scheduleTokenRefresh logic), refresh proactively
+              if (timeToExpiry < 60 && timeToExpiry > 0) {
+                console.log(`Token expires in ${Math.floor(timeToExpiry)} seconds, refreshing proactively...`);
+                refreshToken();
+              } else {
+                console.log('Token is still valid, no refresh needed');
+              }
+            } catch (error) {
+              console.error('Failed to decode token on visibility change:', error);
+              // Token is invalid, clear and logout
+              cookie.remove("authorization", {
+                path: "/",
+                domain: window.location.hostname?.split('.')?.length >= 3
+                  ? window.location.hostname?.split('.')?.slice(-2)?.join('.')
+                  : window.location.hostname
+              });
+              cookie.remove("user", { path: "/" });
+              cookie.remove("entityId", { path: "/" });
+              logout();
+            }
+          }
+        } else {
+          console.log('Token check skipped - missing token or not authenticated');
+        }
+      }
+    };
+
+    console.log('Setting up visibility change listener...');
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    // Also check immediately if already visible on mount
+    if (document.visibilityState === 'visible') {
+      console.log('Already visible on mount, will check after delay...');
+      // Small delay to avoid race conditions with initial load
+      const timeoutId = setTimeout(() => {
+        handleVisibilityChange();
+      }, 1000);
+
+      return () => {
+        console.log('Cleaning up visibility change listener...');
+        document.removeEventListener('visibilitychange', handleVisibilityChange);
+        clearTimeout(timeoutId);
+      };
+    }
+
+    return () => {
+      console.log('Cleaning up visibility change listener...');
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, [isAuthenticated, cookie.get("authorization")]);
 
@@ -786,7 +871,14 @@ const App = ({ props }) => {
   // };
 
   const refreshToken = async () => {
+    // Prevent concurrent refresh attempts
+    if (isRefreshingRef.current) {
+      console.log('Token refresh already in progress, skipping...');
+      return;
+    }
+
     if (isAuthenticated) {
+      isRefreshingRef.current = true;
       // try {
       refresh()
         .then((refreshedSession) => {
@@ -800,10 +892,12 @@ const App = ({ props }) => {
             });
             console.log('Session refreshed and cookie updated!', refreshedSession);
           }
+          isRefreshingRef.current = false;
           login(entityId)
         })
         .catch((error) => {
           console.error('Failed to refresh token:', error);
+          isRefreshingRef.current = false;
           cookie.remove("authorization", {
             path: "/",
             domain: window.location.hostname?.split('.')?.length >= 3 ? window.location.hostname?.split('.')?.slice(-2)?.join('.') : window.location.hostname
@@ -890,7 +984,7 @@ const App = ({ props }) => {
         method: "GET",
         headers: {
           "Authorization": `Bearer ${authorization}`,
-          "X-subdomain": 'cmh-hospital',
+          "X-subdomain": 'master',
         },
       };
     console.log(requestHeader, 'requestHeader')
@@ -933,30 +1027,34 @@ const App = ({ props }) => {
         "Content-Type": "application/json",
         "X-tenantID": id,
         "Authorization": `Bearer ${authorization}`,
-        "X-subdomain": 'cmh-hospital',
+        "X-subdomain": 'master',
       },
     }
     fetch(`${baseUrl()}/user-management-service/auth/login`, requestOptions)
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) {
+          throw response;
+        }
+        return response.json();
+      })
       .then((data) => {
         cookie.set("user", data?.accessToken, {
           path: "/",
-          // domain: window.location.hostname?.split('.')?.length >= 3 ? window.location.hostname?.slice(-2)?.join('.') : window.location.hostname,
-          // secure: true,
-          // sameSite: 'none',
         });
         organizations = data?.organizations || [];
         sessionStorage.setItem('organizations', JSON.stringify(data?.organizations))
       })
       .catch((error) => {
-        ErrorToaster2("Login failed. Please try again. If the issue persists, please contact the administrator.")
-        cookie.remove("authorization", {
-          path: "/",
-          domain: window.location.hostname?.split('.')?.length >= 3 ? window.location.hostname?.split('.')?.slice(-2)?.join('.') : window.location.hostname
-        });
-        cookie.remove("user", { path: "/" });
-        cookie.remove("entityId", { path: "/" });
-        logout();
+        if (error?.status === 400 || error?.status === 401 || error?.status === 403 || error?.status >= 500) {
+          ErrorToaster2("Login failed. Please try again. If the issue persists, please contact the administrator.")
+          cookie.remove("authorization", {
+            path: "/",
+            domain: window.location.hostname?.split('.')?.length >= 3 ? window.location.hostname?.split('.')?.slice(-2)?.join('.') : window.location.hostname
+          });
+          cookie.remove("user", { path: "/" });
+          cookie.remove("entityId", { path: "/" });
+          logout();
+        }
       });
     console.log('entered')
     if (cookie.get("authorization") && cookie.get("authorization") !== 'undefined') {
@@ -967,7 +1065,6 @@ const App = ({ props }) => {
         }
       } catch (error) {
         console.error('Failed to decode token for refresh scheduling in login:', error);
-        // Don't schedule refresh if token is invalid
       }
     }
     return true;

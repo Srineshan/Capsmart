@@ -152,6 +152,10 @@ const MalpracticeInfo = ({ basicForm, setBasicForm, applicationId, getPreApplica
             let temp = missingItems?.filter(data => !filterKeys?.includes(data?.key));
             missingItems = temp;
         }
+        let filterKeys = [`forms[${formIndex}].data.insuranceCarrierInformation.pod`, `forms[${formIndex}].data.insuranceCarrierInformation.data`, `forms[${formIndex}].data.insuranceCarrierInformation.conflict`]
+        let temp = missingItems?.filter(data => !filterKeys?.includes(data?.key));
+        missingItems = temp;
+        console.log(missingItems, 'missingItems')
         return missingItems;
     }
 

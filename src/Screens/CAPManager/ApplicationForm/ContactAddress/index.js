@@ -161,8 +161,6 @@ const ContactAddress = ({ basicForm, setBasicForm, applicationId, getPreApplicat
 
   const skipDisable = getDataStatus()?.filter(data => data?.mandatory)?.length === 0;
 
-  console.log(getDataStatus(), 'check', getDataStatus()?.filter(data => data?.mandatory))
-
   const getMissingFields = () => {
     let missingKeys = [];
     let keyValuePair = [];

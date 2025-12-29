@@ -123,6 +123,12 @@ const PaymentOrder = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
         return obj;
     };
 
+    const getValueByPath = (obj, path) => {
+        const keys = path.split(/[\.\[\]]+/).filter(Boolean);
+        console.log(path, keys.reduce((acc, key) => acc && acc[isNaN(key) ? key : Number(key)], basicForm), basicForm, 'if')
+        return keys.reduce((acc, key) => acc && acc[isNaN(key) ? key : Number(key)], basicForm);
+    };
+
 
     const getMissingFields = () => {
         let missingKeys = [];
@@ -269,14 +275,14 @@ const PaymentOrder = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
         if (isCellPhoneInvalid) {
             setBasicForm((prevForm) => ({
                 ...prevForm,
-                forms: prevForm.forms.map((form) => {
-                    if (form.schemaId === basicForm.forms[formIndex].schemaId) {
+                forms: prevForm?.forms?.map((form) => {
+                    if (form?.schemaId === basicForm?.forms?.[formIndex]?.schemaId) {
                         return {
                             ...form,
                             data: {
-                                ...form.data,
+                                ...form?.data,
                                 personalInformation: {
-                                    ...form.data.personalInformation,
+                                    ...form?.data?.personalInformation,
                                     phone: "",
                                 },
                             },
@@ -290,14 +296,14 @@ const PaymentOrder = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
         if (isEmailInvalid) {
             setBasicForm((prevForm) => ({
                 ...prevForm,
-                forms: prevForm.forms.map((form) => {
-                    if (form.schemaId === basicForm.forms[formIndex].schemaId) {
+                forms: prevForm?.forms?.map((form) => {
+                    if (form?.schemaId === basicForm?.forms?.[formIndex]?.schemaId) {
                         return {
                             ...form,
                             data: {
-                                ...form.data,
+                                ...form?.data,
                                 personalInformation: {
-                                    ...form.data.personalInformation,
+                                    ...form?.data?.personalInformation,
                                     emailAddress: "",
                                 },
                             },
@@ -310,6 +316,8 @@ const PaymentOrder = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
 
         return missingItems;
     }
+
+    const skipDisable = getDataStatus()?.filter(data => data?.mandatory)?.length === 0;
 
     const handleSubmitApplicationReq = async (data, save) => {
         if (isEdited || data || save) {
@@ -364,12 +372,6 @@ const PaymentOrder = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
 
         }
     }
-
-    const getValueByPath = (obj, path) => {
-        const keys = path.split(/[\.\[\]]+/).filter(Boolean);
-        console.log(path, keys.reduce((acc, key) => acc && acc[isNaN(key) ? key : Number(key)], basicForm), basicForm, 'if')
-        return keys.reduce((acc, key) => acc && acc[isNaN(key) ? key : Number(key)], basicForm);
-    };
 
     const getIsEdited = (value) => {
         setIsEdited(value)
@@ -484,7 +486,7 @@ const PaymentOrder = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                     <div className={style.stickyContainer}>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
-                        <div className={`${style.saveInProgress} ${style.marginTop10} `} onClick={() => handleSubmitApplicationReq("skipped")} > SKIP FOR NOW </div>
+                        <div className={`${style.saveInProgress} ${style.marginTop10} ${skipDisable ? style.disabledButton : ''}`} onClick={skipDisable ? () => { } : () => handleSubmitApplicationReq("skipped")} > SKIP FOR NOW </div>
                         <div className={style.twoColForButton}>
                             <div className={`${style.continue} ${style.marginTop10}`} onClick={handleBackClick}>BACK</div>
                             <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()}>CONTINUE</div>

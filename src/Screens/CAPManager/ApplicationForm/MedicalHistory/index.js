@@ -80,6 +80,12 @@ const MedicalHistory = ({ basicForm, setBasicForm, applicationId, getPreApplicat
     }
   }
 
+  const getValueByPath = (obj, path) => {
+    const keys = path.split(/[\.\[\]]+/).filter(Boolean);
+    console.log(path, keys.reduce((acc, key) => acc && acc[isNaN(key) ? key : Number(key)], basicForm), basicForm, 'if')
+    return keys.reduce((acc, key) => acc && acc[isNaN(key) ? key : Number(key)], basicForm);
+  };
+
   const getSkipClicked = (value) => {
     if (value) {
       handleSubmitApplicationReq("skipped")
@@ -327,6 +333,7 @@ const MedicalHistory = ({ basicForm, setBasicForm, applicationId, getPreApplicat
     return missingItems;
   }
 
+  const skipDisable = getDataStatus()?.filter(data => data?.mandatory)?.length === 0;
 
   const handleSubmitApplicationReq = async (data) => {
     if (isEdited || data) {
@@ -366,13 +373,6 @@ const MedicalHistory = ({ basicForm, setBasicForm, applicationId, getPreApplicat
       });
   }
 
-
-  const getValueByPath = (obj, path) => {
-    const keys = path.split(/[\.\[\]]+/).filter(Boolean);
-    console.log(path, keys.reduce((acc, key) => acc && acc[isNaN(key) ? key : Number(key)], basicForm), basicForm, 'if')
-    return keys.reduce((acc, key) => acc && acc[isNaN(key) ? key : Number(key)], basicForm);
-  };
-
   const getIsEdited = (value) => {
     setIsEdited(value)
   }
@@ -399,7 +399,7 @@ const MedicalHistory = ({ basicForm, setBasicForm, applicationId, getPreApplicat
           <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
           <div className={style.stickyContainer}>
             <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
-            <div className={`${style.saveInProgress} ${style.marginTop10} `} onClick={() => getSkipClicked(true)} > SKIP FOR NOW </div>
+            <div className={`${style.saveInProgress} ${style.marginTop10}  ${skipDisable ? style.disabledButton : ''}`} onClick={skipDisable ? () => { } : () => getSkipClicked(true)} > SKIP FOR NOW </div>
             <div className={style.twoColForButton}>
               <div className={`${style.continue} ${style.marginTop10}`} onClick={handleBackClick}>BACK</div>
               <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()}>CONTINUE</div>
