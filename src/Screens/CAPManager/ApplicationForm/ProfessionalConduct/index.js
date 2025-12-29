@@ -85,6 +85,12 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, applicationId, getPreApp
         }
     }
 
+    const getValueByPath = (obj, path) => {
+        const keys = path.split(/[\.\[\]]+/).filter(Boolean);
+        console.log(path, keys.reduce((acc, key) => acc && acc[isNaN(key) ? key : Number(key)], basicForm), basicForm, 'if')
+        return keys.reduce((acc, key) => acc && acc[isNaN(key) ? key : Number(key)], basicForm);
+    };
+
     const getMissingFields = () => {
         let missingKeys = [];
         let keyValuePair = [];
@@ -319,6 +325,8 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, applicationId, getPreApp
         return missingItems;
     }
 
+    const skipDisable = getDataStatus()?.filter(data => data?.mandatory)?.length === 0;
+
     const handleSubmitApplicationReq = async (data) => {
         if (isEdited || data) {
             let temp = {
@@ -359,12 +367,6 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, applicationId, getPreApp
         }
     }
 
-    const getValueByPath = (obj, path) => {
-        const keys = path.split(/[\.\[\]]+/).filter(Boolean);
-        console.log(path, keys.reduce((acc, key) => acc && acc[isNaN(key) ? key : Number(key)], basicForm), basicForm, 'if')
-        return keys.reduce((acc, key) => acc && acc[isNaN(key) ? key : Number(key)], basicForm);
-    };
-
     const getIsEdited = (value) => {
         setIsEdited(value)
     }
@@ -394,7 +396,7 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, applicationId, getPreApp
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                     <div className={style.stickyContainer}>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
-                        <div className={`${style.saveInProgress} ${style.marginTop10} `} onClick={() => getSkipClicked(true)} > SKIP FOR NOW </div>
+                        <div className={`${style.saveInProgress} ${style.marginTop10}  ${skipDisable ? style.disabledButton : ''}`} onClick={skipDisable ? () => { } : () => getSkipClicked(true)} > SKIP FOR NOW </div>
                         <div className={style.twoColForButton}>
                             <div className={`${style.continue} ${style.marginTop10}`} onClick={handleBackClick}>BACK</div>
                             <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()}>CONTINUE</div>

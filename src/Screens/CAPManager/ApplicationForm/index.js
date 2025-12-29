@@ -104,7 +104,7 @@ const ApplicationForm = () => {
     }
 
     const getAcknowledgement = async (id) => {
-        if (id !== "") {
+        if (id !== "" && id) {
             const { data: acknowledgementForm } = await GET(
                 `entity-service/acknowledgementForm?applicantTypeId=${id}`
             );
