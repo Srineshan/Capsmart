@@ -76,7 +76,7 @@ const ApplicationForm = () => {
         if (basicForm && acknowledgementForms?.length === 0) {
             getAcknowledgement(basicForm?.providerType?.id)
         }
-    }, [basicForm])
+    }, [basicForm?.providerType?.id])
 
     useEffect(() => {
         setUserDetails();

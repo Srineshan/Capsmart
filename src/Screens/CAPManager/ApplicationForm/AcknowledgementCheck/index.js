@@ -82,6 +82,11 @@ const AcknowledgementCheck = ({ basicForm, setBasicForm, applicationId }) => {
                 console.log(error)
                 ErrorToaster("Unexpected Error Submitting Application");
             });
+        let timeData = {
+            "value": Math.floor(parseFloat(localStorage.getItem(`totalTime_${applicationId}`)) / 60000),
+            "unit": "MINUTES"
+        }
+        await PUT(`application-management-service/application/${applicationId}/completionDuration`, timeData)
     }
 
     console.log('form', basicForm)

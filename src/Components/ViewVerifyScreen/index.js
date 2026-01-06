@@ -15,9 +15,11 @@ import Verified from "./../../images/verifiedImage.png";
 import CrossPink from "./../../images/crossPink.png";
 import ToBeVerified from "./../../images/toBeVerifiedImage.png";
 import DeleteIcon from "./../../images/deleteHcRow.png";
+import CheckIcon from '@mui/icons-material/Check';
+import ClearIcon from '@mui/icons-material/Clear';
 import Tooltip from "@mui/material/Tooltip";
 import { DELETE, TenantID, GET, PUT, POST } from "../../Screens/dataSaver";
-import { ErrorToaster, SuccessToaster } from "./../../utils/toaster";
+import { ErrorToaster, SuccessToaster, SuccessToaster2 } from "./../../utils/toaster";
 import { formatFirstNameLastName } from "./../../utils/formatting";
 import "react-datalist-input/dist/styles.css";
 import Alert from "../../Components/AlertPopUp";
@@ -119,8 +121,8 @@ const NewActiveApplication = ({
   getPaymentDisplayBox,
   dataLevel,
   getOverRideRequestApprovalDialog,
-  getOverRideRequestDeclineDialog
-
+  getOverRideRequestDeclineDialog,
+  setIsReferenceReview
 }) => {
   console.log("contract Type", contractType);
   const [applicationId, setApplicationId] = useState(
@@ -183,8 +185,8 @@ const NewActiveApplication = ({
   const [expandStates, setExpandStates] = useState({
     section1: false,
     section2: false,
-    section3: false,
-    section4: false,
+    section3: true,
+    section4: true,
     section5: false,
     section6: false,
     section7: false,
@@ -307,6 +309,54 @@ const NewActiveApplication = ({
 
   console.log("dataLevel", users?.id)
 
+  const immunizationCategoryValues = {
+    "Tuberculosis": 'TUBERCULIN', "Measles, Mumps & Rubella (MMR)": 'MEASLES_MUMPS_RUBELLA', "Hepatitis B Vaccination": 'HEPATITIS_B', "Varicella": 'VARICELLA', "Tetnues/Diptheriea/Pertussis(Tdap) and Tetatnus/Diphtheria(Td)": 'TETANUS_DIPHTHERIA_PERTUSSIS_OR_TETANUS_DIPHTHERIA', "Influenza": 'INFLUENZA', "Covid": 'COVID'
+  }
+
+  const immunizationValues = {
+    "2 Step Test ": 'TWO_STEP_TEST', "1 Step Test": 'ONE_STEP_TEST', "Chest X Ray": 'CHEST_X_RAY', 'MMR 1': 'MMR1', 'MMR 2': 'MMR2', "Laboratory Evidence Of Immunity": 'LABORATORY_EVIDENCE_OF_IMMUNITY', "HEP B 3": 'HEP_B_3', "HEP B 2": 'HEP_B_2', "HEP B 1": 'HEP_B_1', "Varicella 1": 'VARICELLA_1', "Varicella 2": 'VARICELLA_2', "Laboratory Confirmation Of Disease": 'LABORATORY_CONFIRMATION_OF_DISEASE', "Influenza Vaccine": 'INFLUENZA_VACCINE', "Covid Vaccine": 'COVID_VACCINE', "Booster": 'BOOSTER', "TD Immunization": 'TD_IMMUNIZATION', "TDAP Immunization": 'TDAP_IMMUNIZATION', "HEP B Booster": 'HEP_B_BOOSTER', "Pertusis Asult Dose": 'PERTUSIS_ADULT_DOSE'
+  }
+
+  const resultValues = {
+    "Positive": 'POSITIVE', "Negative": 'NEGATIVE'
+  }
+
+  const immunizationCategoryLabels = Object.fromEntries(
+    Object.entries(immunizationCategoryValues).map(([label, value]) => [value, label])
+  );
+
+  const immunizationLabels = Object.fromEntries(
+    Object.entries(immunizationValues).map(([label, value]) => [value, label])
+  );
+
+  const resultLabels = Object.fromEntries(
+    Object.entries(resultValues).map(([label, value]) => [value, label])
+  );
+
+  const immunizationKeys = [
+    "2 Step Test ",
+    "1 Step Test",
+    "Chest X Ray",
+    "MMR 1",
+    "MMR 2",
+    "Laboratory Evidence Of Immunity",
+    "HEP B 3",
+    "HEP B 2",
+    "HEP B 1",
+    "Varicella 1",
+    "Varicella 2",
+    "Laboratory Confirmation Of Disease",
+    "Influenza Vaccine",
+    "Covid Vaccine",
+    "Booster",
+    "TD Immunization",
+    "TDAP Immunization",
+    "HEP B Booster",
+    "Pertusis Asult Dose"
+  ];
+
+  const tableHeader = ['Test / Immunization', 'Result', 'Last Test Date', 'Valid', '']
+
   useEffect(() => {
     getPreApplication();
     getPreApplicationTask();
@@ -322,6 +372,8 @@ const NewActiveApplication = ({
   useEffect(() => {
     getMedicalDirectives()
     getAllFormSchemas();
+    if (applicationId)
+      getApplicationImmunization()
   }, [applicationId])
 
   useEffect(() => {
@@ -744,48 +796,39 @@ const NewActiveApplication = ({
     }
 
     console.log("selectedTab:", selectedTab, (workModeType === 'Chief Of Staff' && selectedTab === 'level-2' && (applicationType === "REAPPOINTMENT" || applicationType === "NEW") && isApproverDept === "Approve"), workModeType === 'Chief Of Staff', selectedTab === 'level-2', applicationType === "REAPPOINTMENT", isApproverDept);
-  }, [form, applicationId, userFirstName, userLastName, workModeType, applicationType, isApproverDept]);
+  }, [form, applicationId, userFirstName, userLastName, workModeType, applicationType]);
 
   useEffect(() => {
-    console.log("Updated firstnameuser", userFirstName);
-    console.log("Updated firstnameuser", userLastName);
+    console.log('printCheck', form?.completedWorkflows, userFirstName, userLastName)
+    if (form) {
+      let CredCommApproverDetails = form?.completedWorkflows?.find(
+        (workflow) => workflow?.role === "Credentialing Committee"
+      );
+      console.log('printCheck', CredCommApproverDetails)
+      let approverDetailsArray = CredCommApproverDetails?.approverDetails || [];
+      const matchedApprover = approverDetailsArray?.find((approver) => {
+        const firstName = approver?.approverDetail?.name?.firstName;
+        const lastName = approver?.approverDetail?.name?.lastName;
+        return firstName === userFirstName && lastName === userLastName;
+      });
+      console.log('printCheck', approverDetailsArray, matchedApprover)
 
-    let CredCommApproverDetails = form?.completedWorkflows?.find(
-      (workflow) => workflow?.role === "Credentialing Committee"
-    );
-
-    let approverDetailsArray = CredCommApproverDetails?.approverDetails || [];
-
-    // let firstName = CredCommApproverDetails?.approverDetail?.name?.firstName;
-    // let lastName = CredCommApproverDetails?.approverDetail?.name?.lastName;
-    // let approvalType = CredCommApproverDetails?.approvalType
-    const matchedApprover = approverDetailsArray.find((approver) => {
-      const firstName = approver?.approverDetail?.name?.firstName;
-      const lastName = approver?.approverDetail?.name?.lastName;
-      return firstName === userFirstName && lastName === userLastName;
-    });
-
-    // console.log(`Approver cred: ${firstName} ${lastName}`);
-    console.log("workModeType:", workModeType);
-    // console.log("selectedTab:", selectedTab,(workModeType === 'Chief Of Staff' && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && isApproverDept === "Approve"),workModeType === 'Chief Of Staff' , selectedTab === 'level-2' , applicationType === "REAPPOINTMENT" , isApproverDept);
-    console.log("applicationType:", applicationType);
-    console.log("approvalType:", approvalType);
-
-    if (matchedApprover) {
-      setIsApproverCred("Approve");
-      console.log("levelofApprovaltrue:", isApproverCred);
-      if (!approvalType) {
-        setApprovalType(false);
+      // console.log("levelofApprovaltrue:", isApproverCred, matchedApprover, approverDetailsArray, userFirstName, userLastName);
+      if (matchedApprover) {
+        setIsApproverCred("Approve");
+        console.log("levelofApprovaltrue:", isApproverCred);
+        if (!approvalType) {
+          setApprovalType(false);
+        } else {
+          setApprovalType(true);
+        }
       } else {
-        setApprovalType(true);
+        setIsApproverCred("NotApproved");
+        console.log("levelofApprovalfalse:", isApproverCred);
       }
-    } else {
-      setIsApproverCred("NotApproved");
-      console.log("levelofApprovalfalse:", isApproverCred);
     }
-
-    console.log("selectedTab:", selectedTab, (workModeType === 'Chief Of Staff' && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && isApproverCred === "Approve"), workModeType === 'Chief Of Staff', selectedTab === 'level-2', applicationType === "REAPPOINTMENT", isApproverCred);
-  }, [form, applicationId, userFirstName, userLastName, workModeType, applicationType, isApproverCred]);
+    // console.log("selectedTab:", selectedTab, (workModeType === 'Chief Of Staff' && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && isApproverCred === "Approve"), workModeType === 'Chief Of Staff', selectedTab === 'level-2', applicationType === "REAPPOINTMENT", isApproverCred);
+  }, [form, applicationId, userFirstName, userLastName, workModeType, applicationType]);
 
   console.log("Is Approver:", isApproverDept);
 
@@ -1292,9 +1335,13 @@ const NewActiveApplication = ({
     getEmailDialogBox(true);
   };
 
-  const onClickApproveMoveFunction = () => {
-    handleApplicationAccept(true);
-    getApplicationMoveToNext(true)
+  const onClickApproveMoveFunction = async () => {
+    try {
+      await handleApplicationAccept(true);
+      await getApplicationMoveToNext(true);
+    } catch (error) {
+      console.error("Error while approving and moving application:", error);
+    }
   };
 
   const onClickCCDateSetFunction = () => {
@@ -1313,6 +1360,38 @@ const NewActiveApplication = ({
   const onClickOverRideDeclineDialog = () => {
     getOverRideRequestDeclineDialog(true);
   };
+
+  const handleImmunizationSend = async (id, status, label) => {
+    const formData = new FormData();
+
+    formData.append('taskStatusLabel', new Blob([JSON.stringify({ status: status, label: label })], {
+      type: "application/json"
+    }));
+    await POST(`application-management-service/application/${applicationId}/task/${id}/execute`, formData)
+      .then(response => {
+        SuccessToaster2('Immunization History Review Sent Successfully');
+        console.log(response?.data);
+      })
+      .catch(error => {
+        ErrorToaster('Task Update Failed');
+      })
+  }
+
+  const handleReferenceSend = async (refId) => {
+    // formData.append('taskStatusLabel', new Blob([JSON.stringify({ status: '', label: 'label' })], {
+    //   type: "application/json"
+    // }));
+    console.log("refId", refId);
+
+    await POST(`application-management-service/application/${applicationId}/sendReferenceEmail`, { 'id': refId })
+      .then(response => {
+        SuccessToaster2('Reference Feedback Questionnaire Sent Successfully');
+        console.log(response?.data);
+      })
+      .catch(error => {
+        ErrorToaster('Task Update Failed');
+      })
+  }
 
 
   const handleDeleteNote = async (noteID) => {
@@ -1420,15 +1499,16 @@ const NewActiveApplication = ({
 
     // const isDelegate = selectedTab === 'level-2' || selectedTab === 'level-3' || selectedTab === 'level-4' || selectedTab === 'level-5';
     // const requestData = { ...temp, notes: "" };
-    await PUT(`application-management-service/application/${applicationId}/workflow/complete/APPROVED?isDelegate=${isDelegate}&approvalType=RECOMMENDED`, temp)
-      .then(response => {
-        console.log('success')
-        onClose()
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-    getPreApplication();
+    try {
+      await PUT(`application-management-service/application/${applicationId}/workflow/complete/APPROVED?isDelegate=${isDelegate}&approvalType=RECOMMENDED`, temp)
+      console.log("successful");
+      onClose();
+      getPreApplication();
+      return true; // optional
+    } catch (error) {
+      console.error(error);
+      throw error; // IMPORTANT → allows outer await to stop
+    }
   };
 
   const handleApplicationReject = async () => {
@@ -1586,15 +1666,19 @@ const NewActiveApplication = ({
       approvedDate: new Date().toISOString(),
       title: title
     };
+    try {
+      await PUT(
+        `application-management-service/application/${applicationId}/workflow/move?isDelegate=${isDelegate}&workflowAction=APPROVED`,
+        temp
+      );
 
-    await PUT(`application-management-service/application/${applicationId}/workflow/move?isDelegate=${isDelegate}&workflowAction=APPROVED`, temp)
-      .then(response => {
-        console.log('successfull')
-        onClose()
-      })
-      .catch((error) => {
-        console.log(error)
-      });
+      console.log("successful");
+      onClose();
+      return true; // optional
+    } catch (error) {
+      console.error(error);
+      throw error; // IMPORTANT → allows outer await to stop
+    }
     // getPreApplication();
   }
 
@@ -1817,6 +1901,34 @@ const NewActiveApplication = ({
   //     })
   //     return temp;
   //   }
+  let test = [];
+  let pos = [];
+  let lastTestDate = [];
+  let valid = [];
+  let deleteIcon = [];
+
+  const getTableValues = (data, category) => {
+    test = [];
+    pos = [];
+    lastTestDate = [];
+    valid = [];
+    deleteIcon = [];
+    data?.map(innerData => {
+      test.push(immunizationLabels[innerData?.immunization])
+      pos.push(resultLabels[innerData?.result] !== "Neg" ? 'Positive' : 'Negative')
+      lastTestDate.push(innerData?.testDate ? format(new Date(innerData?.testDate), 'MMM dd, yyyy') : '')
+      valid.push(innerData?.files?.[0]?.valid ? <CheckIcon sx={{ color: '#06617A' }} /> : <ClearIcon sx={{ color: '#06617A' }} />)
+      // deleteIcon.push(<img src={DeleteIcon} alt="" className={`${style.docTypeImgStyle} ${style.cursorPointer}`} onClick={() => { handleDeleteTestDetail(category, innerData) }} />)
+    })
+
+    return [
+      { type: "text", value: test },
+      { type: "text", value: pos },
+      { type: "text", value: lastTestDate },
+      { type: "icon", icon: valid },
+      // { type: "icon", icon: deleteIcon },
+    ];
+  }
 
   const getApplicantValues = (array, index) => {
     if (!array || !Array.isArray(array)) {
@@ -3861,98 +3973,98 @@ const NewActiveApplication = ({
         );
       case "Immunization":
         return (
-          <></>
-          // <>
-          // <div className={`${style.cardTitle} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Tuberculosis(TB)']?.label}</div>
-          //             <div className={`${style.descriptionText} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Tuberculosis(TB)']?.description}</div>
-          //             {applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "TUBERCULIN")?.length !== 0 && (
-          //                 <TableTwo
-          //                     tableHeaderValues={tableHeader}
-          //                     tableDataValues={getTableValues(applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "TUBERCULIN")?.[0]?.testDetails, 'TUBERCULIN')}
-          //                     tableData={applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "TUBERCULIN")?.[0]?.testDetails}
-          //                     gridStyle={style.testGrid}
-          //                     tableSortValues={[]}
-          //                     heading={"There are no record to display"}
-          //                     className={`${style.tableRow} ${style.reportSection}`}
-          //                     hidePagination={true}
-          //                 />
-          //             )}
-          //             <CommonDivider />
-          //             <div className={`${style.cardTitle} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Measles, Mumps & Rubella (MMR)']?.label}</div>
-          //             <div className={`${style.descriptionText} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Measles, Mumps & Rubella (MMR)']?.description}</div>
-          //             {applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "MEASLES_MUMPS_RUBELLA")?.length !== 0 && (
-          //                 <TableTwo
-          //                     tableHeaderValues={tableHeader}
-          //                     tableDataValues={getTableValues(applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "MEASLES_MUMPS_RUBELLA")?.[0]?.testDetails, "MEASLES_MUMPS_RUBELLA")}
-          //                     tableData={applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "MEASLES_MUMPS_RUBELLA")?.[0]?.testDetails}
-          //                     gridStyle={style.testGrid}
-          //                     tableSortValues={[]}
-          //                     heading={"There are no record to display"}
-          //                     className={`${style.tableRow} ${style.reportSection}`}
-          //                     hidePagination={true}
-          //                 />
-          //             )}
-          //             <CommonDivider />
-          //             <div className={`${style.cardTitle} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Hepatitis B Vaccination']?.label}</div>
-          //             <div className={`${style.descriptionText} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Hepatitis B Vaccination']?.description}</div>
-          //             {applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "HEPATITIS_B")?.length !== 0 && (
-          //                 <TableTwo
-          //                     tableHeaderValues={tableHeader}
-          //                     tableDataValues={getTableValues(applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "HEPATITIS_B")?.[0]?.testDetails, "HEPATITIS_B")}
-          //                     tableData={applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "HEPATITIS_B")}
-          //                     gridStyle={style.testGrid}
-          //                     tableSortValues={[]}
-          //                     heading={"There are no record to display"}
-          //                     className={`${style.tableRow} ${style.reportSection}`}
-          //                     hidePagination={true}
-          //                 />
-          //             )}
-          //             <CommonDivider />
-          //             <div className={`${style.cardTitle} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Varicella']?.label}</div>
-          //             <div className={`${style.descriptionText} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Varicella']?.description}</div>
-          //             {applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "VARICELLA")?.length !== 0 && (
-          //                 <TableTwo
-          //                     tableHeaderValues={tableHeader}
-          //                     tableDataValues={getTableValues(applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "VARICELLA")?.[0]?.testDetails, "VARICELLA")}
-          //                     tableData={applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "VARICELLA")?.[0]?.testDetails}
-          //                     gridStyle={style.testGrid}
-          //                     tableSortValues={[]}
-          //                     heading={"There are no record to display"}
-          //                     className={`${style.tableRow} ${style.reportSection}`}
-          //                     hidePagination={true}
-          //                 />
-          //             )}
-          //             <CommonDivider />
-          //             <div className={`${style.cardTitle} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Tetnues/Diptheriea/Pertussis(Tdap) and Tetatnus/Diphtheria(Td)']?.label}</div>
-          //             <div className={`${style.descriptionText} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Tetnues/Diptheriea/Pertussis(Tdap) and Tetatnus/Diphtheria(Td)']?.description}</div>
-          //             {applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "TETANUS_DIPHTHERIA_PERTUSSIS_OR_TETANUS_DIPHTHERIA")?.length !== 0 && (
-          //                 <TableTwo
-          //                     tableHeaderValues={tableHeader}
-          //                     tableDataValues={getTableValues(applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "TETANUS_DIPHTHERIA_PERTUSSIS_OR_TETANUS_DIPHTHERIA")?.[0]?.testDetails, "TETANUS_DIPHTHERIA_PERTUSSIS_OR_TETANUS_DIPHTHERIA")}
-          //                     tableData={applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "TETANUS_DIPHTHERIA_PERTUSSIS_OR_TETANUS_DIPHTHERIA")?.[0]?.testDetails}
-          //                     gridStyle={style.testGrid}
-          //                     tableSortValues={[]}
-          //                     heading={"There are no record to display"}
-          //                     className={`${style.tableRow} ${style.reportSection}`}
-          //                     hidePagination={true}
-          //                 />
-          //             )}
-          //             <CommonDivider />
-          //             <div className={`${style.cardTitle} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Influenza']?.label}</div>
-          //             <div className={`${style.descriptionText} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Influenza']?.description}</div>
-          //             {applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "INFLUENZA")?.length !== 0 && (
-          //                 <TableTwo
-          //                     tableHeaderValues={tableHeader}
-          //                     tableDataValues={getTableValues(applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "INFLUENZA")?.[0]?.testDetails, "INFLUENZA")}
-          //                     tableData={applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "INFLUENZA")?.[0]?.testDetails}
-          //                     gridStyle={style.testGrid}
-          //                     tableSortValues={[]}
-          //                     heading={"There are no record to display"}
-          //                     className={`${style.tableRow} ${style.reportSection}`}
-          //                     hidePagination={true}
-          //                 />
-          //             )}
-          // </>
+          // <></>
+          <>
+            <div className={`${style.cardTitle} ${style.marginTop}`}>{allFormSchemas?.[index]?.formSchema?.schema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Tuberculosis(TB)']?.label}</div>
+            <div className={`${style.descriptionText} ${style.marginTop}`}>{allFormSchemas?.[index]?.formSchema?.schema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Tuberculosis(TB)']?.description}</div>
+            {applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "TUBERCULIN")?.length !== 0 && (
+              <TableTwo
+                tableHeaderValues={tableHeader}
+                tableDataValues={getTableValues(applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "TUBERCULIN")?.[0]?.testDetails, 'TUBERCULIN')}
+                tableData={applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "TUBERCULIN")?.[0]?.testDetails}
+                gridStyle={style.testGrid}
+                tableSortValues={[]}
+                heading={"There are no records to display"}
+                className={`${style.tableRow} ${style.reportSection}`}
+                hidePagination={true}
+              />
+            )}
+            <CommonDivider />
+            <div className={`${style.cardTitle} ${style.marginTop}`}>{allFormSchemas?.[index]?.formSchema?.schema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Measles, Mumps & Rubella (MMR)']?.label}</div>
+            <div className={`${style.descriptionText} ${style.marginTop}`}>{allFormSchemas?.[index]?.formSchema?.schema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Measles, Mumps & Rubella (MMR)']?.description}</div>
+            {applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "MEASLES_MUMPS_RUBELLA")?.length !== 0 && (
+              <TableTwo
+                tableHeaderValues={tableHeader}
+                tableDataValues={getTableValues(applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "MEASLES_MUMPS_RUBELLA")?.[0]?.testDetails, "MEASLES_MUMPS_RUBELLA")}
+                tableData={applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "MEASLES_MUMPS_RUBELLA")?.[0]?.testDetails}
+                gridStyle={style.testGrid}
+                tableSortValues={[]}
+                heading={"There are no records to display"}
+                className={`${style.tableRow} ${style.reportSection}`}
+                hidePagination={true}
+              />
+            )}
+            <CommonDivider />
+            <div className={`${style.cardTitle} ${style.marginTop}`}>{allFormSchemas?.[index]?.formSchema?.schema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Hepatitis B Vaccination']?.label}</div>
+            <div className={`${style.descriptionText} ${style.marginTop}`}>{allFormSchemas?.[index]?.formSchema?.schema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Hepatitis B Vaccination']?.description}</div>
+            {applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "HEPATITIS_B")?.length !== 0 && (
+              <TableTwo
+                tableHeaderValues={tableHeader}
+                tableDataValues={getTableValues(applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "HEPATITIS_B")?.[0]?.testDetails, "HEPATITIS_B")}
+                tableData={applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "HEPATITIS_B")}
+                gridStyle={style.testGrid}
+                tableSortValues={[]}
+                heading={"There are no records to display"}
+                className={`${style.tableRow} ${style.reportSection}`}
+                hidePagination={true}
+              />
+            )}
+            <CommonDivider />
+            <div className={`${style.cardTitle} ${style.marginTop}`}>{allFormSchemas?.[index]?.formSchema?.schema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Varicella']?.label}</div>
+            <div className={`${style.descriptionText} ${style.marginTop}`}>{allFormSchemas?.[index]?.formSchema?.schema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Varicella']?.description}</div>
+            {applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "VARICELLA")?.length !== 0 && (
+              <TableTwo
+                tableHeaderValues={tableHeader}
+                tableDataValues={getTableValues(applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "VARICELLA")?.[0]?.testDetails, "VARICELLA")}
+                tableData={applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "VARICELLA")?.[0]?.testDetails}
+                gridStyle={style.testGrid}
+                tableSortValues={[]}
+                heading={"There are no records to display"}
+                className={`${style.tableRow} ${style.reportSection}`}
+                hidePagination={true}
+              />
+            )}
+            <CommonDivider />
+            <div className={`${style.cardTitle} ${style.marginTop}`}>{allFormSchemas?.[index]?.formSchema?.schema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Tetnues/Diptheriea/Pertussis(Tdap) and Tetatnus/Diphtheria(Td)']?.label}</div>
+            <div className={`${style.descriptionText} ${style.marginTop}`}>{allFormSchemas?.[index]?.formSchema?.schema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Tetnues/Diptheriea/Pertussis(Tdap) and Tetatnus/Diphtheria(Td)']?.description}</div>
+            {applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "TETANUS_DIPHTHERIA_PERTUSSIS_OR_TETANUS_DIPHTHERIA")?.length !== 0 && (
+              <TableTwo
+                tableHeaderValues={tableHeader}
+                tableDataValues={getTableValues(applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "TETANUS_DIPHTHERIA_PERTUSSIS_OR_TETANUS_DIPHTHERIA")?.[0]?.testDetails, "TETANUS_DIPHTHERIA_PERTUSSIS_OR_TETANUS_DIPHTHERIA")}
+                tableData={applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "TETANUS_DIPHTHERIA_PERTUSSIS_OR_TETANUS_DIPHTHERIA")?.[0]?.testDetails}
+                gridStyle={style.testGrid}
+                tableSortValues={[]}
+                heading={"There are no records to display"}
+                className={`${style.tableRow} ${style.reportSection}`}
+                hidePagination={true}
+              />
+            )}
+            <CommonDivider />
+            <div className={`${style.cardTitle} ${style.marginTop}`}>{allFormSchemas?.[index]?.formSchema?.schema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Influenza']?.label}</div>
+            <div className={`${style.descriptionText} ${style.marginTop}`}>{allFormSchemas?.[index]?.formSchema?.schema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Influenza']?.description}</div>
+            {applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "INFLUENZA")?.length !== 0 && (
+              <TableTwo
+                tableHeaderValues={tableHeader}
+                tableDataValues={getTableValues(applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "INFLUENZA")?.[0]?.testDetails, "INFLUENZA")}
+                tableData={applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "INFLUENZA")?.[0]?.testDetails}
+                gridStyle={style.testGrid}
+                tableSortValues={[]}
+                heading={"There are no records to display"}
+                className={`${style.tableRow} ${style.reportSection}`}
+                hidePagination={true}
+              />
+            )}
+          </>
         );
       default:
         console.log(form?.forms?.[index]?.uploadedFiles, 'uploadedFiles', data?.schemaCategory)
@@ -9399,7 +9511,7 @@ const NewActiveApplication = ({
                   </>) : ("")}
 
 
-                  {((workModeType === 'Staff Manager' && selectedTab === 'level-3' && (applicationType === "REAPPOINTMENT" || applicationType === "NEW") && isApproverCred === "NotApproved") || (workModeType === 'Credentialing Committee' && selectedTab === 'level-2' && applicationType === "LOCUM" && isApproverCred === "NotApproved") || (workModeType === 'Chief Of Staff' && selectedTab === 'level-2' && applicationType === "LOCUM" && isApproverCred === "NotApproved")) ? (<>
+                  {((workModeType === 'Staff Manager' && selectedTab === 'level-3' && (applicationType === "REAPPOINTMENT") && isApproverCred === "NotApproved") || (workModeType === 'Credentialing Committee' && selectedTab === 'level-2' && applicationType === "LOCUM" && isApproverCred === "NotApproved") || (workModeType === 'Chief Of Staff' && selectedTab === 'level-2' && applicationType === "LOCUM" && isApproverCred === "NotApproved")) ? (<>
                     <div>
                       <div className={`${style.textCardStyle} ${style.pendingTextStyle} ${style.alignCenter} ${style.padding30} ${style.marginBottom20}`}>
                         Pending Cred. Comm. Recommendation
@@ -10142,7 +10254,7 @@ const NewActiveApplication = ({
                     {(applicationType === "REAPPOINTMENT" || applicationType === "NEW") || applicationType === "LOCUM" ? (
                       <>
                         {selectedTab === "level-4" || selectedTab === "level-5" || (selectedTab === "level-3" && applicationType === "LOCUM") ? (
-                          <div className={`${style.cardLeftStyle} ${style.marginBottom20}`}>
+                          <div className={`${style.cardLeftStyle} ${style.marginBottom20} ${style.marginTop20}`}>
                             <div className={`${style.displayInRow}${style.marginTop20}`}>
                               <div
                                 className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
@@ -10739,6 +10851,163 @@ const NewActiveApplication = ({
 
                           <div className={style.marginBottom20}></div>
                         </div>
+
+                        {applicationType === "NEW" && (
+                          <>
+                            <div className={`${style.cardLeftStyle} ${style.marginTop20}`}>
+                              <div className={`${style.displayInRow}${style.marginTop20}`}>
+                                <div
+                                  className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
+                                >
+                                  <span className={`${style.tableHeaderHeadingTextStyle}`}>
+                                    Reference Feedback Status
+                                  </span>
+                                  <div
+                                    className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                                  >
+                                    <div
+                                      className={`${style.marginLeft10} ${style.tableDataFontStyle1}`} onClick={() => toggleExpand("section2")}
+                                    >
+                                      {expandStates.section2 ? (
+                                        <Tooltip title="Collapse Section" arrow>
+                                          <RemoveIcon
+                                            sx={{
+                                              fontSize: 20,
+                                              color: "#94979A",
+                                              cursor: "pointer",
+                                            }}
+                                          />
+                                        </Tooltip>
+                                      ) : (
+                                        <Tooltip title="Expand Section" arrow>
+                                          <AddIcon
+                                            sx={{
+                                              fontSize: 20,
+                                              color: "#94979A",
+                                              cursor: "pointer",
+                                            }}
+                                          />
+                                        </Tooltip>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                                {expandStates.section2 && (
+                                  <>
+                                    {form?.references?.privilegeReference?.map((reference, index) => (
+                                      <div className={`${style.marginBottom20} ${style.referenceCardStyle}`}>
+                                        <div className={`${style.gridGap}`}>
+                                          <div className={`${reference?.responded ? style.greenDotStyle : style.greyDotStyle} ${style.buttonCenter}`}></div>
+                                          <div>
+                                            <div className={`${style.displayInRow} ${style.spaceBetweenOnly}`}>
+                                              <div>
+                                                <div className={`${style.sideHeadingFontStyle}`}>{`${reference?.firstName} ${reference?.lastName}`}</div>
+                                                <div className={`${style.sideHeadingRefFrontStyle}`}>{reference?.responded ? 'Reference Contact Responded' : 'Reference Contact Not Responded Yet'}</div>
+                                              </div>
+                                              <div className={`${style.viewTextStyle} ${style.viewButton} ${style.alignItem} ${style.cursorPointer} ${reference?.responded ? style.continueDisabled : ''}`} onClick={reference?.responded ? () => { } : () => handleReferenceSend(reference?.rowId)}>Send</div>
+                                            </div>
+                                            <CommonDivider />
+                                          </div>
+                                        </div>
+                                        <div className={`${style.gridGap1}  ${!reference?.reviewDetails?.referenceStatus ? style.continueDisabled : ''}`}>
+                                          <div className={`${reference?.reviewDetails?.referenceStatus === 'REFERENCE_IS_FAVORABLE' ? style.greenDotStyle : reference?.reviewDetails?.referenceStatus === 'REFERENCE_PROVIDED_NOT_FAVORABLE' ? style.redDotStyle : reference?.reviewDetails?.referenceStatus === 'REFERENCE_IS_SATISFACTORY' ? style.yellowDotStyle : style.greyDotStyle} ${style.buttonCenter}`}></div>
+                                          <div className={`${style.sideHeadingRefFrontStyle}`}>{reference?.reviewDetails?.referenceStatus ? `Marked As ${reference?.reviewDetails?.referenceStatus === 'REFERENCE_IS_FAVORABLE' ? 'Favourable' : reference?.reviewDetails?.referenceStatus === 'REFERENCE_PROVIDED_NOT_FAVORABLE' ? 'Not Favourable' : reference?.reviewDetails?.referenceStatus === 'REFERENCE_IS_SATISFACTORY' ? 'Satisfactory' : ''} By Dept. Head On ${reference?.reviewDetails?.esign?.signedDate ? reference?.reviewDetails?.esign?.signedDate : ''}` : 'To Be Verified By Dept. Head'}</div>
+                                          <div>
+                                            <div className={`${style.viewTextStyle} ${style.viewButton} ${workModeType !== 'Department Head' ? style.continueDisabled : style.cursorPointer}`} onClick={workModeType !== 'Department Head' ? () => { } : () => { setIsReferenceReview(true); sessionStorage.setItem('refId', reference?.rowId) }}>Review</div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    ))}
+
+                                    {form?.references?.reference?.map((reference, index) => (
+                                      <div className={`${style.marginBottom20} ${style.referenceCardStyle}`}>
+                                        <div className={`${style.gridGap}`}>
+                                          <div className={`${reference?.responded ? style.greenDotStyle : style.greyDotStyle} ${style.buttonCenter}`}></div>
+                                          <div>
+                                            <div className={`${style.displayInRow} ${style.spaceBetweenOnly}`}>
+                                              <div>
+                                                <div className={`${style.sideHeadingFontStyle}`}>{`${reference?.firstName} ${reference?.lastName}`}</div>
+                                                <div className={`${style.sideHeadingRefFrontStyle}`}>{reference?.responded ? 'Reference Contact Responded' : 'Reference Contact Not Responded Yet'}</div>
+                                              </div>
+                                              <div className={`${style.viewTextStyle} ${style.viewButton} ${style.alignItem} ${style.cursorPointer}  ${reference?.responded ? style.continueDisabled : ''}`} onClick={reference?.responded ? () => { } : () => handleReferenceSend(reference?.rowId)}>Send</div>
+                                            </div>
+                                            <CommonDivider />
+                                          </div>
+                                        </div>
+                                        <div className={`${style.gridGap1} ${!reference?.reviewDetails?.referenceStatus ? style.continueDisabled : ''}`}>
+                                          <div className={`${reference?.reviewDetails?.referenceStatus === 'REFERENCE_IS_FAVORABLE' ? style.greenDotStyle : reference?.reviewDetails?.referenceStatus === 'REFERENCE_PROVIDED_NOT_FAVORABLE' ? style.redDotStyle : reference?.reviewDetails?.referenceStatus === 'REFERENCE_IS_SATISFACTORY' ? style.yellowDotStyle : style.greyDotStyle} ${style.buttonCenter}`}></div>
+                                          <div className={`${style.sideHeadingRefFrontStyle}`} >{reference?.reviewDetails?.referenceStatus ? `Marked As ${reference?.reviewDetails?.referenceStatus === 'REFERENCE_IS_FAVORABLE' ? 'Favourable' : reference?.reviewDetails?.referenceStatus === 'REFERENCE_PROVIDED_NOT_FAVORABLE' ? 'Not Favourable' : reference?.reviewDetails?.referenceStatus === 'REFERENCE_IS_SATISFACTORY' ? 'Satisfactory' : ''} By Dept. Head On  ${reference?.reviewDetails?.esign?.signedDate ? reference?.reviewDetails?.esign?.signedDate : ''}` : 'To Be Verified By Dept. Head'}</div>
+                                          <div>
+                                            <div className={`${style.viewTextStyle} ${style.viewButton} ${workModeType === 'Department Head' ? style.continueDisabled : style.cursorPointer}`} onClick={workModeType === 'Department Head' ? () => { } : () => { setIsReferenceReview(true); sessionStorage.setItem('refId', reference?.rowId) }}>Review</div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </>
+                                )}
+                              </div>
+                              <div className={style.marginBottom20}></div>
+                            </div>
+                            <div className={`${style.cardLeftStyle} ${style.marginTop20}`}>
+                              <div className={`${style.displayInRow}${style.marginTop20}`}>
+                                <div
+                                  className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
+                                >
+                                  <span className={`${style.tableHeaderHeadingTextStyle}`}>
+                                    Immunization History Review
+                                  </span>
+                                  <div
+                                    className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                                  >
+                                    <div
+                                      className={`${style.marginLeft10} ${style.tableDataFontStyle1}`} onClick={() => toggleExpand("section3")}
+                                    >
+                                      {expandStates.section3 ? (
+                                        <Tooltip title="Collapse Section" arrow>
+                                          <RemoveIcon
+                                            sx={{
+                                              fontSize: 20,
+                                              color: "#94979A",
+                                              cursor: "pointer",
+                                            }}
+                                          />
+                                        </Tooltip>
+                                      ) : (
+                                        <Tooltip title="Expand Section" arrow>
+                                          <AddIcon
+                                            sx={{
+                                              fontSize: 20,
+                                              color: "#94979A",
+                                              cursor: "pointer",
+                                            }}
+                                          />
+                                        </Tooltip>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                                {expandStates.section3 && (
+                                  <>
+                                    <div className={`${style.marginBottom20} ${style.referenceCardStyle}`}>
+
+                                      <div className={`${style.gridGap}`}>
+                                        <div className={`${applicationImmunization?.approvalDetails ? style.greenDotStyle : style.greyDotStyle} ${style.buttonCenter}`}></div>
+                                        <div className={`${style.displayInRow} ${style.spaceBetweenOnly}`}>
+                                          <div>
+                                            <div className={`${style.sideHeadingFontStyle}`}>Immunization History</div>
+                                            <div className={`${style.sideHeadingRefFrontStyle}`}>{applicationImmunization?.approvalDetails ? `Approved By Safety & Wellness On ${applicationImmunization?.approvalDetails?.esignature?.signedDate}` : 'Immunization History Not Verified Yet'}</div>
+                                          </div>
+                                          <div className={`${style.viewTextStyle} ${style.viewButton} ${style.alignItem} ${style.cursorPointer}  ${applicationImmunization?.approvalDetails ? style.continueDisabled : ''}`} onClick={applicationImmunization?.approvalDetails ? () => { } : () => handleImmunizationSend(applicationImmunization?.task?.id)}>Send</div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </>
+                                )}
+                              </div>
+                              <div className={style.marginBottom20}></div>
+                            </div>
+                          </>
+                        )}
                       </>
                     ) : (" ")}
 
@@ -10748,7 +11017,7 @@ const NewActiveApplication = ({
               }
               {selectedTab === 'level-4' && applicationType === "NEW" ? (
                 <>
-                  <div className={`${style.cardLeftStyle2}`}>
+                  <div className={`${style.cardLeftStyle2} ${style.marginTop20}`}>
                     <div className={`${style.displayInRow}${style.marginTop20}`}>
                       <div className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20}`}>
                         <span className={`${style.tableHeaderHeadingTextStyle}`}>MAC Meeting Date*</span>

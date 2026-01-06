@@ -39,7 +39,7 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, applicationId, getPreApp
                 setNavigateBackURL(`/applicationForm/${applicationId}/${basicForm?.forms[0]?.formCategory}/${btoa(basicForm?.forms[0]?.schemaCategory)}`)
             }
         }
-    }, [basicForm, formIndex])
+    }, [basicForm?.formSchemas?.[formIndex]?.id, formIndex])
 
     useEffect(() => {
         setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === atob(step)))

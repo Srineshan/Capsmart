@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import ProgressCard from '../../../../Components/ProgressCard';
 import ApplicationUserCard from '../../../../Components/ApplicationUserCard';
 import ApplicationAssistanceCard from '../../../../Components/ApplicationAssistanceCard';
@@ -39,7 +39,7 @@ const MedicalHistory = ({ basicForm, setBasicForm, applicationId, getPreApplicat
         setNavigateBackURL(`/applicationForm/${applicationId}/${basicForm?.forms[0]?.formCategory}/${btoa(basicForm?.forms[0]?.schemaCategory)}`)
       }
     }
-  }, [basicForm, formIndex])
+  }, [basicForm?.formSchemas?.[formIndex]?.id, formIndex])
 
   useEffect(() => {
     setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === atob(step)))
@@ -224,6 +224,69 @@ const MedicalHistory = ({ basicForm, setBasicForm, applicationId, getPreApplicat
     console.log(keyValuePair, "Metadata", missingKeys);
   };
 
+  // Read-only validation function that doesn't update state
+  const getValidationStatus = () => {
+    let missingItems = [];
+    let keyValuePair = [];
+
+    const cellPhone = getValueByPath(
+      basicForm,
+      `forms[${formIndex}].data.impactingPractice.medicalHistory.cellPhone`
+    );
+    const emailId = getValueByPath(
+      basicForm,
+      `forms[${formIndex}].data.impactingPractice.medicalHistory.emailId`
+    );
+    metadata?.map((data, index) => {
+      keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: labels[index]?.label, mandatory: labels[index]?.mandatory })
+    })
+
+    const validateBusinessPhone = (phone) => {
+      const cleaned = phone?.replace(/\D/g, "");
+      const phoneRegex = /^[0-9]{10}$/;
+      return phoneRegex.test(cleaned);
+    };
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    const isCellPhoneInvalid = !validateBusinessPhone(cellPhone);
+    const isEmailInvalid = !emailRegex.test(emailId);
+
+    if (isCellPhoneInvalid && cellPhone && cellPhone !== "") {
+      missingItems.push({
+        key: "cellPhone",
+        value: cellPhone,
+        label: "Cell Phone is invalid",
+      });
+    }
+
+    if (isEmailInvalid && emailId && emailId !== "") {
+      missingItems.push({
+        key: "emailId",
+        value: emailId,
+        label: "Email ID is invalid",
+      });
+    }
+    keyValuePair?.map(data => {
+      if (data?.value === "" || data?.value === null || data?.value === undefined || data?.value === 0) {
+        missingItems.push(data)
+      }
+    })
+
+    if (getValueByPath(basicForm, `forms[${formIndex}].data.impactingPractice.medicalHistory.abilityToPractice`) === 'No' && getValueByPath(basicForm, `forms[${formIndex}].data.impactingPractice.medicalHistory.abilityToPractice`) !== undefined && getValueByPath(basicForm, `forms[${formIndex}].data.impactingPractice.medicalHistory.abilityToPractice`) !== null) {
+      let medicalHistoryRequiredKeys = [`forms[${formIndex}].data.impactingPractice.medicalHistory.nameOfFacility`, `forms[${formIndex}].data.impactingPractice.medicalHistory.treatingPhysicianOrProvider`, `forms[${formIndex}].data.impactingPractice.medicalHistory.emailId`, `forms[${formIndex}].data.impactingPractice.medicalHistory.cellPhone`]
+      let temp = missingItems?.filter(data => !medicalHistoryRequiredKeys?.includes(data?.key));
+      missingItems = temp;
+    }
+
+    if (getValueByPath(basicForm, `forms[${formIndex}].data.impactingPractice.medicalHistory.abilityToPractice`) === 'No' || getValueByPath(basicForm, `forms[${formIndex}].data.impactingPractice.medicalHistory.abilityToPractice`) === undefined) {
+      let filterKeys = [`forms[${formIndex}].data.impactingPractice.medicalHistory.text`, `forms[${formIndex}].data.impactingPractice.medicalHistory.file`]
+      let temp = missingItems?.filter(data => !filterKeys?.includes(data?.key));
+      missingItems = temp;
+    }
+    return missingItems;
+  }
+
   const getDataStatus = () => {
     let missingItems = [];
     let keyValuePair = [];
@@ -271,52 +334,66 @@ const MedicalHistory = ({ basicForm, setBasicForm, applicationId, getPreApplicat
         missingItems.push(data)
       }
     })
-    if (isCellPhoneInvalid) {
-      setBasicForm((prevForm) => ({
-        ...prevForm,
-        forms: prevForm.forms.map((form) => {
-          if (form?.schemaId === basicForm?.forms?.[formIndex]?.schemaId) {
-            return {
-              ...form,
-              data: {
-                ...form?.data,
-                impactingPractice: {
-                  ...form?.data?.impactingPractice,
-                  medicalHistory: {
-                    ...form?.data?.impactingPractice?.medicalHistory,
-                    cellPhone: "",
+
+    // Only update state if the value actually needs to change (not already empty)
+    if (isCellPhoneInvalid && cellPhone && cellPhone !== "") {
+      const currentCellPhone = getValueByPath(
+        basicForm,
+        `forms[${formIndex}].data.impactingPractice.medicalHistory.cellPhone`
+      );
+      if (currentCellPhone && currentCellPhone !== "") {
+        setBasicForm((prevForm) => ({
+          ...prevForm,
+          forms: prevForm?.forms?.map((form) => {
+            if (form?.schemaId === basicForm?.forms?.[formIndex]?.schemaId) {
+              return {
+                ...form,
+                data: {
+                  ...form?.data,
+                  impactingPractice: {
+                    ...form?.data?.impactingPractice,
+                    medicalHistory: {
+                      ...form?.data?.impactingPractice?.medicalHistory,
+                      cellPhone: "",
+                    },
                   },
                 },
-              },
-            };
-          }
-          return form;
-        }),
-      }));
+              };
+            }
+            return form;
+          }),
+        }));
+      }
     }
 
-    if (isEmailInvalid) {
-      setBasicForm((prevForm) => ({
-        ...prevForm,
-        forms: prevForm.forms.map((form) => {
-          if (form?.schemaId === basicForm?.forms?.[formIndex]?.schemaId) {
-            return {
-              ...form,
-              data: {
-                ...form?.data,
-                impactingPractice: {
-                  ...form?.data?.impactingPractice,
-                  medicalHistory: {
-                    ...form?.data?.impactingPractice?.medicalHistory,
-                    emailId: "",
+    if (isEmailInvalid && emailId && emailId !== "") {
+      const currentEmailId = getValueByPath(
+        basicForm,
+        `forms[${formIndex}].data.impactingPractice.medicalHistory.emailId`
+      );
+      if (currentEmailId && currentEmailId !== "") {
+        setBasicForm((prevForm) => ({
+          ...prevForm,
+          forms: prevForm?.forms?.map((form) => {
+            if (form?.schemaId === basicForm?.forms?.[formIndex]?.schemaId) {
+              return {
+                ...form,
+                data: {
+                  ...form?.data,
+                  impactingPractice: {
+                    ...form?.data?.impactingPractice,
+                    medicalHistory: {
+                      ...form?.data?.impactingPractice?.medicalHistory,
+                      emailId: "",
+                    },
                   },
                 },
-              },
-            };
-          }
-          return form;
-        }),
-      }));
+              };
+            }
+            return form;
+          }),
+        }));
+      }
     }
 
     if (getValueByPath(basicForm, `forms[${formIndex}].data.impactingPractice.medicalHistory.abilityToPractice`) === 'No' && getValueByPath(basicForm, `forms[${formIndex}].data.impactingPractice.medicalHistory.abilityToPractice`) !== undefined && getValueByPath(basicForm, `forms[${formIndex}].data.impactingPractice.medicalHistory.abilityToPractice`) !== null) {
@@ -333,16 +410,26 @@ const MedicalHistory = ({ basicForm, setBasicForm, applicationId, getPreApplicat
     return missingItems;
   }
 
-  const skipDisable = getDataStatus()?.filter(data => data?.mandatory)?.length === 0;
+  // Use useMemo to calculate skipDisable without causing infinite loops
+  const skipDisable = useMemo(() => {
+    if (!basicForm || formIndex === undefined || !metadata || !labels) {
+      return false;
+    }
+    const validationStatus = getValidationStatus();
+    return validationStatus?.filter(data => data?.mandatory)?.length === 0;
+  }, [basicForm, formIndex, metadata, labels]);
 
   const handleSubmitApplicationReq = async (data) => {
     if (isEdited || data) {
+      const dataStatusResult = getDataStatus();
+      const mandatoryMissing = dataStatusResult?.filter(data => data?.mandatory)?.length > 0;
+      const anyMissing = dataStatusResult?.length > 0;
       let temp = {
         schemaId: basicForm?.forms?.[formIndex]?.schemaId,
         data: basicForm?.forms?.[formIndex]?.data,
         unFilledFields: warningFields?.map(data => data?.label),
         acknowledged: true,
-        dataStatus: getDataStatus()?.filter(data => data?.mandatory)?.length > 0 ? 'SKIPPED_MANDATORY_FIELD' : getDataStatus()?.length > 0 ? 'SKIPPED_NON_MANDATORY_FIELD' : 'COMPLETED'
+        dataStatus: mandatoryMissing ? 'SKIPPED_MANDATORY_FIELD' : anyMissing ? 'SKIPPED_NON_MANDATORY_FIELD' : 'COMPLETED'
       }
       await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
         .then(response => {

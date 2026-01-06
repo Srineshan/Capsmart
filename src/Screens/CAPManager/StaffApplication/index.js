@@ -31,6 +31,7 @@ import PDFGenerateBox from '../../../Components/PdfGenerate'
 import { fileLoadingURL, FormatPhoneNumber, FormatPostalCode } from "../../../utils/formatting";
 import MDTrackerDialog from '../../../Components/MDTrackerDialog';
 import UpdateStaffStatusDialog from "../../../Components/UpdateStaffStatusDialog"
+import ReferenceReview from '../../../Components/ReferenceReview';
 
 const StaffApplication = () => {
     const [selectedTab, setSelectedTab] = useState('level-1');
@@ -69,6 +70,7 @@ const StaffApplication = () => {
     const [ccDateSetMode, setCcDateSetMode] = useState('');
     const [approveMeetDateSet, setApproveMeetDateSet] = useState();
     const [showPdfGenrateBox, setShowPdfGenerateBox] = useState(false);
+    const [isReferenceReview, setIsReferenceReview] = useState(false);
     // const location = useLocation(); // get the current path
     // const workModeType = sessionStorage.getItem('workModeType')
 
@@ -207,8 +209,10 @@ const StaffApplication = () => {
 
     return (
         <>
-            {activeApplicationView ? (
-                <NewActiveApplication isLoading={isLoading} dataLevel={ccDateSetMode} ccMeetingDateSet={approveMeetDateSet} getloading={getloading} getSelectedTab={getSelectedTab} selectedTab={selectedTab} getActiveApplicationView={getActiveApplicationView} getApprovalNotesCommentBox={getApprovalNotesCommentBox} getApprovalwithoutNotesCommentBox={getApprovalwithoutNotesCommentBox} getActiveApplicationTask={getActiveApplicationTask} getEmailDialogBox={getEmailDialogBox} getApprovalNotesCommentBoxDept={getApprovalNotesCommentBoxDept} emailDialogBox={emailDialogBox} showTimerDialog={showTimerDialog} approvalnotesCommentsBox={approvalnotesCommentsBox} approvalwithoutnotesCommentsBox={approvalwithoutnotesCommentsBox} approvalnotesCommentsBoxDept={approvalnotesCommentsBoxDept} notesCommentsBox={notesCommentsBox} reappointmentChangesCommentsBox={reappointmentChangesCommentsBox} getNotesDialog={getNotesDialog} getClarificationRequestFromApplicantDialog={getClarificationRequestFromApplicantDialog} getDocumentClarificationDialog={getDocumentClarificationDialog} getResolveDialog={getResolveDialog} getRequestOverrideDialog={getRequestOverrideDialog} getStaffView={getStaffView} staffView={staffView} getPaymentDisplayBox={getPaymentDisplayBox} showClarificationRequestFromApplicantDialog={showClarificationRequestFromApplicantDialog} showDocumentClarificationDialog={showDocumentClarificationDialog} showNotesDialog={showNotesDialog} showResolveDialog={showResolveDialog} showRequestOverrideDialog={showRequestOverrideDialog} getOverRideRequestDialog={getOverRideRequestDialog} getOverRideRequestApprovalDialog={getOverRideRequestApprovalDialog} getOverRideRequestDeclineDialog={getOverRideRequestDeclineDialog} />
+            {isReferenceReview ? (
+                <ReferenceReview setIsReferenceReview={setIsReferenceReview} getActiveApplicationView={getActiveApplicationView} />
+            ) : activeApplicationView ? (
+                <NewActiveApplication isLoading={isLoading} dataLevel={ccDateSetMode} ccMeetingDateSet={approveMeetDateSet} getloading={getloading} getSelectedTab={getSelectedTab} selectedTab={selectedTab} getActiveApplicationView={getActiveApplicationView} getApprovalNotesCommentBox={getApprovalNotesCommentBox} getApprovalwithoutNotesCommentBox={getApprovalwithoutNotesCommentBox} getActiveApplicationTask={getActiveApplicationTask} getEmailDialogBox={getEmailDialogBox} getApprovalNotesCommentBoxDept={getApprovalNotesCommentBoxDept} emailDialogBox={emailDialogBox} showTimerDialog={showTimerDialog} approvalnotesCommentsBox={approvalnotesCommentsBox} approvalwithoutnotesCommentsBox={approvalwithoutnotesCommentsBox} approvalnotesCommentsBoxDept={approvalnotesCommentsBoxDept} notesCommentsBox={notesCommentsBox} reappointmentChangesCommentsBox={reappointmentChangesCommentsBox} getNotesDialog={getNotesDialog} getClarificationRequestFromApplicantDialog={getClarificationRequestFromApplicantDialog} getDocumentClarificationDialog={getDocumentClarificationDialog} getResolveDialog={getResolveDialog} getRequestOverrideDialog={getRequestOverrideDialog} getStaffView={getStaffView} staffView={staffView} getPaymentDisplayBox={getPaymentDisplayBox} showClarificationRequestFromApplicantDialog={showClarificationRequestFromApplicantDialog} showDocumentClarificationDialog={showDocumentClarificationDialog} showNotesDialog={showNotesDialog} showResolveDialog={showResolveDialog} showRequestOverrideDialog={showRequestOverrideDialog} getOverRideRequestDialog={getOverRideRequestDialog} getOverRideRequestApprovalDialog={getOverRideRequestApprovalDialog} getOverRideRequestDeclineDialog={getOverRideRequestDeclineDialog} setIsReferenceReview={setIsReferenceReview} />
             ) : credCommApplicationView ? (
                 <NewCredCommApplication getSelectedTab={getSelectedTab} selectedTab={selectedTab} getCredCommApplicationView={getCredCommApplicationView} />
             ) : (

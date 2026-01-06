@@ -430,6 +430,7 @@ const Immunization = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
         setFrom(null);
         setResult('');
         setInduration('');
+        setUploadedFiles([]);
     }
 
     const handleDelete = () => {

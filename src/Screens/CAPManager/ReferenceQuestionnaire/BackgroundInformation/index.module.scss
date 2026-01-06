@@ -1,0 +1,17 @@
+@import "../../../../index.scss";
+
+.radioGridStyle {
+    display: grid;
+    grid-template-columns: 25% 25% 25% 25%;
+}
+
+.gridStyle {
+    display: grid;
+    grid-template-columns: 35% 65%;
+}
+
+.fieldGridStyle {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px
+}

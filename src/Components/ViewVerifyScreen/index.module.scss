@@ -1349,7 +1349,7 @@ body::-webkit-scrollbar {
 
 .continueDisabled {
   cursor: not-allowed !important;
-  opacity: 0.3;
+  opacity: 0.5 !important;
 }
 
 .addBoxDescription {
@@ -4635,7 +4635,7 @@ input[type="number"] {
 
 .referenceCardStyle {
   border: 1px solid var(---7165e3);
-  background: #DBD8FA 0% 0% no-repeat padding-box;
+  background: var(--secondary-color) 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 18px #0F0B3129;
   border: 1px solid var(--primary-color);
   border-radius: 8px;
@@ -4681,11 +4681,9 @@ input[type="number"] {
 
 .gridGap1 {
   display: grid;
-  grid-template-columns: 5% 75% 5%;
-  gap: 10px;
+  grid-template-columns: 10% 65% 15%;
+  gap: 1%;
   margin-top: 10px;
-  align-items: center;
-  // justify-content: space-between;
 }
 
 .buttonCenter {
@@ -4697,7 +4695,7 @@ input[type="number"] {
 .viewButton {
 
   border: 1px solid var(---7165e3);
-  background: #DBD8FA 0% 0% no-repeat padding-box;
+  background: var(--secondary-color) 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 18px #0F0B3129;
   border: 1px solid var(--primary-color);
   border-radius: 8px;
@@ -4710,7 +4708,7 @@ input[type="number"] {
   text-align: center;
   font: normal normal 600 16px/34px var(--font-style);
   letter-spacing: 0px;
-  color: #362B9F;
+  color: var(--primary-color);
   text-transform: capitalize;
   opacity: 1;
 }
@@ -5746,4 +5744,17 @@ input[type="number"] {
 
 .PaymentGrid4> :nth-child(9) {
   grid-column: span 6;
+}
+
+.testGrid {
+  display: grid;
+  grid-template-columns: 55% 10% 15% 15%;
+  gap: 1%;
+}
+
+.descriptionText {
+  text-align: left;
+  font: normal normal normal $navbartext var(--font-style);
+  letter-spacing: 0px;
+  color: #2C2C2C;
 }

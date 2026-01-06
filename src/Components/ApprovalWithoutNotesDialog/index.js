@@ -365,7 +365,7 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
       } else if (workModeType === "Credentialing Committee User") {
         role = "Credentialing Committee";
         title = "Credentialing Committee User Review";
-      } else if (workModeType === "Staff Manager" && applicationType === "REAPPOINTMENT") {
+      } else if (workModeType === "Staff Manager" && (applicationType === "REAPPOINTMENT" || applicationType === "NEW")) {
         role = "Credentialing Committee";
         title = "Credentialing Committee User Review";
       } else if (workModeType === "Staff Manager" && applicationType === "LOCUM") {
@@ -499,7 +499,7 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
       } else if (workModeType === "Credentialing Committee User") {
         role = "Credentialing Committee";
         title = "Credentialing Committee User Review";
-      } else if (workModeType === "Staff Manager" && applicationType === "REAPPOINTMENT") {
+      } else if (workModeType === "Staff Manager" && (applicationType === "REAPPOINTMENT" || applicationType === "NEW")) {
         role = "Credentialing Committee";
         title = "Credentialing Committee User Review";
       } else if (workModeType === "Staff Manager" && applicationType === "LOCUM") {
@@ -628,8 +628,8 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
               <div className={style.spaceBetween}>
                 <div className={style.heading}>
                   {`Staff Recommended for ${applicationType === "LOCUM"
-                      ? `${formDetails?.reappointmentType === "EXTENSION" ? "Locum Extension" : "Locum Renewal"}`
-                      : applicationType === "NEW" ? "Appointment" : "Reappointment"
+                    ? `${formDetails?.reappointmentType === "EXTENSION" ? "Locum Extension" : "Locum Renewal"}`
+                    : applicationType === "NEW" ? "Appointment" : "Reappointment"
                     }`}
                 </div>
                 <div className={style.displayInRow}>

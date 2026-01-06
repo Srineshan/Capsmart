@@ -309,7 +309,7 @@ const FeedbackTicketResolutionLog = ({ getShowFeedbackTicketResolutionLog, ticke
         <div className={`${style.footerLogoStyle} ${style.justifyCenter}`}>
           <img src={WhiteTimeSmartLogo} alt="logo" className={style.logoStyle} />
         </div>
-        <div className={style.copyrightText}>Copyright © 2022 Hapicare, Inc. All rights reserved.</div>
+        <div className={style.copyrightText}>Copyright © {format(new Date(), 'yyyy')} Hapicare, Inc. All rights reserved.</div>
       </div>
     </Dialog>
   )

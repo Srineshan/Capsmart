@@ -234,7 +234,8 @@ const PharmacySignature = ({
           completedFormAsFile: uploadedFile,
           data: basicForm?.forms?.[formIndex]?.data,
           unFilledFields: basicForm?.forms?.[formIndex]?.unFilledFields,
-          acknowledged: basicForm?.forms?.[formIndex]?.acknowledged
+          acknowledged: basicForm?.forms?.[formIndex]?.acknowledged,
+          dataStatus: 'COMPLETED'
         }
         await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
           .then(response => {
@@ -278,6 +279,7 @@ const PharmacySignature = ({
       .then(response => {
         console.log(response)
         getPreApplication()
+        populatePdfWithProfileData(applicantProfile)
         SuccessToaster("Application Updated Successfully");
         if (sessionStorage.getItem('fromSummary') === 'true') {
           navigate(-1);

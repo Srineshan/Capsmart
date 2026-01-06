@@ -86,7 +86,11 @@ const ApplicationFieldCard = ({
   isEdited,
   yesOrNoDemographic,
   setYesOrNoDemographic,
-  formPermission
+  formPermission,
+  refGridStyle,
+  hideBackground,
+  customRadioStyle,
+  referenceRadioShowLabel
 }) => {
   const [calendarStart, setCalendarStart] = useState(false);
   const { section, step } = useParams();
@@ -115,6 +119,16 @@ const ApplicationFieldCard = ({
   const mailingTimeoutRef = useRef(null);
   const businessTimeoutRef = useRef(null);
   const addMoreRef = useRef(null);
+
+  const referenceRadioColor = {
+    'OUTSTANDING': '#14B15A',
+    'SATISFACTORY': '#FEC106',
+    'UNSATISFACTORY': '#F94848',
+    'UNABLE TO ASSESS': '#14358F',
+    'No Knowledge': '#14358F',
+    'Yes': '#F94848',
+    'No': '#14B15A'
+  }
 
   console.log(user);
   useEffect(() => {
@@ -2297,13 +2311,6 @@ const ApplicationFieldCard = ({
           console.log("minDateForDate2:", minDateForDate2);
           console.log("Final minDate:", minDate, maxDate);
 
-          console.log(
-            getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`),
-            "datecheck",
-            isValidDateString(
-              getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)
-            )
-          );
           if (isPOD) {
             return (
               <div>
@@ -2323,7 +2330,7 @@ const ApplicationFieldCard = ({
                     basicForm,
                     `${basicpath}.${baseKey}.${fieldKey}`
                   ) !== undefined &&
-                    isValidDateString(
+                    isValidDate(
                       getValueByPath(
                         basicForm,
                         `${basicpath}.${baseKey}.${fieldKey}`
@@ -2341,7 +2348,7 @@ const ApplicationFieldCard = ({
                     : (getValueByPath(
                       basicForm,
                       `${basicpath}.${baseKey}.${fieldKey}`
-                    ) !== undefined || getValueByPath(
+                    ) !== undefined && getValueByPath(
                       basicForm,
                       `${basicpath}.${baseKey}.${fieldKey}`
                     ) !== "") ? format(
@@ -2498,6 +2505,107 @@ const ApplicationFieldCard = ({
                 warning={warningFields
                   ?.map((data) => data?.key)
                   ?.includes(`${basicpath}.${baseKey}.${fieldKey}`)}
+              />
+            </div>
+          );
+        case "referenceRadioButton":
+          if (isPOD) {
+            return (
+              <div
+                className={`${refGridStyle} ${style.verticalAlignCenter} ${style.refRadioCard} ${style.marginBottom5}`}
+              >
+                <div
+                  className={`${style.lableRadioStyle} ${fieldData.label !== null ? style.marginRight : ""
+                    }`}
+                >
+                  {fieldData.label}
+                  {(isLableEmpty(fieldData.label)
+                    ? false
+                    : object?.required?.includes(fieldKey) || object?.then?.required?.includes(fieldKey) ||
+                    (parentData !== null
+                      ? parentData.required?.includes(fieldKey) || parentData?.then?.required?.includes(fieldKey)
+                      : false)) && "*"}
+                </div>
+                <CommonRadio
+                  isRow={false}
+                  showInCustomCol={true}
+                  customRadioStyle={customRadioStyle}
+                  className={`${style.centerAlign}`}
+                  value={
+                    getValueByPath(
+                      basicForm,
+                      `${basicpath}.${baseKey}.${fieldKey}`
+                    ) || null
+                  }
+                  // onChange={
+                  //   isPOD
+                  //     ? () => { }
+                  //     : (e) => handleChange(fieldKey, e.target.value, baseKey)
+                  // }
+                  radioValue={fieldData.enum}
+                  label={referenceRadioShowLabel ? fieldData.enum : []}
+                  required={
+                    isLableEmpty(fieldData.label)
+                      ? false
+                      : object.required?.includes(fieldKey) || object?.then?.required?.includes(fieldKey) ||
+                      (parentData !== null
+                        ? parentData?.required?.includes(fieldKey) || parentData?.then?.required?.includes(fieldKey)
+                        : false)
+                  }
+                  warning={warningFields
+                    ?.map((data) => data?.key)
+                    ?.includes(`${basicpath}.${baseKey}.${fieldKey}`)}
+                  checkedColor={referenceRadioColor}
+                />
+              </div>
+            );
+          }
+          return (
+            <div
+              className={`${refGridStyle} ${style.verticalAlignCenter} ${style.refRadioCard} ${style.marginBottom5}`}
+            >
+              <div
+                className={`${style.lableRadioStyle} ${fieldData.label !== null ? style.marginRight : ""
+                  }`}
+              >
+                {fieldData.label}
+                {(isLableEmpty(fieldData.label)
+                  ? false
+                  : object?.required?.includes(fieldKey) || object?.then?.required?.includes(fieldKey) ||
+                  (parentData !== null
+                    ? parentData.required?.includes(fieldKey) || parentData?.then?.required?.includes(fieldKey)
+                    : false)) && "*"}
+              </div>
+              <CommonRadio
+                isRow={false}
+                showInCustomCol={true}
+                customRadioStyle={customRadioStyle}
+                className={`${style.centerAlign}`}
+                value={
+                  getValueByPath(
+                    basicForm,
+                    `${basicpath}.${baseKey}.${fieldKey}`
+                  ) || null
+                }
+                onChange={
+                  isPOD
+                    ? () => { }
+                    : (e) => handleChange(fieldKey, e.target.value, baseKey)
+                }
+                radioValue={fieldData.enum}
+                label={referenceRadioShowLabel ? fieldData.enum : []}
+                required={
+                  isLableEmpty(fieldData.label)
+                    ? false
+                    : object.required?.includes(fieldKey) || object?.then?.required?.includes(fieldKey) ||
+                    (parentData !== null
+                      ? parentData?.required?.includes(fieldKey) || parentData?.then?.required?.includes(fieldKey)
+                      : false)
+                }
+                warning={warningFields
+                  ?.map((data) => data?.key)
+                  ?.includes(`${basicpath}.${baseKey}.${fieldKey}`)}
+                checkedColor={referenceRadioColor}
               />
             </div>
           );
@@ -3562,7 +3670,7 @@ const ApplicationFieldCard = ({
         className={`${window.location.pathname.includes("applicationForm") ||
           window.location.pathname.includes("reappointmentApplicationForm") ||
           window.location.pathname.includes("locumApplicationForm") ||
-          isPOD
+          isPOD || hideBackground
           ? ""
           : `${style.backgroundCard} ${style.marginTop10}`
           } ${style.marginTop10}`}

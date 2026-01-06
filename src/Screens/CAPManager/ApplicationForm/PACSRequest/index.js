@@ -399,6 +399,7 @@ const PACSRequest = ({
         .then(response => {
           console.log(response)
           getPreApplication()
+          populatePdfWithProfileData(applicantProfile)
           SuccessToaster("Application Updated Successfully");
           if (!save) {
             if (sessionStorage.getItem('fromSummary') === 'true') {

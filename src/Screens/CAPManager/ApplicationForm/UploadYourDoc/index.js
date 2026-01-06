@@ -323,7 +323,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
     entry.requirement = value ? getIsDocRequired(value) : '';
     try {
       await PUT(
-        `application-management-service/application/${applicationId}/form/updateData`,
+        `application-management-service/application/${applicationId}/form/updateData?documentType=${value}&applicationDocumentId=${entry?.rowId}&manuallyClassified=${true}`,
         entry,
       );
       updated[index] = entry;

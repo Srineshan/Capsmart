@@ -134,7 +134,7 @@ const Qualification = ({ basicForm, setBasicForm, applicationId, getPreApplicati
         if (missingKeys?.length !== 0) {
             setShowValidationDialog(true)
         } else {
-            handleSubmitApplicationReq()
+            handleSubmitApplicationReq('save')
         }
         setWarningFields(missingKeys)
         console.log(keyValuePair, 'Metadata', missingKeys)
@@ -167,7 +167,7 @@ const Qualification = ({ basicForm, setBasicForm, applicationId, getPreApplicati
     const skipDisable = getDataStatus()?.filter(data => data?.mandatory)?.length === 0;
 
     const handleSubmitApplicationReq = async (data, save) => {
-        if (isEdited || save) {
+        if (isEdited || save || data) {
             console.log(basicForm?.forms?.[formIndex]?.data)
             let temp = {
                 schemaId: basicForm?.forms?.[formIndex]?.schemaId,

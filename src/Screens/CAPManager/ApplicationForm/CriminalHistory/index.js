@@ -40,7 +40,7 @@ const CriminalHistory = ({ basicForm, setBasicForm, applicationId, getPreApplica
                 setNavigateBackURL(`/applicationForm/${applicationId}/${basicForm?.forms[0]?.formCategory}/${btoa(basicForm?.forms[0]?.schemaCategory)}`)
             }
         }
-    }, [basicForm, formIndex])
+    }, [basicForm?.formSchemas?.[formIndex]?.id, formIndex])
 
     useEffect(() => {
         setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === atob(step)))
@@ -127,7 +127,7 @@ const CriminalHistory = ({ basicForm, setBasicForm, applicationId, getPreApplica
         if (missingKeys?.length !== 0) {
             setShowValidationDialog(true)
         } else {
-            handleSubmitApplicationReq()
+            handleSubmitApplicationReq('save')
         }
         setWarningFields(missingKeys)
         console.log(keyValuePair, 'Metadata', missingKeys)
