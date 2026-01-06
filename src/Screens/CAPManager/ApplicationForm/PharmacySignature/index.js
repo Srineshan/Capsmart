@@ -234,7 +234,8 @@ const PharmacySignature = ({
           completedFormAsFile: uploadedFile,
           data: basicForm?.forms?.[formIndex]?.data,
           unFilledFields: basicForm?.forms?.[formIndex]?.unFilledFields,
-          acknowledged: basicForm?.forms?.[formIndex]?.acknowledged
+          acknowledged: basicForm?.forms?.[formIndex]?.acknowledged,
+          dataStatus: 'COMPLETED'
         }
         await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
           .then(response => {
@@ -271,12 +272,14 @@ const PharmacySignature = ({
       schemaId: basicForm?.forms?.[formIndex]?.schemaId,
       data: { initials: initialArray },
       acknowledged: true,
-      esign: { esign: isSigned ? encryptedText : '', name: isSigned ? name : '', signedDate: isSigned ? currentDate : '' }
+      esign: { esign: isSigned ? encryptedText : '', name: isSigned ? name : '', signedDate: isSigned ? currentDate : '' },
+      dataStatus: 'COMPLETED'
     }
     await PUT(`application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
       .then(response => {
         console.log(response)
         getPreApplication()
+        populatePdfWithProfileData(applicantProfile)
         SuccessToaster("Application Updated Successfully");
         if (sessionStorage.getItem('fromSummary') === 'true') {
           navigate(-1);

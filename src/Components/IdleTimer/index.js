@@ -7,11 +7,14 @@ import { ErrorToaster } from "./../../utils/toaster";
 import Cookies from "universal-cookie";
 import style from './index.module.scss';
 import { useDescope } from "@descope/react-sdk";
+import { useNavigate } from "react-router-dom";
+import Cookie from 'universal-cookie';
 
 
 export default function IdleTimer() {
     const [isLoggedIn, setIsLoggedIn] = useState(true);
     const [showAlert, setShowAlert] = useState(false);
+    const navigate = useNavigate()
     const { logout } = useDescope();
     const sessionTimeoutRef = useRef(null);
     const cookies = new Cookies();
@@ -33,6 +36,15 @@ export default function IdleTimer() {
     const onContinue = () => {
         setShowAlert(false);
         clearTimeout(sessionTimeoutRef.current);
+    }
+
+    const handleLogout = () => {
+        var cookies = new Cookie();
+        cookies.remove("user", { path: "/" });
+        cookies.remove("entityId", { path: "/" });
+        cookies.remove("authorization", { path: "/", domain: window.location.hostname?.split('.')?.length >= 3 ? window.location.hostname?.split('.')?.slice(-2)?.join('.') : window.location.hostname });
+        logout()
+        navigate('/')
     }
 
 
@@ -67,7 +79,7 @@ export default function IdleTimer() {
                     </p>
                     <div className={`${style.positionCenter} ${style.marginTop20}`}>
                         <button className={`${style.cloneButtonStyle} ${style.marginLeft20} ${style.cursorPointer}`} onClick={onContinue}>Continue</button>
-                        <button className={`${style.cloneButtonStyle} ${style.marginLeft20} ${style.cursorPointer}`} onClick={() => logout()}>Logout</button>
+                        <button className={`${style.cloneButtonStyle} ${style.marginLeft20} ${style.cursorPointer}`} onClick={() => handleLogout()}>Logout</button>
                     </div>
                 </div>
             </Dialog>

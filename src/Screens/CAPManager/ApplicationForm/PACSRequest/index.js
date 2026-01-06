@@ -104,7 +104,7 @@ const PACSRequest = ({
 
   useEffect(() => {
     populatePdfWithProfileData(applicantProfile);
-  }, [applicantProfile])
+  }, [applicantProfile, formSchema])
 
   const getFormSchema = async () => {
     const { data: form } = await GET(
@@ -351,7 +351,8 @@ const PACSRequest = ({
           completedFormAsFile: uploadedFile,
           data: basicForm?.forms?.[formIndex]?.data,
           unFilledFields: basicForm?.forms?.[formIndex]?.unFilledFields,
-          acknowledged: basicForm?.forms?.[formIndex]?.acknowledged
+          acknowledged: basicForm?.forms?.[formIndex]?.acknowledged,
+          dataStatus: 'COMPLETED'
         }
         await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
           .then(response => {
@@ -381,43 +382,47 @@ const PACSRequest = ({
 
 
 
-  const handleSubmitApplicationReq = async () => {
-    // if (isSigned) {
-    let temp = {
-      schemaId: basicForm?.forms?.[formIndex]?.schemaId,
-      data: {
-        initials: initialArray,
-        accessType: accessType,
-        otherAccessType: otherAccessType
-      },
-      acknowledged: true,
-      esign: { esign: isSigned ? encryptedText : '', name: isSigned ? name : '', signedDate: isSigned ? currentDate : '' }
+  const handleSubmitApplicationReq = async (data, save) => {
+    if (data || save) {
+      let temp = {
+        schemaId: basicForm?.forms?.[formIndex]?.schemaId,
+        data: {
+          initials: initialArray,
+          accessType: accessType,
+          otherAccessType: otherAccessType
+        },
+        acknowledged: true,
+        esign: { esign: isSigned ? encryptedText : '', name: isSigned ? name : '', signedDate: isSigned ? currentDate : '' },
+        dataStatus: 'COMPLETED'
+      }
+      await PUT(`application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
+        .then(response => {
+          console.log(response)
+          getPreApplication()
+          populatePdfWithProfileData(applicantProfile)
+          SuccessToaster("Application Updated Successfully");
+          if (!save) {
+            if (sessionStorage.getItem('fromSummary') === 'true') {
+              navigate(-1);
+              sessionStorage.setItem('fromSummary', false)
+            }
+            else {
+              navigate(navigateURL)
+            }
+          }
+        })
+        .catch((error) => {
+          console.log(error)
+          ErrorToaster("Unexpected Error Updating Application");
+        });
     }
-    await PUT(`application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
-      .then(response => {
-        console.log(response)
-        getPreApplication()
-        SuccessToaster("Application Updated Successfully");
-        if (sessionStorage.getItem('fromSummary') === 'true') {
-          navigate(-1);
-          sessionStorage.setItem('fromSummary', false)
-        }
-        else {
-          navigate(navigateURL)
-        }
-      })
-      .catch((error) => {
-        console.log(error)
-        ErrorToaster("Unexpected Error Updating Application");
-      });
-    // }
-    // else {
-    //   if (sessionStorage.getItem('fromSummary') === 'true') {
-    //     navigate(-1);
-    //   } else {
-    //     navigate(navigateURL)
-    //   }
-    // }
+    else {
+      if (sessionStorage.getItem('fromSummary') === 'true') {
+        navigate(-1);
+      } else {
+        navigate(navigateURL)
+      }
+    }
   }
 
   const handleAccessType = (data, checked) => {
@@ -448,6 +453,9 @@ const PACSRequest = ({
   };
 
   const getIsSaveInProgressOpen = (value) => {
+    if (value) {
+      handleSubmitApplicationReq(false, true)
+    }
     setIsSaveInProgressOpen(value);
   }
 
@@ -571,7 +579,7 @@ const PACSRequest = ({
             <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
             <div className={style.twoColForButton}>
               <div className={`${style.continue} ${style.marginTop10}`} onClick={handleBackClick}>BACK</div>
-              <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleSubmitApplicationReq()} >CONTINUE</div>
+              <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleSubmitApplicationReq(true)} >CONTINUE</div>
             </div>
           </div>
         </div>

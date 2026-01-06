@@ -51,6 +51,10 @@ const PODCheck = ({ basicForm, setBasicForm }) => {
     navigate(`/applicationForm/${applicationId}/${basicForm?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[0]?.formCategory}/${btoa(basicForm?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[0]?.schemaCategory)}`);
   }
 
+  const handleBack = () => {
+    navigate(`/applicationForm/${applicationId}/${basicForm?.forms[basicForm?.forms?.filter(data => data?.formCategory === 'Form' || data?.formCategory === 'Disclosure')?.length - 1]?.formCategory}/${btoa(basicForm?.forms[basicForm?.forms?.filter(data => data?.formCategory === 'Form' || data?.formCategory === 'Disclosure')?.length - 1]?.schemaCategory)}`);
+  }
+
   const getIsSaveInProgressOpen = (value) => {
     setIsSaveInProgressOpen(value);
   };
@@ -64,17 +68,17 @@ const PODCheck = ({ basicForm, setBasicForm }) => {
           <div className={`${style.displayInRow}${style.marginTop20}`}>
             <div className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}>
               <span className={`${style.tableHeaderHeadingTextStyle}`}>Overall Status Of Data & Documents Required For This Application</span>
-              <div className={form?.forms.every(item => item.acknowledged === true) ? style.greenDotStyle : style.yellowDotStyle}></div>
+              <div className={form?.forms?.filter(data => data?.formCategory === 'Form' || data?.formCategory === 'Disclosure')?.every(item => item.dataStatus === "COMPLETED") ? style.greenDotStyle : form?.forms?.filter(data => data?.formCategory === 'Form' || data?.formCategory === 'Disclosure')?.some(item => item.dataStatus === "SKIPPED_MANDATORY_FIELD") ? style.redDotStyle : form?.forms?.filter(data => data?.formCategory === 'Form' || data?.formCategory === 'Disclosure')?.some(item => item.dataStatus === "SKIPPED_NON_MANDATORY_FIELD") ? style.yellowDotStyle : style.greyDotStyle}></div>
             </div>
           </div>
           <div className={` ${style.tableTopHeaderStyle} ${style.marginTop10} ${style.tableHeaderGridStyle} `}>
             <div></div>
             <div></div>
             <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-              <div className={form?.forms.every(item => item.acknowledged === true) ? style.greenDotStyle : style.yellowDotStyle}></div>
+              <div className={form?.forms?.filter(data => data?.formCategory === 'Form' || data?.formCategory === 'Disclosure')?.every(item => item.dataStatus === "COMPLETED") ? style.greenDotStyle : form?.forms?.filter(data => data?.formCategory === 'Form' || data?.formCategory === 'Disclosure')?.some(item => item.dataStatus === "SKIPPED_MANDATORY_FIELD") ? style.redDotStyle : form?.forms?.filter(data => data?.formCategory === 'Form' || data?.formCategory === 'Disclosure')?.some(item => item.dataStatus === "SKIPPED_NON_MANDATORY_FIELD") ? style.yellowDotStyle : style.greyDotStyle}></div>
             </div>
             <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-              <div className={form?.forms.every(item => item.acknowledged === true) ? style.greenDotStyle : style.yellowDotStyle}></div>
+              <div className={form?.forms?.filter(data => data?.formCategory === 'Form' || data?.formCategory === 'Disclosure')?.every(item => item.dataStatus === "COMPLETED") ? style.greenDotStyle : form?.forms?.filter(data => data?.formCategory === 'Form' || data?.formCategory === 'Disclosure')?.some(item => item.dataStatus === "SKIPPED_MANDATORY_FIELD") ? style.redDotStyle : form?.forms?.filter(data => data?.formCategory === 'Form' || data?.formCategory === 'Disclosure')?.some(item => item.dataStatus === "SKIPPED_NON_MANDATORY_FIELD") ? style.yellowDotStyle : style.greyDotStyle}></div>
             </div>
           </div>
           <div className={`${style.tableHeaderStyle} ${style.marginTop10} ${style.tableHeaderGridStyle} `}>
@@ -127,7 +131,7 @@ const PODCheck = ({ basicForm, setBasicForm }) => {
           <div>
 
             {
-              form?.formSchemas?.filter(data => data?.formCategory === 'Form' || data?.formCategory === 'Disclosure')?.map((data, index) => (
+              form?.forms?.filter(data => data?.formCategory === 'Form' || data?.formCategory === 'Disclosure')?.map((data, index) => (
                 <div className={`${style.tableDataStyle} ${style.marginTop5} ${style.tableValueGridStyle} `}>
                   <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
                     {index !== 0 && (
@@ -138,11 +142,11 @@ const PODCheck = ({ basicForm, setBasicForm }) => {
                     <div className={`${style.tableDataFontStyle1}`}>{data?.title}</div>
                   </div>
                   <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                    <div className={`${form?.forms[index]?.acknowledged === true ? style.greenDotStyle : style.yellowDotStyle}`}></div>
+                    <div className={form?.forms?.[index]?.dataStatus === "COMPLETED" ? style.greenDotStyle : form?.forms?.[index]?.dataStatus === "SKIPPED_MANDATORY_FIELD" ? style.redDotStyle : form?.forms?.[index]?.dataStatus === "SKIPPED_NON_MANDATORY_FIELD" ? style.yellowDotStyle : style.greyDotStyle}></div>
 
                   </div>
                   <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                    <div className={`${form?.forms[index]?.acknowledged === true ? style.greenDotStyle : style.yellowDotStyle}`}></div>
+                    <div className={form?.forms?.[index]?.dataStatus === "COMPLETED" ? style.greenDotStyle : form?.forms?.[index]?.dataStatus === "SKIPPED_MANDATORY_FIELD" ? style.redDotStyle : form?.forms?.[index]?.dataStatus === "SKIPPED_NON_MANDATORY_FIELD" ? style.yellowDotStyle : style.greyDotStyle}></div>
                   </div>
                   <div className={`${style.displayInRow} ${style.verticalAlignCenter} `}>
                     <img src={Pencil} alt="" className={`${style.pencilImgStyle} ${style.justifyCenter} ${style.cursorPointer}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/applicationForm/${applicationId}/${data?.formCategory}/${btoa(data?.schemaCategory)}`) }} />
@@ -167,7 +171,7 @@ const PODCheck = ({ basicForm, setBasicForm }) => {
           <div className={style.stickyContainer}>
             <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
             <div className={style.twoColForButton}>
-              <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
+              <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleBack()}>BACK</div>
               <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue()}>CONTINUE</div>
             </div>
           </div>

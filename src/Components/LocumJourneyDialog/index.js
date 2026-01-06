@@ -130,7 +130,7 @@ const LocumJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, img, conti
         var cookies = new Cookie();
         cookies.remove("user", { path: "/" });
         cookies.remove("entityId", { path: "/" });
-        cookies.remove("authorization", { path: "/" });
+        cookies.remove("authorization", { path: "/", domain: window.location.hostname?.split('.')?.length >= 3 ? window.location.hostname?.split('.')?.slice(-2)?.join('.') : window.location.hostname });
         logout()
         navigate('/')
     }
@@ -280,16 +280,16 @@ const LocumJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, img, conti
                                     ) : (
                                         <div className={` ${style.displayInRow} ${style.marginTop}`}>
                                             <Tooltip title={"Click to Logout"} arrow>
-                                            <div className={`${style.saveInProgress}`} onClick={() => { getIsOpen(false); handleLogout() }}>LOGOUT</div>
+                                                <div className={`${style.saveInProgress}`} onClick={() => { getIsOpen(false); handleLogout() }}>LOGOUT</div>
                                             </Tooltip>
                                             <Tooltip
-                                                 title={
+                                                title={
                                                     isSubmissionBlocked
-                                                    ? "To submit you have to correct all errors and issues identified."
-                                                    : "Click to submit"
+                                                        ? "To submit you have to correct all errors and issues identified."
+                                                        : "Click to submit"
                                                 }
                                                 arrow
-                                                // {...(!isSubmissionBlocked && { open: false })}
+                                            // {...(!isSubmissionBlocked && { open: false })}
                                             >
                                                 <div className={`${style.continue} ${style.marginLeft} ${isSubmissionBlocked ? style.disabledButton : ''}`} onClick={isSubmissionBlocked ? () => { } : () => { continueClick(); handleSubmitApplication() }}>SUBMIT</div>
                                             </Tooltip>

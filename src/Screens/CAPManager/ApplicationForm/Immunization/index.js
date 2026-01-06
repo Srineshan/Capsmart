@@ -15,7 +15,7 @@ import CommonDropZone from '../../../../Components/CommonFields/CommonDropZone';
 import CommonTextField from '../../../../Components/CommonFields/CommonTextField';
 import CommonSelectField from '../../../../Components/CommonFields/CommonSelectField';
 import CommonDateField from '../../../../Components/CommonFields/CommonDateField';
-import { TextField } from '@mui/material';
+import { TextField, Tooltip } from '@mui/material';
 import SaveInProgressDialog from '../../../../Components/SaveInProgressDialog';
 import CommonPhoneField from '../../../../Components/CommonFields/CommonPhoneField';
 import ESignature from '../../../../Components/ESignature';
@@ -26,6 +26,7 @@ import ClearIcon from '@mui/icons-material/Clear';
 import html2pdf from "html2pdf.js";
 import TableTwo from '../../../../Components/TableDesignTwo';
 import { fileLoadingURL } from '../../../../utils/formatting';
+import FileDisplayDialog from '../../../../Components/fileDisplayDialog';
 
 const Immunization = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFormat, name }) => {
     const [formSchema, setFormSchema] = useState();
@@ -52,6 +53,8 @@ const Immunization = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
     const [result, setResult] = useState('');
     const [induration, setInduration] = useState('');
     const [uploadedFiles, setUploadedFiles] = useState([]);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [selectedFile, setSelectedFile] = useState(null);
     const [applicationImmunization, setApplicationImmunization] = useState();
     const [immunizationCategory, setImmunizationCategory] = useState('');
     const [isSaveInProgressOpen, setIsSaveInProgressOpen] = useState(false);
@@ -218,8 +221,9 @@ const Immunization = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
 
     const handleSubmitApplicationReq = async (data) => {
         let temp = {
-            schemaId: data?.forms?.[formIndex]?.schemaId,
-            data: data?.forms?.[formIndex]?.data
+            schemaId: basicForm?.forms?.[formIndex]?.schemaId,
+            data: basicForm?.forms?.[formIndex]?.data,
+            dataStatus: isSigned ? 'COMPLETED' : 'SKIPPED_MANDATORY_FIELD'
         }
         await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
             .then(response => {
@@ -368,6 +372,7 @@ const Immunization = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
                     handleClear();
                     handleDownload()
                     getApplicationImmunization();
+                    handleSubmitApplicationReq()
                     navigate(navigateURL)
                 })
                 .catch((error) => {
@@ -376,6 +381,7 @@ const Immunization = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
                 });
         } else {
             handleDownload()
+            handleSubmitApplicationReq()
             navigate(navigateURL)
         }
     };
@@ -424,6 +430,7 @@ const Immunization = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
         setFrom(null);
         setResult('');
         setInduration('');
+        setUploadedFiles([]);
     }
 
     const handleDelete = () => {
@@ -465,6 +472,11 @@ const Immunization = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
 
     const handleBackClick = () => {
         navigate(navigateBackURL)
+    }
+
+    const handleFileView = (file) => {
+        setIsDialogOpen(true);
+        setSelectedFile(file)
     }
 
     return (
@@ -629,13 +641,15 @@ const Immunization = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
                                     </div>
                                     <div className={style.marginTop}>
                                         {uploadedFiles?.map((data, index) => (
-                                            <div className={style.uploadButton2}>
-                                                <span
-                                                    className={`${style.uploadText2} ${style.verticalAlignCenter}`}
-                                                >
-                                                    {data?.file?.fileName}
-                                                </span>
-                                            </div>
+                                            <Tooltip title="Click to view file" arrow>
+                                                <div className={`${style.uploadButton2} ${style.cursorPointer}`} onClick={() => handleFileView(data?.file)} >
+                                                    <span
+                                                        className={`${style.uploadText2} ${style.verticalAlignCenter}`}
+                                                    >
+                                                        {data?.file?.fileName}
+                                                    </span>
+                                                </div>
+                                            </Tooltip>
                                         ))}
                                     </div>
                                     <div
@@ -830,6 +844,9 @@ const Immunization = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
                 </div>
                 {isSaveInProgressOpen && (
                     <SaveInProgressDialog getIsOpen={getIsSaveInProgressOpen} />
+                )}
+                {isDialogOpen && (
+                    <FileDisplayDialog getIsOpen={setIsDialogOpen} file={selectedFile} />
                 )}
             </div>
         </>

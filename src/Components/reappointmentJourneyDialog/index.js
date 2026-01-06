@@ -127,7 +127,7 @@ const ReappointmentJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, im
         var cookies = new Cookie();
         cookies.remove("user", { path: "/" });
         cookies.remove("entityId", { path: "/" });
-        cookies.remove("authorization", { path: "/" });
+        cookies.remove("authorization", { path: "/", domain: window.location.hostname?.split('.')?.length >= 3 ? window.location.hostname?.split('.')?.slice(-2)?.join('.') : window.location.hostname });
         logout()
         navigate('/')
     }
@@ -276,7 +276,7 @@ const ReappointmentJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, im
                                                 {...(!isSubmissionBlocked && { open: false })}
                                             >
                                                 <Tooltip title={"Click to Submit Reappointment Application"} arrow >
-                                                <div className={`${style.continue} ${style.marginLeft} ${isSubmissionBlocked ? style.disabledButton : ''}`} onClick={isSubmissionBlocked ? () => { } : () => { continueClick(); handleSubmitApplication() }}>SUBMIT</div></Tooltip>
+                                                    <div className={`${style.continue} ${style.marginLeft} ${isSubmissionBlocked ? style.disabledButton : ''}`} onClick={isSubmissionBlocked ? () => { } : () => { continueClick(); handleSubmitApplication() }}>SUBMIT</div></Tooltip>
                                             </Tooltip>
                                         </div>
                                     )}

@@ -82,6 +82,11 @@ const AcknowledgementCheck = ({ basicForm, setBasicForm, applicationId }) => {
                 console.log(error)
                 ErrorToaster("Unexpected Error Submitting Application");
             });
+        let timeData = {
+            "value": Math.floor(parseFloat(localStorage.getItem(`totalTime_${applicationId}`)) / 60000),
+            "unit": "MINUTES"
+        }
+        await PUT(`application-management-service/application/${applicationId}/completionDuration`, timeData)
     }
 
     console.log('form', basicForm)
@@ -119,6 +124,8 @@ const AcknowledgementCheck = ({ basicForm, setBasicForm, applicationId }) => {
     //         });
     // }
 
+    console.log(basicForm?.forms?.filter(data => data?.formCategory !== 'Form' && data?.formCategory !== 'Disclosure')?.every(item => item.dataStatus === "COMPLETED"), basicForm?.forms?.filter(data => data?.formCategory !== 'Form' && data?.formCategory !== 'Disclosure')?.some(item => item.dataStatus === "SKIPPED_MANDATORY_FIELD"), basicForm?.forms?.filter(data => data?.formCategory !== 'Form' && data?.formCategory !== 'Disclosure')?.some(item => item.dataStatus === "SKIPPED_NON_MANDATORY_FIELD"), basicForm?.forms?.filter(data => data?.formCategory !== 'Form' && data?.formCategory !== 'Disclosure')?.every(item => item.dataStatus === "COMPLETED") ? 'style.greenDotStyle' : basicForm?.forms?.filter(data => data?.formCategory !== 'Form' && data?.formCategory !== 'Disclosure')?.some(item => item.dataStatus === "SKIPPED_MANDATORY_FIELD") ? 'style.redDotStyle' : basicForm?.forms?.filter(data => data?.formCategory !== 'Form' && data?.formCategory !== 'Disclosure')?.some(item => item.dataStatus === "SKIPPED_NON_MANDATORY_FIELD") ? 'style.yellowDotStyle' : 'style.greyDotStyle')
+
     return (
         <div >
 
@@ -134,7 +141,7 @@ const AcknowledgementCheck = ({ basicForm, setBasicForm, applicationId }) => {
                         <div className={`${style.displayInRow}${style.marginTop20}`}>
                             <div className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}>
                                 <span className={`${style.tableHeaderHeadingTextStyle}`}>Acknowledgements & Consents</span>
-                                <div className={`${basicForm?.forms?.filter(data => data?.formCategory !== 'Form' && data?.formCategory !== 'Disclosure')?.every(item => item.acknowledged === true) ? style.greenDotStyle : style.yellowDotStyle}`}></div>
+                                <div className={basicForm?.forms?.filter(data => data?.formCategory !== 'Form' && data?.formCategory !== 'Disclosure')?.every(item => item.dataStatus === "COMPLETED") ? style.greenDotStyle : basicForm?.forms?.filter(data => data?.formCategory !== 'Form' && data?.formCategory !== 'Disclosure')?.some(item => item.dataStatus === "SKIPPED_MANDATORY_FIELD") ? style.redDotStyle : basicForm?.forms?.filter(data => data?.formCategory !== 'Form' && data?.formCategory !== 'Disclosure')?.some(item => item.dataStatus === "SKIPPED_NON_MANDATORY_FIELD") ? style.yellowDotStyle : style.greyDotStyle}></div>
                             </div>
                         </div>
                         <div className={`${style.tableHeaderStyle} ${style.marginTop10} ${style.tableHeaderGridStyle} `}>
@@ -158,7 +165,7 @@ const AcknowledgementCheck = ({ basicForm, setBasicForm, applicationId }) => {
                                         <div className={`${style.tableDataFontStyle1}`}>{data?.title}</div>
                                     </div>
                                     <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                                        <div className={`${basicForm?.forms?.filter(data => data?.formCategory !== 'Form' && data?.formCategory !== 'Disclosure')[index]?.acknowledged ? style.greenDotStyle : style.yellowDotStyle} `}></div>
+                                        <div className={data?.dataStatus === "COMPLETED" ? style.greenDotStyle : data?.dataStatus === "SKIPPED_MANDATORY_FIELD" ? style.redDotStyle : data?.dataStatus === "SKIPPED_NON_MANDATORY_FIELD" ? style.yellowDotStyle : style.greyDotStyle}></div>
                                         <img src={Pencil} alt="" className={`${style.pencilImgStyle} ${style.justifyCenter} ${style.cursorPointer} ${style.marginLeft20}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/applicationForm/${applicationId}/${data?.formCategory}/${btoa(data?.schemaCategory)}`) }} />
                                     </div>
                                 </div>

@@ -97,6 +97,10 @@
     grid-column: span 2;
 }
 
+.EducationGrid> :nth-child(7) {
+    grid-column: 1/-1;
+}
+
 .progressStyle {
     height: 10px;
     width: 100%;

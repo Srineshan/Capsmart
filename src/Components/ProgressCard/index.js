@@ -18,7 +18,16 @@ const ProgressCard = ({ dataType, title, timeNumber, timeText, progressStyle, ba
         // Retrieve stored time from localStorage or initialize it to 0
         const key = applicationId ? `totalTime_${applicationId}` : 'totalTime';
         const savedTime = localStorage.getItem(key);
-        return savedTime ? parseFloat(savedTime) : 0;
+        if (savedTime) {
+            return parseFloat(savedTime);
+        }
+        // If not in localStorage, check basicForm?.completionDuration?.value
+        // This handles cases where user is on a different browser and time was saved in API
+        // completionDuration.value is in minutes, convert to milliseconds
+        if (basicForm?.completionDuration?.value) {
+            return parseFloat(basicForm.completionDuration.value) * 60000;
+        }
+        return 0;
     });
 
     // Use refs to avoid stale closures in intervals
@@ -50,11 +59,28 @@ const ProgressCard = ({ dataType, title, timeNumber, timeText, progressStyle, ba
             setDisplayTime(savedTimeValue);
         } else {
             // Reset to 0 if no saved time for new applicationId
+            // completionDuration will be checked separately when basicForm loads
             setTotalTime(0);
             totalTimeRef.current = 0;
             setDisplayTime(0);
         }
     }, [applicationId]);
+
+    // Check completionDuration when it becomes available (only if localStorage doesn't have the value)
+    // This handles cases where user is on a different browser and time was saved in API
+    useEffect(() => {
+        const key = applicationId ? `totalTime_${applicationId}` : 'totalTime';
+        const savedTime = localStorage.getItem(key);
+        
+        // Only check completionDuration if localStorage doesn't have the value
+        // completionDuration.value is in minutes, convert to milliseconds
+        if (savedTime === null && basicForm?.completionDuration?.value) {
+            const completionDurationValue = parseFloat(basicForm.completionDuration.value) * 60000;
+            setTotalTime(completionDurationValue);
+            totalTimeRef.current = completionDurationValue;
+            setDisplayTime(completionDurationValue);
+        }
+    }, [applicationId, basicForm?.completionDuration?.value]);
 
     // Sync refs with state (only update refs, don't trigger state updates)
     // This prevents stale closures in intervals
@@ -195,49 +221,63 @@ const ProgressCard = ({ dataType, title, timeNumber, timeText, progressStyle, ba
         }
     }
 
+    const isValidESign = (esign) =>
+        esign &&
+        typeof esign.esign === "string" &&
+        esign.esign.trim() !== "" &&
+        typeof esign.name === "string" &&
+        esign.name.trim() !== "" &&
+        typeof esign.signedDate === "string" &&
+        esign.signedDate.trim() !== "";
+
     const checkPrivileges = (privilegeList = []) => {
         for (const item of privilegeList) {
-            // Only for DISCRETE type
-            if (item.privilegeSpecificationType !== "DISCRETE") continue;
 
-            const details = item.privilegeDetails;
-            if (!details) continue;
+            /** ---------------- DISCRETE ---------------- */
+            if (item.privilegeSpecificationType === "DISCRETE") {
+                const details = item.privilegeDetails;
+                if (!details) continue;
 
-            const sectionsToCheck = [
-                details.corePrivileges,
-                details.restrictedPrivileges,
-            ];
-            for (const section of sectionsToCheck) {
-                if (!section) continue;
+                const sectionsToCheck = [
+                    details.corePrivileges,
+                    details.restrictedPrivileges,
+                ];
 
-                const hasPrivileges =
-                    Array.isArray(section.privilegesByCategories) &&
-                    section.privilegesByCategories.some(
-                        (cat) =>
-                            cat &&
-                            Array.isArray(cat.privileges) &&
-                            cat.privileges.length > 0
-                    );
-                if (hasPrivileges) {
-                    const esign = section.esign;
+                for (const section of sectionsToCheck) {
+                    if (!section) continue;
 
-                    const validESign =
-                        esign &&
-                        typeof esign.esign === "string" &&
-                        esign.esign.trim() !== "" &&
-                        typeof esign.name === "string" &&
-                        esign.name.trim() !== "" &&
-                        typeof esign.signedDate === "string" &&
-                        esign.signedDate.trim() !== "";
-                    if (!validESign) {
-                        return false;
+                    const hasPrivileges =
+                        Array.isArray(section.privilegesByCategories) &&
+                        section.privilegesByCategories.some(
+                            (cat) =>
+                                cat &&
+                                Array.isArray(cat.privileges) &&
+                                cat.privileges.length > 0
+                        );
+
+                    if (hasPrivileges) {
+                        if (!isValidESign(section.esign)) {
+                            return false;
+                        }
                     }
                 }
             }
+
+            /** -------- DESCRIPTIVEDOCUMENT -------- */
+            else if (item.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT") {
+                const esign = item?.descriptiveContent?.esign;
+
+                if (!isValidESign(esign)) {
+                    return false;
+                }
+            }
+
+            // other types → ignored
         }
 
         return true;
     };
+
 
     return (
         <div className={style.progressCard}>
@@ -269,349 +309,313 @@ const ProgressCard = ({ dataType, title, timeNumber, timeText, progressStyle, ba
                     >
 
                         {(basicForm?.forms ?? []).map((data, index) => {
-                            let dotClass = `${style.disabledDotStyle} ${style.disabled}`;
-                            if (data?.schemaCategory === "Immunization" ? basicForm?.immunizationData?.immunizationDetails : data?.schemaCategory === "PrivilegeSelection" ? (basicForm?.privileges?.obligatedPrivileges?.length > 0 || basicForm?.privileges?.additionalPrivileges?.length > 0) : (data?.acknowledged || data?.data)) {
-                                const uploadDocForm = basicForm?.forms?.find(form => form?.schemaCategory === 'UploadYourDoc');
-                                const contactAddress = basicForm?.forms?.find(form => form?.schemaCategory === 'ContactAddress');
-                                const qualification = basicForm?.forms?.find(form => form?.schemaCategory === 'Qualification');
-                                const malpracticeInfo = basicForm?.forms?.find(form => form?.schemaCategory === 'MalpracticeInfo');
-                                const education = basicForm?.forms?.find(form => form?.schemaCategory === 'Education');
-                                const workExperience = basicForm?.forms?.find(form => form?.schemaCategory === 'WorkExperience');
-                                const privilegeSelection = basicForm?.forms?.find(form => form?.schemaCategory === 'PrivilegeSelection');
-                                const references = basicForm?.forms?.find(form => form?.schemaCategory === 'References');
-                                const professionalConduct = basicForm?.forms?.find(form => form?.schemaCategory === 'ProfessionalConduct');
-                                const criminalHistory = basicForm?.forms?.find(form => form?.schemaCategory === 'CriminalHistory');
-                                const medicalHistory = basicForm?.forms?.find(form => form?.schemaCategory === 'MedicalHistory');
-                                const miscellaneousQuestion = basicForm?.forms?.find(form => form?.schemaCategory === 'MISCELLANEOUS_QUESTIONS');
-                                const applicantAcknowledgement = basicForm?.forms?.find(form => form?.schemaCategory === 'ApplicantAcknowledgement');
-                                const scheduleA = basicForm?.forms?.find(form => form?.schemaCategory === 'ScheduleA');
-                                const scheduleB = basicForm?.forms?.find(form => form?.schemaCategory === 'ScheduleB');
-                                const immunization = basicForm?.forms?.find(form => form?.schemaCategory === 'Immunization');
-                                const policeVulnerableCheck = basicForm?.forms?.find(form => form?.schemaCategory === 'PoliceVulnerableCheck');
-                                const codeOfConduct = basicForm?.forms?.find(form => form?.schemaCategory === 'CodeOfConduct');
-                                const confidentialityAgreement = basicForm?.forms?.find(form => form?.schemaCategory === 'ConfidentialityAgreement');
-                                const conflictOfInterest = basicForm?.forms?.find(form => form?.schemaCategory === 'ConflictOfInterest');
-                                const offenceDeclaration = basicForm?.forms?.find(form => form?.schemaCategory === 'OffenceDeclaration');
-                                const disabilitiesAct = basicForm?.forms?.find(form => form?.schemaCategory === 'DisabilitiesAct');
-                                const pharmacySignature = basicForm?.forms?.find(form => form?.schemaCategory === 'PharmacySignature');
-                                const pacsRequest = basicForm?.forms?.find(form => form?.schemaCategory === 'PACS_Request');
+                            // let dotClass = `${style.disabledDotStyle} ${style.disabled}`;
+                            // if (data?.schemaCategory === "Immunization" ? basicForm?.immunizationData?.immunizationDetails : data?.schemaCategory === "PrivilegeSelection" ? (basicForm?.privileges?.obligatedPrivileges?.length > 0 || basicForm?.privileges?.additionalPrivileges?.length > 0) : (data?.acknowledged || data?.data)) {
+                            //     const uploadDocForm = basicForm?.forms?.find(form => form?.schemaCategory === 'UploadYourDoc');
+                            //     const contactAddress = basicForm?.forms?.find(form => form?.schemaCategory === 'ContactAddress');
+                            //     const qualification = basicForm?.forms?.find(form => form?.schemaCategory === 'Qualification');
+                            //     const malpracticeInfo = basicForm?.forms?.find(form => form?.schemaCategory === 'MalpracticeInfo');
+                            //     const education = basicForm?.forms?.find(form => form?.schemaCategory === 'Education');
+                            //     const workExperience = basicForm?.forms?.find(form => form?.schemaCategory === 'WorkExperience');
+                            //     const privilegeSelection = basicForm?.forms?.find(form => form?.schemaCategory === 'PrivilegeSelection');
+                            //     const references = basicForm?.forms?.find(form => form?.schemaCategory === 'References');
+                            //     const professionalConduct = basicForm?.forms?.find(form => form?.schemaCategory === 'ProfessionalConduct');
+                            //     const criminalHistory = basicForm?.forms?.find(form => form?.schemaCategory === 'CriminalHistory');
+                            //     const medicalHistory = basicForm?.forms?.find(form => form?.schemaCategory === 'MedicalHistory');
+                            //     const miscellaneousQuestion = basicForm?.forms?.find(form => form?.schemaCategory === 'MISCELLANEOUS_QUESTIONS');
+                            //     const applicantAcknowledgement = basicForm?.forms?.find(form => form?.schemaCategory === 'ApplicantAcknowledgement');
+                            //     const scheduleA = basicForm?.forms?.find(form => form?.schemaCategory === 'ScheduleA');
+                            //     const scheduleB = basicForm?.forms?.find(form => form?.schemaCategory === 'ScheduleB');
+                            //     const immunization = basicForm?.forms?.find(form => form?.schemaCategory === 'Immunization');
+                            //     const policeVulnerableCheck = basicForm?.forms?.find(form => form?.schemaCategory === 'PoliceVulnerableCheck');
+                            //     const codeOfConduct = basicForm?.forms?.find(form => form?.schemaCategory === 'CodeOfConduct');
+                            //     const confidentialityAgreement = basicForm?.forms?.find(form => form?.schemaCategory === 'ConfidentialityAgreement');
+                            //     const conflictOfInterest = basicForm?.forms?.find(form => form?.schemaCategory === 'ConflictOfInterest');
+                            //     const offenceDeclaration = basicForm?.forms?.find(form => form?.schemaCategory === 'OffenceDeclaration');
+                            //     const disabilitiesAct = basicForm?.forms?.find(form => form?.schemaCategory === 'DisabilitiesAct');
+                            //     const pharmacySignature = basicForm?.forms?.find(form => form?.schemaCategory === 'PharmacySignature');
+                            //     const pacsRequest = basicForm?.forms?.find(form => form?.schemaCategory === 'PACS_Request');
 
-                                const unFilledFields = uploadDocForm?.unFilledFields ?? [];
-                                const documentsRequired = basicForm?.documentsRequired ?? [];
-                                const contactAddressUnfilledFields = contactAddress?.unFilledFields ?? [];
-                                const qualificationUnfilledFields = qualification?.unFilledFields ?? [];
-                                const malpracticeInfoUnfilledFields = malpracticeInfo?.unFilledFields ?? [];
-                                const educationUnfilledFields = education?.unFilledFields ?? [];
-                                const workExperienceUnfilledFields = workExperience?.unFilledFields ?? [];
-                                const privilegeSelectionUnfilledFields = privilegeSelection?.unFilledFields ?? [];
-                                const referencesUnfilledFields = references?.unFilledFields ?? [];
-                                const professionalConductUnfilledFields = professionalConduct?.unFilledFields ?? [];
-                                const criminalHistoryUnfilledFields = criminalHistory?.unFilledFields ?? [];
-                                const medicalHistoryUnfilledFields = medicalHistory?.unFilledFields ?? [];
-                                const miscellaneousQuestionUnfilledFields = miscellaneousQuestion?.unFilledFields ?? [];
-                                const applicantAcknowledgementUpdate = applicantAcknowledgement?.acknowledged ?? "";
-                                const scheduleAUpdate = scheduleA?.unFilledFields ?? [];
-                                const scheduleBUpdate = scheduleB?.unFilledFields ?? [];
-                                const immunizationUpdate = immunization?.unFilledFields ?? [];
-                                const policeVulnerableCheckUpdate = policeVulnerableCheck?.unFilledFields ?? [];
-                                const codeOfConductUpdate = codeOfConduct?.unFilledFields ?? [];
-                                const confidentialityAgreementUpdate = confidentialityAgreement?.unFilledFields ?? [];
-                                const conflictOfInterestUpdate = conflictOfInterest?.unFilledFields ?? [];
-                                const offenceDeclarationUpdate = offenceDeclaration?.unFilledFields ?? [];
-                                const disabilitiesActUpdate = disabilitiesAct?.unFilledFields ?? [];
-                                const pharmacySignatureUpdate = pharmacySignature?.unFilledFields ?? [];
-                                const pacsRequestUpdate = pacsRequest?.unFilledFields ?? [];
+                            //     const unFilledFields = uploadDocForm?.unFilledFields ?? [];
+                            //     const documentsRequired = basicForm?.documentsRequired ?? [];
+                            //     const contactAddressUnfilledFields = contactAddress?.unFilledFields ?? [];
+                            //     const qualificationUnfilledFields = qualification?.unFilledFields ?? [];
+                            //     const malpracticeInfoUnfilledFields = malpracticeInfo?.unFilledFields ?? [];
+                            //     const educationUnfilledFields = education?.unFilledFields ?? [];
+                            //     const workExperienceUnfilledFields = workExperience?.unFilledFields ?? [];
+                            //     const privilegeSelectionUnfilledFields = privilegeSelection?.unFilledFields ?? [];
+                            //     const referencesUnfilledFields = references?.unFilledFields ?? [];
+                            //     const professionalConductUnfilledFields = professionalConduct?.unFilledFields ?? [];
+                            //     const criminalHistoryUnfilledFields = criminalHistory?.unFilledFields ?? [];
+                            //     const medicalHistoryUnfilledFields = medicalHistory?.unFilledFields ?? [];
+                            //     const miscellaneousQuestionUnfilledFields = miscellaneousQuestion?.unFilledFields ?? [];
+                            //     const applicantAcknowledgementUpdate = applicantAcknowledgement?.acknowledged ?? "";
+                            //     const scheduleAUpdate = scheduleA?.unFilledFields ?? [];
+                            //     const scheduleBUpdate = scheduleB?.unFilledFields ?? [];
+                            //     const immunizationUpdate = immunization?.unFilledFields ?? [];
+                            //     const policeVulnerableCheckUpdate = policeVulnerableCheck?.unFilledFields ?? [];
+                            //     const codeOfConductUpdate = codeOfConduct?.unFilledFields ?? [];
+                            //     const confidentialityAgreementUpdate = confidentialityAgreement?.unFilledFields ?? [];
+                            //     const conflictOfInterestUpdate = conflictOfInterest?.unFilledFields ?? [];
+                            //     const offenceDeclarationUpdate = offenceDeclaration?.unFilledFields ?? [];
+                            //     const disabilitiesActUpdate = disabilitiesAct?.unFilledFields ?? [];
+                            //     const pharmacySignatureUpdate = pharmacySignature?.unFilledFields ?? [];
+                            //     const pacsRequestUpdate = pacsRequest?.unFilledFields ?? [];
 
 
-                                dotClass = style.dotStyle;
+                            //     dotClass = style.dotStyle;
 
-                                if (data?.schemaCategory === 'UploadYourDoc') {
-                                    // const requiredDocNames = documentsRequired?.filter(doc => doc?.required).map(doc => doc?.document?.shortName);
-                                    const requiredDocNames = documentsRequired?.filter(doc => getIsDocRequired(doc?.document?.shortName) === "Required")?.map(doc => doc?.document?.shortName);
-                                    const missingRequiredDocs = requiredDocNames?.some(name => unFilledFields?.includes(name));
-                                    const unfilledOptionalDocs = unFilledFields?.filter(name => documentsRequired?.some(doc => doc?.document?.shortName === name && !doc?.required));
+                            //     if (data?.schemaCategory === 'UploadYourDoc') {
+                            //         const requiredDocNames = documentsRequired?.filter(doc => getIsDocRequired(doc?.document?.shortName) === "Required")?.map(doc => doc?.document?.shortName);
+                            //         const missingRequiredDocs = requiredDocNames?.some(name => unFilledFields?.includes(name));
+                            //         const unfilledOptionalDocs = unFilledFields?.filter(name => documentsRequired?.some(doc => doc?.document?.shortName === name && !doc?.required));
 
-                                    // const missingRequiredDocs = requiredDocNames?.filter(name => unFilledFields?.includes(name));
-                                    dotClass = missingRequiredDocs ? style.reddotStyle : unfilledOptionalDocs?.length > 0 ? style.yellowdotStyle : style.dotStyle;
-                                } else if (data?.schemaCategory === 'ContactAddress') {
-                                    let hasMandatoryTrue = contactAddressUnfilledFields?.some(field => {
-                                        try {
-                                            const parsed = JSON.parse(field);
-                                            return parsed?.label?.mandatory === true;
-                                        } catch (e) {
-                                            return false;
-                                        }
-                                    });
-                                    let hasMandatoryFalse = contactAddressUnfilledFields?.some(field => {
-                                        try {
-                                            const parsed = JSON.parse(field);
-                                            return parsed?.label?.mandatory !== true;
-                                        } catch (e) {
-                                            return false;
-                                        }
-                                    });
+                            //         dotClass = missingRequiredDocs ? style.reddotStyle : unfilledOptionalDocs?.length > 0 ? style.yellowdotStyle : style.dotStyle;
+                            //     } else if (data?.schemaCategory === 'ContactAddress') {
+                            //         let hasMandatoryTrue = contactAddressUnfilledFields?.some(field => {
+                            //             try {
+                            //                 const parsed = JSON.parse(field);
+                            //                 return parsed?.label?.mandatory === true;
+                            //             } catch (e) {
+                            //                 return false;
+                            //             }
+                            //         });
+                            //         let hasMandatoryFalse = contactAddressUnfilledFields?.some(field => {
+                            //             try {
+                            //                 const parsed = JSON.parse(field);
+                            //                 return parsed?.label?.mandatory !== true;
+                            //             } catch (e) {
+                            //                 return false;
+                            //             }
+                            //         });
 
-                                    dotClass = contactAddressUnfilledFields?.length > 0 ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
-                                } else if (data?.schemaCategory === 'Qualification') {
-                                    let hasMandatoryTrue = qualificationUnfilledFields?.some(field => {
-                                        try {
-                                            const parsed = JSON.parse(field);
-                                            return parsed?.label?.mandatory === true;
-                                        } catch (e) {
-                                            // field is just a plain string or invalid JSON → ignore it
-                                            return false;
-                                        }
-                                    });
-                                    let hasMandatoryFalse = qualificationUnfilledFields?.some(field => {
-                                        try {
-                                            const parsed = JSON.parse(field);
-                                            return parsed?.label?.mandatory !== true;
-                                        } catch (e) {
-                                            // field is just a plain string or invalid JSON → ignore it
-                                            return false;
-                                        }
-                                    });
+                            //         dotClass = contactAddressUnfilledFields?.length > 0 ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
+                            //     } else if (data?.schemaCategory === 'Qualification') {
+                            //         let hasMandatoryTrue = qualificationUnfilledFields?.some(field => {
+                            //             try {
+                            //                 const parsed = JSON.parse(field);
+                            //                 return parsed?.label?.mandatory === true;
+                            //             } catch (e) {
+                            //                 return false;
+                            //             }
+                            //         });
+                            //         let hasMandatoryFalse = qualificationUnfilledFields?.some(field => {
+                            //             try {
+                            //                 const parsed = JSON.parse(field);
+                            //                 return parsed?.label?.mandatory !== true;
+                            //             } catch (e) {
+                            //                 return false;
+                            //             }
+                            //         });
 
-                                    dotClass = qualificationUnfilledFields?.length > 0 ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
-                                } else if (data?.schemaCategory === 'MalpracticeInfo') {
-                                    let hasMandatoryTrue = malpracticeInfoUnfilledFields?.some(field => {
-                                        try {
-                                            const parsed = JSON.parse(field);
-                                            return parsed?.label?.mandatory === true;
-                                        } catch (e) {
-                                            // field is just a plain string or invalid JSON → ignore it
-                                            return false;
-                                        }
-                                    });
-                                    let hasMandatoryFalse = malpracticeInfoUnfilledFields?.some(field => {
-                                        try {
-                                            const parsed = JSON.parse(field);
-                                            return parsed?.label?.mandatory !== true;
-                                        } catch (e) {
-                                            // field is just a plain string or invalid JSON → ignore it
-                                            return false;
-                                        }
-                                    });
+                            //         dotClass = qualificationUnfilledFields?.length > 0 ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
+                            //     } else if (data?.schemaCategory === 'MalpracticeInfo') {
+                            //         let hasMandatoryTrue = malpracticeInfoUnfilledFields?.some(field => {
+                            //             try {
+                            //                 const parsed = JSON.parse(field);
+                            //                 return parsed?.label?.mandatory === true;
+                            //             } catch (e) {
+                            //                 return false;
+                            //             }
+                            //         });
+                            //         let hasMandatoryFalse = malpracticeInfoUnfilledFields?.some(field => {
+                            //             try {
+                            //                 const parsed = JSON.parse(field);
+                            //                 return parsed?.label?.mandatory !== true;
+                            //             } catch (e) {
+                            //                 return false;
+                            //             }
+                            //         });
 
-                                    dotClass = malpracticeInfoUnfilledFields?.length > 0 ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
-                                } else if (data?.schemaCategory === 'Education') {
-                                    let hasMandatoryTrue = educationUnfilledFields?.some(field => {
-                                        try {
-                                            const parsed = JSON.parse(field);
-                                            return parsed?.label?.mandatory === true;
-                                        } catch (e) {
-                                            // field is just a plain string or invalid JSON → ignore it
-                                            return false;
-                                        }
-                                    });
-                                    let hasMandatoryFalse = educationUnfilledFields?.some(field => {
-                                        try {
-                                            const parsed = JSON.parse(field);
-                                            return parsed?.label?.mandatory !== true;
-                                        } catch (e) {
-                                            // field is just a plain string or invalid JSON → ignore it
-                                            return false;
-                                        }
-                                    });
+                            //         dotClass = malpracticeInfoUnfilledFields?.length > 0 ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
+                            //     } else if (data?.schemaCategory === 'Education') {
+                            //         let hasMandatoryTrue = educationUnfilledFields?.some(field => {
+                            //             try {
+                            //                 const parsed = JSON.parse(field);
+                            //                 return parsed?.label?.mandatory === true;
+                            //             } catch (e) {
+                            //                 return false;
+                            //             }
+                            //         });
+                            //         let hasMandatoryFalse = educationUnfilledFields?.some(field => {
+                            //             try {
+                            //                 const parsed = JSON.parse(field);
+                            //                 return parsed?.label?.mandatory !== true;
+                            //             } catch (e) {
+                            //                 return false;
+                            //             }
+                            //         });
 
-                                    dotClass = (education?.data?.graduation?.length > 0) ? style.dotStyle : style.yellowdotStyle;
-                                } else if (data?.schemaCategory === 'WorkExperience') {
-                                    let hasMandatoryTrue = workExperienceUnfilledFields?.some(field => {
-                                        try {
-                                            const parsed = JSON.parse(field);
-                                            return parsed?.label?.mandatory === true;
-                                        } catch (e) {
-                                            // field is just a plain string or invalid JSON → ignore it
-                                            return false;
-                                        }
-                                    });
-                                    let hasMandatoryFalse = workExperienceUnfilledFields?.some(field => {
-                                        try {
-                                            const parsed = JSON.parse(field);
-                                            return parsed?.label?.mandatory !== true;
-                                        } catch (e) {
-                                            // field is just a plain string or invalid JSON → ignore it
-                                            return false;
-                                        }
-                                    });
+                            //         dotClass = (education?.data?.graduation?.length > 0) ? style.dotStyle : style.yellowdotStyle;
+                            //     } else if (data?.schemaCategory === 'WorkExperience') {
+                            //         let hasMandatoryTrue = workExperienceUnfilledFields?.some(field => {
+                            //             try {
+                            //                 const parsed = JSON.parse(field);
+                            //                 return parsed?.label?.mandatory === true;
+                            //             } catch (e) {
+                            //                 return false;
+                            //             }
+                            //         });
+                            //         let hasMandatoryFalse = workExperienceUnfilledFields?.some(field => {
+                            //             try {
+                            //                 const parsed = JSON.parse(field);
+                            //                 return parsed?.label?.mandatory !== true;
+                            //             } catch (e) {
+                            //                 return false;
+                            //             }
+                            //         });
 
-                                    dotClass = (workExperience?.data?.healthcareFacilityAppointments?.length > 0 && references?.data?.trainingAndWorkingExperience?.length > 0) ? style.dotStyle : style.yellowdotStyle;
-                                } else if (data?.schemaCategory === 'PrivilegeSelection') {
-                                    // let hasMandatoryTrue = privilegeSelectionUnfilledFields?.some(field => {
-                                    //     try {
-                                    //         const parsed = JSON.parse(field);
-                                    //         return parsed?.label?.mandatory === true;
-                                    //     } catch (e) {
-                                    //         return false;
-                                    //     }
-                                    // });
-                                    // let hasMandatoryFalse = privilegeSelectionUnfilledFields?.some(field => {
-                                    //     try {
-                                    //         const parsed = JSON.parse(field);
-                                    //         return parsed?.label?.mandatory !== true;
-                                    //     } catch (e) {
-                                    //         return false;
-                                    //     }
-                                    // });
+                            //         dotClass = (workExperience?.data?.healthcareFacilityAppointments?.length > 0 && references?.data?.trainingAndWorkingExperience?.length > 0) ? style.dotStyle : style.yellowdotStyle;
+                            //     } else if (data?.schemaCategory === 'PrivilegeSelection') {
 
-                                    dotClass = (checkPrivileges(basicForm?.privileges?.obligatedPrivileges) &&
-                                        checkPrivileges(basicForm?.privileges?.additionalPrivileges)) ? style.dotStyle : style.reddotStyle;
-                                } else if (data?.schemaCategory === 'References') {
-                                    let hasMandatoryTrue = referencesUnfilledFields?.some(field => {
-                                        try {
-                                            const parsed = JSON.parse(field);
-                                            return parsed?.label?.mandatory === true;
-                                        } catch (e) {
-                                            // field is just a plain string or invalid JSON → ignore it
-                                            return false;
-                                        }
-                                    });
-                                    let hasMandatoryFalse = referencesUnfilledFields?.some(field => {
-                                        try {
-                                            const parsed = JSON.parse(field);
-                                            return parsed?.label?.mandatory !== true;
-                                        } catch (e) {
-                                            // field is just a plain string or invalid JSON → ignore it
-                                            return false;
-                                        }
-                                    });
+                            //         dotClass = (checkPrivileges(basicForm?.privileges?.obligatedPrivileges) &&
+                            //             checkPrivileges(basicForm?.privileges?.additionalPrivileges)) ? style.dotStyle : style.reddotStyle;
+                            //     } else if (data?.schemaCategory === 'References') {
+                            //         let hasMandatoryTrue = referencesUnfilledFields?.some(field => {
+                            //             try {
+                            //                 const parsed = JSON.parse(field);
+                            //                 return parsed?.label?.mandatory === true;
+                            //             } catch (e) {
+                            //                 return false;
+                            //             }
+                            //         });
+                            //         let hasMandatoryFalse = referencesUnfilledFields?.some(field => {
+                            //             try {
+                            //                 const parsed = JSON.parse(field);
+                            //                 return parsed?.label?.mandatory !== true;
+                            //             } catch (e) {
+                            //                 return false;
+                            //             }
+                            //         });
 
-                                    dotClass = (references?.data?.references?.length > 0 && references?.data?.privilegeReferences?.length > 0) ? style.dotStyle : style.yellowdotStyle;
-                                } else if (data?.schemaCategory === 'ProfessionalConduct') {
-                                    let hasMandatoryTrue = professionalConductUnfilledFields?.some(field => {
-                                        try {
-                                            const parsed = JSON.parse(field);
-                                            return parsed?.label?.mandatory === true;
-                                        } catch (e) {
-                                            // field is just a plain string or invalid JSON → ignore it
-                                            return false;
-                                        }
-                                    });
-                                    let hasMandatoryFalse = professionalConductUnfilledFields?.some(field => {
-                                        try {
-                                            const parsed = JSON.parse(field);
-                                            return parsed?.label?.mandatory !== true;
-                                        } catch (e) {
-                                            // field is just a plain string or invalid JSON → ignore it
-                                            return false;
-                                        }
-                                    });
+                            //         dotClass = (references?.data?.references?.length > 0 && references?.data?.privilegeReferences?.length > 0) ? style.dotStyle : style.yellowdotStyle;
+                            //     } else if (data?.schemaCategory === 'ProfessionalConduct') {
+                            //         let hasMandatoryTrue = professionalConductUnfilledFields?.some(field => {
+                            //             try {
+                            //                 const parsed = JSON.parse(field);
+                            //                 return parsed?.label?.mandatory === true;
+                            //             } catch (e) {
+                            //                 return false;
+                            //             }
+                            //         });
+                            //         let hasMandatoryFalse = professionalConductUnfilledFields?.some(field => {
+                            //             try {
+                            //                 const parsed = JSON.parse(field);
+                            //                 return parsed?.label?.mandatory !== true;
+                            //             } catch (e) {
+                            //                 return false;
+                            //             }
+                            //         });
 
-                                    dotClass = professionalConductUnfilledFields?.length > 0 ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
-                                } else if (data?.schemaCategory === 'CriminalHistory') {
-                                    let hasMandatoryTrue = criminalHistoryUnfilledFields?.some(field => {
-                                        try {
-                                            const parsed = JSON.parse(field);
-                                            return parsed?.label?.mandatory === true;
-                                        } catch (e) {
-                                            // field is just a plain string or invalid JSON → ignore it
-                                            return false;
-                                        }
-                                    });
-                                    let hasMandatoryFalse = criminalHistoryUnfilledFields?.some(field => {
-                                        try {
-                                            const parsed = JSON.parse(field);
-                                            return parsed?.label?.mandatory !== true;
-                                        } catch (e) {
-                                            // field is just a plain string or invalid JSON → ignore it
-                                            return false;
-                                        }
-                                    });
+                            //         dotClass = professionalConductUnfilledFields?.length > 0 ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
+                            //     } else if (data?.schemaCategory === 'CriminalHistory') {
+                            //         let hasMandatoryTrue = criminalHistoryUnfilledFields?.some(field => {
+                            //             try {
+                            //                 const parsed = JSON.parse(field);
+                            //                 return parsed?.label?.mandatory === true;
+                            //             } catch (e) {
+                            //                 return false;
+                            //             }
+                            //         });
+                            //         let hasMandatoryFalse = criminalHistoryUnfilledFields?.some(field => {
+                            //             try {
+                            //                 const parsed = JSON.parse(field);
+                            //                 return parsed?.label?.mandatory !== true;
+                            //             } catch (e) {
+                            //                 return false;
+                            //             }
+                            //         });
 
-                                    dotClass = criminalHistoryUnfilledFields?.length > 0 ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
-                                } else if (data?.schemaCategory === 'MedicalHistory') {
-                                    let hasMandatoryTrue = medicalHistoryUnfilledFields?.some(field => {
-                                        try {
-                                            const parsed = JSON.parse(field);
-                                            return parsed?.label?.mandatory === true;
-                                        } catch (e) {
-                                            // field is just a plain string or invalid JSON → ignore it
-                                            return false;
-                                        }
-                                    });
-                                    let hasMandatoryFalse = medicalHistoryUnfilledFields?.some(field => {
-                                        try {
-                                            const parsed = JSON.parse(field);
-                                            return parsed?.label?.mandatory !== true;
-                                        } catch (e) {
-                                            // field is just a plain string or invalid JSON → ignore it
-                                            return false;
-                                        }
-                                    });
+                            //         dotClass = criminalHistoryUnfilledFields?.length > 0 ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
+                            //     } else if (data?.schemaCategory === 'MedicalHistory') {
+                            //         let hasMandatoryTrue = medicalHistoryUnfilledFields?.some(field => {
+                            //             try {
+                            //                 const parsed = JSON.parse(field);
+                            //                 return parsed?.label?.mandatory === true;
+                            //             } catch (e) {
+                            //                 return false;
+                            //             }
+                            //         });
+                            //         let hasMandatoryFalse = medicalHistoryUnfilledFields?.some(field => {
+                            //             try {
+                            //                 const parsed = JSON.parse(field);
+                            //                 return parsed?.label?.mandatory !== true;
+                            //             } catch (e) {
+                            //                 return false;
+                            //             }
+                            //         });
 
-                                    dotClass = medicalHistoryUnfilledFields?.length > 0 ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
-                                } else if (data?.schemaCategory === 'MISCELLANEOUS_QUESTIONS') {
-                                    let hasMandatoryTrue = miscellaneousQuestionUnfilledFields?.some(field => {
-                                        try {
-                                            const parsed = JSON.parse(field);
-                                            return parsed?.label?.mandatory === true;
-                                        } catch (e) {
-                                            // field is just a plain string or invalid JSON → ignore it
-                                            return false;
-                                        }
-                                    });
-                                    let hasMandatoryFalse = miscellaneousQuestionUnfilledFields?.some(field => {
-                                        try {
-                                            const parsed = JSON.parse(field);
-                                            return parsed?.label?.mandatory !== true;
-                                        } catch (e) {
-                                            // field is just a plain string or invalid JSON → ignore it
-                                            return false;
-                                        }
-                                    });
+                            //         dotClass = medicalHistoryUnfilledFields?.length > 0 ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
+                            //     } else if (data?.schemaCategory === 'MISCELLANEOUS_QUESTIONS') {
+                            //         let hasMandatoryTrue = miscellaneousQuestionUnfilledFields?.some(field => {
+                            //             try {
+                            //                 const parsed = JSON.parse(field);
+                            //                 return parsed?.label?.mandatory === true;
+                            //             } catch (e) {
+                            //                 return false;
+                            //             }
+                            //         });
+                            //         let hasMandatoryFalse = miscellaneousQuestionUnfilledFields?.some(field => {
+                            //             try {
+                            //                 const parsed = JSON.parse(field);
+                            //                 return parsed?.label?.mandatory !== true;
+                            //             } catch (e) {
+                            //                 return false;
+                            //             }
+                            //         });
 
-                                    dotClass = hasMandatoryTrue ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
-                                } else if (data?.schemaCategory === 'ScheduleA') {
-                                    let hasMandatoryTrue = scheduleAUpdate?.includes("skipped");
+                            //         dotClass = hasMandatoryTrue ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
+                            //     } else if (data?.schemaCategory === 'ScheduleA') {
+                            //         let hasMandatoryTrue = scheduleAUpdate?.includes("skipped");
 
-                                    dotClass = hasMandatoryTrue ? style.reddotStyle : style.dotStyle;
-                                } else if (data?.schemaCategory === 'ScheduleB') {
-                                    let hasMandatoryTrue = scheduleBUpdate?.includes("skipped");
+                            //         dotClass = hasMandatoryTrue ? style.reddotStyle : style.dotStyle;
+                            //     } else if (data?.schemaCategory === 'ScheduleB') {
+                            //         let hasMandatoryTrue = scheduleBUpdate?.includes("skipped");
 
-                                    dotClass = hasMandatoryTrue ? style.reddotStyle : style.dotStyle;
-                                } else if (data?.schemaCategory === 'Immunization') {
-                                    let hasMandatoryFalse = basicForm?.immunizationData?.immunizationDetails?.length > 0 && basicForm?.immunizationData?.esign?.esign;
+                            //         dotClass = hasMandatoryTrue ? style.reddotStyle : style.dotStyle;
+                            //     } else if (data?.schemaCategory === 'Immunization') {
+                            //         let hasMandatoryFalse = basicForm?.immunizationData?.immunizationDetails?.length > 0 && basicForm?.immunizationData?.esign?.esign;
 
-                                    dotClass = hasMandatoryFalse ? style.dotStyle : style.reddotStyle;
-                                } else if (data?.schemaCategory === 'PoliceVulnerableCheck') {
-                                    let hasMandatoryTrue = policeVulnerableCheckUpdate?.includes("skipped");
+                            //         dotClass = hasMandatoryFalse ? style.dotStyle : style.reddotStyle;
+                            //     } else if (data?.schemaCategory === 'PoliceVulnerableCheck') {
+                            //         let hasMandatoryTrue = policeVulnerableCheckUpdate?.includes("skipped");
 
-                                    dotClass = hasMandatoryTrue ? style.reddotStyle : style.dotStyle;
-                                } else if (data?.schemaCategory === 'CodeOfConduct') {
-                                    let hasMandatoryTrue = codeOfConductUpdate?.includes("skipped");
+                            //         dotClass = hasMandatoryTrue ? style.reddotStyle : style.dotStyle;
+                            //     } else if (data?.schemaCategory === 'CodeOfConduct') {
+                            //         let hasMandatoryTrue = codeOfConductUpdate?.includes("skipped");
 
-                                    dotClass = hasMandatoryTrue ? style.reddotStyle : style.dotStyle;
-                                } else if (data?.schemaCategory === 'ConfidentialityAgreement') {
-                                    let hasMandatoryTrue = confidentialityAgreementUpdate?.includes("skipped");
+                            //         dotClass = hasMandatoryTrue ? style.reddotStyle : style.dotStyle;
+                            //     } else if (data?.schemaCategory === 'ConfidentialityAgreement') {
+                            //         let hasMandatoryTrue = confidentialityAgreementUpdate?.includes("skipped");
 
-                                    dotClass = hasMandatoryTrue ? style.reddotStyle : style.dotStyle;
-                                } else if (data?.schemaCategory === 'ConflictOfInterest') {
-                                    let hasMandatoryTrue = conflictOfInterestUpdate?.includes("skipped");
+                            //         dotClass = hasMandatoryTrue ? style.reddotStyle : style.dotStyle;
+                            //     } else if (data?.schemaCategory === 'ConflictOfInterest') {
+                            //         let hasMandatoryTrue = conflictOfInterestUpdate?.includes("skipped");
 
-                                    dotClass = hasMandatoryTrue ? style.reddotStyle : style.dotStyle;
-                                } else if (data?.schemaCategory === 'OffenceDeclaration') {
-                                    let hasMandatoryTrue = offenceDeclarationUpdate?.includes("skipped");
+                            //         dotClass = hasMandatoryTrue ? style.reddotStyle : style.dotStyle;
+                            //     } else if (data?.schemaCategory === 'OffenceDeclaration') {
+                            //         let hasMandatoryTrue = offenceDeclarationUpdate?.includes("skipped");
 
-                                    dotClass = hasMandatoryTrue ? style.reddotStyle : style.dotStyle;
-                                } else if (data?.schemaCategory === 'DisabilitiesAct') {
-                                    let hasMandatoryTrue = disabilitiesActUpdate?.includes("skipped");
+                            //         dotClass = hasMandatoryTrue ? style.reddotStyle : style.dotStyle;
+                            //     } else if (data?.schemaCategory === 'DisabilitiesAct') {
+                            //         let hasMandatoryTrue = disabilitiesActUpdate?.includes("skipped");
 
-                                    dotClass = hasMandatoryTrue ? style.reddotStyle : style.dotStyle;
-                                } else if (data?.schemaCategory === 'PharmacySignature') {
-                                    let hasMandatoryTrue = pharmacySignatureUpdate?.includes("skipped");
+                            //         dotClass = hasMandatoryTrue ? style.reddotStyle : style.dotStyle;
+                            //     } else if (data?.schemaCategory === 'PharmacySignature') {
+                            //         let hasMandatoryTrue = pharmacySignatureUpdate?.includes("skipped");
 
-                                    dotClass = hasMandatoryTrue ? style.reddotStyle : style.dotStyle;
-                                } else if (data?.schemaCategory === 'PACS_Request') {
-                                    let hasMandatoryTrue = pacsRequestUpdate?.includes("skipped");
+                            //         dotClass = hasMandatoryTrue ? style.reddotStyle : style.dotStyle;
+                            //     } else if (data?.schemaCategory === 'PACS_Request') {
+                            //         let hasMandatoryTrue = pacsRequestUpdate?.includes("skipped");
 
-                                    dotClass = hasMandatoryTrue ? style.reddotStyle : style.dotStyle;
-                                } else if (data?.schemaCategory === 'ApplicantAcknowledgement') {
-                                    dotClass = applicantAcknowledgementUpdate === true ? style.dotStyle : style.reddotStyle;
-                                }
-                            }
+                            //         dotClass = hasMandatoryTrue ? style.reddotStyle : style.dotStyle;
+                            //     } else if (data?.schemaCategory === 'ApplicantAcknowledgement') {
+                            //         dotClass = applicantAcknowledgementUpdate === true ? style.dotStyle : style.reddotStyle;
+                            //     }
+                            // }
 
                             const handleClick = () => {
-                                if (data?.schemaCategory === "Immunization" ? basicForm?.immunizationData?.immunizationDetails : data?.schemaCategory === "PrivilegeSelection" ? (basicForm?.privileges?.obligatedPrivileges?.length > 0 || basicForm?.privileges?.additionalPrivileges?.length > 0) : (data?.acknowledged || data?.data)) {
+                                if (data?.acknowledged || data?.dataStatus !== "PENDING") {
                                     navigate(`/applicationForm/${applicationId}/${data?.formCategory}/${btoa(data?.schemaCategory)}`);
                                 }
                             };
@@ -619,7 +623,7 @@ const ProgressCard = ({ dataType, title, timeNumber, timeText, progressStyle, ba
                             return (
                                 <Tooltip title={data?.title} arrow key={index}>
                                     <div
-                                        className={dotClass}
+                                        className={data?.dataStatus === "COMPLETED" ? style.dotStyle : data?.dataStatus === "SKIPPED_MANDATORY_FIELD" ? style.reddotStyle : data?.dataStatus === "SKIPPED_NON_MANDATORY_FIELD" ? style.yellowdotStyle : !data?.acknowledged ? `${style.disabledDotStyle} ${style.disabled}` : style.disabledDotStyle}
                                         onClick={handleClick}
                                     ></div>
                                 </Tooltip>

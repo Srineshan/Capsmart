@@ -160,7 +160,8 @@ const ScheduleA = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
         schemaId: basicForm?.forms?.[formIndex]?.schemaId,
         data: !isEdited ? basicForm?.forms?.[formIndex]?.data : { esignDate: isChecked ? name + " " + currentDate : '' },
         acknowledged: isChecked,
-        esign: { esign: isChecked ? encryptedText : '', name: isChecked ? name : '', signedDate: isChecked ? currentDate : '' }
+        esign: { esign: isChecked ? encryptedText : '', name: isChecked ? name : '', signedDate: isChecked ? currentDate : '' },
+        dataStatus: isSigned ? 'COMPLETED' : 'SKIPPED_MANDATORY_FIELD'
       }
       await PUT(`application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
         .then(response => {

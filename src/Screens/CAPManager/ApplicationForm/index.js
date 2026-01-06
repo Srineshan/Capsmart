@@ -76,7 +76,7 @@ const ApplicationForm = () => {
         if (basicForm && acknowledgementForms?.length === 0) {
             getAcknowledgement(basicForm?.providerType?.id)
         }
-    }, [basicForm])
+    }, [basicForm?.providerType?.id])
 
     useEffect(() => {
         setUserDetails();
@@ -104,7 +104,7 @@ const ApplicationForm = () => {
     }
 
     const getAcknowledgement = async (id) => {
-        if (id !== "") {
+        if (id !== "" && id) {
             const { data: acknowledgementForm } = await GET(
                 `entity-service/acknowledgementForm?applicantTypeId=${id}`
             );
@@ -128,7 +128,7 @@ const ApplicationForm = () => {
         var cookies = new Cookie();
         cookies.remove("user", { path: "/" });
         cookies.remove("entityId", { path: "/" });
-        cookies.remove("authorization", { path: "/" });
+        cookies.remove("authorization", { path: "/", domain: window.location.hostname?.split('.')?.length >= 3 ? window.location.hostname?.split('.')?.slice(-2)?.join('.') : window.location.hostname });
         logout()
         navigate('/')
     }

@@ -81,6 +81,10 @@
     grid-column: 1 / -1;
 }
 
+.insuranceGrid> :nth-child(8) {
+    grid-column: 1 / -1;
+}
+
 
 .progressStyle {
     height: 10px;
@@ -200,4 +204,9 @@
 .hiddenStickyContainer {
     opacity: 0;
     pointer-events: none;
+}
+
+.disabledButton {
+    opacity: 0.5;
+    cursor: not-allowed;
 }

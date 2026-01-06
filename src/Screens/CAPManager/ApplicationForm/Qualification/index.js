@@ -103,34 +103,78 @@ const Qualification = ({ basicForm, setBasicForm, applicationId, getPreApplicati
         }
     }
 
+    const getValueByPath = (obj, path) => {
+        const keys = path.split(/[\.\[\]]+/).filter(Boolean);
+        console.log(path, keys.reduce((acc, key) => acc && acc[isNaN(key) ? key : Number(key)], basicForm), basicForm, 'if')
+        return keys.reduce((acc, key) => acc && acc[isNaN(key) ? key : Number(key)], basicForm);
+    };
+
     const getMissingFields = () => {
         let missingKeys = [];
         let keyValuePair = [];
         metadata?.map((data, index) => {
-            keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: labels[index]?.label })
+            if (labels?.[index]?.mandatory)
+                keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: labels[index]?.label })
         })
         keyValuePair?.map(data => {
             if (data?.value === "" || data?.value === null || data?.value === undefined || data?.value === 0) {
                 missingKeys.push(data)
             }
         })
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.certifications.file`)) {
+            let filterKeys = [`forms[${formIndex}].data.certifications.reasonForSkip`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.certifications.reasonForSkip`)) {
+            let filterKeys = [`forms[${formIndex}].data.certifications.file`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
         if (missingKeys?.length !== 0) {
             setShowValidationDialog(true)
         } else {
-            handleSubmitApplicationReq()
+            handleSubmitApplicationReq('save')
         }
         setWarningFields(missingKeys)
         console.log(keyValuePair, 'Metadata', missingKeys)
     }
 
+    const getDataStatus = () => {
+        let missingItems = [];
+        let keyValuePair = [];
+        metadata?.map((data, index) => {
+            keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: labels?.[index]?.label, mandatory: labels?.[index]?.mandatory })
+        })
+        keyValuePair?.map(data => {
+            if (data?.value === "" || data?.value === null || data?.value === undefined || data?.value === 0) {
+                missingItems.push(data)
+            }
+        })
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.certifications.file`)) {
+            let filterKeys = [`forms[${formIndex}].data.certifications.reasonForSkip`]
+            let temp = missingItems?.filter(data => !filterKeys?.includes(data?.key));
+            missingItems = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.certifications.reasonForSkip`)) {
+            let filterKeys = [`forms[${formIndex}].data.certifications.file`]
+            let temp = missingItems?.filter(data => !filterKeys?.includes(data?.key));
+            missingItems = temp;
+        }
+        return missingItems;
+    }
+
+    const skipDisable = getDataStatus()?.filter(data => data?.mandatory)?.length === 0;
+
     const handleSubmitApplicationReq = async (data, save) => {
-        if (isEdited || save) {
+        if (isEdited || save || data) {
             console.log(basicForm?.forms?.[formIndex]?.data)
             let temp = {
                 schemaId: basicForm?.forms?.[formIndex]?.schemaId,
                 data: basicForm?.forms?.[formIndex]?.data,
                 unFilledFields: warningFields?.map(data => data?.label),
-                acknowledged: save ? basicForm?.forms?.[formIndex]?.acknowledged : data === "skipped" ? false : true
+                acknowledged: save ? basicForm?.forms?.[formIndex]?.acknowledged : data === "skipped" ? false : true,
+                dataStatus: getDataStatus()?.filter(data => data?.mandatory)?.length > 0 ? 'SKIPPED_MANDATORY_FIELD' : getDataStatus()?.length > 0 ? 'SKIPPED_NON_MANDATORY_FIELD' : 'COMPLETED'
             }
             await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
                 .then(response => {
@@ -173,12 +217,6 @@ const Qualification = ({ basicForm, setBasicForm, applicationId, getPreApplicati
         }
     }
 
-    const getValueByPath = (obj, path) => {
-        const keys = path.split(/[\.\[\]]+/).filter(Boolean);
-        console.log(path, keys.reduce((acc, key) => acc && acc[isNaN(key) ? key : Number(key)], basicForm), basicForm, 'if')
-        return keys.reduce((acc, key) => acc && acc[isNaN(key) ? key : Number(key)], basicForm);
-    };
-
     const getIsEdited = (value) => {
         setIsEdited(value)
     }
@@ -210,7 +248,7 @@ const Qualification = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                     <div className={style.stickyContainer}>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
-                        <div className={`${style.saveInProgress} ${style.marginTop10} `} onClick={() => getSkipClicked(true)} > SKIP FOR NOW </div>
+                        <div className={`${style.saveInProgress} ${style.marginTop10} ${skipDisable ? style.disabledButton : ''}`} onClick={skipDisable ? () => { } : () => getSkipClicked(true)} > SKIP FOR NOW </div>
                         <div className={style.twoColForButton}>
                             <div className={`${style.continue} ${style.marginTop10}`} onClick={handleBackClick}>BACK</div>
                             <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()} >CONTINUE</div>

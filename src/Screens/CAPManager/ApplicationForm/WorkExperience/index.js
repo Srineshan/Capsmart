@@ -144,6 +144,26 @@ const WorkExperience = ({ basicForm, setBasicForm, applicationId, getPreApplicat
                 missingKeys.push(data)
             }
         })
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.trainingAndWorkingExperience.file`)) {
+            let filterKeys = [`forms[${formIndex}].data.trainingAndWorkingExperience.reasonForSkip`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.trainingAndWorkingExperience.reasonForSkip`)) {
+            let filterKeys = [`forms[${formIndex}].data.trainingAndWorkingExperience.file`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
+        if (getValueByPath(basicForm, `undefined.trainingAndWorkingExperience.file`)) {
+            let filterKeys = [`undefined.trainingAndWorkingExperience.reasonForSkip`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
+        if (getValueByPath(basicForm, `undefined.trainingAndWorkingExperience.reasonForSkip`)) {
+            let filterKeys = [`undefined.trainingAndWorkingExperience.file`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
         // if (missingKeys?.length !== 0) {
         //     setShowValidationDialog(true)
         // } else {
@@ -167,6 +187,26 @@ const WorkExperience = ({ basicForm, setBasicForm, applicationId, getPreApplicat
                 missingKeys.push(data)
             }
         })
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.healthcareFacilityAppointments.file`)) {
+            let filterKeys = [`forms[${formIndex}].data.healthcareFacilityAppointments.reasonForSkip`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.healthcareFacilityAppointments.reasonForSkip`)) {
+            let filterKeys = [`forms[${formIndex}].data.healthcareFacilityAppointments.file`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
+        if (getValueByPath(basicForm, `undefined.healthcareFacilityAppointments.file`)) {
+            let filterKeys = [`undefined.healthcareFacilityAppointments.reasonForSkip`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
+        if (getValueByPath(basicForm, `undefined.healthcareFacilityAppointments.reasonForSkip`)) {
+            let filterKeys = [`undefined.healthcareFacilityAppointments.file`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
         // if (missingKeys?.length !== 0) {
         //     setShowValidationDialog(true)
         // } else {
@@ -208,7 +248,8 @@ const WorkExperience = ({ basicForm, setBasicForm, applicationId, getPreApplicat
             schemaId: data?.forms?.[formIndex]?.schemaId,
             data: data?.forms?.[formIndex]?.data,
             unFilledFields: missingFields,
-            acknowledged: missingFields?.length !== 0 ? false : true
+            acknowledged: missingFields?.length !== 0 ? false : true,
+            dataStatus: missingFields?.length > 0 ? 'SKIPPED_MANDATORY_FIELD' : 'COMPLETED'
         }
         console.log(missingFields, 'missingFields')
         await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
@@ -229,7 +270,8 @@ const WorkExperience = ({ basicForm, setBasicForm, applicationId, getPreApplicat
                 schemaId: basicForm?.forms?.[formIndex]?.schemaId,
                 data: basicForm?.forms?.[formIndex]?.data,
                 unFilledFields: basicForm?.forms?.[formIndex]?.unFilledFields,
-                acknowledged: true
+                acknowledged: true,
+                dataStatus: basicForm?.forms?.[formIndex]?.dataStatus
             }
             await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
                 .then(response => {
@@ -284,7 +326,7 @@ const WorkExperience = ({ basicForm, setBasicForm, applicationId, getPreApplicat
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                     <div className={style.stickyContainer}>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
-                        <div className={`${style.saveInProgress} ${style.marginTop10} `} onClick={() => handleContinue(true)} > SKIP FOR NOW </div>
+                        <div className={`${style.saveInProgress} ${style.marginTop10} ${isDataAvailable ? style.disabledButton : ''} `} onClick={isDataAvailable ? () => { } : () => handleContinue(true)} > SKIP FOR NOW </div>
                         <div className={style.twoColForButton}>
                             <div className={`${style.continue} ${style.marginTop10}`} onClick={handleBackClick}>BACK</div>
                             <div className={`${style.continue} ${style.marginTop10} ${isDataAvailable ? '' : style.disabledButton}`} onClick={isDataAvailable ? () => handleContinue() : () => { }}>CONTINUE</div>

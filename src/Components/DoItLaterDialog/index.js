@@ -15,7 +15,7 @@ const DoItLaterDialog = ({ getIsOpen }) => {
         var cookies = new Cookie();
         // cookies.remove("user", { path: "/" });
         cookies.remove("entityId", { path: "/" });
-        cookies.remove("authorization", { path: "/" });
+        cookies.remove("authorization", { path: "/", domain: window.location.hostname?.split('.')?.length >= 3 ? window.location.hostname?.split('.')?.slice(-2)?.join('.') : window.location.hostname });
         logout();
         navigate('/')
     }
@@ -37,9 +37,9 @@ const DoItLaterDialog = ({ getIsOpen }) => {
                     <p className={`${style.description} ${style.marginTop}`}>No problem! You can start your Reappointment application anytime you're ready by clicking the link in the original email you received.</p>
                     <div className={`${style.justifyCenter} ${style.displayInRow} ${style.marginTop}`}>
                         <Tooltip arrow title={"Click to Close"}>
-                        <div className={`${style.saveInProgress}`} onClick={() => { getIsOpen(false); }}>CANCEL</div></Tooltip>
+                            <div className={`${style.saveInProgress}`} onClick={() => { getIsOpen(false); }}>CANCEL</div></Tooltip>
                         <Tooltip title="Click to Confirm and Logout" arrow>
-                        <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { handleLogout(); }}>CONFIRM</div></Tooltip>
+                            <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { handleLogout(); }}>CONFIRM</div></Tooltip>
                     </div>
                 </div>
 
