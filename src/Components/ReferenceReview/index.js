@@ -418,8 +418,23 @@ const ReferenceReview = ({ setIsReferenceReview, getActiveApplicationView }) => 
                                     object={allReferenceSchemas?.[index]?.formSchema?.schema?.properties?.summaryRecommendation}
                                     basicForm={referenceForm}
                                     stepPath={`referenceDetails.responses[${formIndex}].data`}
-                                    gridStyle={style.gridStyle}
+                                    gridStyle={style.fieldGridStyle}
                                     baseKey={"summaryRecommendation"}
+                                    collapsableQuestionCard={true}
+                                    isPOD={true}
+                                    referenceRadioShowLabel={true}
+                                />
+                            )}
+                        {allReferenceSchemas?.[index]?.formSchema?.schema !== undefined &&
+                            allReferenceSchemas?.[index]?.formSchema?.schema?.properties !== null &&
+                            allReferenceSchemas?.[index]?.formSchema?.schema?.properties !== undefined &&
+                            "referenceInformation" in allReferenceSchemas?.[index]?.formSchema?.schema?.properties && (
+                                <ApplicationFieldCard
+                                    object={allReferenceSchemas?.[index]?.formSchema?.schema?.properties?.referenceInformation}
+                                    basicForm={referenceForm}
+                                    stepPath={`referenceDetails.responses[${formIndex}].data`}
+                                    gridStyle={style.fieldGridStyle2}
+                                    baseKey={"referenceInformation"}
                                     collapsableQuestionCard={true}
                                     isPOD={true}
                                     referenceRadioShowLabel={true}

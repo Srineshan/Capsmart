@@ -375,7 +375,7 @@ const ImmunizationReview = ({ setIsReferenceReview, getActiveApplicationView }) 
                             </div>
                             <CommonDivider />
                             <CommonRadio
-                                isRow={false}
+                                isRow={true}
                                 value={immunizationStatus}
                                 onChange={(e) => setImmunizationStatus(e.target.value)}
                                 radioValue={['APPROVED', 'NOT_APPROVED']}

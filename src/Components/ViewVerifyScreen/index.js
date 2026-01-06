@@ -10909,7 +10909,7 @@ const NewActiveApplication = ({
                                             <CommonDivider />
                                           </div>
                                         </div>
-                                        <div className={`${style.gridGap1}  ${!reference?.reviewDetails?.referenceStatus ? style.continueDisabled : ''}`}>
+                                        <div className={`${style.gridGap1}  ${!reference?.responded ? style.continueDisabled : ''}`}>
                                           <div className={`${reference?.reviewDetails?.referenceStatus === 'REFERENCE_IS_FAVORABLE' ? style.greenDotStyle : reference?.reviewDetails?.referenceStatus === 'REFERENCE_PROVIDED_NOT_FAVORABLE' ? style.redDotStyle : reference?.reviewDetails?.referenceStatus === 'REFERENCE_IS_SATISFACTORY' ? style.yellowDotStyle : style.greyDotStyle} ${style.buttonCenter}`}></div>
                                           <div className={`${style.sideHeadingRefFrontStyle}`}>{reference?.reviewDetails?.referenceStatus ? `Marked As ${reference?.reviewDetails?.referenceStatus === 'REFERENCE_IS_FAVORABLE' ? 'Favourable' : reference?.reviewDetails?.referenceStatus === 'REFERENCE_PROVIDED_NOT_FAVORABLE' ? 'Not Favourable' : reference?.reviewDetails?.referenceStatus === 'REFERENCE_IS_SATISFACTORY' ? 'Satisfactory' : ''} By Dept. Head On ${reference?.reviewDetails?.esign?.signedDate ? reference?.reviewDetails?.esign?.signedDate : ''}` : 'To Be Verified By Dept. Head'}</div>
                                           <div>
@@ -10934,7 +10934,7 @@ const NewActiveApplication = ({
                                             <CommonDivider />
                                           </div>
                                         </div>
-                                        <div className={`${style.gridGap1} ${!reference?.reviewDetails?.referenceStatus ? style.continueDisabled : ''}`}>
+                                        <div className={`${style.gridGap1} ${!reference?.responded ? style.continueDisabled : ''}`}>
                                           <div className={`${reference?.reviewDetails?.referenceStatus === 'REFERENCE_IS_FAVORABLE' ? style.greenDotStyle : reference?.reviewDetails?.referenceStatus === 'REFERENCE_PROVIDED_NOT_FAVORABLE' ? style.redDotStyle : reference?.reviewDetails?.referenceStatus === 'REFERENCE_IS_SATISFACTORY' ? style.yellowDotStyle : style.greyDotStyle} ${style.buttonCenter}`}></div>
                                           <div className={`${style.sideHeadingRefFrontStyle}`} >{reference?.reviewDetails?.referenceStatus ? `Marked As ${reference?.reviewDetails?.referenceStatus === 'REFERENCE_IS_FAVORABLE' ? 'Favourable' : reference?.reviewDetails?.referenceStatus === 'REFERENCE_PROVIDED_NOT_FAVORABLE' ? 'Not Favourable' : reference?.reviewDetails?.referenceStatus === 'REFERENCE_IS_SATISFACTORY' ? 'Satisfactory' : ''} By Dept. Head On  ${reference?.reviewDetails?.esign?.signedDate ? reference?.reviewDetails?.esign?.signedDate : ''}` : 'To Be Verified By Dept. Head'}</div>
                                           <div>

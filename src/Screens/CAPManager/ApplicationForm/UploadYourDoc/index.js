@@ -830,11 +830,11 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                               value={skipReason?.[normalizeKey(data?.document?.shortName)] ? skipReason?.[normalizeKey(data?.document?.shortName)] : ''}
                               onChange={(e) => handleSkipReason(data?.document?.shortName, e.target.value)}
                               className={`${style.fullWidth} ${style.verticalAlignCenter}`}
-                              firstOptionLabel={'Select A Reason For Skipping This Step'}
-                              firstOptionValue={''}
-                              valueList={['Current Document Not Received', 'Replacement Document Requested']}
-                              labelList={['Current Document Not Received', 'Replacement Document Requested']}
-                              disabledList={['Current Document Not Received', 'Replacement Document Requested'].map(() => false)}
+                              // firstOptionLabel={'Select A Reason For Skipping This Step'}
+                              // firstOptionValue={''}
+                              valueList={['Current Document Not Available', 'Replacement Document Requested']}
+                              labelList={['Current Document Not Available', 'Replacement Document Requested']}
+                              disabledList={['Current Document Not Available', 'Replacement Document Requested'].map(() => false)}
                             />
                             {/* {data?.instruction} */}
                           </div>
