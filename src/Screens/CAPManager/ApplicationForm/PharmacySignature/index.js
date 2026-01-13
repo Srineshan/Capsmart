@@ -121,14 +121,14 @@ const PharmacySignature = ({
 
   const getFormSchema = async () => {
     const { data: form } = await GET(
-      `application-management-service/formSchema/${basicForm?.formSchemas?.[formIndex]?.id}`
+      `application-management-service/formSchema/${basicForm?.forms?.[formIndex]?.schemaId}`
     );
     setFormSchema(form)
   }
 
   const getUploadFormSchema = async () => {
     const { data: form } = await GET(
-      `application-management-service/formSchema/${basicForm?.formSchemas?.[formUploadIndex]?.id}`
+      `application-management-service/formSchema/${basicForm?.forms?.[formUploadIndex]?.schemaId}`
     );
     setUploadFormSchema(form?.schema)
   }

@@ -128,6 +128,7 @@ const NewActiveApplication = ({
   const [applicationId, setApplicationId] = useState(
     sessionStorage.getItem("applicationId")
   );
+  const leftColumnRef = useRef(null);
   const [form, setForm] = useState();
   const { step } = useParams();
   const contractStatus = sessionStorage.getItem("Selected Contract Status");
@@ -184,9 +185,9 @@ const NewActiveApplication = ({
   const [expand, setExpand] = useState({ status: false, index: 0 });
   const [expandStates, setExpandStates] = useState({
     section1: false,
-    section2: false,
+    section2: true,
     section3: true,
-    section4: true,
+    section4: false,
     section5: false,
     section6: false,
     section7: false,
@@ -239,7 +240,7 @@ const NewActiveApplication = ({
   const [logDetails, setLogDetails] = useState([]);
   const [statusStyle, setStatusStyle] = useState();
   const [showCurrentPrivilegesReappointment, setShowCurrentPrivilegesReappointment] = useState(false);
-  const [currentPrivilegesCategoryReappointment, setCurrentPrivilegesCategoryReappointment] = useState(false);
+  const [currentPrivilegesCategoryReappointment, setCurrentPrivilegesCategoryReappointment] = useState('');
   const [
     selectedAdditionalPrivilegeForDisplay,
     setSelectedAdditionalPrivilegeForDisplay,
@@ -271,6 +272,7 @@ const NewActiveApplication = ({
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [noteToDelete, setNoteToDelete] = useState(null);
   const [applicationImmunization, setApplicationImmunization] = useState();
+  const [activeSection, setActiveSection] = useState(null);
   const canadaData =
     sessionStorage.getItem("canadaData") !== "undefined"
       ? JSON.parse(sessionStorage.getItem("canadaData"))
@@ -417,6 +419,40 @@ const NewActiveApplication = ({
     //   setIsButtonDisabled(true);
     // }
   }, [workModeType, selectedTab, form]);
+
+  useEffect(() => {
+    console.log('section entered')
+    const sections = document.querySelectorAll(".section");
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          console.log('section entered', entry)
+          if (entry.isIntersecting) {
+            const { section, name } = entry.target.dataset;
+            console.log('section entered', entry, entry.target.dataset.section, section, name)
+            setActiveSection({
+              id: entry.target.dataset.section,
+              name: name
+            });
+            // setActiveSection(entry.target.dataset.section);
+          } else {
+            setActiveSection(null)
+          }
+        });
+      },
+      {
+        root: leftColumnRef.current,
+        threshold: 0.5,    // 50% visible
+      }
+    );
+
+    console.log('section entered')
+
+    sections.forEach((section) => observer.observe(section));
+
+    return () => observer.disconnect();
+  }, []);
 
 
   // const handleDateChange = (date, field) => {
@@ -575,7 +611,7 @@ const NewActiveApplication = ({
 
 
   useEffect(() => {
-    if (form?.forms?.[formIndex]?.data !== null) {
+    if (form?.forms?.[formIndex]?.data !== null || applicationType === "NEW") {
       setSelectedPrivilegeForDisplay(form?.privileges?.obligatedPrivileges);
       setSelectedAdditionalPrivilegeForDisplay(
         form?.privileges?.additionalPrivileges
@@ -589,7 +625,7 @@ const NewActiveApplication = ({
     }
   }, [form, formIndex]);
 
-  console.log("selectedPrivilegeForDisplay", selectedAdditionalPrivilegeForDisplay);
+  console.log("selectedPrivilegeForDisplay", selectedAdditionalPrivilegeForDisplay, form?.privileges?.obligatedPrivileges, selectedPrivilegeForDisplay);
 
   useEffect(() => {
     if (form?.completedWorkflows) {
@@ -1972,21 +2008,21 @@ const NewActiveApplication = ({
                 innerData?.isVerified === true
                   ? (
                     <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                      <Tooltip title={"Click to Revert Verification"} arrow>
+                      <Tooltip title={"Click to Revert Acceptance"} arrow>
                         <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
                           onClick={() => handleVerifyClickDocs(array, index)}
                         >
-                          Verified
+                          Accepted
                         </div>
                       </Tooltip>
                     </div>
                   ) : (
                     <div className={`${style.purpleButton} ${style.cursorPointer}`}>
-                      <Tooltip title={"Click to Verify"} arrow>
+                      <Tooltip title={"Click to Accept"} arrow>
                         <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
                           onClick={() => handleVerifyClickDocs(array, index)}
                         >
-                          Verify
+                          Accept
                         </div>
                       </Tooltip>
                     </div>
@@ -2460,52 +2496,60 @@ const NewActiveApplication = ({
               }`}</div>
 
             {selectedAdditionalPrivilegeForDisplay?.map((data) =>
-              data?.privilegeDetails?.corePrivileges?.privilegesByCategories?.map(
-                (categories, index) => (
-                  <>
-                    <div>
-                      <div className={style.categoryGrid}>
-                        <div className={style.itemLeft}>
-                          <strong>
-                            {categories?.category === null
-                              ? ""
-                              : categories?.category}
-                          </strong>
-                        </div>
-                      </div>
-                      <>
-                        {categories?.privileges?.map((privileges) => (
-                          <div className={style.privilegeCodeGrid}>
-                            <div className={style.itemLeft}>
-                              <strong>{privileges?.privilegeId || ""}</strong>
-                            </div>
-                            <div className={style.itemLeft}>
-                              {privileges?.title || ""}
-                            </div>
-                          </div>
-                        ))}
-                      </>
-                    </div>
-                    {categories?.subCategories?.map((subCategory, subIndex) => (
-                      <div className={style.marginLeft20}>
+              data?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ?
+                (
+                  <div
+                    className={` ${style.marginTop} ${style.descriptionStyle}`}
+                    dangerouslySetInnerHTML={{ __html: data?.descriptiveContent?.content }}
+                  />
+                )
+                :
+                data?.privilegeDetails?.corePrivileges?.privilegesByCategories?.map(
+                  (categories, index) => (
+                    <>
+                      <div>
                         <div className={style.categoryGrid}>
-                          <div className={style.itemLeft}><strong>{subCategory?.subCategory === null ? '' : subCategory?.subCategory}</strong></div>
+                          <div className={style.itemLeft}>
+                            <strong>
+                              {categories?.category === null
+                                ? ""
+                                : categories?.category}
+                            </strong>
+                          </div>
                         </div>
-                        <>{
-                          subCategory?.privileges?.map(privileges => (
+                        <>
+                          {categories?.privileges?.map((privileges) => (
                             <div className={style.privilegeCodeGrid}>
-                              <div className={style.itemLeft}><strong>{privileges?.privilegeId || ''}</strong></div>
-                              <div className={style.itemLeft}>{privileges?.title || ''}</div>
+                              <div className={style.itemLeft}>
+                                <strong>{privileges?.privilegeId || ""}</strong>
+                              </div>
+                              <div className={style.itemLeft}>
+                                {privileges?.title || ""}
+                              </div>
                             </div>
-
-                          ))
-                        }
+                          ))}
                         </>
                       </div>
-                    ))}
-                  </>
+                      {categories?.subCategories?.map((subCategory, subIndex) => (
+                        <div className={style.marginLeft20}>
+                          <div className={style.categoryGrid}>
+                            <div className={style.itemLeft}><strong>{subCategory?.subCategory === null ? '' : subCategory?.subCategory}</strong></div>
+                          </div>
+                          <>{
+                            subCategory?.privileges?.map(privileges => (
+                              <div className={style.privilegeCodeGrid}>
+                                <div className={style.itemLeft}><strong>{privileges?.privilegeId || ''}</strong></div>
+                                <div className={style.itemLeft}>{privileges?.title || ''}</div>
+                              </div>
+
+                            ))
+                          }
+                          </>
+                        </div>
+                      ))}
+                    </>
+                  )
                 )
-              )
             )}
             {selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges
               ?.privilegesByCategories?.[0]?.privileges?.length !== 0 &&
@@ -2856,44 +2900,53 @@ const NewActiveApplication = ({
             <div className={style.cardTitle}>{`${staffPrivilege?.filter(data => data?.id === selectedPrivilege)?.map(data => data?.privilegeSetTitle)[0] !== undefined ? staffPrivilege?.filter(data => data?.id === selectedPrivilege)?.map(data => data?.privilegeSetTitle)[0]?.toUpperCase() : ''}`}</div>
 
             {
-              selectedPrivilegeForDisplay?.map((data) => data?.privilegeDetails?.corePrivileges?.privilegesByCategories?.map((categories, index) => (
-                <>
-                  <div>
-                    <div className={style.categoryGrid}>
-                      <div className={style.itemLeft}><strong>{categories?.category === null ? '' : categories?.category}</strong></div>
-                    </div>
-                    <>{
-                      categories?.privileges?.map(privileges => (
-                        <div className={style.privilegeCodeGrid}>
-                          <div className={style.itemLeft}><strong>{privileges?.privilegeId || ''}</strong></div>
-                          <div className={style.itemLeft}>{privileges?.title || ''}</div>
+              selectedPrivilegeForDisplay?.map((data) =>
+                data?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ?
+                  (
+                    <div
+                      className={` ${style.marginTop} ${style.descriptionStyle}`}
+                      dangerouslySetInnerHTML={{ __html: data?.descriptiveContent?.content }}
+                    />
+                  )
+                  :
+                  data?.privilegeDetails?.corePrivileges?.privilegesByCategories?.map((categories, index) => (
+                    <>
+                      <div>
+                        <div className={style.categoryGrid}>
+                          <div className={style.itemLeft}><strong>{categories?.category === null ? '' : categories?.category}</strong></div>
                         </div>
+                        <>{
+                          categories?.privileges?.map(privileges => (
+                            <div className={style.privilegeCodeGrid}>
+                              <div className={style.itemLeft}><strong>{privileges?.privilegeId || ''}</strong></div>
+                              <div className={style.itemLeft}>{privileges?.title || ''}</div>
+                            </div>
 
-                      ))
-                    }
-                    </>
-                  </div>
-                  {categories?.subCategories?.map((subCategory, subIndex) => (
-                    <div className={style.marginLeft20}>
-                      <div className={style.categoryGrid}>
-                        <div className={style.itemLeft}><strong>{subCategory?.subCategory === null ? '' : subCategory?.subCategory}</strong></div>
+                          ))
+                        }
+                        </>
                       </div>
-                      <>{
-                        subCategory?.privileges?.map(privileges => (
-                          <div className={style.privilegeCodeGrid}>
-                            <div className={style.itemLeft}><strong>{privileges?.privilegeId || ''}</strong></div>
-                            <div className={style.itemLeft}>{privileges?.title || ''}</div>
+                      {categories?.subCategories?.map((subCategory, subIndex) => (
+                        <div className={style.marginLeft20}>
+                          <div className={style.categoryGrid}>
+                            <div className={style.itemLeft}><strong>{subCategory?.subCategory === null ? '' : subCategory?.subCategory}</strong></div>
                           </div>
+                          <>{
+                            subCategory?.privileges?.map(privileges => (
+                              <div className={style.privilegeCodeGrid}>
+                                <div className={style.itemLeft}><strong>{privileges?.privilegeId || ''}</strong></div>
+                                <div className={style.itemLeft}>{privileges?.title || ''}</div>
+                              </div>
 
-                        ))
-                      }
-                      </>
-                    </div>
-                  ))}
-                </>
-              )
+                            ))
+                          }
+                          </>
+                        </div>
+                      ))}
+                    </>
+                  )
 
-              )
+                  )
 
               )
             }
@@ -3051,7 +3104,7 @@ const NewActiveApplication = ({
       case "UploadYourDoc":
         console.log("UploadYourDoc Table Data:", form?.forms?.[formIndex]?.data?.table);
         return (
-          <>
+          <div>
             {form?.forms?.[formIndex]?.data?.table?.length !== 0 && (
               <TableTwo
                 tableHeaderValues={[
@@ -3075,7 +3128,7 @@ const NewActiveApplication = ({
                 isUploadYourDocTable={isUploadYourDoc}
               />
             )}
-          </>
+          </div>
         );
       case "CME":
         return (
@@ -3677,7 +3730,7 @@ const NewActiveApplication = ({
       case "References":
         console.log(allFormSchemas?.[index]?.formSchema?.schema);
         return (
-          <>
+          <div className="section" data-section={data?.id} data-name={data?.schemaCategory}>
             {allFormSchemas?.[index]?.formSchema?.schema !== undefined &&
               allFormSchemas?.[index]?.formSchema?.schema?.properties !== null &&
               allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined &&
@@ -3857,7 +3910,7 @@ const NewActiveApplication = ({
                 )
               )}
             </div>
-          </>
+          </div>
         );
       case "ProfessionalConduct":
         return (
@@ -3948,24 +4001,62 @@ const NewActiveApplication = ({
         return (
           <>
             <div className={style.padding}>
-              <div className={style.cardTextBoldStyle}>Selected Privileges</div>
+              <div className={style.cardTextBoldStyle}>Requested Privileges</div>
               {form?.privileges?.obligatedPrivileges?.map((data, index) => (
                 <div
-                  className={`${style.documentTextStyle} ${style.marginLeft} ${style.marginTop10}`}
+                  className={`${style.documentTextStyle} ${style.marginLeft} ${style.marginTop10} ${style.displayInRow}`}
                   key={index}
                 >
-                  <div className={`${style.privilegeTitleStyle} ${style.cursorPointer}`} onClick={() => { setShowCurrentPrivileges(true); handleChange(data?.id) }}>{data?.privilegeSetTitle}</div>
+                  <div className={`${style.privilegeTitleStyle} ${style.cursorPointer}`} onClick={() => { setShowCurrentPrivileges(true); handleChange(data?.id); setCurrentPrivilegesCategoryReappointment('Basic') }}>{data?.privilegeSetTitle}</div>
+                  <div className={style.twoCol}>
+                    {/* <div>
+                      <ESignature
+                        alternateSignature={data?.privilegeDetails?.corePrivileges?.esign !== null ? data?.privilegeDetails?.corePrivileges?.esign?.name : ""}
+                        encData={data?.privilegeDetails?.corePrivileges?.esign !== null ? data?.privilegeDetails?.corePrivileges?.esign?.esign : ""}
+                        showData={data?.privilegeDetails?.corePrivileges?.esign ? true : false}
+                        showDatais={true}
+                      />
+                    </div> */}
+                    <div className={`${style.date} ${style.marginLeft}`}>{`Signed By: ${data?.privilegeSpecificationType === 'DESCRIPTIVEDOCUMENT' ? data?.descriptiveContent?.esign?.name ? data?.descriptiveContent?.esign?.name : '' : data?.privilegeDetails?.corePrivileges?.esign !== null ? data?.privilegeDetails?.corePrivileges?.esign?.name : ""}`}</div>
+                    <div className={style.verticalAlignCenter}>
+                      <div className={style.displayInRow}>
+                        <div className={style.dateTitle}>Date: </div>
+                        <div className={`${style.date} ${style.marginLeft}`}>
+                          {data?.privilegeSpecificationType === 'DESCRIPTIVEDOCUMENT' ? data?.descriptiveContent?.esign?.signedDate ? data?.descriptiveContent?.esign?.signedDate : '' : data?.privilegeDetails?.corePrivileges?.esign?.signedDate}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               ))}
               {form?.privileges?.additionalPrivileges?.length !== 0 && (
-                <div className={`${style.cardTextBoldStyle} ${style.marginTop20}`}>Selected Additional Privileges</div>
+                <div className={`${style.cardTextBoldStyle} ${style.marginTop20}`}>Requested Additional Privileges</div>
               )}
               {form?.privileges?.additionalPrivileges?.map((data, index) => (
                 <div
-                  className={`${style.documentTextStyle} ${style.marginLeft} ${style.marginTop10}`}
+                  className={`${style.documentTextStyle} ${style.marginLeft} ${style.marginTop10} ${style.displayInRow}`}
                   key={index}
                 >
-                  <div className={`${style.privilegeTitleStyle} ${style.cursorPointer}`} onClick={() => { setShowCurrentPrivileges(true); handleChange(data?.id) }}>{data?.privilegeSetTitle}</div>
+                  <div className={`${style.privilegeTitleStyle} ${style.cursorPointer}`} onClick={() => { setShowCurrentPrivileges(true); handleChange(data?.id); setCurrentPrivilegesCategoryReappointment('Additional') }}>{data?.privilegeSetTitle}</div>
+                  <div className={style.twoCol}>
+                    {/* <div>
+                      <ESignature
+                        alternateSignature={data?.privilegeDetails?.corePrivileges?.esign !== null ? data?.privilegeDetails?.corePrivileges?.esign?.name : ""}
+                        encData={data?.privilegeDetails?.corePrivileges?.esign !== null ? data?.privilegeDetails?.corePrivileges?.esign?.esign : ""}
+                        showData={data?.privilegeDetails?.corePrivileges?.esign ? true : false}
+                        showDatais={true}
+                      />
+                    </div> */}
+                    <div className={`${style.date} ${style.marginLeft}`}>{`Signed By: ${data?.privilegeSpecificationType === 'DESCRIPTIVEDOCUMENT' ? data?.descriptiveContent?.esign?.name ? data?.descriptiveContent?.esign?.name : '' : data?.privilegeDetails?.corePrivileges?.esign !== null ? data?.privilegeDetails?.corePrivileges?.esign?.name : ""}`}</div>
+                    <div className={style.verticalAlignCenter}>
+                      <div className={style.displayInRow}>
+                        <div className={style.dateTitle}>Date: </div>
+                        <div className={`${style.date} ${style.marginLeft}`}>
+                          {data?.privilegeSpecificationType === 'DESCRIPTIVEDOCUMENT' ? data?.descriptiveContent?.esign?.signedDate ? data?.descriptiveContent?.esign?.signedDate : '' : data?.privilegeDetails?.corePrivileges?.esign?.signedDate}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
@@ -3974,7 +4065,7 @@ const NewActiveApplication = ({
       case "Immunization":
         return (
           // <></>
-          <>
+          <div className="section" data-section={data?.id} data-name={data?.schemaCategory}>
             <div className={`${style.cardTitle} ${style.marginTop}`}>{allFormSchemas?.[index]?.formSchema?.schema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Tuberculosis(TB)']?.label}</div>
             <div className={`${style.descriptionText} ${style.marginTop}`}>{allFormSchemas?.[index]?.formSchema?.schema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Tuberculosis(TB)']?.description}</div>
             {applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "TUBERCULIN")?.length !== 0 && (
@@ -4064,7 +4155,7 @@ const NewActiveApplication = ({
                 hidePagination={true}
               />
             )}
-          </>
+          </div>
         );
       default:
         console.log(form?.forms?.[index]?.uploadedFiles, 'uploadedFiles', data?.schemaCategory)
@@ -5447,6 +5538,7 @@ const NewActiveApplication = ({
         scrollbarWidth: "thin",
         scrollbarColor: "gray transparent",
       }}
+        ref={leftColumnRef}
       // className={style.calcHeight}
       >
 
@@ -5500,7 +5592,7 @@ const NewActiveApplication = ({
                 <>
                   <div>
                     {((selectedTab === "level-1" && (applicationType === "REAPPOINTMENT" || applicationType === "NEW"))) ? (
-                      <div className={style.grid5and2}>
+                      <div className={form?.payment?.receiptId ? style.grid5and2 : style.grid5and1}>
                         <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth}`}>
                           <div className={style.flex}>
                             {/* <div className={style.displayInRow}> */}
@@ -5615,19 +5707,21 @@ const NewActiveApplication = ({
                           </div> */}
                           </div>
                         </div>
-                        <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.statusCardHeight} ${style.displayInCol}`}>
-                          <div className={`${form?.payment?.paymentCompleted ? style.greenBigDotStyle : style.greyBigDotStyle} ${style.marginCenter}`}></div>
-                          <div className={style.greyDotTextStyle}>
-                            Application Payment Status
-                          </div>
-                          {applicationType !== "LOCUM" && (
-                            <div className={style.cursorPointer}> Transaction ID:{" "}
-                              <Tooltip title="Click to View Transaction Details" arrow>
-                                <span className={`${style.marginTop10} ${style.paymentIDStyle}`} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(form?.payment?.invoice) }}>{form?.payment?.receiptId || "-"}</span>
-                              </Tooltip>
+                        {form?.payment?.receiptId && (
+                          <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.statusCardHeight} ${style.displayInCol}`}>
+                            <div className={`${form?.payment?.paymentCompleted ? style.greenBigDotStyle : style.greyBigDotStyle} ${style.marginCenter}`}></div>
+                            <div className={style.greyDotTextStyle}>
+                              Application Payment Status
                             </div>
-                          )}
-                        </div>
+                            {applicationType !== "LOCUM" && (
+                              <div className={style.cursorPointer}> Transaction ID:{" "}
+                                <Tooltip title="Click to View Transaction Details" arrow>
+                                  <span className={`${style.marginTop10} ${style.paymentIDStyle}`} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(form?.payment?.invoice) }}>{form?.payment?.receiptId || "-"}</span>
+                                </Tooltip>
+                              </div>
+                            )}
+                          </div>
+                        )}
                         <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.statusCardHeight} ${style.displayInCol}`}>
                           <div className={`${statusStyle} ${style.marginCenter}`}></div>
                           <div className={style.greyDotTextStyle}>
@@ -6045,32 +6139,56 @@ const NewActiveApplication = ({
                                                 });
 
                                                 return (
-                                                  <div>
-                                                    {isMatch ? (
-                                                      <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                          Approved
-                                                        </div>
-                                                      </div>
-                                                    ) : (
-                                                      form?.forms?.[index]?.status !== "APPROVED" ? (
-                                                        <div className={`${style.purpleButton} ${style.cursorPointer}`}>
-                                                          <Tooltip title="Click to Approve this Step" arrow>
-                                                            <div
-                                                              className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                              onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
-                                                            >
-                                                              Approve
+                                                  <div key={form?.id}>
+                                                    <div className={`${style.flexEnd}`}>
+                                                      <div>
+                                                        {isMatch ? (
+                                                          <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                            <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                              Verified
                                                             </div>
-                                                          </Tooltip>
-                                                        </div>
-                                                      ) : (
-                                                        <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                          <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                            Approved
+                                                          </div>
+                                                        ) : (
+                                                          form?.forms?.[index]?.status !== "APPROVED" ? (
+                                                            <div className={`${style.purpleButton} ${style.cursorPointer}`}>
+                                                              <Tooltip title="Click to Verify this Step" arrow>
+                                                                <div
+                                                                  className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                                                  onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
+                                                                >
+                                                                  Verify
+                                                                </div>
+                                                              </Tooltip>
+                                                            </div>
+                                                          ) : (
+                                                            <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                              <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                                Verified
+                                                              </div>
+                                                            </div>
+                                                          )
+                                                        )}
+                                                      </div>
+                                                      {(
+                                                        <div className={`${style.whiteButton} ${style.cursorPointer}`} onClick={() => toggleDropdown(index)}>
+                                                          <div className={`${style.spaceEvenly}`}>
+                                                            <div className={`${style.buttonTextStyle} ${style.alignCenter}`}>
+                                                              RFC
+                                                            </div>
+                                                            {isOpenToggle[index] ? <KeyboardArrowUpOutlinedIcon /> : <KeyboardArrowDownOutlinedIcon />}
                                                           </div>
                                                         </div>
-                                                      )
+                                                      )}
+                                                    </div>
+                                                    {isOpenToggle[index] && (
+                                                      <div className={`${style.dropdownContainer}`}>
+                                                        <div className={`${style.dropdownItem}`}>Request for Clarification</div>
+                                                        <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`} onClick={() => {
+                                                          onClickDocumentClarificationRequestFunction(form?.forms?.[index], "APPLICANT");
+                                                        }}>From Applicant</div>
+                                                        {/* <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`}>From Internal Staff</div> */}
+                                                        {/* <div className={`${style.dropDownTextStyle} ${style.marginLeft30}`}>From Institution</div> */}
+                                                      </div>
                                                     )}
                                                   </div>
                                                 );
@@ -6080,7 +6198,7 @@ const NewActiveApplication = ({
                                         ) : (
                                           <div className={`${style.greenButton} ${style.cursorPointer}`}>
                                             <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                              Approved
+                                              Verified
                                             </div>
                                           </div>
                                         )}
@@ -6602,12 +6720,12 @@ const NewActiveApplication = ({
                                     <>
                                       {!form?.basicInformationStatus ? (
                                         <div className={`${style.purpleButton} ${style.cursorPointer} `}>
-                                          <Tooltip title="Click to Approve this Step" arrow>
-                                            <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`} onClick={() => handleVerify()}>Approve</div></Tooltip>
+                                          <Tooltip title="Click to Verify this Step" arrow>
+                                            <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`} onClick={() => handleVerify()}>Verify</div></Tooltip>
                                         </div>
                                       ) : (
                                         <div className={`${style.greenButton}  ${style.cursorPointer} `}>
-                                          <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>Approved</div>
+                                          <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>Verified</div>
                                         </div>
                                       )}
                                     </>
@@ -6703,25 +6821,25 @@ const NewActiveApplication = ({
                                                         {isMatch ? (
                                                           <div className={`${style.greenButton} ${style.cursorPointer}`}>
                                                             <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                              Approved
+                                                              Verified
                                                             </div>
                                                           </div>
                                                         ) : (
                                                           form?.forms?.[index]?.status !== "APPROVED" ? (
                                                             <div className={`${style.purpleButton} ${style.cursorPointer}`}>
-                                                              <Tooltip title="Click to Approve this Step" arrow>
+                                                              <Tooltip title="Click to Verify this Step" arrow>
                                                                 <div
                                                                   className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
                                                                   onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
                                                                 >
-                                                                  Approve
+                                                                  Verify
                                                                 </div>
                                                               </Tooltip>
                                                             </div>
                                                           ) : (
                                                             <div className={`${style.greenButton} ${style.cursorPointer}`}>
                                                               <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                                Approved
+                                                                Verified
                                                               </div>
                                                             </div>
                                                           )
@@ -6734,7 +6852,7 @@ const NewActiveApplication = ({
                                             ) : (
                                               <div className={`${style.greenButton} ${style.cursorPointer}`}>
                                                 <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                  Approved
+                                                  Verified
                                                 </div>
                                               </div>
                                             )}
@@ -6790,25 +6908,25 @@ const NewActiveApplication = ({
                                                         {isMatch ? (
                                                           <div className={`${style.greenButton} ${style.cursorPointer}`}>
                                                             <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                              Approved
+                                                              Verified
                                                             </div>
                                                           </div>
                                                         ) : (
                                                           form?.forms?.[index]?.status !== "APPROVED" ? (
                                                             <div className={`${style.purpleButton} ${style.cursorPointer}`}>
-                                                              <Tooltip title="Click to Approve this Step" arrow>
+                                                              <Tooltip title="Click to Verify this Step" arrow>
                                                                 <div
                                                                   className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
                                                                   onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
                                                                 >
-                                                                  Approve
+                                                                  Verify
                                                                 </div>
                                                               </Tooltip>
                                                             </div>
                                                           ) : (
                                                             <div className={`${style.greenButton} ${style.cursorPointer}`}>
                                                               <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                                Approved
+                                                                Verified
                                                               </div>
                                                             </div>
                                                           )
@@ -7225,7 +7343,7 @@ const NewActiveApplication = ({
                                         <div
                                           className={`${style.purpleButton} ${style.cursorPointer} `}
                                         >
-                                          <Tooltip title="Click to Approve this Step" arrow>
+                                          <Tooltip title="Click to Verify this Step" arrow>
                                             <div
                                               className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
                                               onClick={() => handleVerify()}
@@ -7501,7 +7619,7 @@ const NewActiveApplication = ({
                                                         ) : (
                                                           form?.forms?.[index]?.status !== "APPROVED" ? (
                                                             <div className={`${style.purpleButton} ${style.cursorPointer}`}>
-                                                              <Tooltip title="Click to Approve this Step" arrow>
+                                                              <Tooltip title="Click to Verify this Step" arrow>
                                                                 <div
                                                                   className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
                                                                   onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
@@ -7900,12 +8018,12 @@ const NewActiveApplication = ({
                                     <>
                                       {!form?.basicInformationStatus ? (
                                         <div className={`${style.purpleButton} ${style.cursorPointer} `}>
-                                          <Tooltip title="Click to Approve this Step" arrow>
-                                            <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`} onClick={() => handleVerify()}>Approve</div></Tooltip>
+                                          <Tooltip title="Click to Verify this Step" arrow>
+                                            <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`} onClick={() => handleVerify()}>Verify</div></Tooltip>
                                         </div>
                                       ) : (
                                         <div className={`${style.greenButton}  ${style.cursorPointer} `}>
-                                          <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>Approved</div>
+                                          <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>Verified</div>
                                         </div>
                                       )}
                                     </>
@@ -8025,25 +8143,25 @@ const NewActiveApplication = ({
                                                         {isMatch ? (
                                                           <div className={`${style.greenButton} ${style.cursorPointer}`}>
                                                             <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                              Approved
+                                                              Verified
                                                             </div>
                                                           </div>
                                                         ) : (
                                                           form?.forms?.[index]?.status !== "APPROVED" ? (
                                                             <div className={`${style.purpleButton} ${style.cursorPointer}`}>
-                                                              <Tooltip title="Click to Approve this Step" arrow>
+                                                              <Tooltip title="Click to Verify this Step" arrow>
                                                                 <div
                                                                   className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
                                                                   onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
                                                                 >
-                                                                  Approve
+                                                                  Verify
                                                                 </div>
                                                               </Tooltip>
                                                             </div>
                                                           ) : (
                                                             <div className={`${style.greenButton} ${style.cursorPointer}`}>
                                                               <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                                Approved
+                                                                Verified
                                                               </div>
                                                             </div>
                                                           )
@@ -9096,19 +9214,19 @@ const NewActiveApplication = ({
                       {/* <div> */}
                       <div className={`${style.twoColumnGrid}`}>
                         <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
-                          <Tooltip title={"Click to Save Your Progress"} arrow>
+                          <Tooltip title={"Click to Save & Close"} arrow>
                             <div
                               className={`${style.buttonTextStyle} ${style.alignCenter}`}
                               onClick={() => {
                                 onClose();
                               }}
                             >
-                              SAVE IN PROGRESS
+                              SAVE & CLOSE
                             </div>
                           </Tooltip>
                         </div>
                         <div
-                          className={`${style.buttonCardStyle} ${style.cursorPointer}`}
+                          className={`${style.buttonCardStyle} ${style.cursorPointer} ${form?.forms?.some(data => data?.status === "APPROVED") ? '' : style.disabled}`}
                         >
                           <Tooltip title={"Click to Reject"} arrow>
                             <div
@@ -9116,9 +9234,9 @@ const NewActiveApplication = ({
                               // onClick={() => {
                               //   setShowApplicationDeclineDialog(true);
                               // }}
-                              onClick={() => {
+                              onClick={form?.forms?.some(data => data?.status === "APPROVED") ? () => {
                                 setShowApplicationDeclineDialog(true);
-                              }}
+                              } : () => { }}
                             >
                               REJECT
                             </div>
@@ -9157,7 +9275,7 @@ const NewActiveApplication = ({
                           </Tooltip>
                         </div>
                       </div>
-                      {workModeType === 'Staff Manager' && selectedTab === 'level-1' && applicationType === "LOCUM" && (
+                      {workModeType === 'Staff Manager' && selectedTab === 'level-1' && (applicationType === "LOCUM" || applicationType === "NEW") && (
                         <div className={`${style.marginTop20}`}>
                           <div
                             className={`${style.bigButtonStyle1} ${form?.overrideStatus === "NA" ? style.cursorPointer : ""}`}
@@ -9180,18 +9298,18 @@ const NewActiveApplication = ({
                       )}
                     </div>
                   ) : ("")}
-                  {((workModeType === 'Chief Of Staff' && selectedTab === 'OverrideRequest' && applicationType === "LOCUM")) ? (
+                  {((workModeType === 'Chief Of Staff' && selectedTab === 'OverrideRequest' && (applicationType === "LOCUM" || applicationType === "NEW"))) ? (
                     <div className={`${style.fixedBottom} ${approvalwithoutnotesCommentsBox || approvalnotesCommentsBox || approvalnotesCommentsBoxDept || showApplicationDeclineDialog || notesCommentsBox || reappointmentChangesCommentsBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
                       <div className={`${style.twoColumnGrid}`}>
                         <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
-                          <Tooltip title={"Click to Save Your Progress"} arrow>
+                          <Tooltip title={"Click to Save & Close"} arrow>
                             <div
                               className={`${style.buttonTextStyle} ${style.alignCenter}`}
                               onClick={() => {
                                 onClose();
                               }}
                             >
-                              SAVE IN PROGRESS
+                              SAVE & CLOSE
                             </div>
                           </Tooltip>
                         </div>
@@ -9315,14 +9433,14 @@ const NewActiveApplication = ({
                       {/* <div className={`${style.twoColumnGrid}`}> */}
                       <div className={`${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer}`}>
                         <div className={`${style.marginLeft10} ${style.alignItem} ${style.yellowDotStyle}`} />
-                        <Tooltip title={"Click to Save your progress"} arrow>
+                        <Tooltip title={"Click to Save & Close"} arrow>
                           <div
                             className={`${style.buttonTextStyle} ${style.alignItem} ${style.marginLeft10}`}
                             onClick={() => {
                               onClose();
                             }}
                           >
-                            SAVE IN PROGRESS
+                            SAVE & CLOSE
                           </div>
                         </Tooltip>
                       </div>
@@ -9379,14 +9497,14 @@ const NewActiveApplication = ({
                       {/* <div className={`${style.twoColumnGrid}`}> */}
                       <div className={`${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer}`}>
                         <div className={`${style.marginLeft10} ${style.alignItem} ${style.yellowDotStyle}`} />
-                        <Tooltip title={"Click to Save your progress"} arrow>
+                        <Tooltip title={"Click to Save & Close"} arrow>
                           <div
                             className={`${style.buttonTextStyle} ${style.alignItem} ${style.marginLeft10}`}
                             onClick={() => {
                               onClose();
                             }}
                           >
-                            SAVE IN PROGRESS
+                            SAVE & CLOSE
                           </div>
                         </Tooltip>
                       </div>
@@ -9443,14 +9561,14 @@ const NewActiveApplication = ({
                       {/* <div className={`${style.twoColumnGrid}`}> */}
                       <div className={`${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer}`}>
                         <div className={`${style.marginLeft10} ${style.alignItem} ${style.yellowDotStyle}`} />
-                        <Tooltip title={"Click to Save your progress"} arrow>
+                        <Tooltip title={"Click to Save & Close"} arrow>
                           <div
                             className={`${style.buttonTextStyle} ${style.alignItem} ${style.marginLeft10}`}
                             onClick={() => {
                               onClose();
                             }}
                           >
-                            SAVE IN PROGRESS
+                            SAVE & CLOSE
                           </div>
                         </Tooltip>
                       </div>
@@ -10550,7 +10668,7 @@ const NewActiveApplication = ({
                               className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
                             >
                               <span className={`${style.tableHeaderHeadingTextStyle1}`}>
-                                RFCs & Doc Clarification
+                                Request For Clarification (RFC)
                               </span>
                               <div
                                 className={`${style.displayInRow} ${style.verticalAlignCenter}`}
@@ -10854,158 +10972,172 @@ const NewActiveApplication = ({
 
                         {applicationType === "NEW" && (
                           <>
-                            <div className={`${style.cardLeftStyle} ${style.marginTop20}`}>
-                              <div className={`${style.displayInRow}${style.marginTop20}`}>
-                                <div
-                                  className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
-                                >
-                                  <span className={`${style.tableHeaderHeadingTextStyle}`}>
-                                    Reference Feedback Status
-                                  </span>
+                            {activeSection?.name === 'References' && (
+                              <div className={`${style.cardLeftStyle} ${style.marginTop20} ${style.rightFixedColumn}`}>
+                                {/* <div className={`${style.cardLeftStyle} ${style.marginTop20}`}> */}
+                                <div className={`${style.displayInRow}${style.marginTop20}`}>
                                   <div
-                                    className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                                    className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
                                   >
+                                    <span className={`${style.tableHeaderHeadingTextStyle}`}>
+                                      Reference Feedback Status
+                                    </span>
                                     <div
-                                      className={`${style.marginLeft10} ${style.tableDataFontStyle1}`} onClick={() => toggleExpand("section2")}
+                                      className={`${style.displayInRow} ${style.verticalAlignCenter}`}
                                     >
-                                      {expandStates.section2 ? (
-                                        <Tooltip title="Collapse Section" arrow>
-                                          <RemoveIcon
-                                            sx={{
-                                              fontSize: 20,
-                                              color: "#94979A",
-                                              cursor: "pointer",
-                                            }}
-                                          />
-                                        </Tooltip>
-                                      ) : (
-                                        <Tooltip title="Expand Section" arrow>
-                                          <AddIcon
-                                            sx={{
-                                              fontSize: 20,
-                                              color: "#94979A",
-                                              cursor: "pointer",
-                                            }}
-                                          />
-                                        </Tooltip>
-                                      )}
+                                      <div
+                                        className={`${style.marginLeft10} ${style.tableDataFontStyle1}`} onClick={() => toggleExpand("section2")}
+                                      >
+                                        {expandStates.section2 ? (
+                                          <Tooltip title="Collapse Section" arrow>
+                                            <RemoveIcon
+                                              sx={{
+                                                fontSize: 20,
+                                                color: "#94979A",
+                                                cursor: "pointer",
+                                              }}
+                                            />
+                                          </Tooltip>
+                                        ) : (
+                                          <Tooltip title="Expand Section" arrow>
+                                            <AddIcon
+                                              sx={{
+                                                fontSize: 20,
+                                                color: "#94979A",
+                                                cursor: "pointer",
+                                              }}
+                                            />
+                                          </Tooltip>
+                                        )}
+                                      </div>
                                     </div>
                                   </div>
-                                </div>
-                                {expandStates.section2 && (
-                                  <>
-                                    {form?.references?.privilegeReference?.map((reference, index) => (
-                                      <div className={`${style.marginBottom20} ${style.referenceCardStyle}`}>
-                                        <div className={`${style.gridGap}`}>
-                                          <div className={`${reference?.responded ? style.greenDotStyle : style.greyDotStyle} ${style.buttonCenter}`}></div>
-                                          <div>
-                                            <div className={`${style.displayInRow} ${style.spaceBetweenOnly}`}>
-                                              <div>
-                                                <div className={`${style.sideHeadingFontStyle}`}>{`${reference?.firstName} ${reference?.lastName}`}</div>
-                                                <div className={`${style.sideHeadingRefFrontStyle}`}>{reference?.responded ? 'Reference Contact Responded' : 'Reference Contact Not Responded Yet'}</div>
+                                  {expandStates.section2 && (
+                                    <>
+                                      {form?.references?.privilegeReference?.map((reference, index) => (
+                                        <div className={`${style.marginBottom20} ${style.referenceCardStyle}`}>
+                                          <div className={`${style.gridGap}`}>
+                                            <div className={`${reference?.responded ? style.greenDotStyle : style.greyDotStyle} ${style.buttonCenter}`}></div>
+                                            <div>
+                                              <div className={`${style.displayInRow} ${style.spaceBetweenOnly}`}>
+                                                <div>
+                                                  <div className={`${style.sideHeadingFontStyle}`}>{`${reference?.firstName} ${reference?.lastName}`}</div>
+                                                  <div className={`${style.sideHeadingRefFrontStyle}`}>{reference?.responded ? 'Reference Contact Responded' : 'Reference Contact Not Responded Yet'}</div>
+                                                </div>
+                                                <div className={`${style.viewTextStyle} ${style.viewButton} ${style.alignItem} ${style.cursorPointer} ${reference?.responded ? style.continueDisabled : ''}`} onClick={reference?.responded ? () => { } : () => handleReferenceSend(reference?.rowId)}>Send</div>
                                               </div>
-                                              <div className={`${style.viewTextStyle} ${style.viewButton} ${style.alignItem} ${style.cursorPointer} ${reference?.responded ? style.continueDisabled : ''}`} onClick={reference?.responded ? () => { } : () => handleReferenceSend(reference?.rowId)}>Send</div>
                                             </div>
-                                            <CommonDivider />
                                           </div>
+                                          {reference?.responded && (
+                                            <>
+                                              <CommonDivider />
+                                              <div className={`${style.gridGap1}  ${!reference?.responded ? style.continueDisabled : ''}`}>
+                                                <div className={`${reference?.reviewDetails?.referenceStatus === 'REFERENCE_IS_FAVORABLE' ? style.greenDotStyle : reference?.reviewDetails?.referenceStatus === 'REFERENCE_PROVIDED_NOT_FAVORABLE' ? style.redDotStyle : reference?.reviewDetails?.referenceStatus === 'REFERENCE_IS_SATISFACTORY' ? style.yellowDotStyle : style.greyDotStyle} ${style.buttonCenter}`}></div>
+                                                <div className={`${style.sideHeadingRefFrontStyle}`}>{reference?.reviewDetails?.referenceStatus ? `Marked As ${reference?.reviewDetails?.referenceStatus === 'REFERENCE_IS_FAVORABLE' ? 'Favourable' : reference?.reviewDetails?.referenceStatus === 'REFERENCE_PROVIDED_NOT_FAVORABLE' ? 'Not Favourable' : reference?.reviewDetails?.referenceStatus === 'REFERENCE_IS_SATISFACTORY' ? 'Satisfactory' : ''} By Dept. Head On ${reference?.reviewDetails?.esign?.signedDate ? reference?.reviewDetails?.esign?.signedDate : ''}` : 'To Be Verified By Dept. Head'}</div>
+                                                <div>
+                                                  <div className={`${style.viewTextStyle} ${style.viewButton} ${workModeType !== 'Department Head' ? style.continueDisabled : style.cursorPointer}`} onClick={workModeType !== 'Department Head' ? () => { } : () => { setIsReferenceReview(true); sessionStorage.setItem('refId', reference?.rowId) }}>Review</div>
+                                                </div>
+                                              </div>
+                                            </>
+                                          )}
                                         </div>
-                                        <div className={`${style.gridGap1}  ${!reference?.responded ? style.continueDisabled : ''}`}>
-                                          <div className={`${reference?.reviewDetails?.referenceStatus === 'REFERENCE_IS_FAVORABLE' ? style.greenDotStyle : reference?.reviewDetails?.referenceStatus === 'REFERENCE_PROVIDED_NOT_FAVORABLE' ? style.redDotStyle : reference?.reviewDetails?.referenceStatus === 'REFERENCE_IS_SATISFACTORY' ? style.yellowDotStyle : style.greyDotStyle} ${style.buttonCenter}`}></div>
-                                          <div className={`${style.sideHeadingRefFrontStyle}`}>{reference?.reviewDetails?.referenceStatus ? `Marked As ${reference?.reviewDetails?.referenceStatus === 'REFERENCE_IS_FAVORABLE' ? 'Favourable' : reference?.reviewDetails?.referenceStatus === 'REFERENCE_PROVIDED_NOT_FAVORABLE' ? 'Not Favourable' : reference?.reviewDetails?.referenceStatus === 'REFERENCE_IS_SATISFACTORY' ? 'Satisfactory' : ''} By Dept. Head On ${reference?.reviewDetails?.esign?.signedDate ? reference?.reviewDetails?.esign?.signedDate : ''}` : 'To Be Verified By Dept. Head'}</div>
-                                          <div>
-                                            <div className={`${style.viewTextStyle} ${style.viewButton} ${workModeType !== 'Department Head' ? style.continueDisabled : style.cursorPointer}`} onClick={workModeType !== 'Department Head' ? () => { } : () => { setIsReferenceReview(true); sessionStorage.setItem('refId', reference?.rowId) }}>Review</div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    ))}
+                                      ))}
 
-                                    {form?.references?.reference?.map((reference, index) => (
-                                      <div className={`${style.marginBottom20} ${style.referenceCardStyle}`}>
-                                        <div className={`${style.gridGap}`}>
-                                          <div className={`${reference?.responded ? style.greenDotStyle : style.greyDotStyle} ${style.buttonCenter}`}></div>
-                                          <div>
-                                            <div className={`${style.displayInRow} ${style.spaceBetweenOnly}`}>
-                                              <div>
-                                                <div className={`${style.sideHeadingFontStyle}`}>{`${reference?.firstName} ${reference?.lastName}`}</div>
-                                                <div className={`${style.sideHeadingRefFrontStyle}`}>{reference?.responded ? 'Reference Contact Responded' : 'Reference Contact Not Responded Yet'}</div>
+                                      {form?.references?.reference?.map((reference, index) => (
+                                        <div className={`${style.marginBottom20} ${style.referenceCardStyle}`}>
+                                          <div className={`${style.gridGap}`}>
+                                            <div className={`${reference?.responded ? style.greenDotStyle : style.greyDotStyle} ${style.buttonCenter}`}></div>
+                                            <div>
+                                              <div className={`${style.displayInRow} ${style.spaceBetweenOnly}`}>
+                                                <div>
+                                                  <div className={`${style.sideHeadingFontStyle}`}>{`${reference?.firstName} ${reference?.lastName}`}</div>
+                                                  <div className={`${style.sideHeadingRefFrontStyle}`}>{reference?.responded ? 'Reference Contact Responded' : 'Reference Contact Not Responded Yet'}</div>
+                                                </div>
+                                                <div className={`${style.viewTextStyle} ${style.viewButton} ${style.alignItem} ${style.cursorPointer}  ${reference?.responded ? style.continueDisabled : ''}`} onClick={reference?.responded ? () => { } : () => handleReferenceSend(reference?.rowId)}>Send</div>
                                               </div>
-                                              <div className={`${style.viewTextStyle} ${style.viewButton} ${style.alignItem} ${style.cursorPointer}  ${reference?.responded ? style.continueDisabled : ''}`} onClick={reference?.responded ? () => { } : () => handleReferenceSend(reference?.rowId)}>Send</div>
                                             </div>
-                                            <CommonDivider />
                                           </div>
+                                          {reference?.responded && (
+                                            <>
+                                              <CommonDivider />
+                                              <div className={`${style.gridGap1} ${!reference?.responded ? style.continueDisabled : ''}`}>
+                                                <div className={`${reference?.reviewDetails?.referenceStatus === 'REFERENCE_IS_FAVORABLE' ? style.greenDotStyle : reference?.reviewDetails?.referenceStatus === 'REFERENCE_PROVIDED_NOT_FAVORABLE' ? style.redDotStyle : reference?.reviewDetails?.referenceStatus === 'REFERENCE_IS_SATISFACTORY' ? style.yellowDotStyle : style.greyDotStyle} ${style.buttonCenter}`}></div>
+                                                <div className={`${style.sideHeadingRefFrontStyle}`} >{reference?.reviewDetails?.referenceStatus ? `Marked As ${reference?.reviewDetails?.referenceStatus === 'REFERENCE_IS_FAVORABLE' ? 'Favourable' : reference?.reviewDetails?.referenceStatus === 'REFERENCE_PROVIDED_NOT_FAVORABLE' ? 'Not Favourable' : reference?.reviewDetails?.referenceStatus === 'REFERENCE_IS_SATISFACTORY' ? 'Satisfactory' : ''} By Dept. Head On  ${reference?.reviewDetails?.esign?.signedDate ? reference?.reviewDetails?.esign?.signedDate : ''}` : 'To Be Verified By Dept. Head'}</div>
+                                                <div>
+                                                  <div className={`${style.viewTextStyle} ${style.viewButton} ${workModeType === 'Department Head' ? style.continueDisabled : style.cursorPointer}`} onClick={workModeType === 'Department Head' ? () => { } : () => { setIsReferenceReview(true); sessionStorage.setItem('refId', reference?.rowId) }}>Review</div>
+                                                </div>
+                                              </div>
+                                            </>
+                                          )}
                                         </div>
-                                        <div className={`${style.gridGap1} ${!reference?.responded ? style.continueDisabled : ''}`}>
-                                          <div className={`${reference?.reviewDetails?.referenceStatus === 'REFERENCE_IS_FAVORABLE' ? style.greenDotStyle : reference?.reviewDetails?.referenceStatus === 'REFERENCE_PROVIDED_NOT_FAVORABLE' ? style.redDotStyle : reference?.reviewDetails?.referenceStatus === 'REFERENCE_IS_SATISFACTORY' ? style.yellowDotStyle : style.greyDotStyle} ${style.buttonCenter}`}></div>
-                                          <div className={`${style.sideHeadingRefFrontStyle}`} >{reference?.reviewDetails?.referenceStatus ? `Marked As ${reference?.reviewDetails?.referenceStatus === 'REFERENCE_IS_FAVORABLE' ? 'Favourable' : reference?.reviewDetails?.referenceStatus === 'REFERENCE_PROVIDED_NOT_FAVORABLE' ? 'Not Favourable' : reference?.reviewDetails?.referenceStatus === 'REFERENCE_IS_SATISFACTORY' ? 'Satisfactory' : ''} By Dept. Head On  ${reference?.reviewDetails?.esign?.signedDate ? reference?.reviewDetails?.esign?.signedDate : ''}` : 'To Be Verified By Dept. Head'}</div>
-                                          <div>
-                                            <div className={`${style.viewTextStyle} ${style.viewButton} ${workModeType === 'Department Head' ? style.continueDisabled : style.cursorPointer}`} onClick={workModeType === 'Department Head' ? () => { } : () => { setIsReferenceReview(true); sessionStorage.setItem('refId', reference?.rowId) }}>Review</div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    ))}
-                                  </>
-                                )}
+                                      ))}
+                                    </>
+                                  )}
+                                </div>
+                                <div className={style.marginBottom20}></div>
                               </div>
-                              <div className={style.marginBottom20}></div>
-                            </div>
-                            <div className={`${style.cardLeftStyle} ${style.marginTop20}`}>
-                              <div className={`${style.displayInRow}${style.marginTop20}`}>
-                                <div
-                                  className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
-                                >
-                                  <span className={`${style.tableHeaderHeadingTextStyle}`}>
-                                    Immunization History Review
-                                  </span>
+                            )}
+                            {activeSection?.name === "Immunization" && (
+                              <div className={`${style.cardLeftStyle} ${style.marginTop20} ${style.rightFixedColumn}`}>
+                                {/* <div className={`${style.cardLeftStyle} ${style.marginTop20}`}> */}
+                                <div className={`${style.displayInRow}${style.marginTop20}`}>
                                   <div
-                                    className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                                    className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
                                   >
+                                    <span className={`${style.tableHeaderHeadingTextStyle}`}>
+                                      Immunization History Review
+                                    </span>
                                     <div
-                                      className={`${style.marginLeft10} ${style.tableDataFontStyle1}`} onClick={() => toggleExpand("section3")}
+                                      className={`${style.displayInRow} ${style.verticalAlignCenter}`}
                                     >
-                                      {expandStates.section3 ? (
-                                        <Tooltip title="Collapse Section" arrow>
-                                          <RemoveIcon
-                                            sx={{
-                                              fontSize: 20,
-                                              color: "#94979A",
-                                              cursor: "pointer",
-                                            }}
-                                          />
-                                        </Tooltip>
-                                      ) : (
-                                        <Tooltip title="Expand Section" arrow>
-                                          <AddIcon
-                                            sx={{
-                                              fontSize: 20,
-                                              color: "#94979A",
-                                              cursor: "pointer",
-                                            }}
-                                          />
-                                        </Tooltip>
-                                      )}
+                                      <div
+                                        className={`${style.marginLeft10} ${style.tableDataFontStyle1}`} onClick={() => toggleExpand("section3")}
+                                      >
+                                        {expandStates.section3 ? (
+                                          <Tooltip title="Collapse Section" arrow>
+                                            <RemoveIcon
+                                              sx={{
+                                                fontSize: 20,
+                                                color: "#94979A",
+                                                cursor: "pointer",
+                                              }}
+                                            />
+                                          </Tooltip>
+                                        ) : (
+                                          <Tooltip title="Expand Section" arrow>
+                                            <AddIcon
+                                              sx={{
+                                                fontSize: 20,
+                                                color: "#94979A",
+                                                cursor: "pointer",
+                                              }}
+                                            />
+                                          </Tooltip>
+                                        )}
+                                      </div>
                                     </div>
                                   </div>
-                                </div>
-                                {expandStates.section3 && (
-                                  <>
-                                    <div className={`${style.marginBottom20} ${style.referenceCardStyle}`}>
+                                  {expandStates.section3 && (
+                                    <>
+                                      <div className={`${style.marginBottom20} ${style.referenceCardStyle}`}>
 
-                                      <div className={`${style.gridGap}`}>
-                                        <div className={`${applicationImmunization?.approvalDetails ? style.greenDotStyle : style.greyDotStyle} ${style.buttonCenter}`}></div>
-                                        <div className={`${style.displayInRow} ${style.spaceBetweenOnly}`}>
-                                          <div>
-                                            <div className={`${style.sideHeadingFontStyle}`}>Immunization History</div>
-                                            <div className={`${style.sideHeadingRefFrontStyle}`}>{applicationImmunization?.approvalDetails ? `Approved By Safety & Wellness On ${applicationImmunization?.approvalDetails?.esignature?.signedDate}` : 'Immunization History Not Verified Yet'}</div>
+                                        <div className={`${style.gridGap}`}>
+                                          <div className={`${applicationImmunization?.approvalDetails ? style.greenDotStyle : style.greyDotStyle} ${style.buttonCenter}`}></div>
+                                          <div className={`${style.displayInRow} ${style.spaceBetweenOnly}`}>
+                                            <div>
+                                              <div className={`${style.sideHeadingFontStyle}`}>Immunization History</div>
+                                              <div className={`${style.sideHeadingRefFrontStyle}`}>{applicationImmunization?.approvalDetails ? `Approved By Safety & Wellness On ${applicationImmunization?.approvalDetails?.esignature?.signedDate}` : 'Immunization History Not Verified Yet'}</div>
+                                            </div>
+                                            <div className={`${style.viewTextStyle} ${style.viewButton} ${style.alignItem} ${style.cursorPointer}  ${applicationImmunization?.approvalDetails ? style.continueDisabled : ''}`} onClick={applicationImmunization?.approvalDetails ? () => { } : () => handleImmunizationSend(applicationImmunization?.task?.id)}>Send</div>
                                           </div>
-                                          <div className={`${style.viewTextStyle} ${style.viewButton} ${style.alignItem} ${style.cursorPointer}  ${applicationImmunization?.approvalDetails ? style.continueDisabled : ''}`} onClick={applicationImmunization?.approvalDetails ? () => { } : () => handleImmunizationSend(applicationImmunization?.task?.id)}>Send</div>
                                         </div>
                                       </div>
-                                    </div>
-                                  </>
-                                )}
+                                    </>
+                                  )}
+                                </div>
+                                <div className={style.marginBottom20}></div>
                               </div>
-                              <div className={style.marginBottom20}></div>
-                            </div>
+                            )}
                           </>
                         )}
                       </>

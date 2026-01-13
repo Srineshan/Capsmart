@@ -37,7 +37,7 @@ import { SuccessToaster2 } from '../../utils/toaster';
 import { corsUrl } from "../../utils/formatting";
 import { Download } from "@mui/icons-material";
 
-const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFileIndex, setSelectedFileIndex, selectedRowTableName, selectedFormId, form, setForm, handleStepsVerify, setHasVerificationAttempted, getPreApplicationForReplace,showViewOnly }) => {
+const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFileIndex, setSelectedFileIndex, selectedRowTableName, selectedFormId, form, setForm, handleStepsVerify, setHasVerificationAttempted, getPreApplicationForReplace, showViewOnly }) => {
     const [isContinue, setIsContinue] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
     const [isPrintClicked, setIsPrintClicked] = useState(false);
@@ -547,19 +547,19 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                 }
 
                 setHasVerificationAttempted(true)
-               // Determine toaster message
-               if (file?.isVerified) {
-                SuccessToaster2(`${file?.documentType} Document Verification Reverted Successfully`);
-            } else {
-                SuccessToaster2(
-                    documentStatus === "REJECT_AND_REPLACE_DOCUMENT"
-                        ? `${file?.documentType} Document Rejected & Replaced Successfully`
-                        : documentStatus === "REJECT_DOCUMENT"
-                        ? `${file?.documentType} Document Rejected Successfully`
-                        : `${file?.documentType} Document Accepted Successfully`
-                );
-            }
-            
+                // Determine toaster message
+                if (file?.isVerified) {
+                    SuccessToaster2(`${file?.documentType} Document Verification Reverted Successfully`);
+                } else {
+                    SuccessToaster2(
+                        documentStatus === "REJECT_AND_REPLACE_DOCUMENT"
+                            ? `${file?.documentType} Document Rejected & Replaced Successfully`
+                            : documentStatus === "REJECT_DOCUMENT"
+                                ? `${file?.documentType} Document Rejected Successfully`
+                                : `${file?.documentType} Document Accepted Successfully`
+                    );
+                }
+
 
             })
             .catch((error) => {
@@ -609,12 +609,12 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                     </Tooltip>
                                 </div>
                                 <Tooltip title="Click to Close" arrow >
-                                <img
-                                    src={CrossPink}
-                                    alt="cross"
-                                    className={`${style.crossStyle} ${style.cursorPointer}`}
-                                    onClick={() => { getIsOpen(false) }}
-                                />
+                                    <img
+                                        src={CrossPink}
+                                        alt="cross"
+                                        className={`${style.crossStyle} ${style.cursorPointer}`}
+                                        onClick={() => { getIsOpen(false) }}
+                                    />
                                 </Tooltip>
                             </div>
                         </div>
@@ -622,7 +622,7 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                             <div className={`${style.textStyle}`}>You are required to verify the {fileArray?.length} associated Documents that are part of this application </div>
                         )}
                         <div className={` ${style.spaceBetween} ${style.centerALign} ${style.titleBackgroundColorStyle} ${style.marginTop}`}>
-                            <div className={`${style.heading}`}>{file?.documentType}</div>
+                            <div className={`${style.heading} ${!file?.isVerified ? style.redText : ''}`}>{file?.documentType}</div>
                             <div className={`${style.spaceBetween} ${style.verticalAlignCenter}`}>
                                 {/* {file?.isVerified ? (
                                     <div></div>
@@ -650,7 +650,7 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                         <img src={selectedFileIndex === 0 ? ArrowDisabledLeft : ArrowDefaultLeft} className={`${style.icon} ${style.defaultImg}`} /> */}
                                     </div>
                                 </div>
-                                <div className={`${style.heading} ${style.marginLeft10}`}>Document {selectedFileIndex + 1} of {fileArray.length}</div>
+                                <div className={`${style.heading} ${style.marginLeft10} ${!file?.isVerified ? style.redText : ''}`}>Document {selectedFileIndex + 1} of {fileArray.length}</div>
                                 <div
                                     className={` ${selectedFileIndex === fileArray?.length - 1 ? style.cursorNotAllowed : style.cursorPointer} ${style.marginLeft10}`}
                                     onClick={handleNext}
@@ -736,21 +736,22 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                     <div className={style.spaceBetween}>
                                         <div className={`${style.heading} ${style.marginBottom}`}>Current Document</div>
                                         {showViewOnly !== true && (
-                                        <Tooltip title="Click to Modify Details" arrow>
-                                            <ModeEditOutlinedIcon sx={{ color: "#06617A" }} className={style.cursorPointer} onClick={() => setShowFileWithFields(true)} />
-                                        </Tooltip>
+                                            <Tooltip title="Click to Modify Details" arrow>
+                                                <ModeEditOutlinedIcon sx={{ color: "#06617A" }} className={style.cursorPointer} onClick={() => setShowFileWithFields(true)} />
+                                            </Tooltip>
                                         )}
                                     </div>
                                     {(form?.documents?.documentDetails?.filter(data => data?.rowId === file?.rowId)?.[0]?.notesDetails?.length !== 0 && form?.documents?.documentDetails?.filter(data => data?.rowId === file?.rowId)?.[0]?.notesDetails?.map(item => item.notes?.notes)?.filter(note => note)?.length !== 0) && form?.documents?.documentDetails?.filter(data => data?.rowId === file?.rowId)?.[0]?.notesDetails !== undefined && (
                                         <div>
-                                            <div className={`${style.lableStyle} ${style.marginTop10}`}>Reason for Replacing / Editing Document by MSO</div>
+                                            <div className={`${style.lableStyle} ${style.marginTop10}`}>Reason for Replacing / Editing Document By MSO</div>
                                             <div className={style.dividerStyle}></div>
                                             {form?.documents?.documentDetails?.filter(data => data?.rowId === file?.rowId)?.[0]?.notesDetails?.filter(item => item.notes?.notes)?.map(item => ({
+                                                user: `${item?.user?.name?.firstName} ${item?.user?.name?.lastName}`,
                                                 note: item.notes.notes,
-                                                time: new Date(item.createdDate).toLocaleString()
+                                                time: format(new Date(item.createdDate), 'MMM dd, yyyy HH:mm')
                                             }))?.map(data => (
                                                 <div>
-                                                    <div className={`${style.notesAlignment} ${style.marginTop10} ${style.lableStyle}`}>{`${data?.time}`}</div>
+                                                    <div className={`${style.notesAlignment} ${style.marginTop10} ${style.lableStyle}`}>{`${data?.time} - ${data?.user}`}</div>
                                                     <div
                                                         className={`${style.notesAlignment} ${style.marginTop10} ${style.lableStyle}`}
                                                         dangerouslySetInnerHTML={{ __html: data?.note }}
@@ -826,14 +827,14 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                                         }}
                                                     >
                                                         <div className={`${style.buttonGreyTextStyle} ${style.alignCenter} ${style.cursorPointer}`}>
-                                                            VERIFIED
+                                                            ACCEPTED
                                                         </div>
                                                     </div>
                                                 </Tooltip>) : (
                                                 <Tooltip arrow title={"Accept Document"}>
                                                     <div
                                                         className={`${style.purpleButtonVerify}`}
-                                                            onClick={() => {
+                                                        onClick={() => {
                                                             setDocumentStatus("ACCEPT_DOCUMENT");
                                                             handleDocVerify();
                                                             if (selectedFileIndex === fileArray?.length - 1) {
@@ -858,19 +859,21 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                         <div
                                             className={`${style.greenButtonVerify} ${style.marginTop30}`}
                                         >
-                                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                        <LockOutlinedIcon sx={{
-                                            fontSize: 20,
-                                            color: "#ffffff",
-                                            marginRight: "10px",
-                                            }} />  VERIFIED 
-                                        </div>
+                                            <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                <LockOutlinedIcon sx={{
+                                                    fontSize: 20,
+                                                    color: "#ffffff",
+                                                    marginRight: "10px",
+                                                }} />  ACCEPTED
+                                            </div>
                                         </div>
                                     )}
                                     {documentStatus === "REJECT_DOCUMENT" && (
                                         <>
+                                            <CommonDivider />
                                             <div className={style.marginTop}>
-                                                <div className={style.heading}>Request For Required Document</div>
+                                                <div className={style.subHeading}>Document Rejected</div>
+                                                <div className={style.heading}>Request For Proper Document</div>
                                                 <div className={` ${style.marginTop10}`}>
                                                     <CommonSelectField
                                                         value={rejectClarificationType}
@@ -878,9 +881,9 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                                         className={style.documentStatusWidth}
                                                         // firstOptionLabel={"Select Clarification Type"}
                                                         // firstOptionValue={""}
-                                                        label={'Clarification Type*'}
+                                                        label={'Request Type*'}
                                                         valueList={['REQUEST_ORIGINAL_DOCUMENT', 'REQUEST_UPDATED_DOCUMENT']}
-                                                        labelList={['Request Original Document', 'Request Updated Document']}
+                                                        labelList={['Request For Original Document', 'Request For Updated Document']}
                                                         disabledList={['Request Original Document', 'Request Updated Document']?.map(data => false)}
                                                     />
                                                 </div>
@@ -889,14 +892,14 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                                         className={`${style.commentsNotesFontStyle} ${style.notesBorderStyle} ${style.fullWidth}`}
                                                         value={rejectSubject}
                                                         onChange={(e) => setRejectSubject(e.target.value)}
-                                                        placeholder="Enter Clarification Subject Here"
-                                                        label={"Clarification Required Subject*"}
+                                                        placeholder="Enter Request Email Subject Here"
+                                                        label={"Request Email Subject*"}
                                                     />
                                                 </div>
 
                                             </div>
                                             <div className={style.marginTop10}>
-                                                <div className={style.lableStyle}>Specify the reason why this document is being rejected*</div>
+                                                <div className={style.lableStyle}>Specify the reason why this document is being Rejected*</div>
                                                 <div className={style.marginTop10}>
                                                     <CKEditor
                                                         editor={ClassicEditor}
@@ -943,13 +946,13 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                                 <div
                                                     className={`${style.purpleButtonVerify} ${style.marginTop} ${(rejectClarificationType === "" || rejectSubject === "" || rejectClarification === "") ? style.disabledButton : style.cursorPointer}`}
                                                     onClick={async () => {
-                                                        await handleDocVerify(); 
-                                                        
-                                                        if (selectedFileIndex === fileArray?.length - 1) {
-                                                            setTimeout(() => getIsOpen(false), 500);
-                                                        } else {
-                                                            setTimeout(() => handleNext(), 1000);
-                                                        }
+                                                        await handleDocVerify();
+
+                                                        // if (selectedFileIndex === fileArray?.length - 1) {
+                                                        setTimeout(() => getIsOpen(false), 500);
+                                                        // } else {
+                                                        //     setTimeout(() => handleNext(), 1000);
+                                                        // }
                                                     }}
                                                 >
                                                     <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
@@ -962,7 +965,7 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                     {documentStatus === "REJECT_AND_REPLACE_DOCUMENT" && (
                                         <>
                                             <div className={style.marginTop}>
-                                                <div className={style.lableStyle}>Reason for Replacing Document that could not be identified (Mandatory)</div>
+                                                <div className={style.lableStyle}>Reason for MSO replacing uploading document*</div>
                                                 <CKEditor
                                                     editor={ClassicEditor}
                                                     data={reasonForReplacingDocument}
@@ -1002,33 +1005,31 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                                         autoGrow: false,
                                                     }}
                                                 />
-                                                {reasonForReplacingDocument !== "" && (
-                                                    <div className={`${style.marginTop10} `}>
-                                                        <Tooltip arrow title="Add the reason to enable document replace" followCursor
-                                                            {...(reasonForReplacingDocument !== "" && { open: false })}>
-                                                            <CommonDropZone
-                                                                title={`Replace ${file?.documentType} Document`}
-                                                                description={
-                                                                    "Upload your files or drag & drop from your document cabinet"
-                                                                }
-                                                                changeHandler={changeHandler}
-                                                                files={[]}
-                                                            />
-                                                        </Tooltip>
-                                                    </div>
-                                                )}
+                                                <div className={`${style.marginTop10} ${reasonForReplacingDocument === "" ? style.disabledButton : ''} `}>
+                                                    <Tooltip arrow title={reasonForReplacingDocument === "" ? "Add the reason to enable document replace" : ''} followCursor>
+                                                        <CommonDropZone
+                                                            isDisabled={reasonForReplacingDocument === "" ? true : false}
+                                                            title={replaceRowId === "" ? `Replace ${file?.documentType} Document` : `${file?.documentType} Document Replaced Successfully`}
+                                                            description={
+                                                                "Upload your files or drag & drop from your document cabinet"
+                                                            }
+                                                            changeHandler={reasonForReplacingDocument === "" ? () => { } : changeHandler}
+                                                            files={[]}
+                                                        />
+                                                    </Tooltip>
+                                                </div>
                                             </div>
-                                            <Tooltip arrow title={replaceRowId === "" ? "Document replacement is pending. Please verify" : "Click to Verify document and continue"}>
+                                            <Tooltip arrow title={replaceRowId === "" ? "Document replacement is pending. Please replace" : "Click to Accept document and continue"}>
                                                 <div
                                                     className={`${style.purpleButtonVerify} ${style.marginTop} ${replaceRowId === "" ? style.disabledButton : style.cursorPointer}`}
                                                     onClick={async () => {
                                                         if (replaceRowId !== "") {
-                                                           await handleDocVerify();
+                                                            await handleDocVerify();
                                                             if (selectedFileIndex === fileArray?.length - 1) {
                                                                 setTimeout(() => getIsOpen(false), 500);
                                                             } else {
                                                                 if (documentStatus === "REJECT_AND_REPLACE_DOCUMENT") {
-                                                                    setTimeout(() => getIsOpen(false), 500);
+                                                                    setTimeout(() => handleNext(), 1000);
                                                                 } else {
                                                                     setTimeout(() => handleNext(), 1000);
                                                                 }

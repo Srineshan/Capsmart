@@ -43,18 +43,18 @@ const ReferenceQuestionnaireLanding = ({ getIsOpen, days, applicantName, formId,
             <img src={logo} alt="Hospital Logo" className={`${style.logo}`} />
             <img src={'https://capmanager-dev.s3.us-east-1.amazonaws.com/CAP_Manager.png'} alt="CAPManager Logo" className={`${style.CAPSmartLogo}`} />
           </div>
-          <div className={style.welcomeText}>Welcome to {title ? title : ''}!</div>
+          <div className={style.welcomeText}>Thank you for your time</div>
           <div className={`${style.welcomeSubText} ${style.marginTop10}`}>
-            {`You have a Professional Reference Questionnaire to complete for ${applicantName}`}
+            {`You have been invited to complete a Professional Reference Questionnaire for ${applicantName}.`}
           </div>
           <div className={`${style.descriptionStyle} ${style.marginTop}`}>
-            Your name and contact was provided by the applicant that is applying for a staff position at  {title ? title : ''}.
+            Your name and contact was provided by the applicant, who is currently applying for a staff position at  {title ? title : ''}.
           </div>
           <div className={`${style.descriptionStyle} ${style.marginTop}`}>
-            {title ? title : ''} uses an automated credentialing & privileging software that digitizes the reference questionnaire completion workflow. This questionnaire should take you just a few minutes to complete.
+            {title ? title : ''} uses CAPManager, an automated credentialing & privileging system, to securely manage a paperless reference verification process.
           </div>
           <div className={`${style.descriptionStyle} ${style.marginTop}`}>
-            We would greatly appreciate if you could complete the reference check for the applicant.
+            The questionnaire should take only a few minutes to complete. We would greatly appreciate your assistance in providing a professional reference for the applicant.
           </div>
           <div className={style.alignCenter}>
             <div
@@ -66,14 +66,17 @@ const ReferenceQuestionnaireLanding = ({ getIsOpen, days, applicantName, formId,
               CONTINUE
             </div>
           </div>
+          <div className={`${style.authorizationCard} ${style.marginTop} ${style.cursorPointer} ${style.authorizationText}`}>
+            The applicant's <strong> Authorization for Release of Information Form </strong> is available for you to view. (Click here)
+          </div>
         </div>
         <div
           className={`${style.daysToCompleteCard} ${style.marginTop} ${style.displayInRow} ${style.alignCenter}`}
         >
           <div className={`${style.verticalAlignCenter} ${style.alignCenter}`}>
-            <div className={style.textStyle}>{"YOU HAVE"}</div>
-            <div className={style.daysCountStyle}>{days || 30}</div>
-            <div className={`${style.textStyle}`}>{"DAYS TO COMPLETE"}</div>
+            <div className={style.textStyle}>{"FOR SECURITY PURPOSES THIS LINK WILL EXPIRE IN"}</div>
+            <div className={style.daysCountStyle}>{days || 7}</div>
+            <div className={`${style.textStyle}`}>{"DAYS"}</div>
           </div>
         </div>
       </div>

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import Cookie from 'universal-cookie';
 import style from './index.module.scss';
+import PoweredHapiCare from './../../../images/PoweredHapiCare.png';
+import CAPManagerApplication from './../../../images/CAPManagerApplication.png';
 import { useNavigate, useParams } from 'react-router-dom';
 import ReferenceQuestionnaireLanding from '../../../Components/ReferenceQuestionnaireLanding';
 import { GET, PUT } from '../../dataSaver';
@@ -18,6 +20,7 @@ import VisionMissionAndValues from './VisionMissionAndValues';
 import SummaryRecommendation from './SummaryRecommendation';
 import { ErrorToaster2 } from '../../../utils/toaster';
 import ApplicationSubmitDialog from '../../../Components/ApplicationSubmitDialog';
+import { format } from 'date-fns';
 
 const ReferenceQuestionnaire = () => {
     const navigate = useNavigate()
@@ -170,8 +173,8 @@ const ReferenceQuestionnaire = () => {
                                             <div className={style.applicantInfoGrid}>
                                                 <div className={style.descriptionMild}>Department Head:</div>
                                                 <div>
-                                                    <div className={style.descriptionMild}>{`${deptHead?.name?.firstName} ${deptHead?.name?.lastName}`}</div>
-                                                    <div className={style.descriptionMild}>{`${`${deptHead?.email?.officialEmail} `} | ${`${deptHead?.communication?.countryCode} ${deptHead?.communication?.mobileNumber}`}`}</div>
+                                                    <div className={style.descriptionMild}>{`${deptHead?.name?.firstName || ''} ${deptHead?.name?.lastName || ''}`}</div>
+                                                    <div className={style.descriptionMild}>{`${`${deptHead?.email?.officialEmail || ''} `} ${deptHead?.email?.officialEmail ? `|` : ''} ${`${deptHead?.communication?.countryCode || ''} ${deptHead?.communication?.mobileNumber || ''}`}`}</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -206,14 +209,14 @@ const ReferenceQuestionnaire = () => {
                                         email={"{Email}"}
                                     />
                                     <div className={`${style.stickyContainer}`}>
-                                        <Tooltip title={"Click to save your progress and continue later"} arrow>
+                                        {/* <Tooltip title={"Click to save your progress and continue later"} arrow>
                                             <div
                                                 className={`${style.saveInProgress} ${style.marginTop} `}
                                                 onClick={() => { }}
                                             >
                                                 SAVE IN PROGRESS
                                             </div>
-                                        </Tooltip>
+                                        </Tooltip> */}
                                         {referenceForm?.referenceDetails?.responses?.length === (formIndex + 1) ? (
                                             <Tooltip title={"Click to submit your application"} arrow>
                                                 <div className={` ${style.continue} ${style.marginTop10}`} onClick={() => handleSubmit()}>SUBMIT</div>
@@ -227,6 +230,13 @@ const ReferenceQuestionnaire = () => {
                                 </div>
                             </div>
                         </div >
+                        <div className={style.header}>
+                            <img src={CAPManagerApplication} alt="Hospital Logo" className={`${style.logo}`} />
+                            <div className={style.centerText}>
+                                © {format(new Date(), 'yyyy')} HapiCare, Inc. - All Rights Reserved
+                            </div>
+                            <img src={PoweredHapiCare} alt="Hospital Logo" className={`${style.logo}`} />
+                        </div>
                         {isOpen && (
                             <ApplicationSubmitDialog getIsOpen={getIsOpen} title={`Mission Accomplished! You're A Champion`} description={`Thank You for completing this Professional reference check on behalf of ${referenceForm?.basicDetails?.applicant?.name?.firstName !== undefined ? referenceForm?.basicDetails?.applicant?.name?.firstName : ''} ${referenceForm?.basicDetails?.applicant?.name?.lastName !== undefined ? `${referenceForm?.basicDetails?.applicant?.name?.lastName?.toLowerCase()}` : ''}`} />
                         )}

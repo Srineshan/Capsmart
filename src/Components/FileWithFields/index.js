@@ -273,7 +273,7 @@ const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicati
                     <div className={style.marginTop}>
                         {(!window.location.pathname.includes("reappointmentApplicationForm") && !window.location.pathname.includes("locumApplicationForm") && !window.location.pathname.includes("applicationForm")) && (
                             <div className={style.marginTop10}>
-                                <div className={style.lableStyle}>Reason for Editing Document Details by MSO *</div>
+                                <div className={style.lableStyle}>Reason for MSO Editing this Document *</div>
                                 <div className={style.marginTop10}>
                                     <CKEditor
                                         editor={ClassicEditor}

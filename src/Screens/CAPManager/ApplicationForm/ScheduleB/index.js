@@ -72,9 +72,9 @@ const ScheduleB = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
   }, [basicForm?.forms?.[formIndex]?.id])
 
   const getFormSchema = async () => {
-    if (basicForm?.formSchemas?.[formIndex]?.id !== undefined) {
+    if (basicForm?.forms?.[formIndex]?.schemaId !== undefined) {
       const { data: form } = await GET(
-        `application-management-service/formSchema/${basicForm?.formSchemas?.[formIndex]?.id}`
+        `application-management-service/formSchema/${basicForm?.forms?.[formIndex]?.schemaId}`
       );
       setFormSchema(form)
     }
@@ -110,6 +110,29 @@ const ScheduleB = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
         const response = await POST(`application-management-service/application/${applicationId}/files`, formData);
         console.log(response?.data);
         uploadedFile = response?.data?.file;
+      } catch (error) {
+        console.error(error);
+        return null;
+      }
+      console.log(basicForm, 'effectCheck')
+      try {
+        let temp = {
+          schemaId: basicForm?.forms?.[formIndex]?.schemaId,
+          completedFormAsFile: uploadedFile,
+          data: !isEdited ? basicForm?.forms?.[formIndex]?.data : { esignDate: isChecked ? name + " " + currentDate : '' },
+          acknowledged: isChecked,
+          esign: { esign: isChecked ? encryptedText : '', name: isChecked ? name : '', signedDate: isChecked ? currentDate : '' },
+          dataStatus: isSigned ? 'COMPLETED' : 'SKIPPED_MANDATORY_FIELD'
+        }
+        await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
+          .then(response => {
+            console.log(response)
+            SuccessToaster("Application Updated Successfully");
+          })
+          .catch((error) => {
+            console.log(error)
+            ErrorToaster("Unexpected Error Updating Application");
+          });
       } catch (error) {
         console.error(error);
         return null;
@@ -169,15 +192,13 @@ const ScheduleB = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
       await PUT(`application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
         .then(response => {
           console.log(response)
-          getPreApplication()
           SuccessToaster("Application Updated Successfully");
+          getPreApplication();
           handleDownload();
-          getFormSchema();
           if (sessionStorage.getItem('fromSummary') === 'true') {
             navigate(-1);
             sessionStorage.setItem('fromSummary', false)
-          }
-          else {
+          } else {
             navigate(navigateURL)
           }
         })

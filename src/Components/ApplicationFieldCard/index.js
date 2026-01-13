@@ -152,15 +152,6 @@ const ApplicationFieldCard = ({
 
   const getValueByPath = (obj, path) => {
     const keys = path.split(/[\.\[\]]+/).filter(Boolean);
-    console.log(
-      path,
-      keys.reduce(
-        (acc, key) => acc && acc[isNaN(key) ? key : Number(key)],
-        basicForm
-      ),
-      basicForm,
-      "if"
-    );
     return keys.reduce(
       (acc, key) => acc && acc[isNaN(key) ? key : Number(key)],
       basicForm
@@ -2274,12 +2265,12 @@ const ApplicationFieldCard = ({
           const customValidationsForBirthday = (object?.type === 'object') ? object?.customValidations : object?.items?.customValidations;
           const shouldSetMaxDateForBirthday = customValidationsForBirthday?.some(
             (validation) =>
-              validation.condition === "Age_GreaterThan25LessThan100" &&
+              validation.condition === "Age_GreaterThan18LessThan100" &&
               `${baseKey}.${fieldKey}` === validation.parameters.date1
           );
           const currentDate = new Date();
           const maxDateForBirthday = new Date(
-            currentDate.getFullYear() - 25,
+            currentDate.getFullYear() - 18,
             currentDate.getMonth(),
             currentDate.getDate()
           );
@@ -2826,7 +2817,62 @@ const ApplicationFieldCard = ({
           }
         case "addMoreFileupload":
           if (isPOD) {
-            return <div></div>;
+            const fieldValue = getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`);
+            const fileURL = fieldValue?.fileURL;
+            const fileValid = fileURL && fileURL !== "" && fileURL !== null;
+            if (fileValid) {
+              return <div key={fieldKey}>
+                <div className={`${style.uploadButton}`}>
+                  <div className={style.uploadGrid}>
+                    {getValueByPath(
+                      basicForm,
+                      `${basicpath}.${baseKey}.${fieldKey}`
+                    ) !== undefined &&
+                      getValueByPath(
+                        basicForm,
+                        `${basicpath}.${baseKey}.${fieldKey}`
+                      ) !== null &&
+                      getValueByPath(
+                        basicForm,
+                        `${basicpath}.${baseKey}.${fieldKey}`
+                      ) !== "" &&
+                      getValueByPath(
+                        basicForm,
+                        `${basicpath}.${baseKey}.${fieldKey}`
+                      )?.fileURL !== null ? (
+                      <img
+                        src={VerifiedImage}
+                        alt=""
+                        className={`${style.imgIcon} ${style.cursorPointer}`}
+                        onClick={() => {
+                          setShowFileDisplayDialog(true); setselectedFile(
+                            getValueByPath(
+                              basicForm,
+                              `${basicpath}.${baseKey}.${fieldKey}`
+                            )
+                          );
+                        }
+                        }
+                      />
+                    ) : (
+                      <img
+                        src={ToBeVerifiedImage}
+                        alt=""
+                        className={style.imgIcon}
+                      />
+                    )}
+                    <div
+                      className={`${style.uploadText} ${style.cursorPointer} ${style.verticalAlignCenter}`}
+                    >
+                      {getValueByPath(
+                        basicForm,
+                        `${basicpath}.${baseKey}.${fieldKey}`
+                      )?.fileName}
+                    </div>
+                  </div>
+                </div>
+              </div>;
+            }
           } else {
             let isDocAvailable = (getValueByPath(
               basicForm,
@@ -2965,7 +3011,7 @@ const ApplicationFieldCard = ({
                     </div>
                   </div>
                 </div>
-                {fileValid && (
+                {/* {fileValid && (
                   <div className={style.uploadButton2}>
                     <div className={style.uploadGrid2}>
 
@@ -2983,17 +3029,9 @@ const ApplicationFieldCard = ({
                           {fieldValue?.fileName}
                         </span>
                       </Tooltip>
-                      {/* <Tooltip title="Click to Delete File" arrow>
-                        <img
-                          src={DeleteIcon}
-                          alt="Delete"
-                          className={`${style.imgIcon} ${style.cursorPointer}`}
-                          onClick={() => handleChange(fieldKey, null, baseKey)}
-                        />
-                      </Tooltip> */}
                     </div>
                   </div>
-                )}
+                )} */}
               </div>;
             }
           } else {
@@ -3676,19 +3714,23 @@ const ApplicationFieldCard = ({
           } ${style.marginTop10}`}
         key={baseKey}
       >
-        {!isReappointment ? (
+        {!isPOD && (
           <>
-            <div className={style.cardTitle}>{object?.label}</div>
-            {object?.description !== null && (
-              <div
-                className={`${style.addMoreDescriptionText} ${style.marginTop10}`}
-              >
-                {object?.description}
-              </div>
+            {!isReappointment ? (
+              <>
+                <div className={style.cardTitle}>{object?.label}</div>
+                {object?.description !== null && (
+                  <div
+                    className={`${style.addMoreDescriptionText} ${style.marginTop10}`}
+                  >
+                    {object?.description}
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className={style.cardTitle}>{dataChangedObject?.label}</div>
             )}
           </>
-        ) : (
-          <div className={style.cardTitle}>{dataChangedObject?.label}</div>
         )}
         {addMoreType && !collapsableQuestionCard ? (
           <div>

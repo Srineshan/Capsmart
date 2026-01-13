@@ -6,7 +6,7 @@ import Papa from "papaparse";
 import Dropzone from "react-dropzone";
 
 import style from './index.module.scss'
-const CommonDropZone = ({ title, description, changeHandler, maxFiles }) => {
+const CommonDropZone = ({ title, description, changeHandler, maxFiles, isDisabled }) => {
 
     const dropzoneStyle = {
         width: "100%",
@@ -20,6 +20,7 @@ const CommonDropZone = ({ title, description, changeHandler, maxFiles }) => {
 
     return (
         <Dropzone
+            disabled={isDisabled}
             style={dropzoneStyle}
             onDrop={(acceptedFiles) => changeHandler(acceptedFiles)}
             accept={{

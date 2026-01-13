@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import ApplicationFieldCard from '../../../../Components/ApplicationFieldCard';
 
 import style from './index.module.scss';
+import CommonCheckBox from '../../../../Components/CommonFields/CommonCheckBox';
+import { getValueByPath } from '../../../../utils/formatting';
 
 const HealthStatus = ({ referenceForm, setReferenceForm, applicationId, getReferenceDetails, formSchema, formIndex, formSchemaWholeObject }) => {
     const [metadata, setMetadata] = useState([]);
@@ -29,14 +31,76 @@ const HealthStatus = ({ referenceForm, setReferenceForm, applicationId, getRefer
         }
         setLabels(tempLabels);
     }
+
+    const checkAllSelected = (expectedValue) => {
+        const proceduresPath = `referenceDetails.responses[${formIndex}].data.bestOfYourKnowledge`;
+        const procedures = getValueByPath(referenceForm, proceduresPath) || {};
+        const allValuesMatch = Object.values(procedures).every((val) => val === expectedValue);
+        return allValuesMatch;
+    }
+
+    const checkSomeSelected = (expectedValue) => {
+        const proceduresPath = `referenceDetails.responses[${formIndex}].data.bestOfYourKnowledge`;
+        const procedures = getValueByPath(referenceForm, proceduresPath) || {};
+        const someValuesMatch = Object.values(procedures).some((val) => val === expectedValue);
+        return someValuesMatch;
+    }
+
+    const handleChange = (value) => {
+        setReferenceForm((prevForm) => ({
+            ...prevForm,
+            referenceDetails: {
+                ...prevForm.referenceDetails,
+                responses: prevForm?.referenceDetails?.responses?.map((form, idx) => {
+                    if (form?.schemaId === prevForm?.referenceDetails?.responses?.[formIndex]?.schemaId) {
+                        const existingProcedures =
+                            form?.data?.bestOfYourKnowledge || {};
+
+                        const updatedProcedures = Object.keys(existingProcedures).reduce(
+                            (acc, key) => {
+                                acc[key] = value;
+                                return acc;
+                            },
+                            {}
+                        );
+
+                        return {
+                            ...form,
+                            data: {
+                                ...form.data,
+                                bestOfYourKnowledge: updatedProcedures,
+                            },
+                        };
+                    }
+
+                    return form;
+                }),
+            },
+        }));
+    }
     return (
         <div>
             <div className={style.applicantInfoCard}>
                 <div className={`${style.refRadioCard} ${style.headerGrid}`}>
                     <div className={style.headerText}>TO THE BEST OF YOUR KNOWLEDGE:</div>
-                    <div className={style.headerText}>YES</div>
-                    <div className={style.headerText}>NO</div>
-                    <div className={style.headerText}>NO KNOWLEDGE</div>
+                    <div>
+                        <div className={style.headerText}>YES</div>
+                        <div>
+                            <CommonCheckBox checked={checkAllSelected('Yes')} onChange={(e) => handleChange('Yes')} />
+                        </div>
+                    </div>
+                    <div>
+                        <div className={style.headerText}>NO</div>
+                        <div>
+                            <CommonCheckBox checked={checkAllSelected('No')} onChange={(e) => handleChange('No')} />
+                        </div>
+                    </div>
+                    <div>
+                        <div className={style.headerText}>NO KNOWLEDGE</div>
+                        <div>
+                            <CommonCheckBox checked={checkAllSelected('No Knowledge')} onChange={(e) => handleChange('No Knowledge')} />
+                        </div>
+                    </div>
                 </div>
                 {formSchema !== undefined && "bestOfYourKnowledge" in formSchema?.properties && (
                     <ApplicationFieldCard
@@ -63,21 +127,25 @@ const HealthStatus = ({ referenceForm, setReferenceForm, applicationId, getRefer
                     />
                 )}
             </div>
-            {formSchema !== undefined && "healthStatusExplanation" in formSchema?.properties && (
-                <ApplicationFieldCard
-                    object={formSchema?.properties?.healthStatusExplanation}
-                    refGridStyle={style.gridStyle}
-                    gridStyle={style.fieldGridStyle}
-                    baseKey={"healthStatusExplanation"}
-                    basicForm={referenceForm}
-                    setBasicForm={setReferenceForm}
-                    getAllPath={getAllPath}
-                    getAllLabels={getAllLabels}
-                    warningFields={warningFields}
-                    formSchema={formSchemaWholeObject}
-                    stepPath={`referenceDetails.responses[${formIndex}].data`}
-                    setIsEdited={getIsEdited}
-                />
+            {checkSomeSelected('Yes') && (
+                <>
+                    {formSchema !== undefined && "healthStatusExplanation" in formSchema?.properties && (
+                        <ApplicationFieldCard
+                            object={formSchema?.properties?.healthStatusExplanation}
+                            refGridStyle={style.gridStyle}
+                            gridStyle={style.fieldGridStyle}
+                            baseKey={"healthStatusExplanation"}
+                            basicForm={referenceForm}
+                            setBasicForm={setReferenceForm}
+                            getAllPath={getAllPath}
+                            getAllLabels={getAllLabels}
+                            warningFields={warningFields}
+                            formSchema={formSchemaWholeObject}
+                            stepPath={`referenceDetails.responses[${formIndex}].data`}
+                            setIsEdited={getIsEdited}
+                        />
+                    )}
+                </>
             )}
         </div>
     )

@@ -69,9 +69,9 @@ const ScheduleA = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
   }, [formSchema])
 
   const getFormSchema = async () => {
-    if (basicForm?.formSchemas?.[formIndex]?.id !== undefined) {
+    if (basicForm?.forms?.[formIndex]?.schemaId !== undefined) {
       const { data: form } = await GET(
-        `application-management-service/formSchema/${basicForm?.formSchemas?.[formIndex]?.id}`
+        `application-management-service/formSchema/${basicForm?.forms?.[formIndex]?.schemaId}`
       );
       setFormSchema(form)
     }
@@ -107,6 +107,29 @@ const ScheduleA = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
         const response = await POST(`application-management-service/application/${applicationId}/files`, formData);
         console.log(response?.data);
         uploadedFile = response?.data?.file;
+      } catch (error) {
+        console.error(error);
+        return null;
+      }
+
+      try {
+        let temp = {
+          schemaId: basicForm?.forms?.[formIndex]?.schemaId,
+          completedFormAsFile: uploadedFile,
+          data: basicForm?.forms?.[formIndex]?.data,
+          unFilledFields: basicForm?.forms?.[formIndex]?.unFilledFields,
+          acknowledged: basicForm?.forms?.[formIndex]?.acknowledged,
+          dataStatus: basicForm?.forms?.[formIndex]?.dataStatus
+        }
+        await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
+          .then(response => {
+            console.log(response)
+            SuccessToaster("Application Updated Successfully");
+          })
+          .catch((error) => {
+            console.log(error)
+            ErrorToaster("Unexpected Error Updating Application");
+          });
       } catch (error) {
         console.error(error);
         return null;

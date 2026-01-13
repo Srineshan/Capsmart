@@ -283,9 +283,9 @@ const StaffApplicationList = ({
 
   const applicantHeaderValues = applicationType === "NEW" ? [
     "",
-    applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
-    // applicationType === "NEW" ? "Applicant ID" : "Staff ID",
-    applicationType === "NEW" ? "Applicant Type" : "Staff Type",
+    "Applicant Name",
+    "",
+    "Applicant Type",
     // "Department",
     "Docs",
     // "Data & Disclosures",
@@ -546,7 +546,7 @@ const StaffApplicationList = ({
   const clarificationHeaderValues = applicationType === "NEW" ? [
     "",
     applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
-    // applicationType === "NEW" ? "Applicant ID" : "Staff ID",
+    "",
     applicationType === "NEW" ? "Applicant Type" : "Staff Type",
     // "Department",
     "Docs",
@@ -600,7 +600,7 @@ const StaffApplicationList = ({
   ];
 
   const locumOverrideValues = [
-    "Locum Staff",
+    applicationType === "NEW" ? "Staff" : "Locum Staff",
     "Staff Type",
     "Docs",
     "Notes",
@@ -1897,7 +1897,7 @@ const StaffApplicationList = ({
         if (selectedTab === "OverrideRequest") {
           setIsLoadingImage(true);
           response = await GET(
-            `application-management-service/application/request?requestType=OVERRIDE_REQUEST&status=PENDING&role=Chief Of Staff`,
+            `application-management-service/application/request?requestType=OVERRIDE_REQUEST&status=PENDING&role=Chief Of Staff&applicationCreationType=${applicationType === "LOCUM" ? 'LOCUM_RENEWAL' : applicationType}`,
           );
           console.log("Application data", response?.data?.requests);
           setTableData(response?.data?.requests);
@@ -1958,45 +1958,56 @@ const StaffApplicationList = ({
           return response?.data?.applications || [];
         }
       } else {
-        let role = workModeType === "Credentialing Committee User" ? "Staff Manager" : workModeType;
-        const shouldIncludeAssignee = showAssignee &&
-          (workModeType === "Department Head" ||
-            workModeType === "Chief Of Staff" ||
-            workModeType === "Credentialing Committee");
-        const assignedUserIdsParam = shouldIncludeAssignee ? `&assignedUserIds=${users?.id}` : "";
-        const departmentParam = selectedDepartment || selectedServiceArea ? `&departmentSpecialties=${selectedDepartment}%23${selectedServiceArea}` : "";
-        const positionTypeParam = applicationType === "LOCUM" ? `&positionType=${applicationType}` : applicationType === "NEW" ? "" : "&positionType=PERMANENT";
-        const selectedTabFlow = selectedTab === "ReviewedApplications" ? "level-3" : selectedTab
-        setIsLoadingImage(true);
-        response = await GET(
-          `application-management-service/application/workflowUser?tab=${selectedTabFlow}&sortBy=${sortValue}&sortByField=${sortField}&applicationCreationType=${applicationType}&limit=${limit}&offset=${page - 1}&role=${role}&searchText=${searchTermForTable}&isPaginationRequired=${limit === 9999 ? false : true}${departmentParam}${assignedUserIdsParam}${positionTypeParam}`
-        );
+        if (selectedTab === "OverrideRequest") {
+          setIsLoadingImage(true);
+          response = await GET(
+            `application-management-service/application/request?requestType=OVERRIDE_REQUEST&status=PENDING&role=Chief Of Staff&applicationCreationType=${applicationType === "LOCUM" ? 'LOCUM_RENEWAL' : applicationType}`,
+          );
+          console.log("Application data", response?.data?.requests);
+          setTableData(response?.data?.requests);
+          setTotalCount(response?.data?.numberOfElements);
+          setIsLoadingImage(false);
+        } else {
+          let role = workModeType === "Credentialing Committee User" ? "Staff Manager" : workModeType;
+          const shouldIncludeAssignee = showAssignee &&
+            (workModeType === "Department Head" ||
+              workModeType === "Chief Of Staff" ||
+              workModeType === "Credentialing Committee");
+          const assignedUserIdsParam = shouldIncludeAssignee ? `&assignedUserIds=${users?.id}` : "";
+          const departmentParam = selectedDepartment || selectedServiceArea ? `&departmentSpecialties=${selectedDepartment}%23${selectedServiceArea}` : "";
+          const positionTypeParam = applicationType === "LOCUM" ? `&positionType=${applicationType}` : applicationType === "NEW" ? "" : "&positionType=PERMANENT";
+          const selectedTabFlow = selectedTab === "ReviewedApplications" ? "level-3" : selectedTab
+          setIsLoadingImage(true);
+          response = await GET(
+            `application-management-service/application/workflowUser?tab=${selectedTabFlow}&sortBy=${sortValue}&sortByField=${sortField}&applicationCreationType=${applicationType}&limit=${limit}&offset=${page - 1}&role=${role}&searchText=${searchTermForTable}&isPaginationRequired=${limit === 9999 ? false : true}${departmentParam}${assignedUserIdsParam}${positionTypeParam}`
+          );
 
-        let applications = response?.data?.applications || [];
+          let applications = response?.data?.applications || [];
 
-        if (selectedTab === "level-3" && workModeType === "Credentialing Committee") {
-          applications = applications?.filter(app => {
-            const ccWorkflow = app?.completedWorkflows?.find(wf => wf?.role === "Credentialing Committee");
-            console.log("Application dataaaaaaaaaaaaaaaaa", ccWorkflow);
-            // setShowAssignee(true)
-            return ccWorkflow && ccWorkflow?.approvalType === null;
-          });
-        } else if (selectedTab === "ReviewedApplications" && workModeType === "Credentialing Committee") {
-          // setShowAssignee(false)
-          applications = applications?.filter(app => {
-            const ccWorkflow = app?.completedWorkflows?.find(wf => wf?.role === "Credentialing Committee");
-            console.log("Application dataaaaaaaaaaaaaaaaa", ccWorkflow);
-            return ccWorkflow && ccWorkflow?.approvalType
-          });
+          if (selectedTab === "level-3" && workModeType === "Credentialing Committee") {
+            applications = applications?.filter(app => {
+              const ccWorkflow = app?.completedWorkflows?.find(wf => wf?.role === "Credentialing Committee");
+              console.log("Application dataaaaaaaaaaaaaaaaa", ccWorkflow);
+              // setShowAssignee(true)
+              return ccWorkflow && ccWorkflow?.approvalType === null;
+            });
+          } else if (selectedTab === "ReviewedApplications" && workModeType === "Credentialing Committee") {
+            // setShowAssignee(false)
+            applications = applications?.filter(app => {
+              const ccWorkflow = app?.completedWorkflows?.find(wf => wf?.role === "Credentialing Committee");
+              console.log("Application dataaaaaaaaaaaaaaaaa", ccWorkflow);
+              return ccWorkflow && ccWorkflow?.approvalType
+            });
+          }
+          // console.log("Application dataaaaaaaaaaaaaaaaa",applications);
+          setTableData(applications);
+          setTotalCount(applications?.length);
+          setSearchount(response?.data?.numberOfElements)
+          setReFetchMetaData(true);
+          setIsLoadingImage(false);
+          console.log("Application data length", response?.data?.numberOfElements);
+          return response?.data?.applications || [];
         }
-        // console.log("Application dataaaaaaaaaaaaaaaaa",applications);
-        setTableData(applications);
-        setTotalCount(applications?.length);
-        setSearchount(response?.data?.numberOfElements)
-        setReFetchMetaData(true);
-        setIsLoadingImage(false);
-        console.log("Application data length", response?.data?.numberOfElements);
-        return response?.data?.applications || [];
       }
     }
     catch (error) {
@@ -2377,6 +2388,8 @@ const StaffApplicationList = ({
     capManager = [];
     taskListStatus = [];
     taskListDotColor = [];
+    overRideIcon = [];
+    hoverOverRide = [];
     action = [];
 
     tableData?.map((data) => {
@@ -2416,6 +2429,28 @@ const StaffApplicationList = ({
         `${data?.applicant?.name?.lastName.toUpperCase()}, ${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()}` ||
         " "
       );
+      if (data?.overrideStatus === "APPROVED") {
+        overRideIcon.push(
+          <img src={overRideComplete} alt="Override Icon" style={{ width: 20, height: 20 }} />
+        );
+      } else if (data?.overrideStatus === "PENDING") {
+        overRideIcon.push(
+          <img src={overRidePending} alt="Pending Icon" style={{ width: 20, height: 20 }} />
+        );
+      } else {
+        overRideIcon.push("")
+      }
+      if (data?.overrideStatus === "APPROVED") {
+        hoverOverRide.push(
+          ["Temporary privilege granted"]
+        );
+      } else if (data?.overrideStatus === "PENDING") {
+        hoverOverRide.push(
+          ["Temporary privilege Pending"]
+        );
+      } else {
+        hoverOverRide.push([""])
+      }
       // applicantId.push(data?.displayId);
       applicantType.push(data?.providerType?.serviceProviderType);
       // department.push(
@@ -2487,6 +2522,12 @@ const StaffApplicationList = ({
     return [
       { type: "dot", value: dot, tooltipValue: dotTooltipValues },
       { type: "text", value: applicantName },
+      {
+        type: "iconWithCount",
+        icon: overRideIcon,
+        hoverText: hoverOverRide,
+        isShowHoverText: true,
+      },
       // { type: "text", value: applicantId },
       { type: "text", value: applicantType },
       // { type: "text", value: department },
@@ -6017,6 +6058,8 @@ const StaffApplicationList = ({
     capManager = [];
     taskListStatus = [];
     taskListDotColor = [];
+    overRideIcon = [];
+    hoverOverRide = [];
     action = [];
 
     tableData?.map((data) => {
@@ -6044,6 +6087,28 @@ const StaffApplicationList = ({
         `${data?.applicant?.name?.lastName.toUpperCase()}, ${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()}` ||
         " "
       );
+      if (data?.overrideStatus === "APPROVED") {
+        overRideIcon.push(
+          <img src={overRideComplete} alt="Override Icon" style={{ width: 20, height: 20 }} />
+        );
+      } else if (data?.overrideStatus === "PENDING") {
+        overRideIcon.push(
+          <img src={overRidePending} alt="Pending Icon" style={{ width: 20, height: 20 }} />
+        );
+      } else {
+        overRideIcon.push("")
+      }
+      if (data?.overrideStatus === "APPROVED") {
+        hoverOverRide.push(
+          ["Temporary privilege granted"]
+        );
+      } else if (data?.overrideStatus === "PENDING") {
+        hoverOverRide.push(
+          ["Temporary privilege Pending"]
+        );
+      } else {
+        hoverOverRide.push([""])
+      }
       // applicantId.push(data?.displayId);
       applicantType.push(data?.providerType?.serviceProviderType);
       // department.push(
@@ -6115,6 +6180,12 @@ const StaffApplicationList = ({
     return [
       { type: "dot", value: dot, tooltipValue: dotTooltipValues },
       { type: "text", value: applicantName },
+      {
+        type: "iconWithCount",
+        icon: overRideIcon,
+        hoverText: hoverOverRide,
+        isShowHoverText: true,
+      },
       // { type: "text", value: applicantId },
       { type: "text", value: applicantType },
       // { type: "text", value: department },
@@ -7425,7 +7496,7 @@ const StaffApplicationList = ({
                               ? bodHeaderValues
                               : selectedTab === "LocumRenewals" && applicationType === "LOCUM"
                                 ? locumHeaderValues
-                                : selectedTab === "OverrideRequest" && applicationType === "LOCUM"
+                                : selectedTab === "OverrideRequest" && (applicationType === "LOCUM" || applicationType === "NEW")
                                   ? locumOverrideValues
                                   : selectedTab === "clarificationsRequired"
                                     ? clarificationHeaderValues
@@ -7464,7 +7535,7 @@ const StaffApplicationList = ({
                               ? bodColSortValues
                               : selectedTab === "LocumRenewals" && applicationType === "LOCUM"
                                 ? locumColSortValues
-                                : selectedTab === "OverrideRequest" && applicationType === "LOCUM"
+                                : selectedTab === "OverrideRequest" && (applicationType === "LOCUM" || applicationType === "NEW")
                                   ? locumOverrideColSortValues
                                   : selectedTab === "clarificationsRequired"
                                     ? clarificationColSortValues
@@ -7503,7 +7574,7 @@ const StaffApplicationList = ({
                               ? getBodValues()
                               : selectedTab === "LocumRenewals" && applicationType === "LOCUM"
                                 ? getLocumValues()
-                                : selectedTab === "OverrideRequest" && applicationType === "LOCUM"
+                                : selectedTab === "OverrideRequest" && (applicationType === "LOCUM" || applicationType === "NEW")
                                   ? getLocumOverrideValues()
                                   : selectedTab === "clarificationsRequired"
                                     ? getClarificationValues()
@@ -7544,7 +7615,7 @@ const StaffApplicationList = ({
                                 ? bodActionsData
                                 : selectedTab === "LocumRenewals" && applicationType === "LOCUM"
                                   ? departmentHeadActionsData
-                                  : selectedTab === "OverrideRequest" && applicationType === "LOCUM"
+                                  : selectedTab === "OverrideRequest" && (applicationType === "LOCUM" || applicationType === "NEW")
                                     ? LocumOverrideActionsData
                                     : selectedTab === "clarificationsRequired"
                                       ? clarificationActionsData
@@ -7591,11 +7662,11 @@ const StaffApplicationList = ({
                                       ? style.bodStaffReappointGrid
                                       : selectedTab === "LocumRenewals" && applicationType === "LOCUM"
                                         ? style.locumStaffGrid
-                                        : selectedTab === "OverrideRequest" && applicationType === "LOCUM"
+                                        : selectedTab === "OverrideRequest" && (applicationType === "LOCUM" || applicationType === "NEW")
                                           ? style.locumOverrideStaffGrid
                                           : selectedTab === "clarificationsRequired" && applicationType === "NEW"
                                             ? style.applicantStaffGrid
-                                            : selectedTab === "clarificationsRequired" && (applicationType === "REAPPOINTMENT" || applicationType === "NEW")
+                                            : selectedTab === "clarificationsRequired" && (applicationType === "REAPPOINTMENT")
                                               ? style.applicantStaffReappointGrid
                                               : selectedTab === "rejected"
                                                 ? style.rejectedStaffGrid
@@ -7976,7 +8047,7 @@ const StaffApplicationList = ({
                               }}
                             >
                               {/* Staff Rejected ({applicationRejected?.appointmentRequestsDenied}) */}
-                              {applicationType === "REAPPOINTMENT" ? `Approved But Declined (${applicationRejected?.applicationsRejected})` : `Requested But Declined (${applicationRejected?.applicationsRejected})`}
+                              {applicationType === "NEW" ? `Rejected (${applicationRejected?.applicationsRejected})` : applicationType === "REAPPOINTMENT" ? `Reappointment Declined (${applicationRejected?.applicationsRejected})` : `Declined (${applicationRejected?.applicationsRejected})`}
                             </div>
                           </Tooltip>
                           <Tooltip arrow title={applicationType === "REAPPOINTMENT" ? "Click to View Staff Rejected Applications" : "Click to View Locum Staff Rejected Applications"}>
@@ -7986,7 +8057,7 @@ const StaffApplicationList = ({
                                 setShowApplicationApprovedDeclineDialog(true);
                               }}
                             >
-                              {applicationType === "REAPPOINTMENT" ? `Staff Rejected (${applicationRejected?.appointmentRequestsDenied})` : `Locum Staff Rejected (${applicationRejected?.appointmentRequestsDenied})`}
+                              {applicationType === "NEW" ? `Declined (${applicationRejected?.appointmentRequestsDenied})` : applicationType === "REAPPOINTMENT" ? `Staff Rejected (${applicationRejected?.appointmentRequestsDenied})` : `Locum Staff Rejected (${applicationRejected?.appointmentRequestsDenied})`}
                               {/* Approved But Declined ({applicationRejected?.applicationsRejected}) */}
                             </div>
                           </Tooltip>

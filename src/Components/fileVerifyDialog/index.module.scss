@@ -6,6 +6,16 @@
     color: var(--primary-color);
 }
 
+.redText {
+    color: $statusred !important
+}
+
+.subHeading {
+    text-align: left;
+    font: normal normal bold 15px/28px var(--font-style);
+    color: var(--primary-color);
+}
+
 .marginTop {
     margin-top: 20px;
 }
@@ -414,7 +424,7 @@
 }
 
 .dividerStyle {
-    background: #E8E9E9 0% 0% no-repeat padding-box;
+    background: #d9d9d9 0% 0% no-repeat padding-box;
     height: 1px;
 }
 
@@ -427,8 +437,8 @@
 }
 
 .icon {
-    height: 20px;
-    width: 20px;
+    height: 30px;
+    width: 30px;
     object-fit: contain;
 }
 

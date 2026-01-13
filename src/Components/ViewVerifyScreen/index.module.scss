@@ -5758,3 +5758,9 @@ input[type="number"] {
   letter-spacing: 0px;
   color: #2C2C2C;
 }
+
+.rightFixedColumn {
+  position: sticky;
+  top: 80px;
+  height: fit-content;
+}

@@ -145,8 +145,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
   }, [tempValue?.table]);
 
   const getFormSchema = async () => {
-    const schemaId =
-      basicForm?.forms?.[formIndex]?.schemaId ?? basicForm?.formSchemas?.[formIndex]?.id;
+    const schemaId = basicForm?.forms?.[formIndex]?.schemaId;
     if (!schemaId) return;
     const { data: form } = await GET(
       `application-management-service/formSchema/${schemaId}`,
@@ -282,8 +281,8 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
         const newRow = {
           rowId: uploadedDoc?.id,
           documentType: documentLabel,
-          fileURL: uploadedDoc?.fileURL,
-          fileType: uploadedDoc?.fileType,
+          fileURL: uploadedDoc?.file?.fileURL,
+          fileType: uploadedDoc?.file?.fileType,
           fileUploaded: event[index]?.name,
           fileSize: `${(event[index]?.size / (1024 * 1024)).toFixed(2)} Mb`,
           requirement: documentLabel ? getIsDocRequired(documentLabel) : '',
@@ -296,7 +295,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
       setIsLoading(false);
       return responseData;
     } catch (error) {
-      ErrorToaster('File Upload Failed');
+      ErrorToaster2('File Upload Failed');
       console.error(error);
       setIsLoading(false);
       return null;
