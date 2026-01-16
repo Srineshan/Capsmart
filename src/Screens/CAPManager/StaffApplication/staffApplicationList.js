@@ -2456,12 +2456,29 @@ const StaffApplicationList = ({
       // department.push(
       //   data?.basicDetails?.departmentSpecialty?.department || "-"
       // );
-      docs.push(data?.documents?.uploadedCount + "/" + data?.documents?.uploadedCount || "");
+      docs.push(data?.documents?.verifiedCount + "/" + data?.documents?.uploadedCount || "");
       // docsHoverText.push([
       //   "Immunization History Verification From PCP pending",
       // ]);
       const documentDetails = data?.documents?.documentDetails || [];
-      const docHoverTextArray = documentDetails?.length > 0 ? documentDetails?.map(doc => doc.documentType) : ["-"];
+      const docHoverTextArray = documentDetails?.length > 0
+        ? documentDetails?.map((doc, index) => {
+          const verifiedIndicator = doc?.documentStatus
+            ? <CircleIcon style={{ color: '#8ED12B', fontSize: '12px', marginRight: '5px' }} />
+            : <CircleIcon style={{ color: '#FFCA27', fontSize: '12px', marginRight: '5px' }} />;
+
+          return (
+            <div key={index} className={style.fullWidth}>
+              <span>
+                {verifiedIndicator} {doc?.shortName}
+              </span>
+              {index !== documentDetails.length - 1 && (
+                <hr style={{ margin: '5px 0 -10px 0px' }} />
+              )}
+            </div>
+          );
+        })
+        : ["-"];
       docsHoverText.push(docHoverTextArray);
       // docsIcon.push(
       //   <TextSnippetOutlinedIcon
@@ -2469,8 +2486,12 @@ const StaffApplicationList = ({
       //   />
       // );
 
-      if (data?.documents?.uploadedCount === data?.documents?.uploadedCount) {
-        docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#00C07F` }} />);
+      if (data?.documents?.uploadedCount === 0 || data?.documents?.verifiedCount === 0) {
+        docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#b0a6a6' }} />);
+      } else if (data?.documents?.uploadedCount > data?.documents?.verifiedCount) {
+        docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#FEC106' }} />);
+      } else if (data?.documents?.uploadedCount === data?.documents?.verifiedCount) {
+        docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#00C07F' }} />);
       }
       // else if (data?.documents?.verifiedCount === 0) {
       //   docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#94979A` }} />);
@@ -2484,11 +2505,44 @@ const StaffApplicationList = ({
       //   ? "green"
       //   : "grey");
       // disclosures.push(data?.disclosures || '7/9');
-      crs.push(data?.clarificationRequiredFor || "-");
-      crsHoverText.push(["Ontario Medical Society", "Ontario Medical Society"]);
-      notes.push("0");
+      const clarifications = data?.clarificationCount?.clarifications || [];
+      const crsHoverTextArray = clarifications?.length > 0
+        ? clarifications.map((clarification, index) => {
+          const verifiedIndicator = clarification?.status === "ACCEPTED"
+            ? <CircleIcon style={{ color: '#8ED12B', fontSize: '12px', marginRight: '5px' }} />
+            : clarification?.status === "REJECTED"
+              ? <CircleIcon style={{ color: '#FF6562', fontSize: '12px', marginRight: '5px' }} />
+              : clarification?.status === "RESPONDED"
+                ? <CircleIcon style={{ color: '#FFC100', fontSize: '12px', marginRight: '5px' }} />
+                : <CircleIcon style={{ color: '#B0A6A6', fontSize: '12px', marginRight: '5px' }} />;
+
+          return (
+            <div key={index} className={style.fullWidth}>
+              <span>
+                {verifiedIndicator} {clarification?.title}
+              </span>
+              {index !== clarifications.length - 1 && (
+                <hr style={{ margin: '5px 0 -10px 0px' }} />
+              )}
+            </div>
+          );
+        })
+        : ["-"];
+
+      crsHoverText.push(crsHoverTextArray);
+      // crs.push(data?.clarificationCount?.closedCount + "/" + data?.clarificationCount?.totalCount || "");
+      const closedCount = data?.clarificationCount?.closedCount ?? 0;
+      const totalCount = data?.clarificationCount?.totalCount ?? 0;
+
+      crs.push(closedCount === 0 && totalCount === 0 ? "-" : `${closedCount}/${totalCount}`);
+      const validNotes = data?.notesDetails?.filter(
+        log => log?.notes?.notes && (!log?.private || log?.user?.id === users?.id)
+      ) || [];
+      notes.push(validNotes?.length || "-");
       notesIcon.push(
-        <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#2C2C2C` }} />
+        validNotes.length > 0 ? (
+          <NoteAltOutlinedIcon style={{ fontSize: 20, color: "#2C2C2C" }} />
+        ) : ("")
       );
       const notesDetails = data?.notes || [];
       const notesHoverTextArray = notesDetails?.length > 0 ? notesDetails?.map(note => note?.notes) : ["-"];
@@ -2533,7 +2587,7 @@ const StaffApplicationList = ({
       // { type: "text", value: department },
       {
         type: "iconWithCount",
-        // value: docs,
+        value: docs,
         hoverText: docsHoverText,
         isShowHoverText: true,
         icon: docsIcon,
@@ -8039,7 +8093,7 @@ const StaffApplicationList = ({
                     {
                       showCardDetails && (
                         <>
-                          <Tooltip arrow title={applicationType === "REAPPOINTMENT" ? "Click to View Approved But Declined Applications" : "Click to View Requested But Declined Applications"}>
+                          <Tooltip arrow title={applicationType === "NEW" ? `Click to View Rejected Applications` : applicationType === "REAPPOINTMENT" ? "Click to View Approved But Declined Applications" : "Click to View Requested But Declined Applications"}>
                             <div
                               className={`${style.borderStyle} ${style.marginTop} ${style.textStyle} ${style.cursorPointer}`}
                               onClick={() => {
@@ -8050,7 +8104,7 @@ const StaffApplicationList = ({
                               {applicationType === "NEW" ? `Rejected (${applicationRejected?.applicationsRejected})` : applicationType === "REAPPOINTMENT" ? `Reappointment Declined (${applicationRejected?.applicationsRejected})` : `Declined (${applicationRejected?.applicationsRejected})`}
                             </div>
                           </Tooltip>
-                          <Tooltip arrow title={applicationType === "REAPPOINTMENT" ? "Click to View Staff Rejected Applications" : "Click to View Locum Staff Rejected Applications"}>
+                          <Tooltip arrow title={applicationType === "NEW" ? `Click to View Declined Applications` : applicationType === "REAPPOINTMENT" ? "Click to View Staff Rejected Applications" : "Click to View Locum Staff Rejected Applications"}>
                             <div
                               className={`${style.borderStyle} ${style.marginTop} ${style.textStyle} ${style.cursorPointer}`}
                               onClick={() => {

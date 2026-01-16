@@ -2007,9 +2007,9 @@ const NewActiveApplication = ({
               "icon": array?.map((innerData, index) => (
                 innerData?.isVerified === true
                   ? (
-                    <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                    <div className={`${style.greenButtonSmall} ${style.cursorPointer}`}>
                       <Tooltip title={"Click to Revert Acceptance"} arrow>
-                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                        <div className={`${style.buttonGreyTextStyle2} ${style.alignCenter}`}
                           onClick={() => handleVerifyClickDocs(array, index)}
                         >
                           Accepted
@@ -2017,9 +2017,9 @@ const NewActiveApplication = ({
                       </Tooltip>
                     </div>
                   ) : (
-                    <div className={`${style.purpleButton} ${style.cursorPointer}`}>
+                    <div className={`${style.purpleButtonSmall} ${style.cursorPointer}`}>
                       <Tooltip title={"Click to Accept"} arrow>
-                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                        <div className={`${style.buttonGreyTextStyle2} ${style.alignCenter}`}
                           onClick={() => handleVerifyClickDocs(array, index)}
                         >
                           Accept
@@ -3110,7 +3110,6 @@ const NewActiveApplication = ({
                 tableHeaderValues={[
                   "",
                   "File Uploaded",
-                  "Size",
                   "Document Type",
                   "Requirement",
                   "Verified",
@@ -4017,7 +4016,7 @@ const NewActiveApplication = ({
                         showDatais={true}
                       />
                     </div> */}
-                    <div className={`${style.date} ${style.marginLeft}`}>{`Signed By: ${data?.privilegeSpecificationType === 'DESCRIPTIVEDOCUMENT' ? data?.descriptiveContent?.esign?.name ? data?.descriptiveContent?.esign?.name : '' : data?.privilegeDetails?.corePrivileges?.esign !== null ? data?.privilegeDetails?.corePrivileges?.esign?.name : ""}`}</div>
+                    <div className={`${style.date} ${style.marginLeft20}`}><strong>Signed By:</strong> {`${data?.privilegeSpecificationType === 'DESCRIPTIVEDOCUMENT' ? data?.descriptiveContent?.esign?.name ? data?.descriptiveContent?.esign?.name : '' : data?.privilegeDetails?.corePrivileges?.esign !== null ? data?.privilegeDetails?.corePrivileges?.esign?.name : ""}`}</div>
                     <div className={style.verticalAlignCenter}>
                       <div className={style.displayInRow}>
                         <div className={style.dateTitle}>Date: </div>
@@ -5631,13 +5630,13 @@ const NewActiveApplication = ({
                                 </span>
                               </div>
                               <div className={`${style.marginTop10} ${style.twoColumnGridInner2}`}>
-                                <span className={style.rightAlignTextStyle}>
-                                  {(applicationType === "REAPPOINTMENT" || applicationType === "NEW")
+                                <div className={style.rightAlignTextStyle}>
+                                  {applicationType === "NEW" ? "Appointment Date:" : applicationType === "REAPPOINTMENT"
                                     ? "Reappointment Date:"
                                     : applicationType === "LOCUM" && form?.reappointmentType === "EXTENSION"
                                       ? "Extension Date:"
                                       : "Renewal Date:"}
-                                </span>
+                                </div>
                                 <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>
                                   {/* {form?.createdDate} */}
                                   {reappointmentStartDate}
@@ -5653,9 +5652,9 @@ const NewActiveApplication = ({
                                   : ""}
                               </div>
                               <div className={`${style.twoColumnGridInner2}`}>
-                                <span className={style.rightAlignTextStyle}>
+                                <div className={style.rightAlignTextStyle}>
                                   Application Submitted:
-                                </span>
+                                </div>
                                 <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>
                                   {formattedSubmissionDate} <span className={style.rightAlignTextStyle1}>({daysDifference} Days)</span>
                                 </span>
@@ -5764,13 +5763,13 @@ const NewActiveApplication = ({
                                 </span>
                               </div>
                               <div className={`${style.marginTop10} ${style.twoColumnGridInner2}`}>
-                                <span className={style.rightAlignTextStyle}>
-                                  {(applicationType === "REAPPOINTMENT" || applicationType === "NEW")
+                                <div className={style.rightAlignTextStyle}>
+                                  {applicationType === "NEW" ? "Appointment Date:" : applicationType === "REAPPOINTMENT"
                                     ? "Reappointment Date:"
                                     : applicationType === "LOCUM" && form?.reappointmentType === "EXTENSION"
                                       ? "Extension Date:"
                                       : "Renewal Date:"}
-                                </span>
+                                </div>
                                 <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>
                                   {/* {form?.createdDate} */}
                                   {reappointmentStartDate}
@@ -5786,9 +5785,9 @@ const NewActiveApplication = ({
                                   : ""}
                               </div>
                               <div className={`${style.twoColumnGridInner2}`}>
-                                <span className={style.rightAlignTextStyle}>
+                                <div className={style.rightAlignTextStyle}>
                                   Application Submitted:
-                                </span>
+                                </div>
                                 <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>
                                   {formattedSubmissionDate} <span className={style.rightAlignTextStyle1}>({daysDifference} Days)</span>
                                 </span>
@@ -10775,9 +10774,9 @@ const NewActiveApplication = ({
                                                 {isExpandedData && (
                                                   <div>
                                                     <div className={`${style.rfcSubHeadingTextStyle} ${style.marginTop10}`}>
-                                                      Clarification requested on{' '}
+                                                      Clarification requested by {`${clarification?.clarificationRequest?.clarificationRequestedBy?.name?.firstName} ${clarification?.clarificationRequest?.clarificationRequestedBy?.name?.lastName}`} on {' '}
                                                       {clarification?.clarificationRequest?.createdDate
-                                                        ? format(new Date(clarification.clarificationRequest.createdDate), `${dateFormat}, HH:mm`)
+                                                        ? format(new Date(clarification.clarificationRequest.createdDate), `MMM dd, HH:mm`)
                                                         : '-'}
                                                     </div>
                                                     <div className={`${style.marginTop10} ${style.rfcResponseTextStyle}`}>
@@ -10798,7 +10797,7 @@ const NewActiveApplication = ({
                                                         >
                                                           <Tooltip title={"Click to Resolve Clarification"} arrow>
                                                             <div className={`${style.buttonTextStyleDocs} ${style.alignCenter}`}>
-                                                              Resolve Clarification
+                                                              Resolve
                                                             </div>
                                                           </Tooltip>
                                                         </div>
@@ -10972,172 +10971,172 @@ const NewActiveApplication = ({
 
                         {applicationType === "NEW" && (
                           <>
-                            {activeSection?.name === 'References' && (
-                              <div className={`${style.cardLeftStyle} ${style.marginTop20} ${style.rightFixedColumn}`}>
-                                {/* <div className={`${style.cardLeftStyle} ${style.marginTop20}`}> */}
-                                <div className={`${style.displayInRow}${style.marginTop20}`}>
+                            {/* {activeSection?.name === 'References' && (
+                              <div className={`${style.cardLeftStyle} ${style.marginTop20} ${style.rightFixedColumn}`}> */}
+                            <div className={`${style.cardLeftStyle} ${style.marginTop20}`}>
+                              <div className={`${style.displayInRow}${style.marginTop20}`}>
+                                <div
+                                  className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
+                                >
+                                  <span className={`${style.tableHeaderHeadingTextStyle}`}>
+                                    Reference Feedback Status
+                                  </span>
                                   <div
-                                    className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
+                                    className={`${style.displayInRow} ${style.verticalAlignCenter}`}
                                   >
-                                    <span className={`${style.tableHeaderHeadingTextStyle}`}>
-                                      Reference Feedback Status
-                                    </span>
                                     <div
-                                      className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                                      className={`${style.marginLeft10} ${style.tableDataFontStyle1}`} onClick={() => toggleExpand("section2")}
                                     >
-                                      <div
-                                        className={`${style.marginLeft10} ${style.tableDataFontStyle1}`} onClick={() => toggleExpand("section2")}
-                                      >
-                                        {expandStates.section2 ? (
-                                          <Tooltip title="Collapse Section" arrow>
-                                            <RemoveIcon
-                                              sx={{
-                                                fontSize: 20,
-                                                color: "#94979A",
-                                                cursor: "pointer",
-                                              }}
-                                            />
-                                          </Tooltip>
-                                        ) : (
-                                          <Tooltip title="Expand Section" arrow>
-                                            <AddIcon
-                                              sx={{
-                                                fontSize: 20,
-                                                color: "#94979A",
-                                                cursor: "pointer",
-                                              }}
-                                            />
-                                          </Tooltip>
-                                        )}
-                                      </div>
+                                      {expandStates.section2 ? (
+                                        <Tooltip title="Collapse Section" arrow>
+                                          <RemoveIcon
+                                            sx={{
+                                              fontSize: 20,
+                                              color: "#94979A",
+                                              cursor: "pointer",
+                                            }}
+                                          />
+                                        </Tooltip>
+                                      ) : (
+                                        <Tooltip title="Expand Section" arrow>
+                                          <AddIcon
+                                            sx={{
+                                              fontSize: 20,
+                                              color: "#94979A",
+                                              cursor: "pointer",
+                                            }}
+                                          />
+                                        </Tooltip>
+                                      )}
                                     </div>
                                   </div>
-                                  {expandStates.section2 && (
-                                    <>
-                                      {form?.references?.privilegeReference?.map((reference, index) => (
-                                        <div className={`${style.marginBottom20} ${style.referenceCardStyle}`}>
-                                          <div className={`${style.gridGap}`}>
-                                            <div className={`${reference?.responded ? style.greenDotStyle : style.greyDotStyle} ${style.buttonCenter}`}></div>
-                                            <div>
-                                              <div className={`${style.displayInRow} ${style.spaceBetweenOnly}`}>
-                                                <div>
-                                                  <div className={`${style.sideHeadingFontStyle}`}>{`${reference?.firstName} ${reference?.lastName}`}</div>
-                                                  <div className={`${style.sideHeadingRefFrontStyle}`}>{reference?.responded ? 'Reference Contact Responded' : 'Reference Contact Not Responded Yet'}</div>
-                                                </div>
-                                                <div className={`${style.viewTextStyle} ${style.viewButton} ${style.alignItem} ${style.cursorPointer} ${reference?.responded ? style.continueDisabled : ''}`} onClick={reference?.responded ? () => { } : () => handleReferenceSend(reference?.rowId)}>Send</div>
-                                              </div>
-                                            </div>
-                                          </div>
-                                          {reference?.responded && (
-                                            <>
-                                              <CommonDivider />
-                                              <div className={`${style.gridGap1}  ${!reference?.responded ? style.continueDisabled : ''}`}>
-                                                <div className={`${reference?.reviewDetails?.referenceStatus === 'REFERENCE_IS_FAVORABLE' ? style.greenDotStyle : reference?.reviewDetails?.referenceStatus === 'REFERENCE_PROVIDED_NOT_FAVORABLE' ? style.redDotStyle : reference?.reviewDetails?.referenceStatus === 'REFERENCE_IS_SATISFACTORY' ? style.yellowDotStyle : style.greyDotStyle} ${style.buttonCenter}`}></div>
-                                                <div className={`${style.sideHeadingRefFrontStyle}`}>{reference?.reviewDetails?.referenceStatus ? `Marked As ${reference?.reviewDetails?.referenceStatus === 'REFERENCE_IS_FAVORABLE' ? 'Favourable' : reference?.reviewDetails?.referenceStatus === 'REFERENCE_PROVIDED_NOT_FAVORABLE' ? 'Not Favourable' : reference?.reviewDetails?.referenceStatus === 'REFERENCE_IS_SATISFACTORY' ? 'Satisfactory' : ''} By Dept. Head On ${reference?.reviewDetails?.esign?.signedDate ? reference?.reviewDetails?.esign?.signedDate : ''}` : 'To Be Verified By Dept. Head'}</div>
-                                                <div>
-                                                  <div className={`${style.viewTextStyle} ${style.viewButton} ${workModeType !== 'Department Head' ? style.continueDisabled : style.cursorPointer}`} onClick={workModeType !== 'Department Head' ? () => { } : () => { setIsReferenceReview(true); sessionStorage.setItem('refId', reference?.rowId) }}>Review</div>
-                                                </div>
-                                              </div>
-                                            </>
-                                          )}
-                                        </div>
-                                      ))}
-
-                                      {form?.references?.reference?.map((reference, index) => (
-                                        <div className={`${style.marginBottom20} ${style.referenceCardStyle}`}>
-                                          <div className={`${style.gridGap}`}>
-                                            <div className={`${reference?.responded ? style.greenDotStyle : style.greyDotStyle} ${style.buttonCenter}`}></div>
-                                            <div>
-                                              <div className={`${style.displayInRow} ${style.spaceBetweenOnly}`}>
-                                                <div>
-                                                  <div className={`${style.sideHeadingFontStyle}`}>{`${reference?.firstName} ${reference?.lastName}`}</div>
-                                                  <div className={`${style.sideHeadingRefFrontStyle}`}>{reference?.responded ? 'Reference Contact Responded' : 'Reference Contact Not Responded Yet'}</div>
-                                                </div>
-                                                <div className={`${style.viewTextStyle} ${style.viewButton} ${style.alignItem} ${style.cursorPointer}  ${reference?.responded ? style.continueDisabled : ''}`} onClick={reference?.responded ? () => { } : () => handleReferenceSend(reference?.rowId)}>Send</div>
-                                              </div>
-                                            </div>
-                                          </div>
-                                          {reference?.responded && (
-                                            <>
-                                              <CommonDivider />
-                                              <div className={`${style.gridGap1} ${!reference?.responded ? style.continueDisabled : ''}`}>
-                                                <div className={`${reference?.reviewDetails?.referenceStatus === 'REFERENCE_IS_FAVORABLE' ? style.greenDotStyle : reference?.reviewDetails?.referenceStatus === 'REFERENCE_PROVIDED_NOT_FAVORABLE' ? style.redDotStyle : reference?.reviewDetails?.referenceStatus === 'REFERENCE_IS_SATISFACTORY' ? style.yellowDotStyle : style.greyDotStyle} ${style.buttonCenter}`}></div>
-                                                <div className={`${style.sideHeadingRefFrontStyle}`} >{reference?.reviewDetails?.referenceStatus ? `Marked As ${reference?.reviewDetails?.referenceStatus === 'REFERENCE_IS_FAVORABLE' ? 'Favourable' : reference?.reviewDetails?.referenceStatus === 'REFERENCE_PROVIDED_NOT_FAVORABLE' ? 'Not Favourable' : reference?.reviewDetails?.referenceStatus === 'REFERENCE_IS_SATISFACTORY' ? 'Satisfactory' : ''} By Dept. Head On  ${reference?.reviewDetails?.esign?.signedDate ? reference?.reviewDetails?.esign?.signedDate : ''}` : 'To Be Verified By Dept. Head'}</div>
-                                                <div>
-                                                  <div className={`${style.viewTextStyle} ${style.viewButton} ${workModeType === 'Department Head' ? style.continueDisabled : style.cursorPointer}`} onClick={workModeType === 'Department Head' ? () => { } : () => { setIsReferenceReview(true); sessionStorage.setItem('refId', reference?.rowId) }}>Review</div>
-                                                </div>
-                                              </div>
-                                            </>
-                                          )}
-                                        </div>
-                                      ))}
-                                    </>
-                                  )}
                                 </div>
-                                <div className={style.marginBottom20}></div>
-                              </div>
-                            )}
-                            {activeSection?.name === "Immunization" && (
-                              <div className={`${style.cardLeftStyle} ${style.marginTop20} ${style.rightFixedColumn}`}>
-                                {/* <div className={`${style.cardLeftStyle} ${style.marginTop20}`}> */}
-                                <div className={`${style.displayInRow}${style.marginTop20}`}>
-                                  <div
-                                    className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
-                                  >
-                                    <span className={`${style.tableHeaderHeadingTextStyle}`}>
-                                      Immunization History Review
-                                    </span>
-                                    <div
-                                      className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                    >
-                                      <div
-                                        className={`${style.marginLeft10} ${style.tableDataFontStyle1}`} onClick={() => toggleExpand("section3")}
-                                      >
-                                        {expandStates.section3 ? (
-                                          <Tooltip title="Collapse Section" arrow>
-                                            <RemoveIcon
-                                              sx={{
-                                                fontSize: 20,
-                                                color: "#94979A",
-                                                cursor: "pointer",
-                                              }}
-                                            />
-                                          </Tooltip>
-                                        ) : (
-                                          <Tooltip title="Expand Section" arrow>
-                                            <AddIcon
-                                              sx={{
-                                                fontSize: 20,
-                                                color: "#94979A",
-                                                cursor: "pointer",
-                                              }}
-                                            />
-                                          </Tooltip>
-                                        )}
-                                      </div>
-                                    </div>
-                                  </div>
-                                  {expandStates.section3 && (
-                                    <>
+                                {expandStates.section2 && (
+                                  <>
+                                    {form?.references?.privilegeReference?.map((reference, index) => (
                                       <div className={`${style.marginBottom20} ${style.referenceCardStyle}`}>
-
                                         <div className={`${style.gridGap}`}>
-                                          <div className={`${applicationImmunization?.approvalDetails ? style.greenDotStyle : style.greyDotStyle} ${style.buttonCenter}`}></div>
-                                          <div className={`${style.displayInRow} ${style.spaceBetweenOnly}`}>
-                                            <div>
-                                              <div className={`${style.sideHeadingFontStyle}`}>Immunization History</div>
-                                              <div className={`${style.sideHeadingRefFrontStyle}`}>{applicationImmunization?.approvalDetails ? `Approved By Safety & Wellness On ${applicationImmunization?.approvalDetails?.esignature?.signedDate}` : 'Immunization History Not Verified Yet'}</div>
+                                          <div className={`${reference?.responded ? style.greenDotStyle : style.greyDotStyle} ${style.buttonCenter}`}></div>
+                                          <div>
+                                            <div className={`${style.displayInRow} ${style.spaceBetweenOnly}`}>
+                                              <div>
+                                                <div className={`${style.sideHeadingFontStyle}`}>{`${reference?.firstName} ${reference?.lastName}`}</div>
+                                                <div className={`${style.sideHeadingRefFrontStyle}`}>{reference?.responded ? 'Reference Contact Responded' : 'Reference Contact Not Responded Yet'}</div>
+                                              </div>
+                                              <div className={`${style.viewTextStyle} ${style.viewButton} ${style.alignItem} ${style.cursorPointer} ${reference?.responded ? style.continueDisabled : ''}`} onClick={reference?.responded ? () => { } : () => handleReferenceSend(reference?.rowId)}>Send</div>
                                             </div>
-                                            <div className={`${style.viewTextStyle} ${style.viewButton} ${style.alignItem} ${style.cursorPointer}  ${applicationImmunization?.approvalDetails ? style.continueDisabled : ''}`} onClick={applicationImmunization?.approvalDetails ? () => { } : () => handleImmunizationSend(applicationImmunization?.task?.id)}>Send</div>
                                           </div>
                                         </div>
+                                        {reference?.responded && (
+                                          <>
+                                            <CommonDivider />
+                                            <div className={`${style.gridGap1}  ${!reference?.responded ? style.continueDisabled : ''}`}>
+                                              <div className={`${reference?.reviewDetails?.referenceStatus === 'REFERENCE_IS_FAVORABLE' ? style.greenDotStyle : reference?.reviewDetails?.referenceStatus === 'REFERENCE_PROVIDED_NOT_FAVORABLE' ? style.redDotStyle : reference?.reviewDetails?.referenceStatus === 'REFERENCE_IS_SATISFACTORY' ? style.yellowDotStyle : style.greyDotStyle} ${style.buttonCenter}`}></div>
+                                              <div className={`${style.sideHeadingRefFrontStyle}`}>{reference?.reviewDetails?.referenceStatus ? `Marked As ${reference?.reviewDetails?.referenceStatus === 'REFERENCE_IS_FAVORABLE' ? 'Favourable' : reference?.reviewDetails?.referenceStatus === 'REFERENCE_PROVIDED_NOT_FAVORABLE' ? 'Not Favourable' : reference?.reviewDetails?.referenceStatus === 'REFERENCE_IS_SATISFACTORY' ? 'Satisfactory' : ''} By Dept. Head On ${reference?.reviewDetails?.esign?.signedDate ? reference?.reviewDetails?.esign?.signedDate : ''}` : 'To Be Verified By Dept. Head'}</div>
+                                              <div>
+                                                <div className={`${style.viewTextStyle} ${style.viewButton} ${workModeType !== 'Department Head' ? style.continueDisabled : style.cursorPointer}`} onClick={workModeType !== 'Department Head' ? () => { } : () => { setIsReferenceReview(true); sessionStorage.setItem('refId', reference?.rowId) }}>Review</div>
+                                              </div>
+                                            </div>
+                                          </>
+                                        )}
                                       </div>
-                                    </>
-                                  )}
-                                </div>
-                                <div className={style.marginBottom20}></div>
+                                    ))}
+
+                                    {form?.references?.reference?.map((reference, index) => (
+                                      <div className={`${style.marginBottom20} ${style.referenceCardStyle}`}>
+                                        <div className={`${style.gridGap}`}>
+                                          <div className={`${reference?.responded ? style.greenDotStyle : style.greyDotStyle} ${style.buttonCenter}`}></div>
+                                          <div>
+                                            <div className={`${style.displayInRow} ${style.spaceBetweenOnly}`}>
+                                              <div>
+                                                <div className={`${style.sideHeadingFontStyle}`}>{`${reference?.firstName} ${reference?.lastName}`}</div>
+                                                <div className={`${style.sideHeadingRefFrontStyle}`}>{reference?.responded ? 'Reference Contact Responded' : 'Reference Contact Not Responded Yet'}</div>
+                                              </div>
+                                              <div className={`${style.viewTextStyle} ${style.viewButton} ${style.alignItem} ${style.cursorPointer}  ${reference?.responded ? style.continueDisabled : ''}`} onClick={reference?.responded ? () => { } : () => handleReferenceSend(reference?.rowId)}>Send</div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                        {reference?.responded && (
+                                          <>
+                                            <CommonDivider />
+                                            <div className={`${style.gridGap1} ${!reference?.responded ? style.continueDisabled : ''}`}>
+                                              <div className={`${reference?.reviewDetails?.referenceStatus === 'REFERENCE_IS_FAVORABLE' ? style.greenDotStyle : reference?.reviewDetails?.referenceStatus === 'REFERENCE_PROVIDED_NOT_FAVORABLE' ? style.redDotStyle : reference?.reviewDetails?.referenceStatus === 'REFERENCE_IS_SATISFACTORY' ? style.yellowDotStyle : style.greyDotStyle} ${style.buttonCenter}`}></div>
+                                              <div className={`${style.sideHeadingRefFrontStyle}`} >{reference?.reviewDetails?.referenceStatus ? `Marked As ${reference?.reviewDetails?.referenceStatus === 'REFERENCE_IS_FAVORABLE' ? 'Favourable' : reference?.reviewDetails?.referenceStatus === 'REFERENCE_PROVIDED_NOT_FAVORABLE' ? 'Not Favourable' : reference?.reviewDetails?.referenceStatus === 'REFERENCE_IS_SATISFACTORY' ? 'Satisfactory' : ''} By Dept. Head On  ${reference?.reviewDetails?.esign?.signedDate ? reference?.reviewDetails?.esign?.signedDate : ''}` : 'To Be Verified By Dept. Head'}</div>
+                                              <div>
+                                                <div className={`${style.viewTextStyle} ${style.viewButton} ${workModeType === 'Department Head' ? style.continueDisabled : style.cursorPointer}`} onClick={workModeType === 'Department Head' ? () => { } : () => { setIsReferenceReview(true); sessionStorage.setItem('refId', reference?.rowId) }}>Review</div>
+                                              </div>
+                                            </div>
+                                          </>
+                                        )}
+                                      </div>
+                                    ))}
+                                  </>
+                                )}
                               </div>
-                            )}
+                              <div className={style.marginBottom20}></div>
+                            </div>
+                            {/* )}
+                            {activeSection?.name === "Immunization" && ( */}
+                            {/* <div className={`${style.cardLeftStyle} ${style.marginTop20} ${style.rightFixedColumn}`}> */}
+                            <div className={`${style.cardLeftStyle} ${style.marginTop20}`}>
+                              <div className={`${style.displayInRow}${style.marginTop20}`}>
+                                <div
+                                  className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
+                                >
+                                  <span className={`${style.tableHeaderHeadingTextStyle}`}>
+                                    Immunization History Review
+                                  </span>
+                                  <div
+                                    className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                                  >
+                                    <div
+                                      className={`${style.marginLeft10} ${style.tableDataFontStyle1}`} onClick={() => toggleExpand("section3")}
+                                    >
+                                      {expandStates.section3 ? (
+                                        <Tooltip title="Collapse Section" arrow>
+                                          <RemoveIcon
+                                            sx={{
+                                              fontSize: 20,
+                                              color: "#94979A",
+                                              cursor: "pointer",
+                                            }}
+                                          />
+                                        </Tooltip>
+                                      ) : (
+                                        <Tooltip title="Expand Section" arrow>
+                                          <AddIcon
+                                            sx={{
+                                              fontSize: 20,
+                                              color: "#94979A",
+                                              cursor: "pointer",
+                                            }}
+                                          />
+                                        </Tooltip>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                                {expandStates.section3 && (
+                                  <>
+                                    <div className={`${style.marginBottom20} ${style.referenceCardStyle}`}>
+
+                                      <div className={`${style.gridGap}`}>
+                                        <div className={`${applicationImmunization?.approvalDetails ? style.greenDotStyle : style.greyDotStyle} ${style.buttonCenter}`}></div>
+                                        <div className={`${style.displayInRow} ${style.spaceBetweenOnly}`}>
+                                          <div>
+                                            <div className={`${style.sideHeadingFontStyle}`}>Immunization History</div>
+                                            <div className={`${style.sideHeadingRefFrontStyle}`}>{applicationImmunization?.approvalDetails ? `Approved By Safety & Wellness On ${applicationImmunization?.approvalDetails?.esignature?.signedDate}` : 'Immunization History Not Verified Yet'}</div>
+                                          </div>
+                                          <div className={`${style.viewTextStyle} ${style.viewButton} ${style.alignItem} ${style.cursorPointer}  ${applicationImmunization?.approvalDetails ? style.continueDisabled : ''}`} onClick={applicationImmunization?.approvalDetails ? () => { } : () => handleImmunizationSend(applicationImmunization?.task?.id)}>Send</div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </>
+                                )}
+                              </div>
+                              <div className={style.marginBottom20}></div>
+                            </div>
+                            {/* )} */}
                           </>
                         )}
                       </>
@@ -11552,7 +11551,7 @@ const NewActiveApplication = ({
           {showFileVerifyDialog && (
             <FileVerifyDialog
               getIsOpen={setShowFileVerifyDialog}
-              file={fileArray[selectedFileIndex]}
+              file={fileArray?.[selectedFileIndex]}
               fileArray={fileArray}
               setFileArray={setFileArray}
               selectedFileIndex={selectedFileIndex}

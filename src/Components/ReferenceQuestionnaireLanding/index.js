@@ -48,13 +48,13 @@ const ReferenceQuestionnaireLanding = ({ getIsOpen, days, applicantName, formId,
             {`You have been invited to complete a Professional Reference Questionnaire for ${applicantName}.`}
           </div>
           <div className={`${style.descriptionStyle} ${style.marginTop}`}>
-            Your name and contact was provided by the applicant, who is currently applying for a staff position at  {title ? title : ''}.
+            Your name and contact was provided by {applicantName}, who is currently applying for a staff position at  {title ? title : ''}.
           </div>
           <div className={`${style.descriptionStyle} ${style.marginTop}`}>
             {title ? title : ''} uses CAPManager, an automated credentialing & privileging system, to securely manage a paperless reference verification process.
           </div>
           <div className={`${style.descriptionStyle} ${style.marginTop}`}>
-            The questionnaire should take only a few minutes to complete. We would greatly appreciate your assistance in providing a professional reference for the applicant.
+            The questionnaire should take only a few minutes to complete. We would greatly appreciate your assistance in providing a professional reference for this applicant.
           </div>
           <div className={style.alignCenter}>
             <div
@@ -66,8 +66,8 @@ const ReferenceQuestionnaireLanding = ({ getIsOpen, days, applicantName, formId,
               CONTINUE
             </div>
           </div>
-          <div className={`${style.authorizationCard} ${style.marginTop} ${style.cursorPointer} ${style.authorizationText}`}>
-            The applicant's <strong> Authorization for Release of Information Form </strong> is available for you to view. (Click here)
+          <div className={`${style.authorizationCard} ${style.marginTop} ${style.authorizationText}`}>
+            The applicant's <strong> Authorization for Release of Information Form </strong> is available for you to view. <a href="#">(Click here)</a>
           </div>
         </div>
         <div

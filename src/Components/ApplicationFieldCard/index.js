@@ -90,7 +90,8 @@ const ApplicationFieldCard = ({
   refGridStyle,
   hideBackground,
   customRadioStyle,
-  referenceRadioShowLabel
+  referenceRadioShowLabel,
+  alternateReferenceRadioColor
 }) => {
   const [calendarStart, setCalendarStart] = useState(false);
   const { section, step } = useParams();
@@ -1683,6 +1684,74 @@ const ApplicationFieldCard = ({
               />
             );
           }
+        case "multiDropdown":
+          if (isPOD) {
+            return (
+              <div>
+                <div className={`${style.lableStylePOD}`}>
+                  {fieldData.label}
+                  {isLableEmpty(fieldData.label)
+                    ? false
+                    : (object?.required?.includes(fieldKey) || object?.then?.required?.includes(fieldKey) ||
+                      (parentData !== null
+                        ? parentData?.required?.includes(fieldKey) || parentData?.then?.required?.includes(fieldKey)
+                        : false)) &&
+                    "*"}
+                </div>
+                <hr className={style.borderLine} />
+                <div className={style.lableReadOnlyStyleInPOD}>
+                  {getValueByPath(
+                    basicForm,
+                    `${basicpath}.${baseKey}.${fieldKey}`
+                  ) || "-"}
+                </div>
+              </div>
+            );
+          } else {
+            console.log(formPermission?.permissions?.filter(data => data?.role === sessionStorage.getItem('workModeType'))?.[0]?.fieldLevelPermissions?.filter(data => data?.level === fieldData?.permissionLevel?.toString())?.[0]?.accessPermissions?.includes('Write') ? true : false, formPermission?.permissions?.filter(data => data?.role === sessionStorage.getItem('workModeType'))?.[0]?.fieldLevelPermissions?.filter(data => data?.level === fieldData?.permissionLevel?.toString())?.[0]?.accessPermissions?.includes('Write'), 'Dropdowncheck')
+
+            const specialityValues =
+              fieldKey === "specialty"
+                ? getSpecialityValues(object)
+                : fieldData.enum;
+
+            // Render the dropdown conditionally for "specialty" only if there are values
+            return fieldKey === "specialty" &&
+              specialityValues.length === 0 ? null : (
+              <CommonSelectField
+                value={
+                  getValueByPath(
+                    basicForm,
+                    `${basicpath}.${baseKey}.${fieldKey}`
+                  ) || null
+                }
+                onChange={(e) =>
+                  handleChange(fieldKey, e.target.value, baseKey)
+                }
+                className={style.fullWidth}
+                valueList={specialityValues}
+                labelList={specialityValues}
+                disabledList={specialityValues.map(() => false)}
+                label={fieldData.label}
+                required={
+                  isLableEmpty(fieldData.label)
+                    ? false
+                    : object.required?.includes(fieldKey) || object?.then?.required?.includes(fieldKey) ||
+                    (parentData !== null
+                      ? parentData?.required?.includes(fieldKey) || parentData?.then?.required?.includes(fieldKey)
+                      : false)
+                }
+                // Hide warning specifically for specialty field
+                warning={
+                  fieldKey !== "specialty" &&
+                  warningFields
+                    ?.map((data) => data?.key)
+                    ?.includes(`${basicpath}.${baseKey}.${fieldKey}`)
+                }
+                disabledSelect={!formPermission ? false : formPermission?.permissions?.filter(data => data?.role === sessionStorage.getItem('workModeType'))?.[0]?.fieldLevelPermissions?.filter(data => data?.level === fieldData?.permissionLevel?.toString())?.[0]?.accessPermissions?.includes('Write') ? false : true}
+              />
+            );
+          }
         case "datalist":
           if (isPOD) {
             return (
@@ -2111,7 +2180,7 @@ const ApplicationFieldCard = ({
                       });
                     }}
                     config={{
-                      placeholder: "Type your content here...",
+                      placeholder: "Enter your response here...",
                       toolbar: {
                         shouldNotGroupWhenFull: true,
                         sticky: true,
@@ -2546,7 +2615,7 @@ const ApplicationFieldCard = ({
                   warning={warningFields
                     ?.map((data) => data?.key)
                     ?.includes(`${basicpath}.${baseKey}.${fieldKey}`)}
-                  checkedColor={referenceRadioColor}
+                  checkedColor={alternateReferenceRadioColor ? alternateReferenceRadioColor : referenceRadioColor}
                 />
               </div>
             );
@@ -2596,7 +2665,7 @@ const ApplicationFieldCard = ({
                 warning={warningFields
                   ?.map((data) => data?.key)
                   ?.includes(`${basicpath}.${baseKey}.${fieldKey}`)}
-                checkedColor={referenceRadioColor}
+                checkedColor={alternateReferenceRadioColor ? alternateReferenceRadioColor : referenceRadioColor}
               />
             </div>
           );
@@ -2823,7 +2892,7 @@ const ApplicationFieldCard = ({
             if (fileValid) {
               return <div key={fieldKey}>
                 <div className={`${style.uploadButton}`}>
-                  <div className={style.uploadGrid}>
+                  <div className={style.uploadGridPOD}>
                     {getValueByPath(
                       basicForm,
                       `${basicpath}.${baseKey}.${fieldKey}`
@@ -2862,13 +2931,23 @@ const ApplicationFieldCard = ({
                       />
                     )}
                     <div
-                      className={`${style.uploadText} ${style.cursorPointer} ${style.verticalAlignCenter}`}
+                      className={`${style.uploadText} ${style.verticalAlignCenter}`}
                     >
                       {getValueByPath(
                         basicForm,
                         `${basicpath}.${baseKey}.${fieldKey}`
                       )?.fileName}
                     </div>
+                    <div className={`${style.uploadText} ${style.cursorPointer} ${style.verticalAlignCenter}`}
+                      onClick={() => {
+                        setShowFileDisplayDialog(true); setselectedFile(
+                          getValueByPath(
+                            basicForm,
+                            `${basicpath}.${baseKey}.${fieldKey}`
+                          )
+                        );
+                      }}
+                    >View</div>
                   </div>
                 </div>
               </div>;
@@ -3722,9 +3801,8 @@ const ApplicationFieldCard = ({
                 {object?.description !== null && (
                   <div
                     className={`${style.addMoreDescriptionText} ${style.marginTop10}`}
-                  >
-                    {object?.description}
-                  </div>
+                    dangerouslySetInnerHTML={{ __html: object?.description }}
+                  />
                 )}
               </>
             ) : (

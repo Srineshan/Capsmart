@@ -54,7 +54,7 @@ const ClinicalAbilities = ({ referenceForm, setReferenceForm, applicationId, get
                 responses: prevForm?.referenceDetails?.responses?.map((form, idx) => {
                     if (form?.schemaId === prevForm?.referenceDetails?.responses?.[formIndex]?.schemaId) {
                         const existingProcedures =
-                            form?.data?.natureOfProceduresObserved || {};
+                            formSchema?.properties?.natureOfProceduresObserved?.properties || {};
 
                         const updatedProcedures = Object.keys(existingProcedures).reduce(
                             (acc, key) => {

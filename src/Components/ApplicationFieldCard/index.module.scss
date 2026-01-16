@@ -221,6 +221,12 @@
     gap: 1%;
 }
 
+.uploadGridPOD {
+    display: grid;
+    grid-template-columns: 3% 90% 5%;
+    gap: 1%;
+}
+
 .uploadGrid2 {
     display: grid;
     grid-template-columns: 90% 5%;
@@ -354,7 +360,7 @@
     text-align: left;
     font: normal normal 500 $tabledatatext1 var(--font-style);
     letter-spacing: 0px;
-    color: $textgrey;
+    color: $texttertiary;
     text-transform: capitalize;
     margin-top: 5px;
 }

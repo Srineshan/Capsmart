@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ApplicationFieldCard from '../../../../Components/ApplicationFieldCard';
 import CryptoJS from "crypto-js";
 
 import style from './index.module.scss';
 import ESignature from '../../../../Components/ESignature';
 import { format } from 'date-fns';
+import { getValueByPath } from '../../../../utils/formatting';
 
 const SummaryRecommendation = ({ referenceForm, setReferenceForm, applicationId, getReferenceDetails, formSchema, formIndex, formSchemaWholeObject }) => {
     const [metadata, setMetadata] = useState([]);
@@ -20,9 +21,38 @@ const SummaryRecommendation = ({ referenceForm, setReferenceForm, applicationId,
             publicKey
         ).toString()
     );
+    const phoneCallNeeded = getValueByPath(referenceForm, `referenceDetails.responses[${formIndex}].data.summaryRecommendation.anySensitiveNatureToDiscussByPhone`)
     const getIsEdited = () => {
 
     }
+
+    useEffect(() => {
+        setReferenceForm((prevData) => ({
+            ...prevData,
+            referenceDetails: {
+                ...prevData?.referenceDetails,
+                responses: prevData?.referenceDetails?.responses?.map((form, idx) => {
+                    if (idx !== formIndex) return form;
+
+                    return {
+                        ...form,
+                        data: {
+                            ...form?.data,
+                            referenceInformation: {
+                                ...form?.data?.referenceInformation,
+                                name: `${referenceForm?.referenceDetails?.firstName ?? ""} ${referenceForm.referenceDetails?.lastName ?? ""
+                                    }`.trim(),
+                            },
+                        },
+                    };
+                }),
+            },
+        }));
+    }, [
+        referenceForm?.referenceDetails?.firstName,
+        referenceForm?.referenceDetails?.lastName,
+        formIndex,
+    ]);
 
     const getAllPath = (data) => {
         let temp = metadata;
@@ -41,13 +71,14 @@ const SummaryRecommendation = ({ referenceForm, setReferenceForm, applicationId,
         }
         setLabels(tempLabels);
     }
+
     return (
         <div className={style.applicantInfoCard}>
             {formSchema !== undefined && "summaryRecommendation" in formSchema?.properties && (
                 <ApplicationFieldCard
                     object={formSchema?.properties?.summaryRecommendation}
                     refGridStyle={style.gridStyle}
-                    gridStyle={style.fieldGridStyle}
+                    gridStyle={phoneCallNeeded ? style.fieldGridStyle : style.alternateFieldGridStyle}
                     baseKey={"summaryRecommendation"}
                     basicForm={referenceForm}
                     setBasicForm={setReferenceForm}

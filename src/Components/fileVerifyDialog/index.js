@@ -364,8 +364,8 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
 
 
     const getDocument = async () => {
-        if (fileArray.length > 0 && selectedFileIndex >= 0 && selectedFileIndex < fileArray.length) {
-            const currentFile = fileArray[selectedFileIndex];
+        if (fileArray?.length > 0 && selectedFileIndex >= 0 && selectedFileIndex < fileArray?.length) {
+            const currentFile = fileArray?.[selectedFileIndex];
             const { data: response } = await GET(
                 `document-management-service/document/${currentFile?.rowId}`
             );
@@ -377,8 +377,8 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
     }
 
     const getDocumentAlternative = async () => {
-        if (fileArray.length > 0 && selectedFileIndex >= 0 && selectedFileIndex < fileArray.length) {
-            const currentFile = fileArray[selectedFileIndex];
+        if (fileArray?.length > 0 && selectedFileIndex >= 0 && selectedFileIndex < fileArray?.length) {
+            const currentFile = fileArray?.[selectedFileIndex];
             if (form?.documents?.alternateDocuments[form?.documents?.alternateDocuments?.findIndex(data => data?.replacedByRowId === currentFile?.rowId)]?.rowId !== undefined) {
                 const { data: response } = await GET(
                     `document-management-service/document/${form?.documents?.alternateDocuments[form?.documents?.alternateDocuments?.findIndex(data => data?.replacedByRowId === currentFile?.rowId)]?.rowId}`
@@ -650,7 +650,7 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                         <img src={selectedFileIndex === 0 ? ArrowDisabledLeft : ArrowDefaultLeft} className={`${style.icon} ${style.defaultImg}`} /> */}
                                     </div>
                                 </div>
-                                <div className={`${style.heading} ${style.marginLeft10} ${!file?.isVerified ? style.redText : ''}`}>Document {selectedFileIndex + 1} of {fileArray.length}</div>
+                                <div className={`${style.heading} ${style.marginLeft10} ${!file?.isVerified ? style.redText : ''}`}>Document {selectedFileIndex + 1} of {fileArray?.length}</div>
                                 <div
                                     className={` ${selectedFileIndex === fileArray?.length - 1 ? style.cursorNotAllowed : style.cursorPointer} ${style.marginLeft10}`}
                                     onClick={handleNext}
@@ -734,32 +734,13 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                             <div className={`${style.detailsColumn} ${fields?.length > 6 ? style.expanded : ""}`}>
                                 <div className={style.extractedFields}>
                                     <div className={style.spaceBetween}>
-                                        <div className={`${style.heading} ${style.marginBottom}`}>Current Document</div>
+                                        <div className={`${style.heading} ${style.marginBottom}`}>{form?.documents?.documentDetails?.filter(data => data?.rowId === file?.rowId)?.[0]?.documentStatus === "REJECT_AND_REPLACE_DOCUMENT" && "(Replaced)"} Current Document</div>
                                         {showViewOnly !== true && (
                                             <Tooltip title="Click to Modify Details" arrow>
                                                 <ModeEditOutlinedIcon sx={{ color: "#06617A" }} className={style.cursorPointer} onClick={() => setShowFileWithFields(true)} />
                                             </Tooltip>
                                         )}
                                     </div>
-                                    {(form?.documents?.documentDetails?.filter(data => data?.rowId === file?.rowId)?.[0]?.notesDetails?.length !== 0 && form?.documents?.documentDetails?.filter(data => data?.rowId === file?.rowId)?.[0]?.notesDetails?.map(item => item.notes?.notes)?.filter(note => note)?.length !== 0) && form?.documents?.documentDetails?.filter(data => data?.rowId === file?.rowId)?.[0]?.notesDetails !== undefined && (
-                                        <div>
-                                            <div className={`${style.lableStyle} ${style.marginTop10}`}>Reason for Replacing / Editing Document By MSO</div>
-                                            <div className={style.dividerStyle}></div>
-                                            {form?.documents?.documentDetails?.filter(data => data?.rowId === file?.rowId)?.[0]?.notesDetails?.filter(item => item.notes?.notes)?.map(item => ({
-                                                user: `${item?.user?.name?.firstName} ${item?.user?.name?.lastName}`,
-                                                note: item.notes.notes,
-                                                time: format(new Date(item.createdDate), 'MMM dd, yyyy HH:mm')
-                                            }))?.map(data => (
-                                                <div>
-                                                    <div className={`${style.notesAlignment} ${style.marginTop10} ${style.lableStyle}`}>{`${data?.time} - ${data?.user}`}</div>
-                                                    <div
-                                                        className={`${style.notesAlignment} ${style.marginTop10} ${style.lableStyle}`}
-                                                        dangerouslySetInnerHTML={{ __html: data?.note }}
-                                                    />
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
                                     {documentStatus === "REJECT_AND_REPLACE_DOCUMENT" ? (
                                         <div className={`${style.twoCol} ${style.marginTop}`}>
                                             {fields?.map((field, index) => renderFields(field, index))}
@@ -773,6 +754,26 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                                     <div className={`${style.notesAlignment} ${style.marginTop10} ${style.lableStyle}`}>
                                                         {metaData !== null ? metaData[field?.name] !== undefined ? field?.fieldType === "datepicker" ? format(new Date(metaData[field?.name]), 'dd/MM/yyyy') : metaData[field?.name] : "" : ""}
                                                     </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                    {(form?.documents?.documentDetails?.filter(data => data?.rowId === file?.rowId)?.[0]?.notesDetails?.length !== 0 && form?.documents?.documentDetails?.filter(data => data?.rowId === file?.rowId)?.[0]?.notesDetails?.map(item => item.notes?.notes)?.filter(note => note)?.length !== 0) && form?.documents?.documentDetails?.filter(data => data?.rowId === file?.rowId)?.[0]?.notesDetails !== undefined && (
+                                        <div>
+                                            <CommonDivider />
+                                            <div className={`${style.lableStyle} ${style.marginTop}`}>Reason for Replacing / Editing Document By MSO</div>
+                                            <div className={style.dividerStyle}></div>
+                                            {form?.documents?.documentDetails?.filter(data => data?.rowId === file?.rowId)?.[0]?.notesDetails?.filter(item => item.notes?.notes)?.map(item => ({
+                                                user: `${item?.user?.name?.firstName} ${item?.user?.name?.lastName}`,
+                                                note: item.notes.notes,
+                                                time: format(new Date(item.createdDate), 'MMM dd, yyyy HH:mm')
+                                            }))?.map(data => (
+                                                <div>
+                                                    <div className={`${style.notesAlignment} ${style.marginTop10} ${style.lableStyle}`}>{`${data?.time} - ${data?.user}`}</div>
+                                                    <div
+                                                        className={`${style.notesAlignment} ${style.marginTop10} ${style.lableStyle}`}
+                                                        dangerouslySetInnerHTML={{ __html: data?.note }}
+                                                    />
                                                 </div>
                                             ))}
                                         </div>
@@ -877,14 +878,18 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                                 <div className={` ${style.marginTop10}`}>
                                                     <CommonSelectField
                                                         value={rejectClarificationType}
-                                                        onChange={(e) => setRejectClarificationType(e.target.value)}
+                                                        onChange={(e) => {
+                                                            setRejectClarificationType(e.target.value);
+                                                            if (rejectSubject === '')
+                                                                setRejectSubject(e.target.value === 'REQUEST_ORIGINAL_DOCUMENT' ? 'Request For Original Document' : 'Request For Updated Document')
+                                                        }}
                                                         className={style.documentStatusWidth}
                                                         // firstOptionLabel={"Select Clarification Type"}
                                                         // firstOptionValue={""}
                                                         label={'Request Type*'}
                                                         valueList={['REQUEST_ORIGINAL_DOCUMENT', 'REQUEST_UPDATED_DOCUMENT']}
                                                         labelList={['Request For Original Document', 'Request For Updated Document']}
-                                                        disabledList={['Request Original Document', 'Request Updated Document']?.map(data => false)}
+                                                        disabledList={['Request For Original Document', 'Request For Updated Document']?.map(data => false)}
                                                     />
                                                 </div>
                                                 <div className={style.marginTop10}>
@@ -965,7 +970,7 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                     {documentStatus === "REJECT_AND_REPLACE_DOCUMENT" && (
                                         <>
                                             <div className={style.marginTop}>
-                                                <div className={style.lableStyle}>Reason for MSO replacing uploading document*</div>
+                                                <div className={style.lableStyle}>Reason for MSO replacing document provided*</div>
                                                 <CKEditor
                                                     editor={ClassicEditor}
                                                     data={reasonForReplacingDocument}

@@ -9,7 +9,11 @@ const VisionMissionAndValues = ({ referenceForm, setReferenceForm, applicationId
     const [metadata, setMetadata] = useState([]);
     const [labels, setLabels] = useState([]);
     const [warningFields, setWarningFields] = useState([]);
-
+    const referenceRadioColor = {
+        'No Knowledge': '#14358F',
+        'Yes': '#14B15A',
+        'No': '#F94848'
+    }
     const getIsEdited = () => {
 
     }
@@ -93,6 +97,7 @@ const VisionMissionAndValues = ({ referenceForm, setReferenceForm, applicationId
                             justifyItems: "left",
                             alignItems: "center"
                         }}
+                        alternateReferenceRadioColor={referenceRadioColor}
                     />
                 )}
                 {checkSomeSelected('No') && (

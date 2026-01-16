@@ -54,7 +54,7 @@ const ProfessionalConduct = ({ referenceForm, setReferenceForm, applicationId, g
                 responses: prevForm?.referenceDetails?.responses?.map((form, idx) => {
                     if (form?.schemaId === prevForm?.referenceDetails?.responses?.[formIndex]?.schemaId) {
                         const existingProcedures =
-                            form?.data?.bestOfYourKnowledge || {};
+                            formSchema?.properties?.bestOfYourKnowledge?.properties || {};
 
                         const updatedProcedures = Object.keys(existingProcedures).reduce(
                             (acc, key) => {

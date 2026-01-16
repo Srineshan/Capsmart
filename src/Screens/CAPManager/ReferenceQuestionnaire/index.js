@@ -126,6 +126,10 @@ const ReferenceQuestionnaire = () => {
             });
     }
 
+    const handleBack = async () => {
+        navigate(`/applications/${applicationId}/references/${referenceId}/${referenceForm?.referenceDetails?.responses?.[formIndex - 1]?.schemaId}/${btoa(referenceForm?.referenceDetails?.responses?.[formIndex - 1]?.referenceSchemaCategory)}`)
+    }
+
     const handleSubmit = async () => {
         await PUT(`application-management-service/application/${applicationId}/reference/${referenceId}/form/${referenceForm?.referenceDetails?.responses?.[formIndex]?.id}/response`, { data: referenceForm?.referenceDetails?.responses?.[formIndex]?.data })
             .then(response => {
@@ -162,13 +166,13 @@ const ReferenceQuestionnaire = () => {
                             <div className={style.applicationScreenGrid}>
                                 <div className={style.marginTop}>
                                     <div className={`${style.applicantInfoCard}`}>
-                                        <div className={style.applicantInformation}>APPLICANT INFORMATION</div>
+                                        <div className={style.applicantInformation}>NEW STAFF APPLICANT</div>
                                         <div className={style.applicantName}>{`${referenceForm?.basicDetails?.applicant?.name?.firstName} ${referenceForm?.basicDetails?.applicant?.name?.lastName}`}</div>
-                                        <div className={style.description}>{`${referenceForm?.basicDetails?.applicant?.applicantType} Applying for a staff position as ${referenceForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory}`}</div>
+                                        <div className={style.description}>{`${referenceForm?.basicDetails?.applicant?.applicantType} Applying for a staff position`}</div>
                                         <div className={`${style.twoCol} ${style.marginTop10}`}>
                                             <div className={style.applicantInfoGrid}>
-                                                <div className={style.descriptionMild}>Department:</div>
-                                                <div className={style.descriptionMild}>{referenceForm?.basicDetails?.departmentSpecialty?.department}</div>
+                                                <div className={style.descriptionMild}>Department / Speciality:</div>
+                                                <div className={style.descriptionMild}>{`${referenceForm?.basicDetails?.departmentSpecialty?.department} / ${referenceForm?.basicDetailReferences?.specialty?.name}`}</div>
                                             </div>
                                             <div className={style.applicantInfoGrid}>
                                                 <div className={style.descriptionMild}>Department Head:</div>
@@ -176,12 +180,6 @@ const ReferenceQuestionnaire = () => {
                                                     <div className={style.descriptionMild}>{`${deptHead?.name?.firstName || ''} ${deptHead?.name?.lastName || ''}`}</div>
                                                     <div className={style.descriptionMild}>{`${`${deptHead?.email?.officialEmail || ''} `} ${deptHead?.email?.officialEmail ? `|` : ''} ${`${deptHead?.communication?.countryCode || ''} ${deptHead?.communication?.mobileNumber || ''}`}`}</div>
                                                 </div>
-                                            </div>
-                                        </div>
-                                        <div className={`${style.twoCol} ${style.marginTop10}`}>
-                                            <div className={style.applicantInfoGrid}>
-                                                <div className={style.descriptionMild}>Speciality:</div>
-                                                <div className={style.descriptionMild}>{referenceForm?.basicDetailReferences?.specialty?.name}</div>
                                             </div>
                                         </div>
                                     </div>
@@ -217,6 +215,11 @@ const ReferenceQuestionnaire = () => {
                                                 SAVE IN PROGRESS
                                             </div>
                                         </Tooltip> */}
+                                        {formIndex !== 0 && (
+                                            <Tooltip title={"Click to go to the previous step"} arrow>
+                                                <div className={` ${style.saveInProgress} ${style.marginTop10}`} onClick={() => handleBack()}>BACK</div>
+                                            </Tooltip>
+                                        )}
                                         {referenceForm?.referenceDetails?.responses?.length === (formIndex + 1) ? (
                                             <Tooltip title={"Click to submit your application"} arrow>
                                                 <div className={` ${style.continue} ${style.marginTop10}`} onClick={() => handleSubmit()}>SUBMIT</div>
