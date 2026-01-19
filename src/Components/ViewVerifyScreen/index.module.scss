@@ -4483,6 +4483,12 @@ input[type="number"] {
   grid-gap: 1%;
 }
 
+.tableHeaderGridStyleWithSignedBy {
+  display: grid;
+  grid-template-columns: 5% 72% 20%;
+  grid-gap: 1%;
+}
+
 .tableHeaderGridStyleFormReappointment {
   display: grid;
   grid-template-columns: 85% 14%;

@@ -4,6 +4,7 @@ import React, { useEffect, useState, useRef } from "react";
 import CommonPhoneField from "../../Components/CommonFields/CommonPhoneField";
 import CommonInputField from "../CommonFields/CommonInputField";
 import CommonSelectField from "../CommonFields/CommonSelectField";
+import CommonMultiSelectField from "../CommonFields/CommonMultiSelectField";
 import CommonDateField from "../CommonFields/CommonDateField";
 import TextSnippetOutlinedIcon from "@mui/icons-material/TextSnippetOutlined";
 import { TextField, Tooltip } from "@mui/material";
@@ -1718,38 +1719,51 @@ const ApplicationFieldCard = ({
             // Render the dropdown conditionally for "specialty" only if there are values
             return fieldKey === "specialty" &&
               specialityValues.length === 0 ? null : (
-              <CommonSelectField
-                value={
-                  getValueByPath(
-                    basicForm,
-                    `${basicpath}.${baseKey}.${fieldKey}`
-                  ) || null
-                }
-                onChange={(e) =>
-                  handleChange(fieldKey, e.target.value, baseKey)
-                }
-                className={style.fullWidth}
-                valueList={specialityValues}
-                labelList={specialityValues}
-                disabledList={specialityValues.map(() => false)}
-                label={fieldData.label}
-                required={
-                  isLableEmpty(fieldData.label)
+              <div>
+                <div className={`${style.lableStyle}`}>
+                  {fieldData.label}
+                  {(isLableEmpty(fieldData.label)
                     ? false
-                    : object.required?.includes(fieldKey) || object?.then?.required?.includes(fieldKey) ||
+                    : object?.required?.includes(fieldKey) || object?.then?.required?.includes(fieldKey) ||
                     (parentData !== null
                       ? parentData?.required?.includes(fieldKey) || parentData?.then?.required?.includes(fieldKey)
-                      : false)
-                }
-                // Hide warning specifically for specialty field
-                warning={
-                  fieldKey !== "specialty" &&
-                  warningFields
-                    ?.map((data) => data?.key)
-                    ?.includes(`${basicpath}.${baseKey}.${fieldKey}`)
-                }
-                disabledSelect={!formPermission ? false : formPermission?.permissions?.filter(data => data?.role === sessionStorage.getItem('workModeType'))?.[0]?.fieldLevelPermissions?.filter(data => data?.level === fieldData?.permissionLevel?.toString())?.[0]?.accessPermissions?.includes('Write') ? false : true}
-              />
+                      : false)) && "*"}
+                </div>
+                <div className={style.marginTop10}>
+                  <CommonMultiSelectField
+                    value={
+                      getValueByPath(
+                        basicForm,
+                        `${basicpath}.${baseKey}.${fieldKey}`
+                      ) || []
+                    }
+                    onChange={(e) =>
+                      handleChange(fieldKey, e.target.value, baseKey)
+                    }
+                    className={style.fullWidth}
+                    valueList={specialityValues}
+                    labelList={specialityValues}
+                    disabledList={specialityValues.map(() => false)}
+                    label={fieldData.label}
+                    required={
+                      isLableEmpty(fieldData.label)
+                        ? false
+                        : object.required?.includes(fieldKey) || object?.then?.required?.includes(fieldKey) ||
+                        (parentData !== null
+                          ? parentData?.required?.includes(fieldKey) || parentData?.then?.required?.includes(fieldKey)
+                          : false)
+                    }
+                    // Hide warning specifically for specialty field
+                    warning={
+                      fieldKey !== "specialty" &&
+                      warningFields
+                        ?.map((data) => data?.key)
+                        ?.includes(`${basicpath}.${baseKey}.${fieldKey}`)
+                    }
+                    disabledSelect={!formPermission ? false : formPermission?.permissions?.filter(data => data?.role === sessionStorage.getItem('workModeType'))?.[0]?.fieldLevelPermissions?.filter(data => data?.level === fieldData?.permissionLevel?.toString())?.[0]?.accessPermissions?.includes('Write') ? false : true}
+                  />
+                </div>
+              </div>
             );
           }
         case "datalist":
@@ -3688,8 +3702,8 @@ const ApplicationFieldCard = ({
                   : innerData[data]
                 : ""
             ),
-            tooltipValueText: ["Click to Edit"],
-            onClickFunction: handleEdit,
+            tooltipValueText: !isPOD ? ["Click to Edit"] : [],
+            onClickFunction: !isPOD ? handleEdit : () => { },
           });
         } else {
           temp.push({

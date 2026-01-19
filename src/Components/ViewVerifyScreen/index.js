@@ -5878,7 +5878,7 @@ const NewActiveApplication = ({
                                 className={`${style.displayInRow} ${style.verticalAlignCenter} `}
                               >
                                 <div className={`${style.tableHeaderTextStyle} ${style.marginLeft20}`}>
-                                  Required {applicationType === "LOCUM" ? `Application ${form?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'} data and Proof of Documentation for ${formattedStartingDate} and ${formattedExpiringDate}` : 'Reappointment data and Proof of Documentation for July 1, 2025 and June 30, 2026'}
+                                  Required {applicationType === "NEW" ? 'Appointment data and Proof of Documentation' : applicationType === "LOCUM" ? `Application ${form?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'} data and Proof of Documentation for ${formattedStartingDate} and ${formattedExpiringDate}` : 'Reappointment data and Proof of Documentation for July 1, 2025 and June 30, 2026'}
                                 </div>
                               </div>
                             </div>
@@ -6050,7 +6050,7 @@ const NewActiveApplication = ({
                                     className={` ${style.marginTop5} ${style.tableDataStyle}`}
                                   >
                                     <div
-                                      className={` ${style.tableHeaderGridStyleFormReappointmentForStaff} ${style.marginTop10} ${style.backgroundColorStyle} ${style.paddingTopBottom10}`}
+                                      className={` ${(data?.formCategory === "Acknowledgement" && form?.forms?.[index]?.esign?.signedDate) ? style.tableHeaderGridStyleWithSignedBy : style.tableHeaderGridStyleFormReappointmentForStaff} ${style.marginTop10} ${style.backgroundColorStyle} ${style.paddingTopBottom10}`}
                                     >
                                       {/* <div  className={`${style.backgroundColorStyle}`}> */}
                                       <div
@@ -6073,6 +6073,9 @@ const NewActiveApplication = ({
                                           {data?.title}
                                         </div>
                                       </div>
+                                      {(data?.formCategory === "Acknowledgement" && form?.forms?.[index]?.esign?.signedDate) && (
+                                        <div className={`${style.date} ${style.marginLeft20}`}><strong>Signed By:</strong> {`${form?.forms?.[index]?.esign?.name} ${form?.forms?.[index]?.esign?.signedDate}`}</div>
+                                      )}
                                     </div>
                                     {applicationType === "NEW" ? (
                                       <>
@@ -6679,7 +6682,7 @@ const NewActiveApplication = ({
                             <div className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderGridStyleCred1} `}>
 
                               <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                                <div className={`${style.tableHeaderTextStyleCred}`}> Required {applicationType === "LOCUM" ? `Application ${form?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'} data and Proof of Documentation for ${formattedStartingDate} and ${formattedExpiringDate}` : 'Reappointment data and Proof of Documentation for July 1, 2025 and June 30, 2026'} </div>
+                                <div className={`${style.tableHeaderTextStyleCred}`}> Required {applicationType === "NEW" ? 'Appointment data and Proof of Documentation' : applicationType === "LOCUM" ? `Application ${form?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'} data and Proof of Documentation for ${formattedStartingDate} and ${formattedExpiringDate}` : 'Reappointment data and Proof of Documentation for July 1, 2025 and June 30, 2026'} </div>
                               </div>
 
                             </div>

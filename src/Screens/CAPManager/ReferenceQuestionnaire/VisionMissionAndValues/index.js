@@ -5,7 +5,7 @@ import style from './index.module.scss';
 import { getValueByPath } from '../../../../utils/formatting';
 import CommonCheckBox from '../../../../Components/CommonFields/CommonCheckBox';
 
-const VisionMissionAndValues = ({ referenceForm, setReferenceForm, applicationId, getReferenceDetails, formSchema, formIndex, formSchemaWholeObject }) => {
+const VisionMissionAndValues = ({ referenceForm, setReferenceForm, applicationId, getReferenceDetails, formSchema, formIndex, formSchemaWholeObject, getAllPath, getAllLabels }) => {
     const [metadata, setMetadata] = useState([]);
     const [labels, setLabels] = useState([]);
     const [warningFields, setWarningFields] = useState([]);
@@ -18,23 +18,23 @@ const VisionMissionAndValues = ({ referenceForm, setReferenceForm, applicationId
 
     }
 
-    const getAllPath = (data) => {
-        let temp = metadata;
-        if (!temp?.includes(data)) {
-            console.log(temp, data, 'Metadata')
-            temp.push(data);
-        }
-        setMetadata(temp);
-    }
+    // const getAllPath = (data) => {
+    //     let temp = metadata;
+    //     if (!temp?.includes(data)) {
+    //         console.log(temp, data, 'Metadata')
+    //         temp.push(data);
+    //     }
+    //     setMetadata(temp);
+    // }
 
-    const getAllLabels = (data) => {
-        let tempLabels = labels;
-        if (tempLabels?.filter(innerData => data?.path === innerData?.path)?.length === 0) {
-            console.log(tempLabels, data, 'MetadataLabel')
-            tempLabels.push(data);
-        }
-        setLabels(tempLabels);
-    }
+    // const getAllLabels = (data) => {
+    //     let tempLabels = labels;
+    //     if (tempLabels?.filter(innerData => data?.path === innerData?.path)?.length === 0) {
+    //         console.log(tempLabels, data, 'MetadataLabel')
+    //         tempLabels.push(data);
+    //     }
+    //     setLabels(tempLabels);
+    // }
 
     const checkSomeSelected = (expectedValue) => {
         const proceduresPath = `referenceDetails.responses[${formIndex}].data.willEndorseAndFulfillVisionMission`;

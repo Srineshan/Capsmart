@@ -199,9 +199,9 @@ const References = ({ basicForm, setBasicForm, applicationId, getPreApplication 
         data?.value === undefined ||
         data?.value === 0 ||
         (data?.key === "undefined.references.emailAddress" &&
-          !emailRegex.test(data?.value)) ||
+          !emailRegex?.test(data?.value)) ||
         (data?.key === "undefined.references.contactNumber" &&
-          !phoneRegex.test(data?.value))
+          !phoneRegex?.test(data?.value))
       ) {
         missingKeys.push(data);
       }

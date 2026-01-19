@@ -7,7 +7,7 @@ import ESignature from '../../../../Components/ESignature';
 import { format } from 'date-fns';
 import { getValueByPath } from '../../../../utils/formatting';
 
-const SummaryRecommendation = ({ referenceForm, setReferenceForm, applicationId, getReferenceDetails, formSchema, formIndex, formSchemaWholeObject }) => {
+const SummaryRecommendation = ({ referenceForm, setReferenceForm, applicationId, getReferenceDetails, formSchema, formIndex, formSchemaWholeObject, getAllPath, getAllLabels }) => {
     const [metadata, setMetadata] = useState([]);
     const [labels, setLabels] = useState([]);
     const [warningFields, setWarningFields] = useState([]);
@@ -54,23 +54,23 @@ const SummaryRecommendation = ({ referenceForm, setReferenceForm, applicationId,
         formIndex,
     ]);
 
-    const getAllPath = (data) => {
-        let temp = metadata;
-        if (!temp?.includes(data)) {
-            console.log(temp, data, 'Metadata')
-            temp.push(data);
-        }
-        setMetadata(temp);
-    }
+    // const getAllPath = (data) => {
+    //     let temp = metadata;
+    //     if (!temp?.includes(data)) {
+    //         console.log(temp, data, 'Metadata')
+    //         temp.push(data);
+    //     }
+    //     setMetadata(temp);
+    // }
 
-    const getAllLabels = (data) => {
-        let tempLabels = labels;
-        if (tempLabels?.filter(innerData => data?.path === innerData?.path)?.length === 0) {
-            console.log(tempLabels, data, 'MetadataLabel')
-            tempLabels.push(data);
-        }
-        setLabels(tempLabels);
-    }
+    // const getAllLabels = (data) => {
+    //     let tempLabels = labels;
+    //     if (tempLabels?.filter(innerData => data?.path === innerData?.path)?.length === 0) {
+    //         console.log(tempLabels, data, 'MetadataLabel')
+    //         tempLabels.push(data);
+    //     }
+    //     setLabels(tempLabels);
+    // }
 
     return (
         <div className={style.applicantInfoCard}>
