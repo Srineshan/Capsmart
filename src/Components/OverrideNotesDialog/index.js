@@ -6,7 +6,7 @@ import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
 import style from "./index.module.scss";
 import CryptoJS from 'crypto-js';
-import { format , parseISO, differenceInDays} from 'date-fns';
+import { format, parseISO, differenceInDays } from 'date-fns';
 import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
 import { fileLoadingURL, FormatPhoneNumber, FormatPostalCode } from "../../utils/formatting";
 import LoadingScreen from "../LoadingScreen";
@@ -66,10 +66,10 @@ const OverrideNotesDialog = ({ getIsOpen, getActiveApplicationView, selectedTab 
     getLog();
   }, [applicationType]);
 
-  useEffect (() => {
+  useEffect(() => {
     getRequestUserData()
-    console.log("userSelectOverideApplicant",userSelectOverideApplicant)
-  },[])
+    console.log("userSelectOverideApplicant", userSelectOverideApplicant)
+  }, [])
 
   useEffect(() => {
     sessionStorage.setItem("fromSummary", false);
@@ -203,23 +203,23 @@ const OverrideNotesDialog = ({ getIsOpen, getActiveApplicationView, selectedTab 
     }
   };
 
-   const getRequestUserData = async () => {
-      try {
-        let response;
-          response = await GET(
-            `application-management-service/application/request?requestType=OVERRIDE_REQUEST&status=PENDING&role=Chief Of Staff`,
-          );
-          const requests = response?.data?.requests || [];
-          const filteredRequest = requests.find(item => item?.application?.id === id);
-          console.log("Filtered Application Data", filteredRequest);
-          setUserSelectOverideApplicant(filteredRequest);      
-      }
-      catch (error) {
-        console.error("Error fetching applications:", error);
-        return [];
-      }
-    };
-  
+  const getRequestUserData = async () => {
+    try {
+      let response;
+      response = await GET(
+        `application-management-service/application/request?requestType=OVERRIDE_REQUEST&status=PENDING&role=Chief Of Staff`,
+      );
+      const requests = response?.data?.requests || [];
+      const filteredRequest = requests.find(item => item?.application?.id === id);
+      console.log("Filtered Application Data", filteredRequest);
+      setUserSelectOverideApplicant(filteredRequest);
+    }
+    catch (error) {
+      console.error("Error fetching applications:", error);
+      return [];
+    }
+  };
+
   // const checkRequirements = () => {
   //   return userRole.includes('Chief Of Staff')
   //     ? isChecked.isChecked1
@@ -446,69 +446,73 @@ const OverrideNotesDialog = ({ getIsOpen, getActiveApplicationView, selectedTab 
                 </div>
               </div>
               <div className={`${style.headingLocum} ${style.marginTop10}`}>
-                  Review Locum Staff for Privilege {userSelectOverideApplicant?.locumRenewalDetails?.reappointmentType === "EXTENSION" ? "Extension" : "Renewal"}
-                </div>
+                {applicationType === "NEW" ? 'Review Staff for Appointment' : `Review Locum Staff for Privilege ${userSelectOverideApplicant?.locumRenewalDetails?.reappointmentType === "EXTENSION" ? "Extension" : "Renewal"}`}
+              </div>
               <div ref={componentRef} className={`${style.pagebreak}`}>
-                
+
                 <div className={`${style.rejectionBorderStyle} ${style.declineBorderStyle} ${style.marginTop10}`}>
-                <div className={style.marginTop10}>
-                <div className={`${style.twoColumnGrid} ${style.marginLeftRight20} ${style.marginBottom10}`}>
-                    <div className={`${style.displayInRow} ${style.displayInRowCenter}`}>
-                    <span className={style.rejectionHeadingTextStyle}>
-                        {userSelectOverideApplicant?.application?.applicant?.name?.lastName?.charAt(0).toUpperCase() +
-                        userSelectOverideApplicant?.application?.applicant?.name?.lastName?.slice(1).toLowerCase()}
-                        {", "}
-                        {userSelectOverideApplicant?.application?.applicant?.name?.firstName
-                        ? userSelectOverideApplicant?.application?.applicant?.name?.firstName.charAt(0).toUpperCase() +
-                        userSelectOverideApplicant?.application?.applicant?.name?.firstName.slice(1).toLowerCase()
-                        : ""}
-                    </span>
-                    <div className={`${style.rejectionTextStyle} ${style.marginLeft2}`}>
-                        Locum {userSelectOverideApplicant?.application?.basicDetailReferences?.applicantType?.serviceProviderType}
-                    </div>
-                    </div>
-                    <div className={`${style.displayInRow} ${style.displayInRowCenter}`}>
-                    <span className={`${style.rejectionHeadingTextStyle}`}>
-                        {userSelectOverideApplicant?.application?.basicDetailReferences?.department?.name || ""}
-                        {userSelectOverideApplicant?.application?.basicDetailReferences?.specialty
-                        ? ` - ${userSelectOverideApplicant?.application?.basicDetailReferences?.specialty?.name}`
-                        : ""}
-                    </span>
-                    </div>
-                    {entity?.multiSiteEntity && (
-                    <div className={`${style.twoColumnGridInner}`}>
-                        <span className={`${style.rejectionTextStyle}`}>Site Name:</span>
-                        <span className={`${style.rejectionTextStyle1}`}>{entity?.multiSiteEntity?.[0]?.name || "-"}</span>
-                    </div>
-                    )}
-                    <div className={`${style.twoColumnGridInner}`}>
-                    <span className={`${style.rejectionTextStyle}`}>Expiration Date:</span>
-                    <span className={`${style.rejectionTextStyle1}`}>{formattedExpiringDate}</span>
-                    </div>
-                    <div className={`${style.twoColumnGridInner}`}>
-                    <span className={`${style.rejectionTextStyle}`}>{userSelectOverideApplicant?.locumRenewalDetails?.reappointmentType === "EXTENSION" ? "Days From Expiration :" : "Days Since Expiration :"}</span>
-                    <span className={`${style.rejectionTextStyle1}`}> {userSelectOverideApplicant?.locumRenewalDetails?.reappointmentType === "EXTENSION" ? `${daysRemaining} days` : `${daysRemaining} days`}</span>
-                    </div>
-                    {/* <div className={`${style.twoColumnGridInner}`}>
+                  <div className={style.marginTop10}>
+                    <div className={`${style.twoColumnGrid} ${style.marginLeftRight20} ${style.marginBottom10}`}>
+                      <div className={`${style.displayInRow} ${style.displayInRowCenter}`}>
+                        <span className={style.rejectionHeadingTextStyle}>
+                          {userSelectOverideApplicant?.application?.applicant?.name?.lastName?.charAt(0).toUpperCase() +
+                            userSelectOverideApplicant?.application?.applicant?.name?.lastName?.slice(1).toLowerCase()}
+                          {", "}
+                          {userSelectOverideApplicant?.application?.applicant?.name?.firstName
+                            ? userSelectOverideApplicant?.application?.applicant?.name?.firstName.charAt(0).toUpperCase() +
+                            userSelectOverideApplicant?.application?.applicant?.name?.firstName.slice(1).toLowerCase()
+                            : ""}
+                        </span>
+                        <div className={`${style.rejectionTextStyle} ${style.marginLeft2}`}>
+                          {applicationType === "NEW" ? '' : 'Locum'} {userSelectOverideApplicant?.application?.basicDetailReferences?.applicantType?.serviceProviderType}
+                        </div>
+                      </div>
+                      <div className={`${style.displayInRow} ${style.displayInRowCenter}`}>
+                        <span className={`${style.rejectionHeadingTextStyle}`}>
+                          {userSelectOverideApplicant?.application?.basicDetailReferences?.department?.name || ""}
+                          {userSelectOverideApplicant?.application?.basicDetailReferences?.specialty
+                            ? ` - ${userSelectOverideApplicant?.application?.basicDetailReferences?.specialty?.name}`
+                            : ""}
+                        </span>
+                      </div>
+                      {entity?.multiSiteEntity && (
+                        <div className={`${style.twoColumnGridInner}`}>
+                          <span className={`${style.rejectionTextStyle}`}>Site Name:</span>
+                          <span className={`${style.rejectionTextStyle1}`}>{entity?.multiSiteEntity?.[0]?.name || "-"}</span>
+                        </div>
+                      )}
+                      {applicationType === "LOCUM" && (
+                        <>
+                          <div className={`${style.twoColumnGridInner}`}>
+                            <span className={`${style.rejectionTextStyle}`}>Expiration Date:</span>
+                            <span className={`${style.rejectionTextStyle1}`}>{formattedExpiringDate}</span>
+                          </div>
+                          <div className={`${style.twoColumnGridInner}`}>
+                            <span className={`${style.rejectionTextStyle}`}>{userSelectOverideApplicant?.locumRenewalDetails?.reappointmentType === "EXTENSION" ? "Days From Expiration :" : "Days Since Expiration :"}</span>
+                            <span className={`${style.rejectionTextStyle1}`}> {userSelectOverideApplicant?.locumRenewalDetails?.reappointmentType === "EXTENSION" ? `${daysRemaining} days` : `${daysRemaining} days`}</span>
+                          </div>
+                        </>
+                      )}
+                      {/* <div className={`${style.twoColumnGridInner}`}>
         <span className={`${style.rejectionTextStyle}`}>OHIP Number :</span>
         <span className={`${style.rejectionTextStyle1}`}>-</span>
         </div> */}
-                </div>
-                </div>
-            </div>
-                    <div className={`${style.marginTop} ${style.credDateTextStyle}`}>
-                      Override Request Reason From Staff Manager
                     </div>
-                    <hr color="grey" size="2"></hr>
-                    {userSelectOverideApplicant?.notes?.length > 0 && (
-                    userSelectOverideApplicant?.notes?.map((note, index) => (
-                        <div key={note?.id || index} className={`${style.marginTop10}`}>
-                        <div className={style.commentsNotesFontStyle} dangerouslySetInnerHTML={{ __html: note?.notes?.notes || '' }} />
-                        </div>
-                    ))
-                    )}
+                  </div>
+                </div>
+                <div className={`${style.marginTop} ${style.credDateTextStyle}`}>
+                  Override Request Reason From Staff Manager
+                </div>
+                <hr color="grey" size="2"></hr>
+                {userSelectOverideApplicant?.notes?.length > 0 && (
+                  userSelectOverideApplicant?.notes?.map((note, index) => (
+                    <div key={note?.id || index} className={`${style.marginTop10}`}>
+                      <div className={style.commentsNotesFontStyle} dangerouslySetInnerHTML={{ __html: note?.notes?.notes || '' }} />
+                    </div>
+                  ))
+                )}
                 <div className={`${style.marginTop} ${style.reviewButtonContainer}`} onClick={() => getIsOpen(false)}>
-                 <Tooltip title={"Click to Start the Review Process"} arrow><div className={style.reviewButton}>REVIEW FOR OVERRIDE</div></Tooltip>
+                  <Tooltip title={"Click to Start the Review Process"} arrow><div className={style.reviewButton}>REVIEW FOR OVERRIDE</div></Tooltip>
                 </div>
               </div>
             </div>

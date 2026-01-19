@@ -108,7 +108,7 @@ const PACSRequest = ({
 
   const getFormSchema = async () => {
     const { data: form } = await GET(
-      `application-management-service/formSchema/${basicForm?.formSchemas?.[formIndex]?.id}`
+      `application-management-service/formSchema/${basicForm?.forms?.[formIndex]?.schemaId}`
     );
     setFormSchema(form)
   }
@@ -399,6 +399,7 @@ const PACSRequest = ({
         .then(response => {
           console.log(response)
           getPreApplication()
+          populatePdfWithProfileData(applicantProfile)
           SuccessToaster("Application Updated Successfully");
           if (!save) {
             if (sessionStorage.getItem('fromSummary') === 'true') {

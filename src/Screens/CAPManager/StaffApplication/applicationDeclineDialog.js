@@ -564,9 +564,9 @@ const ApplicationDecline = ({ getIsOpen, selectedTab, applicationType, getApplic
           <div className={`${style.eSignDialogBackground}`}>
             <div className={style.spaceBetween}>
               <p className={style.heading1}>
-                {`Staff Not Recommended for ${applicationType === "LOCUM"
-                    ? `${formDetails?.reappointmentType === "EXTENSION" ? "Locum Extension" : "Locum Renewal"}`
-                    : "Reappointment"
+                {`${applicationType === "NEW" ? 'Staff Rejected For' : 'Staff Not Recommended for'} ${applicationType === "LOCUM"
+                  ? `${formDetails?.reappointmentType === "EXTENSION" ? "Locum Extension" : "Locum Renewal"}`
+                  : applicationType === "NEW" ? "Appointment" : "Reappointment"
                   }`}
               </p>
               <Icon icon="cross" size={20} className={style.crossStyle} onClick={() => getApplicationDeclineDialog(false)} />
@@ -662,7 +662,7 @@ const ApplicationDecline = ({ getIsOpen, selectedTab, applicationType, getApplic
                   </div>
                 </div>
               </div>
-              <div className={`${style.marginTop20} ${style.commentsNotesHeadingFontStyle}`}>Enter your Notes / Comments *</div>
+              <div className={`${style.marginTop20} ${style.commentsNotesHeadingFontStyle}`}>{`Enter your reasons for ${applicationType === "NEW" ? 'rejecting' : 'not recommending'} this applicant (This will be included in the email notification to the applicant)*`}</div>
               <div className={`${style.rejectionBorderStyle} ${style.marginTop10}`}>
                 {/* <div className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop10}`}>
                   <textarea
@@ -832,7 +832,7 @@ const ApplicationDecline = ({ getIsOpen, selectedTab, applicationType, getApplic
             </div> */}
               <Tooltip title=" Click to Reject/Decline Staff" arrow>
                 <div className={`${style.marginTop10} ${style.reviewButtonContainer}`} onClick={isApproveEnabled ? () => onClickRejectMoveFunction() : () => { }} style={{ pointerEvents: isApproveEnabled ? 'auto' : 'none', opacity: isApproveEnabled ? 1 : 0.5 }}>
-                  <div className={style.reviewButton}>NOT RECOMMENDED</div>
+                  <div className={style.reviewButton}>{applicationType === "NEW" ? "SAVE & REJECT" : 'NOT RECOMMENDED'}</div>
                 </div>
               </Tooltip>
             </div>

@@ -260,6 +260,8 @@ const SuperAdminDashboard = React.lazy(() =>
 const ClientAdminDashboard = React.lazy(() =>
   import("./Screens/ReferenceList/customerAdminDashboard")
 );
+const ReferenceQuestionnaire = React.lazy(() => import("./Screens/CAPManager/ReferenceQuestionnaire"))
+const ImmunizationReview = React.lazy(() => import("./Components/ImmunizationReview"))
 const ApplicationSummary = React.lazy(() =>
   import("./Screens/CAPManager/ApplicationForm/ApplicationSummary")
 );
@@ -1761,6 +1763,22 @@ const App = ({ props }) => {
                 <Route
                   path="/ApplicantDashboard"
                   element={<ProtectedRoute><ApplicantPortalDashboard /></ProtectedRoute>}
+                />
+                <Route
+                  path="/applications/:applicationId/references/:referenceId"
+                  element={<ReferenceQuestionnaire />}
+                />
+                <Route
+                  path="/applications/:applicationId/references/:referenceId/:formId"
+                  element={<ReferenceQuestionnaire />}
+                />
+                <Route
+                  path="/applications/:applicationId/references/:referenceId/:formId/:step"
+                  element={<ReferenceQuestionnaire />}
+                />
+                <Route
+                  path="/applications/:applicationId/immunization"
+                  element={<ImmunizationReview />}
                 />
                 <Route path="*" element={<DescopeLoginDialog />} {...props} exact={true} />
 

@@ -1,0 +1,332 @@
+@import "../../index.scss";
+
+.marginLeftRight50 {
+    margin: 0 50px !important;
+}
+
+.marginTop {
+    margin-top: 20px !important;
+}
+
+.marginTop10 {
+    margin-top: 10px !important;
+}
+
+.marginLeft {
+    margin-left: 20px !important;
+}
+
+.cardLeftStyle {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 5px 20px #52575D29;
+    border: 0.4000000059604645px solid #E0E1FB;
+    border-radius: 12px;
+    opacity: 1;
+    height: auto;
+}
+
+.cardLeftStyleWithPadding {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 5px 20px #52575D29;
+    border: 0.4000000059604645px solid #E0E1FB;
+    border-radius: 12px;
+    opacity: 1;
+    height: auto;
+    padding: 20px;
+}
+
+.bigCalendarLeftCardWidth {
+    margin-right: 15px;
+}
+
+.userLogo {
+    width: 53px;
+    height: 53px;
+    border-radius: 50%;
+    object-fit: contain;
+}
+
+.flex {
+    display: flex;
+}
+
+.photoBorderStyle {
+    width: 93px;
+    height: 89px;
+}
+
+.profileImage {
+    width: 93px;
+    height: 89px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.twoColumnGrid1 {
+    display: grid;
+    grid-template-columns: 45% 50%;
+    grid-gap: 10px;
+}
+
+
+.textAlignLeft {
+    text-align: left !important;
+}
+
+.cardTextBoldStyle {
+    text-align: left;
+    font: normal normal 600 $tabledatatext1 var(--font-style);
+    color: $textgrey;
+    text-transform: capitalize;
+    opacity: 1;
+}
+
+
+.cardTextNormalStyle {
+    text-align: left;
+    font: normal normal medium 16px/23px var(--font-style);
+    letter-spacing: 0px;
+    color: black;
+    text-transform: capitalize;
+    opacity: 0.6;
+}
+
+.twoColumnGridInner2 {
+    display: grid;
+    grid-template-columns: 45% 45%;
+    grid-gap: 10px;
+    justify-items: start;
+}
+
+
+.emailTextBoldStyle {
+    text-align: start;
+    font: normal normal 400 16px/20px var(--font-style);
+    letter-spacing: 0px;
+    color: #2C2C2C;
+    opacity: 1;
+}
+
+.cursorPointer {
+    cursor: pointer;
+}
+
+.displayInRow {
+    display: flex;
+    flex-direction: row;
+}
+
+.twoCol {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.referenceGrid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+}
+
+.marginTop5 {
+    margin-top: 5px !important;
+}
+
+.marginLeft10 {
+    margin-left: 10px !important;
+}
+
+
+.tableDataStyle {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    min-height: 50px;
+    width: 100%;
+    border: 0.400000006px solid $secondarycolor;
+    box-shadow: 0px 5px 20px #52575D29;
+    border-radius: 2px;
+    padding: 10px;
+}
+
+.tableHeaderGridStyleFormReappointmentForStaff {
+    display: grid;
+    grid-template-columns: 5% 78% 14%;
+    grid-gap: 1%;
+}
+
+
+.backgroundColorStyle {
+    border: 0.4px solid var(--unnamed-color-9aafb5);
+    background: #F5F8F8 0% 0% no-repeat padding-box;
+    border: 0.4000000059604645px solid #9AAFB5;
+    border-radius: 2px;
+    opacity: 1;
+}
+
+.paddingTopBottom10 {
+    padding: 10px 0px;
+}
+
+.verticalAlignCenter {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+
+.greenDotStyle {
+    height: 12px;
+    width: 12px;
+    border-radius: 50%;
+    background-color: $statusgreen;
+    color: $statusgreen;
+}
+
+
+.tableDataFontStyleCredReappointment {
+    font: normal normal bold 20px/26px var(--font-style);
+    margin-left: 20px;
+    letter-spacing: 0px;
+    color: #52575d;
+    text-align: left;
+}
+
+.gridStyle {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+}
+
+.refRadioCard {
+    background: #F5F5F8 0% 0% no-repeat padding-box;
+    border: 0.4000000059604645px solid var(--primary-color);
+    border-radius: 4px;
+    padding: 5px 10px;
+}
+
+.headerText {
+    font: normal normal bold 12px/20px var(--font-style);
+    color: #1D2437;
+    text-align: left;
+}
+
+.headerGrid {
+    display: grid;
+    grid-template-columns: 35% 15% 15% 15% 15%;
+    gap: 1%;
+}
+
+
+.headerGrid2 {
+    display: grid;
+    grid-template-columns: 64% 11% 11% 12%;
+    gap: 1%;
+}
+
+.applicantInfoCard {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    border: 0.4000000059604645px solid #EDEDF3;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0px 5px 20px #52575D4D;
+}
+
+.clinicalGridStyle {
+    display: grid;
+    grid-template-columns: 35% 65%;
+}
+
+.yesNoGridStyle {
+    display: grid;
+    grid-template-columns: 65% 35%;
+}
+
+.dateTitle {
+    text-align: left;
+    font: normal normal bold 17px/26px var(--font-style);
+    letter-spacing: 0px;
+    color: #2C2C2C;
+}
+
+.date {
+    text-align: left;
+    font: normal normal normal 17px/26px var(--font-style);
+    letter-spacing: 0px;
+    color: #2C2C2C;
+}
+
+.fullWidth {
+    width: 100%;
+}
+
+.continue {
+    background: var(--primary-color) 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 6px #00000029;
+    border-radius: 8px;
+    text-align: center;
+    font: normal normal bold 17px/30px var(--font-style);
+    letter-spacing: 0px;
+    color: #FFFFFF;
+    text-transform: uppercase;
+    padding: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.continue:hover {
+    background: var(--primary-color-hover) 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #00000052;
+    border-radius: 8px;
+    opacity: 1;
+}
+
+.fieldGridStyle {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px
+}
+
+.fieldGridStyle> :nth-child(1) {
+    grid-column: span 6;
+}
+
+.fieldGridStyle> :nth-child(2) {
+    grid-column: span 6;
+}
+
+.fieldGridStyle> :nth-child(3) {
+    grid-column: span 6;
+}
+
+.fieldGridStyle> :nth-child(4) {
+    grid-column: span 3;
+}
+
+.fieldGridStyle> :nth-child(5) {
+    grid-column: span 3;
+}
+
+.fieldGridStyle> :nth-child(6) {
+    grid-column: span 2;
+}
+
+.fieldGridStyle> :nth-child(7) {
+    grid-column: span 2;
+}
+
+.fieldGridStyle> :nth-child(8) {
+    grid-column: span 2;
+}
+
+.fieldGridStyle2 {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px
+}
+
+.fieldGridStyle2> :nth-child(1) {
+    grid-column: span 3;
+}
+
+.fieldGridStyle2> :nth-child(2) {
+    grid-column: span 3;
+}

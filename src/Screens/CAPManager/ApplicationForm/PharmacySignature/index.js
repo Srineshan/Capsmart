@@ -121,14 +121,14 @@ const PharmacySignature = ({
 
   const getFormSchema = async () => {
     const { data: form } = await GET(
-      `application-management-service/formSchema/${basicForm?.formSchemas?.[formIndex]?.id}`
+      `application-management-service/formSchema/${basicForm?.forms?.[formIndex]?.schemaId}`
     );
     setFormSchema(form)
   }
 
   const getUploadFormSchema = async () => {
     const { data: form } = await GET(
-      `application-management-service/formSchema/${basicForm?.formSchemas?.[formUploadIndex]?.id}`
+      `application-management-service/formSchema/${basicForm?.forms?.[formUploadIndex]?.schemaId}`
     );
     setUploadFormSchema(form?.schema)
   }
@@ -234,7 +234,8 @@ const PharmacySignature = ({
           completedFormAsFile: uploadedFile,
           data: basicForm?.forms?.[formIndex]?.data,
           unFilledFields: basicForm?.forms?.[formIndex]?.unFilledFields,
-          acknowledged: basicForm?.forms?.[formIndex]?.acknowledged
+          acknowledged: basicForm?.forms?.[formIndex]?.acknowledged,
+          dataStatus: 'COMPLETED'
         }
         await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
           .then(response => {
@@ -278,6 +279,7 @@ const PharmacySignature = ({
       .then(response => {
         console.log(response)
         getPreApplication()
+        populatePdfWithProfileData(applicantProfile)
         SuccessToaster("Application Updated Successfully");
         if (sessionStorage.getItem('fromSummary') === 'true') {
           navigate(-1);

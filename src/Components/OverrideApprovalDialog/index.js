@@ -176,13 +176,13 @@ const OverRideApprovalDialog = ({ getIsOpen, getActiveApplicationView, selectedT
     getApplication();
   }, []);
 
-  useEffect(() => {
-    setIsCheckedSign(formDetails?.forms?.[19]?.acknowledged || true);
-    setIsSigned(
-      formDetails?.forms?.[19]?.esign?.esign !== undefined &&
-      formDetails?.forms?.[19]?.acknowledged
-    );
-  }, [formDetails]);
+  // useEffect(() => {
+  //   setIsCheckedSign(formDetails?.forms?.[19]?.acknowledged || true);
+  //   setIsSigned(
+  //     formDetails?.forms?.[19]?.esign?.esign !== undefined &&
+  //     formDetails?.forms?.[19]?.acknowledged
+  //   );
+  // }, [formDetails]);
 
   useEffect(() => {
     if (name && dateTime) {
@@ -249,10 +249,10 @@ const OverRideApprovalDialog = ({ getIsOpen, getActiveApplicationView, selectedT
     );
     setApplicantType(applicant);
   }
-  
+
   const checkRequirements = () => {
-  return isChecked
-};
+    return isChecked
+  };
 
 
   useEffect(() => {
@@ -540,20 +540,20 @@ const OverRideApprovalDialog = ({ getIsOpen, getActiveApplicationView, selectedT
 
   const reappointmentRequestApplication = async () => {
     const temp = {
-          notes: {
-            notes: userRoleComments
-          },
-          staffEsign: {
-            esign: encryptedText,
-            name : name,
-            signedDate : currentDate
-          }
-        }
+      notes: {
+        notes: userRoleComments
+      },
+      staffEsign: {
+        esign: encryptedText,
+        name: name,
+        signedDate: currentDate
+      }
+    }
 
     const newFormData = new FormData();
     newFormData.append(
       "response",
-      new Blob([JSON.stringify({temp})], {
+      new Blob([JSON.stringify({ temp })], {
         type: "application/json",
       })
     );
@@ -618,30 +618,29 @@ const OverRideApprovalDialog = ({ getIsOpen, getActiveApplicationView, selectedT
             <div className={Classes.DIALOG_BODY}>
               <div className={style.spaceBetween}>
                 <div className={`${style.heading}`}>
-                  {`Locum Privileges ${
-                    applicationType === "LOCUM"
-                      ? `${formDetails?.reappointmentType === "EXTENSION" ? "Extension" : "Renewal"}`
-                      : "Reappointment"
-                  } Override Approval by Chief Of Staff`}
+                  {applicationType === "NEW" ? 'Appointment Override Approval by Chief Of Staff' : `Locum Privileges ${applicationType === "LOCUM"
+                    ? `${formDetails?.reappointmentType === "EXTENSION" ? "Extension" : "Renewal"}`
+                    : "Reappointment"
+                    } Override Approval by Chief Of Staff`}
                 </div>
                 <div className={style.displayInRow}>
-                <Tooltip title="Click to Close" arrow>
-                  <img
-                    src={CrossPink}
-                    alt="cross"
-                    className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft}`}
-                    onClick={() => {
-                      getIsOpen(false);
-                    }}
-                  />
+                  <Tooltip title="Click to Close" arrow>
+                    <img
+                      src={CrossPink}
+                      alt="cross"
+                      className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft}`}
+                      onClick={() => {
+                        getIsOpen(false);
+                      }}
+                    />
                   </Tooltip>
                 </div>
               </div>
               <div ref={componentRef} className={`${style.pagebreak}`}>
                 <div className={`${style.rejectionBorderStyle} ${style.declineBorderStyle} ${style.marginTop10}`}>
-                    <div className={style.marginTop10}>
+                  <div className={style.marginTop10}>
                     <div className={`${style.twoColumnGrid} ${style.marginLeftRight20} ${style.marginBottom10}`}>
-                        <div className={`${style.displayInRow} ${style.displayInRowCenter}`}>
+                      <div className={`${style.displayInRow} ${style.displayInRowCenter}`}>
                         <span className={style.rejectionHeadingTextStyle}>
                           {formDetails?.basicDetails?.applicant?.name?.lastName?.charAt(0).toUpperCase() +
                             formDetails?.basicDetails?.applicant?.name?.lastName?.slice(1).toLowerCase()}{", "}
@@ -650,38 +649,42 @@ const OverRideApprovalDialog = ({ getIsOpen, getActiveApplicationView, selectedT
                             formDetails.basicDetails.applicant.name.firstName.slice(1).toLowerCase()
                             : ""}
                         </span>
-                       <span className={`${style.rejectionTextStyle} ${style.marginLeft4}`}>
-                          {" "} {applicationType === "LOCUM" ? "Locum":""} {formDetails?.providerType?.serviceProviderType}
+                        <span className={`${style.rejectionTextStyle} ${style.marginLeft4}`}>
+                          {" "} {applicationType === "LOCUM" ? "Locum" : ""} {formDetails?.providerType?.serviceProviderType}
                         </span>
-                        </div>
-                        <div className={`${style.displayInRow} ${style.displayInRowCenter}`}>
-                          <span className={`${style.rejectionHeadingTextStyle}`}>
-                            {formDetails?.basicDetails?.departmentSpecialty?.department || ""}
-                            {formDetails?.basicDetails?.departmentSpecialty?.specialty
-                              ? ` - ${formDetails.basicDetails.departmentSpecialty.specialty}`
-                              : ""}
-                          </span>
-                        </div>
-                        {entity?.multiSiteEntity && (
+                      </div>
+                      <div className={`${style.displayInRow} ${style.displayInRowCenter}`}>
+                        <span className={`${style.rejectionHeadingTextStyle}`}>
+                          {formDetails?.basicDetails?.departmentSpecialty?.department || ""}
+                          {formDetails?.basicDetails?.departmentSpecialty?.specialty
+                            ? ` - ${formDetails.basicDetails.departmentSpecialty.specialty}`
+                            : ""}
+                        </span>
+                      </div>
+                      {entity?.multiSiteEntity && (
                         <div className={`${style.twoColumnGridInner}`}>
-                            <span className={`${style.rejectionTextStyle}`}>Site Name:</span>
-                            <span className={`${style.rejectionTextStyle1}`}>{entity?.multiSiteEntity?.[0]?.name || "-"}</span>
+                          <span className={`${style.rejectionTextStyle}`}>Site Name:</span>
+                          <span className={`${style.rejectionTextStyle1}`}>{entity?.multiSiteEntity?.[0]?.name || "-"}</span>
                         </div>
-                        )}
-                        <div className={`${style.twoColumnGridInner}`}>
-                        <span className={`${style.rejectionTextStyle}`}>Expiration Date:</span>
-                        <span className={`${style.rejectionTextStyle1}`}>{formattedExpiringDate}</span>
-                        </div>
-                        <div className={`${style.twoColumnGridInner}`}>
-                        <span className={`${style.rejectionTextStyle}`}>{formDetails?.reappointmentType === "EXTENSION" ? "Days From Expiration :" : "Days Since Expiration :"}</span>
-                        <span className={`${style.rejectionTextStyle1}`}> {formDetails?.reappointmentType === "EXTENSION" ? `${daysRemaining} days` : `${daysRemaining} days`}</span>
-                        </div>
-                        {/* <div className={`${style.twoColumnGridInner}`}>
+                      )}
+                      {applicationType === "LOCUM" && (
+                        <>
+                          <div className={`${style.twoColumnGridInner}`}>
+                            <span className={`${style.rejectionTextStyle}`}>Expiration Date:</span>
+                            <span className={`${style.rejectionTextStyle1}`}>{formattedExpiringDate}</span>
+                          </div>
+                          <div className={`${style.twoColumnGridInner}`}>
+                            <span className={`${style.rejectionTextStyle}`}>{formDetails?.reappointmentType === "EXTENSION" ? "Days From Expiration :" : "Days Since Expiration :"}</span>
+                            <span className={`${style.rejectionTextStyle1}`}> {formDetails?.reappointmentType === "EXTENSION" ? `${daysRemaining} days` : `${daysRemaining} days`}</span>
+                          </div>
+                        </>
+                      )}
+                      {/* <div className={`${style.twoColumnGridInner}`}>
             <span className={`${style.rejectionTextStyle}`}>OHIP Number :</span>
             <span className={`${style.rejectionTextStyle1}`}>-</span>
             </div> */}
                     </div>
-                    </div>
+                  </div>
                 </div>
                 {/* <div className={`${style.marginTop} ${style.commentsNotesHeadingFontStyle}`}>
             Provide notes, if any, for the Department Head regarding this application(Optional)
@@ -734,39 +737,39 @@ const OverRideApprovalDialog = ({ getIsOpen, getActiveApplicationView, selectedT
                   />
                 </div>
                 <CommonCheckBox
-                    className={`${style.marginTop}`}
-                    label={formatLabel("I as the Chief of Staff recommend the Privilege Extension for {ApplicantName} as per the criteria and standards established by {EntityName}’s bylaws and policies. This Recommendation is contingent upon the fulfillment of all required qualifications and obligations as outlined in the medical staff bylaws.", dynamicValues)}
-                    checked={isChecked}
-                    onChange={handleCheckboxChange}
-                  />
-                  <div className={style.twoCol}>
-              <div
-                onClick={!checkRequirements() ? () => { } : onClicksignFunction}
-                className={!checkRequirements() ? style.disabled : style.signatureContainer}
-              >
-                <ESignature
-                  // userName={isSigned ? name : ""}
-                  encData={isSigned ? encryptedText : ''}
-                  showData={isSigned}
-                  showDatais={true}
-                  alternateSignature={isSigned ? `${name}` : ""}
+                  className={`${style.marginTop}`}
+                  label={formatLabel("I as the Chief of Staff recommend the Privilege Extension for {ApplicantName} as per the criteria and standards established by {EntityName}’s bylaws and policies. This Recommendation is contingent upon the fulfillment of all required qualifications and obligations as outlined in the medical staff bylaws.", dynamicValues)}
+                  checked={isChecked}
+                  onChange={handleCheckboxChange}
                 />
-              </div>
-              <div className={style.verticalAlignCenter}>
-                <div className={style.displayInRow} onClick={setTodayDate}>
-                  <div className={style.dateTitle}>Date: </div>
-                  <div className={`${style.date} ${style.marginLeft}`}>
-                    {isSigned
-                      ? currentDate
-                      : ""}
+                <div className={style.twoCol}>
+                  <div
+                    onClick={!checkRequirements() ? () => { } : onClicksignFunction}
+                    className={!checkRequirements() ? style.disabled : style.signatureContainer}
+                  >
+                    <ESignature
+                      // userName={isSigned ? name : ""}
+                      encData={isSigned ? encryptedText : ''}
+                      showData={isSigned}
+                      showDatais={true}
+                      alternateSignature={isSigned ? `${name}` : ""}
+                    />
+                  </div>
+                  <div className={style.verticalAlignCenter}>
+                    <div className={style.displayInRow} onClick={setTodayDate}>
+                      <div className={style.dateTitle}>Date: </div>
+                      <div className={`${style.date} ${style.marginLeft}`}>
+                        {isSigned
+                          ? currentDate
+                          : ""}
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
                 <div className={`${style.marginTop}  ${style.reviewButtonContainer}`}>
                   <div className={` ${style.cursorPointer}`} onClick={() => getIsOpen(false)}>
-                  <Tooltip title="Click to Close" arrow>
-                    <div className={`${style.cancelButton} ${style.cancelButtonTextStyle}`}>Cancel</div></Tooltip>
+                    <Tooltip title="Click to Close" arrow>
+                      <div className={`${style.cancelButton} ${style.cancelButtonTextStyle}`}>Cancel</div></Tooltip>
                   </div>
                   <div
                     className={`${style.reviewButtonStyle} ${isApproveEnabled ? style.cursorPointer : undefined} ${style.marginLeft}`}
@@ -776,8 +779,8 @@ const OverRideApprovalDialog = ({ getIsOpen, getActiveApplicationView, selectedT
                       opacity: isApproveEnabled ? 1 : 0.5
                     }}
                   >
-                    <Tooltip title={isApproveEnabled ? "Click to Send Application for Review" : ""}arrow>
-                    <div className={style.reviewButton}>OVERRIDE</div>
+                    <Tooltip title={isApproveEnabled ? "Click to Send Application for Review" : ""} arrow>
+                      <div className={style.reviewButton}>OVERRIDE</div>
                     </Tooltip>
                   </div>
                 </div>

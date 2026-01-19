@@ -221,6 +221,12 @@
     gap: 1%;
 }
 
+.uploadGridPOD {
+    display: grid;
+    grid-template-columns: 3% 90% 5%;
+    gap: 1%;
+}
+
 .uploadGrid2 {
     display: grid;
     grid-template-columns: 90% 5%;
@@ -354,7 +360,7 @@
     text-align: left;
     font: normal normal 500 $tabledatatext1 var(--font-style);
     letter-spacing: 0px;
-    color: $textgrey;
+    color: $texttertiary;
     text-transform: capitalize;
     margin-top: 5px;
 }
@@ -403,7 +409,7 @@
 
 .lableReadOnlyStyleInPOD {
     text-align: left;
-    font: normal normal normal 14px/20px var(--font-style);
+    font: normal normal normal 17px/24px var(--font-style);
     letter-spacing: 0px;
     color: $textgrey;
     // text-transform: capitalize;
@@ -450,8 +456,7 @@
 }
 
 .borderLine {
-    // background: var(--unnamed-color-e8e9e9) 0% 0% no-repeat padding-box;
-    background: #2c2c2c 0% 0% no-repeat padding-box;
+    border: 1px solid #d9d9d9;
     border-radius: 4px;
     opacity: 1;
 }
@@ -469,6 +474,13 @@
     text-align: center;
     font: italic normal bold 24px/35px var(--font-style);
     letter-spacing: 0px;
-    color: #52575D;
+    color: #25BF6A;
     opacity: 1;
+}
+
+.refRadioCard {
+    background: #F5F5F8 0% 0% no-repeat padding-box;
+    border: 0.4000000059604645px solid var(--primary-color);
+    border-radius: 4px;
+    padding: 5px 10px;
 }

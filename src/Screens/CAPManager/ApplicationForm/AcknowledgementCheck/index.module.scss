@@ -908,6 +908,21 @@ body::-webkit-scrollbar {
     grid-gap: 10px;
 }
 
+.tableValuePODGridStyle {
+    display: grid;
+    grid-template-columns: 10% 60% 10% 10% 5%;
+    grid-gap: 1%;
+}
+
+.tableTopHeaderStyle {
+    // background: $secondarycolor 0% 0% no-repeat padding-box;
+    min-height: 48px;
+    width: 96%;
+    margin-left: 2%;
+    // border: 0.400000006px solid $secondarycolor;
+    border-radius: 2px;
+}
+
 .editIcon {
     height: 20px;
     width: 20px;

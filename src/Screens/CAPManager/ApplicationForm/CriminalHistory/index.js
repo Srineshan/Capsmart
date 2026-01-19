@@ -40,7 +40,7 @@ const CriminalHistory = ({ basicForm, setBasicForm, applicationId, getPreApplica
                 setNavigateBackURL(`/applicationForm/${applicationId}/${basicForm?.forms[0]?.formCategory}/${btoa(basicForm?.forms[0]?.schemaCategory)}`)
             }
         }
-    }, [basicForm, formIndex])
+    }, [basicForm?.forms?.[formIndex]?.schemaId, formIndex])
 
     useEffect(() => {
         setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === atob(step)))
@@ -72,9 +72,9 @@ const CriminalHistory = ({ basicForm, setBasicForm, applicationId, getPreApplica
 
 
     const getFormSchema = async () => {
-        if (basicForm?.formSchemas?.[formIndex]?.id !== undefined) {
+        if (basicForm?.forms?.[formIndex]?.schemaId !== undefined) {
             const { data: form } = await GET(
-                `application-management-service/formSchema/${basicForm?.formSchemas?.[formIndex]?.id}`
+                `application-management-service/formSchema/${basicForm?.forms?.[formIndex]?.schemaId}`
             );
             setFormSchema(form?.schema)
             setFormSchemaWholeObject(form)
@@ -127,7 +127,7 @@ const CriminalHistory = ({ basicForm, setBasicForm, applicationId, getPreApplica
         if (missingKeys?.length !== 0) {
             setShowValidationDialog(true)
         } else {
-            handleSubmitApplicationReq()
+            handleSubmitApplicationReq('save')
         }
         setWarningFields(missingKeys)
         console.log(keyValuePair, 'Metadata', missingKeys)

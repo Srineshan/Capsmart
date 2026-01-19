@@ -189,7 +189,7 @@ const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicati
     }
 
     const handleContinue = async () => {
-        if (isEdited || changedData === null || window.location.pathname.includes('Q01F')) {
+        if (isEdited || changedData === null || window.location.pathname.includes('Q01F') || fields?.length === 0) {
             let updateData = {
                 data: changedData,
                 notes: {
@@ -271,9 +271,9 @@ const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicati
                         ) : <iframe src={`${file?.fileURL}#toolbar=1&view=fitV`} width="100%" height="600px"></iframe>}
                     </div>
                     <div className={style.marginTop}>
-                        {(!window.location.pathname.includes("reappointmentApplicationForm") && !window.location.pathname.includes("locumApplicationForm")) && (
+                        {(!window.location.pathname.includes("reappointmentApplicationForm") && !window.location.pathname.includes("locumApplicationForm") && !window.location.pathname.includes("applicationForm")) && (
                             <div className={style.marginTop10}>
-                                <div className={style.lableStyle}>Reason for Editing Document Details by MSO *</div>
+                                <div className={style.lableStyle}>Reason for MSO Editing this Document *</div>
                                 <div className={style.marginTop10}>
                                     <CKEditor
                                         editor={ClassicEditor}

@@ -145,8 +145,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
   }, [tempValue?.table]);
 
   const getFormSchema = async () => {
-    const schemaId =
-      basicForm?.forms?.[formIndex]?.schemaId ?? basicForm?.formSchemas?.[formIndex]?.id;
+    const schemaId = basicForm?.forms?.[formIndex]?.schemaId;
     if (!schemaId) return;
     const { data: form } = await GET(
       `application-management-service/formSchema/${schemaId}`,
@@ -282,8 +281,8 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
         const newRow = {
           rowId: uploadedDoc?.id,
           documentType: documentLabel,
-          fileURL: uploadedDoc?.fileURL,
-          fileType: uploadedDoc?.fileType,
+          fileURL: uploadedDoc?.file?.fileURL,
+          fileType: uploadedDoc?.file?.fileType,
           fileUploaded: event[index]?.name,
           fileSize: `${(event[index]?.size / (1024 * 1024)).toFixed(2)} Mb`,
           requirement: documentLabel ? getIsDocRequired(documentLabel) : '',
@@ -296,7 +295,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
       setIsLoading(false);
       return responseData;
     } catch (error) {
-      ErrorToaster('File Upload Failed');
+      ErrorToaster2('File Upload Failed');
       console.error(error);
       setIsLoading(false);
       return null;
@@ -323,7 +322,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
     entry.requirement = value ? getIsDocRequired(value) : '';
     try {
       await PUT(
-        `application-management-service/application/${applicationId}/form/updateData`,
+        `application-management-service/application/${applicationId}/form/updateData?documentType=${value}&applicationDocumentId=${entry?.rowId}&manuallyClassified=${true}`,
         entry,
       );
       updated[index] = entry;
@@ -830,11 +829,11 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                               value={skipReason?.[normalizeKey(data?.document?.shortName)] ? skipReason?.[normalizeKey(data?.document?.shortName)] : ''}
                               onChange={(e) => handleSkipReason(data?.document?.shortName, e.target.value)}
                               className={`${style.fullWidth} ${style.verticalAlignCenter}`}
-                              firstOptionLabel={'Select A Reason For Skipping This Step'}
-                              firstOptionValue={''}
-                              valueList={['Current Document Not Received', 'Replacement Document Requested']}
-                              labelList={['Current Document Not Received', 'Replacement Document Requested']}
-                              disabledList={['Current Document Not Received', 'Replacement Document Requested'].map(() => false)}
+                              // firstOptionLabel={'Select A Reason For Skipping This Step'}
+                              // firstOptionValue={''}
+                              valueList={['Current Document Not Available', 'Replacement Document Requested']}
+                              labelList={['Current Document Not Available', 'Replacement Document Requested']}
+                              disabledList={['Current Document Not Available', 'Replacement Document Requested'].map(() => false)}
                             />
                             {/* {data?.instruction} */}
                           </div>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
 import ProgressCard from '../../../../Components/ProgressCard';
 import ApplicationUserCard from '../../../../Components/ApplicationUserCard';
 import ApplicationAssistanceCard from '../../../../Components/ApplicationAssistanceCard';
@@ -32,12 +32,13 @@ const PaymentOrder = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
     const [navigateBackURL, setNavigateBackURL] = useState();
     const [isEdited, setIsEdited] = useState(false);
     const [completedFormAsFile, setCompletedFormAsFile] = useState();
+    const isPreFillCompleted = sessionStorage.getItem('preFillCompleted')
     useEffect(() => {
         if (basicForm && !formSchema) {
             getFormSchema()
         }
         if (basicForm !== undefined && formIndex !== undefined) {
-            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form')?.length === (formIndex + 1)) ? `/applicationForm/${applicationId}/Form/${btoa('PODCheck')}` : `/applicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
+            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form' || data?.formCategory === 'Disclosure')?.length === (formIndex + 1)) ? `/applicationForm/${applicationId}/Form/${btoa('PODCheck')}` : `/applicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
             if (formIndex > 0) {
                 setNavigateBackURL(`/applicationForm/${applicationId}/${basicForm?.forms[formIndex - 1]?.formCategory}/${btoa(basicForm?.forms[formIndex - 1]?.schemaCategory)}`)
             } else {
@@ -79,13 +80,13 @@ const PaymentOrder = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
     }
 
     const getFormSchema = async () => {
-        if (basicForm?.formSchemas?.[formIndex]?.id !== undefined) {
+        if (basicForm?.forms?.[formIndex]?.schemaId !== undefined) {
             const { data: form } = await GET(
-                `application-management-service/formSchema/${basicForm?.formSchemas?.[formIndex]?.id}`
+                `application-management-service/formSchema/${basicForm?.forms?.[formIndex]?.schemaId}`
             );
             setFormSchema(form?.schema)
             setFormSchemaWholeObject(form)
-            if (form?.preFillRequired) {
+            if (form?.preFillRequired && !isPreFillCompleted) {
                 preFillData()
             }
         }
@@ -95,6 +96,7 @@ const PaymentOrder = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
         await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}/preFillData`)
             .then(response => {
                 console.log(response)
+                sessionStorage.setItem('preFillCompleted', 'done')
                 SuccessToaster("Application Updated Successfully");
                 getPreApplication();
             })
@@ -226,6 +228,56 @@ const PaymentOrder = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
         console.log(keyValuePair, 'Metadata', missingKeys)
     }
 
+    // Read-only validation function that doesn't update state
+    const getValidationStatus = () => {
+        let missingItems = [];
+        let keyValuePair = [];
+        const cellPhone = getValueByPath(
+            basicForm,
+            `forms[${formIndex}].data.personalInformation.phone`
+        );
+        const emailId = getValueByPath(
+            basicForm,
+            `forms[${formIndex}].data.personalInformation.emailAddress`
+        );
+        metadata?.map((data, index) => {
+            keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: labels[index]?.label, mandatory: labels[index]?.mandatory })
+        })
+        const validateBusinessPhone = (phone) => {
+            const cleaned = phone?.replace(/\D/g, "");
+            const phoneRegex = /^[0-9]{10}$/;
+            return phoneRegex.test(cleaned);
+        };
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        const isCellPhoneInvalid = !validateBusinessPhone(cellPhone);
+        const isEmailInvalid = !emailRegex.test(emailId);
+
+        if (isCellPhoneInvalid && cellPhone && cellPhone !== "") {
+            missingItems.push({
+                key: "cellPhone",
+                value: cellPhone,
+                label: "Cell Phone is invalid",
+            });
+        }
+
+        if (isEmailInvalid && emailId && emailId !== "") {
+            missingItems.push({
+                key: "emailId",
+                value: emailId,
+                label: "Email ID is invalid",
+            });
+        }
+        keyValuePair?.map(data => {
+            if (data?.value === "" || data?.value === null || data?.value === undefined || data?.value === 0) {
+                missingItems.push(data)
+            }
+        })
+
+        return missingItems;
+    }
+
     const getDataStatus = () => {
         let missingItems = [];
         let keyValuePair = [];
@@ -272,62 +324,85 @@ const PaymentOrder = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
             }
         })
 
-        if (isCellPhoneInvalid) {
-            setBasicForm((prevForm) => ({
-                ...prevForm,
-                forms: prevForm?.forms?.map((form) => {
-                    if (form?.schemaId === basicForm?.forms?.[formIndex]?.schemaId) {
-                        return {
-                            ...form,
-                            data: {
-                                ...form?.data,
-                                personalInformation: {
-                                    ...form?.data?.personalInformation,
-                                    phone: "",
+        // Only update state if the value actually needs to change (not already empty)
+        if (isCellPhoneInvalid && cellPhone && cellPhone !== "") {
+            const currentPhone = getValueByPath(
+                basicForm,
+                `forms[${formIndex}].data.personalInformation.phone`
+            );
+            if (currentPhone && currentPhone !== "") {
+                setBasicForm((prevForm) => ({
+                    ...prevForm,
+                    forms: prevForm?.forms?.map((form) => {
+                        if (form?.schemaId === basicForm?.forms?.[formIndex]?.schemaId) {
+                            return {
+                                ...form,
+                                data: {
+                                    ...form?.data,
+                                    personalInformation: {
+                                        ...form?.data?.personalInformation,
+                                        phone: "",
+                                    },
                                 },
-                            },
-                        };
-                    }
-                    return form;
-                }),
-            }));
+                            };
+                        }
+                        return form;
+                    }),
+                }));
+            }
         }
 
-        if (isEmailInvalid) {
-            setBasicForm((prevForm) => ({
-                ...prevForm,
-                forms: prevForm?.forms?.map((form) => {
-                    if (form?.schemaId === basicForm?.forms?.[formIndex]?.schemaId) {
-                        return {
-                            ...form,
-                            data: {
-                                ...form?.data,
-                                personalInformation: {
-                                    ...form?.data?.personalInformation,
-                                    emailAddress: "",
+        if (isEmailInvalid && emailId && emailId !== "") {
+            const currentEmail = getValueByPath(
+                basicForm,
+                `forms[${formIndex}].data.personalInformation.emailAddress`
+            );
+            if (currentEmail && currentEmail !== "") {
+                setBasicForm((prevForm) => ({
+                    ...prevForm,
+                    forms: prevForm?.forms?.map((form) => {
+                        if (form?.schemaId === basicForm?.forms?.[formIndex]?.schemaId) {
+                            return {
+                                ...form,
+                                data: {
+                                    ...form?.data,
+                                    personalInformation: {
+                                        ...form?.data?.personalInformation,
+                                        emailAddress: "",
+                                    },
                                 },
-                            },
-                        };
-                    }
-                    return form;
-                }),
-            }));
+                            };
+                        }
+                        return form;
+                    }),
+                }));
+            }
         }
 
         return missingItems;
     }
 
-    const skipDisable = getDataStatus()?.filter(data => data?.mandatory)?.length === 0;
+    // Use useMemo to calculate skipDisable without causing infinite loops
+    const skipDisable = useMemo(() => {
+        if (!basicForm || formIndex === undefined || !metadata || !labels) {
+            return false;
+        }
+        const validationStatus = getValidationStatus();
+        return validationStatus?.filter(data => data?.mandatory)?.length === 0;
+    }, [basicForm, formIndex, metadata, labels]);
 
     const handleSubmitApplicationReq = async (data, save) => {
         if (isEdited || data || save) {
             console.log(basicForm?.forms?.[formIndex]?.data)
+            const dataStatusResult = getDataStatus();
+            const mandatoryMissing = dataStatusResult?.filter(data => data?.mandatory)?.length > 0;
+            const anyMissing = dataStatusResult?.length > 0;
             let temp = {
                 schemaId: basicForm?.forms?.[formIndex]?.schemaId,
                 data: basicForm?.forms?.[formIndex]?.data,
                 unFilledFields: warningFields?.map(data => data?.label),
                 acknowledged: data === "skipped" ? false : true,
-                dataStatus: getDataStatus()?.filter(data => data?.mandatory)?.length > 0 ? 'SKIPPED_MANDATORY_FIELD' : getDataStatus()?.length > 0 ? 'SKIPPED_NON_MANDATORY_FIELD' : 'COMPLETED'
+                dataStatus: mandatoryMissing ? 'SKIPPED_MANDATORY_FIELD' : anyMissing ? 'SKIPPED_NON_MANDATORY_FIELD' : 'COMPLETED'
             }
             await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
                 .then(response => {
@@ -350,6 +425,7 @@ const PaymentOrder = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
                     console.log(error)
                     ErrorToaster("Unexpected Error Updating Application");
                 });
+            sessionStorage.removeItem('preFillCompleted')
         } else {
             if (sessionStorage.getItem('fromSummary') === "true") {
                 navigate(-1);
@@ -359,6 +435,7 @@ const PaymentOrder = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
                 navigate(navigateURL)
 
             }
+            sessionStorage.removeItem('preFillCompleted')
         }
     }
 
@@ -401,13 +478,16 @@ const PaymentOrder = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
             }
 
 
+            const dataStatusResult = getDataStatus();
+            const mandatoryMissing = dataStatusResult?.filter(data => data?.mandatory)?.length > 0;
+            const anyMissing = dataStatusResult?.length > 0;
             let temp = {
                 schemaId: basicForm?.forms?.[formIndex]?.schemaId,
                 completedFormAsFile: uploadedFile,
                 data: basicForm?.forms?.[formIndex]?.data,
                 unFilledFields: basicForm?.forms?.[formIndex]?.unFilledFields,
                 acknowledged: basicForm?.forms?.[formIndex]?.acknowledged,
-                dataStatus: getDataStatus()?.filter(data => data?.mandatory)?.length > 0 ? 'SKIPPED_MANDATORY_FIELD' : getDataStatus()?.length > 0 ? 'SKIPPED_NON_MANDATORY_FIELD' : 'COMPLETED'
+                dataStatus: mandatoryMissing ? 'SKIPPED_MANDATORY_FIELD' : anyMissing ? 'SKIPPED_NON_MANDATORY_FIELD' : 'COMPLETED'
             }
             await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
                 .then(response => {

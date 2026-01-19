@@ -1,0 +1,254 @@
+@import "../../../index.scss";
+
+.screenPadding {
+    padding: 20px 100px;
+    min-height: calc(100vh - 80px);
+    overflow: auto;
+    overflow-y: scroll !important;
+    scrollbar-color: gray $tableheadbg !important;
+}
+
+.screenBackground {
+    background: $secondarycolor 0% 0% no-repeat padding-box;
+}
+
+.marginTop {
+    margin-top: 20px;
+}
+
+.marginTop10 {
+    margin-top: 10px;
+}
+
+.marginLeft {
+    margin-left: 20px;
+}
+
+.applicantInformation {
+    color: var(--primary-color);
+    text-align: left;
+    font: normal normal bold 16px/28px var(--font-style);
+    opacity: 0.6;
+}
+
+.applicantInfoCard {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    border: 0.4000000059604645px solid #EDEDF3;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0px 5px 20px #52575D4D;
+}
+
+.applicantName {
+    font: normal normal bold 20px/25px var(--font-style);
+    text-align: left;
+    color: $textsecondary;
+}
+
+.description {
+    text-align: left;
+    font: normal normal medium 15px/24px var(--font-style);
+    color: #1D2437;
+}
+
+.descriptionMild {
+    text-align: left;
+    font: normal normal medium 15px/24px var(--font-style);
+    color: #1D2437;
+    opacity: 0.7;
+}
+
+.twoCol {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.applicantInfoGrid {
+    display: grid;
+    grid-template-columns: 40% 60%;
+}
+
+.applicationScreenGrid {
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+    grid-gap: 20px;
+    position: relative;
+
+    @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+    }
+}
+
+.stepperHeading {
+    text-align: left;
+    font: normal normal medium 22px/25px var(--font-style);
+    color: #52575D;
+}
+
+.displayInRow {
+    display: flex;
+    flex-direction: row;
+}
+
+.progressStyle {
+    height: 10px;
+    width: 100%;
+    border-radius: 2px;
+}
+
+.progressStyleBackground {
+    background: transparent linear-gradient(90deg, var(--primary-color) 0%, var(--primary-color) 10%, #E9E9F0 20%, #E9E9F0 100%) 0% 0% no-repeat padding-box;
+}
+
+.progressStyleBackground0 {
+    background: transparent linear-gradient(90deg, var(--primary-color) 0%, var(--primary-color) 10%, #E9E9F0 20%, #E9E9F0 100%) 0% 0% no-repeat padding-box;
+}
+
+.progressStyleBackground1 {
+    background: transparent linear-gradient(90deg, var(--primary-color) 0%, var(--primary-color) 20%, #E9E9F0 30%, #E9E9F0 100%) 0% 0% no-repeat padding-box;
+}
+
+.progressStyleBackground2 {
+    background: transparent linear-gradient(90deg, var(--primary-color) 0%, var(--primary-color) 30%, #E9E9F0 40%, #E9E9F0 100%) 0% 0% no-repeat padding-box;
+}
+
+.progressStyleBackground3 {
+    background: transparent linear-gradient(90deg, var(--primary-color) 0%, var(--primary-color) 40%, #E9E9F0 50%, #E9E9F0 100%) 0% 0% no-repeat padding-box;
+}
+
+.progressStyleBackground4 {
+    background: transparent linear-gradient(90deg, var(--primary-color) 0%, var(--primary-color) 50%, #E9E9F0 60%, #E9E9F0 100%) 0% 0% no-repeat padding-box;
+}
+
+.progressStyleBackground5 {
+    background: transparent linear-gradient(90deg, var(--primary-color) 0%, var(--primary-color) 60%, #E9E9F0 70%, #E9E9F0 100%) 0% 0% no-repeat padding-box;
+}
+
+.progressStyleBackground6 {
+    background: transparent linear-gradient(90deg, var(--primary-color) 0%, var(--primary-color) 70%, #E9E9F0 85%, #E9E9F0 100%) 0% 0% no-repeat padding-box;
+}
+
+.progressStyleBackground7 {
+    background: transparent linear-gradient(90deg, var(--primary-color) 0%, var(--primary-color) 85%, #E9E9F0 100%, #E9E9F0 100%) 0% 0% no-repeat padding-box;
+}
+
+.sectionSplit {
+    width: 8px;
+    height: 15px;
+    background-color: white;
+    rotate: 30deg;
+    margin-left: 100%;
+    margin-top: -12px;
+}
+
+.sectionSplitGrid {
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-columns: 10% 40% 40% 10%;
+}
+
+.stickyContainer {
+    position: fixed;
+    bottom: 80px;
+    z-index: 10;
+    padding: 0px 20px 20px 20px;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
+    right: 100px;
+    width: calc(25% - 50px);
+}
+
+@media (max-width: 948px) {
+    .stickyContainer {
+        position: fixed;
+        bottom: 0;
+        left: auto;
+        right: auto;
+        width: auto;
+        padding: 0px 20px 20px 20px;
+        margin: 0 auto;
+        box-sizing: border-box;
+    }
+}
+
+@media (max-width: 768px) {
+    .stickyContainer {
+        // position: sticky;
+        // padding: 20px;
+        // display: flex;
+        // flex-direction: column;
+        // align-items: center; 
+        // float: right;
+        display: none;
+    }
+}
+
+.saveInProgress {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 6px #00000029;
+    border: 0.5px solid var(--primary-color);
+    border-radius: 8px;
+    text-align: center;
+    font: normal normal bold 17px/30px var(--font-style);
+    letter-spacing: 0px;
+    color: var(--primary-color);
+    text-transform: uppercase;
+    padding: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.saveInProgress:hover {
+    background: #F1F6F7 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #00000052;
+    border: 0.5px solid #9AAFB5;
+    border-radius: 8px;
+    opacity: 1;
+}
+
+.continue {
+    background: var(--primary-color) 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 6px #00000029;
+    border-radius: 8px;
+    text-align: center;
+    font: normal normal bold 17px/30px var(--font-style);
+    letter-spacing: 0px;
+    color: #FFFFFF;
+    text-transform: uppercase;
+    padding: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.continue:hover {
+    background: var(--primary-color-hover) 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #00000052;
+    border-radius: 8px;
+    opacity: 1;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 40px;
+    position: relative;
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 6px 12px #171A1A14;
+}
+
+.centerText {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    font-weight: 600;
+    font: normal normal medium 18px/23px var(--font-style);
+    letter-spacing: 0.9px;
+    color: $textgrey;
+}
+
+.logo {
+    position: relative;
+    width: auto;
+    height: 40px;
+    object-fit: contain;
+}

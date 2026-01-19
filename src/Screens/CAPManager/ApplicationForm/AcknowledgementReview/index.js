@@ -117,7 +117,7 @@ const AcknowledgementReview = ({ basicForm, setBasicForm }) => {
                   <div></div>
                 </div>
               </div>
-              {form?.formSchemas
+              {form?.forms
                 ?.filter((data) => data?.formCategory !== "Form")
                 ?.map((data, index) => (
                   <div

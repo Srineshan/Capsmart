@@ -146,7 +146,7 @@ const Immunization = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
 
     const getFormSchema = async () => {
         const { data: form } = await GET(
-            `application-management-service/formSchema/${basicForm?.formSchemas?.[formIndex]?.id}`
+            `application-management-service/formSchema/${basicForm?.forms?.[formIndex]?.schemaId}`
         );
         setFormSchema(form?.schema)
     }
@@ -430,6 +430,7 @@ const Immunization = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
         setFrom(null);
         setResult('');
         setInduration('');
+        setUploadedFiles([]);
     }
 
     const handleDelete = () => {
@@ -457,7 +458,7 @@ const Immunization = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
         })
 
         return [
-            { type: "text", value: test },
+            { type: "text", value: test, onClickFunction: (data, index) => { setIsDialogOpen(true); setSelectedFile(data?.files?.[0]) } },
             { type: "text", value: pos },
             { type: "text", value: lastTestDate },
             { type: "icon", icon: valid },

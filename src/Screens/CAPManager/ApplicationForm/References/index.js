@@ -111,9 +111,9 @@ const References = ({ basicForm, setBasicForm, applicationId, getPreApplication 
 
 
   const getFormSchema = async () => {
-    if (basicForm?.formSchemas?.[formIndex]?.id !== undefined) {
+    if (basicForm?.forms?.[formIndex]?.schemaId !== undefined) {
       const { data: form } = await GET(
-        `application-management-service/formSchema/${basicForm?.formSchemas?.[formIndex]?.id}`
+        `application-management-service/formSchema/${basicForm?.forms?.[formIndex]?.schemaId}`
       );
       setFormSchema(form?.schema)
       setFormSchemaWholeObject(form)
@@ -199,9 +199,9 @@ const References = ({ basicForm, setBasicForm, applicationId, getPreApplication 
         data?.value === undefined ||
         data?.value === 0 ||
         (data?.key === "undefined.references.emailAddress" &&
-          !emailRegex.test(data?.value)) ||
+          !emailRegex?.test(data?.value)) ||
         (data?.key === "undefined.references.contactNumber" &&
-          !phoneRegex.test(data?.value))
+          !phoneRegex?.test(data?.value))
       ) {
         missingKeys.push(data);
       }
