@@ -50,6 +50,7 @@ import { useDescope } from '@descope/react-sdk';
 import PharmacySignature from './PharmacySignature';
 import PACSRequest from './PACSRequest';
 import PaymentOrder from './PaymentOrder';
+import MedicalDirectives from './MedicalDirectives';
 
 
 const ApplicationForm = () => {
@@ -151,6 +152,8 @@ const ApplicationForm = () => {
                 return <WorkExperience basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
             case 'PrivilegeSelection':
                 return <PrivilegeSelection basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
+            case 'MEDICAL_DIRECTIVES':
+                return <MedicalDirectives basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} />
             case 'step9':
                 return <Step9 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
             case 'References':

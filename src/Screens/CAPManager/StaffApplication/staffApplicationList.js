@@ -2562,7 +2562,7 @@ const StaffApplicationList = ({
 
       taskListStatus.push(data?.tasks?.completedCount + "/" + data?.tasks?.totalCount);
       lastUpdated.push(
-        format(new Date(data?.lastModifiedDate), dateFormat)
+        `${data?.updatedBy?.name?.firstName || ''} ${`${data?.updatedBy?.name?.lastName}` || ''} ${format(new Date(data?.lastModifiedDate), dateFormat)}`
       );
       lastUpdatedBy.push(["-"]);
       // const lastUpdatedDate = new Date(data?.lastModifiedDate);
@@ -2614,10 +2614,8 @@ const StaffApplicationList = ({
       },
       // { type: "dot", value: taskListDotColor, tooltipValue: dotTooltipValues },
       {
-        type: "iconWithCount",
+        type: "text",
         value: lastUpdated,
-        hoverText: lastUpdatedBy,
-        isShowHoverText: true,
       },
       { type: "action", value: action },
     ];

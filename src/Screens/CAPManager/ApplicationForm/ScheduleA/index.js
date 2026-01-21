@@ -36,6 +36,7 @@ const ScheduleA = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
   const [formIndex, setFormIndex] = useState();
   const [signText, setSignText] = useState(name + " " + currentDate);
   const [isSaveInProgressOpen, setIsSaveInProgressOpen] = useState(false);
+  const [entityLogo, setEntityLogo] = useState(sessionStorage.getItem('logo') || null)
   let questionsArray = [
     'Nature of treatments / consultations that are relevant to the Applicant’s ability to practice medicine.',
     'Dates of treatment (past, present and / or ongoing).',
@@ -85,6 +86,9 @@ const ScheduleA = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
   }
 
   const getIsSaveInProgressOpen = (value) => {
+    if (value) {
+      handleSubmitApplicationReq(true);
+    }
     setIsSaveInProgressOpen(value);
   };
 
@@ -177,8 +181,8 @@ const ScheduleA = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
     }
   }
 
-  const handleSubmitApplicationReq = async () => {
-    if (isSigned) {
+  const handleSubmitApplicationReq = async (save) => {
+    if (isSigned || save) {
       let temp = {
         schemaId: basicForm?.forms?.[formIndex]?.schemaId,
         data: !isEdited ? basicForm?.forms?.[formIndex]?.data : { esignDate: isChecked ? name + " " + currentDate : '' },
@@ -193,11 +197,13 @@ const ScheduleA = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
           SuccessToaster("Application Updated Successfully");
           handleDownload();
           getFormSchema();
-          if (sessionStorage.getItem('fromSummary') === 'true') {
-            navigate(-1);
-            sessionStorage.setItem('fromSummary', false)
-          } else {
-            navigate(navigateURL)
+          if (!save) {
+            if (sessionStorage.getItem('fromSummary') === 'true') {
+              navigate(-1);
+              sessionStorage.setItem('fromSummary', false)
+            } else {
+              navigate(navigateURL)
+            }
           }
         })
         .catch((error) => {
@@ -238,7 +244,7 @@ const ScheduleA = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
         <div>
           <div className={`${style.applicationCardStyle} ${style.applicationCardScrollStyle}`} ref={targetRef}>
             <div className={`${style.marginTop} ${style.justifyCenter}`}>
-              <img src={logo} alt="Hospital Logo" className={`${style.logo}`} />
+              <img src={entityLogo || logo} alt="Hospital Logo" className={`${style.logo}`} />
             </div>
             <CommonDivider />
             <div className={`${style.cardTitle} ${style.marginTop}  ${style.justifyCenter}`}>{formSchema?.title}</div>

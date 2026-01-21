@@ -66,6 +66,9 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, applicationId, getPreApp
     };
 
     const getIsSaveInProgressOpen = (value) => {
+        if (value) {
+            handleSubmitApplicationReq('', true);
+        }
         setIsSaveInProgressOpen(value);
     }
 
@@ -327,8 +330,8 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, applicationId, getPreApp
 
     const skipDisable = getDataStatus()?.filter(data => data?.mandatory)?.length === 0;
 
-    const handleSubmitApplicationReq = async (data) => {
-        if (isEdited || data) {
+    const handleSubmitApplicationReq = async (data, save) => {
+        if (isEdited || data || save) {
             let temp = {
                 schemaId: basicForm?.forms?.[formIndex]?.schemaId,
                 data: basicForm?.forms?.[formIndex]?.data,
@@ -342,13 +345,15 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, applicationId, getPreApp
                     setBasicForm(response?.data)
                     SuccessToaster("Application Updated Successfully");
                     getPreApplication();
-                    if (sessionStorage.getItem('fromSummary') === "true") {
-                        navigate(-1);
-                        sessionStorage.setItem('fromSummary', false)
-                    }
-                    else {
-                        navigate(navigateURL)
+                    if (!save) {
+                        if (sessionStorage.getItem('fromSummary') === "true") {
+                            navigate(-1);
+                            sessionStorage.setItem('fromSummary', false)
+                        }
+                        else {
+                            navigate(navigateURL)
 
+                        }
                     }
                 })
                 .catch((error) => {

@@ -27,7 +27,7 @@ import { getValueByPath } from '../../../utils/formatting';
 const ReferenceQuestionnaire = () => {
     const navigate = useNavigate()
     const { logout } = useDescope();
-    const { applicationId, referenceId, formId, step } = useParams();
+    const { entityId, applicationId, referenceId, formId, step } = useParams();
     const [referenceForm, setReferenceForm] = useState();
     const [formSchema, setFormSchema] = useState();
     const [formIndex, setFormIndex] = useState();
@@ -58,6 +58,13 @@ const ReferenceQuestionnaire = () => {
         if (formId)
             getFormSchema()
     }, [formId])
+
+    useEffect(() => {
+        var cookies = new Cookie();
+        cookies.set("entityId", entityId, {
+            path: "/",
+        });
+    }, [])
 
     const getAllPath = (data) => {
         let temp = metadata;
@@ -174,7 +181,7 @@ const ReferenceQuestionnaire = () => {
                 setMetadata([]);
                 setLabels([]);
                 getReferenceDetails();
-                navigate(`/applications/${applicationId}/references/${referenceId}/${referenceForm?.referenceDetails?.responses?.[formIndex + 1]?.schemaId}/${btoa(referenceForm?.referenceDetails?.responses?.[formIndex + 1]?.referenceSchemaCategory)}`)
+                navigate(`/tenant/${entityId}/applications/${applicationId}/references/${referenceId}/${referenceForm?.referenceDetails?.responses?.[formIndex + 1]?.schemaId}/${btoa(referenceForm?.referenceDetails?.responses?.[formIndex + 1]?.referenceSchemaCategory)}`)
             })
             .catch((error) => {
                 console.log(error)
@@ -199,7 +206,7 @@ const ReferenceQuestionnaire = () => {
         setWarningFields([]);
         setMetadata([]);
         setLabels([]);
-        navigate(`/applications/${applicationId}/references/${referenceId}/${referenceForm?.referenceDetails?.responses?.[formIndex - 1]?.schemaId}/${btoa(referenceForm?.referenceDetails?.responses?.[formIndex - 1]?.referenceSchemaCategory)}`)
+        navigate(`/tenant/${entityId}/applications/${applicationId}/references/${referenceId}/${referenceForm?.referenceDetails?.responses?.[formIndex - 1]?.schemaId}/${btoa(referenceForm?.referenceDetails?.responses?.[formIndex - 1]?.referenceSchemaCategory)}`)
     }
 
     const handleSubmit = async () => {

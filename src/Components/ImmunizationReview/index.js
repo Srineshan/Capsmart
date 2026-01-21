@@ -18,11 +18,14 @@ import { Tooltip } from '@mui/material';
 import { ErrorToaster2 } from '../../utils/toaster';
 import style from './index.module.scss';
 import TableTwo from '../TableDesignTwo';
+import Cookies from 'universal-cookie';
+import { useParams } from 'react-router-dom';
 
 
 const ImmunizationReview = ({ setIsReferenceReview, getActiveApplicationView }) => {
     const [applicationId, setApplicationId] = useState(sessionStorage.getItem("applicationId"));
     const [refId, setRefId] = useState(sessionStorage.getItem('refId'))
+    const { entityId } = useParams();
     const [reference, setReference] = useState();
     const [immunization, setImmunization] = useState();
     const [allReferenceSchemas, setAllReferenceSchemas] = useState();
@@ -48,7 +51,7 @@ const ImmunizationReview = ({ setIsReferenceReview, getActiveApplicationView }) 
 
 
     const immunizationCategoryValues = {
-        "Tuberculosis": 'TUBERCULIN', "Measles, Mumps & Rubella (MMR)": 'MEASLES_MUMPS_RUBELLA', "Hepatitis B Vaccination": 'HEPATITIS_B', "Varicella": 'VARICELLA', "Tetnues/Diptheriea/Pertussis(Tdap) and Tetatnus/Diphtheria(Td)": 'TETANUS_DIPHTHERIA_PERTUSSIS_OR_TETANUS_DIPHTHERIA', "Influenza": 'INFLUENZA', "Covid": 'COVID'
+        "Tuberculosis": 'TUBERCULIN', "Measles, Mumps & Rubella (MMR)": 'MEASLES_MUMPS_RUBELLA', "Hepatitis B Vaccination": 'HEPATITIS_B', "Varicella": 'VARICELLA', "Tetanus/Diptheriea/Pertussis(TDAP) and Tetanus/Diptheria(TD)": 'TETANUS_DIPHTHERIA_PERTUSSIS_OR_TETANUS_DIPHTHERIA', "Influenza": 'INFLUENZA', "Covid": 'COVID'
     }
 
     const immunizationValues = {
@@ -101,6 +104,13 @@ const ImmunizationReview = ({ setIsReferenceReview, getActiveApplicationView }) 
             getApplicationImmunization();
         }
     }, [applicationId]);
+
+    useEffect(() => {
+        var cookies = new Cookies();
+        cookies.set("entityId", entityId, {
+            path: "/",
+        });
+    }, [])
 
     useEffect(() => {
         if (form) {
@@ -276,7 +286,7 @@ const ImmunizationReview = ({ setIsReferenceReview, getActiveApplicationView }) 
                             <div className={`${style.marginTop10} ${style.screenPadding}`}>
                                 <>
                                     <div className={`${style.cardTitle} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Tuberculosis(TB)']?.label}</div>
-                                    <div className={`${style.descriptionText} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Tuberculosis(TB)']?.description}</div>
+                                    {/* <div className={`${style.descriptionText} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Tuberculosis(TB)']?.description}</div> */}
                                     {immunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "TUBERCULIN")?.length !== 0 && (
                                         <TableTwo
                                             tableHeaderValues={tableHeader}
@@ -291,7 +301,7 @@ const ImmunizationReview = ({ setIsReferenceReview, getActiveApplicationView }) 
                                     )}
                                     <CommonDivider />
                                     <div className={`${style.cardTitle} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Measles, Mumps & Rubella (MMR)']?.label}</div>
-                                    <div className={`${style.descriptionText} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Measles, Mumps & Rubella (MMR)']?.description}</div>
+                                    {/* <div className={`${style.descriptionText} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Measles, Mumps & Rubella (MMR)']?.description}</div> */}
                                     {immunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "MEASLES_MUMPS_RUBELLA")?.length !== 0 && (
                                         <TableTwo
                                             tableHeaderValues={tableHeader}
@@ -306,7 +316,7 @@ const ImmunizationReview = ({ setIsReferenceReview, getActiveApplicationView }) 
                                     )}
                                     <CommonDivider />
                                     <div className={`${style.cardTitle} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Hepatitis B Vaccination']?.label}</div>
-                                    <div className={`${style.descriptionText} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Hepatitis B Vaccination']?.description}</div>
+                                    {/* <div className={`${style.descriptionText} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Hepatitis B Vaccination']?.description}</div> */}
                                     {immunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "HEPATITIS_B")?.length !== 0 && (
                                         <TableTwo
                                             tableHeaderValues={tableHeader}
@@ -321,7 +331,7 @@ const ImmunizationReview = ({ setIsReferenceReview, getActiveApplicationView }) 
                                     )}
                                     <CommonDivider />
                                     <div className={`${style.cardTitle} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Varicella']?.label}</div>
-                                    <div className={`${style.descriptionText} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Varicella']?.description}</div>
+                                    {/* <div className={`${style.descriptionText} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Varicella']?.description}</div> */}
                                     {immunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "VARICELLA")?.length !== 0 && (
                                         <TableTwo
                                             tableHeaderValues={tableHeader}
@@ -335,8 +345,8 @@ const ImmunizationReview = ({ setIsReferenceReview, getActiveApplicationView }) 
                                         />
                                     )}
                                     <CommonDivider />
-                                    <div className={`${style.cardTitle} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Tetnues/Diptheriea/Pertussis(Tdap) and Tetatnus/Diphtheria(Td)']?.label}</div>
-                                    <div className={`${style.descriptionText} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Tetnues/Diptheriea/Pertussis(Tdap) and Tetatnus/Diphtheria(Td)']?.description}</div>
+                                    <div className={`${style.cardTitle} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Tetanus/Diptheriea/Pertussis(TDAP) and Tetanus/Diptheria(TD)']?.label}</div>
+                                    {/* <div className={`${style.descriptionText} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Tetanus/Diptheriea/Pertussis(TDAP) and Tetanus/Diptheria(TD)']?.description}</div> */}
                                     {immunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "TETANUS_DIPHTHERIA_PERTUSSIS_OR_TETANUS_DIPHTHERIA")?.length !== 0 && (
                                         <TableTwo
                                             tableHeaderValues={tableHeader}
@@ -351,7 +361,7 @@ const ImmunizationReview = ({ setIsReferenceReview, getActiveApplicationView }) 
                                     )}
                                     <CommonDivider />
                                     <div className={`${style.cardTitle} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Influenza']?.label}</div>
-                                    <div className={`${style.descriptionText} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Influenza']?.description}</div>
+                                    {/* <div className={`${style.descriptionText} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Influenza']?.description}</div> */}
                                     {immunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "INFLUENZA")?.length !== 0 && (
                                         <TableTwo
                                             tableHeaderValues={tableHeader}

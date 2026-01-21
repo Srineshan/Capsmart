@@ -85,9 +85,9 @@ const PdfPage = ({ page, index, totalPages, name, currentDate, initialArray, set
             ) : (
                 <div onClick={() => { handleSign(index) }}>
                     <ESignature
-                        userName={(initialArray[index] !== undefined && initialArray[index]?.name !== '') ? initialArray[index]?.name : ""}
-                        encData={(initialArray[index] !== undefined && initialArray[index]?.name !== '') ? initialArray[index]?.esign : ''}
-                        showData={(initialArray[index] !== undefined && initialArray[index]?.name !== '') ? true : false}
+                        userName={(initialArray?.[index] !== undefined && initialArray?.[index]?.name !== '') ? initialArray?.[index]?.name : ""}
+                        encData={(initialArray?.[index] !== undefined && initialArray?.[index]?.name !== '') ? initialArray?.[index]?.esign : ''}
+                        showData={(initialArray?.[index] !== undefined && initialArray?.[index]?.name !== '') ? true : false}
                         showDatais={true}
                         isInitial={true}
                     />

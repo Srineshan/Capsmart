@@ -232,10 +232,10 @@ const LoginDialog = ({ getIsOpen, days }) => {
           </div>
           <div className={style.welcomeText}>Welcome to {title ? title : ''}!</div>
           <div className={`${style.descriptionStyle} ${style.marginTop10}`}>
-            We are thrilled to have you join our dedicated team of healthcare professionals. Today, CMH is a modern, full-service hospital with over 200 inpatient beds and a committed team of more than 1,600 staff and physicians, all working together to provide exceptional care.
+            We are thrilled to have you join our dedicated team of healthcare professionals. Today, {title !== 'HapiCare' ? title : ''} is a modern, full-service hospital with over 200 inpatient beds and a committed team of more than 1,600 staff and physicians, all working together to provide exceptional care.
           </div>
           <div className={`${style.descriptionStyle} ${style.marginTop}`}>
-            Your decision to join our team reflects a shared commitment to excellence, compassion, and innovation in patient care. At CMH, we pride ourselves on delivering compassionate, patient-centred care while fostering a collaborative and supportive work environment.
+            Your decision to join our team reflects a shared commitment to excellence, compassion, and innovation in patient care. At {title !== 'HapiCare' ? title : ''}, we pride ourselves on delivering compassionate, patient-centred care while fostering a collaborative and supportive work environment.
           </div>
           <div className={`${style.descriptionStyle} ${style.marginTop}`}>
             As part of our community-focused hospital, you’ll play an essential role in improving the health and well-being of those we serve. We encourage you to embrace our values of caring, collaboration, accountability, innovation and respect, as we work together to make a positive impact every day.

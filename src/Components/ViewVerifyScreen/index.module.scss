@@ -4278,7 +4278,7 @@ input[type="number"] {
 
 .tableGridGraduation {
   display: grid;
-  grid-template-columns: 3% 3% 16% 21% 16% 15% 15% 3%;
+  grid-template-columns: 3% 3% 16% 25% 16% 15% 15%;
   gap: 1%;
 }
 
@@ -4288,9 +4288,21 @@ input[type="number"] {
   gap: 1%;
 }
 
+.tableGrid {
+  display: grid;
+  grid-template-columns: 3% 3% 21% 20% 20% 13% 13%;
+  gap: 1%;
+}
+
+.tableGridTraining {
+  display: grid;
+  grid-template-columns: 3% 3% 39% 25% 12% 12%;
+  gap: 1%;
+}
+
 .tableGridReferences {
   display: grid;
-  grid-template-columns: 20% 20% 21% 20% 10% 3%;
+  grid-template-columns: 20% 20% 19% 24% 12%;
   gap: 1%;
 }
 
@@ -4479,13 +4491,13 @@ input[type="number"] {
 
 .tableHeaderGridStyleFormReappointmentForStaff {
   display: grid;
-  grid-template-columns: 5% 78% 14%;
+  grid-template-columns: 3% 80% 14%;
   grid-gap: 1%;
 }
 
 .tableHeaderGridStyleWithSignedBy {
   display: grid;
-  grid-template-columns: 5% 72% 20%;
+  grid-template-columns: 3% 59% 35%;
   grid-gap: 1%;
 }
 

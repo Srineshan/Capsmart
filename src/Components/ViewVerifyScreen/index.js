@@ -312,7 +312,7 @@ const NewActiveApplication = ({
   console.log("dataLevel", users?.id)
 
   const immunizationCategoryValues = {
-    "Tuberculosis": 'TUBERCULIN', "Measles, Mumps & Rubella (MMR)": 'MEASLES_MUMPS_RUBELLA', "Hepatitis B Vaccination": 'HEPATITIS_B', "Varicella": 'VARICELLA', "Tetnues/Diptheriea/Pertussis(Tdap) and Tetatnus/Diphtheria(Td)": 'TETANUS_DIPHTHERIA_PERTUSSIS_OR_TETANUS_DIPHTHERIA', "Influenza": 'INFLUENZA', "Covid": 'COVID'
+    "Tuberculosis": 'TUBERCULIN', "Measles, Mumps & Rubella (MMR)": 'MEASLES_MUMPS_RUBELLA', "Hepatitis B Vaccination": 'HEPATITIS_B', "Varicella": 'VARICELLA', "Tetanus/Diptheriea/Pertussis(TDAP) and Tetanus/Diptheria(TD)": 'TETANUS_DIPHTHERIA_PERTUSSIS_OR_TETANUS_DIPHTHERIA', "Influenza": 'INFLUENZA', "Covid": 'COVID'
   }
 
   const immunizationValues = {
@@ -642,7 +642,7 @@ const NewActiveApplication = ({
   }, [form]);
 
   useEffect(() => {
-    if (form?.formSchemas) {
+    if (form?.forms) {
 
       const relevantSchemas = form?.forms?.filter(schema => schema?.schemaCategory);
 
@@ -2114,7 +2114,7 @@ const NewActiveApplication = ({
       console.error("Array is undefined or not an array:", array);
       return [];
     }
-    let schema = applicationType === "NEW" ? formSchema : allFormSchemas?.[index]?.formSchema?.schema
+    let schema = allFormSchemas?.[index]?.formSchema?.schema
     let temp = [];
     console.log(array, 'arrayyyyyy1233')
     // console.log(array[data],"@@@@@@@@@");
@@ -2263,7 +2263,7 @@ const NewActiveApplication = ({
     }
   };
 
-  const filteredData = form?.formSchemas?.filter((data) => data?.formCategory === "Acknowledgement");
+  const filteredData = form?.forms?.filter((data) => data?.formCategory === "Acknowledgement");
   console.log("filteredDataaaaaaaaaaa" + JSON.stringify(filteredData));
 
   const relevantForm = form?.forms?.filter(schema => schema?.schemaCategory !== "UploadYourDoc");
@@ -3144,6 +3144,7 @@ const NewActiveApplication = ({
           </>
         );
       case "MEDICAL_DIRECTIVES":
+        console.log("MEDICAL_DIRECTIVES Table Data:", form?.forms?.[formIndex]?.data?.table);
         return (
           <>
             <TableTwo
@@ -3155,8 +3156,8 @@ const NewActiveApplication = ({
                 "Attestation Due Date",
                 "",
               ]}
-              tableDataValues={getMedicalDirectiveTable()}
-              tableData={medicalDirectives}
+              tableDataValues={getMedicalDirectiveTable(form?.forms?.[formIndex]?.data?.table, index)}
+              tableData={form?.forms?.[formIndex]?.data?.table || []}
               gridStyle={style.medicalDirectivesGridStyle}
               actions={[]}
               // scrollStyle={style.contractScrollStyle}
@@ -3487,7 +3488,7 @@ const NewActiveApplication = ({
                         setShowDocVerifyDialog(true);
                         setSelectedRow(data);
                         setSelectedRowTableName("graduation");
-                        setSelectedFormId(form?.forms?.[4]?.id);
+                        setSelectedFormId(form?.forms?.[formIndex]?.id);
                       }}
                     >
 
@@ -3505,7 +3506,7 @@ const NewActiveApplication = ({
                             <div
                               className={`${style.buttonGreyTextStyleSmall} ${style.alignCenter}`}
                             >
-                              Verified
+                              Accepted
                             </div>
                           </div>
                         </>
@@ -3522,7 +3523,7 @@ const NewActiveApplication = ({
                             <div
                               className={`${style.buttonGreyTextStyleSmall} ${style.alignCenter}`}
                             >
-                              Verify
+                              Accept
                             </div>
                           </div>
                         </>
@@ -3551,7 +3552,7 @@ const NewActiveApplication = ({
                   addMoreType={true}
                   formId={form?.forms?.[formIndex]?.id}
                   applicationId={applicationId}
-                  tableGrid={style.tableGridTrainingAndExperience}
+                  tableGrid={style.tableGridTraining}
                   isPOD={true}
                 />
               )}
@@ -3601,7 +3602,7 @@ const NewActiveApplication = ({
                               <div
                                 className={`${style.buttonGreyTextStyleSmall} ${style.alignCenter}`}
                               >
-                                Verified
+                                Accepted
                               </div>
                             </div>
                           </>
@@ -3618,7 +3619,7 @@ const NewActiveApplication = ({
                               <div
                                 className={`${style.buttonGreyTextStyleSmall} ${style.alignCenter}`}
                               >
-                                Verify
+                                Accept
                               </div>
                             </div>
                           </>
@@ -3645,12 +3646,12 @@ const NewActiveApplication = ({
                   addMoreType={true}
                   formId={form?.forms?.[formIndex]?.id}
                   applicationId={applicationId}
-                  tableGrid={style.tableGridTrainingAndExperience}
+                  tableGrid={style.tableGrid}
                   isPOD={true}
                 />
               )}
             <div className={style.marginTop20}>
-              {form?.forms?.[5]?.data?.healthcareFacilityAppointments?.map(
+              {form?.forms?.[formIndex]?.data?.healthcareFacilityAppointments?.map(
                 (data, index) =>
                   data?.file?.fileURL !== undefined ? (
                     <div
@@ -3695,7 +3696,7 @@ const NewActiveApplication = ({
                               <div
                                 className={`${style.buttonGreyTextStyleSmall} ${style.alignCenter}`}
                               >
-                                Verified
+                                Accepted
                               </div>
                             </div>
                           </>
@@ -3712,7 +3713,7 @@ const NewActiveApplication = ({
                               <div
                                 className={`${style.buttonGreyTextStyleSmall} ${style.alignCenter}`}
                               >
-                                Verify
+                                Accept
                               </div>
                             </div>
                           </>
@@ -3819,7 +3820,7 @@ const NewActiveApplication = ({
                 )
               )}
             </div>
-            <CommonDivider />
+            {/* <CommonDivider />
             {allFormSchemas?.[index]?.formSchema?.schema !== undefined &&
               allFormSchemas?.[index]?.formSchema?.schema?.properties !== null &&
               allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined &&
@@ -3908,7 +3909,7 @@ const NewActiveApplication = ({
                   ""
                 )
               )}
-            </div>
+            </div> */}
           </div>
         );
       case "ProfessionalConduct":
@@ -4003,11 +4004,11 @@ const NewActiveApplication = ({
               <div className={style.cardTextBoldStyle}>Requested Privileges</div>
               {form?.privileges?.obligatedPrivileges?.map((data, index) => (
                 <div
-                  className={`${style.documentTextStyle} ${style.marginLeft} ${style.marginTop10} ${style.displayInRow}`}
+                  className={`${style.documentTextStyle} ${style.marginLeft} ${style.marginTop10} ${style.spaceBetween}`}
                   key={index}
                 >
                   <div className={`${style.privilegeTitleStyle} ${style.cursorPointer}`} onClick={() => { setShowCurrentPrivileges(true); handleChange(data?.id); setCurrentPrivilegesCategoryReappointment('Basic') }}>{data?.privilegeSetTitle}</div>
-                  <div className={style.twoCol}>
+                  <div className={style.displayInRow}>
                     {/* <div>
                       <ESignature
                         alternateSignature={data?.privilegeDetails?.corePrivileges?.esign !== null ? data?.privilegeDetails?.corePrivileges?.esign?.name : ""}
@@ -4017,9 +4018,8 @@ const NewActiveApplication = ({
                       />
                     </div> */}
                     <div className={`${style.date} ${style.marginLeft20}`}><strong>Signed By:</strong> {`${data?.privilegeSpecificationType === 'DESCRIPTIVEDOCUMENT' ? data?.descriptiveContent?.esign?.name ? data?.descriptiveContent?.esign?.name : '' : data?.privilegeDetails?.corePrivileges?.esign !== null ? data?.privilegeDetails?.corePrivileges?.esign?.name : ""}`}</div>
-                    <div className={style.verticalAlignCenter}>
+                    <div className={`${style.verticalAlignCenter} ${style.marginLeft20}`}>
                       <div className={style.displayInRow}>
-                        <div className={style.dateTitle}>Date: </div>
                         <div className={`${style.date} ${style.marginLeft}`}>
                           {data?.privilegeSpecificationType === 'DESCRIPTIVEDOCUMENT' ? data?.descriptiveContent?.esign?.signedDate ? data?.descriptiveContent?.esign?.signedDate : '' : data?.privilegeDetails?.corePrivileges?.esign?.signedDate}
                         </div>
@@ -4033,11 +4033,11 @@ const NewActiveApplication = ({
               )}
               {form?.privileges?.additionalPrivileges?.map((data, index) => (
                 <div
-                  className={`${style.documentTextStyle} ${style.marginLeft} ${style.marginTop10} ${style.displayInRow}`}
+                  className={`${style.documentTextStyle} ${style.marginLeft} ${style.marginTop10} ${style.spaceBetween}`}
                   key={index}
                 >
                   <div className={`${style.privilegeTitleStyle} ${style.cursorPointer}`} onClick={() => { setShowCurrentPrivileges(true); handleChange(data?.id); setCurrentPrivilegesCategoryReappointment('Additional') }}>{data?.privilegeSetTitle}</div>
-                  <div className={style.twoCol}>
+                  <div className={style.displayInRow}>
                     {/* <div>
                       <ESignature
                         alternateSignature={data?.privilegeDetails?.corePrivileges?.esign !== null ? data?.privilegeDetails?.corePrivileges?.esign?.name : ""}
@@ -4047,9 +4047,8 @@ const NewActiveApplication = ({
                       />
                     </div> */}
                     <div className={`${style.date} ${style.marginLeft}`}>{`Signed By: ${data?.privilegeSpecificationType === 'DESCRIPTIVEDOCUMENT' ? data?.descriptiveContent?.esign?.name ? data?.descriptiveContent?.esign?.name : '' : data?.privilegeDetails?.corePrivileges?.esign !== null ? data?.privilegeDetails?.corePrivileges?.esign?.name : ""}`}</div>
-                    <div className={style.verticalAlignCenter}>
+                    <div className={`${style.verticalAlignCenter} ${style.marginLeft20}`}>
                       <div className={style.displayInRow}>
-                        <div className={style.dateTitle}>Date: </div>
                         <div className={`${style.date} ${style.marginLeft}`}>
                           {data?.privilegeSpecificationType === 'DESCRIPTIVEDOCUMENT' ? data?.descriptiveContent?.esign?.signedDate ? data?.descriptiveContent?.esign?.signedDate : '' : data?.privilegeDetails?.corePrivileges?.esign?.signedDate}
                         </div>
@@ -4066,7 +4065,7 @@ const NewActiveApplication = ({
           // <></>
           <div className="section" data-section={data?.id} data-name={data?.schemaCategory}>
             <div className={`${style.cardTitle} ${style.marginTop}`}>{allFormSchemas?.[index]?.formSchema?.schema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Tuberculosis(TB)']?.label}</div>
-            <div className={`${style.descriptionText} ${style.marginTop}`}>{allFormSchemas?.[index]?.formSchema?.schema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Tuberculosis(TB)']?.description}</div>
+            {/* <div className={`${style.descriptionText} ${style.marginTop}`}>{allFormSchemas?.[index]?.formSchema?.schema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Tuberculosis(TB)']?.description}</div> */}
             {applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "TUBERCULIN")?.length !== 0 && (
               <TableTwo
                 tableHeaderValues={tableHeader}
@@ -4080,8 +4079,8 @@ const NewActiveApplication = ({
               />
             )}
             <CommonDivider />
-            <div className={`${style.cardTitle} ${style.marginTop}`}>{allFormSchemas?.[index]?.formSchema?.schema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Measles, Mumps & Rubella (MMR)']?.label}</div>
-            <div className={`${style.descriptionText} ${style.marginTop}`}>{allFormSchemas?.[index]?.formSchema?.schema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Measles, Mumps & Rubella (MMR)']?.description}</div>
+            <div className={`${style.cardTitle} ${style.marginTop20}`}>{allFormSchemas?.[index]?.formSchema?.schema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Measles, Mumps & Rubella (MMR)']?.label}</div>
+            {/* <div className={`${style.descriptionText} ${style.marginTop}`}>{allFormSchemas?.[index]?.formSchema?.schema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Measles, Mumps & Rubella (MMR)']?.description}</div> */}
             {applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "MEASLES_MUMPS_RUBELLA")?.length !== 0 && (
               <TableTwo
                 tableHeaderValues={tableHeader}
@@ -4095,8 +4094,8 @@ const NewActiveApplication = ({
               />
             )}
             <CommonDivider />
-            <div className={`${style.cardTitle} ${style.marginTop}`}>{allFormSchemas?.[index]?.formSchema?.schema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Hepatitis B Vaccination']?.label}</div>
-            <div className={`${style.descriptionText} ${style.marginTop}`}>{allFormSchemas?.[index]?.formSchema?.schema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Hepatitis B Vaccination']?.description}</div>
+            <div className={`${style.cardTitle} ${style.marginTop20}`}>{allFormSchemas?.[index]?.formSchema?.schema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Hepatitis B Vaccination']?.label}</div>
+            {/* <div className={`${style.descriptionText} ${style.marginTop}`}>{allFormSchemas?.[index]?.formSchema?.schema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Hepatitis B Vaccination']?.description}</div> */}
             {applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "HEPATITIS_B")?.length !== 0 && (
               <TableTwo
                 tableHeaderValues={tableHeader}
@@ -4110,8 +4109,8 @@ const NewActiveApplication = ({
               />
             )}
             <CommonDivider />
-            <div className={`${style.cardTitle} ${style.marginTop}`}>{allFormSchemas?.[index]?.formSchema?.schema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Varicella']?.label}</div>
-            <div className={`${style.descriptionText} ${style.marginTop}`}>{allFormSchemas?.[index]?.formSchema?.schema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Varicella']?.description}</div>
+            <div className={`${style.cardTitle} ${style.marginTop20}`}>{allFormSchemas?.[index]?.formSchema?.schema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Varicella']?.label}</div>
+            {/* <div className={`${style.descriptionText} ${style.marginTop}`}>{allFormSchemas?.[index]?.formSchema?.schema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Varicella']?.description}</div> */}
             {applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "VARICELLA")?.length !== 0 && (
               <TableTwo
                 tableHeaderValues={tableHeader}
@@ -4125,8 +4124,8 @@ const NewActiveApplication = ({
               />
             )}
             <CommonDivider />
-            <div className={`${style.cardTitle} ${style.marginTop}`}>{allFormSchemas?.[index]?.formSchema?.schema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Tetnues/Diptheriea/Pertussis(Tdap) and Tetatnus/Diphtheria(Td)']?.label}</div>
-            <div className={`${style.descriptionText} ${style.marginTop}`}>{allFormSchemas?.[index]?.formSchema?.schema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Tetnues/Diptheriea/Pertussis(Tdap) and Tetatnus/Diphtheria(Td)']?.description}</div>
+            <div className={`${style.cardTitle} ${style.marginTop20}`}>{allFormSchemas?.[index]?.formSchema?.schema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Tetanus/Diptheriea/Pertussis(TDAP) and Tetanus/Diptheria(TD)']?.label}</div>
+            {/* <div className={`${style.descriptionText} ${style.marginTop}`}>{allFormSchemas?.[index]?.formSchema?.schema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Tetanus/Diptheriea/Pertussis(TDAP) and Tetanus/Diptheria(TD)']?.description}</div> */}
             {applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "TETANUS_DIPHTHERIA_PERTUSSIS_OR_TETANUS_DIPHTHERIA")?.length !== 0 && (
               <TableTwo
                 tableHeaderValues={tableHeader}
@@ -4140,8 +4139,8 @@ const NewActiveApplication = ({
               />
             )}
             <CommonDivider />
-            <div className={`${style.cardTitle} ${style.marginTop}`}>{allFormSchemas?.[index]?.formSchema?.schema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Influenza']?.label}</div>
-            <div className={`${style.descriptionText} ${style.marginTop}`}>{allFormSchemas?.[index]?.formSchema?.schema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Influenza']?.description}</div>
+            <div className={`${style.cardTitle} ${style.marginTop20}`}>{allFormSchemas?.[index]?.formSchema?.schema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Influenza']?.label}</div>
+            {/* <div className={`${style.descriptionText} ${style.marginTop}`}>{allFormSchemas?.[index]?.formSchema?.schema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Influenza']?.description}</div> */}
             {applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "INFLUENZA")?.length !== 0 && (
               <TableTwo
                 tableHeaderValues={tableHeader}
@@ -5878,7 +5877,7 @@ const NewActiveApplication = ({
                                 className={`${style.displayInRow} ${style.verticalAlignCenter} `}
                               >
                                 <div className={`${style.tableHeaderTextStyle} ${style.marginLeft20}`}>
-                                  Required {applicationType === "NEW" ? 'Appointment data and Proof of Documentation' : applicationType === "LOCUM" ? `Application ${form?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'} data and Proof of Documentation for ${formattedStartingDate} and ${formattedExpiringDate}` : 'Reappointment data and Proof of Documentation for July 1, 2025 and June 30, 2026'}
+                                  Required {applicationType === "NEW" ? 'New Staff Appointment Data & Proof Of Documentation (POD)' : applicationType === "LOCUM" ? `Application ${form?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'} data and Proof of Documentation for ${formattedStartingDate} and ${formattedExpiringDate}` : 'Reappointment data and Proof of Documentation for July 1, 2025 and June 30, 2026'}
                                 </div>
                               </div>
                             </div>
@@ -5890,7 +5889,7 @@ const NewActiveApplication = ({
                                     className={` ${style.marginTop5} ${style.tableDataStyle}`}
                                   >
                                     <div
-                                      className={` ${style.tableHeaderGridStyleForm} ${style.marginTop10}`}
+                                      className={` ${style.tableHeaderGridStyleForm} ${style.marginTop10}  ${style.backgroundColorStyle} ${style.paddingTopBottom10}`}
                                     >
                                       <div
                                         className={`${style.displayInRow} ${style.verticalAlignCenter} `}
@@ -5907,10 +5906,7 @@ const NewActiveApplication = ({
                                         className={`${style.displayInRow} ${style.verticalAlignCenter}`}
                                       >
                                         <div
-                                          className={`${expand?.status && expand?.index === 0
-                                            ? style.tableHeaderTextStyle
-                                            : style.tableDataFontStyle1
-                                            }`}
+                                          className={`${style.tableHeaderTextStyleCred}`}
                                         >
                                           Applicant Profile Information
                                         </div>
@@ -6074,7 +6070,7 @@ const NewActiveApplication = ({
                                         </div>
                                       </div>
                                       {(data?.formCategory === "Acknowledgement" && form?.forms?.[index]?.esign?.signedDate) && (
-                                        <div className={`${style.date} ${style.marginLeft20}`}><strong>Signed By:</strong> {`${form?.forms?.[index]?.esign?.name} ${form?.forms?.[index]?.esign?.signedDate}`}</div>
+                                        <div className={`${style.date} ${style.marginLeft20}`}><strong>Signed By:</strong> {`${form?.forms?.[index]?.esign?.name} (${form?.forms?.[index]?.esign?.signedDate})`}</div>
                                       )}
                                     </div>
                                     {applicationType === "NEW" ? (
@@ -6151,24 +6147,25 @@ const NewActiveApplication = ({
                                                             </div>
                                                           </div>
                                                         ) : (
-                                                          form?.forms?.[index]?.status !== "APPROVED" ? (
-                                                            <div className={`${style.purpleButton} ${style.cursorPointer}`}>
-                                                              <Tooltip title="Click to Verify this Step" arrow>
-                                                                <div
-                                                                  className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                                  onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
-                                                                >
-                                                                  Verify
-                                                                </div>
-                                                              </Tooltip>
-                                                            </div>
-                                                          ) : (
-                                                            <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                              <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                                Verified
+                                                          form?.forms?.[index]?.status !== "APPROVED" ?
+                                                            form?.forms?.[index]?.schemaCategory !== "UploadYourDoc" ? (
+                                                              <div className={`${style.purpleButton} ${style.cursorPointer}`}>
+                                                                <Tooltip title="Click to Verify this Step" arrow>
+                                                                  <div
+                                                                    className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                                                    onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
+                                                                  >
+                                                                    Verify
+                                                                  </div>
+                                                                </Tooltip>
                                                               </div>
-                                                            </div>
-                                                          )
+                                                            ) : '' : (
+                                                              <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                                <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                                  Verified
+                                                                </div>
+                                                              </div>
+                                                            )
                                                         )}
                                                       </div>
                                                       {(
@@ -6682,7 +6679,7 @@ const NewActiveApplication = ({
                             <div className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderGridStyleCred1} `}>
 
                               <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                                <div className={`${style.tableHeaderTextStyleCred}`}> Required {applicationType === "NEW" ? 'Appointment data and Proof of Documentation' : applicationType === "LOCUM" ? `Application ${form?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'} data and Proof of Documentation for ${formattedStartingDate} and ${formattedExpiringDate}` : 'Reappointment data and Proof of Documentation for July 1, 2025 and June 30, 2026'} </div>
+                                <div className={`${style.tableHeaderTextStyleCred}`}> Required {applicationType === "NEW" ? 'New Staff Appointment Data & Proof Of Documentation (POD)' : applicationType === "LOCUM" ? `Application ${form?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'} data and Proof of Documentation for ${formattedStartingDate} and ${formattedExpiringDate}` : 'Reappointment data and Proof of Documentation for July 1, 2025 and June 30, 2026'} </div>
                               </div>
 
                             </div>
@@ -6690,7 +6687,7 @@ const NewActiveApplication = ({
                               <>
                                 {applicationType === "NEW" && (
                                   <div className={` ${style.marginTop5} ${style.tableDataStyle}`}>
-                                    <div className={` ${style.tableHeaderGridStyleFormCred} ${style.marginTop10}`}>
+                                    <div className={` ${style.tableHeaderGridStyleFormCred} ${style.marginTop10} ${style.backgroundColorStyle} ${style.paddingTopBottom10}`}>
 
                                       <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
                                         <div className={`${style.tableHeaderTextStyleCred}`}>Applicant Profile Information</div>
@@ -7314,7 +7311,7 @@ const NewActiveApplication = ({
                                   className={` ${expand?.status && expand?.index === 0
                                     ? style.tableHeaderGridStyleForm
                                     : style.tableHeaderGridStyle
-                                    } ${style.marginTop10}`}
+                                    } ${style.marginTop10}  ${style.backgroundColorStyle} ${style.paddingTopBottom10}`}
                                 >
                                   <div
                                     className={`${style.displayInRow} ${style.verticalAlignCenter} `}
@@ -8009,7 +8006,7 @@ const NewActiveApplication = ({
                             </div>
                             <div>
                               <div className={` ${style.marginTop5} ${style.tableDataStyle}`}>
-                                <div className={` ${(expand?.status && expand?.index === 0) ? style.tableHeaderGridStyleFormCred : style.tableHeaderGridStyleCred1} ${style.marginTop10}`}>
+                                <div className={` ${(expand?.status && expand?.index === 0) ? style.tableHeaderGridStyleFormCred : style.tableHeaderGridStyleCred1} ${style.marginTop10}  ${style.backgroundColorStyle} ${style.paddingTopBottom10}`}>
 
                                   <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
                                     <div className={`${(expand?.status && expand?.index === 0) ? style.tableHeaderTextStyleCred : style.tableDataFontStyleCred}`}>Applicant Profile Information</div>
@@ -8500,7 +8497,7 @@ const NewActiveApplication = ({
                                 className={` ${expand?.status && expand?.index === 0
                                   ? style.tableHeaderGridStyleForm
                                   : style.tableHeaderGridStyle
-                                  } ${style.marginTop10}`}
+                                  } ${style.marginTop10}  ${style.backgroundColorStyle} ${style.paddingTopBottom10}`}
                               >
                                 <div
                                   className={`${style.displayInRow} ${style.verticalAlignCenter} `}
