@@ -16,6 +16,7 @@ import CommonInputField from '../../../Components/CommonFields/CommonInputField'
 import MDManagerStep1 from "./step1";
 import MDManagerStep2 from "./step2";
 import MDManagerStep3 from "./step3";
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import CommonSearchField from "../../../Components/CommonFields/CommonSearchField";
 import CommonDateField from "../../../Components/CommonFields/CommonDateField";
@@ -25,6 +26,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { format } from "date-fns";
 import CommonMultiSelectField from "../../../Components/CommonFields/CommonMultiSelectField";
 import MDManagerStep4 from "./step4";
+import { SuccessToaster2 } from "../../../utils/toaster";
 
 const MDManager = () => {
   const navigate = useNavigate();
@@ -35,6 +37,8 @@ const MDManager = () => {
   const [selectedOption, setSelectedOption] = useState("MANAGE MEDICAL DIRECTIVES");
   const [isExpanded, setIsExpanded] = useState(true);
   let selectedOptionValue = sessionStorage.getItem("selectedOption");
+  let mdSelectedOption = sessionStorage.getItem('mdOption');
+  // const [mdSelectedOption, setMdSelectedOption] = useState(sessionStorage.getItem('mdOption'))
   const [entityId, setEntityId] = useState("");
   const [refMetadata, setRefMetadata] = useState({ customCount: [], defaultCount: [], setupRequired: [], reviewForUse: [] })
   const [customCount, setCustomCount] = useState([]);
@@ -363,6 +367,22 @@ const MDManager = () => {
     setSelectedGroups(id)
   }
 
+  const STATIC_PATH = "/mdManager/manageAttestation";
+
+  const getRootDomain = (hostname) => {
+    const parts = hostname.split(".");
+    return parts.slice(-2).join(".");
+  };
+
+  const copyUrl = async () => {
+    const { protocol, hostname } = window.location;
+    const rootDomain = getRootDomain(hostname);
+    const finalUrl = `${protocol}//${rootDomain}${STATIC_PATH}`;
+
+    await navigator.clipboard.writeText(finalUrl);
+    SuccessToaster2("Copied Successfully!")
+  };
+
   console.log('ref', refMetadata);
 
   return step1 ? (
@@ -569,6 +589,25 @@ const MDManager = () => {
                   </>
                 )}
               </div>
+              {/* {mdSelectedOption === "Attestations Outstanding" && ( */}
+              <div className={`${style.searchFieldCard} ${style.marginTop20}`}>
+                <div className={style.attestationLinkHeading}>
+                  Outstanding Attestation Access Link
+                </div>
+                <div className={style.attestationLinkDesc}>
+                  This link provides secure access for staff to review and attest to their assigned medical directive. Share this link with the appropriate individual to complete the attestation.
+                </div>
+                <div className={`${style.attestationLinkButton} ${style.marginTop20} ${style.cursorPointer}`} onClick={() => copyUrl()}>
+                  <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                    <ContentCopyIcon sx={{
+                      fontSize: 20,
+                      color: "#ffffff",
+                      marginRight: "10px",
+                    }} /> COPY ATTESTATION LINK
+                  </div>
+                </div>
+              </div>
+              {/* )} */}
             </div>
           </SideBar>
         </div>

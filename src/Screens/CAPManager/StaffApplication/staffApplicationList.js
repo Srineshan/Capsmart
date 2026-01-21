@@ -2562,7 +2562,7 @@ const StaffApplicationList = ({
 
       taskListStatus.push(data?.tasks?.completedCount + "/" + data?.tasks?.totalCount);
       lastUpdated.push(
-        `${data?.updatedBy?.name?.firstName || ''} ${`${data?.updatedBy?.name?.lastName}` || ''} ${format(new Date(data?.lastModifiedDate), dateFormat)}`
+        `${data?.updatedBy?.name?.firstName || ''} ${`${data?.updatedBy?.name?.lastName}` || ''} (${format(new Date(data?.lastModifiedDate), dateFormat)})`
       );
       lastUpdatedBy.push(["-"]);
       // const lastUpdatedDate = new Date(data?.lastModifiedDate);
