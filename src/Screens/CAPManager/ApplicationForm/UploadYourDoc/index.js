@@ -145,8 +145,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
   }, [tempValue?.table]);
 
   const getFormSchema = async () => {
-    const schemaId =
-      basicForm?.forms?.[formIndex]?.schemaId ?? basicForm?.formSchemas?.[formIndex]?.id;
+    const schemaId = basicForm?.forms?.[formIndex]?.schemaId;
     if (!schemaId) return;
     const { data: form } = await GET(
       `application-management-service/formSchema/${schemaId}`,
@@ -257,49 +256,51 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
   };
 
   const changeHandler = async (event) => {
-    setIsLoading(true);
-    setFiles(event);
-    const table = tempValue.table ? [...tempValue.table] : [];
-    const formData = new FormData();
-    const fileNameArray = [];
-    event?.forEach((file) => {
-      fileNameArray.push({ fileName: file?.name });
-      formData.append('documents', file);
-    });
-    formData.append(
-      'files',
-      new Blob([JSON.stringify(fileNameArray)], {
-        type: 'application/json',
-      }),
-    );
-    try {
-      const { data: responseData } = await POST(
-        `application-management-service/application/${applicationId}/files/bulk?isLLMRequired=${true}`,
-        formData,
-      );
-      responseData?.forEach((uploadedDoc, index) => {
-        const documentLabel = uploadedDoc?.documentType !== null ? uploadedDoc?.documentType?.shortName : '';
-        const newRow = {
-          rowId: uploadedDoc?.id,
-          documentType: documentLabel,
-          fileURL: uploadedDoc?.fileURL,
-          fileType: uploadedDoc?.fileType,
-          fileUploaded: event[index]?.name,
-          fileSize: `${(event[index]?.size / (1024 * 1024)).toFixed(2)} Mb`,
-          requirement: documentLabel ? getIsDocRequired(documentLabel) : '',
-          valid: uploadedDoc?.valid,
-          verified: uploadedDoc?.verified,
-        };
-        table.push(newRow);
+    if (event?.length > 0) {
+      setIsLoading(true);
+      setFiles(event);
+      const table = tempValue.table ? [...tempValue.table] : [];
+      const formData = new FormData();
+      const fileNameArray = [];
+      event?.forEach((file) => {
+        fileNameArray.push({ fileName: file?.name });
+        formData.append('documents', file);
       });
-      await handleSubmitApplicationReq(table);
-      setIsLoading(false);
-      return responseData;
-    } catch (error) {
-      ErrorToaster('File Upload Failed');
-      console.error(error);
-      setIsLoading(false);
-      return null;
+      formData.append(
+        'files',
+        new Blob([JSON.stringify(fileNameArray)], {
+          type: 'application/json',
+        }),
+      );
+      try {
+        const { data: responseData } = await POST(
+          `application-management-service/application/${applicationId}/files/bulk?isLLMRequired=${true}`,
+          formData,
+        );
+        responseData?.forEach((uploadedDoc, index) => {
+          const documentLabel = uploadedDoc?.documentType !== null ? uploadedDoc?.documentType?.shortName : '';
+          const newRow = {
+            rowId: uploadedDoc?.id,
+            documentType: documentLabel,
+            fileURL: uploadedDoc?.file?.fileURL,
+            fileType: uploadedDoc?.file?.fileType,
+            fileUploaded: event[index]?.name,
+            fileSize: `${(event[index]?.size / (1024 * 1024)).toFixed(2)} Mb`,
+            requirement: documentLabel ? getIsDocRequired(documentLabel) : '',
+            valid: uploadedDoc?.valid,
+            verified: uploadedDoc?.verified,
+          };
+          table.push(newRow);
+        });
+        await handleSubmitApplicationReq(table);
+        setIsLoading(false);
+        return responseData;
+      } catch (error) {
+        ErrorToaster2('File Upload Failed');
+        console.error(error);
+        setIsLoading(false);
+        return null;
+      }
     }
   };
 
@@ -782,7 +783,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                   <div>
                     <div
                       className={`${style.requiredDocumentCard} ${style.tableGrid
-                        } ${skipReason?.[normalizeKey(data?.document?.shortName)] ? '' : (basicForm?.forms?.[formIndex]?.data !== null &&
+                        } ${skipReason?.[normalizeKey(data?.document?.shortName)] ? style.greenBorder : (
                           (tempValue?.table?.filter(
                             (tableData) =>
                               tableData?.documentType ===
@@ -790,7 +791,8 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                           )?.length === 0 || !(tempValue?.table?.filter((tableData) => tableData?.documentType === data?.document?.shortName)?.[0]?.verified && tempValue?.table?.filter((tableData) => tableData?.documentType === data?.document?.shortName)?.[0]?.valid)) &&
                           data?.required)
                           ? style.redBorder
-                          : ""
+                          : !(tempValue?.table?.filter((tableData) => tableData?.documentType === data?.document?.shortName)?.[0]?.verified && tempValue?.table?.filter((tableData) => tableData?.documentType === data?.document?.shortName)?.[0]?.valid) ? style.yellowBorder
+                            : style.greenBorder
                         } ${index % 2 === 0
                           ? style.requiredDocumentCardAlternativeColor
                           : ""
@@ -822,23 +824,33 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                           tableData?.documentType ===
                           data?.document?.shortName
                       )?.length === 0 || !(tempValue?.table?.filter((tableData) => tableData?.documentType === data?.document?.shortName)?.[0]?.verified && tempValue?.table?.filter((tableData) => tableData?.documentType === data?.document?.shortName)?.[0]?.valid)) &&
-                        data?.required) && (
-                          <div
-                            className={` ${style.fullWidth}`}
-                          >
-                            <CommonSelectField
-                              value={skipReason?.[normalizeKey(data?.document?.shortName)] ? skipReason?.[normalizeKey(data?.document?.shortName)] : ''}
-                              onChange={(e) => handleSkipReason(data?.document?.shortName, e.target.value)}
-                              className={`${style.fullWidth} ${style.verticalAlignCenter}`}
-                              // firstOptionLabel={'Select A Reason For Skipping This Step'}
-                              // firstOptionValue={''}
-                              valueList={['Current Document Not Available', 'Replacement Document Requested']}
-                              labelList={['Current Document Not Available', 'Replacement Document Requested']}
-                              disabledList={['Current Document Not Available', 'Replacement Document Requested'].map(() => false)}
-                            />
-                            {/* {data?.instruction} */}
-                          </div>
-                        )}
+                        data?.required) ? (
+                        <div
+                          className={` ${style.fullWidth}`}
+                        >
+                          <CommonSelectField
+                            value={skipReason?.[normalizeKey(data?.document?.shortName)] ? skipReason?.[normalizeKey(data?.document?.shortName)] : ''}
+                            onChange={(e) => handleSkipReason(data?.document?.shortName, e.target.value)}
+                            className={`${style.fullWidth} ${style.verticalAlignCenter}`}
+                            // firstOptionLabel={'Select A Reason For Skipping This Step'}
+                            // firstOptionValue={''}
+                            valueList={['Current Document Not Available', 'Replacement Document Requested']}
+                            labelList={['Current Document Not Available', 'Replacement Document Requested']}
+                            disabledList={['Current Document Not Available', 'Replacement Document Requested'].map(() => false)}
+                          />
+                          {/* {data?.instruction} */}
+                        </div>
+                      ) : tempValue?.table?.filter(
+                        (tableData) =>
+                          tableData?.documentType ===
+                          data?.document?.shortName
+                      )?.length !== 0 ? (
+                        <div
+                          className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}
+                        >
+                          Already Uploaded
+                        </div>
+                      ) : ""}
                     </div>
                   </div>
                 ))}

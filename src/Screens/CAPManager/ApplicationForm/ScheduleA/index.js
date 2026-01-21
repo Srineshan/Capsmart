@@ -36,6 +36,7 @@ const ScheduleA = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
   const [formIndex, setFormIndex] = useState();
   const [signText, setSignText] = useState(name + " " + currentDate);
   const [isSaveInProgressOpen, setIsSaveInProgressOpen] = useState(false);
+  const [entityLogo, setEntityLogo] = useState(sessionStorage.getItem('logo') || null)
   let questionsArray = [
     'Nature of treatments / consultations that are relevant to the Applicant’s ability to practice medicine.',
     'Dates of treatment (past, present and / or ongoing).',
@@ -69,9 +70,9 @@ const ScheduleA = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
   }, [formSchema])
 
   const getFormSchema = async () => {
-    if (basicForm?.formSchemas?.[formIndex]?.id !== undefined) {
+    if (basicForm?.forms?.[formIndex]?.schemaId !== undefined) {
       const { data: form } = await GET(
-        `application-management-service/formSchema/${basicForm?.formSchemas?.[formIndex]?.id}`
+        `application-management-service/formSchema/${basicForm?.forms?.[formIndex]?.schemaId}`
       );
       setFormSchema(form)
     }
@@ -85,6 +86,9 @@ const ScheduleA = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
   }
 
   const getIsSaveInProgressOpen = (value) => {
+    if (value) {
+      handleSubmitApplicationReq(true);
+    }
     setIsSaveInProgressOpen(value);
   };
 
@@ -107,6 +111,29 @@ const ScheduleA = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
         const response = await POST(`application-management-service/application/${applicationId}/files`, formData);
         console.log(response?.data);
         uploadedFile = response?.data?.file;
+      } catch (error) {
+        console.error(error);
+        return null;
+      }
+
+      try {
+        let temp = {
+          schemaId: basicForm?.forms?.[formIndex]?.schemaId,
+          completedFormAsFile: uploadedFile,
+          data: basicForm?.forms?.[formIndex]?.data,
+          unFilledFields: basicForm?.forms?.[formIndex]?.unFilledFields,
+          acknowledged: basicForm?.forms?.[formIndex]?.acknowledged,
+          dataStatus: basicForm?.forms?.[formIndex]?.dataStatus
+        }
+        await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
+          .then(response => {
+            console.log(response)
+            SuccessToaster("Application Updated Successfully");
+          })
+          .catch((error) => {
+            console.log(error)
+            ErrorToaster("Unexpected Error Updating Application");
+          });
       } catch (error) {
         console.error(error);
         return null;
@@ -154,8 +181,8 @@ const ScheduleA = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
     }
   }
 
-  const handleSubmitApplicationReq = async () => {
-    if (isSigned) {
+  const handleSubmitApplicationReq = async (save) => {
+    if (isSigned || save) {
       let temp = {
         schemaId: basicForm?.forms?.[formIndex]?.schemaId,
         data: !isEdited ? basicForm?.forms?.[formIndex]?.data : { esignDate: isChecked ? name + " " + currentDate : '' },
@@ -170,11 +197,13 @@ const ScheduleA = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
           SuccessToaster("Application Updated Successfully");
           handleDownload();
           getFormSchema();
-          if (sessionStorage.getItem('fromSummary') === 'true') {
-            navigate(-1);
-            sessionStorage.setItem('fromSummary', false)
-          } else {
-            navigate(navigateURL)
+          if (!save) {
+            if (sessionStorage.getItem('fromSummary') === 'true') {
+              navigate(-1);
+              sessionStorage.setItem('fromSummary', false)
+            } else {
+              navigate(navigateURL)
+            }
           }
         })
         .catch((error) => {
@@ -215,7 +244,7 @@ const ScheduleA = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
         <div>
           <div className={`${style.applicationCardStyle} ${style.applicationCardScrollStyle}`} ref={targetRef}>
             <div className={`${style.marginTop} ${style.justifyCenter}`}>
-              <img src={logo} alt="Hospital Logo" className={`${style.logo}`} />
+              <img src={entityLogo || logo} alt="Hospital Logo" className={`${style.logo}`} />
             </div>
             <CommonDivider />
             <div className={`${style.cardTitle} ${style.marginTop}  ${style.justifyCenter}`}>{formSchema?.title}</div>

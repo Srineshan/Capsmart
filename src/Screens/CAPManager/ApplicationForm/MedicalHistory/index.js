@@ -39,7 +39,7 @@ const MedicalHistory = ({ basicForm, setBasicForm, applicationId, getPreApplicat
         setNavigateBackURL(`/applicationForm/${applicationId}/${basicForm?.forms[0]?.formCategory}/${btoa(basicForm?.forms[0]?.schemaCategory)}`)
       }
     }
-  }, [basicForm?.formSchemas?.[formIndex]?.id, formIndex])
+  }, [basicForm?.forms?.[formIndex]?.schemaId, formIndex])
 
   useEffect(() => {
     setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === atob(step)))
@@ -66,14 +66,17 @@ const MedicalHistory = ({ basicForm, setBasicForm, applicationId, getPreApplicat
   };
 
   const getIsSaveInProgressOpen = (value) => {
+    if (value) {
+      handleSubmitApplicationReq('', true);
+    }
     setIsSaveInProgressOpen(value);
   }
 
 
   const getFormSchema = async () => {
-    if (basicForm?.formSchemas?.[formIndex]?.id !== undefined) {
+    if (basicForm?.forms?.[formIndex]?.schemaId !== undefined) {
       const { data: form } = await GET(
-        `application-management-service/formSchema/${basicForm?.formSchemas?.[formIndex]?.id}`
+        `application-management-service/formSchema/${basicForm?.forms?.[formIndex]?.schemaId}`
       );
       setFormSchema(form?.schema)
       setFormSchemaWholeObject(form)
@@ -419,8 +422,8 @@ const MedicalHistory = ({ basicForm, setBasicForm, applicationId, getPreApplicat
     return validationStatus?.filter(data => data?.mandatory)?.length === 0;
   }, [basicForm, formIndex, metadata, labels]);
 
-  const handleSubmitApplicationReq = async (data) => {
-    if (isEdited || data) {
+  const handleSubmitApplicationReq = async (data, save) => {
+    if (isEdited || data || save) {
       const dataStatusResult = getDataStatus();
       const mandatoryMissing = dataStatusResult?.filter(data => data?.mandatory)?.length > 0;
       const anyMissing = dataStatusResult?.length > 0;
@@ -436,7 +439,9 @@ const MedicalHistory = ({ basicForm, setBasicForm, applicationId, getPreApplicat
           console.log(response)
           setBasicForm(response?.data)
           SuccessToaster("Application Updated Successfully");
-          navigate(navigateURL)
+          if (!save) {
+            navigate(navigateURL)
+          }
           getPreApplication()
         })
         .catch((error) => {

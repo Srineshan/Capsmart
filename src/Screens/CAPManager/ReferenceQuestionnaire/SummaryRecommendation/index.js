@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ApplicationFieldCard from '../../../../Components/ApplicationFieldCard';
 import CryptoJS from "crypto-js";
 
 import style from './index.module.scss';
 import ESignature from '../../../../Components/ESignature';
 import { format } from 'date-fns';
+import { getValueByPath } from '../../../../utils/formatting';
 
-const SummaryRecommendation = ({ referenceForm, setReferenceForm, applicationId, getReferenceDetails, formSchema, formIndex, formSchemaWholeObject }) => {
+const SummaryRecommendation = ({ referenceForm, setReferenceForm, applicationId, getReferenceDetails, formSchema, formIndex, formSchemaWholeObject, getAllPath, getAllLabels }) => {
     const [metadata, setMetadata] = useState([]);
     const [labels, setLabels] = useState([]);
     const [warningFields, setWarningFields] = useState([]);
@@ -20,34 +21,64 @@ const SummaryRecommendation = ({ referenceForm, setReferenceForm, applicationId,
             publicKey
         ).toString()
     );
+    const phoneCallNeeded = getValueByPath(referenceForm, `referenceDetails.responses[${formIndex}].data.summaryRecommendation.anySensitiveNatureToDiscussByPhone`)
     const getIsEdited = () => {
 
     }
 
-    const getAllPath = (data) => {
-        let temp = metadata;
-        if (!temp?.includes(data)) {
-            console.log(temp, data, 'Metadata')
-            temp.push(data);
-        }
-        setMetadata(temp);
-    }
+    useEffect(() => {
+        setReferenceForm((prevData) => ({
+            ...prevData,
+            referenceDetails: {
+                ...prevData?.referenceDetails,
+                responses: prevData?.referenceDetails?.responses?.map((form, idx) => {
+                    if (idx !== formIndex) return form;
 
-    const getAllLabels = (data) => {
-        let tempLabels = labels;
-        if (tempLabels?.filter(innerData => data?.path === innerData?.path)?.length === 0) {
-            console.log(tempLabels, data, 'MetadataLabel')
-            tempLabels.push(data);
-        }
-        setLabels(tempLabels);
-    }
+                    return {
+                        ...form,
+                        data: {
+                            ...form?.data,
+                            referenceInformation: {
+                                ...form?.data?.referenceInformation,
+                                name: `${referenceForm?.referenceDetails?.firstName ?? ""} ${referenceForm.referenceDetails?.lastName ?? ""
+                                    }`.trim(),
+                            },
+                        },
+                    };
+                }),
+            },
+        }));
+    }, [
+        referenceForm?.referenceDetails?.firstName,
+        referenceForm?.referenceDetails?.lastName,
+        formIndex,
+    ]);
+
+    // const getAllPath = (data) => {
+    //     let temp = metadata;
+    //     if (!temp?.includes(data)) {
+    //         console.log(temp, data, 'Metadata')
+    //         temp.push(data);
+    //     }
+    //     setMetadata(temp);
+    // }
+
+    // const getAllLabels = (data) => {
+    //     let tempLabels = labels;
+    //     if (tempLabels?.filter(innerData => data?.path === innerData?.path)?.length === 0) {
+    //         console.log(tempLabels, data, 'MetadataLabel')
+    //         tempLabels.push(data);
+    //     }
+    //     setLabels(tempLabels);
+    // }
+
     return (
         <div className={style.applicantInfoCard}>
             {formSchema !== undefined && "summaryRecommendation" in formSchema?.properties && (
                 <ApplicationFieldCard
                     object={formSchema?.properties?.summaryRecommendation}
                     refGridStyle={style.gridStyle}
-                    gridStyle={style.fieldGridStyle}
+                    gridStyle={phoneCallNeeded ? style.fieldGridStyle : style.alternateFieldGridStyle}
                     baseKey={"summaryRecommendation"}
                     basicForm={referenceForm}
                     setBasicForm={setReferenceForm}

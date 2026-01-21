@@ -7,7 +7,7 @@
 
 .gridStyle {
     display: grid;
-    grid-template-columns: 35% 65%;
+    grid-template-columns: 100%;
 }
 
 .fieldGridStyle {
@@ -25,28 +25,67 @@
 }
 
 .fieldGridStyle> :nth-child(3) {
-    grid-column: span 6;
+    grid-column: span 2;
 }
 
 .fieldGridStyle> :nth-child(4) {
-    grid-column: span 3;
+    grid-column: span 2;
 }
 
 .fieldGridStyle> :nth-child(5) {
-    grid-column: span 3;
+    grid-column: span 2;
 }
 
 .fieldGridStyle> :nth-child(6) {
-    grid-column: span 2;
+    grid-column: span 6;
 }
 
 .fieldGridStyle> :nth-child(7) {
-    grid-column: span 2;
+    grid-column: span 3;
 }
 
 .fieldGridStyle> :nth-child(8) {
+    grid-column: span 3;
+}
+
+.alternateFieldGridStyle {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px
+}
+
+.alternateFieldGridStyle> :nth-child(1) {
+    grid-column: span 6;
+}
+
+.alternateFieldGridStyle> :nth-child(2) {
+    grid-column: span 6;
+}
+
+.alternateFieldGridStyle> :nth-child(3) {
+    grid-column: span 6;
+}
+
+.alternateFieldGridStyle> :nth-child(4) {
     grid-column: span 2;
 }
+
+.alternateFieldGridStyle> :nth-child(5) {
+    grid-column: span 2;
+}
+
+.alternateFieldGridStyle> :nth-child(6) {
+    grid-column: span 2;
+}
+
+.alternateFieldGridStyle> :nth-child(7) {
+    grid-column: span 3;
+}
+
+.alternateFieldGridStyle> :nth-child(8) {
+    grid-column: span 3;
+}
+
 
 .fieldGridStyle2 {
     display: grid;
@@ -107,4 +146,9 @@
     border-radius: 12px;
     padding: 20px;
     box-shadow: 0px 5px 20px #52575D4D;
+}
+
+.centerAlign {
+    display: flex;
+    justify-content: center;
 }

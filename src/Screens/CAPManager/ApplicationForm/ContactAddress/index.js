@@ -41,7 +41,7 @@ const ContactAddress = ({ basicForm, setBasicForm, applicationId, getPreApplicat
         setNavigateBackURL(`/applicationForm/${applicationId}/${basicForm?.forms[0]?.formCategory}/${btoa(basicForm?.forms[0]?.schemaCategory)}`)
       }
     }
-  }, [basicForm?.formSchemas?.[formIndex]?.id, formIndex])
+  }, [basicForm?.forms?.[formIndex]?.schemaId, formIndex])
 
   useEffect(() => {
     setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === atob(step)))
@@ -110,9 +110,9 @@ const ContactAddress = ({ basicForm, setBasicForm, applicationId, getPreApplicat
   }
 
   const getFormSchema = async () => {
-    if (basicForm?.formSchemas?.[formIndex]?.id !== undefined) {
+    if (basicForm?.forms?.[formIndex]?.schemaId !== undefined) {
       const { data: form } = await GET(
-        `application-management-service/formSchema/${basicForm?.formSchemas?.[formIndex]?.id}`
+        `application-management-service/formSchema/${basicForm?.forms?.[formIndex]?.schemaId}`
       );
       setFormSchema(form?.schema)
       setFormSchemaWholeObject(form)

@@ -284,6 +284,7 @@ const ApplicationForm = React.lazy(() => import("./Screens/CAPManager/Applicatio
 const ReappointmentApplicationForm = React.lazy(() => import("./Screens/CAPManager/ReappointmentApplicationForm"));
 const LocumApplicationForm = React.lazy(() => import("./Screens/CAPManager/LocumApplicationForm"));
 const MedicalDirectivesAttest = React.lazy(() => import("./Screens/CAPManager/ReappointmentApplicationForm/MedicalDirectives/MedicalDirectivesAttest"));
+const MedicalDirectivesAttestInitialApplication = React.lazy(() => import("./Screens/CAPManager/ApplicationForm/MedicalDirectives/MedicalDirectivesAttest"));
 const LocumMedicalDirectivesAttest = React.lazy(() => import("./Screens/CAPManager/LocumApplicationForm/MedicalDirectives/MedicalDirectivesAttest"));
 const ApplicationFormRequirement = React.lazy(() =>
   import("./Screens/CAPManager/ApplicationForm/ApplicationFormRequirement")
@@ -1659,6 +1660,10 @@ const App = ({ props }) => {
                   element={<ProtectedRoute><ApplicationForm /></ProtectedRoute>}
                 />
                 <Route
+                  path="/applicationForm/:applicationId/:section/:step/:medicalDirectivesId"
+                  element={<ProtectedRoute><MedicalDirectivesAttestInitialApplication /></ProtectedRoute>}
+                />
+                <Route
                   path="/reappointmentApplicationForm/:applicationId/:section/:step"
                   element={<ProtectedRoute><ReappointmentApplicationForm /></ProtectedRoute>}
                 />
@@ -1765,19 +1770,19 @@ const App = ({ props }) => {
                   element={<ProtectedRoute><ApplicantPortalDashboard /></ProtectedRoute>}
                 />
                 <Route
-                  path="/applications/:applicationId/references/:referenceId"
+                  path="/tenant/:entityId/applications/:applicationId/references/:referenceId"
                   element={<ReferenceQuestionnaire />}
                 />
                 <Route
-                  path="/applications/:applicationId/references/:referenceId/:formId"
+                  path="/tenant/:entityId/applications/:applicationId/references/:referenceId/:formId"
                   element={<ReferenceQuestionnaire />}
                 />
                 <Route
-                  path="/applications/:applicationId/references/:referenceId/:formId/:step"
+                  path="/tenant/:entityId/applications/:applicationId/references/:referenceId/:formId/:step"
                   element={<ReferenceQuestionnaire />}
                 />
                 <Route
-                  path="/applications/:applicationId/immunization"
+                  path="/tenant/:entityId/applications/:applicationId/immunization"
                   element={<ImmunizationReview />}
                 />
                 <Route path="*" element={<DescopeLoginDialog />} {...props} exact={true} />

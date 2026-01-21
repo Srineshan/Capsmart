@@ -91,13 +91,13 @@ const OverRideRequestDialog = ({ getIsOpen, getActiveApplicationView, selectedTa
     getApplication();
   }, [applicationType]);
 
-  useEffect(() => {
-    setIsCheckedSign(formDetails?.forms?.[19]?.acknowledged || true);
-    setIsSigned(
-      formDetails?.forms?.[19]?.esign?.esign !== undefined &&
-      formDetails?.forms?.[19]?.acknowledged
-    );
-  }, [formDetails]);
+  // useEffect(() => {
+  //   setIsCheckedSign(formDetails?.forms?.[19]?.acknowledged || true);
+  //   setIsSigned(
+  //     formDetails?.forms?.[19]?.esign?.esign !== undefined &&
+  //     formDetails?.forms?.[19]?.acknowledged
+  //   );
+  // }, [formDetails]);
 
   useEffect(() => {
     if (name && dateTime) {
@@ -267,7 +267,7 @@ const OverRideRequestDialog = ({ getIsOpen, getActiveApplicationView, selectedTa
   //     setIsApproveEnabled(hasValidComments);
   //   }
   // };
-console.log("files123",files)
+  console.log("files123", files)
   const checkApproveEnabled = () => {
     const hasValidComments = userRoleComments.trim() !== '';
 
@@ -291,16 +291,18 @@ console.log("files123",files)
   };
 
   const reappointmentRequestForOverrideApplication = async () => {
-  const filesWithNotes = (files || []).map((item, index) => ({ "fileName": item?.name }));
+    const filesWithNotes = (files || []).map((item, index) => ({ "fileName": item?.name }));
 
     const temp = {
       requestType: 'OVERRIDE_REQUEST',
       application: {
         id: id
       },
-      locumRenewalDetails: {
-        reappointmentType: formDetails?.reappointmentType,
-      },
+      ...(applicationType !== "NEW" && {
+        locumRenewalDetails: {
+          reappointmentType: formDetails?.reappointmentType,
+        },
+      }),
       notes: [
         {
           notes: {
@@ -378,22 +380,21 @@ console.log("files123",files)
             <div className={Classes.DIALOG_BODY}>
               <div className={style.spaceBetween}>
                 <div className={style.heading}>
-                  {`Request Override for Locum Period & Privileges ${
-                    applicationType === "LOCUM"
-                      ? `${formDetails?.reappointmentType === "EXTENSION" ? "Extension" : "Renewal"}`
-                      : "Reappointment"
-                  }`}
+                  {applicationType === "NEW" ? 'Request Override for Appointment' : `Request Override for Locum Period & Privileges ${applicationType === "LOCUM"
+                    ? `${formDetails?.reappointmentType === "EXTENSION" ? "Extension" : "Renewal"}`
+                    : "Reappointment"
+                    }`}
                 </div>
                 <div className={style.displayInRow}>
                   <Tooltip arrow title={"Click to Close"}>
-                  <img
-                    src={CrossPink}
-                    alt="cross"
-                    className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft}`}
-                    onClick={() => {
-                      getIsOpen(false);
-                    }}
-                  />
+                    <img
+                      src={CrossPink}
+                      alt="cross"
+                      className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft}`}
+                      onClick={() => {
+                        getIsOpen(false);
+                      }}
+                    />
                   </Tooltip>
                 </div>
               </div>
@@ -431,7 +432,7 @@ console.log("files123",files)
                             : ""}
                         </span>
                           <span className={`${style.rejectionTextStyle} ${style.marginLeft4}`}>
-                          {" "} {applicationType === "LOCUM" ? "Locum":""} {formDetails?.providerType?.serviceProviderType}
+                            {" "} {applicationType === "LOCUM" ? "Locum" : ""} {formDetails?.providerType?.serviceProviderType}
                           </span>
                         </div>
                         <div className={`${style.gridItem2}`}>
@@ -472,7 +473,7 @@ console.log("files123",files)
                             {formDetails?.basicDetails?.applicant?.name?.firstName
                               ? formDetails?.updatedBy?.name?.firstName.charAt(0).toUpperCase() +
                               formDetails?.updatedBy?.name?.firstName.slice(1).toLowerCase()
-                              : ""}{formDetails?.updatedBy?.name?.lastName?.toUpperCase()} {formDetails?.updatedBy?.title?.title  ? `, ${formDetails?.updatedBy?.title?.title}`: ""}
+                              : ""}{formDetails?.updatedBy?.name?.lastName?.toUpperCase()} {formDetails?.updatedBy?.title?.title ? `, ${formDetails?.updatedBy?.title?.title}` : ""}
                           </span>
                         </div>
                       </div>
@@ -480,11 +481,10 @@ console.log("files123",files)
                   </div>
                 </div>
                 <div className={`${style.marginTop} ${style.commentsNotesHeadingFontStyle}`}>
-                  {`Reason For Locum ${
-                    applicationType === "LOCUM"
-                      ? `${formDetails?.reappointmentType === "EXTENSION" ? "Extension" : "Renewal"}`
-                      : "Reappointment"
-                  } Application Override *`}
+                  {applicationType === "NEW" ? 'Reason For Appointment Application Override*' : `Reason For Locum ${applicationType === "LOCUM"
+                    ? `${formDetails?.reappointmentType === "EXTENSION" ? "Extension" : "Renewal"}`
+                    : "Reappointment"
+                    } Application Override*`}
                 </div>
                 {/* <div className={`${style.notesBorderStyle}`}>
               <div className={`${style.commentsNotesFontStyle}`}>
@@ -667,11 +667,11 @@ console.log("files123",files)
                   <div
                     className={`${style.reviewButtonStyle} ${style.reviewButtonStyle}`}
                     onClick={isApproveEnabled ? () => reappointmentRequestForOverrideApplication() : () => { }}
-                      // onClick={isApproveEnabled ? () => onClose() : () => { }}
+                    // onClick={isApproveEnabled ? () => onClose() : () => { }}
                     style={{ pointerEvents: isApproveEnabled ? 'auto' : 'none', opacity: isApproveEnabled ? 1 : 0.5 }}
                   >
                     <Tooltip title={isApproveEnabled ? "Click to Continue" : ""} arrow>
-                    <div className={style.reviewButton}>Continue</div></Tooltip>
+                      <div className={style.reviewButton}>Continue</div></Tooltip>
                   </div>
                   {/* <div
                 className={`${style.reviewButtonStyle} ${style.cursorPointer}`}

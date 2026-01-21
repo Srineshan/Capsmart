@@ -73,9 +73,9 @@ const Education = ({ basicForm, setBasicForm, applicationId, getPreApplication }
     }
 
     const getFormSchema = async () => {
-        if (basicForm?.formSchemas?.[formIndex]?.id !== undefined) {
+        if (basicForm?.forms?.[formIndex]?.schemaId !== undefined) {
             const { data: form } = await GET(
-                `application-management-service/formSchema/${basicForm?.formSchemas?.[formIndex]?.id}`
+                `application-management-service/formSchema/${basicForm?.forms?.[formIndex]?.schemaId}`
             );
             setFormSchema(form?.schema)
             setFormSchemaWholeObject(form)
@@ -185,25 +185,25 @@ const Education = ({ basicForm, setBasicForm, applicationId, getPreApplication }
     }
 
     const handleContinue = async (skip) => {
-        if (skip) {
-            let temp = {
-                schemaId: basicForm?.forms?.[formIndex]?.schemaId,
-                data: basicForm?.forms?.[formIndex]?.data,
-                unFilledFields: basicForm?.forms?.[formIndex]?.unFilledFields,
-                acknowledged: true,
-                dataStatus: basicForm?.forms?.[formIndex]?.dataStatus
-            }
-            await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
-                .then(response => {
-                    console.log(response)
-                    SuccessToaster("Application Updated Successfully");
-                    getPreApplication();
-                })
-                .catch((error) => {
-                    console.log(error)
-                    ErrorToaster("Unexpected Error Updating Application");
-                });
+        // if (skip) {
+        let temp = {
+            schemaId: basicForm?.forms?.[formIndex]?.schemaId,
+            data: basicForm?.forms?.[formIndex]?.data,
+            unFilledFields: basicForm?.forms?.[formIndex]?.unFilledFields,
+            acknowledged: true,
+            dataStatus: (basicForm?.forms?.[formIndex]?.dataStatus === 'PENDING' && basicForm?.forms?.[formIndex]?.data?.graduation?.length > 0) ? 'COMPLETED' : basicForm?.forms?.[formIndex]?.dataStatus
         }
+        await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
+            .then(response => {
+                console.log(response)
+                SuccessToaster("Application Updated Successfully");
+                getPreApplication();
+            })
+            .catch((error) => {
+                console.log(error)
+                ErrorToaster("Unexpected Error Updating Application");
+            });
+        // }
         if (sessionStorage.getItem('fromSummary') === "true") {
             navigate(-1);
             sessionStorage.setItem('fromSummary', false)

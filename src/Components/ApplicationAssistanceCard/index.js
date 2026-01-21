@@ -15,7 +15,16 @@ const ApplicationAssistanceCard = ({ user, designation, contactNumber, email }) 
     }, [])
     const getSMDetails = async () => {
         const { data: smData } = await GET(`user-management-service/user/role?role=${['Staff Manager', 'Entity Sys Admin']}`);
+        if (!smData?.length) return;
 
+        const staffManager = smData?.find(user =>
+            user?.roles?.some(role => role.roleName === "Staff Manager")
+        );
+
+        if (staffManager) {
+            setSMDetails(staffManager);
+            return;
+        }
         setSMDetails(smData?.[0]);
     }
     return (

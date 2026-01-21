@@ -89,14 +89,15 @@
 }
 
 .welcomeSubText {
-    text-align: center;
+    text-align: left;
     font: normal normal bold 25px/35px var(--font-style);
     letter-spacing: 0px;
-    color: var(--primary-color);
+    color: $textgrey;
+    padding: 0 60px;
 }
 
 .descriptionStyle {
-    text-align: center;
+    text-align: left;
     font: normal normal normal 19px/26px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
@@ -328,4 +329,18 @@
 
 .halfWidth {
     width: 450px;
+}
+
+.authorizationCard {
+    background: var(--secondary-color) 0% 0% no-repeat padding-box;
+    border: 0.4000000059604645px solid var(--secondary-color);
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.authorizationText {
+    text-align: center;
+    font: normal normal normal 18px/25px var(--font-style);
+    letter-spacing: 0px;
+    color: $textgrey;
 }

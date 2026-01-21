@@ -32,7 +32,7 @@ const References = ({ basicForm, setBasicForm, applicationId, getPreApplication 
   const navigate = useNavigate()
   const [navigateURL, setNavigateURL] = useState();
   const [navigateBackURL, setNavigateBackURL] = useState();
-  const isDataAvailable = basicForm?.forms?.[formIndex]?.data?.privilegeReferences?.length > 0 && basicForm?.forms?.[formIndex]?.data?.references?.length > 0;
+  const isDataAvailable = basicForm?.forms?.[formIndex]?.data?.references?.length > 0;
   useEffect(() => {
     if (basicForm && !formSchema) {
       getFormSchema()
@@ -111,9 +111,9 @@ const References = ({ basicForm, setBasicForm, applicationId, getPreApplication 
 
 
   const getFormSchema = async () => {
-    if (basicForm?.formSchemas?.[formIndex]?.id !== undefined) {
+    if (basicForm?.forms?.[formIndex]?.schemaId !== undefined) {
       const { data: form } = await GET(
-        `application-management-service/formSchema/${basicForm?.formSchemas?.[formIndex]?.id}`
+        `application-management-service/formSchema/${basicForm?.forms?.[formIndex]?.schemaId}`
       );
       setFormSchema(form?.schema)
       setFormSchemaWholeObject(form)
@@ -199,9 +199,9 @@ const References = ({ basicForm, setBasicForm, applicationId, getPreApplication 
         data?.value === undefined ||
         data?.value === 0 ||
         (data?.key === "undefined.references.emailAddress" &&
-          !emailRegex.test(data?.value)) ||
+          !emailRegex?.test(data?.value)) ||
         (data?.key === "undefined.references.contactNumber" &&
-          !phoneRegex.test(data?.value))
+          !phoneRegex?.test(data?.value))
       ) {
         missingKeys.push(data);
       }
@@ -311,12 +311,12 @@ const References = ({ basicForm, setBasicForm, applicationId, getPreApplication 
         <div>
           <div className={style.applicationCardStyle}>
             {formSchema !== undefined && 'references' in formSchema?.properties && (
-              <ApplicationFieldCard object={formSchema?.properties?.references} gridStyle={style.twoCol} baseKey={'references'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} addMoreType={true} formId={basicForm?.forms?.[formIndex]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} warningFields={warningFields} getMissingFields={getMissingFields} showValidationDialog={showValidationDialog} setShowValidationDialog={setShowValidationDialog} isAddMore={isAddMore} setIsAddMore={setIsAddMore} formSchema={formSchemaWholeObject} />
+              <ApplicationFieldCard object={formSchema?.properties?.references} gridStyle={style.twoCol} baseKey={'references'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} addMoreType={true} formId={basicForm?.forms?.[formIndex]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} warningFields={warningFields} getMissingFields={getMissingFields} showValidationDialog={showValidationDialog} setShowValidationDialog={setShowValidationDialog} isAddMore={isAddMore} setIsAddMore={setIsAddMore} formSchema={formSchemaWholeObject} heading={'References not yet provided'} />
             )}
-            <CommonDivider />
+            {/* <CommonDivider />
             {formSchema !== undefined && 'privilegeReferences' in formSchema?.properties && (
-              <ApplicationFieldCard object={formSchema?.properties?.privilegeReferences} gridStyle={style.twoCol} baseKey={'privilegeReferences'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath2} getAllLabels={getAllLabels2} addMoreType={true} formId={basicForm?.forms?.[formIndex]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} warningFields={warningFields2} getMissingFields={getMissingFields2} showValidationDialog={showValidationDialog2} setShowValidationDialog={setShowValidationDialog2} isAddMore={isAddMore2} setIsAddMore={setIsAddMore2} formSchema={formSchemaWholeObject} />
-            )}
+              <ApplicationFieldCard object={formSchema?.properties?.privilegeReferences} gridStyle={style.twoCol} baseKey={'privilegeReferences'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath2} getAllLabels={getAllLabels2} addMoreType={true} formId={basicForm?.forms?.[formIndex]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} warningFields={warningFields2} getMissingFields={getMissingFields2} showValidationDialog={showValidationDialog2} setShowValidationDialog={setShowValidationDialog2} isAddMore={isAddMore2} setIsAddMore={setIsAddMore2} formSchema={formSchemaWholeObject} heading={'References not yet provided'} />
+            )} */}
           </div>
         </div>
         <div>

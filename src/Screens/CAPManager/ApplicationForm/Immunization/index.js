@@ -60,7 +60,7 @@ const Immunization = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
     const [isSaveInProgressOpen, setIsSaveInProgressOpen] = useState(false);
     const navigate = useNavigate()
     const immunizationCategoryValues = {
-        "Tuberculosis": 'TUBERCULIN', "Measles, Mumps & Rubella (MMR)": 'MEASLES_MUMPS_RUBELLA', "Hepatitis B Vaccination": 'HEPATITIS_B', "Varicella": 'VARICELLA', "Tetnues/Diptheriea/Pertussis(Tdap) and Tetatnus/Diphtheria(Td)": 'TETANUS_DIPHTHERIA_PERTUSSIS_OR_TETANUS_DIPHTHERIA', "Influenza": 'INFLUENZA', "Covid": 'COVID'
+        "Tuberculosis": 'TUBERCULIN', "Measles, Mumps & Rubella (MMR)": 'MEASLES_MUMPS_RUBELLA', "Hepatitis B Vaccination": 'HEPATITIS_B', "Varicella": 'VARICELLA', "Tetanus/Diptheriea/Pertussis(TDAP) and Tetanus/Diptheria(TD)": 'TETANUS_DIPHTHERIA_PERTUSSIS_OR_TETANUS_DIPHTHERIA', "Influenza": 'INFLUENZA', "Covid": 'COVID'
     }
 
     const immunizationValues = {
@@ -146,7 +146,7 @@ const Immunization = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
 
     const getFormSchema = async () => {
         const { data: form } = await GET(
-            `application-management-service/formSchema/${basicForm?.formSchemas?.[formIndex]?.id}`
+            `application-management-service/formSchema/${basicForm?.forms?.[formIndex]?.schemaId}`
         );
         setFormSchema(form?.schema)
     }
@@ -158,6 +158,9 @@ const Immunization = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
     }
 
     const getIsSaveInProgressOpen = (value) => {
+        if (value) {
+            handleContinue(true);
+        }
         setIsSaveInProgressOpen(value);
     };
 
@@ -346,8 +349,8 @@ const Immunization = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
             });
     };
 
-    const handleContinue = async (close) => {
-        if (isEdited) {
+    const handleContinue = async (save) => {
+        if (isEdited || save) {
             let temp = []
 
             setApplicationImmunization((prev) => {
@@ -373,7 +376,9 @@ const Immunization = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
                     handleDownload()
                     getApplicationImmunization();
                     handleSubmitApplicationReq()
-                    navigate(navigateURL)
+                    if (!save) {
+                        navigate(navigateURL)
+                    }
                 })
                 .catch((error) => {
                     console.log(error)
@@ -458,7 +463,7 @@ const Immunization = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
         })
 
         return [
-            { type: "text", value: test },
+            { type: "text", value: test, onClickFunction: (data, index) => { setIsDialogOpen(true); setSelectedFile(data?.files?.[0]) } },
             { type: "text", value: pos },
             { type: "text", value: lastTestDate },
             { type: "icon", icon: valid },
@@ -739,8 +744,8 @@ const Immunization = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
                                     />
                                 )}
                                 <CommonDivider />
-                                <div className={`${style.cardTitle} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Tetnues/Diptheriea/Pertussis(Tdap) and Tetatnus/Diphtheria(Td)']?.label}</div>
-                                <div className={`${style.descriptionText} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Tetnues/Diptheriea/Pertussis(Tdap) and Tetatnus/Diphtheria(Td)']?.description}</div>
+                                <div className={`${style.cardTitle} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Tetanus/Diptheriea/Pertussis(TDAP) and Tetanus/Diptheria(TD)']?.label}</div>
+                                <div className={`${style.descriptionText} ${style.marginTop}`}>{formSchema?.properties?.professionalStaffImmunizationAndSurveillancePolicyInformationSheet?.properties['test/ImmunizationCategoryTables']?.properties['Tetanus/Diptheriea/Pertussis(TDAP) and Tetanus/Diptheria(TD)']?.description}</div>
                                 {applicationImmunization?.immunizationDetails?.filter(data => data?.immunizationCategory === "TETANUS_DIPHTHERIA_PERTUSSIS_OR_TETANUS_DIPHTHERIA")?.length !== 0 && (
                                     <TableTwo
                                         tableHeaderValues={tableHeader}

@@ -271,7 +271,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
         initialTab = "level-1";
         // setInitialTabSet(false);
       } else if (workModeType === "Chief Of Staff" && applicationType === "NEW") {
-        initialTab = "level-3";
+        initialTab = "level-2";
         // setInitialTabSet(false);
       } else if ((workModeType === "Department Head" || workModeType === "Chief Of Staff") && applicationType === "REAPPOINTMENT") {
         initialTab = "level-2";
@@ -416,7 +416,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
             ))}
           </>
         )}
-        {workModeType === "Chief Of Staff" && applicationType === "LOCUM" && (
+        {workModeType === "Chief Of Staff" && (applicationType === "LOCUM" || applicationType === "NEW") && (
           <TileApplication
             selectedTab={selectedTab}
             getSelectedTab={handleTabClick}

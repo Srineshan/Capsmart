@@ -495,6 +495,7 @@ const StaffApplicationTopTiles = (searchTermForTable, totalCount, showBulkApprov
   const applicationId = "66dc44ec788741fedc982b01";
   const [applicantType, setApplicantType] = useState([]);
   const [totalCountLocumOverride, setTotalCountLocumOverride] = useState(0);
+  const [totalCountOverride, setTotalCountOverride] = useState(0);
   const workModeType = sessionStorage.getItem('workModeType')
   const userDetailsFetchOption = (sessionStorage.getItem('user') !== "undefined" && sessionStorage.getItem('user')) ? JSON.parse(sessionStorage.getItem('user')) : {};
   const applicationType =
@@ -596,10 +597,11 @@ const StaffApplicationTopTiles = (searchTermForTable, totalCount, showBulkApprov
   const getRequestData = async () => {
     try {
       const response = await GET(
-        `application-management-service/application/request?requestType=OVERRIDE_REQUEST&status=PENDING&role=Chief Of Staff`,
+        `application-management-service/application/request?requestType=OVERRIDE_REQUEST&status=PENDING&role=Chief Of Staff&applicationCreationType=${applicationType === "LOCUM" ? 'LOCUM_RENEWAL' : applicationType}`,
       );
-      setTotalCountLocumOverride(response?.data?.numberOfElements)
-      console.log("setLocumCounts", totalCountLocumOverride)
+      setTotalCountOverride(response?.data?.requests?.filter(data => data?.application?.creationType === 'NEW')?.length)
+      setTotalCountLocumOverride(response?.data?.requests?.filter(data => data?.application?.creationType !== 'NEW')?.length)
+      console.log("setLocumCounts", response?.data?.requests?.filter(data => data?.application?.creationType === 'NEW')?.length)
       return response?.data?.request || [];
     } catch (error) {
       console.error("Error fetching applications:", error);
@@ -781,7 +783,7 @@ const StaffApplicationTopTiles = (searchTermForTable, totalCount, showBulkApprov
       <TopTileApplication
         selectedTab={selectedTab}
         getSelectedTab={getSelectedTab}
-        tileCount={calculateVisibleCounts(newCounts, workModeType, "NEW")}
+        tileCount={workModeType === "Chief Of Staff" ? (calculateVisibleCounts(newCounts, workModeType, "NEW") || 0) + totalCountOverride : calculateVisibleCounts(newCounts, workModeType, "NEW")}
         tileLabel="New Applicants"
         currentTile="NewApplicants"
         isLoading={isLoading}

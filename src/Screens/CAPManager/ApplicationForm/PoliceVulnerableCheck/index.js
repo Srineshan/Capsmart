@@ -36,6 +36,7 @@ const PoliceVulnerableCheck = ({ acknowledgementForm, dateFormat, name, basicFor
     const [formIndex, setFormIndex] = useState();
     const [signText, setSignText] = useState(name + " " + currentDate);
     const [isSaveInProgressOpen, setIsSaveInProgressOpen] = useState(false);
+    const [entityLogo, setEntityLogo] = useState(sessionStorage.getItem('logo') || null)
     useEffect(() => {
         if (dateFormat) {
             setCurrentDate(format(new Date(), dateFormat))
@@ -72,9 +73,9 @@ const PoliceVulnerableCheck = ({ acknowledgementForm, dateFormat, name, basicFor
     }, [basicForm?.forms?.[formIndex]?.id])
 
     const getFormSchema = async () => {
-        if (basicForm?.formSchemas?.[formIndex]?.id !== undefined) {
+        if (basicForm?.forms?.[formIndex]?.schemaId !== undefined) {
             const { data: form } = await GET(
-                `application-management-service/formSchema/${basicForm?.formSchemas?.[formIndex]?.id}`
+                `application-management-service/formSchema/${basicForm?.forms?.[formIndex]?.schemaId}`
             );
             setFormSchema(form)
         }
@@ -207,7 +208,7 @@ const PoliceVulnerableCheck = ({ acknowledgementForm, dateFormat, name, basicFor
                 <div>
                     <div className={`${style.applicationCardStyle} ${style.applicationCardScrollStyle}`} ref={targetRef}>
                         <div className={`${style.marginTop} ${style.justifyCenter}`}>
-                            <img src={logo} alt="Hospital Logo" className={`${style.logo}`} />
+                            <img src={entityLogo || logo} alt="Hospital Logo" className={`${style.logo}`} />
                         </div>
                         <CommonDivider />
                         <div className={`${style.cardTitle} ${style.marginTop}  ${style.justifyCenter}`}>{formSchema?.title}</div>

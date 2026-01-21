@@ -16,7 +16,10 @@
     gap: 10px
 }
 
-
+.centerAlign {
+    display: flex;
+    justify-content: center;
+}
 
 .headerGrid {
     display: grid;

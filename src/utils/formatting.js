@@ -6,17 +6,17 @@ export const FormatPhoneNumber = (value) => {
   if (!value) return value;
 
   const phoneNumber = value.replace(/[^\d]/g, "");
-  if (/^(\d)\1{9}$/.test(phoneNumber)) {
-    return ""; // Invalid phone number with all digits the same
-  }
+  // if (/^(\d)\1{9}$/.test(phoneNumber)) {
+  //   return ""; // Invalid phone number with all digits the same
+  // }
   const phoneNumberLength = phoneNumber.length;
 
   if (phoneNumberLength < 4) return phoneNumber;
 
   const areaCode = phoneNumber.slice(0, 3);
-  if (!/^[2-9]\d{2}$/.test(areaCode)) {
-    return ""; // Invalid area code
-  }
+  // if (!/^[2-9]\d{2}$/.test(areaCode)) {
+  //   return ""; // Invalid area code
+  // }
 
   if (phoneNumberLength < 7) {
     return `(${areaCode}) ${phoneNumber.slice(3)}`;

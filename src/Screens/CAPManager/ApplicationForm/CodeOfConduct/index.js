@@ -46,6 +46,7 @@ const CodeOfConduct = ({ acknowledgementForm, dateFormat, name, basicForm, getPr
     const [isSaveInProgressOpen, setIsSaveInProgressOpen] = useState(false);
     const [signText, setSignText] = useState(name + " " + currentDate);
     const [initialArray, setInitialArray] = useState([])
+    const [entityLogo, setEntityLogo] = useState(sessionStorage.getItem('logo') || null)
     const proxyUrl = "https://app.timesmartai.com/cors/"
 
     console.log(initialArray)
@@ -94,7 +95,7 @@ const CodeOfConduct = ({ acknowledgementForm, dateFormat, name, basicForm, getPr
 
     const getFormSchema = async () => {
         const { data: form } = await GET(
-            `application-management-service/formSchema/${basicForm?.formSchemas?.[formIndex]?.id}`
+            `application-management-service/formSchema/${basicForm?.forms?.[formIndex]?.schemaId}`
         );
         setFormSchema(form)
     }
@@ -107,6 +108,9 @@ const CodeOfConduct = ({ acknowledgementForm, dateFormat, name, basicForm, getPr
     }
 
     const getIsSaveInProgressOpen = (value) => {
+        if (value) {
+            handleSubmitApplicationReq(true);
+        }
         setIsSaveInProgressOpen(value);
     };
 
@@ -198,11 +202,14 @@ const CodeOfConduct = ({ acknowledgementForm, dateFormat, name, basicForm, getPr
                     completedFormAsFile: uploadedFile,
                     data: basicForm?.forms?.[formIndex]?.data,
                     unFilledFields: basicForm?.forms?.[formIndex]?.unFilledFields,
-                    acknowledged: basicForm?.forms?.[formIndex]?.acknowledged
+                    acknowledged: basicForm?.forms?.[formIndex]?.acknowledged,
+                    esign: basicForm?.forms?.[formIndex]?.esign,
+                    dataStatus: basicForm?.forms?.[formIndex]?.dataStatus
                 }
                 await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
                     .then(response => {
                         console.log(response)
+                        getPreApplication()
                         SuccessToaster("Application Updated Successfully");
                     })
                     .catch((error) => {
@@ -274,8 +281,8 @@ const CodeOfConduct = ({ acknowledgementForm, dateFormat, name, basicForm, getPr
         });
     };
 
-    const handleSubmitApplicationReq = async () => {
-        if (isSigned) {
+    const handleSubmitApplicationReq = async (save) => {
+        if (isSigned || save) {
             let temp = {
                 schemaId: basicForm?.forms?.[formIndex]?.schemaId,
                 data: { initials: initialArray },
@@ -289,12 +296,14 @@ const CodeOfConduct = ({ acknowledgementForm, dateFormat, name, basicForm, getPr
                     getPreApplication()
                     SuccessToaster("Application Updated Successfully");
                     handleDownload();
-                    if (sessionStorage.getItem('fromSummary') === 'true') {
-                        navigate(-1);
-                        sessionStorage.setItem('fromSummary', false)
-                    }
-                    else {
-                        navigate(navigateURL)
+                    if (!save) {
+                        if (sessionStorage.getItem('fromSummary') === 'true') {
+                            navigate(-1);
+                            sessionStorage.setItem('fromSummary', false)
+                        }
+                        else {
+                            navigate(navigateURL)
+                        }
                     }
                 })
                 .catch((error) => {
@@ -326,7 +335,7 @@ const CodeOfConduct = ({ acknowledgementForm, dateFormat, name, basicForm, getPr
                 <div>
                     <div className={style.applicationCardStyle} ref={targetRef}>
                         <div className={`${style.marginTop} ${style.justifyCenter}`}>
-                            <img src={logo} alt="Hospital Logo" className={`${style.logo}`} />
+                            <img src={entityLogo || logo} alt="Hospital Logo" className={`${style.logo}`} />
                         </div>
                         <CommonDivider />
                         <div className={`${style.cardTitle} ${style.marginTop}  ${style.justifyCenter}`}>{formSchema?.title}</div>

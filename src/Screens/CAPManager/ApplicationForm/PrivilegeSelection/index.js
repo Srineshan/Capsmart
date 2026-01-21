@@ -126,8 +126,11 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, applicationId, getPreAppl
 
     const getStaffPrivilege = async () => {
         if (applicationData) {
+            const specialtyParam = applicationData?.basicDetailReferences?.specialty?.id
+                ? `&serviceArea=${applicationData?.basicDetailReferences?.specialty?.id}`
+                : "";
             const { data: privilege } = await GET(
-                `entity-service/staffPrivilege?department=${applicationData?.basicDetailReferences?.department?.id}`
+                `entity-service/staffPrivilege?department=${applicationData?.basicDetailReferences?.department?.id}${specialtyParam}`
             );
             // const { data: privilege } = await GET(
             //     `entity-service/staffPrivilege`

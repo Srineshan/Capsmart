@@ -4,6 +4,7 @@ import React, { useEffect, useState, useRef } from "react";
 import CommonPhoneField from "../../Components/CommonFields/CommonPhoneField";
 import CommonInputField from "../CommonFields/CommonInputField";
 import CommonSelectField from "../CommonFields/CommonSelectField";
+import CommonMultiSelectField from "../CommonFields/CommonMultiSelectField";
 import CommonDateField from "../CommonFields/CommonDateField";
 import TextSnippetOutlinedIcon from "@mui/icons-material/TextSnippetOutlined";
 import { TextField, Tooltip } from "@mui/material";
@@ -90,7 +91,8 @@ const ApplicationFieldCard = ({
   refGridStyle,
   hideBackground,
   customRadioStyle,
-  referenceRadioShowLabel
+  referenceRadioShowLabel,
+  alternateReferenceRadioColor
 }) => {
   const [calendarStart, setCalendarStart] = useState(false);
   const { section, step } = useParams();
@@ -152,15 +154,6 @@ const ApplicationFieldCard = ({
 
   const getValueByPath = (obj, path) => {
     const keys = path.split(/[\.\[\]]+/).filter(Boolean);
-    console.log(
-      path,
-      keys.reduce(
-        (acc, key) => acc && acc[isNaN(key) ? key : Number(key)],
-        basicForm
-      ),
-      basicForm,
-      "if"
-    );
     return keys.reduce(
       (acc, key) => acc && acc[isNaN(key) ? key : Number(key)],
       basicForm
@@ -1692,6 +1685,87 @@ const ApplicationFieldCard = ({
               />
             );
           }
+        case "multiDropdown":
+          if (isPOD) {
+            return (
+              <div>
+                <div className={`${style.lableStylePOD}`}>
+                  {fieldData.label}
+                  {isLableEmpty(fieldData.label)
+                    ? false
+                    : (object?.required?.includes(fieldKey) || object?.then?.required?.includes(fieldKey) ||
+                      (parentData !== null
+                        ? parentData?.required?.includes(fieldKey) || parentData?.then?.required?.includes(fieldKey)
+                        : false)) &&
+                    "*"}
+                </div>
+                <hr className={style.borderLine} />
+                <div className={style.lableReadOnlyStyleInPOD}>
+                  {getValueByPath(
+                    basicForm,
+                    `${basicpath}.${baseKey}.${fieldKey}`
+                  ) || "-"}
+                </div>
+              </div>
+            );
+          } else {
+            console.log(formPermission?.permissions?.filter(data => data?.role === sessionStorage.getItem('workModeType'))?.[0]?.fieldLevelPermissions?.filter(data => data?.level === fieldData?.permissionLevel?.toString())?.[0]?.accessPermissions?.includes('Write') ? true : false, formPermission?.permissions?.filter(data => data?.role === sessionStorage.getItem('workModeType'))?.[0]?.fieldLevelPermissions?.filter(data => data?.level === fieldData?.permissionLevel?.toString())?.[0]?.accessPermissions?.includes('Write'), 'Dropdowncheck')
+
+            const specialityValues =
+              fieldKey === "specialty"
+                ? getSpecialityValues(object)
+                : fieldData.enum;
+
+            // Render the dropdown conditionally for "specialty" only if there are values
+            return fieldKey === "specialty" &&
+              specialityValues.length === 0 ? null : (
+              <div>
+                <div className={`${style.lableStyle}`}>
+                  {fieldData.label}
+                  {(isLableEmpty(fieldData.label)
+                    ? false
+                    : object?.required?.includes(fieldKey) || object?.then?.required?.includes(fieldKey) ||
+                    (parentData !== null
+                      ? parentData?.required?.includes(fieldKey) || parentData?.then?.required?.includes(fieldKey)
+                      : false)) && "*"}
+                </div>
+                <div className={style.marginTop10}>
+                  <CommonMultiSelectField
+                    value={
+                      getValueByPath(
+                        basicForm,
+                        `${basicpath}.${baseKey}.${fieldKey}`
+                      ) || []
+                    }
+                    onChange={(e) =>
+                      handleChange(fieldKey, e.target.value, baseKey)
+                    }
+                    className={style.fullWidth}
+                    valueList={specialityValues}
+                    labelList={specialityValues}
+                    disabledList={specialityValues.map(() => false)}
+                    label={fieldData.label}
+                    required={
+                      isLableEmpty(fieldData.label)
+                        ? false
+                        : object.required?.includes(fieldKey) || object?.then?.required?.includes(fieldKey) ||
+                        (parentData !== null
+                          ? parentData?.required?.includes(fieldKey) || parentData?.then?.required?.includes(fieldKey)
+                          : false)
+                    }
+                    // Hide warning specifically for specialty field
+                    warning={
+                      fieldKey !== "specialty" &&
+                      warningFields
+                        ?.map((data) => data?.key)
+                        ?.includes(`${basicpath}.${baseKey}.${fieldKey}`)
+                    }
+                    disabledSelect={!formPermission ? false : formPermission?.permissions?.filter(data => data?.role === sessionStorage.getItem('workModeType'))?.[0]?.fieldLevelPermissions?.filter(data => data?.level === fieldData?.permissionLevel?.toString())?.[0]?.accessPermissions?.includes('Write') ? false : true}
+                  />
+                </div>
+              </div>
+            );
+          }
         case "datalist":
           if (isPOD) {
             return (
@@ -2120,7 +2194,7 @@ const ApplicationFieldCard = ({
                       });
                     }}
                     config={{
-                      placeholder: "Type your content here...",
+                      placeholder: "Enter your response here...",
                       toolbar: {
                         shouldNotGroupWhenFull: true,
                         sticky: true,
@@ -2274,12 +2348,12 @@ const ApplicationFieldCard = ({
           const customValidationsForBirthday = (object?.type === 'object') ? object?.customValidations : object?.items?.customValidations;
           const shouldSetMaxDateForBirthday = customValidationsForBirthday?.some(
             (validation) =>
-              validation.condition === "Age_GreaterThan25LessThan100" &&
+              validation.condition === "Age_GreaterThan18LessThan100" &&
               `${baseKey}.${fieldKey}` === validation.parameters.date1
           );
           const currentDate = new Date();
           const maxDateForBirthday = new Date(
-            currentDate.getFullYear() - 25,
+            currentDate.getFullYear() - 18,
             currentDate.getMonth(),
             currentDate.getDate()
           );
@@ -2351,7 +2425,10 @@ const ApplicationFieldCard = ({
                     ) !== undefined && getValueByPath(
                       basicForm,
                       `${basicpath}.${baseKey}.${fieldKey}`
-                    ) !== "") ? format(
+                    ) !== "" && getValueByPath(
+                      basicForm,
+                      `${basicpath}.${baseKey}.${fieldKey}`
+                    )) ? format(
                       new Date(
                         getValueByPath(
                           basicForm,
@@ -2555,7 +2632,7 @@ const ApplicationFieldCard = ({
                   warning={warningFields
                     ?.map((data) => data?.key)
                     ?.includes(`${basicpath}.${baseKey}.${fieldKey}`)}
-                  checkedColor={referenceRadioColor}
+                  checkedColor={alternateReferenceRadioColor ? alternateReferenceRadioColor : referenceRadioColor}
                 />
               </div>
             );
@@ -2605,7 +2682,7 @@ const ApplicationFieldCard = ({
                 warning={warningFields
                   ?.map((data) => data?.key)
                   ?.includes(`${basicpath}.${baseKey}.${fieldKey}`)}
-                checkedColor={referenceRadioColor}
+                checkedColor={alternateReferenceRadioColor ? alternateReferenceRadioColor : referenceRadioColor}
               />
             </div>
           );
@@ -2656,14 +2733,15 @@ const ApplicationFieldCard = ({
             <div
               className={`${style.disclosureGrid} ${style.verticalAlignCenter}`}
             >
-              <div className={!isPOD ? style.disclosureLabelGrid : style.displayInRow}>
-                {!isPOD && (
-                  <div className={`${style.lableRadioSerialNumberStyle}`}>
-                    {fieldData.serialNumber !== null
-                      ? `${fieldData.serialNumber}. `
-                      : ""}
-                  </div>
-                )}
+              {/* <div className={!isPOD ? style.disclosureLabelGrid : style.displayInRow}> */}
+              <div className={style.disclosureLabelGrid}>
+                {/* {!isPOD && ( */}
+                <div className={`${style.lableRadioSerialNumberStyle}`}>
+                  {fieldData.serialNumber !== null
+                    ? `${fieldData.serialNumber}. `
+                    : ""}
+                </div>
+                {/* )} */}
                 <div
                   className={`${style.lableRadioStyle} ${!isPOD ? fieldData.serialNumber !== null ? style.marginLeft10 : "" : ""
                     } ${fieldData.label !== null ? style.marginRight : ""} ${style.displayInRow}`} style={{ display: 'inline' }}
@@ -2826,7 +2904,72 @@ const ApplicationFieldCard = ({
           }
         case "addMoreFileupload":
           if (isPOD) {
-            return <div></div>;
+            const fieldValue = getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`);
+            const fileURL = fieldValue?.fileURL;
+            const fileValid = fileURL && fileURL !== "" && fileURL !== null;
+            if (fileValid) {
+              return <div key={fieldKey}>
+                <div className={`${style.uploadButton}`}>
+                  <div className={style.uploadGridPOD}>
+                    {getValueByPath(
+                      basicForm,
+                      `${basicpath}.${baseKey}.${fieldKey}`
+                    ) !== undefined &&
+                      getValueByPath(
+                        basicForm,
+                        `${basicpath}.${baseKey}.${fieldKey}`
+                      ) !== null &&
+                      getValueByPath(
+                        basicForm,
+                        `${basicpath}.${baseKey}.${fieldKey}`
+                      ) !== "" &&
+                      getValueByPath(
+                        basicForm,
+                        `${basicpath}.${baseKey}.${fieldKey}`
+                      )?.fileURL !== null ? (
+                      <img
+                        src={VerifiedImage}
+                        alt=""
+                        className={`${style.imgIcon} ${style.cursorPointer}`}
+                        onClick={() => {
+                          setShowFileDisplayDialog(true); setselectedFile(
+                            getValueByPath(
+                              basicForm,
+                              `${basicpath}.${baseKey}.${fieldKey}`
+                            )
+                          );
+                        }
+                        }
+                      />
+                    ) : (
+                      <img
+                        src={ToBeVerifiedImage}
+                        alt=""
+                        className={style.imgIcon}
+                      />
+                    )}
+                    <div
+                      className={`${style.uploadText} ${style.verticalAlignCenter}`}
+                    >
+                      {getValueByPath(
+                        basicForm,
+                        `${basicpath}.${baseKey}.${fieldKey}`
+                      )?.fileName}
+                    </div>
+                    <div className={`${style.uploadText} ${style.cursorPointer} ${style.verticalAlignCenter}`}
+                      onClick={() => {
+                        setShowFileDisplayDialog(true); setselectedFile(
+                          getValueByPath(
+                            basicForm,
+                            `${basicpath}.${baseKey}.${fieldKey}`
+                          )
+                        );
+                      }}
+                    >View</div>
+                  </div>
+                </div>
+              </div>;
+            }
           } else {
             let isDocAvailable = (getValueByPath(
               basicForm,
@@ -2965,7 +3108,7 @@ const ApplicationFieldCard = ({
                     </div>
                   </div>
                 </div>
-                {fileValid && (
+                {/* {fileValid && (
                   <div className={style.uploadButton2}>
                     <div className={style.uploadGrid2}>
 
@@ -2983,17 +3126,9 @@ const ApplicationFieldCard = ({
                           {fieldValue?.fileName}
                         </span>
                       </Tooltip>
-                      {/* <Tooltip title="Click to Delete File" arrow>
-                        <img
-                          src={DeleteIcon}
-                          alt="Delete"
-                          className={`${style.imgIcon} ${style.cursorPointer}`}
-                          onClick={() => handleChange(fieldKey, null, baseKey)}
-                        />
-                      </Tooltip> */}
                     </div>
                   </div>
-                )}
+                )} */}
               </div>;
             }
           } else {
@@ -3566,13 +3701,13 @@ const ApplicationFieldCard = ({
                 ? isValidDate(innerData[data])
                   ? format(
                     new Date(innerData[data]),
-                    canadaData?.dateFormat || "dd/MM/yyyy"
+                    "MMM dd, yyyy"
                   )
                   : innerData[data]
                 : ""
             ),
-            tooltipValueText: ["Click to Edit"],
-            onClickFunction: handleEdit,
+            tooltipValueText: !isPOD ? ["Click to Edit"] : [],
+            onClickFunction: !isPOD ? handleEdit : () => { },
           });
         } else {
           temp.push({
@@ -3676,19 +3811,22 @@ const ApplicationFieldCard = ({
           } ${style.marginTop10}`}
         key={baseKey}
       >
-        {!isReappointment ? (
+        {!isPOD && (
           <>
-            <div className={style.cardTitle}>{object?.label}</div>
-            {object?.description !== null && (
-              <div
-                className={`${style.addMoreDescriptionText} ${style.marginTop10}`}
-              >
-                {object?.description}
-              </div>
+            {!isReappointment ? (
+              <>
+                <div className={style.cardTitle}>{object?.label}</div>
+                {object?.description !== null && (
+                  <div
+                    className={`${style.addMoreDescriptionText} ${style.marginTop10}`}
+                    dangerouslySetInnerHTML={{ __html: object?.description }}
+                  />
+                )}
+              </>
+            ) : (
+              <div className={style.cardTitle}>{dataChangedObject?.label}</div>
             )}
           </>
-        ) : (
-          <div className={style.cardTitle}>{dataChangedObject?.label}</div>
         )}
         {addMoreType && !collapsableQuestionCard ? (
           <div>
@@ -3748,7 +3886,7 @@ const ApplicationFieldCard = ({
                     />
                     <Tooltip title={"Click to Add"} arrow>
                       <div
-                        className={`${style.addMoreButton} ${style.marginLeft}`}
+                        className={`${style.addMoreButton} ${style.addMoreButtonFlexEnd} ${style.marginLeft}`}
                         onClick={() => setIsAddMore(true)}
                       >
                         ADD

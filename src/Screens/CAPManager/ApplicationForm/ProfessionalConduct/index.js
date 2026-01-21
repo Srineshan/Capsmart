@@ -39,7 +39,7 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, applicationId, getPreApp
                 setNavigateBackURL(`/applicationForm/${applicationId}/${basicForm?.forms[0]?.formCategory}/${btoa(basicForm?.forms[0]?.schemaCategory)}`)
             }
         }
-    }, [basicForm?.formSchemas?.[formIndex]?.id, formIndex])
+    }, [basicForm?.forms?.[formIndex]?.schemaId, formIndex])
 
     useEffect(() => {
         setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === atob(step)))
@@ -66,13 +66,16 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, applicationId, getPreApp
     };
 
     const getIsSaveInProgressOpen = (value) => {
+        if (value) {
+            handleSubmitApplicationReq('', true);
+        }
         setIsSaveInProgressOpen(value);
     }
 
     const getFormSchema = async () => {
-        if (basicForm?.formSchemas?.[formIndex]?.id !== undefined) {
+        if (basicForm?.forms?.[formIndex]?.schemaId !== undefined) {
             const { data: form } = await GET(
-                `application-management-service/formSchema/${basicForm?.formSchemas?.[formIndex]?.id}`
+                `application-management-service/formSchema/${basicForm?.forms?.[formIndex]?.schemaId}`
             );
             setFormSchema(form?.schema)
             setFormSchemaWholeObject(form)
@@ -327,8 +330,8 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, applicationId, getPreApp
 
     const skipDisable = getDataStatus()?.filter(data => data?.mandatory)?.length === 0;
 
-    const handleSubmitApplicationReq = async (data) => {
-        if (isEdited || data) {
+    const handleSubmitApplicationReq = async (data, save) => {
+        if (isEdited || data || save) {
             let temp = {
                 schemaId: basicForm?.forms?.[formIndex]?.schemaId,
                 data: basicForm?.forms?.[formIndex]?.data,
@@ -342,13 +345,15 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, applicationId, getPreApp
                     setBasicForm(response?.data)
                     SuccessToaster("Application Updated Successfully");
                     getPreApplication();
-                    if (sessionStorage.getItem('fromSummary') === "true") {
-                        navigate(-1);
-                        sessionStorage.setItem('fromSummary', false)
-                    }
-                    else {
-                        navigate(navigateURL)
+                    if (!save) {
+                        if (sessionStorage.getItem('fromSummary') === "true") {
+                            navigate(-1);
+                            sessionStorage.setItem('fromSummary', false)
+                        }
+                        else {
+                            navigate(navigateURL)
 
+                        }
                     }
                 })
                 .catch((error) => {

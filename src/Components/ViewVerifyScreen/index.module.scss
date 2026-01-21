@@ -133,7 +133,7 @@ body::-webkit-scrollbar {
 }
 
 .buttonCardStyleDoc {
-  height: 50px;
+  height: 35px;
   width: 130px;
   justify-self: right;
   background: #FFFFFF 0% 0% no-repeat padding-box;
@@ -248,7 +248,6 @@ body::-webkit-scrollbar {
 }
 
 .purpleButton {
-
   width: 108px;
   height: 35px;
   background: var(--primary-color) 0% 0% no-repeat padding-box;
@@ -328,6 +327,15 @@ body::-webkit-scrollbar {
 .buttonGreyTextStyle {
   text-align: center;
   font: normal normal bold 18px/26px var(--font-style);
+  letter-spacing: 0px;
+  color: #FFFFFF;
+  text-transform: uppercase;
+  opacity: 1
+}
+
+.buttonGreyTextStyle2 {
+  text-align: center;
+  font: normal normal bold 15px/26px var(--font-style);
   letter-spacing: 0px;
   color: #FFFFFF;
   text-transform: uppercase;
@@ -2635,7 +2643,7 @@ select {
 
 .twoColumnGridInner2 {
   display: grid;
-  grid-template-columns: 45% 45%;
+  grid-template-columns: 1.5fr 1fr;
   grid-gap: 10px;
   justify-items: start;
 }
@@ -3408,7 +3416,7 @@ input[type="number"] {
 
 .twoColumnGrid1 {
   display: grid;
-  grid-template-columns: 45% 50%;
+  grid-template-columns: 1fr 1.5fr;
   grid-gap: 10px;
 }
 
@@ -4270,7 +4278,7 @@ input[type="number"] {
 
 .tableGridGraduation {
   display: grid;
-  grid-template-columns: 3% 3% 16% 21% 16% 15% 15% 3%;
+  grid-template-columns: 3% 3% 16% 25% 16% 15% 15%;
   gap: 1%;
 }
 
@@ -4280,9 +4288,21 @@ input[type="number"] {
   gap: 1%;
 }
 
+.tableGrid {
+  display: grid;
+  grid-template-columns: 3% 3% 21% 20% 20% 13% 13%;
+  gap: 1%;
+}
+
+.tableGridTraining {
+  display: grid;
+  grid-template-columns: 3% 3% 39% 25% 12% 12%;
+  gap: 1%;
+}
+
 .tableGridReferences {
   display: grid;
-  grid-template-columns: 20% 20% 21% 20% 10% 3%;
+  grid-template-columns: 20% 20% 19% 24% 12%;
   gap: 1%;
 }
 
@@ -4471,7 +4491,13 @@ input[type="number"] {
 
 .tableHeaderGridStyleFormReappointmentForStaff {
   display: grid;
-  grid-template-columns: 5% 78% 14%;
+  grid-template-columns: 3% 80% 14%;
+  grid-gap: 1%;
+}
+
+.tableHeaderGridStyleWithSignedBy {
+  display: grid;
+  grid-template-columns: 3% 59% 35%;
   grid-gap: 1%;
 }
 
@@ -5757,4 +5783,10 @@ input[type="number"] {
   font: normal normal normal $navbartext var(--font-style);
   letter-spacing: 0px;
   color: #2C2C2C;
+}
+
+.rightFixedColumn {
+  position: sticky;
+  top: 80px;
+  height: fit-content;
 }

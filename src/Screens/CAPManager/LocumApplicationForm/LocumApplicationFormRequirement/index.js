@@ -512,7 +512,7 @@ const LocumApplicationFormRequirement = () => {
                 ] = {
                     ...temp?.[index]?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.[categoriesIndex],
                     privileges: [
-                        ...temp?.[index]?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.[categoriesIndex]?.privileges,
+                        ...(temp?.[index]?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.[categoriesIndex]?.privileges || []),
                     ],
                 };
                 if (key === "file") {
@@ -947,7 +947,8 @@ const LocumApplicationFormRequirement = () => {
                                                                                         categoriesIndex,
                                                                                         privilegesIndex,
                                                                                         e.target.files[0],
-                                                                                        "file"
+                                                                                        "file",
+                                                                                        isBasicOrAdditional
                                                                                     );
                                                                                 }}
                                                                             />

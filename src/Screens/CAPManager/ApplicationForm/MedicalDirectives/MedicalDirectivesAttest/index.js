@@ -4,7 +4,6 @@ import style from './index.module.scss';
 import ApplicationHeader from '../../../../../Components/ApplicationHeaders';
 import { GET, POST } from '../../../../dataSaver';
 import { useNavigate, useParams } from 'react-router-dom';
-import PdfViewer from '../../pdfViewer';
 import CryptoJS from 'crypto-js';
 import CommonCheckBox from '../../../../../Components/CommonFields/CommonCheckBox';
 import { Tooltip } from '@mui/material';
@@ -13,8 +12,9 @@ import { format } from 'date-fns';
 import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
 import CloseIcon from '@mui/icons-material/Close';
+import CommonPdfViewer from '../../../../../Components/CommonPdfViewer';
 
-const MedicalDirectivesAttest = () => {
+const MedicalDirectivesAttestInitialApplication = () => {
     const { applicationId, section, step, medicalDirectivesId } = useParams();
     const [medicalDirectives, setMedicalDirectives] = useState()
     const [medicalDirectivesAttestationLog, setMedicalDirectivesAttestationLog] = useState()
@@ -151,7 +151,7 @@ const MedicalDirectivesAttest = () => {
         }
         await POST(`medical-directive-service/medicalDirectives/${medicalDirectivesId}/attest`, temp)
             .then(response => {
-                navigate(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex]?.formCategory}/${btoa(basicForm?.forms[formIndex]?.schemaCategory)}`)
+                navigate(`/applicationForm/${applicationId}/${basicForm?.forms?.[formIndex]?.formCategory}/${btoa(basicForm?.forms?.[formIndex]?.schemaCategory)}`)
                 getAttestationLog();
                 console.log(response, response?.response?.data)
             })
@@ -168,7 +168,7 @@ const MedicalDirectivesAttest = () => {
     }
 
     const handleClose = () => {
-        navigate(`/reappointmentApplicationForm/${applicationId}/${section}/${step}`);
+        navigate(`/applicationForm/${applicationId}/${section}/${step}`);
     }
     return (
         <div className={style.screenBackground}>
@@ -192,7 +192,7 @@ const MedicalDirectivesAttest = () => {
                             {/* <div className={`${style.marginTop10} ${style.description}`}>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd.</div> */}
                         </div>
                         <div className={`${style.medicalDirectivesCard} ${style.marginTop}`}>
-                            <PdfViewer pdfurl={medicalDirectives?.file?.fileURL} setIsScrolledToBottom={setIsScrolledToBottom} />
+                            <CommonPdfViewer pdfurl={medicalDirectives?.file?.fileURL} setIsScrolledToBottom={setIsScrolledToBottom} />
 
                             {/* <iframe src={`${medicalDirectives?.file?.fileURL}`} className={style.pdfDisplay} ref={iframeRef} /> */}
                         </div>
@@ -280,4 +280,4 @@ const MedicalDirectivesAttest = () => {
     )
 }
 
-export default MedicalDirectivesAttest;
+export default MedicalDirectivesAttestInitialApplication;

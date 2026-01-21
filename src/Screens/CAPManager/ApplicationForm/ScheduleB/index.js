@@ -36,6 +36,7 @@ const ScheduleB = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
   const [formIndex, setFormIndex] = useState();
   const [signText, setSignText] = useState(name + " " + currentDate);
   const [isSaveInProgressOpen, setIsSaveInProgressOpen] = useState(false);
+  const [entityLogo, setEntityLogo] = useState(sessionStorage.getItem('logo') || null)
   useEffect(() => {
     if (dateFormat) {
       setCurrentDate(format(new Date(), dateFormat))
@@ -72,9 +73,9 @@ const ScheduleB = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
   }, [basicForm?.forms?.[formIndex]?.id])
 
   const getFormSchema = async () => {
-    if (basicForm?.formSchemas?.[formIndex]?.id !== undefined) {
+    if (basicForm?.forms?.[formIndex]?.schemaId !== undefined) {
       const { data: form } = await GET(
-        `application-management-service/formSchema/${basicForm?.formSchemas?.[formIndex]?.id}`
+        `application-management-service/formSchema/${basicForm?.forms?.[formIndex]?.schemaId}`
       );
       setFormSchema(form)
     }
@@ -88,6 +89,9 @@ const ScheduleB = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
   }
 
   const getIsSaveInProgressOpen = (value) => {
+    if (value) {
+      handleSubmitApplicationReq(true);
+    }
     setIsSaveInProgressOpen(value);
   };
 
@@ -110,6 +114,29 @@ const ScheduleB = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
         const response = await POST(`application-management-service/application/${applicationId}/files`, formData);
         console.log(response?.data);
         uploadedFile = response?.data?.file;
+      } catch (error) {
+        console.error(error);
+        return null;
+      }
+      console.log(basicForm, 'effectCheck')
+      try {
+        let temp = {
+          schemaId: basicForm?.forms?.[formIndex]?.schemaId,
+          completedFormAsFile: uploadedFile,
+          data: !isEdited ? basicForm?.forms?.[formIndex]?.data : { esignDate: isChecked ? name + " " + currentDate : '' },
+          acknowledged: isChecked,
+          esign: { esign: isChecked ? encryptedText : '', name: isChecked ? name : '', signedDate: isChecked ? currentDate : '' },
+          dataStatus: isSigned ? 'COMPLETED' : 'SKIPPED_MANDATORY_FIELD'
+        }
+        await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
+          .then(response => {
+            console.log(response)
+            SuccessToaster("Application Updated Successfully");
+          })
+          .catch((error) => {
+            console.log(error)
+            ErrorToaster("Unexpected Error Updating Application");
+          });
       } catch (error) {
         console.error(error);
         return null;
@@ -157,8 +184,8 @@ const ScheduleB = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
     }
   }
 
-  const handleSubmitApplicationReq = async () => {
-    if (isSigned) {
+  const handleSubmitApplicationReq = async (save) => {
+    if (isSigned || save) {
       let temp = {
         schemaId: basicForm?.forms?.[formIndex]?.schemaId,
         data: !isEdited ? basicForm?.forms?.[formIndex]?.data : { esignDate: isChecked ? name + " " + currentDate : '' },
@@ -169,16 +196,16 @@ const ScheduleB = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
       await PUT(`application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
         .then(response => {
           console.log(response)
-          getPreApplication()
           SuccessToaster("Application Updated Successfully");
+          getPreApplication();
           handleDownload();
-          getFormSchema();
-          if (sessionStorage.getItem('fromSummary') === 'true') {
-            navigate(-1);
-            sessionStorage.setItem('fromSummary', false)
-          }
-          else {
-            navigate(navigateURL)
+          if (!save) {
+            if (sessionStorage.getItem('fromSummary') === 'true') {
+              navigate(-1);
+              sessionStorage.setItem('fromSummary', false)
+            } else {
+              navigate(navigateURL)
+            }
           }
         })
         .catch((error) => {
@@ -218,7 +245,7 @@ const ScheduleB = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
         <div>
           <div className={`${style.applicationCardStyle} ${style.applicationCardScrollStyle}`} ref={targetRef}>
             <div className={`${style.marginTop} ${style.justifyCenter}`}>
-              <img src={logo} alt="Hospital Logo" className={`${style.logo}`} />
+              <img src={entityLogo || logo} alt="Hospital Logo" className={`${style.logo}`} />
             </div>
             <CommonDivider />
             <div className={`${style.cardTitle} ${style.marginTop}  ${style.justifyCenter}`}>{formSchema?.title}</div>
