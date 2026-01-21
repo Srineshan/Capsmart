@@ -182,7 +182,7 @@ const PaymentOrder = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
             setBasicForm((prevForm) => ({
                 ...prevForm,
                 forms: prevForm.forms.map((form) => {
-                    if (form.schemaId === basicForm.forms[formIndex].schemaId) {
+                    if (form.schemaId === basicForm?.forms?.[formIndex]?.schemaId) {
                         return {
                             ...form,
                             data: {
@@ -203,7 +203,7 @@ const PaymentOrder = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
             setBasicForm((prevForm) => ({
                 ...prevForm,
                 forms: prevForm.forms.map((form) => {
-                    if (form.schemaId === basicForm.forms[formIndex].schemaId) {
+                    if (form.schemaId === basicForm?.forms?.[formIndex]?.schemaId) {
                         return {
                             ...form,
                             data: {
@@ -222,7 +222,7 @@ const PaymentOrder = ({ basicForm, setBasicForm, applicationId, getPreApplicatio
         if (missingKeys?.length !== 0) {
             setShowValidationDialog(true)
         } else {
-            handleSubmitApplicationReq('')
+            handleSubmitApplicationReq('pass')
         }
         setWarningFields(missingKeys)
         console.log(keyValuePair, 'Metadata', missingKeys)

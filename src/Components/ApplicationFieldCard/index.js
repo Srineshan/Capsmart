@@ -2425,7 +2425,10 @@ const ApplicationFieldCard = ({
                     ) !== undefined && getValueByPath(
                       basicForm,
                       `${basicpath}.${baseKey}.${fieldKey}`
-                    ) !== "") ? format(
+                    ) !== "" && getValueByPath(
+                      basicForm,
+                      `${basicpath}.${baseKey}.${fieldKey}`
+                    )) ? format(
                       new Date(
                         getValueByPath(
                           basicForm,
@@ -2730,14 +2733,15 @@ const ApplicationFieldCard = ({
             <div
               className={`${style.disclosureGrid} ${style.verticalAlignCenter}`}
             >
-              <div className={!isPOD ? style.disclosureLabelGrid : style.displayInRow}>
-                {!isPOD && (
-                  <div className={`${style.lableRadioSerialNumberStyle}`}>
-                    {fieldData.serialNumber !== null
-                      ? `${fieldData.serialNumber}. `
-                      : ""}
-                  </div>
-                )}
+              {/* <div className={!isPOD ? style.disclosureLabelGrid : style.displayInRow}> */}
+              <div className={style.disclosureLabelGrid}>
+                {/* {!isPOD && ( */}
+                <div className={`${style.lableRadioSerialNumberStyle}`}>
+                  {fieldData.serialNumber !== null
+                    ? `${fieldData.serialNumber}. `
+                    : ""}
+                </div>
+                {/* )} */}
                 <div
                   className={`${style.lableRadioStyle} ${!isPOD ? fieldData.serialNumber !== null ? style.marginLeft10 : "" : ""
                     } ${fieldData.label !== null ? style.marginRight : ""} ${style.displayInRow}`} style={{ display: 'inline' }}
@@ -3697,7 +3701,7 @@ const ApplicationFieldCard = ({
                 ? isValidDate(innerData[data])
                   ? format(
                     new Date(innerData[data]),
-                    canadaData?.dateFormat || "dd/MM/yyyy"
+                    "MMM dd, yyyy"
                   )
                   : innerData[data]
                 : ""
@@ -3882,7 +3886,7 @@ const ApplicationFieldCard = ({
                     />
                     <Tooltip title={"Click to Add"} arrow>
                       <div
-                        className={`${style.addMoreButton} ${style.marginLeft}`}
+                        className={`${style.addMoreButton} ${style.addMoreButtonFlexEnd} ${style.marginLeft}`}
                         onClick={() => setIsAddMore(true)}
                       >
                         ADD

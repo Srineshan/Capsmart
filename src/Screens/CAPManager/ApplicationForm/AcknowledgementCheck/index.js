@@ -46,6 +46,7 @@ const AcknowledgementCheck = ({ basicForm, setBasicForm, applicationId }) => {
             : basicForm?.forms?.[uploadFormIndex]?.data;
     const docLabel = (doc) => doc?.document?.shortName || doc?.document?.name || '';
     const normalizeKey = (shortName) => shortName.trim().toLowerCase().replace(/\s+/g, "_");
+    const mandatoryDataMissing = basicForm?.forms?.some(item => item.dataStatus === "SKIPPED_MANDATORY_FIELD" || item.dataStatus === "PENDING")
     useEffect(() => {
         // getPreApplication();
         sessionStorage.setItem('fromSummary', false)
@@ -149,7 +150,7 @@ const AcknowledgementCheck = ({ basicForm, setBasicForm, applicationId }) => {
                                 </div>
                             </div>
                             <div className={` ${style.tableTopHeaderStyle} ${style.marginTop10} ${style.tableValuePODGridStyle} `}>
-                                <div></div>
+                                {/* <div></div> */}
                                 <div></div>
                                 <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
                                     <div className={basicForm?.forms?.filter(data => data?.formCategory === 'Form' || data?.formCategory === 'Disclosure')?.every(item => item.dataStatus === "COMPLETED") ? style.greenDotStyle : basicForm?.forms?.filter(data => data?.formCategory === 'Form' || data?.formCategory === 'Disclosure')?.some(item => item.dataStatus === "SKIPPED_MANDATORY_FIELD") ? style.redDotStyle : basicForm?.forms?.filter(data => data?.formCategory === 'Form' || data?.formCategory === 'Disclosure')?.some(item => item.dataStatus === "SKIPPED_NON_MANDATORY_FIELD") ? style.yellowDotStyle : style.greyDotStyle}></div>
@@ -159,9 +160,9 @@ const AcknowledgementCheck = ({ basicForm, setBasicForm, applicationId }) => {
                                 </div>
                             </div>
                             <div className={`${style.tableHeaderStyle} ${style.marginTop10} ${style.tableValuePODGridStyle} `}>
-                                <div></div>
+                                {/* <div></div> */}
                                 <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                                    <div className={`${style.tableHeaderTextStyle}`}>POD Verification Check</div>
+                                    <div className={`${style.tableHeaderTextStyle} ${style.marginLeft20}`}>POD Verification Check</div>
                                 </div>
                                 <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
                                     <div className={`${style.tableHeaderTextStyle}`}
@@ -186,11 +187,11 @@ const AcknowledgementCheck = ({ basicForm, setBasicForm, applicationId }) => {
                                 </div>
                             </div>
                             <div className={`${style.tableDataStyle} ${style.marginTop5} ${style.tableValuePODGridStyle} `}>
-                                <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
+                                {/* <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
                                     <div className={`${style.marginLeft5} ${style.tableDataFontDisabledStyle1}}`}></div>
-                                </div>
+                                </div> */}
                                 <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                                    <div className={`${style.tableDataFontStyle1}`}> Applicant Profile Information</div>
+                                    <div className={`${style.tableDataFontStyle1} ${style.marginLeft20}`}> Applicant Profile Information</div>
                                 </div>
                                 <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
                                     <div className={`${style.greenDotStyle} `}></div>
@@ -207,12 +208,12 @@ const AcknowledgementCheck = ({ basicForm, setBasicForm, applicationId }) => {
                                 {
                                     basicForm?.forms?.filter(data => data?.formCategory === 'Form' || data?.formCategory === 'Disclosure')?.map((data, index) => (
                                         <div className={`${style.tableDataStyle} ${style.marginTop5} ${style.tableValuePODGridStyle} `}>
-                                            <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
+                                            {/* <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
                                                 {index !== 0 && (
                                                     <div className={`${style.marginLeft5} ${style.tableDataFontDisabledStyle1}`}>{data?.description || ''}</div>
                                                 )}
-                                            </div>
-                                            <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
+                                            </div> */}
+                                            <div className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginLeft20}`} >
                                                 <div className={`${style.tableDataFontStyle1}`}>{data?.title}</div>
                                             </div>
                                             <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
@@ -279,8 +280,8 @@ const AcknowledgementCheck = ({ basicForm, setBasicForm, applicationId }) => {
                     </div>
                     <div className={style.stickyContainer}>
                         {/* <div className={`${style.saveInProgress} ${style.marginTop}`}>SAVE IN PROGRESS</div> */}
-                        <Tooltip title={isDisabled ? 'Payment is required to submit the application' : (getMissingDocs()?.map((doc) => docLabel(doc))?.length !== 0 || showRedBorderForESign) ? 'Please click the pencil icon to update the required fields marked with red indicators' : ''} arrow isDisabled={!isDisabled || !(getMissingDocs()?.map((doc) => docLabel(doc))?.length !== 0 || showRedBorderForESign)}>
-                            <div className={`${(isDisabled || (getMissingDocs()?.map((doc) => docLabel(doc))?.length !== 0 || showRedBorderForESign)) ? style.disabled : ''} ${style.continue} ${style.marginTop10}`} onClick={(isDisabled || (getMissingDocs()?.map((doc) => docLabel(doc))?.length !== 0 || showRedBorderForESign)) ? () => { } : () => handleSubmitApplication()}>SUBMIT APPLICATION</div>
+                        <Tooltip title={isDisabled ? 'Payment is required to submit the application' : (getMissingDocs()?.map((doc) => docLabel(doc))?.length !== 0 || showRedBorderForESign || mandatoryDataMissing) ? 'Please click the pencil icon to update the required fields marked with red indicators' : 'Click to Submit'} arrow isDisabled={!isDisabled || !(getMissingDocs()?.map((doc) => docLabel(doc))?.length !== 0 || showRedBorderForESign || mandatoryDataMissing)}>
+                            <div className={`${(isDisabled || (getMissingDocs()?.map((doc) => docLabel(doc))?.length !== 0 || showRedBorderForESign) || mandatoryDataMissing) ? style.disabled : ''} ${style.continue} ${style.marginTop10}`} onClick={(isDisabled || (getMissingDocs()?.map((doc) => docLabel(doc))?.length !== 0 || showRedBorderForESign || mandatoryDataMissing)) ? () => { } : () => handleSubmitApplication()}>SUBMIT APPLICATION</div>
                         </Tooltip>
                         {(paymentListData?.fee !== 0 && paymentListData?.fee !== undefined && !basicForm?.payment?.paymentCompleted) && (
                             <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowPaymentDialog(true)}>PROCEED TO PAYMENT</div>

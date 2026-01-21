@@ -53,6 +53,7 @@ const PharmacySignature = ({
   const eSignTypeContent = getValueByPath(basicForm, `forms[${formUploadIndex}].data.setUpYourSignature.type.text`);
   const eSignTypeContentStyle = getValueByPath(basicForm, `forms[${formUploadIndex}].data.setUpYourSignature.type.style`);
   const showRedBorderForESign = ((!eSignTypeContent || !eSignTypeContentStyle) && !eSignImg);
+  const [entityLogo, setEntityLogo] = useState(sessionStorage.getItem('logo') || null)
   console.log(initialArray)
   const publicKey = "-----BEGIN PUBLIC KEY-----MIGeMA0GCSqGSIb3DQEBAQUAA4GMADCBiAKBgHA5SDu30/8uQAqqkQE0NuY4ePBptMGufG6AWnC/88YVLXi4thh7M8VU6kElVJkfXL5DwlfVnwPb08+PK1EcaOWWtp2gdQitkohjZLB9zVE+0OtRrzSc33wItf7Iwisi5dHPggHvfOp5fr+QYWFMa/kKYl3SgNo8fryeLbKKalmdAgMBAAE=-----END PUBLIC KEY-----";
   // const fixedPdfUrl = formSchema?.file?.fileURL;
@@ -341,7 +342,7 @@ const PharmacySignature = ({
             { height: "1350px" }
           }>
             <div className={`${style.marginTop} ${style.justifyCenter}`}>
-              <img src={logo} alt="Hospital Logo" className={`${style.logo}`} />
+              <img src={entityLogo || logo} alt="Hospital Logo" className={`${style.logo}`} />
             </div>
             <CommonDivider />
             <div className={`${style.cardTitle} ${style.marginTop}  ${style.justifyCenter}`}>{formSchema?.title}</div>

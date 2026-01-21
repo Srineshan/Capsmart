@@ -36,6 +36,7 @@ const ScheduleB = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
   const [formIndex, setFormIndex] = useState();
   const [signText, setSignText] = useState(name + " " + currentDate);
   const [isSaveInProgressOpen, setIsSaveInProgressOpen] = useState(false);
+  const [entityLogo, setEntityLogo] = useState(sessionStorage.getItem('logo') || null)
   useEffect(() => {
     if (dateFormat) {
       setCurrentDate(format(new Date(), dateFormat))
@@ -88,6 +89,9 @@ const ScheduleB = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
   }
 
   const getIsSaveInProgressOpen = (value) => {
+    if (value) {
+      handleSubmitApplicationReq(true);
+    }
     setIsSaveInProgressOpen(value);
   };
 
@@ -180,8 +184,8 @@ const ScheduleB = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
     }
   }
 
-  const handleSubmitApplicationReq = async () => {
-    if (isSigned) {
+  const handleSubmitApplicationReq = async (save) => {
+    if (isSigned || save) {
       let temp = {
         schemaId: basicForm?.forms?.[formIndex]?.schemaId,
         data: !isEdited ? basicForm?.forms?.[formIndex]?.data : { esignDate: isChecked ? name + " " + currentDate : '' },
@@ -195,11 +199,13 @@ const ScheduleB = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
           SuccessToaster("Application Updated Successfully");
           getPreApplication();
           handleDownload();
-          if (sessionStorage.getItem('fromSummary') === 'true') {
-            navigate(-1);
-            sessionStorage.setItem('fromSummary', false)
-          } else {
-            navigate(navigateURL)
+          if (!save) {
+            if (sessionStorage.getItem('fromSummary') === 'true') {
+              navigate(-1);
+              sessionStorage.setItem('fromSummary', false)
+            } else {
+              navigate(navigateURL)
+            }
           }
         })
         .catch((error) => {
@@ -239,7 +245,7 @@ const ScheduleB = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
         <div>
           <div className={`${style.applicationCardStyle} ${style.applicationCardScrollStyle}`} ref={targetRef}>
             <div className={`${style.marginTop} ${style.justifyCenter}`}>
-              <img src={logo} alt="Hospital Logo" className={`${style.logo}`} />
+              <img src={entityLogo || logo} alt="Hospital Logo" className={`${style.logo}`} />
             </div>
             <CommonDivider />
             <div className={`${style.cardTitle} ${style.marginTop}  ${style.justifyCenter}`}>{formSchema?.title}</div>
