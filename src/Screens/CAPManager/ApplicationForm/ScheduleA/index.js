@@ -120,10 +120,10 @@ const ScheduleA = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
         let temp = {
           schemaId: basicForm?.forms?.[formIndex]?.schemaId,
           completedFormAsFile: uploadedFile,
-          data: basicForm?.forms?.[formIndex]?.data,
-          unFilledFields: basicForm?.forms?.[formIndex]?.unFilledFields,
-          acknowledged: basicForm?.forms?.[formIndex]?.acknowledged,
-          dataStatus: basicForm?.forms?.[formIndex]?.dataStatus
+          data: !isEdited ? basicForm?.forms?.[formIndex]?.data : { esignDate: isChecked ? name + " " + currentDate : '' },
+          acknowledged: isChecked,
+          esign: { esign: isChecked ? encryptedText : '', name: isChecked ? name : '', signedDate: isChecked ? currentDate : '' },
+          dataStatus: isSigned ? 'COMPLETED' : 'SKIPPED_MANDATORY_FIELD'
         }
         await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
           .then(response => {

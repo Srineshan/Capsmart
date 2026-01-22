@@ -41,6 +41,7 @@ const Home = React.lazy(() => import("./Screens/CustomerSystemAdmin"));
 const RetireMDManager = React.lazy(() => import("./Screens/MDManagerScreens/MDManager/retireMedicalDirectives"));
 const MDManager = React.lazy(() => import("./Screens/MDManagerScreens/MDManager"));
 const ManageAttestation = React.lazy(() => import("./Screens/MDManagerScreens/MDAttestations/ManageAttestations"));
+const ManageAttestationWithSeparateLogin = React.lazy(() => import("./Screens/MDManagerScreens/MDAttestations/ManageAttestationsWithSeparateLogin"));
 const ManageAcknowledgement = React.lazy(() => import("./Screens/MDManagerScreens/MDAttestations/ManageAcknowledgements"));
 const ManageSignOff = React.lazy(() => import("./Screens/MDManagerScreens/MDAttestations/ManageSignOff"));
 const ManageAttestationGroups = React.lazy(() => import("./Screens/MDManagerScreens/MDAttestations/ManageAttestationGroups"));
@@ -68,6 +69,7 @@ const MDDashboard = React.lazy(() => import("./Screens/MDManagerScreens/Dashboar
 const ActiveStaff = React.lazy(() => import("./Screens/CAPManager/ActiveStaff"));
 const LocumStaff = React.lazy(() => import("./Screens/CAPManager/LocumStaff"));
 const DescopeLoginDialog = React.lazy(() => import("./Components/DescopeLogin"));
+const DescopeMDLoginDialog = React.lazy(() => import("./Components/DescopeMDLogin"));
 const Welcome = React.lazy(() =>
   import("./Screens/SuperAdminDashboard/welcome")
 );
@@ -337,6 +339,7 @@ const MDAttest = React.lazy(() => import("./Screens/CAPManager/MDRequestAttest/M
 const MDAttestStatus = React.lazy(() => import("./Screens/MDManagerScreens/MDManager/MedicalDirectivesAttestStatus"));
 const AttestStatusPNP = React.lazy(() => import("./Screens/PNPManager/PNPManager/PNPAttestStatus"));
 const ManageMDAttest = React.lazy(() => import("./Screens/MDManagerScreens/MDAttestations/ManageAttestations/MedicalDirectivesAttest"));
+const ManageMDAttestWithSeparateLogin = React.lazy(() => import("./Screens/MDManagerScreens/MDAttestations/ManageAttestationsWithSeparateLogin/MedicalDirectivesAttest"));
 const ManageMDAcknowledgement = React.lazy(() => import("./Screens/MDManagerScreens/MDAttestations/ManageAcknowledgements/MedicalDirectivesAcknowledge"));
 const ManageMDSignOff = React.lazy(() => import("./Screens/MDManagerScreens/MDAttestations/ManageSignOff/MedicalDirectivesSignOff"));
 const MedicalDirectivesMECApproval = React.lazy(() => import("./Screens/MDManagerScreens/MDManager/MedicalDirectivesMECApproval"));
@@ -1310,9 +1313,17 @@ const App = ({ props }) => {
     return (cookie.get("authorization") !== undefined && cookie.get("authorization") !== 'undefined' && !isSessionTokenExpired(cookie.get("authorization"))) ? children : <Navigate to="/loginPage" />;
   };
 
+  const ProtectedMDRoute = ({ children }) => {
+    // if (!(cookie.get("authorization") !== undefined && cookie.get("authorization") !== 'undefined' && !isSessionTokenExpired(cookie.get("authorization")))) {
+    //   localStorage.setItem('initialRoute', window.location.pathname + (window.location.search ? window.location.search : ''))
+    // }
+    return (cookie.get("authorization") !== undefined && cookie.get("authorization") !== 'undefined' && !isSessionTokenExpired(cookie.get("authorization"))) ? children : <Navigate to="/mdLoginPage" />;
+  };
+
   const IsLoggedIn = ({ children }) => {
     return (isAuthenticated && cookie.get("authorization") !== undefined && cookie.get("authorization") !== 'undefined') ? <Navigate to="/" /> : children;
   };
+
 
   if (isSessionLoading) {
     return <Loader />;
@@ -1334,6 +1345,7 @@ const App = ({ props }) => {
                 {/* Public Routes */}
                 <Route path="/" element={<LoginRoute />} />
                 <Route path="/loginPage" element={<IsLoggedIn><DescopeLoginDialog /></IsLoggedIn>} />
+                <Route path="/mdLoginPage" element={<DescopeMDLoginDialog />} />
                 <Route path="/medicalDirectiveAttest" element={<MedicalDirectivesAttestRFC />} />
                 {/* <Route path="/loginPage" element={<DescopeLoginDialog />} /> */}
 
@@ -1621,6 +1633,7 @@ const App = ({ props }) => {
                 <Route path="/mdManager/retired" element={<ProtectedRoute><RetireMDManager /></ProtectedRoute>} />
                 <Route path="/mdManager" element={<ProtectedRoute><MDManager /></ProtectedRoute>} />
                 <Route path="/mdManager/manageAttestation" element={<ProtectedRoute><ManageAttestation /></ProtectedRoute>} />
+                <Route path="tenant/:entityId/mdAttestation" element={<ManageAttestationWithSeparateLogin />} />
                 <Route path="/mdManager/manageAcknowledgement" element={<ProtectedRoute><ManageAcknowledgement /></ProtectedRoute>} />
                 <Route path="/mdManager/manageSignOff" element={<ProtectedRoute><ManageSignOff /></ProtectedRoute>} />
                 <Route path="/mdManager/manageAttestationGroups" element={<ProtectedRoute><ManageAttestationGroups /></ProtectedRoute>} />
@@ -1685,7 +1698,11 @@ const App = ({ props }) => {
                 />
                 <Route
                   path="/mdManager/manageAttestation/:entityId/:medicalDirectivesId"
-                  element={<ProtectedRoute><ManageMDAttest /></ProtectedRoute>}
+                  element={<ProtectedMDRoute><ManageMDAttest /></ProtectedMDRoute>}
+                />
+                <Route
+                  path="/tenant/:entityId/mdAttestation/:medicalDirectivesId"
+                  element={<ProtectedRoute><ManageMDAttestWithSeparateLogin /></ProtectedRoute>}
                 />
                 <Route path="/mdManager/dashboard" element={<ProtectedRoute><MDDashboard /></ProtectedRoute>} />
                 <Route
