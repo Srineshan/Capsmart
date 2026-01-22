@@ -347,3 +347,29 @@
 .marginLeft {
     margin-left: 20px;
 }
+
+.redBorder {
+    border: 1px solid #FF6562 !important;
+}
+
+.uploadDescriptionText {
+    text-align: center;
+    font: normal normal 300 14px/14px var(--font-style);
+    color: #52575D;
+}
+
+
+.uploadTextStyle {
+    text-align: center;
+    font: normal normal 600 20px/28px var(--font-style);
+    color: var(--primary-color);
+    text-transform: capitalize;
+}
+
+.uploadBorderStyle {
+    background: $secondarycolor 0% 0% no-repeat padding-box;
+    border: 2px dashed $secondarycolor;
+    border-radius: 4px;
+    padding: 20px;
+    cursor: pointer;
+}

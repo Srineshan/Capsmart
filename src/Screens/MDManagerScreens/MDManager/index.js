@@ -1,5 +1,5 @@
 import React, { useState, useEffect, Fragment } from "react";
-import { GET } from "./../../dataSaver";
+import { GET, TenantID } from "./../../dataSaver";
 import SideBar from "../../../Components/Sidebar";
 import Navbar from "../../../Components/Navbar";
 import Tile from "../../../Components/Tile";
@@ -17,6 +17,7 @@ import MDManagerStep1 from "./step1";
 import MDManagerStep2 from "./step2";
 import MDManagerStep3 from "./step3";
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import DoneIcon from '@mui/icons-material/Done';
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import CommonSearchField from "../../../Components/CommonFields/CommonSearchField";
 import CommonDateField from "../../../Components/CommonFields/CommonDateField";
@@ -69,6 +70,7 @@ const MDManager = () => {
   const [to, setTo] = useState(null);
   const [calendarStart, setCalendarStart] = useState(false);
   const [selectedMdId, setSelectedMdId] = useState('');
+  const [isLinkCopied, setIsLinkCopied] = useState(false);
   const [showAddNewMedicalDirectives, setShowAddNewMedicalDirectives] = useState(false);
   const selectedSite = sessionStorage.getItem('selectedSite') || ''
   useEffect(() => {
@@ -367,7 +369,7 @@ const MDManager = () => {
     setSelectedGroups(id)
   }
 
-  const STATIC_PATH = "/mdManager/manageAttestation";
+  const STATIC_PATH = `/tenant/${TenantID}/mdAttestation`;
 
   const getRootDomain = (hostname) => {
     const parts = hostname.split(".");
@@ -380,6 +382,7 @@ const MDManager = () => {
     const finalUrl = `${protocol}//${rootDomain}${STATIC_PATH}`;
 
     await navigator.clipboard.writeText(finalUrl);
+    setIsLinkCopied(true);
     SuccessToaster2("Copied Successfully!")
   };
 
@@ -594,17 +597,27 @@ const MDManager = () => {
                 <div className={style.attestationLinkHeading}>
                   Outstanding Attestation Access Link
                 </div>
-                <div className={style.attestationLinkDesc}>
+                <div className={`${style.attestationLinkDesc} ${style.marginTop20}`}>
                   This link provides secure access for staff to review and attest to their assigned medical directive. Share this link with the appropriate individual to complete the attestation.
                 </div>
                 <div className={`${style.attestationLinkButton} ${style.marginTop20} ${style.cursorPointer}`} onClick={() => copyUrl()}>
-                  <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                    <ContentCopyIcon sx={{
-                      fontSize: 20,
-                      color: "#ffffff",
-                      marginRight: "10px",
-                    }} /> COPY ATTESTATION LINK
-                  </div>
+                  {isLinkCopied ? (
+                    <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                      <DoneIcon sx={{
+                        fontSize: 20,
+                        color: "#ffffff",
+                        marginRight: "10px",
+                      }} /> LINK COPIED
+                    </div>
+                  ) : (
+                    <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                      <ContentCopyIcon sx={{
+                        fontSize: 20,
+                        color: "#ffffff",
+                        marginRight: "10px",
+                      }} /> COPY LINK
+                    </div>
+                  )}
                 </div>
               </div>
               {/* )} */}
