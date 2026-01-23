@@ -72,7 +72,7 @@ const ActiveStaffList = ({
   const userDetailsFetchOption = (sessionStorage.getItem('user') !== "undefined" && sessionStorage.getItem('user')) ? JSON.parse(sessionStorage.getItem('user')) : {};
   const canadaData = sessionStorage.getItem('canadaData') !== 'undefined' ? JSON.parse(sessionStorage.getItem('canadaData')) : {};
   const dateFormat = canadaData?.dateFormat || 'MMM dd, yyyy';
-  const permanentHeaderValues = ["", "Staff Name", "Staff ID", "Staff Type", "Docs", "Notes", "Last Updated", "Action"];
+  const permanentHeaderValues = ["", "Staff Name", "Licence Number", "Billing Number", "Staff Type", "Docs", "Notes", "Last Updated", "Action"];
   const locumHeaderValues = ["", "Staff Name", "Staff ID", "Staff Type", "CR", "COS", "CC", "CC Date", "Last Updated", "Action"];
   const temporaryStaffHeaderValues = ["Staff Name", "Staff ID", "Staff Type", "CC Approval", "COS Approval", "Last Updated"];
   const approvedHeaderValues = ["", "Staff Name", "Type", "Notes", "Last Updated On", ""];
@@ -323,6 +323,8 @@ const ActiveStaffList = ({
   let cr = [];
   let cos = [];
   let cc = [];
+  let licenceNumber = [];
+  let billingNumber = [];
   let ccdate = [];
   let ccapproval = [];
   let cosapproval = [];
@@ -413,6 +415,8 @@ const ActiveStaffList = ({
     taskListDotColor = [];
     action = [];
 
+    licenceNumber = [];
+    billingNumber = [];
     tableData?.map((data) => {
       dot.push(
         data?.status === "SUBMITTED"
@@ -433,6 +437,8 @@ const ActiveStaffList = ({
       )
       // applicantId.push(data?.displayId || "123");
       applicantId.push(data?.staffId || "123");
+      licenceNumber.push(data?.applicant?.licenseNumber || "-");
+      billingNumber.push(data?.applicant?.ohipNumber || "-");
       // applicantType.push(data?.providerType?.serviceProviderType || "Doctor");
       applicantType.push(data?.basicDetailReferences?.applicantType?.serviceProviderType || "Doctor");
       if (data?.documents?.length === 0) {
@@ -511,7 +517,8 @@ const ActiveStaffList = ({
     return [
       { type: "dot", value: dot, tooltipValue: dotTooltipValues },
       { type: "text", value: applicantName, tooltipValueText: applicantNameHoverText, onClickFunction: (data, index) => onClickViewAndVerifyStaffViewFunction(data.id) },
-      { type: "text", value: applicantId },
+      { type: "text", value: licenceNumber },
+      { type: "text", value: billingNumber },
       { type: "text", value: applicantType },
       // { type: "text", value: department },
       {

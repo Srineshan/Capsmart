@@ -29,7 +29,9 @@ const Tile = ({
   smallNum1SelectedColor,
   smallNum2SelectedColor,
   smallNum3SelectedColor,
-  getTabFilter
+  getTabFilter,
+  addPadding,
+  increaseSmallTextSize,
 }) => {
 
 
@@ -80,7 +82,7 @@ const Tile = ({
   return (
     <div
       className={`${style.cardStyle} ${selectedContract === currentTile && style.selectedContractBackground
-        }`}
+        } ${addPadding ? style.padding20 : ''} `}
       onClick={() => getSelectedContract(currentTile)}
     >
       {topText !== "" && <p className={style.next30Style}>{topText}</p>}

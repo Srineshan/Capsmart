@@ -49,7 +49,8 @@ const DescopeMDLoginDialog = ({ getIsOpen, days }) => {
         <div>
           <div className={`${style.alignCenter} ${style.verticalAlignCenter}`}>
             <Descope
-              flowId={'medical-directives'}
+              // flowId={'medical-directives'}
+              flowId={'master'}
               theme="light"
               onSuccess={(e) => {
                 handleSession(e.detail.sessionJwt)

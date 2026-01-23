@@ -439,6 +439,11 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
   };
 
   const handleContinue = async (action) => {
+    if (showRedBorderForESign) {
+      ErrorToaster2('Please add your E-Sign to proceed');
+      setIsShowESignDialog(true)
+      return;
+    }
     if (
       tempValue?.table &&
       tempValue.table.some((row) => !row.documentType || row.documentType === '')
@@ -446,7 +451,9 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
       ErrorToaster2('Please select the missing document type for the uploaded documents');
       return;
     }
-    setIsLoading(true);
+    if (tempValue?.table?.length > 0) {
+      setIsLoading(true);
+    }
     const payload = {
       schemaId: basicForm?.forms?.[formIndex]?.schemaId,
       data: basicForm?.forms?.[formIndex]?.data,

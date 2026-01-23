@@ -144,7 +144,7 @@ const CreateStaffMemberApplication = () => {
     const { data: profile } = await GET(
       `user-management-service/user/role?role=Department Head&departmentSpecialties=${basicForm?.basicDetailReferences?.department?.id}`
     );
-    setManagerName(`${profile?.[0]?.name?.firstName} ${profile?.[0]?.name?.lastName}`)
+    setManagerName(`${profile?.[0]?.name?.firstName || ''} ${profile?.[0]?.name?.lastName || ''}`)
   }
 
   const setUserDetails = async () => {

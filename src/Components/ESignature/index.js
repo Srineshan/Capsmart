@@ -80,7 +80,7 @@ const ESignature = ({ userName, currentDate, encData, showData, showDatais = tru
                   alt="Signature"
                   className={style.eSignImg}
                 />
-                <div className={style.marginLeft}>{`${form?.applicant?.name?.firstName} ${form?.applicant?.name?.lastName}`}</div>
+                <div className={style.marginLeft}>{`${form?.applicant?.name?.firstName || ''} ${form?.applicant?.name?.lastName || ''}`}</div>
               </div>
             ) : (alternateDrawSignature?.file) ? (
               <div className={style.displayInRow}>
@@ -89,7 +89,7 @@ const ESignature = ({ userName, currentDate, encData, showData, showDatais = tru
                   alt="Signature"
                   className={style.eSignImg}
                 />
-                <div>{`${form?.applicant?.name?.firstName} ${form?.applicant?.name?.lastName}`}</div>
+                <div>{alternateSignature ? alternateSignature : `${form?.applicant?.name?.firstName || ''} ${form?.applicant?.name?.lastName || ''}`}</div>
               </div>
             ) : (
               <span style={{ fontFamily: eSignTypeContentStyle }} className={style.userName}>

@@ -39,6 +39,19 @@
     object-fit: contain;
 }
 
+.header {
+    display: grid;
+    grid-template-columns: 15% 67% 15%;
+    gap: 1%;
+}
+
+
+.left,
+.right {
+    width: 80px;
+    /* same fixed width */
+}
+
 .titleText {
     text-align: center;
     font: normal normal bold 20px/28px var(--font-style);

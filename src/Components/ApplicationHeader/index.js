@@ -10,7 +10,7 @@ import PrintOutlinedIcon from "@mui/icons-material/PrintOutlined";
 import { Tooltip } from '@mui/material';
 import LogoutConfirmation from '../LogoutConfirmation';
 
-const ApplicationHeader = ({ title, close, closeClick, handleNavigate, isShowPrint, isNotLogout }) => {
+const ApplicationHeader = ({ title, close, closeClick, handleNavigate, isShowPrint, isNotLogout, closeIcon }) => {
     // const { logout } = useDescope();
     // const handleSignOut = () => {
     //     logout()
@@ -47,7 +47,6 @@ const ApplicationHeader = ({ title, close, closeClick, handleNavigate, isShowPri
                 ) : (<div></div>)
                 }
                 <div className={`${style.titleText} ${style.verticalAlignCenter}`}>{title}</div>
-                <div></div>
                 <div className={style.displayInRow}>
                     {isShowPrint && (
                         <div
@@ -65,26 +64,32 @@ const ApplicationHeader = ({ title, close, closeClick, handleNavigate, isShowPri
                         </div>
                     )}
                     {close && (
-
-                        <div className={`${style.verticalAlignCenter} ${style.marginLeft20}`}>
-                            {/* <img
+                        closeIcon ? (
+                            <div onClick={isNotLogout ? closeClick : () => setShowLogoutConfirmation(true)}>
+                                {closeIcon}
+                            </div>
+                        ) :
+                            <div className={`${style.verticalAlignCenter} ${style.marginLeft20}`}>
+                                {/* <img
                             src={CrossPink}
                             alt="cross"
                             className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft20}`}
                             onClick={closeClick}
                         /> */}
-                            <Tooltip title={"Click to Close"} arrow>
-                                <CloseIcon sx={{ fontSize: 40, color: '#06617A', cursor: 'pointer' }} onClick={isNotLogout ? closeClick : () => setShowLogoutConfirmation(true)} />
-                            </Tooltip>
-                        </div>
+                                <Tooltip title={"Click to Close"} arrow>
+                                    <CloseIcon sx={{ fontSize: 40, color: '#06617A', cursor: 'pointer' }} onClick={isNotLogout ? closeClick : () => setShowLogoutConfirmation(true)} />
+                                </Tooltip>
+                            </div>
 
                     )}
                 </div>
             </div>
-            {showLogoutConfirmation && (
-                <LogoutConfirmation getIsOpen={getIsOpen} closeClick={closeClick} />
-            )}
-        </div>
+            {
+                showLogoutConfirmation && (
+                    <LogoutConfirmation getIsOpen={getIsOpen} closeClick={closeClick} />
+                )
+            }
+        </div >
     )
 }
 

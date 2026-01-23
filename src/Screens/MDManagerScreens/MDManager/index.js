@@ -369,7 +369,7 @@ const MDManager = () => {
     setSelectedGroups(id)
   }
 
-  const STATIC_PATH = `/tenant/${TenantID}/mdAttestation`;
+  const STATIC_PATH = `/${TenantID}/mdAttestation`;
 
   const getRootDomain = (hostname) => {
     const parts = hostname.split(".");

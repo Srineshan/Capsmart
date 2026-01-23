@@ -22,6 +22,10 @@
     margin: 20px;
 }
 
+.screenPadding {
+    padding: 20px 60px;
+}
+
 .marginLeft {
     margin-left: 20px;
 }
@@ -99,6 +103,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 160px;
     background-color: var(--primary-color);
     padding: 5px;
     box-shadow: 0px 3px 11px var(--primary-color);
@@ -140,13 +145,19 @@
 
 .reviewAndAttestGrid {
     display: grid;
-    grid-template-columns: 3% 3% 40% 8% 8% 14% 14% 3%;
+    grid-template-columns: 3% 44% 8% 8% 14% 14% 3%;
     gap: 1%;
+}
+
+.grayscale {
+    filter: grayscale(100%);
+    opacity: 0.6;
+    /* optional but nice UX */
 }
 
 .attestedGrid {
     display: grid;
-    grid-template-columns: 60% 10% 13% 13%;
+    grid-template-columns: 3% 56% 10% 13% 13%;
     gap: 1%;
 }
 
@@ -202,7 +213,7 @@
 
 .dateTitle {
     text-align: left;
-    font: normal normal bold 17px/26px var(--font-style);
+    font: normal normal normal 17px/26px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
 }
@@ -271,5 +282,62 @@
 .whiteSignImgStyle {
     height: 20px;
     width: auto;
+    object-fit: contain;
+}
+
+.logoutStyle {
+    // margin: 25px 0 0 30px;
+    padding: 0 15px;
+    // font: normal normal bold 15px/25px var(--font-style);
+    font: normal normal 600 13px/18px var(--font-style);
+    letter-spacing: 1.5px;
+    color: #646D82;
+    align-content: center;
+}
+
+.logoutIcons {
+    width: 30px;
+    height: 30px;
+    // margin: 20px 20px 0 -10px;
+    cursor: pointer;
+    align-self: center;
+    margin-left: 10px;
+}
+
+.iconSize1 {
+    text-align: left;
+    color: $textcolor;
+    opacity: 0.7;
+}
+
+.iconSize1:hover {
+    // background-color: #F0F2F5;
+    color: var(--primary-color);
+    opacity: 0.7;
+}
+
+.logOutTextStyle {
+    text-align: left;
+    font: normal normal medium 18px/23px var(--font-style);
+    color: $textgrey;
+}
+
+
+.loadingOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.fileLoadingStyle {
+    height: 200px;
+    width: 40%;
     object-fit: contain;
 }

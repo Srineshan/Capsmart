@@ -4,7 +4,11 @@ import { GET, POST } from "./../../../dataSaver";
 import SideBar from "../../../../Components/Sidebar";
 import Navbar from "../../../../Components/Navbar";
 import { useNavigate, useParams } from "react-router-dom";
-import style from "./index.module.scss";
+import InputAdornment from "@mui/material/InputAdornment";
+import SearchIcon from "@mui/icons-material/Search";
+import CloseIcon from "@mui/icons-material/Close";
+import IconButton from "@mui/material/IconButton";
+import style from './index.module.scss'
 import AddIcon from "@mui/icons-material/Add";
 import CommonSelectField from '../../../../Components/CommonFields/CommonSelectField';
 import CommonInputField from '../../../../Components/CommonFields/CommonInputField';
@@ -18,6 +22,7 @@ import Tile from "../../../../Components/Tile";
 import CryptoJS from 'crypto-js';
 import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
+import LogoutIcon from '@mui/icons-material/Logout';
 import { isSessionTokenExpired, useDescope } from '@descope/react-sdk';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -31,6 +36,10 @@ import ESignDialogUser from "../../../../Components/ESignDialogUser";
 import ApplicationFieldCard from "../../../../Components/ApplicationFieldCard";
 import ApplicationHeader from "../../../../Components/ApplicationHeader";
 import DescopeMDLoginDialog from "../../../../Components/DescopeMDLogin";
+import AttestationCompletedDialog from "./AttestationCompletedDialog";
+import AttestationPendingDialog from "./AttestationPendingDialog";
+import { dataLoadingGIF } from "../../../../utils/formatting";
+import LoadingScreen from "../../../../Components/LoadingScreen";
 
 const ManageAttestationsWithSeparateLogin = () => {
     const navigate = useNavigate();
@@ -54,8 +63,11 @@ const ManageAttestationsWithSeparateLogin = () => {
     const canadaData = sessionStorage.getItem('canadaData') !== 'undefined' ? JSON.parse(sessionStorage.getItem('canadaData')) : {};
     const [currentDate, setCurrentDate] = useState(format(new Date(), canadaData?.dateFormat || 'dd/MM/yyyy'));
     const [isSigned, setIsSigned] = useState(false);
+    const [isAttestationCompleted, setIsAttestationCompleted] = useState(false);
+    const [isAttestationPending, setIsAttestationPending] = useState(false);
     const { entityId } = useParams();
     const [alertsData, setAlertsData] = useState([]);
+    const [isFocused, setIsFocused] = useState(false);
     const [feedBackTileData, setFeedBackTileData] = useState([]);
     const [userMetadata, setUserMetadata] = useState([]);
     const [viewAlerts, setViewAlerts] = useState(true);
@@ -98,8 +110,9 @@ const ManageAttestationsWithSeparateLogin = () => {
     const [medicalDirectivesAttestation, setMedicalDirectivesAttestation] = useState(false);
     const [totalTableCount, setTotalTableCount] = useState(0);
     const [showReviewAndAttestDialog, setShowReviewAndAttestDialog] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const selectedSite = sessionStorage.getItem('selectedSite') || ''
-
+    const entityName = sessionStorage.getItem('title')
     const advancedSearch = useMemo(() => ({
         siteDepartmentSpecialties: selectedCombinations?.map(item => `${selectedSite}#${item.replaceAll("|", "#")}`),
         mdID: mdId,
@@ -143,7 +156,7 @@ const ManageAttestationsWithSeparateLogin = () => {
 
     useEffect(() => {
         getAttestationMetaList();
-    }, [cookie.get("entityId")]);
+    }, [cookie.get("entityId"), cookie.get("user")]);
 
     useEffect(() => {
         const controller = new AbortController();
@@ -168,10 +181,14 @@ const ManageAttestationsWithSeparateLogin = () => {
     }, [cookie.get("entityId"), entityId])
 
     // useEffect(() => {
-    //     if (entityId !== "" && entityId !== undefined) {
-    //         getReferenceCustomDefault();
-    //     }
-    // }, [entityId]);
+    //     setIsAttestationPending(attestationMeta?.pending_md?.totalCount > 0 ? true : false)
+    // }, []);
+
+    useEffect(() => {
+        if (attestationMeta) {
+            setIsAttestationCompleted(attestationMeta?.pending_md?.totalCount === 0 ? true : false)
+        }
+    }, [attestationMeta]);
 
     useEffect(() => {
         getApplicantProfile();
@@ -220,6 +237,14 @@ const ManageAttestationsWithSeparateLogin = () => {
 
     const getIsOpenESignDialog = (value) => {
         setIsShowESignDialog(value);
+    }
+
+    const getIsOpenAttestationCompleted = (value) => {
+        setIsAttestationCompleted(value)
+    }
+
+    const getIsOpenAttestationPending = (value) => {
+        setIsAttestationPending(value)
     }
 
     const updateFunc = () => {
@@ -281,14 +306,17 @@ const ManageAttestationsWithSeparateLogin = () => {
     }
 
     const getAttestationMetaList = async () => {
+        setIsLoading(true)
         const response = await GET(
             `medical-directive-service/attestation/byUser/meta`
         );
         console.log(response.data);
         setAttestationMeta(response?.data)
+        setIsLoading(false)
     }
 
     const getAttestationList = async (signal) => {
+        setIsLoading(true)
         const response = await POST(
             `medical-directive-service/attestation/byUser?offset=${page - 1}&limit=${limit}&isPaginationRequired=${isPaginationRequired}&userId=${users?.id}&tab=${selectedOption}`, advancedSearch, { signal }
         );
@@ -296,6 +324,7 @@ const ManageAttestationsWithSeparateLogin = () => {
         setAttestationList(response?.data?.medicalDirectives)
         setTotalTableCount(response?.data?.numberOfElements)
         setSearchCount(response?.data?.numberOfElements)
+        setIsLoading(false)
     }
 
     const getSelectedPage = (value) => {
@@ -320,11 +349,13 @@ const ManageAttestationsWithSeparateLogin = () => {
     };
 
     const handleCheckboxClick = (id, innerData) => {
-        setCheckedIds(prevCheckedIds => {
-            // Toggle the ID in the array
-            return prevCheckedIds?.map(data => data?.id)?.includes(innerData?.medicalDirective?.id)
-                ? prevCheckedIds.filter(checkedId => checkedId?.id !== innerData?.medicalDirective?.id)
-                : [...prevCheckedIds, innerData?.medicalDirective?.id];
+        setCheckedIds(prev => {
+            const tempId = innerData?.medicalDirective?.id;
+            if (!tempId) return prev;
+
+            return prev.includes(tempId)
+                ? prev.filter(checkedId => checkedId !== tempId)
+                : [...prev, tempId];
         });
         getAttestationValues()
     };
@@ -371,7 +402,6 @@ const ManageAttestationsWithSeparateLogin = () => {
             checked={checkedIds?.length === attestationList?.length}
             onChange={handleSelectAllClick}
         />,
-        "",
         "Title",
         "MD ID",
         "Type",
@@ -380,6 +410,7 @@ const ManageAttestationsWithSeparateLogin = () => {
         ""
     ];
     const attestedHeaderValues = [
+        "",
         "Title",
         "MD ID",
         "Type",
@@ -402,6 +433,7 @@ const ManageAttestationsWithSeparateLogin = () => {
     let action = [];
     let signImg = [];
     let checkbox = [];
+    let no = [];
 
     const getAttestationValues = () => {
         title = [];
@@ -412,28 +444,30 @@ const ManageAttestationsWithSeparateLogin = () => {
         signImg = [];
         checkbox = [];
         attestedDate = [];
+        no = [];
 
         attestationList?.map((data, index) => {
             checkbox.push(
                 <CommonCheckBox
                     size="medium"
                     checked={checkedIds?.includes(data?.medicalDirective?.id)}
-                    onChange={() => handleCheckboxClick(data?.medicalDirective?.id)}
+                    onChange={() => handleCheckboxClick(data?.medicalDirective?.id, data)}
                     key={`${data?.medicalDirective?.id}${index}`}
                 />
             );
+            no.push(`${index + 1}.`);
             title.push(data?.medicalDirective?.title);
             id.push(data?.medicalDirective?.mdID);
             type.push(data?.medicalDirective?.revisionStatus === "NA" ? 'New' : "Revised");
-            dueDate.push(data?.dueDate);
+            dueDate.push(data?.dueDate ? format(new Date(data?.dueDate), 'MMM dd, yyyy') : '-');
             attestedDate.push(data?.attestationLog?.createdDate ? format(new Date(data?.attestationLog?.createdDate), 'MMM dd, yyyy') : '-');
             lastUpdated.push(data?.medicalDirective?.lastModifiedDate ? format(new Date(data?.medicalDirective?.lastModifiedDate), 'MMM dd, yyyy') : '-');
-            signImg.push(<img src={BlueSign} alt="" className={`${style.blueSignImgStyle} ${style.cursorPointer}`} onClick={() => handleEdit(data)} />);
+            signImg.push(<Tooltip arrow title={checkedIds?.length > 1 ? 'You have selected multiple Medical Directives. Click on the button above to Attest.' : 'Click to Attest'}><img src={BlueSign} alt="" className={`${style.blueSignImgStyle} ${style.cursorPointer} ${checkedIds?.length > 1 ? `${style.grayscale} ${style.disabled}` : ''}`} onClick={checkedIds?.length > 1 ? () => { } : () => handleEdit(data)} /></Tooltip>);
         });
 
         return selectedOption === "pending_md" ? [
             { type: "checkbox", value: checkbox },
-            { type: "dot", value: title },
+            // { type: "dot", value: title },
             { type: "text", value: title },
             { type: "text", value: id },
             { type: "text", value: type },
@@ -441,6 +475,7 @@ const ManageAttestationsWithSeparateLogin = () => {
             { type: "text", value: lastUpdated },
             { type: "icon", icon: signImg },
         ] : [
+            { type: "text", value: no },
             { type: "text", value: title },
             { type: "text", value: id },
             { type: "text", value: type },
@@ -511,7 +546,7 @@ const ManageAttestationsWithSeparateLogin = () => {
     }
 
     const handleEdit = (data) => {
-        navigate(`/tenant/${entityId}/mdAttestation/${data?.medicalDirective?.id}`)
+        navigate(`/${entityId}/mdAttestation/${data?.medicalDirective?.id}`)
     }
 
     const handleSubmitAttestBulk = async () => {
@@ -541,6 +576,19 @@ const ManageAttestationsWithSeparateLogin = () => {
             })
     }
 
+    const handleClear = () => {
+        setIsFocused(false);
+        setSearchTerm('');
+    }
+
+    const handleLogoutCheck = () => {
+        if (attestationMeta?.pending_md?.totalCount > 0) {
+            setIsAttestationPending(true);
+        } else {
+            handleLogout();
+        }
+    }
+
     const handleLogout = () => {
         var cookies = new Cookie();
         cookies.remove("user", { path: "/" });
@@ -558,12 +606,30 @@ const ManageAttestationsWithSeparateLogin = () => {
     };
     console.log(isLoggedIn(), 'routeCheck')
     return isLoggedIn() ? (
-        <Fragment>
-            {/* <Navbar /> */}
-            <ApplicationHeader title={`Medical Directive Attestation`} close={true} closeClick={handleLogout} />
-            <div>
-                <div className={`${isExpanded ? style.bigCardGrid : style.smallCardGrid} ${style.margin20}`}>
+        <div>
+            {isLoading ? (
+                <LoadingScreen />
+                // <div
+                //     className={`${style.verticalAlignCenter} ${style.justifyCenter} ${style.loadingOverlay}`}
+                // >
+                //     <img src={dataLoadingGIF} alt="" className={style.fileLoadingStyle} />
+                // </div>
+            ) : (
+                <Fragment>
+                    {/* <Navbar /> */}
+                    <ApplicationHeader title={``} close={true} closeClick={handleLogoutCheck} isNotLogout={true}
+                        closeIcon={
+                            <div className={style.cursorPointer}>
+                                <Tooltip title={'Click to Exit'} arrow >
+                                    <div className={`${style.logOutTextStyle} ${style.verticalAlignCenter}`}>Exit  <LogoutIcon className={`${style.logoutIcons} ${style.iconSize1}`} style={{ fontSize: 30 }} /></div>
+                                </Tooltip>
+                            </div>
+                        }
+                    />
                     <div>
+                        <div className={` ${style.screenPadding}`}>
+                            {/* <div className={`${isExpanded ? style.bigCardGrid : style.smallCardGrid} ${style.margin20}`}> */}
+                            {/* <div>
                         <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
                             <div>
                                 <div className={style.searchFieldCard}>
@@ -580,24 +646,6 @@ const ManageAttestationsWithSeparateLogin = () => {
                                     </div>
                                     {showAdvancedSearch && (
                                         <>
-                                            {/* <div className={style.marginTop10}>
-                                                <div className={style.labelStyle}>Medical Directive ID</div>
-                                                <CommonInputField
-                                                    value={mdId}
-                                                    onChange={(e) => setMdId(e.target.value)}
-                                                    type="text"
-                                                    placeholder="Enter MD ID"
-                                                />
-                                            </div>
-                                            <div className={style.marginTop10}>
-                                                <div className={style.labelStyle}>Medical Directive Title</div>
-                                                <CommonInputField
-                                                    value={mdTitle}
-                                                    onChange={(e) => setMdTitle(e.target.value)}
-                                                    type="text"
-                                                    placeholder="Contains"
-                                                />
-                                            </div> */}
                                             <div className={style.marginTop10}>
                                                 <div className={style.labelStyle}>Department / Division</div>
                                                 <CommonMultiSelectField
@@ -605,8 +653,6 @@ const ManageAttestationsWithSeparateLogin = () => {
                                                     onChange={handleChange}
                                                     className={style.fullWidth}
                                                     widthValue='250px'
-                                                    // firstOptionLabel={'All'}
-                                                    // firstOptionValue={''}
                                                     valueList={transformedOptions.map(option => option?.value)}
                                                     labelList={transformedOptions.map(option => option?.label)}
                                                     disabledList={transformedOptions.map(() => false)}
@@ -639,8 +685,6 @@ const ManageAttestationsWithSeparateLogin = () => {
                                                     onChange={(e) => handleGroupSelect(e.target.value)}
                                                     className={style.fullWidth}
                                                     widthValue='250px'
-                                                    // firstOptionLabel={'All'}
-                                                    // firstOptionValue={''}
                                                     valueList={groupList?.map(option => option?.id)}
                                                     labelList={groupList?.map(option => `${option?.name}`)}
                                                     disabledList={groupList?.map(() => false)}
@@ -653,8 +697,6 @@ const ManageAttestationsWithSeparateLogin = () => {
                                                     value={selectedAuthor}
                                                     onChange={(e) => setSelectedAuthor(e.target.value)}
                                                     className={style.fullWidth}
-                                                    // firstOptionLabel={'All'}
-                                                    // firstOptionValue={''}
                                                     valueList={staffList?.map(option => option?.id)}
                                                     labelList={staffList?.map(option => `${option?.applicant?.name?.firstName} ${option?.applicant?.name?.lastName}`)}
                                                     disabledList={staffList?.map(() => false)}
@@ -670,14 +712,10 @@ const ManageAttestationsWithSeparateLogin = () => {
                                                         open={calendarStart}
                                                         onOpen={() => setCalendarStart(true)}
                                                         onClose={() => setCalendarStart(false)}
-                                                        // minDate={sub(new Date(), { years: 3 })}
-                                                        // maxDate={add(new Date(), { months: 6 })}
                                                         value={from}
                                                         onChange={(newValue) =>
                                                             setFrom(format(new Date(newValue), "yyyy-MM-dd"))
                                                         }
-                                                        // minDate={minDate}
-                                                        // maxDate={maxDate}
                                                         InputProps={{
                                                             style: {
                                                                 fontSize: 14,
@@ -701,14 +739,11 @@ const ManageAttestationsWithSeparateLogin = () => {
                                                         open={calendarStart}
                                                         onOpen={() => setCalendarStart(true)}
                                                         onClose={() => setCalendarStart(false)}
-                                                        // minDate={sub(new Date(), { years: 3 })}
-                                                        // maxDate={add(new Date(), { months: 6 })}
                                                         value={to}
                                                         onChange={(newValue) =>
                                                             setTo(format(new Date(newValue), "yyyy-MM-dd"))
                                                         }
-                                                        // minDate={minDate}
-                                                        // maxDate={maxDate}
+                                                        
                                                         InputProps={{
                                                             style: {
                                                                 fontSize: 14,
@@ -734,121 +769,180 @@ const ManageAttestationsWithSeparateLogin = () => {
                                 </div>
                             </div>
                         </SideBar>
-                    </div>
-                    <div>
-                        {/* <div className={`${style.grid2} ${style.marginTop10}`}>
-                            <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="REVIEW & ATTEST" bigNumber={attestationMeta?.pending_md?.totalCount} smallNum1={attestationMeta?.pending_md?.notPastDueCount} smallNum2={attestationMeta?.pending_md?.pastDueCount} smallText1="Not Done" smallText2="Past Due" currentTile="pending_md" topText='' smallNum1Color={style.redSmallNumber} smallNum2Color={style.redSmallNumber} smallNum1SelectedColor={style.redSmallNumberSelected} smallNum2SelectedColor={style.redSmallNumberSelected} />
-                            <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="ATTESTED" bigNumber={attestationMeta?.attested_md?.totalCount} smallNum1="" smallNum2="" currentTile="attested_md" topText='IN THE PAST 12 MONTHS' />
-                        </div> */}
-                        <div
-                            className={`${style.spaceBetween} ${style.marginLeft30} `}
-                        >
-                            <div className={`${style.tabs}`}>
-                                {/* <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Review & Attest" tileCount={attestationMeta?.pending_md?.totalCount} currentTile="pending_md" />
-                                <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Attested" tileCount={attestationMeta?.attested_md?.totalCount} currentTile="attested_md" /> */}
-                            </div>
+                    </div> */}
                             <div>
-                                <button
-                                    className={`${style.borderNone} ${style.backgroundBlue} ${style.borderRadius5} ${style.cursorPointer} ${checkedIds?.length === 0 ? style.disabled : ''}`}
-                                    onClick={checkedIds?.length === 0 ? () => { } : () => setShowReviewAndAttestDialog(true)} // Open dialog on button click
+                                <div className={`${style.grid2} ${style.marginTop10}`}>
+                                    <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="TO REVIEW & ATTEST" bigNumber={attestationMeta?.pending_md?.totalCount} smallNum1={attestationMeta?.pending_md?.notPastDueCount} smallNum2={attestationMeta?.pending_md?.pastDueCount} smallText1="Not Done" smallText2="Past Due" currentTile="pending_md" topText='' smallNum1Color={style.redSmallNumber} smallNum2Color={style.redSmallNumber} smallNum1SelectedColor={style.redSmallNumberSelected} smallNum2SelectedColor={style.redSmallNumberSelected} addPadding={true} increaseSmallTextSize={true} />
+                                    <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="ATTESTED" bigNumber={attestationMeta?.attested_md?.totalCount} smallNum1="" smallNum2="" currentTile="attested_md" topText='' addPadding={true} increaseSmallTextSize={true} />
+                                </div>
+                                <div
+                                    className={`${style.spaceBetween} ${style.marginLeft30}  ${style.marginTop10}`}
                                 >
-                                    <div className={` ${style.addNewButton} ${style.textColorWhite}`}>
-                                        <img src={WhiteSign} alt="" className={style.whiteSignImgStyle} onClick={() => { }} />
-                                        <span>Review & Attest</span>
+                                    <div className={`${style.tabs}`}>
+                                        <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="To Review & Attest" tileCount={attestationMeta?.pending_md?.totalCount} currentTile="pending_md" />
+                                        <TileApplication selectedTab={selectedOption} getSelectedTab={getSelectedOptionLevelTwo} tileLabel="Attested" tileCount={attestationMeta?.attested_md?.totalCount} currentTile="attested_md" />
                                     </div>
-                                </button>
-                            </div>
-                        </div>
-                        <div className={`${style.bigCardStyle} ${style.marginTop10}`}>
-                            <div ref={componentRef}>
-                                <div className={`${style.reduceMarginTop10} registeredUsers`} ref={PDFRef}>
-                                    <TableTwo
-                                        tableHeaderValues={tableHeaderValues}
-                                        tableDataValues={getAttestationValues()}
-                                        tableData={attestationList}
-                                        gridStyle={selectedOption === 'pending_md' ? style.reviewAndAttestGrid : style.attestedGrid}
-                                        // actions={actionsData}
-                                        // scrollStyle={style.contractScrollStyle}
-                                        tableSortValues={[]}
-                                        heading={"There are no Record for you to manage"}
-                                        onClickFunction={() => { }}
-                                        hidePagination={false}
-                                        getSelectedPage={getSelectedPage}
-                                        totalCount={totalTableCount}
-                                        page={page}
-                                        searchTermForTable={searchTermForTable}
-                                        searchCount={searchCount}
-                                        setSearchTermForTable={setSearchTermForTable}
-                                        onLimitChange={handleLimitChange}
-                                        checkedIds={checkedIds}
-                                        handleCheckboxClick={handleCheckboxClick}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <Dialog isOpen={showReviewAndAttestDialog} onClose={() => setShowReviewAndAttestDialog(false)} className={`${style.attestMDDialogBackground} ${style.attestMDDialog}`}>
-                        <div className={Classes.DIALOG_BODY}>
-                            <div className={style.dialogTitle}>Medical Directives Review & Attestations</div>
-                            <div className={`${style.dialogDesc} ${style.marginTop20}`}>You are attesting to {checkedIds?.length} Medical Directives that were assigned to you for review.</div>
-                            <div>
-                                <div className={` ${style.marginTop10} ${style.leftAlign}`}>
-                                    <CommonCheckBox checked={medicalDirectivesAttestation} label={'I certify that I have read the Medical Directives assigned to me and have a good understanding of them.'}
-                                        onChange={(e) => setMedicalDirectivesAttestation(e.target.checked)} />
-                                </div>
-                                <div className={`${medicalDirectivesAttestation ? "" : style.disabled} ${style.displayInRow} ${style.verticalAlignCenter}`}>
-                                    <div onClick={medicalDirectivesAttestation ? () => { setIsSigned(!isSigned); } : () => { }}>
-                                        <ESignature
-                                            userName={isSigned ? `${users?.userName} ` : ""}
-                                            encData={isSigned ? encryptedText : ''}
-                                            showData={isSigned}
-                                            showDatais={true}
-                                            removePadding={true}
-                                            alternateSignature={users?.userName}
+                                    <div className={style.displayInRow}>
+                                        <TextField
+                                            size="small"
+                                            variant="outlined"
+                                            placeholder={"Search"}
+                                            value={searchTerm}
+                                            onChange={handleSearch}
+                                            onFocus={() => setIsFocused(true)}
+                                            // onBlur={() => setIsFocused(false)}
+                                            fullWidth
+                                            sx={{ height: "32px", maxWidth: '280px' }}
+                                            InputProps={{
+                                                sx: { height: "32px", padding: "0px 5px" },
+                                                startAdornment: (
+                                                    <InputAdornment position="start">
+                                                        <SearchIcon />
+                                                    </InputAdornment>
+                                                ),
+                                                endAdornment: isFocused && (
+                                                    <InputAdornment position="end">
+                                                        <IconButton onClick={handleClear} size="small">
+                                                            <CloseIcon fontSize="small" />
+                                                        </IconButton>
+                                                    </InputAdornment>
+                                                ),
+                                            }}
                                         />
+                                        {/* <CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} isOnClickAvailable={false} onClickFunc={() => { }} placeholder={"Search"} /> */}
+                                        <Tooltip
+                                            title="Click this button to start your Attestation."
+                                            open={(checkedIds?.length > 1 && !showReviewAndAttestDialog) ? true : false}
+                                            placement="top"
+                                            arrow
+                                            sx={{
+                                                '& .MuiTooltip-tooltip': {
+                                                    backgroundColor: '#1976d2', // your color
+                                                    color: '#fff',
+                                                    fontSize: '0.875rem',
+                                                },
+                                                '& .MuiTooltip-arrow': {
+                                                    color: '#1976d2',
+                                                },
+                                            }}
+                                        >
+                                            <span>
+                                                <button
+                                                    className={`${style.borderNone} ${style.backgroundBlue} ${style.borderRadius5} ${style.cursorPointer} ${checkedIds?.length === 0 ? `${style.grayscale} ${style.disabled}` : ''} ${style.marginLeft}`}
+                                                    onClick={checkedIds?.length === 0 ? () => { } : () => setShowReviewAndAttestDialog(true)} // Open dialog on button click
+                                                >
+                                                    <div className={` ${style.addNewButton} ${style.textColorWhite}`}>
+                                                        <img src={WhiteSign} alt="" className={style.whiteSignImgStyle} onClick={() => { }} />
+                                                        <span>Review & Attest</span>
+                                                    </div>
+                                                </button>
+                                            </span>
+                                        </Tooltip>
                                     </div>
-                                    <div className={style.verticalAlignCenter}>
-                                        <div className={`${style.displayInRow} ${style.marginLeft}`}>
-                                            <div className={`${style.dateTitle}`}>Date: </div>
-                                            <div className={`${style.date} ${style.marginLeft}`}>{isSigned ? currentDate : ""}</div>
+                                </div>
+                                <div className={`${style.bigCardStyle}`}>
+                                    <div ref={componentRef}>
+                                        <div className={`${style.reduceMarginTop10} registeredUsers`} ref={PDFRef}>
+                                            <TableTwo
+                                                tableHeaderValues={tableHeaderValues}
+                                                tableDataValues={getAttestationValues()}
+                                                tableData={attestationList}
+                                                gridStyle={selectedOption === 'pending_md' ? style.reviewAndAttestGrid : style.attestedGrid}
+                                                // actions={actionsData}
+                                                // scrollStyle={style.contractScrollStyle}
+                                                tableSortValues={[]}
+                                                heading={"There are no Record for you to manage"}
+                                                onClickFunction={() => { }}
+                                                hidePagination={false}
+                                                getSelectedPage={getSelectedPage}
+                                                totalCount={totalTableCount}
+                                                page={page}
+                                                searchTermForTable={searchTermForTable}
+                                                searchCount={searchCount}
+                                                setSearchTermForTable={setSearchTermForTable}
+                                                onLimitChange={handleLimitChange}
+                                                checkedIds={checkedIds}
+                                                handleCheckboxClick={handleCheckboxClick}
+                                            />
                                         </div>
                                     </div>
                                 </div>
-                                <div className={style.justifyCenter}>
-                                    <Tooltip arrow title={"Click to Submit"}>
-                                        <div className={`${style.continue} ${style.marginTop} ${isSigned ? "" : style.disabled}`} onClick={isSigned ? () => handleSubmitAttestBulk() : () => { }}>SUBMIT</div>
-                                    </Tooltip>
-                                </div>
                             </div>
+                            <Dialog isOpen={showReviewAndAttestDialog} onClose={() => setShowReviewAndAttestDialog(false)} className={`${style.attestMDDialogBackground} ${style.attestMDDialog}`}>
+                                <div className={Classes.DIALOG_BODY}>
+                                    <div className={style.dialogTitle}>Medical Directives Review & Attestations</div>
+                                    <div className={`${style.dialogDesc} ${style.marginTop20}`}>{checkedIds?.length > 1 ? `You are attesting to ${checkedIds?.length} Medical Directives that are assigned to you for review.` : `You are attesting to ${checkedIds?.length} Medical Directive that is assigned to you for review.`}</div>
+                                    <div>
+                                        <div className={` ${style.marginTop10} ${style.leftAlign}`}>
+                                            <CommonCheckBox checked={medicalDirectivesAttestation} label={`I hereby confirm that by signing, I agree to the delegation and implementation of the Medical Directives and Delegated Acts used within the ${entityName !== 'HapiCare' ? entityName : ''}.`}
+                                                onChange={(e) => setMedicalDirectivesAttestation(e.target.checked)} />
+                                        </div>
+                                        <div className={`${medicalDirectivesAttestation ? "" : style.disabled} ${style.displayInRow} ${style.verticalAlignCenter}`}>
+                                            <div onClick={medicalDirectivesAttestation ? () => { setIsSigned(!isSigned); } : () => { }}>
+                                                <ESignature
+                                                    userName={isSigned ? `${users?.userName} ` : ""}
+                                                    encData={isSigned ? encryptedText : ''}
+                                                    showData={isSigned}
+                                                    showDatais={true}
+                                                    removePadding={true}
+                                                    alternateSignature={users?.userName}
+                                                    alternateDrawSignature={userData?.esignature}
+                                                />
+                                            </div>
+                                            <div className={style.verticalAlignCenter}>
+                                                <div className={`${style.displayInRow} ${style.marginLeft30}`}>
+                                                    <div className={`${style.dateTitle}`}>Date: </div>
+                                                    <div className={`${style.date} ${style.marginLeft}`}>{isSigned ? currentDate : ""}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className={style.justifyCenter}>
+                                            <Tooltip arrow title={"Click to Submit"}>
+                                                <div className={`${style.continue} ${style.marginTop} ${isSigned ? "" : style.disabled}`} onClick={isSigned ? () => handleSubmitAttestBulk() : () => { }}>SUBMIT</div>
+                                            </Tooltip>
+                                        </div>
+                                    </div>
+                                </div>
+                            </Dialog >
+                            {
+                                isShowESignConfirmationDialog && (
+                                    <ESignConfirmationUserDialog
+                                        getIsOpen={getIsOpenESignConfirmation}
+                                        updateFunc={updateFunc}
+                                        confirmFunc={confirmESign}
+                                        hideCross={true}
+                                    />
+                                )
+                            }
+                            {
+                                isShowESignDialog && (
+                                    <ESignDialogUser
+                                        getIsOpen={getIsOpenESignDialog}
+                                        // baseKey={"setUpYourSignature"}
+                                        // applicationId={applicationId}
+                                        // basicForm={basicForm}
+                                        // setBasicForm={setBasicForm}
+                                        // getPreApplication={getPreApplication}
+                                        hideCross={true}
+                                    >
+                                    </ESignDialogUser>
+                                )
+                            }
+                            {
+                                isAttestationPending && (
+                                    <AttestationPendingDialog getIsOpen={getIsOpenAttestationPending} title={`You Still Have ${attestationMeta?.pending_md?.totalCount || 0} Medical Directives To Review & Attest`} />
+                                )
+                            }
+                            {
+                                isAttestationCompleted && (
+                                    <AttestationCompletedDialog getIsOpen={getIsOpenAttestationCompleted} />
+                                )
+                            }
                         </div>
-                    </Dialog >
-                    {
-                        isShowESignConfirmationDialog && (
-                            <ESignConfirmationUserDialog
-                                getIsOpen={getIsOpenESignConfirmation}
-                                updateFunc={updateFunc}
-                                confirmFunc={confirmESign}
-                                hideCross={true}
-                            />
-                        )
-                    }
-                    {
-                        isShowESignDialog && (
-                            <ESignDialogUser
-                                getIsOpen={getIsOpenESignDialog}
-                                // baseKey={"setUpYourSignature"}
-                                // applicationId={applicationId}
-                                // basicForm={basicForm}
-                                // setBasicForm={setBasicForm}
-                                // getPreApplication={getPreApplication}
-                                hideCross={true}
-                            >
-                            </ESignDialogUser>
-                        )
-                    }
-                </div>
-            </div>
-        </Fragment>
+                    </div>
+                </Fragment>
+            )}
+        </div>
     ) : (<DescopeMDLoginDialog />);
 };
 
