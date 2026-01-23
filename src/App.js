@@ -1633,7 +1633,7 @@ const App = ({ props }) => {
                 <Route path="/mdManager/retired" element={<ProtectedRoute><RetireMDManager /></ProtectedRoute>} />
                 <Route path="/mdManager" element={<ProtectedRoute><MDManager /></ProtectedRoute>} />
                 <Route path="/mdManager/manageAttestation" element={<ProtectedRoute><ManageAttestation /></ProtectedRoute>} />
-                <Route path="tenant/:entityId/mdAttestation" element={<ManageAttestationWithSeparateLogin />} />
+                <Route path="/:entityId/mdAttestation" element={<ManageAttestationWithSeparateLogin />} />
                 <Route path="/mdManager/manageAcknowledgement" element={<ProtectedRoute><ManageAcknowledgement /></ProtectedRoute>} />
                 <Route path="/mdManager/manageSignOff" element={<ProtectedRoute><ManageSignOff /></ProtectedRoute>} />
                 <Route path="/mdManager/manageAttestationGroups" element={<ProtectedRoute><ManageAttestationGroups /></ProtectedRoute>} />
@@ -1701,8 +1701,8 @@ const App = ({ props }) => {
                   element={<ProtectedMDRoute><ManageMDAttest /></ProtectedMDRoute>}
                 />
                 <Route
-                  path="/tenant/:entityId/mdAttestation/:medicalDirectivesId"
-                  element={<ProtectedRoute><ManageMDAttestWithSeparateLogin /></ProtectedRoute>}
+                  path="/:entityId/mdAttestation/:medicalDirectivesId"
+                  element={<ManageMDAttestWithSeparateLogin />}
                 />
                 <Route path="/mdManager/dashboard" element={<ProtectedRoute><MDDashboard /></ProtectedRoute>} />
                 <Route

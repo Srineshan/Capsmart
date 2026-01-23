@@ -17,6 +17,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import CommonPdfViewer from '../../../../../Components/CommonPdfViewer';
 import { useReactToPrint } from 'react-to-print';
 import DescopeMDLoginDialog from '../../../../../Components/DescopeMDLogin';
+import LoadingScreen from '../../../../../Components/LoadingScreen';
 
 const ManageMDAttest = () => {
     const componentRef = useRef(null);
@@ -38,6 +39,7 @@ const ManageMDAttest = () => {
     const [medicalDirectivesAttestation, setMedicalDirectivesAttestation] = useState(false);
     const [formIndex, setFormIndex] = useState();
     const [userData, setUserData] = useState();
+    const [isLoading, setIsLoading] = useState(false);
     let cookie = new Cookie();
     let userDetails = cookie.get('user');
     const users = jwt(userDetails);
@@ -110,6 +112,7 @@ const ManageMDAttest = () => {
     console.log(isScrolledToBottom, 'scroll')
 
     const getMedicalDirectives = async () => {
+        setIsLoading(true)
         if (medicalDirectivesId !== undefined) {
             const { data: medicalDirectives } = await GET(
                 `medical-directive-service/medicalDirectives/${medicalDirectivesId}`
@@ -117,6 +120,7 @@ const ManageMDAttest = () => {
             setMedicalDirectives(medicalDirectives);
             console.log(medicalDirectives, 'medicalDirectives')
         }
+        setIsLoading(false)
     }
 
     const getAttestationLog = async () => {
@@ -150,7 +154,7 @@ const ManageMDAttest = () => {
         }
         await POST(`medical-directive-service/medicalDirectives/${medicalDirectivesId}/attest`, temp)
             .then(response => {
-                navigate(`/tenant/${entityId}/mdAttestation`);
+                navigate(`/${entityId}/mdAttestation`);
                 getAttestationLog();
                 console.log(response, response?.response?.data)
             })
@@ -160,7 +164,7 @@ const ManageMDAttest = () => {
     }
 
     const handleClose = () => {
-        navigate(`/tenant/${entityId}/mdAttestation`);
+        navigate(`/${entityId}/mdAttestation`);
     }
 
     const reactToPrintContent = useCallback(() => {
@@ -182,7 +186,7 @@ const ManageMDAttest = () => {
         // }
         return (cookie.get("authorization") !== undefined && cookie.get("authorization") !== 'undefined' && !isSessionTokenExpired(cookie.get("authorization"))) ? true : false;
     };
-    return isLoggedIn() ? (
+    return isLoggedIn() ? isLoading ? (<LoadingScreen />) : (
         <div className={style.screenBackground}>
             <div className={style.welcomeText}>
                 <ApplicationHeader title={`${medicalDirectives?.title}`} close={true} closeClick={handleClose} print={true} printPage={handlePrintClick} isNotLogout={true} />
@@ -200,7 +204,7 @@ const ManageMDAttest = () => {
                 <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
                     <div>
                         <div className={style.medicalDirectivesCard}>
-                            <div className={style.title}>{`${medicalDirectives?.title}`} <span className={style.mdIDStyle}>{medicalDirectives?.mdID}</span></div>
+                            <div className={style.title}>{`${medicalDirectives?.title || ''}`} <span className={style.mdIDStyle}>{medicalDirectives?.mdID || ''}</span></div>
                             {(!isScrolledToBottom) && (
                                 <div className={`${style.marginTop10} ${style.description} ${style.attestationRequiredText}`}>You need to scroll to the end of the document before you can certify that it has been viewed by you.</div>
                             )}
@@ -212,14 +216,14 @@ const ManageMDAttest = () => {
                         </div>
                     </div>
                     <div>
-                        {!isScrolledToBottom && (
+                        {/* {!isScrolledToBottom && (
                             <div className={style.medicalDirectivesCard}>
-                                <div className={style.title}>{`Attestation Due In ${medicalDirectives?.noOfDaysToAttest} Days`} </div>
+                                <div className={style.title}>{`Attestation Due In ${medicalDirectives?.noOfDaysToAttest || '-'} Days`} </div>
                             </div>
-                        )}
+                        )} */}
                         <div className={`${style.medicalDirectivesCard} ${style.marginTop10} ${style.stickyContainer}`}>
                             <div className={style.title}><strong>{`Medical Directive Attestation`} </strong></div>
-                            <div className={`${style.marginTop10} ${style.description}`}>You have to review and attest to this Medical Directive that has been assigned to you.</div>
+                            <div className={`${style.marginTop10} ${style.description}`}>You have to review and attest to this Medical Directive.</div>
                             {(!isScrolledToBottom) ? (
                                 <Tooltip title="Scroll to the end of the document" arrow>
                                     <div>
@@ -273,7 +277,7 @@ const ManageMDAttest = () => {
                                         </div>
                                         <div className={style.verticalAlignCenter}>
                                             <div className={style.displayInRow}>
-                                                <div className={`${style.dateTitle}`}>Date: </div>
+                                                <div className={`${style.dateTitle} ${style.marginLeft50}`}>Date: </div>
                                                 <div className={`${style.date} ${style.marginLeft}`}>{isSigned ? (basicForm?.forms?.[formIndex]?.esign?.signedDate !== '' && basicForm?.forms?.[formIndex]?.esign?.signedDate !== undefined) ? basicForm?.forms?.[formIndex]?.esign?.signedDate : currentDate : ""}</div>
                                             </div>
                                         </div>
@@ -285,12 +289,12 @@ const ManageMDAttest = () => {
                                 </>
                             )}
                         </div>
-                        <div className={`${style.medicalDirectivesCard} ${!isScrolledToBottom ? style.marginTop : ''}`}>
+                        {/* <div className={`${style.medicalDirectivesCard} ${!isScrolledToBottom ? style.marginTop : ''}`}>
                             <div className={style.title}><strong>{`My Attestation Log`} </strong></div>
                             {medicalDirectivesAttestationLog?.map(data => (
                                 <div className={`${style.marginTop10} ${style.description}`}>{format(new Date(data?.createdDate), 'MMM dd, yyyy HH:mm')}</div>
                             ))}
-                        </div>
+                        </div> */}
                     </div>
                 </div>
             </div>

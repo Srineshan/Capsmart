@@ -174,11 +174,11 @@ const PACSRequest = ({
       // form.getTextField("Text110").setText(profileData.extension || "");
 
       form.getTextField("First Name / Last Name").setText(formattedFullName);
-      form.getTextField("Department / Nursing Unit").setText(profileData.department?.name || "");
-      form.getTextField("Job Title / Position").setText(profileData.jobTitle || "");
-      form.getTextField("Manager's Name").setText(profileData.managerName || "");
-      form.getTextField("Email").setText(profileData.email?.officialEmail || "")
-      form.getTextField("Extension").setText(profileData.extension || "");
+      form.getTextField("Department / Nursing Unit").setText(profileData?.department?.name || "");
+      form.getTextField("Manager's Name").setText(profileData?.jobTitle || "");
+      form.getTextField("Job Title / Position").setText(profileData?.managerName || "");
+      form.getTextField("Email").setText(profileData?.email?.officialEmail || "")
+      form.getTextField("Extension").setText(profileData?.extension || "");
 
 
       // Fill checkboxes
