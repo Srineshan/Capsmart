@@ -230,3 +230,8 @@
     opacity: 0.5;
     cursor: not-allowed;
 }
+
+.rightAlign {
+    display: flex;
+    align-self: flex-end;
+}

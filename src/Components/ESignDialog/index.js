@@ -46,6 +46,7 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
     }, [eSignImg])
 
     useEffect(() => {
+        contentRef.current?.focus();
         if (contentRef.current && contentRef.current.innerHTML !== eSignType && eSignType !== null) {
             contentRef.current.innerHTML = eSignType;
         }
@@ -211,6 +212,11 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
                                 <div className={`${selectedESignFormat === 'TYPE' ? style.drawOrTypeUnderline : ''} ${style.marginLeft}`}></div>
                             </div>
                         )}
+                        {/* <Tooltip title={"Click to Clear Signature"} arrow>
+                            <div className={style.rightAlign}>
+                                <div className={`${style.saveInProgress}`} onClick={() => { clearSignature() }}>Clear</div>
+                            </div>
+                        </Tooltip> */}
                     </div>
                     {selectedESignFormat === 'DRAW' ? (
                         <div className={`${style.eSignBox} ${style.marginTop} ${style.cursorPointer}`} onClick={!isShowDrawCanvas ? () => setIsShowDrawCanvas(true) : () => { }}>
@@ -304,7 +310,7 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
                     </div>
                 </div>
 
-            </div>
+            </div >
         </Dialog >
     )
 }

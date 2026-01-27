@@ -186,6 +186,11 @@ const BasicInformation = ({ basicForm, setBasicForm, applicationId, getPreApplic
       let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
       missingKeys = temp;
     }
+    if (getValueByPath(basicForm, `basicDetails.billingNumber.doYouHaveOHIP`) === true) {
+      let filterKeys = [`basicDetails.billingNumber.billingNumber`]
+      let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+      missingKeys = temp;
+    }
     console.log(missingKeys, 'missingKeys')
     if (missingKeys?.length !== 0) {
       setShowValidationDialog(true);

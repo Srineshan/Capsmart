@@ -221,7 +221,7 @@ const ApplicationForm = () => {
 
     return (
         <div className={style.screenBackground}>
-            <ApplicationHeader title={`New Medical Professional Staff Application For ${basicForm?.basicDetails?.applicant?.name?.firstName !== undefined ? basicForm?.basicDetails?.applicant?.name?.firstName : ''} ${basicForm?.basicDetails?.applicant?.name?.lastName !== undefined ? basicForm?.basicDetails?.applicant?.name?.lastName : ''}, ${(basicForm?.basicDetails?.applicant?.applicantType !== null) ? basicForm?.basicDetails?.applicant?.applicantType : ''}`} close={true} closeClick={handleLogout} />
+            <ApplicationHeader title={`New Medical Professional Staff Application For ${basicForm?.basicDetails?.applicant?.name?.firstName !== undefined ? basicForm?.basicDetails?.applicant?.name?.firstName : ''} ${basicForm?.basicDetails?.applicant?.name?.lastName !== undefined ? basicForm?.basicDetails?.applicant?.name?.lastName : ''}, ${(basicForm?.basicDetails?.applicant?.applicantType) ? basicForm?.basicDetails?.applicant?.applicantType : ''}`} close={true} closeClick={handleLogout} />
             <div className={style.screenPadding}>
                 {/* <div className={style.applicationScreenGrid}> */}
                 {StepDisplay()}

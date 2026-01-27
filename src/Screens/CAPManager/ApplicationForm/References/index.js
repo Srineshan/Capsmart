@@ -44,6 +44,7 @@ const References = ({ basicForm, setBasicForm, applicationId, getPreApplication 
       } else {
         setNavigateBackURL(`/applicationForm/${applicationId}/${basicForm?.forms[0]?.formCategory}/${btoa(basicForm?.forms[0]?.schemaCategory)}`)
       }
+      setIsAddMore(basicForm?.forms?.[formIndex]?.data?.references?.length > 3 ? false : true)
     }
   }, [basicForm, formIndex])
 

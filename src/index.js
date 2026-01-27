@@ -14,6 +14,7 @@ import { AuthProvider } from '@descope/react-sdk';
 import UnexpectedError from './Components/ErrorPage/unexpectedError';
 import { TenantID, POST } from './Screens/dataSaver';
 import { currentUser } from './utils/auth';
+import { LoadScript } from "@react-google-maps/api";
 import { SuccessToaster, ErrorToaster } from './utils/toaster';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from "./theme";
@@ -159,7 +160,12 @@ if (window.self === window.top) {
     >
       <ErrorBoundary FallbackComponent={UnexpectedError} onError={logError}>
         <ThemeProvider theme={theme}>
-          <App />
+          <LoadScript
+            googleMapsApiKey="AIzaSyBEtAuysEMldC5CwMsRFvaUsFA1KlooucE"
+            libraries={["places"]}
+          >
+            <App />
+          </LoadScript>
         </ThemeProvider>
       </ErrorBoundary>
     </AuthProvider >

@@ -1,13 +1,13 @@
 // main applicationFieldCard
 
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useMemo } from "react";
 import CommonPhoneField from "../../Components/CommonFields/CommonPhoneField";
 import CommonInputField from "../CommonFields/CommonInputField";
 import CommonSelectField from "../CommonFields/CommonSelectField";
 import CommonMultiSelectField from "../CommonFields/CommonMultiSelectField";
 import CommonDateField from "../CommonFields/CommonDateField";
 import TextSnippetOutlinedIcon from "@mui/icons-material/TextSnippetOutlined";
-import { TextField, Tooltip } from "@mui/material";
+import { Autocomplete, TextField, Tooltip } from "@mui/material";
 import { add, format, isValid, parse, parseISO, sub } from "date-fns";
 import { fileLoadingURL, FormatPhoneNumber, FormatPostalCode } from "../../utils/formatting";
 import CommonRadio from "../CommonFields/CommonRadio";
@@ -42,7 +42,7 @@ import ValidationDialog from "../validationDialog";
 import FileDisplayDialog from "../fileDisplayDialog";
 import PriorDataDialog from "../PriorDataDialog"
 import DeleteConfirmation from "../DeleteConfirmation";
-
+import debounce from "lodash.debounce";
 
 const TEXTFIELDLEN50 = 50;
 
@@ -121,6 +121,9 @@ const ApplicationFieldCard = ({
   const mailingTimeoutRef = useRef(null);
   const businessTimeoutRef = useRef(null);
   const addMoreRef = useRef(null);
+  const autocompleteService = useRef(null);
+  const placesService = useRef(null);
+  const [options, setOptions] = useState([]);
 
   const referenceRadioColor = {
     'OUTSTANDING': '#14B15A',
@@ -143,6 +146,18 @@ const ApplicationFieldCard = ({
       setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === atob(step)))
     }
   }, [step])
+
+  useEffect(() => {
+    if (window.google && !autocompleteService.current) {
+      autocompleteService.current =
+        new window.google.maps.places.AutocompleteService();
+
+      placesService.current = new window.google.maps.places.PlacesService(
+        document.createElement("div")
+      );
+    }
+  }, []);
+
 
   const getShowDeleteConfirmation = (value) => {
     setShowDeleteConfirmation(value)
@@ -264,6 +279,110 @@ const ApplicationFieldCard = ({
       return null;
     }
   };
+
+  const fetchAddresses = useMemo(
+    () =>
+      debounce((input) => {
+        if (!input || !autocompleteService.current) return;
+
+        autocompleteService.current.getPlacePredictions(
+          {
+            input,
+            types: ["address"],
+            componentRestrictions: { country: "ca" }, // optional
+          },
+          (predictions) => {
+            setOptions(predictions || []);
+          }
+        );
+      }, 300),
+    []
+  );
+
+  useEffect(() => {
+    return () => {
+      fetchAddresses.cancel();
+    };
+  }, [fetchAddresses]);
+
+  const handleAddressSelect = (path, value, basePath) => {
+    if (!value || !placesService.current) return;
+
+    if (stepPath !== undefined || isReappointment) {
+      setIsEdited(true);
+    }
+
+    const clean = (v) => v?.trim?.();
+
+    const addressText = value?.structured_formatting?.main_text;
+
+    placesService.current.getDetails(
+      { placeId: value.place_id },
+      (place) => {
+        const components = place?.address_components || [];
+
+        const getComponent = (type) =>
+          components.find((c) => c.types.includes(type))?.long_name || "";
+
+        const pinCode = getComponent("postal_code");
+        const city =
+          getComponent("locality") ||
+          getComponent("administrative_area_level_2");
+        const province = getComponent("administrative_area_level_1");
+
+        setBasicForm((prev) => {
+          const newData = structuredClone(prev);
+
+          // Build base paths safely
+          const fullPath =
+            basePath && path
+              ? `${clean(basePath)}.${clean(path)}`
+              : path
+                ? clean(path)
+                : clean(baseKey);
+
+          const basicFullPath =
+            basePath && path
+              ? `${basicpath}.${clean(basePath)}.${clean(path)}`
+              : path
+                ? `${basicpath}.${clean(path)}`
+                : `${basicpath}.${clean(baseKey)}`;
+
+          // Street address
+          setNestedValue(newData, fullPath, addressText);
+          setNestedValue(newData, basicFullPath, addressText);
+
+          // Address details
+          const parentPath = basePath ? clean(basePath) : "";
+
+          if (parentPath) {
+            setNestedValue(newData, `${parentPath}.pinCode`, pinCode);
+            setNestedValue(newData, `${parentPath}.city`, city);
+            setNestedValue(newData, `${parentPath}.province`, province);
+
+            setNestedValue(
+              newData,
+              `${basicpath}.${parentPath}.pinCode`,
+              pinCode
+            );
+            setNestedValue(
+              newData,
+              `${basicpath}.${parentPath}.city`,
+              city
+            );
+            setNestedValue(
+              newData,
+              `${basicpath}.${parentPath}.province`,
+              province
+            );
+          }
+
+          return newData;
+        });
+      }
+    );
+  };
+
 
   const setNestedValue = async (obj, path, value) => {
     console.log(obj, path, value, "Test");
@@ -1150,163 +1269,163 @@ const ApplicationFieldCard = ({
     }
   }, [department, formSchema]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          `https://geocoder.ca/${isHomeAddressPincodeEntered}?json=1`
-        );
-        let data = response.data;
-        console.log(data);
-        setBasicForm((prevData) => {
-          let tempContactAddress1 = { ...prevData };
-          tempContactAddress1.forms[
-            addressPageIndex
-          ].data.contactAddress1.homeAddress.city = data?.standard?.city || "";
-          tempContactAddress1.forms[
-            addressPageIndex
-          ].data.contactAddress1.homeAddress.province =
-            data?.standard?.prov || "";
-          return tempContactAddress1;
-        });
-      } catch (error) {
-        console.log("Error fetching data");
-      }
-    };
-    if (
-      isHomeAddressPincodeEntered !== undefined &&
-      isHomeAddressPincodeEntered !== null &&
-      isHomeAddressPincodeEntered?.length >= 7 &&
-      !isPOD &&
-      (baseKey?.split(".")[0] === "contactAddress1" ||
-        baseKey?.split(".")[0] === "contactAddress2" ||
-        baseKey?.split(".")[0] === "contactAddress3")
-    ) {
-      if (validateCanadianPostalCode(isHomeAddressPincodeEntered)) {
-        if (hometimeoutRef.current) {
-          clearTimeout(hometimeoutRef.current);
-        }
-        hometimeoutRef.current = setTimeout(() => {
-          fetchData();
-        }, 2000);
-      } else {
-        setBasicForm((prevData) => {
-          let tempContactAddress1 = { ...prevData };
-          tempContactAddress1.forms[
-            addressPageIndex
-          ].data.contactAddress1.homeAddress.pinCode = "";
-          return tempContactAddress1;
-        });
-      }
-    }
-  }, [isHomeAddressPincodeEntered]);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await axios.get(
+  //         `https://geocoder.ca/${isHomeAddressPincodeEntered}?json=1`
+  //       );
+  //       let data = response.data;
+  //       console.log(data);
+  //       setBasicForm((prevData) => {
+  //         let tempContactAddress1 = { ...prevData };
+  //         tempContactAddress1.forms[
+  //           addressPageIndex
+  //         ].data.contactAddress1.homeAddress.city = data?.standard?.city || "";
+  //         tempContactAddress1.forms[
+  //           addressPageIndex
+  //         ].data.contactAddress1.homeAddress.province =
+  //           data?.standard?.prov || "";
+  //         return tempContactAddress1;
+  //       });
+  //     } catch (error) {
+  //       console.log("Error fetching data");
+  //     }
+  //   };
+  //   if (
+  //     isHomeAddressPincodeEntered !== undefined &&
+  //     isHomeAddressPincodeEntered !== null &&
+  //     isHomeAddressPincodeEntered?.length >= 7 &&
+  //     !isPOD &&
+  //     (baseKey?.split(".")[0] === "contactAddress1" ||
+  //       baseKey?.split(".")[0] === "contactAddress2" ||
+  //       baseKey?.split(".")[0] === "contactAddress3")
+  //   ) {
+  //     if (validateCanadianPostalCode(isHomeAddressPincodeEntered)) {
+  //       if (hometimeoutRef.current) {
+  //         clearTimeout(hometimeoutRef.current);
+  //       }
+  //       hometimeoutRef.current = setTimeout(() => {
+  //         fetchData();
+  //       }, 2000);
+  //     } else {
+  //       setBasicForm((prevData) => {
+  //         let tempContactAddress1 = { ...prevData };
+  //         tempContactAddress1.forms[
+  //           addressPageIndex
+  //         ].data.contactAddress1.homeAddress.pinCode = "";
+  //         return tempContactAddress1;
+  //       });
+  //     }
+  //   }
+  // }, [isHomeAddressPincodeEntered]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          `https://geocoder.ca/${isMailingAddressPincodeEntered}?json=1`
-        );
-        let data = response.data;
-        console.log(data);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await axios.get(
+  //         `https://geocoder.ca/${isMailingAddressPincodeEntered}?json=1`
+  //       );
+  //       let data = response.data;
+  //       console.log(data);
 
-        setBasicForm((prevData) => {
-          let tempContactAddress2 = { ...prevData };
-          tempContactAddress2.forms[
-            addressPageIndex
-          ].data.contactAddress2.mailingAddress.city = data?.standard?.city || "";
-          tempContactAddress2.forms[
-            addressPageIndex
-          ].data.contactAddress2.mailingAddress.province = data?.standard?.prov || "";
-          return tempContactAddress2;
-        });
-      } catch (error) {
-        console.log("Error fetching data");
-      }
-    };
+  //       setBasicForm((prevData) => {
+  //         let tempContactAddress2 = { ...prevData };
+  //         tempContactAddress2.forms[
+  //           addressPageIndex
+  //         ].data.contactAddress2.mailingAddress.city = data?.standard?.city || "";
+  //         tempContactAddress2.forms[
+  //           addressPageIndex
+  //         ].data.contactAddress2.mailingAddress.province = data?.standard?.prov || "";
+  //         return tempContactAddress2;
+  //       });
+  //     } catch (error) {
+  //       console.log("Error fetching data");
+  //     }
+  //   };
 
-    if (
-      isMailingAddressSameAsHomeAddress === "Different Address" &&
-      isMailingAddressPincodeEntered !== undefined &&
-      isMailingAddressPincodeEntered !== null &&
-      isMailingAddressPincodeEntered?.length >= 7 &&
-      !isPOD &&
-      (baseKey?.split(".")[0] === "contactAddress1" ||
-        baseKey?.split(".")[0] === "contactAddress2" ||
-        baseKey?.split(".")[0] === "contactAddress3")
-    ) {
-      if (validateCanadianPostalCode(isMailingAddressPincodeEntered)) {
-        if (mailingTimeoutRef.current) {
-          clearTimeout(mailingTimeoutRef.current);
-        }
-        mailingTimeoutRef.current = setTimeout(() => {
-          fetchData();
-        }, 2000);
-      } else {
-        setBasicForm((prevData) => {
-          let tempContactAddress2 = { ...prevData };
-          tempContactAddress2.forms[
-            addressPageIndex
-          ].data.contactAddress2.mailingAddress.pinCode = "";
-          return tempContactAddress2;
-        });
-      }
-    }
-  }, [isMailingAddressPincodeEntered, isMailingAddressSameAsHomeAddress]);
+  //   if (
+  //     isMailingAddressSameAsHomeAddress === "Different Address" &&
+  //     isMailingAddressPincodeEntered !== undefined &&
+  //     isMailingAddressPincodeEntered !== null &&
+  //     isMailingAddressPincodeEntered?.length >= 7 &&
+  //     !isPOD &&
+  //     (baseKey?.split(".")[0] === "contactAddress1" ||
+  //       baseKey?.split(".")[0] === "contactAddress2" ||
+  //       baseKey?.split(".")[0] === "contactAddress3")
+  //   ) {
+  //     if (validateCanadianPostalCode(isMailingAddressPincodeEntered)) {
+  //       if (mailingTimeoutRef.current) {
+  //         clearTimeout(mailingTimeoutRef.current);
+  //       }
+  //       mailingTimeoutRef.current = setTimeout(() => {
+  //         fetchData();
+  //       }, 2000);
+  //     } else {
+  //       setBasicForm((prevData) => {
+  //         let tempContactAddress2 = { ...prevData };
+  //         tempContactAddress2.forms[
+  //           addressPageIndex
+  //         ].data.contactAddress2.mailingAddress.pinCode = "";
+  //         return tempContactAddress2;
+  //       });
+  //     }
+  //   }
+  // }, [isMailingAddressPincodeEntered, isMailingAddressSameAsHomeAddress]);
 
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          `https://geocoder.ca/${isBusinessAddressPincodeEntered}?json=1`
-        );
-        let data = response.data;
-        console.log(data);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await axios.get(
+  //         `https://geocoder.ca/${isBusinessAddressPincodeEntered}?json=1`
+  //       );
+  //       let data = response.data;
+  //       console.log(data);
 
-        setBasicForm((prevData) => {
-          let tempContactAddress3 = { ...prevData };
-          tempContactAddress3.forms[
-            addressPageIndex
-          ].data.contactAddress3.business.businessAddress.city = data?.standard?.city || "";
-          tempContactAddress3.forms[
-            addressPageIndex
-          ].data.contactAddress3.business.businessAddress.province = data?.standard?.prov || "";
-          return tempContactAddress3;
-        });
-      } catch (error) {
-        console.log("Error fetching data");
-      }
-    };
+  //       setBasicForm((prevData) => {
+  //         let tempContactAddress3 = { ...prevData };
+  //         tempContactAddress3.forms[
+  //           addressPageIndex
+  //         ].data.contactAddress3.business.businessAddress.city = data?.standard?.city || "";
+  //         tempContactAddress3.forms[
+  //           addressPageIndex
+  //         ].data.contactAddress3.business.businessAddress.province = data?.standard?.prov || "";
+  //         return tempContactAddress3;
+  //       });
+  //     } catch (error) {
+  //       console.log("Error fetching data");
+  //     }
+  //   };
 
-    if (
-      isBusinessAddressSameAsHomeAddressOrMailingAddress === "Different Address" &&
-      isBusinessAddressPincodeEntered !== undefined &&
-      isBusinessAddressPincodeEntered !== null &&
-      isBusinessAddressPincodeEntered?.length >= 7 &&
-      !isPOD &&
-      (baseKey?.split(".")[0] === "contactAddress1" ||
-        baseKey?.split(".")[0] === "contactAddress2" ||
-        baseKey?.split(".")[0] === "contactAddress3")
-    ) {
-      if (validateCanadianPostalCode(isBusinessAddressPincodeEntered)) {
-        if (businessTimeoutRef.current) {
-          clearTimeout(businessTimeoutRef.current);
-        }
-        businessTimeoutRef.current = setTimeout(() => {
-          fetchData();
-        }, 2000);
-      } else {
-        setBasicForm((prevData) => {
-          let tempContactAddress3 = { ...prevData };
-          tempContactAddress3.forms[
-            addressPageIndex
-          ].data.contactAddress3.business.businessAddress.pinCode = "";
-          return tempContactAddress3;
-        });
-      }
-    }
-  }, [isBusinessAddressPincodeEntered, isBusinessAddressSameAsHomeAddressOrMailingAddress]);
+  //   if (
+  //     isBusinessAddressSameAsHomeAddressOrMailingAddress === "Different Address" &&
+  //     isBusinessAddressPincodeEntered !== undefined &&
+  //     isBusinessAddressPincodeEntered !== null &&
+  //     isBusinessAddressPincodeEntered?.length >= 7 &&
+  //     !isPOD &&
+  //     (baseKey?.split(".")[0] === "contactAddress1" ||
+  //       baseKey?.split(".")[0] === "contactAddress2" ||
+  //       baseKey?.split(".")[0] === "contactAddress3")
+  //   ) {
+  //     if (validateCanadianPostalCode(isBusinessAddressPincodeEntered)) {
+  //       if (businessTimeoutRef.current) {
+  //         clearTimeout(businessTimeoutRef.current);
+  //       }
+  //       businessTimeoutRef.current = setTimeout(() => {
+  //         fetchData();
+  //       }, 2000);
+  //     } else {
+  //       setBasicForm((prevData) => {
+  //         let tempContactAddress3 = { ...prevData };
+  //         tempContactAddress3.forms[
+  //           addressPageIndex
+  //         ].data.contactAddress3.business.businessAddress.pinCode = "";
+  //         return tempContactAddress3;
+  //       });
+  //     }
+  //   }
+  // }, [isBusinessAddressPincodeEntered, isBusinessAddressSameAsHomeAddressOrMailingAddress]);
 
 
   const getItems = (data) => {
@@ -1649,7 +1768,37 @@ const ApplicationFieldCard = ({
                 : fieldData.enum;
 
             // Render the dropdown conditionally for "specialty" only if there are values
-            return fieldKey === "specialty" &&
+            return (((user === null ||
+              user?.roles?.filter(
+                (data) => data?.roleName === "Staff Manager"
+              )?.length === 0) &&
+              (fieldKey === "credentialingCategory" ||
+                fieldKey === "department" || fieldKey === "specialty") && window.location.pathname.includes("applicationForm"))) ? (
+              // <CommonLabel label={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || ''} />\
+              <div>
+                {fieldKey === "specialty" &&
+                  specialityValues?.length === 0 ? null : (
+                  <div className={`${style.lableStyle}`}>
+                    {fieldData.label}
+                    {isLableEmpty(fieldData.label)
+                      ? false
+                      : (object?.required?.includes(fieldKey) || object?.then?.required?.includes(fieldKey) ||
+                        (parentData !== null
+                          ? parentData?.required?.includes(fieldKey) || parentData?.then?.required?.includes(fieldKey)
+                          : false)) &&
+                      "*"}
+                  </div>
+                )}
+                {(
+                  <div className={style.lableReadOnlyStyle}>
+                    <strong>{getValueByPath(
+                      basicForm,
+                      `${basicpath}.${baseKey}.${fieldKey}`
+                    ) || ""}</strong>
+                  </div>
+                )}
+              </div>
+            ) : fieldKey === "specialty" &&
               specialityValues.length === 0 ? null : (
               <CommonSelectField
                 value={
@@ -1884,12 +2033,12 @@ const ApplicationFieldCard = ({
               //     type={fieldData.type}
               //     min={fieldData.minimum}
               // />
-              (user === null ||
+              (((user === null ||
                 user?.roles?.filter(
                   (data) => data?.roleName === "Staff Manager"
                 )?.length === 0) &&
                 (fieldKey === "officialEmail" ||
-                  fieldKey === "applicantType") ? (
+                  fieldKey === "applicantType"))) ? (
                 // <CommonLabel label={getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || ''} />\
                 <div>
                   <div className={`${style.lableStyle}`}>
@@ -1929,6 +2078,53 @@ const ApplicationFieldCard = ({
                     </div>
                   )}
                 </div>
+              ) : fieldKey === 'streetName' ? (
+                <Autocomplete
+                  freeSolo
+                  options={options}
+                  value={getValueByPath(
+                    basicForm,
+                    `${basicpath}.${baseKey}.${fieldKey}`
+                  ) || ""}
+                  filterOptions={(x) => x}
+                  getOptionLabel={(option) =>
+                    typeof option === "string" ? option : option.description
+                  }
+                  onInputChange={(e, value, reason) => {
+                    if (reason === "input") {
+                      fetchAddresses(value);
+                    }
+                  }}
+                  onChange={(e, value) => handleAddressSelect(
+                    fieldKey,
+                    value,
+                    baseKey
+                  )}
+                  fullWidth
+                  renderInput={(params) => (
+                    <CommonTextField
+                      {...params}
+                      label={fieldData.label}
+                      value={getValueByPath(
+                        basicForm,
+                        `${basicpath}.${baseKey}.${fieldKey}`
+                      ) || ""}
+                      required={
+                        isLableEmpty(fieldData.label)
+                          ? false
+                          : object?.required?.includes(fieldKey) || object?.then?.required?.includes(fieldKey) ||
+                          (parentData !== null
+                            ? parentData?.required?.includes(fieldKey) || parentData?.then?.required?.includes(fieldKey)
+                            : false)
+                      }
+                      placeholder="Start typing your address"
+                      className={style.fullWidth}
+                      warning={warningFields
+                        ?.map((data) => data?.key)
+                        ?.includes(`${basicpath}.${baseKey}.${fieldKey}`)}
+                    />
+                  )}
+                />
               ) : (
                 <div key={fieldKey}>
 
@@ -2269,7 +2465,7 @@ const ApplicationFieldCard = ({
                 }
                 label={fieldData.label}
                 required={
-                  isLableEmpty(fieldData.label)
+                  (isLableEmpty(fieldData.label) || window.location.pathname.includes("createStaffMemberApplication"))
                     ? false
                     : object?.required?.includes(fieldKey) || object?.then?.required?.includes(fieldKey) ||
                     (parentData !== null
@@ -2455,7 +2651,8 @@ const ApplicationFieldCard = ({
                     `${basicpath}.${baseKey}.${fieldKey}`
                   ) || null
                 }
-                onChange={(newValue) =>
+                onChange={(newValue) => {
+                  if (!isValid(newValue)) return;
                   handleChange(
                     fieldKey,
                     fieldData.format === "date-time"
@@ -2463,7 +2660,7 @@ const ApplicationFieldCard = ({
                       : format(new Date(newValue), "yyyy-MM-dd'T'00:00"),
                     baseKey
                   )
-                }
+                }}
                 minDate={minDate}
                 maxDate={maxDate}
                 InputProps={{
@@ -2483,7 +2680,7 @@ const ApplicationFieldCard = ({
                           : fieldData.label !== null
                             ? `Enter ${fieldData.label}`
                             : null,
-                      readOnly: true,
+                      // readOnly: true,
                     }}
                     color={
                       warningFields

@@ -646,10 +646,8 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                         </div>
                     </div>
                     <div className={`${style.stickyContainer} ${isSaveInProgressOpen ? style.hiddenStickyContainer : ""}`}>
-                        <Tooltip title={"Click to Skip This Step and Continue Later"} arrow>
-                            <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => handleContinue("skip")}>SKIP FOR NOW</div></Tooltip>
                         <Tooltip title={"Click to Save your Progress and Continue later"} arrow>
-                            <div className={`${style.saveInProgress} ${style.marginTop10}`} onClick={async () => {
+                            <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={async () => {
                                 await getIsSaveInProgressOpen(true);
                                 if (showMedicalDirectives) {
                                     if (isSigned) {
@@ -660,6 +658,8 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                                     handleContinue("save");
                                 }
                             }}>SAVE IN PROGRESS</div></Tooltip>
+                        <Tooltip title={"Click to Skip This Step and Continue Later"} arrow>
+                            <div className={`${style.saveInProgress} ${style.marginTop10}`} onClick={() => handleContinue("skip")}>SKIP FOR NOW</div></Tooltip>
                         <div className={style.twoColForButton}>
                             <Tooltip title={"Click to Go Back to the Previous Step"} arrow>
                                 <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleBackClick()}>BACK</div></Tooltip>
