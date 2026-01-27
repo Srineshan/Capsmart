@@ -20,6 +20,7 @@
     "@mui/x-data-grid": "^6.19.1",
     "@mui/x-date-pickers": "^5.0.0-beta.6",
     "@ramonak/react-progress-bar": "^4.4.0",
+    "@react-google-maps/api": "^2.20.8",
     "@react-latest-ui/react-sticky-notes": "^0.2.6",
     "@stripe/stripe-js": "^4.10.0",
     "@syncfusion/ej2-base": "^31.2.4",

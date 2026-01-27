@@ -5,6 +5,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 import { DateInput2 } from "@blueprintjs/datetime2";
 import { FormControl } from '@mui/material';
+import { isBefore, isAfter } from "date-fns";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 import style from './index.module.scss'
@@ -13,6 +14,21 @@ const CommonDateField = ({ onChange, value, InputProps, onOpen, onClose, open, r
     const contractStatus = sessionStorage.getItem('Selected Contract Status');
     const dateFnsFormat = "MM/dd/yyyy";
     const warningCheck = (value === '');
+
+    const getDefaultCalendarMonth = (minDate, maxDate) => {
+        const today = new Date();
+
+        if (minDate && isBefore(today, minDate)) {
+            return minDate;
+        }
+
+        if (maxDate && isAfter(today, maxDate)) {
+            return maxDate;
+        }
+
+        return today;
+    };
+
     const theme = createTheme({
         palette: {
             error: {
@@ -47,6 +63,7 @@ const CommonDateField = ({ onChange, value, InputProps, onOpen, onClose, open, r
                                 maxDate={maxDate}
                                 renderInput={renderInput}
                                 reduceAnimations={true}
+                                defaultCalendarMonth={getDefaultCalendarMonth(minDate, maxDate)}
                                 readOnly={contractStatus === "ACTIVE" ? true : false}
                             />
                         </FormControl>

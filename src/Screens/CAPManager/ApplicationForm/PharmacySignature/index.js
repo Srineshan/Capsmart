@@ -339,7 +339,7 @@ const PharmacySignature = ({
       <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
         <div>
           <div className={style.applicationCardStyle} ref={targetRef} style={
-            { height: "1350px" }
+            { height: "1650px" }
           }>
             <div className={`${style.marginTop} ${style.justifyCenter}`}>
               <img src={entityLogo || logo} alt="Hospital Logo" className={`${style.logo}`} />
@@ -347,46 +347,46 @@ const PharmacySignature = ({
             <CommonDivider />
             <div className={`${style.cardTitle} ${style.marginTop}  ${style.justifyCenter}`}>{formSchema?.title}</div>
             <CommonDivider />
-            {!eSignImg && (
-              <div>
+            {/* {!eSignImg && ( */}
+            <div>
 
-                {(basicForm?.forms?.[formIndex]?.data !== null && !showRedBorderForESign) ||
-                  applicantProfile?.signature?.updated ? (
-                  <>
-                    <div className={`${style.eSignatureOnFileCard} ${style.marginTop10}`}>
-                      <div className={style.eSignatureOnFileTitle}>Establish your eSignature</div>
-                      <div className={style.eSignGrid}>
-                        <ESignature userName={''} encData={encryptedText} showData showDatais isUpdated={isShowESignDialog} />
-                        <div className={style.verticalAlignCenter}>
-                          <div className={style.displayInRow}>
-                            <div className={style.dateTitle}>Initial:</div>
-                            <div className={`${style.date} ${style.marginLeft}`}>{eSignInitial}</div>
-                          </div>
-                        </div>
-                        <div className={style.verticalAlignCenter}>
-                          <div className={style.dateTitle}>{eSignTitle}</div>
+              {(basicForm?.forms?.[formIndex]?.data !== null && !showRedBorderForESign) ||
+                applicantProfile?.signature?.updated ? (
+                <>
+                  <div className={`${style.eSignatureOnFileCard} ${style.marginTop10}`}>
+                    <div className={style.eSignatureOnFileTitle}>Establish your eSignature</div>
+                    <div className={style.eSignGrid}>
+                      <ESignature userName={''} encData={encryptedText} showData showDatais isUpdated={isShowESignDialog} />
+                      <div className={style.verticalAlignCenter}>
+                        <div className={style.displayInRow}>
+                          <div className={style.dateTitle}>Initial:</div>
+                          <div className={`${style.date} ${style.marginLeft}`}>{eSignInitial}</div>
                         </div>
                       </div>
-                      <div className={style.eSignatureOnFileButton}>
-                        <div className={`${style.continue} ${style.eSignatureOnFileButtonPadding}`} onClick={() => setIsShowESignDialog(true)}>
-                          CLICK TO UPDATE
-                        </div>
+                      <div className={style.verticalAlignCenter}>
+                        <div className={style.dateTitle}>{eSignTitle}</div>
                       </div>
                     </div>
-                  </>
-                ) : (
-                  <div className={style.marginTop} onClick={() => setIsShowESignDialog(true)}>
-                    <div className={`${style.uploadBorderStyle} ${showRedBorderForESign ? style.redBorder : ''}`}>
-                      <p className={style.uploadTextStyle}>Add Your eSignature</p>
-                      <p className={style.uploadDescriptionText}>
-                        Our paperless automated application submission uses electronic signatures with digital fingerprinting.
-                      </p>
+                    <div className={style.eSignatureOnFileButton}>
+                      <div className={`${style.continue} ${style.eSignatureOnFileButtonPadding}`} onClick={() => setIsShowESignDialog(true)}>
+                        CLICK TO UPDATE
+                      </div>
                     </div>
                   </div>
-                )}
-                <CommonDivider />
-              </div>
-            )}
+                </>
+              ) : (
+                <div className={style.marginTop} onClick={() => setIsShowESignDialog(true)}>
+                  <div className={`${style.uploadBorderStyle} ${showRedBorderForESign ? style.redBorder : ''}`}>
+                    <p className={style.uploadTextStyle}>Add Your eSignature</p>
+                    <p className={style.uploadDescriptionText}>
+                      Our paperless automated application submission uses electronic signatures with digital fingerprinting.
+                    </p>
+                  </div>
+                </div>
+              )}
+              <CommonDivider />
+            </div>
+            {/* )} */}
             <div className={style.marginTop10}>
               {renderPdfContent()}
             </div>

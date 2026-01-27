@@ -327,6 +327,9 @@ const CreateStaffMemberApplication = () => {
       );
       missingKeys = temp;
     }
+    let filterKeys = [`basicDetails.applicant.cellPhone`]
+    let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+    missingKeys = temp;
     if (missingKeys?.length !== 0) {
       // Focus the first missing field
       const firstMissingField = missingKeys[0];

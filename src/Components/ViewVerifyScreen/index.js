@@ -6066,7 +6066,7 @@ const NewActiveApplication = ({
                                         className={`${style.displayInRow} ${style.verticalAlignCenter}`}
                                       >
                                         <div className={`${style.tableDataFontStyleCredReappointment}`}>
-                                          {data?.title}
+                                          {form?.creationType === "NEW" ? data?.reviewerTitle : data?.title}
                                         </div>
                                       </div>
                                       {(data?.formCategory === "Acknowledgement" && form?.forms?.[index]?.esign?.signedDate) && (
@@ -6750,7 +6750,7 @@ const NewActiveApplication = ({
                                       <div className={` ${style.marginTop5} ${style.tableDataStyle}`}>
                                         <div>
                                           <div className={`${style.tableHeaderGridStyleCred1} ${style.backgroundColorStyle} ${style.paddingTopBottom10}`} >
-                                            <div className={`${style.tableDataFontStyleCredReappointment}`}>{data?.title}</div>
+                                            <div className={`${style.tableDataFontStyleCredReappointment}`}>{form?.creationType === "NEW" ? data?.reviewerTitle : data?.title}</div>
                                           </div>
 
                                         </div>
@@ -7554,7 +7554,7 @@ const NewActiveApplication = ({
                                         className={`${style.displayInRow} ${style.verticalAlignCenter}`}
                                       >
                                         <div className={`${style.tableDataFontStyle1}`}>
-                                          {data?.title}
+                                          {form?.creationType === "NEW" ? data?.reviewerTitle : data?.title}
                                         </div>
                                       </div>
 
@@ -8084,7 +8084,7 @@ const NewActiveApplication = ({
                                       <div className={` ${expand?.index === index + 1 ? style.tableHeaderGridStyleFormCred : style.tableHeaderGridStyleCred} ${style.marginTop10}`}>
 
                                         <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-                                          <div className={`${style.tableDataFontStyleCred}`}>{data?.title}</div>
+                                          <div className={`${style.tableDataFontStyleCred}`}>{form?.creationType === "NEW" ? data?.reviewerTitle : data?.title}</div>
                                         </div>
 
                                         {/* woking with credapproval false  */}
@@ -8741,7 +8741,7 @@ const NewActiveApplication = ({
                                       className={`${style.displayInRow} ${style.verticalAlignCenter}`}
                                     >
                                       <div className={`${style.tableDataFontStyle1}`}>
-                                        {data?.title}
+                                        {form?.creationType === "NEW" ? data?.reviewerTitle : data?.title}
                                       </div>
                                       <div
                                         className={`${style.displayInRow} ${style.verticalAlignCenter}`}

@@ -66,6 +66,7 @@ const ESignDialogUser = ({ getIsOpen, tempValue, baseKey, applicationId, basicFo
     }, [eSignImg])
 
     useEffect(() => {
+        contentRef.current?.focus();
         if (contentRef.current && contentRef.current.innerHTML !== eSignType && eSignType !== null) {
             contentRef.current.innerHTML = eSignType;
         }
