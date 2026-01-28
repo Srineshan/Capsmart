@@ -4,6 +4,7 @@ import CrossPink from "../../images/crossPink.png";
 import Pencil from "../../images/pencil.png";
 import SignatureCanvas from 'react-signature-canvas';
 import { POST, PUT, GET } from '../../Screens/dataSaver';
+import EditIcon from '@mui/icons-material/Edit';
 import { ErrorToaster, ErrorToaster2, SuccessToaster } from '../../utils/toaster';
 import style from './index.module.scss'
 import CommonSelectField from '../CommonFields/CommonSelectField';
@@ -183,7 +184,7 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
             <div>
                 <div className={Classes.DIALOG_BODY}>
                     <div className={style.spaceBetween}>
-                        <div className={style.heading}>Adopt Your Electronic Signature</div>
+                        <div className={style.heading}>Addopt Your Electronic Signature</div>
                         <div className={style.displayInRow}>
                             {/* <p className={`${style.dateAndTimeTextStyle} ${style.marginLeft}`}>Mm/Dd/Yyyy</p>
                             <p className={`${style.dateAndTimeTextStyle} ${style.marginLeft}`}>00:00</p> */}
@@ -201,22 +202,27 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
                     </div>
 
                     <p className={`${style.description} ${style.marginTop}`}>CAPManager uses Electronic Signatures for you to sign off on the required forms and documents that are part of this application. Draw or type your signature below to set it up for use:</p>
-                    <div className={`${style.displayInRow} ${style.marginTop}`}>
-                        <div>
-                            <div className={`${style.drawOrTypeTextStyle}`} onClick={() => { setSelectedESignFormat('DRAW') }}> DRAW</div>
-                            <div className={selectedESignFormat === 'DRAW' ? style.drawOrTypeUnderline : ''}></div>
-                        </div>
-                        {!isHideTypeStyle && (
+                    <div className={style.spaceBetween}>
+                        <div className={`${style.displayInRow} ${style.marginTop}`}>
                             <div>
-                                <div className={`${style.drawOrTypeTextStyle} ${style.marginLeft}`} onClick={() => { setSelectedESignFormat('TYPE') }}> TYPE</div>
-                                <div className={`${selectedESignFormat === 'TYPE' ? style.drawOrTypeUnderline : ''} ${style.marginLeft}`}></div>
+                                <div className={`${style.drawOrTypeTextStyle}`} onClick={() => { setSelectedESignFormat('DRAW') }}> DRAW</div>
+                                <div className={selectedESignFormat === 'DRAW' ? style.drawOrTypeUnderline : ''}></div>
                             </div>
-                        )}
-                        {/* <Tooltip title={"Click to Clear Signature"} arrow>
+                            {!isHideTypeStyle && (
+                                <div>
+                                    <div className={`${style.drawOrTypeTextStyle} ${style.marginLeft}`} onClick={() => { setSelectedESignFormat('TYPE') }}> TYPE</div>
+                                    <div className={`${selectedESignFormat === 'TYPE' ? style.drawOrTypeUnderline : ''} ${style.marginLeft}`}></div>
+                                </div>
+                            )}
+                            {/* <Tooltip title={"Click to Clear Signature"} arrow>
                             <div className={style.rightAlign}>
                                 <div className={`${style.saveInProgress}`} onClick={() => { clearSignature() }}>Clear</div>
                             </div>
                         </Tooltip> */}
+                        </div>
+                        {selectedESignFormat === 'DRAW' && (
+                            <div className={`${style.bottomAlign} ${style.cursorPointer}`} onClick={!isShowDrawCanvas ? () => { setIsShowDrawCanvas(true) } : () => { clearSignature() }}><EditIcon /></div>
+                        )}
                     </div>
                     {selectedESignFormat === 'DRAW' ? (
                         <div className={`${style.eSignBox} ${style.marginTop} ${style.cursorPointer}`} onClick={!isShowDrawCanvas ? () => setIsShowDrawCanvas(true) : () => { }}>
@@ -235,6 +241,8 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
                                 <SignatureCanvas
                                     ref={sigCanvas}
                                     penColor='black'
+                                    minWidth={1}
+                                    maxWidth={1.5}
                                     canvasProps={{
                                         // width: 500,
                                         // height: 200,

@@ -132,10 +132,13 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, applicationId, getPreAppl
             const { data: privilege } = await GET(
                 `entity-service/staffPrivilege?department=${applicationData?.basicDetailReferences?.department?.id}${specialtyParam}`
             );
+            const { data: deptPrivilege } = await GET(
+                `entity-service/staffPrivilege?department=${applicationData?.basicDetailReferences?.department?.id}`
+            );
             // const { data: privilege } = await GET(
             //     `entity-service/staffPrivilege`
             // );
-            setStaffPrivilege(privilege);
+            setStaffPrivilege(privilege?.length > 0 ? privilege : deptPrivilege);
         }
     }
 
