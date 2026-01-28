@@ -2,13 +2,14 @@ import React from 'react';
 import { InputGroup, Intent } from '@blueprintjs/core';
 import InputAdornment from '@mui/material/InputAdornment';
 import style from './index.module.scss';
-import { TextField } from '@mui/material';
+import InfoIcon from '@mui/icons-material/Info';
+import { TextField, Tooltip } from '@mui/material';
 
 const CommonPhoneField = ({ onChange, placeholder, type, maxLength, value, error, label, required, warning }) => {
     const warningCheck = type === 'number' ? (value === 0 || value === '') : (value === '' || value === null || value === undefined);
     return (
         <div>
-            <div className={`${style.lableStyle}`}>{label}{required && '*'}</div>
+            <div className={`${style.lableStyle}`}>{label}{required && '*'} <Tooltip title="Required for SMS / Text Messaging" arrow><InfoIcon sx={{ fontSize: 17, cursor: 'pointer' }} /></Tooltip></div>
             <div className={`${style.marginTop}`}>
                 {/* <div className={`${style.lableStyle}`}>+1</div> */}
                 {/* <InputGroup value={value} onChange={onChange}

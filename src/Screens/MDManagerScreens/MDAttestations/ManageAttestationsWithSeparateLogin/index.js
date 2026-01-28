@@ -812,7 +812,7 @@ const ManageAttestationsWithSeparateLogin = () => {
                                         {/* <CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} isOnClickAvailable={false} onClickFunc={() => { }} placeholder={"Search"} /> */}
                                         <Tooltip
                                             title="Click this button to start your Attestation."
-                                            open={(checkedIds?.length > 1 && !showReviewAndAttestDialog) ? true : false}
+                                            open={(checkedIds?.length > 1 && !showReviewAndAttestDialog && !isAttestationPending && !isAttestationCompleted) ? true : false}
                                             placement="top"
                                             arrow
                                             sx={{
