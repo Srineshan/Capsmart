@@ -53,15 +53,23 @@ const ManageAttestationsWithSeparateLogin = () => {
     const [dateTime, setDateTime] = useState(new Date().toISOString());
     const [basicForm, setBasicForm] = useState({})
     let cookie = new Cookie();
-    let userDetails = cookie.get('user');
-    let users = null;
-    if (userDetails) {
-        users = jwt(userDetails);
-    }
+    // Track cookie values in state so React can detect changes
+    const [cookieEntityId, setCookieEntityId] = useState(cookie.get("entityId"));
+    const [cookieUser, setCookieUser] = useState(cookie.get("user"));
+    const [cookieAuthorization, setCookieAuthorization] = useState(cookie.get("authorization"));
+    // Track users in state
+    const [users, setUsers] = useState(() => {
+        const userDetails = cookie.get('user');
+        return userDetails ? jwt(userDetails) : null;
+    });
     const [userData, setUserData] = useState();
-    const [encryptedText, setEncryptedText] = useState(CryptoJS.AES.encrypt(users?.userName + dateTime, publicKey).toString());
+    const [encryptedText, setEncryptedText] = useState(() => {
+        const userDetails = cookie.get('user');
+        const parsedUsers = userDetails ? jwt(userDetails) : null;
+        return CryptoJS.AES.encrypt((parsedUsers?.userName || '') + dateTime, publicKey).toString();
+    });
     const canadaData = sessionStorage.getItem('canadaData') !== 'undefined' ? JSON.parse(sessionStorage.getItem('canadaData')) : {};
-    const [currentDate, setCurrentDate] = useState(format(new Date(), canadaData?.dateFormat || 'dd/MM/yyyy'));
+    const [currentDate, setCurrentDate] = useState(format(new Date(), canadaData?.dateFormat || 'MMM dd, yyyy'));
     const [isSigned, setIsSigned] = useState(false);
     const [isAttestationCompleted, setIsAttestationCompleted] = useState(false);
     const [isAttestationPending, setIsAttestationPending] = useState(false);
@@ -111,6 +119,7 @@ const ManageAttestationsWithSeparateLogin = () => {
     const [totalTableCount, setTotalTableCount] = useState(0);
     const [showReviewAndAttestDialog, setShowReviewAndAttestDialog] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [isInitialLoading, setIsInitialLoading] = useState(true); // Track initial load separately
     const selectedSite = sessionStorage.getItem('selectedSite') || ''
     const entityName = sessionStorage.getItem('title')
     const advancedSearch = useMemo(() => ({
@@ -154,18 +163,74 @@ const ManageAttestationsWithSeparateLogin = () => {
         getGroupList();
     }, []);
 
+    // Sync cookies to state so React can detect changes
+    useEffect(() => {
+        const checkCookies = () => {
+            const newEntityId = cookie.get("entityId");
+            const newUser = cookie.get("user");
+            const newAuthorization = cookie.get("authorization");
+
+            setCookieEntityId(prev => prev !== newEntityId ? newEntityId : prev);
+            setCookieUser(prev => {
+                if (prev !== newUser) {
+                    // Update users when user cookie changes
+                    setUsers(newUser ? jwt(newUser) : null);
+                    return newUser;
+                }
+                return prev;
+            });
+            setCookieAuthorization(prev => prev !== newAuthorization ? newAuthorization : prev);
+        };
+
+        // Check immediately
+        checkCookies();
+
+        // Check periodically to catch cookie changes after login
+        const interval = setInterval(checkCookies, 500);
+
+        return () => clearInterval(interval);
+    }, []);
+
+    useEffect(() => {
+        if (cookieEntityId) {
+            getLogo(cookieEntityId)
+        }
+    }, [cookieEntityId]);
+
     useEffect(() => {
         getAttestationMetaList();
-    }, [cookie.get("entityId"), cookie.get("user")]);
+    }, [cookieEntityId, cookieUser, cookieAuthorization]);
+
+    // Track previous selectedOption to detect tab changes
+    const prevSelectedOptionRef = useRef(selectedOption);
 
     useEffect(() => {
         const controller = new AbortController();
         const signal = controller.signal;
 
+        // Detect if tab changed
+        const isTabChange = prevSelectedOptionRef.current !== selectedOption;
+
+        // Check if it's a search/filter operation (not a tab change or initial load)
+        const isSearchOrFilter = searchTerm || selectedCombinations.length > 0 || mdId || mdTitle || selectedGroups.length > 0 || selectedAuthor || from || to;
+        const isFirstLoad = !attestationList || attestationList.length === 0;
+
+        // Show loading screen on first load or tab change (not during search/filter)
+        if (isTabChange || (isFirstLoad && !isSearchOrFilter)) {
+            setIsInitialLoading(true);
+            // Clear previous tab's data when switching tabs
+            if (isTabChange) {
+                setAttestationList([]);
+            }
+        }
+
+        // Update ref for next comparison
+        prevSelectedOptionRef.current = selectedOption;
+
         getAttestationList(signal);
 
         return () => controller.abort();
-    }, [selectedOption, advancedSearch, limit, page, cookie.get("entityId"), cookie.get("user")]);
+    }, [selectedOption, advancedSearch, limit, page, cookieEntityId, cookieUser, cookieAuthorization]);
 
     useEffect(() => {
         if (!isLoggedIn()) return;
@@ -174,21 +239,30 @@ const ManageAttestationsWithSeparateLogin = () => {
             const currentEntity = cookie.get("entityId");
             if (currentEntity !== entityId) {
                 cookie.set("entityId", entityId, { path: "/" });
+                setCookieEntityId(entityId);
             }
         }, 500);
 
         return () => clearTimeout(timeout);
-    }, [cookie.get("entityId"), entityId])
+    }, [cookieEntityId, entityId])
 
     // useEffect(() => {
     //     setIsAttestationPending(attestationMeta?.pending_md?.totalCount > 0 ? true : false)
     // }, []);
 
     useEffect(() => {
-        if (attestationMeta) {
-            setIsAttestationCompleted(attestationMeta?.pending_md?.totalCount === 0 ? true : false)
+        // Only set completed if attestationMeta is fully loaded and has pending_md data
+        // Check that pending_md exists and totalCount is explicitly 0 (not undefined/null)
+        // Also check that we're not loading (both isLoading and isInitialLoading) to prevent showing dialog during data fetch
+        if (!isLoading && !isInitialLoading && attestationMeta && attestationMeta?.pending_md !== undefined && attestationMeta?.pending_md !== null) {
+            const pendingCount = attestationMeta?.pending_md?.totalCount;
+            // Only set to completed if totalCount is explicitly 0 (not undefined/null)
+            setIsAttestationCompleted(pendingCount === 0);
+        } else {
+            // If data is not fully loaded yet or still loading, don't show completed dialog
+            setIsAttestationCompleted(false);
         }
-    }, [attestationMeta]);
+    }, [attestationMeta, isLoading, isInitialLoading]);
 
     useEffect(() => {
         getApplicantProfile();
@@ -307,6 +381,8 @@ const ManageAttestationsWithSeparateLogin = () => {
 
     const getAttestationMetaList = async () => {
         setIsLoading(true)
+        // Don't set isInitialLoading here - let getAttestationList control it
+        // This prevents blocking table display when meta loads before list data
         const response = await GET(
             `medical-directive-service/attestation/byUser/meta`
         );
@@ -316,16 +392,45 @@ const ManageAttestationsWithSeparateLogin = () => {
     }
 
     const getAttestationList = async (signal) => {
-        setIsLoading(true)
-        const response = await POST(
-            `medical-directive-service/attestation/byUser?offset=${page - 1}&limit=${limit}&isPaginationRequired=${isPaginationRequired}&userId=${users?.id}&tab=${selectedOption}`, advancedSearch, { signal }
-        );
-        console.log(response.data);
-        setAttestationList(response?.data?.medicalDirectives)
-        setTotalTableCount(response?.data?.numberOfElements)
-        setSearchCount(response?.data?.numberOfElements)
-        setIsLoading(false)
+        // Only show full screen loading on initial load, not during search/filter operations
+        const isSearchOrFilter = searchTerm || selectedCombinations.length > 0 || mdId || mdTitle || selectedGroups.length > 0 || selectedAuthor || from || to;
+
+        if (!isSearchOrFilter) {
+            setIsLoading(true)
+        }
+
+        try {
+            const response = await POST(
+                `medical-directive-service/attestation/byUser?offset=${page - 1}&limit=${limit}&isPaginationRequired=${isPaginationRequired}&userId=${users?.id}&tab=${selectedOption}`, advancedSearch, { signal }
+            );
+            console.log(response.data);
+            setAttestationList(response?.data?.medicalDirectives)
+            setTotalTableCount(response?.data?.numberOfElements)
+            setSearchCount(response?.data?.numberOfElements)
+        } catch (error) {
+            if (error.name !== 'AbortError') {
+                console.error('Error fetching attestation list:', error);
+            }
+        } finally {
+            setIsLoading(false)
+            setIsInitialLoading(false)
+        }
     }
+
+    const getLogo = async (entityId) => {
+        const { data: data } = await GET(`entity-service/entity/${entityId}`);
+        sessionStorage.setItem("entityTypeId", data?.entityType?.id);
+        sessionStorage.setItem("entityTypeValue", data?.entityType?.type);
+        sessionStorage.setItem("industry", data?.customerType);
+        sessionStorage.setItem("logo", data?.logo?.file?.fileURL);
+        sessionStorage.setItem("thumbnail", data?.logoThumbnail?.file?.fileURL);
+        sessionStorage.setItem("title", data?.entityName?.entityName);
+        sessionStorage.setItem(
+            "isEmployeeContractNeeded",
+            data?.isEmployeeContractIncluded
+        );
+        sessionStorage.setItem("isMultiSiteEntity", data?.multiSiteEntity);
+    };
 
     const getSelectedPage = (value) => {
         setPage(value);
@@ -607,7 +712,7 @@ const ManageAttestationsWithSeparateLogin = () => {
     console.log(isLoggedIn(), 'routeCheck')
     return isLoggedIn() ? (
         <div>
-            {isLoading ? (
+            {isInitialLoading ? (
                 <LoadingScreen />
                 // <div
                 //     className={`${style.verticalAlignCenter} ${style.justifyCenter} ${style.loadingOverlay}`}
