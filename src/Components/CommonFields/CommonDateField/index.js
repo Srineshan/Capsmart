@@ -56,6 +56,7 @@ const CommonDateField = ({ onChange, value, InputProps, onOpen, onClose, open, r
                         >
                             <DesktopDatePicker
                                 inputFormat="MMM dd, yyyy"
+                                // mask="___ __, ____"
                                 value={value}
                                 onChange={onChange}
                                 InputProps={InputProps}

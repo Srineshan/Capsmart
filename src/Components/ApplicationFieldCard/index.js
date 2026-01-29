@@ -2678,7 +2678,7 @@ const ApplicationFieldCard = ({
                         fieldData.placeHolder !== null
                           ? fieldData.placeHolder
                           : fieldData.label !== null
-                            ? `Enter ${fieldData.label}`
+                            ? `Enter ${fieldData.label} (e.g. ${format(new Date(), 'MMM dd, yyyy')})`
                             : null,
                       // readOnly: true,
                     }}
