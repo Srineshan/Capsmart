@@ -33,7 +33,7 @@ const ManageMDAttest = () => {
     const [basicForm, setBasicForm] = useState({})
     // const [decryptedText, setDecryptedText] = useState(CryptoJS.AES.decrypt(encryptedText, publicKey).toString(CryptoJS.enc.Utf8));
     const canadaData = sessionStorage.getItem('canadaData') !== 'undefined' ? JSON.parse(sessionStorage.getItem('canadaData')) : {};
-    const [currentDate, setCurrentDate] = useState(format(new Date(), canadaData?.dateFormat || 'dd/MM/yyyy'));
+    const [currentDate, setCurrentDate] = useState(format(new Date(), canadaData?.dateFormat || 'MMM dd, yyyy'));
     const [isSigned, setIsSigned] = useState(false);
     const [isScrolledToBottom, setIsScrolledToBottom] = useState(false);
     const [medicalDirectivesAttestation, setMedicalDirectivesAttestation] = useState(false);
@@ -59,7 +59,7 @@ const ManageMDAttest = () => {
     // }, [basicForm, step])
 
     useEffect(() => {
-        setCurrentDate(format(new Date(), canadaData?.dateFormat || 'dd/MM/yyyy'))
+        setCurrentDate(format(new Date(), canadaData?.dateFormat || 'MMM dd, yyyy'))
     }, [canadaData?.dateFormat])
 
     useEffect(() => {
@@ -149,7 +149,7 @@ const ManageMDAttest = () => {
             esign: {
                 esign: isSigned ? encryptedText : '',
                 name: isSigned ? users?.userName : '',
-                signedDate: isSigned ? format(new Date(), canadaData?.dateFormat || 'dd/MM/yyyy') : ''
+                signedDate: isSigned ? format(new Date(), canadaData?.dateFormat || 'MMM dd, yyyy') : ''
             }
         }
         await POST(`medical-directive-service/medicalDirectives/${medicalDirectivesId}/attest`, temp)
