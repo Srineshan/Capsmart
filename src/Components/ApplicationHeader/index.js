@@ -43,11 +43,11 @@ const ApplicationHeader = ({ title, close, closeClick, handleNavigate, isShowPri
         <div className={`${style.headerCard}`}>
             <div className={`${style.spaceBetween} ${style.verticalAlignCenter}`}>
                 {logo !== null ? (
-                    <img src={logo} alt="Hospital Logo" className={`${style.logo}`} />
+                    <img src={logo} alt="Hospital Logo" className={`${style.logo} ${style.left}`} />
                 ) : (<div></div>)
                 }
                 <div className={`${style.titleText} ${style.verticalAlignCenter}`}>{title}</div>
-                <div className={style.displayInRow}>
+                <div className={`${style.displayInRow}  ${style.right} ${style.rightAlign}`}>
                     {isShowPrint && (
                         <div
                             className={` ${style.alignCenter} ${style.cursorPointer}`}

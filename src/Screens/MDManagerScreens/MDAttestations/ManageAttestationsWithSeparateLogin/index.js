@@ -617,7 +617,7 @@ const ManageAttestationsWithSeparateLogin = () => {
             ) : (
                 <Fragment>
                     {/* <Navbar /> */}
-                    <ApplicationHeader title={``} close={true} closeClick={handleLogoutCheck} isNotLogout={true}
+                    <ApplicationHeader title={`Medical Directive Attestation For ${userData?.name?.firstName !== undefined ? userData?.name?.firstName : ''} ${userData?.name?.lastName !== undefined ? userData?.name?.lastName : ''}`} close={true} closeClick={handleLogoutCheck} isNotLogout={true}
                         closeIcon={
                             <div className={style.cursorPointer}>
                                 <Tooltip title={'Click to Exit'} arrow >
