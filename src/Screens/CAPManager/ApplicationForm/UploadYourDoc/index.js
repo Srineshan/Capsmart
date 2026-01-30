@@ -257,12 +257,41 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
 
   const changeHandler = async (event) => {
     if (event?.length > 0) {
+      const existingFileNames = (tempValue?.table || []).map((row) => row?.fileUploaded).filter(Boolean);
+
+      const duplicateNames = [];
+      const newFiles = [];
+      event?.forEach((file) => {
+        if (existingFileNames.includes(file?.name)) {
+          duplicateNames.push(file?.name);
+        } else {
+          newFiles.push(file);
+        }
+      });
+
+      if (newFiles.length === 0) {
+        ErrorToaster2(
+          duplicateNames.length === 1
+            ? 'This document is already uploaded.'
+            : 'One or more of the selected documents are already uploaded.'
+        );
+        return;
+      }
+
+      if (duplicateNames.length > 0) {
+        ErrorToaster2(
+          duplicateNames.length === 1
+            ? `"${duplicateNames[0]}" is already uploaded and has been skipped.`
+            : `${duplicateNames.length} duplicate document(s) have been skipped.`
+        );
+      }
+
       setIsLoading(true);
-      setFiles(event);
+      setFiles(newFiles);
       const table = tempValue.table ? [...tempValue.table] : [];
       const formData = new FormData();
       const fileNameArray = [];
-      event?.forEach((file) => {
+      newFiles.forEach((file) => {
         fileNameArray.push({ fileName: file?.name });
         formData.append('documents', file);
       });
@@ -284,8 +313,8 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
             documentType: documentLabel,
             fileURL: uploadedDoc?.file?.fileURL,
             fileType: uploadedDoc?.file?.fileType,
-            fileUploaded: event[index]?.name,
-            fileSize: `${(event[index]?.size / (1024 * 1024)).toFixed(2)} Mb`,
+            fileUploaded: newFiles[index]?.name,
+            fileSize: `${(newFiles[index]?.size / (1024 * 1024)).toFixed(2)} Mb`,
             requirement: documentLabel ? getIsDocRequired(documentLabel) : '',
             valid: uploadedDoc?.valid,
             verified: uploadedDoc?.verified,
