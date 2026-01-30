@@ -271,7 +271,8 @@ const WorkExperience = ({ basicForm, setBasicForm, applicationId, getPreApplicat
                 data: basicForm?.forms?.[formIndex]?.data,
                 unFilledFields: basicForm?.forms?.[formIndex]?.unFilledFields,
                 acknowledged: true,
-                dataStatus: basicForm?.forms?.[formIndex]?.dataStatus
+                dataStatus: 'COMPLETED'
+                // dataStatus: basicForm?.forms?.[formIndex]?.dataStatus
             }
             await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
                 .then(response => {
@@ -329,7 +330,8 @@ const WorkExperience = ({ basicForm, setBasicForm, applicationId, getPreApplicat
                         <div className={`${style.saveInProgress} ${style.marginTop10} ${isDataAvailable ? style.disabledButton : ''} `} onClick={isDataAvailable ? () => { } : () => handleContinue(true)} > SKIP FOR NOW </div>
                         <div className={style.twoColForButton}>
                             <div className={`${style.continue} ${style.marginTop10}`} onClick={handleBackClick}>BACK</div>
-                            <div className={`${style.continue} ${style.marginTop10} ${isDataAvailable ? '' : style.disabledButton}`} onClick={isDataAvailable ? () => handleContinue() : () => { }}>CONTINUE</div>
+                            {/* <div className={`${style.continue} ${style.marginTop10} ${isDataAvailable ? '' : style.disabledButton}`} onClick={isDataAvailable ? () => handleContinue() : () => { }}>CONTINUE</div> */}
+                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue()}>CONTINUE</div>
                         </div>
                     </div>
                     <div className={style.marginTop}>

@@ -52,7 +52,7 @@ const PharmacySignature = ({
   const eSignImg = getValueByPath(basicForm, `forms[${formUploadIndex}].data.setUpYourSignature.file`);
   const eSignTypeContent = getValueByPath(basicForm, `forms[${formUploadIndex}].data.setUpYourSignature.type.text`);
   const eSignTypeContentStyle = getValueByPath(basicForm, `forms[${formUploadIndex}].data.setUpYourSignature.type.style`);
-  const showRedBorderForESign = ((!eSignTypeContent || !eSignTypeContentStyle) && !eSignImg);
+  const showRedBorderForESign = (!eSignImg);
   const [entityLogo, setEntityLogo] = useState(sessionStorage.getItem('logo') || null)
   console.log(initialArray)
   const publicKey = "-----BEGIN PUBLIC KEY-----MIGeMA0GCSqGSIb3DQEBAQUAA4GMADCBiAKBgHA5SDu30/8uQAqqkQE0NuY4ePBptMGufG6AWnC/88YVLXi4thh7M8VU6kElVJkfXL5DwlfVnwPb08+PK1EcaOWWtp2gdQitkohjZLB9zVE+0OtRrzSc33wItf7Iwisi5dHPggHvfOp5fr+QYWFMa/kKYl3SgNo8fryeLbKKalmdAgMBAAE=-----END PUBLIC KEY-----";
@@ -350,8 +350,7 @@ const PharmacySignature = ({
             {/* {!eSignImg && ( */}
             <div>
 
-              {(basicForm?.forms?.[formIndex]?.data !== null && !showRedBorderForESign) ||
-                applicantProfile?.signature?.updated ? (
+              {(basicForm?.forms?.[formIndex]?.data !== null && !showRedBorderForESign) ? (
                 <>
                   <div className={`${style.eSignatureOnFileCard} ${style.marginTop10}`}>
                     <div className={style.eSignatureOnFileTitle}>Establish your eSignature</div>
@@ -399,7 +398,7 @@ const PharmacySignature = ({
             <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
             <div className={style.twoColForButton}>
               <div className={`${style.continue} ${style.marginTop10}`} onClick={handleBackClick}>BACK</div>
-              <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleSubmitApplicationReq()} >CONTINUE</div>
+              <div className={`${style.continue} ${style.marginTop10} ${showRedBorderForESign ? style.disabledButton : ''}`} onClick={showRedBorderForESign ? () => { } : () => handleSubmitApplicationReq()} >CONTINUE</div>
             </div>
           </div>
         </div>

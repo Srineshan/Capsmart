@@ -115,7 +115,9 @@ const ApplicationForm = () => {
 
     const getCountryList = async () => {
         const { data: countryData } = await GET(`entity-service/countryMaster`);
-        sessionStorage.setItem('canadaData', JSON.stringify(countryData?.filter(data => data?.abbreviation === 'CN')[0]));
+        if (countryData?.filter(data => data?.abbreviation === 'CN')?.[0]) {
+            sessionStorage.setItem('canadaData', JSON.stringify(countryData?.filter(data => data?.abbreviation === 'CN')?.[0]));
+        }
     };
 
     const getPreApplication = async () => {

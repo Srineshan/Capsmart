@@ -115,7 +115,7 @@ const ApplicationFieldCard = ({
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const toDelete = useRef(null);;
   const { setValue, value } = useComboboxControls({ initialValue: "" });
-  const canadaData = JSON.parse(sessionStorage.getItem("canadaData")) || {};
+  const canadaData = (sessionStorage.getItem("canadaData") && sessionStorage.getItem("canadaData") !== "undefined") ? JSON.parse(sessionStorage.getItem("canadaData")) : {};
   let user = JSON.parse(sessionStorage.getItem("user"));
   const hometimeoutRef = useRef(null);
   const mailingTimeoutRef = useRef(null);

@@ -547,8 +547,7 @@ const HistoricalData = () => {
 
   const getPrivilegeCategories = async () => {
     const { data: types } = await GET(`entity-service/privilege?applicantTypeIds=${applicantType}`);
-    const filteredTypes = types.filter(item => item.category !== "Locum Tenens");
-    setPrivilegeCategoryList(filteredTypes);
+    setPrivilegeCategoryList(types);
   };
 
   const getDepartments = async () => {

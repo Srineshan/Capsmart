@@ -163,7 +163,10 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
     const handleSubmitApplicationReq = async (data) => {
         let temp = {
             schemaId: basicForm?.forms?.[formIndex]?.schemaId,
-            data: data
+            data: data,
+            unFilledFields: basicForm?.forms?.[formIndex]?.unFilledFields,
+            acknowledged: basicForm?.forms?.[formIndex]?.acknowledged,
+            dataStatus: basicForm?.forms?.[formIndex]?.dataStatus
         }
         console.log(temp, data)
         await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)

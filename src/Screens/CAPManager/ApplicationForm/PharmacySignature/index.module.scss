@@ -373,3 +373,8 @@
     padding: 20px;
     cursor: pointer;
 }
+
+.disabledButton {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
