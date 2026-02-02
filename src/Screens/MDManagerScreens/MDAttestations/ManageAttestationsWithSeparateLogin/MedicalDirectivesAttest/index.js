@@ -239,7 +239,7 @@ const ManageMDAttest = () => {
                                                     showData={isSigned}
                                                     showDatais={true}
                                                     removePadding={true}
-                                                    alternateSignature={users?.userName}
+                                                    alternateSignature={userData?.esignature?.type?.text || users?.userName}
                                                     alternateDrawSignature={userData?.esignature}
                                                 />
                                             </div>
@@ -271,7 +271,7 @@ const ManageMDAttest = () => {
                                                 showData={isSigned}
                                                 showDatais={true}
                                                 removePadding={true}
-                                                alternateSignature={users?.userName}
+                                                alternateSignature={userData?.esignature?.type?.text || users?.userName}
                                                 alternateDrawSignature={userData?.esignature}
                                             />
                                         </div>

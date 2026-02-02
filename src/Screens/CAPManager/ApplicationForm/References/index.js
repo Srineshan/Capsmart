@@ -44,9 +44,13 @@ const References = ({ basicForm, setBasicForm, applicationId, getPreApplication 
       } else {
         setNavigateBackURL(`/applicationForm/${applicationId}/${basicForm?.forms[0]?.formCategory}/${btoa(basicForm?.forms[0]?.schemaCategory)}`)
       }
-      setIsAddMore(basicForm?.forms?.[formIndex]?.data?.references?.length >= 3 ? false : true)
     }
   }, [basicForm, formIndex])
+
+  useEffect(() => {
+    if (basicForm)
+      setIsAddMore(basicForm?.forms?.[formIndex]?.data?.references?.length >= 3 ? false : true)
+  }, [formIndex])
 
   useEffect(() => {
     setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === atob(step)))
@@ -254,6 +258,7 @@ const References = ({ basicForm, setBasicForm, applicationId, getPreApplication 
     await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
       .then(response => {
         console.log(response)
+        setIsAddMore(data?.forms?.[formIndex]?.data?.references?.length >= 3 ? false : true)
         SuccessToaster("Application Updated Successfully");
         getPreApplication();
       })

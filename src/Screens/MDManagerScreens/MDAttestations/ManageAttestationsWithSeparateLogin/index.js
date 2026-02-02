@@ -322,6 +322,7 @@ const ManageAttestationsWithSeparateLogin = () => {
     }
 
     const updateFunc = () => {
+        sessionStorage.setItem('attestationESignConfirmed', 'done')
         setIsShowESignDialog(true);
     }
 
@@ -507,6 +508,7 @@ const ManageAttestationsWithSeparateLogin = () => {
             checked={checkedIds?.length === attestationList?.length}
             onChange={handleSelectAllClick}
         />,
+        "",
         "Title",
         "MD ID",
         "Type",
@@ -539,6 +541,7 @@ const ManageAttestationsWithSeparateLogin = () => {
     let signImg = [];
     let checkbox = [];
     let no = [];
+    let dotTooltipValues = [];
 
     const getAttestationValues = () => {
         title = [];
@@ -550,7 +553,8 @@ const ManageAttestationsWithSeparateLogin = () => {
         checkbox = [];
         attestedDate = [];
         no = [];
-
+        dot = [];
+        dotTooltipValues = [];
         attestationList?.map((data, index) => {
             checkbox.push(
                 <CommonCheckBox
@@ -561,6 +565,8 @@ const ManageAttestationsWithSeparateLogin = () => {
                 />
             );
             no.push(`${index + 1}.`);
+            dot.push(data?.dueDate < new Date() ? "red" : "grey");
+            dotTooltipValues.push(data?.dueDate < new Date() ? "Past Due" : "Not Yet Started")
             title.push(data?.medicalDirective?.title);
             id.push(data?.medicalDirective?.mdID);
             type.push(data?.medicalDirective?.revisionStatus === "NA" ? 'New' : "Revised");
@@ -572,7 +578,7 @@ const ManageAttestationsWithSeparateLogin = () => {
 
         return selectedOption === "pending_md" ? [
             { type: "checkbox", value: checkbox },
-            // { type: "dot", value: title },
+            { type: "dot", value: dot, tooltipValue: dotTooltipValues },
             { type: "text", value: title },
             { type: "text", value: id },
             { type: "text", value: type },
@@ -914,35 +920,36 @@ const ManageAttestationsWithSeparateLogin = () => {
                                                 ),
                                             }}
                                         />
-                                        {/* <CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} isOnClickAvailable={false} onClickFunc={() => { }} placeholder={"Search"} /> */}
-                                        <Tooltip
-                                            title="Click this button to start your Attestation."
-                                            open={(checkedIds?.length > 1 && !showReviewAndAttestDialog && !isAttestationPending && !isAttestationCompleted) ? true : false}
-                                            placement="top"
-                                            arrow
-                                            sx={{
-                                                '& .MuiTooltip-tooltip': {
-                                                    backgroundColor: '#1976d2', // your color
-                                                    color: '#fff',
-                                                    fontSize: '0.875rem',
-                                                },
-                                                '& .MuiTooltip-arrow': {
-                                                    color: '#1976d2',
-                                                },
-                                            }}
-                                        >
-                                            <span>
-                                                <button
-                                                    className={`${style.borderNone} ${style.backgroundBlue} ${style.borderRadius5} ${style.cursorPointer} ${checkedIds?.length === 0 ? `${style.grayscale} ${style.disabled}` : ''} ${style.marginLeft}`}
-                                                    onClick={checkedIds?.length === 0 ? () => { } : () => setShowReviewAndAttestDialog(true)} // Open dialog on button click
-                                                >
-                                                    <div className={` ${style.addNewButton} ${style.textColorWhite}`}>
-                                                        <img src={WhiteSign} alt="" className={style.whiteSignImgStyle} onClick={() => { }} />
-                                                        <span>Review & Attest</span>
-                                                    </div>
-                                                </button>
-                                            </span>
-                                        </Tooltip>
+                                        {selectedOption === "pending_md" && (
+                                            <Tooltip
+                                                title="Click this button to start your Attestation."
+                                                open={(checkedIds?.length > 1 && !showReviewAndAttestDialog && !isAttestationPending && !isAttestationCompleted) ? true : false}
+                                                placement="top"
+                                                arrow
+                                                sx={{
+                                                    '& .MuiTooltip-tooltip': {
+                                                        backgroundColor: '#1976d2', // your color
+                                                        color: '#fff',
+                                                        fontSize: '0.875rem',
+                                                    },
+                                                    '& .MuiTooltip-arrow': {
+                                                        color: '#1976d2',
+                                                    },
+                                                }}
+                                            >
+                                                <span>
+                                                    <button
+                                                        className={`${style.borderNone} ${style.backgroundBlue} ${style.borderRadius5} ${style.cursorPointer} ${checkedIds?.length === 0 ? `${style.grayscale} ${style.disabled}` : ''} ${style.marginLeft}`}
+                                                        onClick={checkedIds?.length === 0 ? () => { } : () => setShowReviewAndAttestDialog(true)} // Open dialog on button click
+                                                    >
+                                                        <div className={` ${style.addNewButton} ${style.textColorWhite}`}>
+                                                            <img src={WhiteSign} alt="" className={style.whiteSignImgStyle} onClick={() => { }} />
+                                                            <span>Review & Attest</span>
+                                                        </div>
+                                                    </button>
+                                                </span>
+                                            </Tooltip>
+                                        )}
                                     </div>
                                 </div>
                                 <div className={`${style.bigCardStyle}`}>
@@ -990,7 +997,7 @@ const ManageAttestationsWithSeparateLogin = () => {
                                                     showData={isSigned}
                                                     showDatais={true}
                                                     removePadding={true}
-                                                    alternateSignature={users?.userName}
+                                                    alternateSignature={userData?.esignature?.type?.text || users?.userName}
                                                     alternateDrawSignature={userData?.esignature}
                                                 />
                                             </div>

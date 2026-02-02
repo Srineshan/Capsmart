@@ -153,6 +153,7 @@ const ESignDialogUser = ({ getIsOpen, tempValue, baseKey, applicationId, basicFo
             try {
                 const response = await PUT(`user-management-service/user/${users?.id}/updateESignature`, formData);
                 SuccessToaster('File Uploaded Successfully');
+                sessionStorage.setItem('attestationESignConfirmed', 'done')
                 setIsContinue(true);
                 getIsOpen(false)
                 console.log(response?.data);
@@ -197,11 +198,12 @@ const ESignDialogUser = ({ getIsOpen, tempValue, baseKey, applicationId, basicFo
         await PUT(`user-management-service/user/${users?.id}/updateESignature`, formData)
             .then(response => {
                 console.log(response)
+                sessionStorage.setItem('attestationESignConfirmed', 'done')
+                setIsContinue(true);
+                getIsOpen(false)
                 setBasicForm(response?.data)
                 // getPreApplication()
                 SuccessToaster("Application Updated Successfully");
-                setIsContinue(true);
-                getIsOpen(false)
             })
             .catch((error) => {
                 console.log(error)

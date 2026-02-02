@@ -36,8 +36,8 @@ const AttestationCompletedDialog = ({ getIsOpen }) => {
                     </div>
                     <p className={`${style.description} ${style.marginTop}`}>You have reviewed and attested to all assigned medical directives. No further action is required at this time.</p>
                     <div className={`${style.justifyCenter} ${style.displayInRow} ${style.marginTop}`}>
-                        {/* <Tooltip arrow title={"Click to go back"}>
-                            <div className={`${style.saveInProgress}`} onClick={() => { getIsOpen(false); }}>Go To Attestor Workspace</div></Tooltip> */}
+                        <Tooltip arrow title={"Click to go back"}>
+                            <div className={`${style.saveInProgress}`} onClick={() => { getIsOpen(false); }}>Go To Attestor Workspace</div></Tooltip>
                         <Tooltip title="Click to Confirm and Logout" arrow>
                             <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { handleLogout(); }}>LOGOUT</div></Tooltip>
                     </div>

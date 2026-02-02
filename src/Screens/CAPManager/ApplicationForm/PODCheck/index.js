@@ -28,7 +28,6 @@ const PODCheck = ({ basicForm, setBasicForm }) => {
   const { applicationId, section, step } = useParams();
   // const id = sessionStorage.getItem('applicationId');
   useEffect(() => {
-    sessionStorage.setItem('fromSummary', false);
     getPreApplication();
   }, [])
 
@@ -48,10 +47,12 @@ const PODCheck = ({ basicForm, setBasicForm }) => {
   }
 
   const handleContinue = () => {
+    sessionStorage.setItem('fromSummary', false);
     navigate(`/applicationForm/${applicationId}/${basicForm?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[0]?.formCategory}/${btoa(basicForm?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[0]?.schemaCategory)}`);
   }
 
   const handleBack = () => {
+    sessionStorage.setItem('fromSummary', false);
     navigate(`/applicationForm/${applicationId}/${basicForm?.forms[basicForm?.forms?.filter(data => data?.formCategory === 'Form' || data?.formCategory === 'Disclosure')?.length - 1]?.formCategory}/${btoa(basicForm?.forms[basicForm?.forms?.filter(data => data?.formCategory === 'Form' || data?.formCategory === 'Disclosure')?.length - 1]?.schemaCategory)}`);
   }
 

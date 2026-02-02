@@ -65,10 +65,10 @@
     position: fixed;
     right: 80px;
     left: calc(75% - 77px);
-    bottom: 0;
+    bottom: 20px;
     z-index: 10;
     padding: 20px 20px 20px 20px;
-    background: $secondarycolor 0% 0% no-repeat padding-box;
+    background: #FFFFFF 0% 0% no-repeat padding-box;
 }
 
 @media (max-width: 1240px) {

@@ -47,10 +47,8 @@ const AcknowledgementCheck = ({ basicForm, setBasicForm, applicationId }) => {
     const docLabel = (doc) => doc?.document?.shortName || doc?.document?.name || '';
     const normalizeKey = (shortName) => shortName.trim().toLowerCase().replace(/\s+/g, "_");
     const mandatoryDataMissing = basicForm?.forms?.some(item => item.dataStatus === "SKIPPED_MANDATORY_FIELD" || item.dataStatus === "PENDING")
-    useEffect(() => {
-        // getPreApplication();
-        sessionStorage.setItem('fromSummary', false)
-    }, [])
+    // fromSummary: do not clear on mount (same as PODCheck) so Edit → form → Continue returns here correctly.
+    // Cleared by form step when user clicks Continue (before navigate(-1)).
 
     useEffect(() => {
         if (!basicForm) return;
