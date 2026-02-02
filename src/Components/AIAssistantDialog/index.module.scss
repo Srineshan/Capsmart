@@ -17,7 +17,11 @@
 }
 
 .whiteBackground {
-    background: transparent linear-gradient(180deg, #D3D0F6 0%, #EEECFB 11%, #FCFCFE 22%, #FFFFFF 100%) 0% 0% no-repeat padding-box;
+    background: transparent linear-gradient(180deg,
+            #E3ECEC 0%,
+            #EDF3F3 11%,
+            #F7FAFA 22%,
+            #FFFFFF 100%) 0% 0% no-repeat padding-box;
     box-shadow: 0px 5px 50px #52575D4D;
     border-radius: 20px;
     padding: 20px;

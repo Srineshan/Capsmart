@@ -97,19 +97,19 @@ const FileDisplayDialog = ({ getIsOpen, file }) => {
   };
 
 
-const handleDownload = (url, fileName) => {
-  if (!url) {
-    console.error("No URL provided for download");
-    return;
-  }
+  const handleDownload = (url, fileName) => {
+    if (!url) {
+      console.error("No URL provided for download");
+      return;
+    }
 
-  if (!fileName || fileName.trim() === "") {
-    console.error("Invalid file name for download");
-    return;
-  }
+    if (!fileName || fileName.trim() === "") {
+      console.error("Invalid file name for download");
+      return;
+    }
 
-  downloadPDF(url, fileName);
-};
+    downloadPDF(url, fileName);
+  };
 
 
 
@@ -193,7 +193,7 @@ const handleDownload = (url, fileName) => {
                       color: "#06617A",
                     }}
                     className={style.cursorPointer}
-                    onClick={() => handleDownload(pdfUrl, file?.documentType || file?.title)}
+                    onClick={() => handleDownload(pdfUrl, file?.documentType || file?.title || file?.fileName)}
                   />
                 </Tooltip>
                 {!isExpanded ? (

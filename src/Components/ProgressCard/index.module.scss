@@ -153,10 +153,11 @@
     background-color: $statusgrey;
     margin-top: -3px;
     border: 1px solid var(--primary-color);
+    cursor: pointer;
 }
 
 .disabled {
-    cursor: not-allowed;
+    cursor: not-allowed !important;
 }
 
 .cursorPointer {

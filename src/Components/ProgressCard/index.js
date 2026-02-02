@@ -71,7 +71,7 @@ const ProgressCard = ({ dataType, title, timeNumber, timeText, progressStyle, ba
     useEffect(() => {
         const key = applicationId ? `totalTime_${applicationId}` : 'totalTime';
         const savedTime = localStorage.getItem(key);
-        
+
         // Only check completionDuration if localStorage doesn't have the value
         // completionDuration.value is in minutes, convert to milliseconds
         if (savedTime === null && basicForm?.completionDuration?.value) {
@@ -614,16 +614,40 @@ const ProgressCard = ({ dataType, title, timeNumber, timeText, progressStyle, ba
                             //     }
                             // }
 
+                            // Check if current item is clickable
+                            const isCurrentClickable = data?.acknowledged || data?.dataStatus !== "PENDING";
+
+                            // Check if any future item (after current index) has dataStatus !== "PENDING"
+                            const hasFutureNonPending = basicForm?.forms?.slice(index + 1)?.some(
+                                (futureData) => futureData?.dataStatus !== "PENDING"
+                            ) || false;
+
+                            const isClickable = isCurrentClickable || hasFutureNonPending;
+
                             const handleClick = () => {
-                                if (data?.acknowledged || data?.dataStatus !== "PENDING") {
+                                if (isClickable) {
                                     navigate(`/applicationForm/${applicationId}/${data?.formCategory}/${btoa(data?.schemaCategory)}`);
                                 }
                             };
 
+                            // Determine className based on dataStatus and clickability
+                            let dotClassName = style.disabledDotStyle;
+                            if (data?.dataStatus === "COMPLETED") {
+                                dotClassName = style.dotStyle;
+                            } else if (data?.dataStatus === "SKIPPED_MANDATORY_FIELD") {
+                                dotClassName = style.reddotStyle;
+                            } else if (data?.dataStatus === "SKIPPED_NON_MANDATORY_FIELD") {
+                                dotClassName = style.yellowdotStyle;
+                            } else if (!isClickable) {
+                                dotClassName = `${style.disabledDotStyle} ${style.disabled}`;
+                            } else {
+                                dotClassName = style.disabledDotStyle;
+                            }
+
                             return (
                                 <Tooltip title={data?.title} arrow key={index}>
                                     <div
-                                        className={data?.dataStatus === "COMPLETED" ? style.dotStyle : data?.dataStatus === "SKIPPED_MANDATORY_FIELD" ? style.reddotStyle : data?.dataStatus === "SKIPPED_NON_MANDATORY_FIELD" ? style.yellowdotStyle : !data?.acknowledged ? `${style.disabledDotStyle} ${style.disabled}` : style.disabledDotStyle}
+                                        className={dotClassName}
                                         onClick={handleClick}
                                     ></div>
                                 </Tooltip>
