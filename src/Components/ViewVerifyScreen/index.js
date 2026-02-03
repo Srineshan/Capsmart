@@ -11052,7 +11052,7 @@ const NewActiveApplication = ({
                                                 <div className={`${style.sideHeadingFontStyle}`}>{`${reference?.firstName} ${reference?.lastName}`}</div>
                                                 <div className={`${style.sideHeadingRefFrontStyle}`}>{reference?.responded ? 'Reference Contact Responded' : 'Reference Contact Not Responded Yet'}</div>
                                               </div>
-                                              <div className={`${style.viewTextStyle} ${style.viewButton} ${style.alignItem} ${style.cursorPointer}  ${reference?.responded ? style.continueDisabled : ''}`} onClick={reference?.responded ? () => { } : () => handleReferenceSend(reference?.rowId)}>Send</div>
+                                              <div className={`${style.viewTextStyle} ${style.viewButton} ${style.alignItem} ${style.cursorPointer}  ${reference?.responded ? style.continueDisabled : ''}`} onClick={reference?.responded ? () => { } : () => handleReferenceSend(reference?.rowId)}>{reference?.status === "NOT_SENT" ? 'Send' : 'Resend'}</div>
                                             </div>
                                           </div>
                                         </div>

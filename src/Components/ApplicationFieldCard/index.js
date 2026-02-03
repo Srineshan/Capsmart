@@ -1560,6 +1560,123 @@ const ApplicationFieldCard = ({
   // const thenStrings = getAllThenStrings(object);
   // console.log(thenStrings, '246');
 
+  // Helper function to evaluate if and get conditional enum values from allOf
+  const getConditionalEnumFromAllOf = (fieldKey, baseKey, getValueByPath) => {
+    console.log(formSchema?.schema, fieldKey, baseKey, 'conditionalEnum')
+    if (!formSchema?.schema?.allOf || !Array.isArray(formSchema?.schema?.allOf)) {
+      return null;
+    }
+
+    // Find the allOf item that affects this fieldKey
+    const relevantAllOf = formSchema?.schema?.allOf?.find((allOfItem) => {
+      if (!allOfItem?.if || (!allOfItem?.then && !allOfItem?.else)) {
+        return false;
+      }
+
+      // Check if this fieldKey exists in then or else at the matching baseKey path
+      const thenHasField = checkFieldInCondition(allOfItem.then?.properties, baseKey, fieldKey);
+      const elseHasField = checkFieldInCondition(allOfItem.else?.properties, baseKey, fieldKey);
+      return thenHasField || elseHasField;
+    });
+
+    if (!relevantAllOf) {
+      return null;
+    }
+
+    // Evaluate the if condition
+    const conditionMet = evaluateIfCondition(
+      relevantAllOf.if,
+      getValueByPath
+    );
+
+    // Get the enum from the appropriate condition
+    if (conditionMet && relevantAllOf.then) {
+      const enumValue = getEnumFromCondition(relevantAllOf.then.properties, baseKey, fieldKey);
+      if (enumValue) return enumValue;
+    } else if (!conditionMet && relevantAllOf.else) {
+      const enumValue = getEnumFromCondition(relevantAllOf.else.properties, baseKey, fieldKey);
+      if (enumValue) return enumValue;
+    }
+
+    return null;
+  };
+
+  // Helper to check if a field exists in a condition's properties at the matching baseKey path
+  const checkFieldInCondition = (properties, baseKey, fieldKey) => {
+    if (!properties) return false;
+
+    // Split baseKey to check nested structure (e.g., "contactAddress2" -> ["contactAddress2"])
+    const baseKeyParts = baseKey?.split(".");
+    let current = properties;
+
+    // Navigate through the baseKey path
+    for (const part of baseKeyParts) {
+      if (current?.[part]?.properties) {
+        current = current[part].properties;
+      } else {
+        return false;
+      }
+    }
+
+    // Check if fieldKey exists at this level and has enum
+    return current?.[fieldKey]?.enum !== undefined;
+  };
+
+  // Helper to get enum value from condition properties
+  const getEnumFromCondition = (properties, baseKey, fieldKey) => {
+    if (!properties) return null;
+
+    // Split baseKey to navigate nested structure
+    const baseKeyParts = baseKey.split(".");
+    let current = properties;
+
+    // Navigate through the baseKey path
+    for (const part of baseKeyParts) {
+      if (current?.[part]?.properties) {
+        current = current[part].properties;
+      } else {
+        return null;
+      }
+    }
+
+    // Get enum from the fieldKey
+    return current?.[fieldKey]?.enum || null;
+  };
+
+  // Helper to evaluate if condition against form data
+  const evaluateIfCondition = (ifCondition, getValueByPath) => {
+    if (!ifCondition?.properties) {
+      return false;
+    }
+
+    // Traverse the nested properties structure (e.g., contactAddress3.registeredBusinessAddress)
+    // and extract the path and const value
+    const extractConditionPathAndValue = (props, currentPath = "") => {
+      for (const [key, value] of Object.entries(props)) {
+        const newPath = currentPath ? `${currentPath}.${key}` : key;
+
+        if (value?.properties) {
+          // Continue traversing nested properties
+          const result = extractConditionPathAndValue(value.properties, newPath);
+          if (result) return result;
+        } else if (value?.const !== undefined) {
+          // Found a const value, return path and expected value
+          return { path: newPath, expectedValue: value.const };
+        }
+      }
+      return null;
+    };
+
+    const condition = extractConditionPathAndValue(ifCondition.properties);
+    if (!condition) {
+      return false;
+    }
+
+    // Check the form data at the condition path
+    const formValue = getValueByPath(basicForm, `${basicpath}.${condition.path}`);
+    return formValue === condition.expectedValue;
+  };
+
   const renderField = (
     fieldKey,
     fieldData,
@@ -1594,40 +1711,40 @@ const ApplicationFieldCard = ({
 
     // Usage:
     // const conditionMet = checkAllOfConditions(object, `${baseKey}`, fieldKey);
-    console.log(
-      fieldKey,
-      "fielddataaaaaaaaaaaa" + JSON.stringify(fieldData),
-      `${basicpath}.${baseKey}.${fieldKey}`,
-      object?.then?.required,
-      getAllThenStrings(object),
-      getAllThenStrings(object)
-        ?.map((data) => data?.value)
-        ?.includes(fieldKey),
-      object?.then?.required?.includes(fieldKey),
-      "275",
-      parentData,
-      object,
-      getValueByPath(
-        basicForm,
-        `${basicpath}.${baseKey}.${getAllThenStrings(object)?.filter(
-          (data) => data?.value === fieldKey
-        )[0]?.key
-        }`
-      ) ==
-        getAllThenStrings(object)?.filter(
-          (data) => data?.value === fieldKey
-        )[0]?.checkValue == null ? null : getAllThenStrings(object)?.filter(
-          (data) => data?.value === fieldKey
-        )[0]?.checkValue,
-      getValueByPath(
-        basicForm,
-        `${basicpath}.${baseKey}.${getAllThenStrings(object)?.filter(
-          (data) => data?.value === fieldKey
-        )[0]?.key
-        }`
-      ),
-      parentData?.required?.includes(fieldKey) || parentData?.then?.required?.includes(fieldKey) || object?.required?.includes(fieldKey) || object?.then?.required?.includes(fieldKey)
-    );
+    // console.log(
+    //   fieldKey,
+    //   "fielddataaaaaaaaaaaa" + JSON.stringify(fieldData),
+    //   `${basicpath}.${baseKey}.${fieldKey}`,
+    //   object?.then?.required,
+    //   getAllThenStrings(object),
+    //   getAllThenStrings(object)
+    //     ?.map((data) => data?.value)
+    //     ?.includes(fieldKey),
+    //   object?.then?.required?.includes(fieldKey),
+    //   "275",
+    //   parentData,
+    //   object,
+    //   getValueByPath(
+    //     basicForm,
+    //     `${basicpath}.${baseKey}.${getAllThenStrings(object)?.filter(
+    //       (data) => data?.value === fieldKey
+    //     )[0]?.key
+    //     }`
+    //   ) ==
+    //     getAllThenStrings(object)?.filter(
+    //       (data) => data?.value === fieldKey
+    //     )[0]?.checkValue == null ? null : getAllThenStrings(object)?.filter(
+    //       (data) => data?.value === fieldKey
+    //     )[0]?.checkValue,
+    //   getValueByPath(
+    //     basicForm,
+    //     `${basicpath}.${baseKey}.${getAllThenStrings(object)?.filter(
+    //       (data) => data?.value === fieldKey
+    //     )[0]?.key
+    //     }`
+    //   ),
+    //   parentData?.required?.includes(fieldKey) || parentData?.then?.required?.includes(fieldKey) || object?.required?.includes(fieldKey) || object?.then?.required?.includes(fieldKey)
+    // );
     // if (object?.then?.required?.includes(fieldKey) !== undefined ? (!object?.then?.required?.includes(fieldKey) || object?.if?.properties !== undefined && getValueByPath(basicForm, `${basicpath}.${baseKey}.${Object.entries(object?.if?.properties)?.map(([key, data]) => key)}`) === Object.entries(object?.if?.properties)?.map(([key, data]) => data)[0]?.const) : getAllThenStrings(object)?.map(data => data?.value)?.includes(fieldKey) ? (getAllThenStrings(object)?.map(data => data?.value)?.includes(fieldKey) && (getAllThenStrings(object)?.map(data => data?.value)?.includes(fieldKey) && getValueByPath(basicForm, `${basicpath}.${baseKey}.${getAllThenStrings(object)?.filter(data => data?.value === fieldKey)[0]?.key}`) === getAllThenStrings(object)?.filter(data => data?.value === fieldKey)[0]?.checkValue)) : true && fieldData.fieldType) {
     let firstObject;
     let dynamicValue;
@@ -2737,6 +2854,15 @@ const ApplicationFieldCard = ({
           if (isPOD) {
             return null;
           }
+
+          // Check for conditional enum from allOf (ifCondition/thenCondition/elseCondition)
+          const conditionalEnum = formSchema?.schema
+            ? getConditionalEnumFromAllOf(fieldKey, baseKey, getValueByPath)
+            : null;
+          console.log(conditionalEnum, 'conditionalEnum')
+          // Use conditional enum if available, otherwise use fieldData.enum
+          const radioEnum = conditionalEnum || fieldData.enum;
+
           return (
             <div
               className={`${style.spaceBetween} ${style.verticalAlignCenter}`}
@@ -2766,8 +2892,8 @@ const ApplicationFieldCard = ({
                     ? () => { }
                     : (e) => handleChange(fieldKey, e.target.value, baseKey)
                 }
-                radioValue={fieldData.enum}
-                label={fieldData.enum}
+                radioValue={radioEnum}
+                label={radioEnum}
                 required={
                   isLableEmpty(fieldData.label)
                     ? false
