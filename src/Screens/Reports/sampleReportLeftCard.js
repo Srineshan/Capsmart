@@ -137,11 +137,15 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
     const [contractedServiceProviders, setContractedServiceProviders] = useState([]);
     const [initialValueSet, setInitialValueSet] = useState(false);
     console.log(isLoading, 'loading')
+    // API expects departmentSpecialties as departmentId or departmentId#serviceAreaId
+    const selectedDepartmentsForApi = (selectedDepartments?.filter(s => s && s !== defaultOption) || [])
+        .map(s => String(s).replace(/\|/g, '#'));
+
     let dataToUseInReport = {
         renewalreportingTimePeriod: renewalreportingTimePeriod,
         selectedSites: selectedSites,
         selectedSitesToSend: selectedSitesToSend,
-        selectedDepartments: selectedDepartments,
+        selectedDepartments: selectedDepartmentsForApi,
         selectedGroups: selectedGroups,
         selectedAuthors: selectedAuthors,
         selectedDepartmentsToSend: selectedDepartmentsToSend,
@@ -364,7 +368,8 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
             if (reportFilter?.endDate)
                 setTo(new Date(reportFilter?.endDate));
             // setSelectedSites(reportFilter?.sites);
-            setSelectedDepartments(reportFilter?.departmentSpecialties ? reportFilter?.departmentSpecialties?.map(data => data?.split('#')?.length > 1 ? data?.split('#')?.[1] : data) : []);
+            // Store with | for UI (dropdown values); API uses #
+            setSelectedDepartments(reportFilter?.departmentSpecialties ? reportFilter?.departmentSpecialties?.map(data => String(data).replace(/#/g, '|')) : []);
             setSelectedGroups(reportFilter?.groupIds ? reportFilter?.groupIds : []);
             setSelectedAuthors(reportFilter?.authorIds ? reportFilter?.authorIds : []);
             setWorkflowLevel(reportFilter?.currentLevel ? reportFilter?.currentLevel : 'All')
@@ -386,11 +391,23 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
             let authorsToShow = [];
             let staffsToShow = [];
             let privilegeCategoryToShow = [];
-            departments?.map(data => {
-                if (reportFilter?.departmentSpecialties?.includes(data?.id)) {
-                    departmentsToShow.push(data?.id?.split('#')?.length > 1 ? data?.id?.split('#')?.[1] : data?.id)
+            // Build display objects: reportFilter.departmentSpecialties can be "deptId" or "deptId#serviceAreaId"
+            reportFilter?.departmentSpecialties?.forEach((spec) => {
+                const hasHash = String(spec).includes('#');
+                const [deptId, serviceAreaId] = hasHash ? String(spec).split('#') : [spec, null];
+                const dept = departments?.find(d => d?.id === deptId);
+                if (!dept) return;
+                if (serviceAreaId) {
+                    const serviceArea = dept?.serviceAreas?.find(sa => sa?.id === serviceAreaId);
+                    if (serviceArea) {
+                        departmentsToShow.push({ departmentName: { name: `${dept?.departmentName?.name || ''} / ${serviceArea?.name || ''}` }, serviceArea, ...dept });
+                    } else {
+                        departmentsToShow.push(dept);
+                    }
+                } else {
+                    departmentsToShow.push(dept);
                 }
-            })
+            });
             setSelectedDepartmentsToSend(departmentsToShow)
             groups?.map(data => {
                 if (reportFilter?.groupIds?.includes(data?.id)) {
@@ -667,17 +684,29 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         const {
             target: { value },
         } = event;
-        console.log(value[value?.length - 1], value)
-        if (value?.length >= 2 && value[value?.length - 1] === defaultOption) {
+        const selectedValues = typeof value === 'string' ? value.split(',') : value;
+        if (selectedValues?.length >= 2 && selectedValues[selectedValues?.length - 1] === defaultOption) {
             setSelectedDepartments([defaultOption]);
             setSelectedDepartmentsToSend([]);
         } else {
-            setSelectedDepartments(
-                typeof value === 'string' ? value.split(',') : value
-            );
-            setSelectedDepartmentsToSend(
-                typeof value === 'string' ? departments?.filter(data => value.split(',')?.includes(data?.id))?.map(data => data) : departments?.filter(data => value?.includes(data?.id))?.map(data => data),
-            );
+            setSelectedDepartments(selectedValues);
+            // Build selectedDepartmentsToSend: each value is department.id or "departmentId|serviceAreaId"
+            const toSend = (selectedValues || [])
+                .filter(v => v && v !== defaultOption)
+                .map((val) => {
+                    if (String(val).includes('|')) {
+                        const [departmentId, serviceAreaId] = String(val).split('|');
+                        const dept = departments?.find(d => d?.id === departmentId);
+                        const serviceArea = dept?.serviceAreas?.find(sa => sa?.id === serviceAreaId);
+                        if (dept && serviceArea) {
+                            return { departmentName: { name: `${dept?.departmentName?.name || ''} / ${serviceArea?.name || ''}` }, serviceArea, ...dept };
+                        }
+                        return dept;
+                    }
+                    return departments?.find(d => d?.id === val);
+                })
+                .filter(Boolean);
+            setSelectedDepartmentsToSend(toSend);
         }
         setSelectedContracts([defaultOption]);
         setSelectedContractsToSend([]);
@@ -991,27 +1020,31 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                     disabled={isLoading}
                                     className={style.textAlignLeft}
                                     renderValue={(selected) => {
-                                        if (selected?.length === 1) {
-                                            const dept = departments?.find(dep => dep?.id === selected[0]);
-                                            console.log("")
-                                            return dept?.departmentName?.name || 'All';
-                                        } else if (selected.length > 1) {
-                                            return `${selected.length} Selected`;
-                                        } else {
-                                            return '';
+                                        if (!selected?.length || (selected.length === 1 && selected[0] === defaultOption)) return 'All';
+                                        if (selected.length === 1) {
+                                            const option = transformedOptions?.find(o => o.value === selected[0]);
+                                            if (option?.type === 'department') return option.label;
+                                            if (option?.type === 'serviceArea') {
+                                                const [, serviceAreaId] = String(selected[0]).split('|');
+                                                const dept = departments?.find(d => d?.serviceAreas?.some(sa => sa?.id === serviceAreaId));
+                                                const serviceArea = dept?.serviceAreas?.find(sa => sa?.id === serviceAreaId);
+                                                return serviceArea?.name || selected[0];
+                                            }
+                                            return selected[0];
                                         }
+                                        return `${selected.filter(v => v !== defaultOption).length} Selected`;
                                     }}
                                 >
                                     {departments?.length >= 2 && (
                                         <MenuItem value={defaultOption} disabled={isLoading}>All</MenuItem>
                                     )}
-                                    {departments?.map((data) => (
+                                    {transformedOptions?.map((option) => (
                                         <MenuItem
-                                            key={data?.id}
-                                            value={data?.id}
+                                            key={option.value}
+                                            value={option.value}
                                             disabled={isLoading}
                                         >
-                                            {data?.departmentName?.name}
+                                            {option.type === 'department' ? option.label : option.label}
                                         </MenuItem>
                                     ))}
                                 </Select>
@@ -1019,13 +1052,16 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                         )
                         }
                         {
-                            selectedDepartments?.filter(Boolean).length > 0 && (
+                            selectedDepartments?.filter(v => v && v !== defaultOption).length > 0 && (
                                 <div className={`${style.grid2Gap} ${style.marginLeft5}`}>
-                                    {selectedDepartments.map((id) => {
-                                        const dept = departments?.find(dep => dep?.id === id);
+                                    {selectedDepartments.filter(v => v && v !== defaultOption).map((val) => {
+                                        const option = transformedOptions?.find(o => o.value === val);
+                                        const displayLabel = option?.type === 'department' ? option.label : option?.type === 'serviceArea'
+                                            ? (() => { const [, saId] = String(val).split('|'); const d = departments?.find(dep => dep?.serviceAreas?.some(sa => sa?.id === saId)); return d?.serviceAreas?.find(sa => sa?.id === saId)?.name || val; })()
+                                            : departments?.find(dep => dep?.id === val)?.departmentName?.name || val;
                                         return (
-                                            <div key={id} className={`${style.spaceBetween} ${style.marginRight5} ${style.filterBackground}`}>
-                                                <div className={`${style.filtertextStyle}`}>{dept?.departmentName?.name}</div>
+                                            <div key={val} className={`${style.spaceBetween} ${style.marginRight5} ${style.filterBackground}`}>
+                                                <div className={`${style.filtertextStyle}`}>{displayLabel}</div>
                                                 <Tooltip title="Remove Filter" arrow>
                                                     <CancelOutlinedIcon
                                                         sx={{
@@ -1035,14 +1071,21 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                                         }}
                                                         className={style.cursorPointer}
                                                         onClick={() => {
-                                                            const updatedDepartments = selectedDepartments.filter(depId => depId !== id);
-                                                            setSelectedDepartments(updatedDepartments);
-
-                                                            const updatedDepartmentsToSend = departments
-                                                                ?.filter(data => updatedDepartments.includes(data?.id))
-                                                                ?.map(data => data);
-
-                                                            setSelectedDepartmentsToSend(updatedDepartmentsToSend);
+                                                            const updated = selectedDepartments.filter(v => v !== val);
+                                                            setSelectedDepartments(updated);
+                                                            const toSend = updated
+                                                                .filter(v => v && v !== defaultOption)
+                                                                .map((id) => {
+                                                                    if (String(id).includes('|')) {
+                                                                        const [deptId, saId] = String(id).split('|');
+                                                                        const dept = departments?.find(d => d?.id === deptId);
+                                                                        const sa = dept?.serviceAreas?.find(s => s?.id === saId);
+                                                                        return dept && sa ? { departmentName: { name: `${dept?.departmentName?.name || ''} / ${sa?.name || ''}` }, serviceArea: sa, ...dept } : dept;
+                                                                    }
+                                                                    return departments?.find(d => d?.id === id);
+                                                                })
+                                                                .filter(Boolean);
+                                                            setSelectedDepartmentsToSend(toSend);
                                                         }}
                                                     />
                                                 </Tooltip>
@@ -1931,23 +1974,32 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 MenuProps={MenuProps}
                                 disabled={isMyReport || isScheduledReport || isLoading}
                                 className={style.textAlignLeft}
+                                renderValue={(selected) => {
+                                    if (!selected?.length || (selected.length === 1 && selected[0] === defaultOption)) return 'All Departments';
+                                    if (selected.length === 1) {
+                                        const option = transformedOptions?.find(o => o.value === selected[0]);
+                                        if (option?.type === 'department') return option.label;
+                                        if (option?.type === 'serviceArea') {
+                                            const [, serviceAreaId] = String(selected[0]).split('|');
+                                            const dept = departments?.find(d => d?.serviceAreas?.some(sa => sa?.id === serviceAreaId));
+                                            const serviceArea = dept?.serviceAreas?.find(sa => sa?.id === serviceAreaId);
+                                            return serviceArea?.name || selected[0];
+                                        }
+                                        return selected[0];
+                                    }
+                                    return `${selected.filter(v => v !== defaultOption).length} Selected`;
+                                }}
                             >
                                 {departments?.length >= 2 && (
                                     <MenuItem value={defaultOption} disabled={isMyReport || isScheduledReport || isLoading}>All Departments</MenuItem>
                                 )}
-                                {departments?.map((data) => (
-                                    // <MenuItem
-                                    //     key={data?.dept?.id}
-                                    //     value={data?.dept?.id}
-                                    // >
-                                    //     {`${data?.site?.siteName?.siteName} - ${data?.dept?.departmentName?.name}`}
-                                    // </MenuItem>
+                                {transformedOptions?.map((option) => (
                                     <MenuItem
-                                        key={data?.id}
-                                        value={data?.id}
+                                        key={option.value}
+                                        value={option.value}
                                         disabled={isMyReport || isScheduledReport || isLoading}
                                     >
-                                        {data?.departmentName?.name}
+                                        {option.type === 'department' ? option.label : option.label}
                                     </MenuItem>
                                 ))}
                             </Select>

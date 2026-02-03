@@ -4375,7 +4375,7 @@ const ReportTypeOverview = () => {
                                                                             ? 'Department'
                                                                             : 'Departments'}
                                                                     </div>
-                                                                    <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.departmentName?.name).join(', ') || 'All Departments'}</div>
+                                                                    <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.serviceArea ? `${data?.departmentName?.name || ''} / ${data?.serviceArea?.name || ''}` : data?.departmentName?.name).filter(Boolean).join(', ') || 'All Departments'}</div>
                                                                 </div>
                                                             )}
                                                             {(reportType !== "currentMedicalDirectives" && reportType !== "medicalDirectivesTracker" && reportType !== "currentPolicyAndProcedures") && (
@@ -4444,7 +4444,7 @@ const ReportTypeOverview = () => {
                                                                         ? 'Department'
                                                                         : 'Departments'}
                                                                 </div>
-                                                                <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.departmentName?.name).join(', ') || 'All Departments'}</div>
+                                                                <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.serviceArea ? `${data?.departmentName?.name || ''} / ${data?.serviceArea?.name || ''}` : data?.departmentName?.name).filter(Boolean).join(', ') || 'All Departments'}</div>
                                                             </div>
                                                             {/* <div>
                                                             <div className={`${style.reportRunByParamStyle} ${style.marginTop5} `}>DIVISION / SPECIALITY </div>
@@ -4524,7 +4524,7 @@ const ReportTypeOverview = () => {
                                                             </div>
                                                             <div>
                                                                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Departments</div>
-                                                                <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.departmentName?.name).join(', ') || 'All Departments'}</div>
+                                                                <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.serviceArea ? `${data?.departmentName?.name || ''} / ${data?.serviceArea?.name || ''}` : data?.departmentName?.name).filter(Boolean).join(', ') || 'All Departments'}</div>
                                                             </div>
                                                             <div>
                                                                 <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Contract </div>
@@ -4557,7 +4557,7 @@ const ReportTypeOverview = () => {
                                                                 </div>
                                                                 <div>
                                                                     <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Departments</div>
-                                                                    <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.departmentName?.name).join(', ') || 'All Departments'}</div>
+                                                                    <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.serviceArea ? `${data?.departmentName?.name || ''} / ${data?.serviceArea?.name || ''}` : data?.departmentName?.name).filter(Boolean).join(', ') || 'All Departments'}</div>
                                                                 </div>
                                                                 <div>
                                                                     <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Contracts </div>

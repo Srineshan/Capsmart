@@ -296,7 +296,7 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType, setIsL
                 filterDisplayNames: [
                     { name: 'Reporting Period used for this report', values: [`${dataToUseInReport?.fromToDisplay} - ${dataToUseInReport?.toToDisplay}`] },
                     { name: 'Staff Type', values: [dataToUseInReport?.selectedStaffTypeToSend?.map(data => data?.applicantType).join(', ') || 'All Staff Type'] },
-                    { name: 'Departments', values: [dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.departmentName?.name).join(', ') || 'All Departments'] },
+                    { name: 'Departments', values: [dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.serviceArea ? `${data?.departmentName?.name || ''} / ${data?.serviceArea?.name || ''}` : data?.departmentName?.name).filter(Boolean).join(', ') || 'All Departments'] },
                     { name: 'Privilege Category', values: [dataToUseInReport?.selectedPrivilegeCategoryToSend?.map(data => data?.category).join(', ') || 'All Categories'] },
                     { name: 'Position', values: dataToUseInReport?.selectedPosition !== "" ? [dataToUseInReport?.selectedPosition] : [] },
                     { name: 'Application Type', values: [availableApplicationTypes[dataToUseInReport?.selectedApplicationType] || 'All Application Type'] },
