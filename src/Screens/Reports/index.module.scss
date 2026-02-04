@@ -1934,6 +1934,12 @@
     grid-gap: 1%;
 }
 
+.newStaffAppointmentGrid {
+    display: grid;
+    grid-template-columns: 3% 22% 27% 10% 12% 23%;
+    grid-gap: 1%;
+}
+
 .renewedLocumStaffGrid {
     display: grid;
     grid-template-columns: 3% 18% 27% 15% 15% 16%;

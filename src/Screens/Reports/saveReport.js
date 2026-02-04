@@ -73,6 +73,7 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType, setIsL
     const [reportName, setReportName] = useState('');
     const [reportDescription, setReportDescription] = useState('');
     const [deliverySchedule, setDeliverySchedule] = useState('');
+    const [dayOfWeek, setDayOfWeek] = useState(null);
     const [startDate, setStartDate] = useState(new Date());
     const [deliveryTime, setDeliveryTime] = useState(null);
     const [scheduledFor, setScheduledFor] = useState('MYSELF');
@@ -263,6 +264,7 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType, setIsL
                 "schedule": {
                     "isdeliveryScheduled": isDeliveryScheduled,
                     "schedule": deliverySchedule !== "" ? deliverySchedule : 'ONETIME',
+                    "dayOfWeek": dayOfWeek ? dayOfWeek : null,
                     "startDate": format(new Date(startDate), 'yyyy-MM-dd'),
                     "deliveryTime": format(new Date(deliveryTime), 'HH:mm:ss'),
                     "scheduledFor": scheduledFor
@@ -328,6 +330,7 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType, setIsL
                         "schedule": {
                             "isdeliveryScheduled": isDeliveryScheduled,
                             "schedule": deliverySchedule !== "" ? deliverySchedule : 'ONETIME',
+                            "dayOfWeek": dayOfWeek ? dayOfWeek : null,
                             "startDate": format(new Date(startDate), 'yyyy-MM-dd'),
                             "deliveryTime": format(new Date(deliveryTime), 'HH:mm:ss'),
                             "scheduledFor": scheduledFor
@@ -458,6 +461,42 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType, setIsL
                                             Annually
                                         </option>
                                     </select>
+                                    {deliverySchedule === "WEEKLY" && (
+                                        <>
+                                            <div className={`${style.saveReportLabelStyle} ${style.marginTop20}`}>Delivery Schedule</div>
+                                            <select
+                                                name="action"
+                                                id="action"
+                                                value={dayOfWeek}
+                                                onChange={(e) => setDayOfWeek(e.target.value)}
+                                                className={`${style.fullWidth} ${style.marginTop10}`}>
+                                                <option value="" >
+                                                    Select Day Of The Week
+                                                </option>
+                                                <option value="MONDAY" >
+                                                    Monday
+                                                </option>
+                                                <option value="TUESDAY" >
+                                                    Tuesday
+                                                </option>
+                                                <option value="WEDNESDAY" >
+                                                    Wednesday
+                                                </option>
+                                                <option value="THURSDAY" >
+                                                    Thursday
+                                                </option>
+                                                <option value="FRIDAY" >
+                                                    Friday
+                                                </option>
+                                                <option value="SATURDAY" >
+                                                    Saturday
+                                                </option>
+                                                <option value="SUNDAY" >
+                                                    Sunday
+                                                </option>
+                                            </select>
+                                        </>
+                                    )}
                                     <div className={`${style.displayInRow} ${style.marginTop20}`}>
                                         <div className={`${style.displayInCol} ${style.marginTop5}`}>
                                             <label className={`${style.saveReportLabelStyle}`}>Start Date</label>

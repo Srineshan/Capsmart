@@ -34,7 +34,7 @@ import CommonSearchField from '../../Components/CommonFields/CommonSearchField';
 import { formatFirstNameLastName } from '../../utils/formatting';
 import { SuccessToaster2 } from '../../utils/toaster';
 
-const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, refToUse, getIsDownloadClicked, isNoData, setIsFullScreenLoading }) => {
+const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, refToUse, getIsDownloadClicked, getIsExcelClicked, isNoData, setIsFullScreenLoading }) => {
     const { reportType } = useParams();
     const [showSaveReportOutput, setShowSaveReportOutput] = useState(false);
     const [showReportRefreshingDialog, setShowReportRefreshingDialog] = useState(false);
@@ -552,16 +552,12 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                                 <div className={style.popoverStyle}>Click to Save this Report</div>
                             </Popover>
                         </div>
-                        <div className={`${style.iconPadding} ${style.cursorPointer} ${isNoData && style.disabledCursor}`} onClick={() => !isNoData ? getIsDownloadClicked(true) : {}}
-                            onMouseEnter={(e) => !isNoData ? setAnchorElDownload(e.currentTarget) : {}} onMouseLeave={() => !isNoData ? setAnchorElDownload(null) : {}} aria-owns={openDownload ? 'mouse-over-popover' : undefined}
+                        <div className={`${style.iconPadding} ${style.cursorPointer} ${isNoData && style.disabledCursor}`} onClick={(e) => !isNoData && setAnchorElDownload(anchorElDownload ? null : e.currentTarget)}
+                            onMouseLeave={() => setAnchorElDownload(null)} aria-owns={openDownload ? 'download-menu-popover' : undefined}
                             aria-haspopup="true">
                             <img src={ReportsDownload} alt="" className={`${style.reportsActions} ${style.marginTop5}`} />
-                            {/* <DownloadingOutlinedIcon style={{ color: "#2C2C2C" }} /> */}
                             <Popover
-                                id={'mouse-over-popover'}
-                                sx={{
-                                    pointerEvents: 'none',
-                                }}
+                                id={'download-menu-popover'}
                                 open={openDownload}
                                 anchorEl={anchorElDownload}
                                 onClose={() => setAnchorElDownload(null)}
@@ -569,9 +565,12 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                                     vertical: 'bottom',
                                     horizontal: 'left',
                                 }}
-                                disableRestoreFocus
+                                transformOrigin={{ vertical: 'top', horizontal: 'left' }}
                             >
-                                <div className={style.popoverStyle}>Click To Download This Report</div>
+                                <div className={style.popoverStyle} style={{ padding: '4px 0' }}>
+                                    {/* <div className={style.cursorPointer} style={{ padding: '8px 16px' }} onClick={() => { getIsDownloadClicked(true); setAnchorElDownload(null); }}>Download PDF</div> */}
+                                    {/* <div className={style.cursorPointer} style={{ padding: '8px 16px' }} onClick={() => { getIsExcelClicked?.(true); setAnchorElDownload(null); }}>Download Excel (or CSV)</div> */}
+                                </div>
                             </Popover>
                         </div>
                         <div className={`${style.iconPadding} ${style.cursorPointer} ${isNoData && style.disabledCursor}`} onClick={!isNoData ? handlePrint : {}}

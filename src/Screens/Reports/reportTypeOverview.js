@@ -11,6 +11,7 @@ import { useReactToPrint } from "react-to-print";
 import { addYears, format } from 'date-fns';
 import { FullScreen, useFullScreenHandle } from "react-full-screen";
 import { toPDF } from '../../Components/ConvertToPdf';
+import { toExcel } from '../../Components/ExportToExcel';
 import LoadingScreen from '../../Components/LoadingScreen';
 import ProgressBar from "@ramonak/react-progress-bar";
 import Pie from './d3-chart/pieGraph';
@@ -596,6 +597,12 @@ const ReportTypeOverview = () => {
         setIsDownloadClicked(value);
         if (value) {
             toPDF(".Report", `${reportTitleList[reportType]}_${userDetail?.userName}_${format(new Date(), 'MM_dd_yy')}`);
+        }
+    }
+
+    const getIsExcelClicked = (value) => {
+        if (value) {
+            toExcel(".Report", `${reportTitleList[reportType]}_${userDetail?.userName}_${format(new Date(), 'MM_dd_yy')}`);
         }
     }
 
@@ -4328,7 +4335,7 @@ const ReportTypeOverview = () => {
                         </div>
                     )}
                     <div>
-                        <ReportPerformanceAndOptions handle={handle} handlePrint={handlePrint} dataToUseInReport={dataToUseInReport} refToUse={PDFRef} getIsDownloadClicked={getIsDownloadClicked} isNoData={isNoData} setIsFullScreenLoading={setIsFullScreenLoading} />
+                        <ReportPerformanceAndOptions handle={handle} handlePrint={handlePrint} dataToUseInReport={dataToUseInReport} refToUse={PDFRef} getIsDownloadClicked={getIsDownloadClicked} getIsExcelClicked={getIsExcelClicked} isNoData={isNoData} setIsFullScreenLoading={setIsFullScreenLoading} />
                         <FullScreen handle={handle} className={handle.active ? style.scroll : ''}>
                             <div className={`Report`} ref={PDFRef}>
                                 <div className={`${style.reportBackgroundCard} ${style.marginTop20} ${style.printContainer} ${style.tableRow} ${style.reportSection} `} ref={componentRef}>
@@ -5640,7 +5647,7 @@ const ReportTypeOverview = () => {
                                                                                                 tableHeaderValues={headerValuesNewStaffReappointments}
                                                                                                 tableDataValues={getNewStaffReappointmentsTableValues(data?.staffs)}
                                                                                                 tableData={data?.staffs}
-                                                                                                gridStyle={style.locumTermExpirationGrid}
+                                                                                                gridStyle={style.newStaffAppointmentGrid}
                                                                                                 tableSortValues={colSortValuesNewStaffReappointments}
                                                                                                 heading={"There are no record to display"}
                                                                                                 className={`${style.tableRow} ${style.reportSection}`}
