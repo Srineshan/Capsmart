@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import ProgressCard from '../../../../Components/ProgressCard';
 import ApplicationUserCard from '../../../../Components/ApplicationUserCard';
 import ApplicationAssistanceCard from '../../../../Components/ApplicationAssistanceCard';
@@ -725,6 +725,20 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
   const missingDocs = getMissingDocs();
   const tableValues = tempValue?.table || [];
 
+  // Documents that are not yet uploaded + verified + valid (to show in the required/recommended list)
+  const documentsToShow = useMemo(() => {
+    const required = basicForm?.documentsRequired || [];
+    return required.filter((data) => {
+      const matchingRows = (tempValue?.table || []).filter(
+        (tableData) => tableData?.documentType === data?.document?.shortName
+      );
+      const hasUploadedVerifiedValid = matchingRows.some((row) => row?.verified && row?.valid);
+      return !hasUploadedVerifiedValid;
+    });
+  }, [basicForm?.documentsRequired, tempValue?.table]);
+
+  const showRequiredDocumentsSection = documentsToShow?.length > 0;
+
   return (
     <div>
       {isLoading && (
@@ -790,110 +804,112 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
               </Tooltip>
             </div>
 
-            <div className={`${style.addMoreBorder} ${style.marginTop}`}>
-              <div className={style.padding20}>
-                <div className={style.spaceBetween}>
-                  <div className={style.collapsableCardText}>
-                    Required and Recommended documents & forms for this
-                    Application
-                  </div>
-                </div>
-                <div
-                  className={`${style.tableHeader} ${style.tableGrid} ${style.marginTop}`}
-                >
-                  <div
-                    className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}
-                  >
-                    Document Type
-                  </div>
-                  <div
-                    className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}
-                  >
-                    Requirements
-                  </div>
-                  <div
-                    className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}
-                  ></div>
-                </div>
-                {basicForm?.documentsRequired?.map((data, index) => (
-                  <div>
-                    <div
-                      className={`${style.requiredDocumentCard} ${style.tableGrid
-                        } ${skipReason?.[normalizeKey(data?.document?.shortName)] ? style.greenBorder : (
-                          (tempValue?.table?.filter(
-                            (tableData) =>
-                              tableData?.documentType ===
-                              data?.document?.shortName
-                          )?.length === 0 || !(tempValue?.table?.filter((tableData) => tableData?.documentType === data?.document?.shortName)?.[0]?.verified && tempValue?.table?.filter((tableData) => tableData?.documentType === data?.document?.shortName)?.[0]?.valid)) &&
-                          data?.required)
-                          ? style.redBorder
-                          : !(tempValue?.table?.filter((tableData) => tableData?.documentType === data?.document?.shortName)?.[0]?.verified && tempValue?.table?.filter((tableData) => tableData?.documentType === data?.document?.shortName)?.[0]?.valid) ? style.yellowBorder
-                            : style.greenBorder
-                        } ${index % 2 === 0
-                          ? style.requiredDocumentCardAlternativeColor
-                          : ""
-                        }  ${style.marginTop5}`}
-                    >
-                      <div
-                        className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                      >
-                        <div
-                          className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}
-                        >
-                          {data?.document?.shortName}
-                        </div>
-                        {data?.instruction ? (
-                          <Tooltip title={data?.instruction} arrow>
-                            <InfoOutlinedIcon sx={{ fontSize: 14, marginLeft: '10px' }} className={style.info} />
-                          </Tooltip>
-                        ) : (
-                          <div></div>
-                        )}
-                      </div>
-                      <div
-                        className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}
-                      >
-                        {data?.required ? "Required" : "Recommended"}
-                      </div>
-                      {((tempValue?.table?.filter(
-                        (tableData) =>
-                          tableData?.documentType ===
-                          data?.document?.shortName
-                      )?.length === 0 || !(tempValue?.table?.filter((tableData) => tableData?.documentType === data?.document?.shortName)?.[0]?.verified && tempValue?.table?.filter((tableData) => tableData?.documentType === data?.document?.shortName)?.[0]?.valid)) &&
-                        data?.required) ? (
-                        <div
-                          className={` ${style.fullWidth}`}
-                        >
-                          <CommonSelectField
-                            value={skipReason?.[normalizeKey(data?.document?.shortName)] ? skipReason?.[normalizeKey(data?.document?.shortName)] : ''}
-                            onChange={(e) => handleSkipReason(data?.document?.shortName, e.target.value)}
-                            className={`${style.fullWidth} ${style.verticalAlignCenter}`}
-                            firstOptionLabel={'Select A Reason For Skipping This Document'}
-                            firstOptionValue={''}
-                            valueList={['Current Document Not Available', 'Replacement Document Requested']}
-                            labelList={['Current Document Not Available', 'Replacement Document Requested']}
-                            disabledList={['Current Document Not Available', 'Replacement Document Requested'].map(() => false)}
-                          />
-                          {/* {data?.instruction} */}
-                        </div>
-                      ) : (tempValue?.table && tempValue?.table?.filter(
-                        (tableData) =>
-                          tableData?.documentType ===
-                          data?.document?.shortName
-                      )?.length !== 0) ? (
-                        <div
-                          className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}
-                        >
-                          Already Uploaded
-                        </div>
-                      ) : ""}
+            {showRequiredDocumentsSection && (
+              <div className={`${style.addMoreBorder} ${style.marginTop}`}>
+                <div className={style.padding20}>
+                  <div className={style.spaceBetween}>
+                    <div className={style.collapsableCardText}>
+                      Required and Recommended documents & forms for this
+                      Application
                     </div>
                   </div>
-                ))}
+                  <div
+                    className={`${style.tableHeader} ${style.tableGrid} ${style.marginTop}`}
+                  >
+                    <div
+                      className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}
+                    >
+                      Document Type
+                    </div>
+                    <div
+                      className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}
+                    >
+                      Requirements
+                    </div>
+                    <div
+                      className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}
+                    ></div>
+                  </div>
+                  {documentsToShow?.map((data, index) => (
+                    <div>
+                      <div
+                        className={`${style.requiredDocumentCard} ${style.tableGrid
+                          } ${skipReason?.[normalizeKey(data?.document?.shortName)] ? style.greenBorder : (
+                            (tempValue?.table?.filter(
+                              (tableData) =>
+                                tableData?.documentType ===
+                                data?.document?.shortName
+                            )?.length === 0 || !(tempValue?.table?.filter((tableData) => tableData?.documentType === data?.document?.shortName)?.[0]?.verified && tempValue?.table?.filter((tableData) => tableData?.documentType === data?.document?.shortName)?.[0]?.valid)) &&
+                            data?.required)
+                            ? style.redBorder
+                            : !(tempValue?.table?.filter((tableData) => tableData?.documentType === data?.document?.shortName)?.[0]?.verified && tempValue?.table?.filter((tableData) => tableData?.documentType === data?.document?.shortName)?.[0]?.valid) ? style.yellowBorder
+                              : style.greenBorder
+                          } ${index % 2 === 0
+                            ? style.requiredDocumentCardAlternativeColor
+                            : ""
+                          }  ${style.marginTop5}`}
+                      >
+                        <div
+                          className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                        >
+                          <div
+                            className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}
+                          >
+                            {data?.document?.shortName}
+                          </div>
+                          {data?.instruction ? (
+                            <Tooltip title={data?.instruction} arrow>
+                              <InfoOutlinedIcon sx={{ fontSize: 14, marginLeft: '10px' }} className={style.info} />
+                            </Tooltip>
+                          ) : (
+                            <div></div>
+                          )}
+                        </div>
+                        <div
+                          className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}
+                        >
+                          {data?.required ? "Required" : "Recommended"}
+                        </div>
+                        {((tempValue?.table?.filter(
+                          (tableData) =>
+                            tableData?.documentType ===
+                            data?.document?.shortName
+                        )?.length === 0 || !(tempValue?.table?.filter((tableData) => tableData?.documentType === data?.document?.shortName)?.[0]?.verified && tempValue?.table?.filter((tableData) => tableData?.documentType === data?.document?.shortName)?.[0]?.valid)) &&
+                          data?.required) ? (
+                          <div
+                            className={` ${style.fullWidth}`}
+                          >
+                            <CommonSelectField
+                              value={skipReason?.[normalizeKey(data?.document?.shortName)] ? skipReason?.[normalizeKey(data?.document?.shortName)] : ''}
+                              onChange={(e) => handleSkipReason(data?.document?.shortName, e.target.value)}
+                              className={`${style.fullWidth} ${style.verticalAlignCenter}`}
+                              firstOptionLabel={'Select A Reason For Skipping This Document'}
+                              firstOptionValue={''}
+                              valueList={['Current Document Not Available', 'Replacement Document Requested']}
+                              labelList={['Current Document Not Available', 'Replacement Document Requested']}
+                              disabledList={['Current Document Not Available', 'Replacement Document Requested'].map(() => false)}
+                            />
+                            {/* {data?.instruction} */}
+                          </div>
+                        ) : (tempValue?.table && tempValue?.table?.filter(
+                          (tableData) =>
+                            tableData?.documentType ===
+                            data?.document?.shortName
+                        )?.length !== 0) ? (
+                          <div
+                            className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}
+                          >
+                            Already Uploaded
+                          </div>
+                        ) : ""}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
             <div ref={tableRef} className={style.tableContainer}>
-              {tableValues.length > 0 && (
+              {tableValues?.length > 0 && (
                 <TableTwo
                   tableHeaderValues={['', 'File Uploaded', 'Document Type', '', 'Verified', 'Valid', '', '']}
                   tableDataValues={getApplicantValues(tableValues)}

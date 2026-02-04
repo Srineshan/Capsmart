@@ -579,7 +579,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
 
       remindTooltipCount.push(remindTooltipValue);
       DateSend.push(
-        format(new Date(data?.reAppointmentSentDate), dateFormat)
+        data?.reAppointmentSentDate ? format(new Date(data?.reAppointmentSentDate), dateFormat) : '-'
       );
     });
 
@@ -1037,7 +1037,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
           <div className={`${style.flex} ${style.gap}`}>
             {selectedDepartment && (
               <div className={`${style.searchChips} ${style.flex} ${style.marginLeft} ${style.alignItemCenter}`}>
-                <div className={`${style.marginRight5}`}>Filter by {selectedDepartmentName}</div>
+                <div className={`${style.marginRight5}`}>{selectedDepartmentName}</div>
                 <Tooltip title="Click to Remove Filter" arrow>
                   <CancelIcon
                     sx={{
@@ -1051,8 +1051,8 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
               </div>
             )}
             {selectedApplicantType && (
-              <div className={`${style.searchChips} ${style.flex} ${style.marginLeft5} ${style.alignItemCenter}`}>
-                <div className={`${style.marginRight5}`}>Filter by {selectedApplicantName}</div>
+              <div className={`${style.searchChips} ${style.flex} ${style.marginLeft} ${style.alignItemCenter}`}>
+                <div className={`${style.marginRight5}`}> {selectedApplicantName}</div>
                 <Tooltip title="Click to Remove Filter" arrow>
                   <CancelIcon
                     sx={{
@@ -1066,9 +1066,9 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
               </div>
             )}
             {selectedReappointmentStatus && (
-              <div className={`${style.searchChips} ${style.flex} ${style.marginLeft5} ${style.alignItemCenter}`}>
+              <div className={`${style.searchChips} ${style.flex} ${style.marginLeft} ${style.alignItemCenter}`}>
                 <div className={`${style.marginRight5}`}>
-                  Filter by {" "}
+                  {" "}
                   {Array.isArray(selectedReappointmentStatus) ? "Sent" :
                     selectedReappointmentStatus === 'RE_SENT' ? 'Reminder Sent' :
                       selectedReappointmentStatus === 'SENT' ? 'Sent' :

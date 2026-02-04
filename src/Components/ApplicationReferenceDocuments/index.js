@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import CheckIcon from "@mui/icons-material/Check";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import style from "./index.module.scss";
 import { GET } from "../../Screens/dataSaver";
 import FileDisplayDialog from "../fileDisplayDialog";
@@ -61,7 +62,10 @@ const ApplicationReferenceDocuments = ({ refetchRefDoc, getResetRefetch }) => {
       {(tableData?.length > 0 || basicForm?.payment?.invoice?.fileURL !== undefined) ? (
         <>
           {tableData?.map((document, index) => {
-            console.log(document); // Log the document object for debugging
+            const docRequired = basicForm?.documentsRequired?.find(
+              (d) => d?.document?.shortName === document?.documentType
+            );
+            const instruction = docRequired?.instruction;
 
             // Determine the icon to show based on file type
             const docIcon =
@@ -92,6 +96,11 @@ const ApplicationReferenceDocuments = ({ refetchRefDoc, getResetRefetch }) => {
                         >
                           {document?.fileUploaded}
                         </div>
+                        {instruction ? (
+                          <Tooltip title={instruction} arrow>
+                            <InfoOutlinedIcon sx={{ fontSize: 14, marginLeft: '10px' }} className={style.info} />
+                          </Tooltip>
+                        ) : null}
                       </div>
                       {/* <div
                       className={`${style.checkBackground} ${style.verticalAlignCenter} ${style.justifyCenter}`}

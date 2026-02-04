@@ -2592,6 +2592,7 @@ const ApplicationFieldCard = ({
                 warning={warningFields
                   ?.map((data) => data?.key)
                   ?.includes(`${basicpath}.${baseKey}.${fieldKey}`)}
+                showHelpText={fieldKey === "cellPhone"}
               />
             );
           }
@@ -2795,7 +2796,7 @@ const ApplicationFieldCard = ({
                         fieldData.placeHolder !== null
                           ? fieldData.placeHolder
                           : fieldData.label !== null
-                            ? `Enter ${fieldData.label} (e.g. ${format(new Date(), 'MMM dd, yyyy')})`
+                            ? `Enter Date (e.g. ${format(new Date(), 'MMM dd, yyyy')})`
                             : null,
                       // readOnly: true,
                     }}
@@ -3171,28 +3172,30 @@ const ApplicationFieldCard = ({
             return <div></div>;
           } else {
             return (
-              <CommonCheckBox
-                checked={
-                  getValueByPath(
-                    basicForm,
-                    `${basicpath}.${baseKey}.${fieldKey}`
-                  ) || null
-                }
-                onChange={(e) =>
-                  handleChange(fieldKey, e.target.checked, baseKey)
-                }
-                label={`${fieldData.label}${(
-                  isLableEmpty(fieldData.label)
-                    ? false
-                    : object?.required?.includes(fieldKey) || object?.then?.required?.includes(fieldKey) ||
-                    (parentData !== null
-                      ? parentData.required?.includes(fieldKey) || parentData?.then?.required?.includes(fieldKey)
-                      : false)
-                )
-                  ? "*"
-                  : ""
-                  }`}
-              />
+              <div className={style.verticalAlignCenter}>
+                <CommonCheckBox
+                  checked={
+                    getValueByPath(
+                      basicForm,
+                      `${basicpath}.${baseKey}.${fieldKey}`
+                    ) || null
+                  }
+                  onChange={(e) =>
+                    handleChange(fieldKey, e.target.checked, baseKey)
+                  }
+                  label={`${fieldData.label}${(
+                    isLableEmpty(fieldData.label)
+                      ? false
+                      : object?.required?.includes(fieldKey) || object?.then?.required?.includes(fieldKey) ||
+                      (parentData !== null
+                        ? parentData.required?.includes(fieldKey) || parentData?.then?.required?.includes(fieldKey)
+                        : false)
+                  )
+                    ? "*"
+                    : ""
+                    }`}
+                />
+              </div>
             );
           }
         case "sitecheckbox":

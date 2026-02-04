@@ -569,7 +569,7 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                             >
                                 <div className={style.popoverStyle} style={{ padding: '4px 0' }}>
                                     {/* <div className={style.cursorPointer} style={{ padding: '8px 16px' }} onClick={() => { getIsDownloadClicked(true); setAnchorElDownload(null); }}>Download PDF</div> */}
-                                    {/* <div className={style.cursorPointer} style={{ padding: '8px 16px' }} onClick={() => { getIsExcelClicked?.(true); setAnchorElDownload(null); }}>Download Excel (or CSV)</div> */}
+                                    <div className={style.cursorPointer} style={{ padding: '8px 16px' }} onClick={() => { getIsExcelClicked?.(true); setAnchorElDownload(null); }}>Download Excel </div>
                                 </div>
                             </Popover>
                         </div>

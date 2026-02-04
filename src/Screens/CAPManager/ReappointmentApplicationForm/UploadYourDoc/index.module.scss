@@ -385,6 +385,10 @@
     border: 3px solid $statusyellow !important;
 }
 
+.greenBorder {
+    border: 3px solid $statusgreen !important;
+}
+
 .uploadDescriptionText {
     text-align: center;
     font: normal normal 300 14px/14px var(--font-style);

@@ -5,11 +5,11 @@ import style from './index.module.scss';
 import InfoIcon from '@mui/icons-material/Info';
 import { TextField, Tooltip } from '@mui/material';
 
-const CommonPhoneField = ({ onChange, placeholder, type, maxLength, value, error, label, required, warning }) => {
+const CommonPhoneField = ({ onChange, placeholder, type, maxLength, value, error, label, required, warning, showHelpText }) => {
     const warningCheck = type === 'number' ? (value === 0 || value === '') : (value === '' || value === null || value === undefined);
     return (
         <div>
-            <div className={`${style.lableStyle}`}>{label}{required && '*'} <Tooltip title="Required for SMS / Text Messaging" arrow><InfoIcon sx={{ fontSize: 17, cursor: 'pointer' }} /></Tooltip></div>
+            <div className={`${style.lableStyle}`}>{label}{required && '*'} {showHelpText && (<Tooltip title="Required for SMS / Text Messaging" arrow><InfoIcon sx={{ fontSize: 17, cursor: 'pointer' }} /></Tooltip>)}</div>
             <div className={`${style.marginTop}`}>
                 {/* <div className={`${style.lableStyle}`}>+1</div> */}
                 {/* <InputGroup value={value} onChange={onChange}

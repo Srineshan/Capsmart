@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import ProgressCard from '../../../../Components/ProgressCard';
 import ApplicationUserCard from '../../../../Components/ApplicationUserCard';
 import ApplicationAssistanceCard from '../../../../Components/ApplicationAssistanceCard';
@@ -98,16 +98,18 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
     const [deleteData, setDeleteData] = useState();
     const [refetchRefDoc, setRefetchRefDoc] = useState(false);
+    const [skipReason, setSkipReason] = useState();
+
+    useEffect(() => {
+        if (basicForm == null || formIndex === undefined) return;
+        const tempSkipReason = basicForm?.forms?.[formIndex]?.data?.skipReason;
+        setSkipReason(tempSkipReason != null ? tempSkipReason : {});
+    }, [basicForm, formIndex]);
+
     const requiredShortNames = (basicForm?.documentsRequired || [])
         .filter((doc) => doc?.required)
         .map((doc) => doc?.document?.shortName);
     const uploadedDocs = tempValue?.table || [];
-    const isContinueEnabled = requiredShortNames.every((shortName) => {
-        const uploadedDoc = uploadedDocs.find(
-            (doc) => doc.documentType === shortName
-        );
-        return uploadedDoc && uploadedDoc.valid === true; // must exist and be valid
-    });
     const uploadedDocumentTypes = tempValue?.table?.map((row) => row?.documentType) || [];
     const allDocumentsUploaded = requiredShortNames.every((shortName) =>
         uploadedDocumentTypes.includes(shortName)
@@ -649,15 +651,63 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
     //     )
     // }
 
+    const normalizeKey = (shortName) => (shortName || '').trim().toLowerCase().replace(/\s+/g, '_');
+
+    const handleSkipReason = async (shortName, reason) => {
+        const key = normalizeKey(shortName);
+        let temp;
+        setSkipReason((prev) => {
+            const updated = { ...prev, [key]: reason };
+            temp = updated;
+            return updated;
+        });
+        const updatedTempValue = { ...tempValue, skipReason: temp };
+        const payload = {
+            schemaId: basicForm?.forms?.[formIndex]?.schemaId,
+            data: updatedTempValue,
+        };
+        await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, payload)
+            .then((response) => {
+                setBasicForm(response?.data);
+                getPreApplication();
+                SuccessToaster('Application Updated Successfully');
+            })
+            .catch((error) => {
+                console.error(error);
+                ErrorToaster('Unexpected Error Updating Application');
+            });
+    };
+
     const getMissingDocs = () => {
-        let temp = []
-        basicForm?.documentsRequired?.map((data, index) => {
-            if ((((tempValue?.table || [])?.filter(tableData => tableData?.documentType === data?.document?.shortName)?.length === 0 || !(tempValue?.table?.filter((tableData) => tableData?.documentType === data?.document?.shortName)?.[0]?.verified && tempValue?.table?.filter((tableData) => tableData?.documentType === data?.document?.shortName)?.[0]?.valid)))) {
-                temp.push(data)
+        const temp = [];
+        const uploaded = tempValue?.table || [];
+        basicForm?.documentsRequired?.forEach((data) => {
+            const label = data?.document?.shortName;
+            const key = normalizeKey(data?.document?.shortName || label);
+            const hasSkipReason = Boolean(skipReason?.[key]);
+            const isUploadedAndValid = uploaded?.some(
+                (row) => row?.documentType === label && row?.verified && row?.valid
+            );
+            const isRequired = getIsDocRequired(label) === 'Required';
+            if (isRequired && !isUploadedAndValid && !hasSkipReason) {
+                temp.push(data);
             }
-        })
+        });
         return temp;
-    }
+    };
+
+    const documentsToShow = useMemo(() => {
+        const required = basicForm?.documentsRequired || [];
+        return required.filter((data) => {
+            const matchingRows = (tempValue?.table || []).filter(
+                (tableData) => tableData?.documentType === data?.document?.shortName
+            );
+            const hasUploadedVerifiedValid = matchingRows.some((row) => row?.verified && row?.valid);
+            return !hasUploadedVerifiedValid;
+        });
+    }, [basicForm?.documentsRequired, tempValue?.table]);
+
+    const showRequiredDocumentsSection = documentsToShow?.length > 0;
 
     console.log(tempValue?.table?.filter(tableData => !tableData?.documentType?.includes(basicForm?.documentsRequired?.filter(data => data?.required)?.map(data => data?.document?.shortName))), 'checkconsole', tempValue?.table, basicForm?.documentsRequired?.filter(data => data?.required)?.map(data => data?.document?.shortName), getMissingDocs())
 
@@ -748,54 +798,65 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                 className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}
                             ></div>
                         </div> */}
-                        {basicForm?.documentsRequired?.map((data, index) => (
-                            <div>
-                                <div
-                                    className={`${style.requiredDocumentCard} ${style.tableGrid
-                                        } ${basicForm?.forms?.[formIndex]?.data !== null &&
-                                            (tempValue?.table?.filter(
-                                                (tableData) =>
-                                                    tableData?.documentType ===
-                                                    data?.document?.shortName
-                                            )?.length === 0 || !(tempValue?.table?.filter((tableData) => tableData?.documentType === data?.document?.shortName)?.[0]?.verified && tempValue?.table?.filter((tableData) => tableData?.documentType === data?.document?.shortName)?.[0]?.valid)) &&
-                                            getIsDocRequired(data?.document?.shortName) === "Required"
-                                            ? style.redBorder
-                                            : ""
-                                        } ${index % 2 === 0
-                                            ? style.requiredDocumentCardAlternativeColor
-                                            : ""
-                                        }  ${style.marginTop2}`}
-                                >
+                        {showRequiredDocumentsSection && documentsToShow?.map((data, index) => {
+                            const key = normalizeKey(data?.document?.shortName);
+                            const matchingRows = (tempValue?.table || []).filter(
+                                (tableData) => tableData?.documentType === data?.document?.shortName
+                            );
+                            const isUploadedVerifiedValid = matchingRows.some((row) => row?.verified && row?.valid);
+                            const isRequired = getIsDocRequired(data?.document?.shortName) === 'Required';
+                            const showSkipDropdown = isRequired && !isUploadedVerifiedValid;
+                            const hasSkip = Boolean(skipReason?.[key]);
+                            const borderClass =
+                                hasSkip || isUploadedVerifiedValid
+                                    ? style.greenBorder
+                                    : showSkipDropdown
+                                        ? style.redBorder
+                                        : !isUploadedVerifiedValid
+                                            ? style.yellowBorder
+                                            : style.greenBorder;
+                            return (
+                                <div key={key || index}>
                                     <div
-                                        className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                                        className={`${style.requiredDocumentCard} ${style.tableGrid} ${borderClass} ${index % 2 === 0 ? style.requiredDocumentCardAlternativeColor : ''} ${style.marginTop5}`}
                                     >
-                                        <div
-                                            className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}
-                                        >
-                                            {data?.document?.shortName}
+                                        <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
+                                            <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>
+                                                {data?.document?.shortName}
+                                            </div>
+                                            {data?.instruction ? (
+                                                <Tooltip title={data?.instruction} arrow>
+                                                    <InfoOutlinedIcon sx={{ fontSize: 14, marginLeft: '10px' }} className={style.info} />
+                                                </Tooltip>
+                                            ) : null}
                                         </div>
-                                        {/* <InfoOutlinedIcon
-                                            sx={{ fontSize: 14, marginLeft: "10px" }}
-                                            className={style.info}
-                                        /> */}
-                                    </div>
-                                    <div
-                                        className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}
-                                    >
-                                        {data?.document?.shortName === 'Profile Picture' ? 'Optional' : getIsDocRequired(data?.document?.shortName)}
-                                    </div>
-                                    <div
-                                        className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}
-                                    >
-                                        {data?.instruction}
+                                        <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>
+                                            {data?.document?.shortName === 'Profile Picture' ? 'Optional' : getIsDocRequired(data?.document?.shortName)}
+                                        </div>
+                                        {showSkipDropdown ? (
+                                            <div className={`${style.fullWidth}`}>
+                                                <CommonSelectField
+                                                    value={skipReason?.[key] ?? ''}
+                                                    onChange={(e) => handleSkipReason(data?.document?.shortName, e.target.value)}
+                                                    className={`${style.fullWidth} ${style.verticalAlignCenter}`}
+                                                    firstOptionLabel="Select A Reason For Skipping This Document"
+                                                    firstOptionValue=""
+                                                    valueList={['Current Document Not Available', 'Replacement Document Requested']}
+                                                    labelList={['Current Document Not Available', 'Replacement Document Requested']}
+                                                    disabledList={[false, false]}
+                                                />
+                                            </div>
+                                        ) : isUploadedVerifiedValid ? (
+                                            <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>
+                                                Already Uploaded
+                                            </div>
+                                        ) : null}
                                     </div>
                                 </div>
-                            </div>
-                        ))}
-                        {/* </>
-                                )} */}
-                        {/* </div>
-                        </div> */}
+                            );
+                        }
+
+                        )}
                         <div className={`${style.twoCol} ${style.marginTop10}`}>
                             <CommonDropZone
                                 title={"Upload Your Documents"}
@@ -972,7 +1033,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                     <div className={`${style.stickyContainer} ${isSaveInProgressOpen || isShowESignDialog || showJourneyDialog || isShowUploadValidation
                         || showFileDisplayDialog || isShowESignConfirmationDialog ? style.hiddenStickyContainer : ""}`}>
                         <Tooltip title={"Click to Skip This Step and Continue Later"} arrow>
-                            <div className={`${!isContinueEnabled ? `${style.saveInProgress} ${style.marginTop}` : `${style.saveInProgress} ${style.marginTop} ${style.disabledButton}`}`} onClick={!isContinueEnabled ? handleContinue : undefined}>
+                            <div className={`${getMissingDocs()?.length === 0 ? `${style.saveInProgress} ${style.marginTop} ${style.disabledButton}` : `${style.saveInProgress} ${style.marginTop}`}`} onClick={getMissingDocs()?.length === 0 ? undefined : () => handleContinue("skipped")}>
                                 SKIP FOR NOW
                             </div>
                         </Tooltip>
@@ -1018,8 +1079,8 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                             CONTINUE
                         </div> */}
                         {/* <Tooltip title={"Click to Proceed to the Next Step"} arrow> */}
-                        <Tooltip title={isContinueEnabled ? "Click to Proceed to the Next Step" : "Please upload all required documents"} arrow>
-                            <div className={`${isContinueEnabled ? `${style.continue} ${style.marginTop10}` : `${style.continue} ${style.marginTop10} ${style.disabledButton}`}`} onClick={isContinueEnabled ? handleContinue : undefined}>CONTINUE</div>
+                        <Tooltip title={getMissingDocs()?.length === 0 ? "Click to Proceed to the Next Step" : "Please upload all required documents or provide a reason for skipping"} arrow>
+                            <div className={`${getMissingDocs()?.length === 0 ? `${style.continue} ${style.marginTop10}` : `${style.continue} ${style.marginTop10} ${style.disabledButton}`}`} onClick={getMissingDocs()?.length === 0 ? () => handleContinue("continue") : undefined}>CONTINUE</div>
                         </Tooltip>
                         {/* </div> */}
                     </div>

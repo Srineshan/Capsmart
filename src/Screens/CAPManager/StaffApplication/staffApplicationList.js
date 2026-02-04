@@ -7910,7 +7910,7 @@ const StaffApplicationList = ({
                         scrollbarColor: "gray transparent",
                       }}
                     >
-                      <div
+                      {/* <div
                         className={`${style.displayInCol} ${style.marginTop}`}
                       >
                         <div className={`${style.warningTextAlign} ${style.staffTextStyle}`}>
@@ -7918,8 +7918,6 @@ const StaffApplicationList = ({
                             <div className={style.spaceBetween}>
                               <div className={style.DepartmentHeadingTextStyle}>
                                 All Department
-                                {/* (
-                                  {totalCountDept || 0}) */}
                               </div>
                               <KeyboardArrowRightIcon
                                 sx={{ fontSize: 20, color: "#06617A" }}
@@ -7927,7 +7925,7 @@ const StaffApplicationList = ({
                             </div>
                           </div>
                         </div>
-                      </div>
+                      </div> */}
                       <Tooltip title={'Click to View Current Status'} arrow >
                         <div className={`${style.viewCurrentStatusText} ${style.marginTop10} ${style.cursorPointer}`} onClick={() => onClickDepttrackerDialog()}>VIEW CURRENT STATUS</div></Tooltip>
                     </div>
