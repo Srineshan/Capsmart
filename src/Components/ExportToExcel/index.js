@@ -294,7 +294,7 @@ const extractTableTwo = (container, processedRows = new Set()) => {
       }
       // Trim if too many columns
       if (row.length > expectedCols) {
-        row = row.slice(0, expectedCols);
+        row.splice(expectedCols);
       }
 
       // Filter out duplicate rows: rows where the first (and only) non-empty cell 
@@ -321,6 +321,169 @@ const extractTableTwo = (container, processedRows = new Set()) => {
     } else {
       console.warn(`TableTwo: Row ${rowIndex + 1} has no extractable cells.`);
     }
+  });
+
+  return rows;
+};
+
+// Extract data from ReportsApplicantWithAllDataTable (card layout with label-value pairs)
+const extractApplicantWithAllData = (container) => {
+  const rows = [];
+  // Cards: top-level divs with rejectionBorderStyle that contain twoColumnGrid (one per applicant)
+  const allWithBorder = container.querySelectorAll('[class*="rejectionBorderStyle"]');
+  const cards = Array.from(allWithBorder).filter((el) => {
+    const hasGrid = el.querySelector('[class*="twoColumnGrid"]');
+    const isTopCard = el.closest('[class*="rejectionBorderStyle"]') === el;
+    return hasGrid && isTopCard;
+  });
+
+  if (cards.length === 0) return rows;
+
+  const getClassStr = (node) => {
+    if (!node || !node.className) return '';
+    return typeof node.className === 'string' ? node.className : (node.className?.baseVal || '');
+  };
+
+  const getLabelValuePairsFromCard = (card) => {
+    const grid = card.querySelector('[class*="twoColumnGrid"]');
+    if (!grid) return [];
+
+    const pairs = [];
+    const children = Array.from(grid.children);
+
+    children.forEach((child) => {
+      const classStr = getClassStr(child);
+
+      // Name row: only the row that contains the heading (rejectionHeadingTextStyle).
+      // Do not match by "displayInRow" - twoColumnGridInner uses displayInRowCenter which would match.
+      const isNameRow = child.querySelector('[class*="rejectionHeadingTextStyle"]');
+      if (isNameRow) {
+        const nameEl = child.querySelector('[class*="rejectionHeadingTextStyle"]');
+        let name = nameEl ? (nameEl.textContent || '').trim().replace(/\s+/g, ' ') : '';
+        name = name.replace(/,\s*$/, '').trim(); // remove trailing comma after name
+        if (name) pairs.push({ label: 'Name', value: name });
+
+        const typeEl = child.querySelector('[class*="rejectionTextStyle"]:not([class*="rejectionTextStyle1"])');
+        const typeVal = typeEl ? (typeEl.textContent || '').trim().replace(/\s+/g, ' ') : '';
+        if (typeVal) pairs.push({ label: 'Applicant Type', value: typeVal });
+
+        const declinedEl = child.querySelector('[class*="declinedTextStyle"]');
+        if (declinedEl) {
+          const status = (declinedEl.textContent || '').trim();
+          if (status) pairs.push({ label: 'Status', value: status });
+        }
+        return;
+      }
+
+      // twoColumnGridInner: label + value row (dynamic – works with any fields)
+      // Prefer class-based selectors; fallback to structure (first child = label, second = value)
+      if (classStr.includes('twoColumnGridInner')) {
+        const labelEl = child.querySelector('[class*="rejectionTextStyle"]:not([class*="rejectionTextStyle1"])');
+        let valueEl = child.querySelector('[class*="rejectionTextStyle1"]');
+        const directChildren = Array.from(child.children).filter((n) => n.nodeType === 1);
+        let label = labelEl ? (labelEl.textContent || '').trim().replace(/\s+/g, ' ').replace(/:?\s*$/, '') : '';
+        let value = valueEl ? (valueEl.textContent || '').trim().replace(/\s+/g, ' ') : '';
+        if (!label && directChildren.length >= 1) {
+          label = (directChildren[0].textContent || '').trim().replace(/\s+/g, ' ').replace(/:?\s*$/, '');
+        }
+        if (!valueEl && directChildren.length >= 2) {
+          value = (directChildren[1].textContent || '').trim().replace(/\s+/g, ' ');
+        }
+        if (label) pairs.push({ label, value: value || '' });
+      }
+    });
+
+    return pairs;
+  };
+
+  const firstCardPairs = getLabelValuePairsFromCard(cards[0]);
+  if (firstCardPairs.length === 0) return rows;
+
+  const headers = firstCardPairs.map((p) => p.label);
+  rows.push(headers);
+
+  cards.forEach((card) => {
+    const pairs = getLabelValuePairsFromCard(card);
+    const valueByLabel = {};
+    pairs.forEach((p) => { valueByLabel[p.label] = p.value; });
+    const row = headers.map((h) => valueByLabel[h] ?? '');
+    rows.push(row);
+  });
+
+  return rows;
+};
+
+// Extract data from mdReportCard layout (appointmentHistorySummary, medical directives, etc.)
+const extractMdReportCard = (container) => {
+  const rows = [];
+  const cards = Array.from(container.querySelectorAll('[class*="mdReportCard"]')).filter(
+    (el) => el.closest('[class*="mdReportCard"]') === el
+  );
+  if (cards.length === 0) return rows;
+
+  const getLabelValuePairsFromCard = (card) => {
+    const pairs = [];
+
+    const nameEl = card.querySelector('[class*="mdTitle"]');
+    if (nameEl) {
+      let name = (nameEl.textContent || '').trim().replace(/\s+/g, ' ');
+      name = name.replace(/^\d+\.\s*/, '').trim();
+      if (name) pairs.push({ label: 'Name', value: name });
+    }
+
+    const idEl = card.querySelector('[class*="mdId"]');
+    if (idEl) {
+      const id = (idEl.textContent || '').trim().replace(/\s+/g, ' ');
+      if (id) pairs.push({ label: 'ID', value: id });
+    }
+
+    const descEl = card.querySelector('[class*="mdDesc"]');
+    if (descEl) {
+      const desc = (descEl.textContent || '').trim().replace(/\s+/g, ' ');
+      if (desc) pairs.push({ label: 'Description', value: desc });
+    }
+
+    card.querySelectorAll('[class*="mdGrid"]').forEach((grid) => {
+      const labelEl = grid.querySelector('[class*="mdLabel"]');
+      const valueEl = grid.querySelector('[class*="mdValue"]');
+      const label = labelEl ? (labelEl.textContent || '').trim().replace(/\s+/g, ' ').replace(/:?\s*$/, '') : '';
+      const value = valueEl ? (valueEl.textContent || '').trim().replace(/\s+/g, ' ') : '';
+      if (label) pairs.push({ label, value: value || '' });
+    });
+
+    card.querySelectorAll('[class*="mdLabel"]').forEach((labelEl) => {
+      if (labelEl.closest('[class*="mdGrid"]')) return;
+      const parent = labelEl.parentElement;
+      if (!parent) return;
+      const valueEl = parent.querySelector('[class*="mdValue"]');
+      const label = (labelEl.textContent || '').trim().replace(/\s+/g, ' ').replace(/:?\s*$/, '');
+      let value = '';
+      if (valueEl) {
+        const children = Array.from(valueEl.children).filter((c) => c.nodeType === 1);
+        if (children.length > 1) {
+          value = children.map((c) => (c.textContent || '').trim().replace(/\s+/g, ' ')).filter(Boolean).join('\n\n');
+        } else {
+          value = (valueEl.textContent || '').trim().replace(/\s+/g, ' ');
+        }
+      }
+      if (label && !pairs.some((p) => p.label === label)) pairs.push({ label, value: value || '' });
+    });
+
+    return pairs;
+  };
+
+  const firstCardPairs = getLabelValuePairsFromCard(cards[0]);
+  if (firstCardPairs.length === 0) return rows;
+
+  const headers = firstCardPairs.map((p) => p.label);
+  rows.push(headers);
+
+  cards.forEach((card) => {
+    const pairs = getLabelValuePairsFromCard(card);
+    const valueByLabel = {};
+    pairs.forEach((p) => { valueByLabel[p.label] = p.value; });
+    const row = headers.map((h) => valueByLabel[h] ?? '');
+    rows.push(row);
   });
 
   return rows;
@@ -479,6 +642,26 @@ export const toExcel = (selector, filename) => {
       }
     });
 
+    // 4. Extract ReportsApplicantWithAllDataTable (card layout with label-value pairs)
+    const applicantWithAllDataRows = extractApplicantWithAllData(container);
+    if (applicantWithAllDataRows.length > 0) {
+      const ws = XLSX.utils.aoa_to_sheet(applicantWithAllDataRows);
+      formatWorksheet(ws, applicantWithAllDataRows);
+      const sheetName = `Table_${++sheetIndex}`;
+      XLSX.utils.book_append_sheet(wb, ws, sheetName.substring(0, 31));
+      console.log(`Excel export: Added ApplicantWithAllData sheet "${sheetName}" with ${applicantWithAllDataRows.length} rows`);
+    }
+
+    // 5. Extract mdReportCard layout (appointmentHistorySummary, medical directives, etc.)
+    const mdReportCardRows = extractMdReportCard(container);
+    if (mdReportCardRows.length > 0) {
+      const ws = XLSX.utils.aoa_to_sheet(mdReportCardRows);
+      formatWorksheet(ws, mdReportCardRows);
+      const sheetName = `Table_${++sheetIndex}`;
+      XLSX.utils.book_append_sheet(wb, ws, sheetName.substring(0, 31));
+      console.log(`Excel export: Added MdReportCard sheet "${sheetName}" with ${mdReportCardRows.length} rows`);
+    }
+
     if (wb.SheetNames.length === 0) {
       console.error('Excel export: No sheets created');
       alert('No data found to export. Make sure the report has loaded.');
@@ -564,4 +747,20 @@ const exportCsvFromTables = (selector, filename) => {
       }
     }
   });
+
+  // ReportsApplicantWithAllDataTable (card layout)
+  const applicantWithAllDataRows = extractApplicantWithAllData(container);
+  if (applicantWithAllDataRows.length > 0) {
+    const csv = applicantWithAllDataRows.map((r) => r.map(escapeCsvCell).join(',')).join('\n');
+    const outFilename = `${filename || 'report'}_Table_${++fileIndex}.csv`;
+    downloadBlob(new Blob([csv], { type: 'text/csv;charset=utf-8;' }), outFilename);
+  }
+
+  // mdReportCard layout (appointmentHistorySummary, medical directives, etc.)
+  const mdReportCardRows = extractMdReportCard(container);
+  if (mdReportCardRows.length > 0) {
+    const csv = mdReportCardRows.map((r) => r.map(escapeCsvCell).join(',')).join('\n');
+    const outFilename = `${filename || 'report'}_Table_${++fileIndex}.csv`;
+    downloadBlob(new Blob([csv], { type: 'text/csv;charset=utf-8;' }), outFilename);
+  }
 };
