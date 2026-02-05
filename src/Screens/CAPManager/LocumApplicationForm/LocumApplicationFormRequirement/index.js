@@ -1086,6 +1086,17 @@ const LocumApplicationFormRequirement = () => {
         }
     };
 
+    const uploadFormIndex = basicForm?.forms?.findIndex((f) => f?.schemaCategory === 'UploadYourDoc') ?? -1;
+    const uploadTable = (uploadFormIndex >= 0 && basicForm?.forms?.[uploadFormIndex]?.data?.table) ? basicForm.forms[uploadFormIndex].data.table : [];
+
+    const documentsToShow = (basicForm?.documentsRequired || []).filter((data) => {
+        const matchingRows = (uploadTable || []).filter(
+            (row) => row?.documentType === data?.document?.shortName
+        );
+        const hasValidVerified = matchingRows.some((row) => row?.verified && row?.valid);
+        return !hasValidVerified;
+    });
+
     const getIsDocRequired = (data) => {
         if (!data?.departmentSpecific) {
             return data?.document?.shortName === "Profile Picture" ? "Optional" : data?.required ? 'Required' : 'Recommended';
@@ -1322,22 +1333,30 @@ const LocumApplicationFormRequirement = () => {
                                     </div>
                                     <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
                                         <div className={style.titleTextStyle}> List of Documents to Complete this Application</div>
-                                        <div className={`${style.tableHeader} ${style.tableGrid} ${style.marginTop}`}>
-                                            <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}>Document Type</div>
-                                            <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}> </div>
-                                            <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}></div>
-                                        </div>
-                                        {basicForm?.documentsRequired?.map((data, index) => (
-                                            <div>
-                                                <div className={`${style.requiredDocumentCard} ${style.tableGrid} ${index % 2 === 0 ? style.requiredDocumentCardAlternativeColor : ''}  ${style.marginTop5}`}>
-                                                    <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
-                                                        <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.document?.shortName}</div>
-                                                    </div>
-                                                    <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{getIsDocRequired(data)}</div>
-                                                    <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.instruction}</div>
+                                        {documentsToShow?.length > 0 ? (
+                                            <>
+                                                <div className={`${style.tableHeader} ${style.tableGrid} ${style.marginTop}`}>
+                                                    <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}>Document Type</div>
+                                                    <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}> </div>
+                                                    <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}></div>
                                                 </div>
+                                                {documentsToShow?.map((data, index) => (
+                                                    <div key={data?.document?.id ?? index}>
+                                                        <div className={`${style.requiredDocumentCard} ${style.tableGrid} ${index % 2 === 0 ? style.requiredDocumentCardAlternativeColor : ''}  ${style.marginTop5}`}>
+                                                            <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
+                                                                <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.document?.shortName}</div>
+                                                            </div>
+                                                            <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{getIsDocRequired(data)}</div>
+                                                            <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.instruction}</div>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </>
+                                        ) : (basicForm?.documentsRequired?.length > 0 ? (
+                                            <div className={`${style.allDocumentsCompleteMessage} ${style.marginTop}`}>
+                                                All required documents have been uploaded and verified.
                                             </div>
-                                        ))}
+                                        ) : null)}
                                     </div>
 
                                 </div>
