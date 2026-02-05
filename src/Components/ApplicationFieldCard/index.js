@@ -123,7 +123,9 @@ const ApplicationFieldCard = ({
   const addMoreRef = useRef(null);
   const autocompleteService = useRef(null);
   const placesService = useRef(null);
+  const geocoder = useRef(null);
   const [options, setOptions] = useState([]);
+  const streetNameSelectedRef = useRef(false);
 
   const referenceRadioColor = {
     'OUTSTANDING': '#14B15A',
@@ -148,14 +150,35 @@ const ApplicationFieldCard = ({
   }, [step])
 
   useEffect(() => {
-    if (window.google && !autocompleteService.current) {
-      autocompleteService.current =
-        new window.google.maps.places.AutocompleteService();
+    const initGoogleServices = () => {
+      if (window.google && window.google.maps) {
+        if (!autocompleteService.current) {
+          autocompleteService.current =
+            new window.google.maps.places.AutocompleteService();
 
-      placesService.current = new window.google.maps.places.PlacesService(
-        document.createElement("div")
-      );
-    }
+          placesService.current = new window.google.maps.places.PlacesService(
+            document.createElement("div")
+          );
+        }
+        
+        if (!geocoder.current) {
+          geocoder.current = new window.google.maps.Geocoder();
+        }
+      }
+    };
+
+    // Try to initialize immediately
+    initGoogleServices();
+
+    // Also check periodically in case Google Maps loads later
+    const interval = setInterval(() => {
+      if (window.google && window.google.maps && (!geocoder.current || !autocompleteService.current)) {
+        initGoogleServices();
+        clearInterval(interval);
+      }
+    }, 100);
+
+    return () => clearInterval(interval);
   }, []);
 
 
@@ -299,12 +322,6 @@ const ApplicationFieldCard = ({
     []
   );
 
-  useEffect(() => {
-    return () => {
-      fetchAddresses.cancel();
-    };
-  }, [fetchAddresses]);
-
   const handleAddressSelect = (path, value, basePath) => {
     if (!value || !placesService.current) return;
 
@@ -315,6 +332,12 @@ const ApplicationFieldCard = ({
     const clean = (v) => v?.trim?.();
 
     const addressText = value?.structured_formatting?.main_text;
+
+    // Mark that streetName was selected to prevent pinCode geocoding from overwriting
+    streetNameSelectedRef.current = true;
+    setTimeout(() => {
+      streetNameSelectedRef.current = false;
+    }, 2000); // Reset after 2 seconds
 
     placesService.current.getDetails(
       { placeId: value.place_id },
@@ -382,6 +405,108 @@ const ApplicationFieldCard = ({
       }
     );
   };
+
+  const fetchCityProvinceFromPostalCode = useMemo(
+    () =>
+      debounce((postalCode, basePath) => {
+        if (!postalCode || streetNameSelectedRef.current) {
+          console.log('Skipping geocoding - no postal code or streetName was recently selected');
+          return;
+        }
+        
+        // Wait for geocoder to be initialized
+        if (!window.google || !window.google.maps) {
+          console.warn('Google Maps not loaded yet');
+          return;
+        }
+        
+        if (!geocoder.current) {
+          console.warn('Geocoder not initialized, initializing now...');
+          geocoder.current = new window.google.maps.Geocoder();
+        }
+
+        // Clean and validate Canadian postal code format
+        const cleanPostalCode = postalCode.replace(/\s+/g, '').toUpperCase();
+        
+        // Validate format: must be exactly 6 characters A1A1A1
+        if (cleanPostalCode.length !== 6 || !/^[A-Z]\d[A-Z]\d[A-Z]\d$/.test(cleanPostalCode)) {
+          console.log('Invalid postal code format:', postalCode, cleanPostalCode);
+          return;
+        }
+        
+        // Format with space for geocoding: A1A 1A1
+        const formattedPostalCode = `${cleanPostalCode.slice(0, 3)} ${cleanPostalCode.slice(3, 6)}`;
+
+        console.log('Geocoding postal code:', formattedPostalCode, 'basePath:', basePath, 'baseKey:', baseKey);
+
+        geocoder.current.geocode(
+          { address: formattedPostalCode, region: 'CA' },
+          (results, status) => {
+            console.log('Geocoding result:', status, results);
+            if (status === 'OK' && results && results.length > 0) {
+              const result = results[0];
+              const components = result.address_components || [];
+
+              const getComponent = (type) =>
+                components.find((c) => c.types.includes(type))?.long_name || "";
+
+              const city =
+                getComponent("locality") ||
+                getComponent("administrative_area_level_2");
+              const province = getComponent("administrative_area_level_1");
+
+              console.log('Extracted city:', city, 'province:', province);
+
+              if (city || province) {
+                setBasicForm((prev) => {
+                  const newData = structuredClone(prev);
+                  const clean = (v) => v?.trim?.();
+                  // Use basePath if provided, otherwise use baseKey (which should be the parent path like "homeAddress")
+                  const parentPath = basePath ? clean(basePath) : (baseKey ? clean(baseKey) : "");
+
+                  console.log('Updating form with parentPath:', parentPath, 'basicpath:', basicpath, 'basePath:', basePath, 'baseKey:', baseKey);
+
+                  if (parentPath) {
+                    if (city) {
+                      setNestedValue(newData, `${parentPath}.city`, city);
+                      setNestedValue(
+                        newData,
+                        `${basicpath}.${parentPath}.city`,
+                        city
+                      );
+                    }
+                    if (province) {
+                      setNestedValue(newData, `${parentPath}.province`, province);
+                      setNestedValue(
+                        newData,
+                        `${basicpath}.${parentPath}.province`,
+                        province
+                      );
+                    }
+                  } else {
+                    console.warn('No parentPath found, cannot update city/province. basePath:', basePath, 'baseKey:', baseKey);
+                  }
+
+                  return newData;
+                });
+              } else {
+                console.warn('No city or province found in geocoding results');
+              }
+            } else {
+              console.warn('Geocoding failed:', status, results);
+            }
+          }
+        );
+      }, 500),
+    []
+  );
+
+  useEffect(() => {
+    return () => {
+      fetchAddresses.cancel();
+      fetchCityProvinceFromPostalCode.cancel();
+    };
+  }, [fetchAddresses, fetchCityProvinceFromPostalCode]);
 
 
   const setNestedValue = async (obj, path, value) => {
@@ -2256,26 +2381,29 @@ const ApplicationFieldCard = ({
                     //   refsMap.current?.[basicForm,`${basicpath}.${baseKey}.${fieldKey}`]
                     // }
                     className={style.fullWidth}
-                    onChange={(e) =>
-                      handleChange(
-                        fieldKey,
-                        fieldData.type === "number"
-                          ? parseInt(
-                            e.target.value <= fieldData.maximum
+                    onChange={(e) => {
+                      const newValue = fieldData.type === "number"
+                        ? parseInt(
+                          e.target.value <= fieldData.maximum
+                            ? e.target.value
+                            : fieldData.maximum
+                        )
+                        : fieldKey === "pinCode"
+                          ? FormatPostalCode(e.target.value)
+                          : fieldData.type === "string" &&
+                            fieldData.maxLength !== 0
+                            ? e.target.value.length <= fieldData.maxLength
                               ? e.target.value
-                              : fieldData.maximum
-                          )
-                          : fieldKey === "pinCode"
-                            ? FormatPostalCode(e.target.value)
-                            : fieldData.type === "string" &&
-                              fieldData.maxLength !== 0
-                              ? e.target.value.length <= fieldData.maxLength
-                                ? e.target.value
-                                : e.target.value.slice(0, fieldData.maxLength)
-                              : e.target.value,
-                        baseKey
-                      )
-                    }
+                              : e.target.value.slice(0, fieldData.maxLength)
+                            : e.target.value;
+                      
+                      handleChange(fieldKey, newValue, baseKey);
+                      
+                      // Trigger geocoding when pinCode is entered
+                      if (fieldKey === "pinCode" && newValue) {
+                        fetchCityProvinceFromPostalCode(newValue, baseKey);
+                      }
+                    }}
                     maxLength={TEXTFIELDLEN50}
                     placeholder={
                       fieldData.placeHolder !== null
