@@ -1,10 +1,79 @@
 import * as XLSX from 'xlsx';
 
+// Excel sheet names: max 31 chars, cannot contain \ / * ? : [ ]
+const SANITIZE_SHEET_NAME_RE = /[\\/*?:\[\]]/g;
+const MAX_SHEET_NAME_LENGTH = 31;
+
+/**
+ * Sanitize and truncate a string for use as an Excel sheet name. Ensures uniqueness.
+ * @param {string} name - Raw title
+ * @param {Set<string>} usedNames - Set of already-used sheet names (mutated to add new name)
+ * @returns {string}
+ */
+const sanitizeSheetName = (name, usedNames = new Set()) => {
+  if (!name || typeof name !== 'string') return 'Sheet';
+  let safe = name.replace(SANITIZE_SHEET_NAME_RE, ' ').replace(/\s+/g, ' ').trim();
+  if (!safe) return 'Sheet';
+  safe = safe.substring(0, MAX_SHEET_NAME_LENGTH);
+  let final = safe;
+  let n = 1;
+  while (usedNames.has(final)) {
+    const suffix = ` (${n})`;
+    final = (safe.substring(0, MAX_SHEET_NAME_LENGTH - suffix.length) + suffix).substring(0, MAX_SHEET_NAME_LENGTH);
+    n += 1;
+  }
+  usedNames.add(final);
+  return final;
+};
+
+/**
+ * Find the title for a report section: nearest preceding element with tableTitleTextStyle (title on top of table).
+ * If none (e.g. map of tables), use report title.
+ * @param {Element} element - Table or section container
+ * @param {Element} container - Report root (e.g. .Report)
+ * @param {string} reportTitle - Fallback when no table title is found
+ * @returns {string}
+ */
+const getTitleForElement = (element, container, reportTitle) => {
+  if (!element || !container) return reportTitle || 'Report';
+  let parent = element.parentElement;
+  while (parent && parent !== container) {
+    const siblings = Array.from(parent.children);
+    const idx = siblings.indexOf(element);
+    // Prefer tableTitleTextStyle (title on top of this table)
+    for (let i = idx - 1; i >= 0; i--) {
+      const el = siblings[i];
+      const titleEl = el.matches?.('[class*="tableTitleTextStyle"]') ? el : el.querySelector?.('[class*="tableTitleTextStyle"]');
+      if (titleEl) {
+        const text = (titleEl.textContent || '').trim();
+        if (text) return text;
+      }
+    }
+    element = parent;
+    parent = parent.parentElement;
+  }
+  return reportTitle || 'Report';
+};
+
+/**
+ * Prepend the sheet title as a heading row at the top of the data.
+ * @param {string} title - Title to show as heading (full text, not truncated)
+ * @param {Array<Array>} rows - Data rows
+ * @returns {Array<Array>}
+ */
+const rowsWithHeading = (title, rows) => {
+  if (!title || !rows?.length) return rows || [];
+  const colCount = Math.max(...rows.map((r) => r.length), 1);
+  const headingRow = [title, ...Array(Math.max(0, colCount - 1)).fill('')];
+  return [headingRow, ...rows];
+};
+
 /**
  * Extract table data from a DOM element (e.g. .Report) and export to Excel.
  * Each <table> becomes a sheet. Chart data is not captured (only HTML tables).
  * @param {string} selector - CSS selector for the container (e.g. ".Report")
  * @param {string} filename - Output filename without extension
+ * @param {string} [reportTitle] - Report title; used as sheet name when no title is found above a table
  */
 // Extract data from HTML table
 const extractHtmlTable = (table) => {
@@ -517,13 +586,12 @@ const formatWorksheet = (ws, rows) => {
 
   ws['!cols'] = colWidths;
 
-  // Freeze header row (first row) - freeze panes may not be supported in all SheetJS versions
-  // Try to set freeze panes (may not work in community edition)
+  // Freeze title row (1) and header row (2) so they stay visible and are not included in sort
   try {
     ws['!freeze'] = {
-      xSplit: "0",
-      ySplit: "1",
-      topLeftCell: "A2",
+      xSplit: 0,
+      ySplit: 2,
+      topLeftCell: "A3",
       activePane: "bottomRight",
       state: "frozen"
     };
@@ -531,39 +599,63 @@ const formatWorksheet = (ws, rows) => {
     console.warn('Freeze panes not supported in this version of SheetJS');
   }
 
-  // Format header row (make it bold with background color)
-  if (rows.length > 0) {
-    const headerRow = rows[0];
-    headerRow.forEach((_, colIndex) => {
-      const cellAddress = XLSX.utils.encode_cell({ r: 0, c: colIndex });
-      if (!ws[cellAddress]) {
-        // Create cell if it doesn't exist
-        ws[cellAddress] = { t: 's', v: headerRow[colIndex] || '' };
-      }
-
-      // Get existing cell
-      const cell = ws[cellAddress];
-
-      // Apply formatting
-      ws[cellAddress] = {
-        ...cell,
-        s: {
-          font: { bold: true },
-          fill: { fgColor: { rgb: "E0E0E0" } }, // Light gray background
-          alignment: { horizontal: "center", vertical: "center" },
-          border: {
-            top: { style: "thin", color: { rgb: "000000" } },
-            bottom: { style: "thin", color: { rgb: "000000" } },
-            left: { style: "thin", color: { rgb: "000000" } },
-            right: { style: "thin", color: { rgb: "000000" } }
-          }
-        }
+  // Autofilter from row 2 (header) so Excel treats row 1 as title, row 2 as table header; sorting only affects data rows (3+)
+  if (rows.length >= 2) {
+    const dataEndRow = rows.length - 1;
+    const dataEndCol = Math.max(0, maxCols - 1);
+    try {
+      ws['!autofilter'] = {
+        ref: XLSX.utils.encode_range({ s: { r: 1, c: 0 }, e: { r: dataEndRow, c: dataEndCol } })
       };
+    } catch (e) {
+      console.warn('Autofilter not set:', e);
+    }
+  }
+
+  // Style row 0 as sheet heading (title): bold, larger font, background
+  if (rows.length > 0) {
+    const headingRow = rows[0];
+    const headingStyle = {
+      font: { bold: true, sz: 14 },
+      fill: { fgColor: { rgb: "D0D0D0" } },
+      alignment: { horizontal: "left", vertical: "center", wrapText: false },
+      border: {
+        top: { style: "thin", color: { rgb: "000000" } },
+        bottom: { style: "thin", color: { rgb: "000000" } },
+        left: { style: "thin", color: { rgb: "000000" } },
+        right: { style: "thin", color: { rgb: "000000" } }
+      }
+    };
+    headingRow.forEach((_, colIndex) => {
+      const cellAddress = XLSX.utils.encode_cell({ r: 0, c: colIndex });
+      const cell = ws[cellAddress] || { t: 's', v: headingRow[colIndex] ?? '' };
+      ws[cellAddress] = { ...cell, s: headingStyle };
+    });
+  }
+
+  // Style row 1 as table header (column headers) so it's distinct and fixed with title
+  if (rows.length >= 2) {
+    const headerRow = rows[1];
+    const headerStyle = {
+      font: { bold: true },
+      fill: { fgColor: { rgb: "E8E8E8" } },
+      alignment: { horizontal: "center", vertical: "center" },
+      border: {
+        top: { style: "thin", color: { rgb: "000000" } },
+        bottom: { style: "thin", color: { rgb: "000000" } },
+        left: { style: "thin", color: { rgb: "000000" } },
+        right: { style: "thin", color: { rgb: "000000" } }
+      }
+    };
+    headerRow.forEach((_, colIndex) => {
+      const cellAddress = XLSX.utils.encode_cell({ r: 1, c: colIndex });
+      const cell = ws[cellAddress] || { t: 's', v: headerRow[colIndex] ?? '' };
+      ws[cellAddress] = { ...cell, s: headerStyle };
     });
   }
 };
 
-export const toExcel = (selector, filename) => {
+export const toExcel = (selector, filename, reportTitle = 'Report') => {
   try {
     const container = document.querySelector(selector);
     if (!container) {
@@ -573,7 +665,7 @@ export const toExcel = (selector, filename) => {
     }
 
     const wb = XLSX.utils.book_new();
-    let sheetIndex = 0;
+    const usedSheetNames = new Set();
 
     // 1. Extract HTML tables
     const htmlTables = container.querySelectorAll('table');
@@ -582,10 +674,12 @@ export const toExcel = (selector, filename) => {
     htmlTables.forEach((table) => {
       const rows = extractHtmlTable(table);
       if (rows.length > 0) {
-        const ws = XLSX.utils.aoa_to_sheet(rows);
-        formatWorksheet(ws, rows);
-        const sheetName = `Table_${++sheetIndex}`;
-        XLSX.utils.book_append_sheet(wb, ws, sheetName.substring(0, 31));
+        const title = getTitleForElement(table, container, reportTitle);
+        const dataRows = rowsWithHeading(title, rows);
+        const ws = XLSX.utils.aoa_to_sheet(dataRows);
+        formatWorksheet(ws, dataRows);
+        const sheetName = sanitizeSheetName(title, usedSheetNames);
+        XLSX.utils.book_append_sheet(wb, ws, sheetName);
         console.log(`Excel export: Added HTML table sheet "${sheetName}" with ${rows.length} rows`);
       }
     });
@@ -611,10 +705,12 @@ export const toExcel = (selector, filename) => {
           // Verify rows structure: each row should be an array of cells
           console.log(`Excel export: ReportsTable has ${rows.length} rows, first row has ${rows[0]?.length || 0} columns`);
 
-          const ws = XLSX.utils.aoa_to_sheet(rows);
-          formatWorksheet(ws, rows);
-          const sheetName = `Table_${++sheetIndex}`;
-          XLSX.utils.book_append_sheet(wb, ws, sheetName.substring(0, 31));
+          const title = getTitleForElement(reportsTableContainer, container, reportTitle);
+          const dataRows = rowsWithHeading(title, rows);
+          const ws = XLSX.utils.aoa_to_sheet(dataRows);
+          formatWorksheet(ws, dataRows);
+          const sheetName = sanitizeSheetName(title, usedSheetNames);
+          XLSX.utils.book_append_sheet(wb, ws, sheetName);
           console.log(`Excel export: Added ReportsTable sheet "${sheetName}" with ${rows.length} rows`);
         }
       }
@@ -633,10 +729,12 @@ export const toExcel = (selector, filename) => {
         processedContainers.add(parent);
         const rows = extractTableTwo(parent, processedRows);
         if (rows.length > 0) {
-          const ws = XLSX.utils.aoa_to_sheet(rows);
-          formatWorksheet(ws, rows);
-          const sheetName = `Table_${++sheetIndex}`;
-          XLSX.utils.book_append_sheet(wb, ws, sheetName.substring(0, 31));
+          const title = getTitleForElement(parent, container, reportTitle);
+          const dataRows = rowsWithHeading(title, rows);
+          const ws = XLSX.utils.aoa_to_sheet(dataRows);
+          formatWorksheet(ws, dataRows);
+          const sheetName = sanitizeSheetName(title, usedSheetNames);
+          XLSX.utils.book_append_sheet(wb, ws, sheetName);
           console.log(`Excel export: Added TableTwo sheet "${sheetName}" with ${rows.length} rows`);
         }
       }
@@ -645,20 +743,26 @@ export const toExcel = (selector, filename) => {
     // 4. Extract ReportsApplicantWithAllDataTable (card layout with label-value pairs)
     const applicantWithAllDataRows = extractApplicantWithAllData(container);
     if (applicantWithAllDataRows.length > 0) {
-      const ws = XLSX.utils.aoa_to_sheet(applicantWithAllDataRows);
-      formatWorksheet(ws, applicantWithAllDataRows);
-      const sheetName = `Table_${++sheetIndex}`;
-      XLSX.utils.book_append_sheet(wb, ws, sheetName.substring(0, 31));
+      const applicantSection = container.querySelector('[class*="applicantWithAllData"], [class*="ReportApplicantWithAllData"]') || container;
+      const title = getTitleForElement(applicantSection, container, reportTitle);
+      const dataRows = rowsWithHeading(title, applicantWithAllDataRows);
+      const ws = XLSX.utils.aoa_to_sheet(dataRows);
+      formatWorksheet(ws, dataRows);
+      const sheetName = sanitizeSheetName(title, usedSheetNames);
+      XLSX.utils.book_append_sheet(wb, ws, sheetName);
       console.log(`Excel export: Added ApplicantWithAllData sheet "${sheetName}" with ${applicantWithAllDataRows.length} rows`);
     }
 
     // 5. Extract mdReportCard layout (appointmentHistorySummary, medical directives, etc.)
     const mdReportCardRows = extractMdReportCard(container);
     if (mdReportCardRows.length > 0) {
-      const ws = XLSX.utils.aoa_to_sheet(mdReportCardRows);
-      formatWorksheet(ws, mdReportCardRows);
-      const sheetName = `Table_${++sheetIndex}`;
-      XLSX.utils.book_append_sheet(wb, ws, sheetName.substring(0, 31));
+      const mdReportSection = container.querySelector('[class*="mdReportCard"], [class*="appointmentHistorySummary"]') || container;
+      const title = getTitleForElement(mdReportSection, container, reportTitle);
+      const dataRows = rowsWithHeading(title, mdReportCardRows);
+      const ws = XLSX.utils.aoa_to_sheet(dataRows);
+      formatWorksheet(ws, dataRows);
+      const sheetName = sanitizeSheetName(title, usedSheetNames);
+      XLSX.utils.book_append_sheet(wb, ws, sheetName);
       console.log(`Excel export: Added MdReportCard sheet "${sheetName}" with ${mdReportCardRows.length} rows`);
     }
 

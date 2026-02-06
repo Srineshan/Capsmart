@@ -602,7 +602,7 @@ const ReportTypeOverview = () => {
 
     const getIsExcelClicked = (value) => {
         if (value) {
-            toExcel(".Report", `${reportTitleList[reportType]}_Created_By_${userDetail?.userName}_${format(new Date(), 'MM_dd_yy')}`);
+            toExcel(".Report", `${reportTitleList[reportType]}_Created_By_${userDetail?.userName}_${format(new Date(), 'MM_dd_yy')}`, reportTitleList[reportType]);
         }
     }
 
@@ -5588,7 +5588,7 @@ const ReportTypeOverview = () => {
                                                                                     }]} categories={locumTermExpirationSummary?.map(data => data?.month ? format(new Date(data?.month), 'MMM yyyy') : '') || []} reportingPeriod={``} yAxisTitle="Staff Count" xAxisTitle="Expired Locum Staff That Were Not Renewed" />
                                                                                     {locumTermExpirationSummary?.map(data => (
                                                                                         <>
-                                                                                            <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} `}>{format(new Date(data?.month), 'MMMM, yyyy')}</div>
+                                                                                            <div className={`${style.tableTitleTextStyle} ${style.textAlignLeft} ${style.marginTop20} `}>{format(new Date(data?.month), 'MMMM, yyyy')}</div>
                                                                                             <TableTwo
                                                                                                 tableHeaderValues={headerValuesLocumTermExpiration}
                                                                                                 tableDataValues={getLocumTermExpirationTableValues(data?.staffs)}
@@ -5615,7 +5615,7 @@ const ReportTypeOverview = () => {
                                                                                     }]} categories={renewedLocumStaff?.map(data => data?.month ? format(new Date(data?.month), 'MMM yyyy') : '') || []} reportingPeriod={``} yAxisTitle="Staff Count" xAxisTitle="Renewed Locum Staff" />
                                                                                     {renewedLocumStaff?.map(data => (
                                                                                         <>
-                                                                                            <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} `}>{format(new Date(data?.month), 'MMMM, yyyy')}</div>
+                                                                                            <div className={`${style.tableTitleTextStyle} ${style.textAlignLeft} ${style.marginTop20} `}>{format(new Date(data?.month), 'MMMM, yyyy')}</div>
                                                                                             <TableTwo
                                                                                                 tableHeaderValues={headerValuesRenewedLocumStaff}
                                                                                                 tableDataValues={getRenewedLocumStaffTableValues(data?.staffs)}
@@ -5642,7 +5642,7 @@ const ReportTypeOverview = () => {
                                                                                     }]} categories={newStaffAppointmentsSummary?.map(data => data?.month ? format(new Date(data?.month), 'MMM yyyy') : '') || []} reportingPeriod={``} yAxisTitle="Staff Count" xAxisTitle="New Staff Appointments" />
                                                                                     {newStaffAppointmentsSummary?.map(data => (
                                                                                         <>
-                                                                                            <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} `}>{format(new Date(data?.month), 'MMMM, yyyy')}</div>
+                                                                                            <div className={`${style.tableTitleTextStyle} ${style.textAlignLeft} ${style.marginTop20} `}>{format(new Date(data?.month), 'MMMM, yyyy')}</div>
                                                                                             <TableTwo
                                                                                                 tableHeaderValues={headerValuesNewStaffReappointments}
                                                                                                 tableDataValues={getNewStaffReappointmentsTableValues(data?.staffs)}
@@ -5669,7 +5669,7 @@ const ReportTypeOverview = () => {
                                                                                     }]} categories={inactiveStaffSummaryByMonth?.map(data => data?.month ? format(new Date(data?.month), 'MMM yyyy') : '') || []} reportingPeriod={``} yAxisTitle="Staff Count" xAxisTitle="Inactive Staff Summary" />
                                                                                     {inactiveStaffSummaryByMonth?.map(data => (
                                                                                         <>
-                                                                                            <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop20} `}>{format(new Date(data?.month), 'MMMM, yyyy')}</div>
+                                                                                            <div className={`${style.tableTitleTextStyle} ${style.textAlignLeft} ${style.marginTop20} `}>{format(new Date(data?.month), 'MMMM, yyyy')}</div>
                                                                                             <TableTwo
                                                                                                 tableHeaderValues={headerValuesInactiveStaffSummaryByMonth}
                                                                                                 tableDataValues={getInactiveStaffSummaryByMonthTableValues(data?.staffs)}
