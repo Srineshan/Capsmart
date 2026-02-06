@@ -602,7 +602,7 @@ const ReportTypeOverview = () => {
 
     const getIsExcelClicked = (value) => {
         if (value) {
-            toExcel(".Report", `${reportTitleList[reportType]}_${userDetail?.userName}_${format(new Date(), 'MM_dd_yy')}`);
+            toExcel(".Report", `${reportTitleList[reportType]}_Created_By_${userDetail?.userName}_${format(new Date(), 'MM_dd_yy')}`);
         }
     }
 
@@ -4373,16 +4373,16 @@ const ReportTypeOverview = () => {
                                                 <div className={`${style.marginTop20} ${style.reportTypeParamsBackground}`}>
                                                     <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop5} `}>Reporting Parameters Applied</div>
                                                     {((reportType === "currentMedicalDirectives" || reportType === "retiredMedicalDirectives" || reportType === "workflow" || reportType === "medicalDirectivesTracker" || reportType === "upcomingForReview" || reportType === "currentPolicyAndProcedures" || reportType === "retiredPolicyAndProcedures" || reportType === "policyAndProceduresWorkflow" || reportType === "policyAndProceduresTracker" || reportType === "policyAndProceduresUpcomingForReview") && reportType !== "attestationOutstanding" && reportType !== "policyAndProceduresAttestationOutstanding") && (
-                                                        <div className={`${style.grid4} ${style.marginTop20} `}>
+                                                        <div className={`${style.grid3} ${style.marginTop20} `}>
                                                             {reportType !== "medicalDirectivesTracker" && (
                                                                 <div>
                                                                     <div className={`${style.reportRunByParamStyle} ${style.marginTop5}`}>
                                                                         {(dataToUseInReport?.selectedDepartmentsToSend?.length === 1 &&
                                                                             dataToUseInReport?.selectedDepartmentsToSend[0]?.departmentName?.name)
-                                                                            ? 'Department'
-                                                                            : 'Departments'}
+                                                                            ? 'Department / Specialty'
+                                                                            : 'Departments / Specialties'}
                                                                     </div>
-                                                                    <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.serviceArea ? `${data?.departmentName?.name || ''} / ${data?.serviceArea?.name || ''}` : data?.departmentName?.name).filter(Boolean).join(', ') || 'All Departments'}</div>
+                                                                    <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.serviceArea ? `${data?.departmentName?.name || ''} / ${data?.serviceArea?.name || ''}` : data?.departmentName?.name).filter(Boolean).join(', ') || 'All Departments / Specialties'}</div>
                                                                 </div>
                                                             )}
                                                             {(reportType !== "currentMedicalDirectives" && reportType !== "medicalDirectivesTracker" && reportType !== "currentPolicyAndProcedures") && (
@@ -4433,7 +4433,7 @@ const ReportTypeOverview = () => {
                                                         reportType === "declinedOrNotRenewedStaffSummary" || reportType === "reappointmentApplicationNotStarted" || reportType === "currentNotesSummary" || reportType === "staffReappointmentStatusSummary" || reportType === "staffbyTypes" || reportType === "locumStaffRenewalStatusTracker" || reportType === "locumStaffbyTypes" || reportType === "privilegedStaffSummary" || reportType === "careProvidersSummary"
                                                         || reportType === "expiredDocumentsSummaryForStaff" || reportType === "documentsExpirationSummaryForStaff" || reportType === "appointmentHistorySummary" || reportType === "inactiveStaffSummary"
                                                         || reportType === "newStaffAppointmentsSummary" || reportType === "inactiveStaffSummaryByMonth" || reportType === "staffUploadedDocumentsSummary" || reportType === "locumTermExpirationSummary" || reportType === "renewedLocumStaff") ? (
-                                                        <div className={`${style.grid4} ${style.marginTop20} `}>
+                                                        <div className={`${style.grid3} ${style.marginTop20} `}>
                                                             {/* {reportType === "staffReappointmentsNotes" && (
                                                         <div>
                                                             <div className={`${style.reportRunByParamStyle} ${style.marginTop5} `}>{reportType === "staffReappointmentsNotes" ? 'Renewal' : 'Expiration'} Time Frame </div>
@@ -4448,8 +4448,8 @@ const ReportTypeOverview = () => {
                                                                 <div className={`${style.reportRunByParamStyle} ${style.marginTop5}`}>
                                                                     {(dataToUseInReport?.selectedDepartmentsToSend?.length === 1 &&
                                                                         dataToUseInReport?.selectedDepartmentsToSend[0]?.departmentName?.name)
-                                                                        ? 'Department'
-                                                                        : 'Departments'}
+                                                                        ? 'Department / Specialty'
+                                                                        : 'Departments / Specialties'}
                                                                 </div>
                                                                 <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.serviceArea ? `${data?.departmentName?.name || ''} / ${data?.serviceArea?.name || ''}` : data?.departmentName?.name).filter(Boolean).join(', ') || 'All Departments'}</div>
                                                             </div>

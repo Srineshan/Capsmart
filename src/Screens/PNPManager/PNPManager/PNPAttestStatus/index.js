@@ -349,7 +349,7 @@ const PNPAttestStatus = () => {
                 {selectedGroup?.members?.map((data, index) => (
                     <div className={`${style.dialogTableGrid} ${style.marginTop} ${style.verticalAlignCenter}`}>
                         <div className={data?.attestationDetail?.status === "COMPLETED" ? style.darkGreenDotStyle : style.redDotStyle}></div>
-                        <div>{data?.attestationDetail?.attestationLog?.user?.name?.firstName}</div>
+                        <div>{`${data?.user?.name?.firstName} ${data?.user?.name?.lastName}`}</div>
                         <div>{data?.user?.title ? data?.user?.title?.title : '-'}</div>
                         <div>{data?.user?.departments?.map(data => data?.name)?.join(', ')}</div>
                         <div>{data?.attestationDetail?.dueDate ? format(new Date(data?.attestationDetail?.dueDate), 'MMM dd, yyyy') : '-'}</div>

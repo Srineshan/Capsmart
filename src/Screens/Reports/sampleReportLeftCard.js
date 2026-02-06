@@ -1009,7 +1009,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                         )}
                         {(reportType !== "medicalDirectivesTracker" && reportType !== "policyAndProceduresTracker") && (
                             <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                                <InputLabel id="demo-multiple-name-label2" className={style.headingtextStyle}>Departments</InputLabel>
+                                <InputLabel id="demo-multiple-name-label2" className={style.headingtextStyle}>Departments / Specialty (Select 1 or more)</InputLabel>
                                 <Select
                                     labelId="demo-multiple-name-label2"
                                     id="demo-multiple-name2"
@@ -1099,7 +1099,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                             reportType !== "currentMedicalDirectives" && reportType !== "currentPolicyAndProcedures" && (reportType === "workflow" || reportType === "retiredMedicalDirectives" || reportType === "upcomingForReview" || reportType === "retiredPolicyAndProcedures" || reportType === "policyAndProceduresWorkflow" || reportType === "policyAndProceduresUpcomingForReview") && (
                                 <>
                                     <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                                        <InputLabel id="demo-multiple-name-label2" className={style.headingtextStyle}>Groups</InputLabel>
+                                        <InputLabel id="demo-multiple-name-label2" className={style.headingtextStyle}>Groups (Select 1 or more)</InputLabel>
                                         <Select
                                             labelId="demo-multiple-name-label2"
                                             id="demo-multiple-name2"
@@ -1168,7 +1168,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                         </div>
                                     )}
                                     <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                                        <InputLabel id="demo-multiple-name-label2" className={style.headingtextStyle}>Author / Owner</InputLabel>
+                                        <InputLabel id="demo-multiple-name-label2" className={style.headingtextStyle}>Author / Owner (Select 1 or more)</InputLabel>
                                         <Select
                                             labelId="demo-multiple-name-label2"
                                             id="demo-multiple-name2"
@@ -1301,7 +1301,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                         </FormControl> */}
                         {reportType !== 'workflow' && reportType !== "currentMedicalDirectives" && reportType !== "retiredMedicalDirectives" && reportType !== "upcomingForReview" && reportType !== "medicalDirectivesTracker" && reportType !== "currentPolicyAndProcedures" && reportType !== "retiredPolicyAndProcedures" && reportType !== 'policyAndProceduresWorkflow' && reportType !== "policyAndProceduresUpcomingForReview" && reportType !== "policyAndProceduresTracker" && (
                             <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                                <InputLabel id="demo-multiple-name-label2" className={style.headingtextStyle}>Staff Type</InputLabel>
+                                <InputLabel id="demo-multiple-name-label2" className={style.headingtextStyle}>Staff Type (Select 1 or more)</InputLabel>
                                 <Select
                                     labelId="demo-multiple-name-label2"
                                     id="demo-multiple-name2"
@@ -1370,7 +1370,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                         }
                         {reportType !== 'workflow' && reportType !== "currentMedicalDirectives" && reportType !== "retiredMedicalDirectives" && reportType !== "upcomingForReview" && reportType !== "medicalDirectivesTracker" && reportType !== "locumTermExpirationSummary" && reportType !== "renewedLocumStaff" && reportType !== "currentPolicyAndProcedures" && reportType !== "retiredPolicyAndProcedures" && reportType !== 'policyAndProceduresWorkflow' && reportType !== "policyAndProceduresUpcomingForReview" && reportType !== "policyAndProceduresTracker" && (
                             <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                                <InputLabel id="demo-multiple-name-label2" className={style.headingtextStyle}>Privilege Category</InputLabel>
+                                <InputLabel id="demo-multiple-name-label2" className={style.headingtextStyle}>Privilege Category (Select 1 or more)</InputLabel>
                                 <Select
                                     labelId="demo-multiple-name-label2"
                                     id="demo-multiple-name2"
