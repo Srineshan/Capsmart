@@ -48,7 +48,7 @@
 
 .left,
 .right {
-    width: 100px;
+    width: 120px;
     /* same fixed width */
 }
 
@@ -70,6 +70,10 @@
 
 .marginLeft20 {
     margin-left: 20px !important;
+}
+
+.marginRight20 {
+    margin-right: 20px !important;
 }
 
 .crossStyle {
@@ -95,6 +99,11 @@
 .displayInRow {
     display: flex;
     flex-direction: row;
+}
+
+.displayInRowRev {
+    display: flex;
+    flex-direction: row-reverse;
 }
 
 .rightAlign {

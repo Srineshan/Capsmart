@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import CrossPink from "../../images/crossPink.png";
 import { useDescope } from '@descope/react-sdk';
 import CloseIcon from '@mui/icons-material/Close';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import style from './index.module.scss';
 import { TenantID, GET } from '../../Screens/dataSaver';
 import Cookies from 'universal-cookie';
@@ -10,7 +11,7 @@ import PrintOutlinedIcon from "@mui/icons-material/PrintOutlined";
 import { Tooltip } from '@mui/material';
 import LogoutConfirmation from '../LogoutConfirmation';
 
-const ApplicationHeader = ({ title, close, closeClick, handleNavigate, isShowPrint, isNotLogout, closeIcon }) => {
+const ApplicationHeader = ({ title, close, closeClick, handleNavigate, isShowPrint, isNotLogout, closeIcon, isShowURLCopy, handleCopy }) => {
     // const { logout } = useDescope();
     // const handleSignOut = () => {
     //     logout()
@@ -47,10 +48,29 @@ const ApplicationHeader = ({ title, close, closeClick, handleNavigate, isShowPri
                 ) : (<div></div>)
                 }
                 <div className={`${style.titleText} ${style.verticalAlignCenter}`}>{title}</div>
-                <div className={`${style.displayInRow}  ${style.right} ${style.rightAlign}`}>
+                <div className={`${style.displayInRowRev}  ${style.right} ${style.rightAlign}`}>
+                    {close && (
+                        closeIcon ? (
+                            <div className={style.marginRight20} onClick={isNotLogout ? closeClick : () => setShowLogoutConfirmation(true)}>
+                                {closeIcon}
+                            </div>
+                        ) :
+                            <div className={`${style.verticalAlignCenter} ${style.marginRight20}`}>
+                                {/* <img
+                            src={CrossPink}
+                            alt="cross"
+                            className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft20}`}
+                            onClick={closeClick}
+                        /> */}
+                                <Tooltip title={"Click to Close"} arrow>
+                                    <CloseIcon sx={{ fontSize: 40, color: '#06617A', cursor: 'pointer' }} onClick={isNotLogout ? closeClick : () => setShowLogoutConfirmation(true)} />
+                                </Tooltip>
+                            </div>
+
+                    )}
                     {isShowPrint && (
                         <div
-                            className={` ${style.alignCenter} ${style.cursorPointer}`}
+                            className={` ${style.alignCenter} ${style.cursorPointer} ${style.marginRight20}`}
                         >
                             <Tooltip title="Print Report" arrow>
                                 <PrintOutlinedIcon
@@ -63,24 +83,20 @@ const ApplicationHeader = ({ title, close, closeClick, handleNavigate, isShowPri
                             </Tooltip>
                         </div>
                     )}
-                    {close && (
-                        closeIcon ? (
-                            <div onClick={isNotLogout ? closeClick : () => setShowLogoutConfirmation(true)}>
-                                {closeIcon}
-                            </div>
-                        ) :
-                            <div className={`${style.verticalAlignCenter} ${style.marginLeft20}`}>
-                                {/* <img
-                            src={CrossPink}
-                            alt="cross"
-                            className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft20}`}
-                            onClick={closeClick}
-                        /> */}
-                                <Tooltip title={"Click to Close"} arrow>
-                                    <CloseIcon sx={{ fontSize: 40, color: '#06617A', cursor: 'pointer' }} onClick={isNotLogout ? closeClick : () => setShowLogoutConfirmation(true)} />
-                                </Tooltip>
-                            </div>
-
+                    {isShowURLCopy && (
+                        <div
+                            className={` ${style.alignCenter} ${style.cursorPointer} ${style.marginRight20}`}
+                        >
+                            <Tooltip title="Copy URL" arrow>
+                                <ContentCopyIcon
+                                    sx={{
+                                        fontSize: 40,
+                                        color: "#06617A",
+                                    }}
+                                    onClick={handleCopy}
+                                />
+                            </Tooltip>
+                        </div>
                     )}
                 </div>
             </div>

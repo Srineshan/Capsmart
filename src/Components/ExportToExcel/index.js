@@ -68,6 +68,90 @@ const rowsWithHeading = (title, rows) => {
   return [headingRow, ...rows];
 };
 
+const REPORTING_PERIOD_LABEL = 'Reporting Period used for this report';
+
+/**
+ * Find "Reporting Period used for this report" in the container and return [label, value] or null.
+ * @param {Element} container - Report root
+ * @returns {[string, string]|null}
+ */
+const extractReportingPeriodItem = (container) => {
+  if (!container) return null;
+  const candidates = container.querySelectorAll('[class*="reportRunByTextStyle"]');
+  for (let i = 0; i < candidates.length; i++) {
+    const text = (candidates[i].textContent || '').trim();
+    if (!text.includes(REPORTING_PERIOD_LABEL)) continue;
+    const afterColon = text.indexOf(' : ');
+    const value = afterColon >= 0 ? text.slice(afterColon + 3).trim() : text;
+    return [REPORTING_PERIOD_LABEL, value];
+  }
+  return null;
+};
+
+/**
+ * Extract "Reporting Parameters Applied" section from the report container.
+ * Includes "Reporting Period used for this report" when present.
+ * Returns array of rows: [["Reporting Parameters Applied"], ["Label", "Value"], ...]
+ * @param {Element} container - Report root (e.g. .Report)
+ * @returns {Array<Array<string>>}
+ */
+const extractReportingParams = (container) => {
+  if (!container) return [];
+  const rows = [];
+  const reportingPeriodItem = extractReportingPeriodItem(container);
+  const paramsContainer = container.querySelector('[class*="reportTypeParamsBackground"]');
+
+  if (paramsContainer) {
+    const headingEl = paramsContainer.querySelector('[class*="entityNameBolderStyle"]');
+    if (headingEl) {
+      const heading = (headingEl.textContent || '').trim();
+      if (heading) rows.push([heading]);
+    }
+    if (reportingPeriodItem) rows.push(reportingPeriodItem);
+    const grid = paramsContainer.querySelector('[class*="grid3"]') || paramsContainer.querySelector('[class*="grid2"]') || paramsContainer.querySelector('[class*="grid4"]');
+    if (grid) {
+      Array.from(grid.children).forEach((block) => {
+        const labelEl = block.querySelector('[class*="reportRunByParamStyle"]');
+        const valueEl = block.querySelector('[class*="reportTypeValueParamTextStyle"]') || block.querySelector('[class*="reportTypeValueTextStyle"]');
+        if (labelEl) {
+          const label = (labelEl.textContent || '').trim();
+          const value = valueEl ? (valueEl.textContent || '').trim() : '';
+          if (label || value) rows.push([label, value]);
+        }
+      });
+    }
+  } else if (reportingPeriodItem) {
+    rows.push(['Reporting Parameters Applied']);
+    rows.push(reportingPeriodItem);
+  }
+  return rows;
+};
+
+/**
+ * Build sheet rows with title, reporting params, and table data.
+ * @param {string} title - Sheet title
+ * @param {Array<Array>} paramsRows - Rows from extractReportingParams (can be empty)
+ * @param {Array<Array>} tableRows - Table data (header + body)
+ * @returns {{ rows: Array<Array>, paramsRowCount: number }}
+ */
+const rowsWithHeadingAndParams = (title, paramsRows, tableRows) => {
+  if (!tableRows?.length) return { rows: [], paramsRowCount: 0 };
+  const colCount = Math.max(...tableRows.map((r) => r.length), 1);
+  const pad = (row) => {
+    const r = Array.isArray(row) ? [...row] : [row];
+    while (r.length < colCount) r.push('');
+    return r;
+  };
+  const out = [pad([title])];
+  let paramsRowCount = 0;
+  if (paramsRows?.length) {
+    paramsRows.forEach((pr) => out.push(pad(pr)));
+    paramsRowCount = paramsRows.length;
+  }
+  tableRows.forEach((r) => out.push(pad(r)));
+  return { rows: out, paramsRowCount };
+};
+
 /**
  * Extract table data from a DOM element (e.g. .Report) and export to Excel.
  * Each <table> becomes a sheet. Chart data is not captured (only HTML tables).
@@ -558,8 +642,9 @@ const extractMdReportCard = (container) => {
   return rows;
 };
 
-// Format worksheet: set column widths, freeze header row, format headers
-const formatWorksheet = (ws, rows) => {
+// Format worksheet: set column widths, freeze rows, format title/params/header
+// paramsRowCount = number of rows for "Reporting Parameters Applied" (heading + param rows)
+const formatWorksheet = (ws, rows, paramsRowCount = 0) => {
   if (!rows || rows.length === 0) return;
 
   // Calculate column widths based on content
@@ -572,26 +657,23 @@ const formatWorksheet = (ws, rows) => {
       const cellValue = row[col];
       if (cellValue !== undefined && cellValue !== null) {
         const cellLength = String(cellValue).length;
-        // Header row typically needs more space
-        if (rowIndex === 0) {
-          maxLength = Math.max(maxLength, cellLength * 1.2);
-        } else {
-          maxLength = Math.max(maxLength, cellLength);
-        }
+        if (rowIndex === 0) maxLength = Math.max(maxLength, cellLength * 1.2);
+        else maxLength = Math.max(maxLength, cellLength);
       }
     });
-    // Set reasonable max width (50 characters) and min width (10)
     colWidths.push({ wch: Math.min(Math.max(maxLength, 10), 50) });
   }
 
   ws['!cols'] = colWidths;
 
-  // Freeze title row (1) and header row (2) so they stay visible and are not included in sort
+  // Freeze title + params + table header so they stay visible and are not included in sort
+  const tableHeaderRowIndex = 1 + paramsRowCount;
+  const freezeRowCount = 2 + paramsRowCount; // title + params + table header
   try {
     ws['!freeze'] = {
       xSplit: 0,
-      ySplit: 2,
-      topLeftCell: "A3",
+      ySplit: freezeRowCount,
+      topLeftCell: XLSX.utils.encode_cell({ r: freezeRowCount, c: 0 }),
       activePane: "bottomRight",
       state: "frozen"
     };
@@ -599,43 +681,55 @@ const formatWorksheet = (ws, rows) => {
     console.warn('Freeze panes not supported in this version of SheetJS');
   }
 
-  // Autofilter from row 2 (header) so Excel treats row 1 as title, row 2 as table header; sorting only affects data rows (3+)
-  if (rows.length >= 2) {
+  // Autofilter from table header row so sorting only affects data rows
+  if (rows.length > tableHeaderRowIndex) {
     const dataEndRow = rows.length - 1;
     const dataEndCol = Math.max(0, maxCols - 1);
     try {
       ws['!autofilter'] = {
-        ref: XLSX.utils.encode_range({ s: { r: 1, c: 0 }, e: { r: dataEndRow, c: dataEndCol } })
+        ref: XLSX.utils.encode_range({ s: { r: tableHeaderRowIndex, c: 0 }, e: { r: dataEndRow, c: dataEndCol } })
       };
     } catch (e) {
       console.warn('Autofilter not set:', e);
     }
   }
 
-  // Style row 0 as sheet heading (title): bold, larger font, background
+  // Title style: bold, larger font, background - used for Report title and Reporting Parameters Applied
+  const titleStyle = {
+    font: { bold: true, sz: 14 },
+    fill: { fgColor: { rgb: "D0D0D0" } },
+    alignment: { horizontal: "left", vertical: "center", wrapText: false },
+    border: {
+      top: { style: "thin", color: { rgb: "000000" } },
+      bottom: { style: "thin", color: { rgb: "000000" } },
+      left: { style: "thin", color: { rgb: "000000" } },
+      right: { style: "thin", color: { rgb: "000000" } }
+    }
+  };
+
+  // Style row 0 as sheet heading (Report title): bold, larger font, background
   if (rows.length > 0) {
     const headingRow = rows[0];
-    const headingStyle = {
-      font: { bold: true, sz: 14 },
-      fill: { fgColor: { rgb: "D0D0D0" } },
-      alignment: { horizontal: "left", vertical: "center", wrapText: false },
-      border: {
-        top: { style: "thin", color: { rgb: "000000" } },
-        bottom: { style: "thin", color: { rgb: "000000" } },
-        left: { style: "thin", color: { rgb: "000000" } },
-        right: { style: "thin", color: { rgb: "000000" } }
-      }
-    };
     headingRow.forEach((_, colIndex) => {
       const cellAddress = XLSX.utils.encode_cell({ r: 0, c: colIndex });
       const cell = ws[cellAddress] || { t: 's', v: headingRow[colIndex] ?? '' };
-      ws[cellAddress] = { ...cell, s: headingStyle };
+      ws[cellAddress] = { ...cell, s: titleStyle };
     });
   }
 
-  // Style row 1 as table header (column headers) so it's distinct and fixed with title
-  if (rows.length >= 2) {
-    const headerRow = rows[1];
+  // Style "Reporting Parameters Applied" heading (row 1) as title when params exist: bold, same look as Report title
+  if (paramsRowCount > 0 && rows.length > 1) {
+    const paramsHeadingRow = rows[1];
+    paramsHeadingRow.forEach((_, colIndex) => {
+      const cellAddress = XLSX.utils.encode_cell({ r: 1, c: colIndex });
+      const cell = ws[cellAddress] || { t: 's', v: paramsHeadingRow[colIndex] ?? '' };
+      ws[cellAddress] = { ...cell, s: titleStyle };
+    });
+  }
+
+  // Style table header row (column names)
+  if (rows.length > tableHeaderRowIndex) {
+    const headerRow = rows[tableHeaderRowIndex];
     const headerStyle = {
       font: { bold: true },
       fill: { fgColor: { rgb: "E8E8E8" } },
@@ -648,7 +742,7 @@ const formatWorksheet = (ws, rows) => {
       }
     };
     headerRow.forEach((_, colIndex) => {
-      const cellAddress = XLSX.utils.encode_cell({ r: 1, c: colIndex });
+      const cellAddress = XLSX.utils.encode_cell({ r: tableHeaderRowIndex, c: colIndex });
       const cell = ws[cellAddress] || { t: 's', v: headerRow[colIndex] ?? '' };
       ws[cellAddress] = { ...cell, s: headerStyle };
     });
@@ -666,6 +760,7 @@ export const toExcel = (selector, filename, reportTitle = 'Report') => {
 
     const wb = XLSX.utils.book_new();
     const usedSheetNames = new Set();
+    const reportingParamsRows = extractReportingParams(container);
 
     // 1. Extract HTML tables
     const htmlTables = container.querySelectorAll('table');
@@ -675,9 +770,9 @@ export const toExcel = (selector, filename, reportTitle = 'Report') => {
       const rows = extractHtmlTable(table);
       if (rows.length > 0) {
         const title = getTitleForElement(table, container, reportTitle);
-        const dataRows = rowsWithHeading(title, rows);
+        const { rows: dataRows, paramsRowCount } = rowsWithHeadingAndParams(title, reportingParamsRows, rows);
         const ws = XLSX.utils.aoa_to_sheet(dataRows);
-        formatWorksheet(ws, dataRows);
+        formatWorksheet(ws, dataRows, paramsRowCount);
         const sheetName = sanitizeSheetName(title, usedSheetNames);
         XLSX.utils.book_append_sheet(wb, ws, sheetName);
         console.log(`Excel export: Added HTML table sheet "${sheetName}" with ${rows.length} rows`);
@@ -706,9 +801,9 @@ export const toExcel = (selector, filename, reportTitle = 'Report') => {
           console.log(`Excel export: ReportsTable has ${rows.length} rows, first row has ${rows[0]?.length || 0} columns`);
 
           const title = getTitleForElement(reportsTableContainer, container, reportTitle);
-          const dataRows = rowsWithHeading(title, rows);
+          const { rows: dataRows, paramsRowCount } = rowsWithHeadingAndParams(title, reportingParamsRows, rows);
           const ws = XLSX.utils.aoa_to_sheet(dataRows);
-          formatWorksheet(ws, dataRows);
+          formatWorksheet(ws, dataRows, paramsRowCount);
           const sheetName = sanitizeSheetName(title, usedSheetNames);
           XLSX.utils.book_append_sheet(wb, ws, sheetName);
           console.log(`Excel export: Added ReportsTable sheet "${sheetName}" with ${rows.length} rows`);
@@ -730,9 +825,9 @@ export const toExcel = (selector, filename, reportTitle = 'Report') => {
         const rows = extractTableTwo(parent, processedRows);
         if (rows.length > 0) {
           const title = getTitleForElement(parent, container, reportTitle);
-          const dataRows = rowsWithHeading(title, rows);
+          const { rows: dataRows, paramsRowCount } = rowsWithHeadingAndParams(title, reportingParamsRows, rows);
           const ws = XLSX.utils.aoa_to_sheet(dataRows);
-          formatWorksheet(ws, dataRows);
+          formatWorksheet(ws, dataRows, paramsRowCount);
           const sheetName = sanitizeSheetName(title, usedSheetNames);
           XLSX.utils.book_append_sheet(wb, ws, sheetName);
           console.log(`Excel export: Added TableTwo sheet "${sheetName}" with ${rows.length} rows`);
@@ -745,9 +840,9 @@ export const toExcel = (selector, filename, reportTitle = 'Report') => {
     if (applicantWithAllDataRows.length > 0) {
       const applicantSection = container.querySelector('[class*="applicantWithAllData"], [class*="ReportApplicantWithAllData"]') || container;
       const title = getTitleForElement(applicantSection, container, reportTitle);
-      const dataRows = rowsWithHeading(title, applicantWithAllDataRows);
+      const { rows: dataRows, paramsRowCount } = rowsWithHeadingAndParams(title, reportingParamsRows, applicantWithAllDataRows);
       const ws = XLSX.utils.aoa_to_sheet(dataRows);
-      formatWorksheet(ws, dataRows);
+      formatWorksheet(ws, dataRows, paramsRowCount);
       const sheetName = sanitizeSheetName(title, usedSheetNames);
       XLSX.utils.book_append_sheet(wb, ws, sheetName);
       console.log(`Excel export: Added ApplicantWithAllData sheet "${sheetName}" with ${applicantWithAllDataRows.length} rows`);
@@ -758,9 +853,9 @@ export const toExcel = (selector, filename, reportTitle = 'Report') => {
     if (mdReportCardRows.length > 0) {
       const mdReportSection = container.querySelector('[class*="mdReportCard"], [class*="appointmentHistorySummary"]') || container;
       const title = getTitleForElement(mdReportSection, container, reportTitle);
-      const dataRows = rowsWithHeading(title, mdReportCardRows);
+      const { rows: dataRows, paramsRowCount } = rowsWithHeadingAndParams(title, reportingParamsRows, mdReportCardRows);
       const ws = XLSX.utils.aoa_to_sheet(dataRows);
-      formatWorksheet(ws, dataRows);
+      formatWorksheet(ws, dataRows, paramsRowCount);
       const sheetName = sanitizeSheetName(title, usedSheetNames);
       XLSX.utils.book_append_sheet(wb, ws, sheetName);
       console.log(`Excel export: Added MdReportCard sheet "${sheetName}" with ${mdReportCardRows.length} rows`);

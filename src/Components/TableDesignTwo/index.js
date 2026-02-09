@@ -127,7 +127,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         REAPPOINTMENT_STATUS: ['Reappointment', 'Status'],
         MEETING_DATE: ['Meeting Date'],
         REVIEWED_DATE: ['Reviewed On'],
-        COMPLETION_PERCENTAGE: ['Completed %'],
+        COMPLETION_PERCENTAGE: ['Progress'],
         MDID: ['MD ID'],
         TITLE: ['MD Title', 'Title'],
         NOT_ATTESTED_COUNT: ['Not Attested', 'Not Attested To Any'],
@@ -169,7 +169,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         'Meeting Date': 'MEETING_DATE',
         'Reviewed On': 'REVIEWED_DATE',
         'Status': 'REAPPOINTMENT_STATUS',
-        'Completed %': 'COMPLETION_PERCENTAGE',
+        'Progress': 'COMPLETION_PERCENTAGE',
         'MD ID': 'MDID',
         'MD Title': 'TITLE',
         'Title': 'TITLE',
@@ -647,40 +647,43 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                     ) : tableData?.type === "dotWithText" ? (
                                         <div className={style.flex}>
                                             <Tooltip title={tableData?.tooltipValueText?.[index]} arrow>
-                                                <div
-                                                    className={`
+                                                <div className={style.flex}>
+                                                    <div
+                                                        className={`
                                             ${tableData?.value?.[index] === "green" ? style.greenDotStyle :
-                                                            tableData?.value?.[index] === "darkgreen" ? style.darkGreenDotStyle :
-                                                                tableData?.value?.[index] === "yellow" ? style.yellowDotStyle :
-                                                                    tableData?.value?.[index] === "grey" ? style.greyDotStyle :
-                                                                        tableData?.value?.[index] === "red" ? style.redDotStyle :
-                                                                            tableData?.value?.[index] === "purple" ? style.purpleDotStyle : ''
-                                                        } ${style.alignSelfCenter}
+                                                                tableData?.value?.[index] === "darkgreen" ? style.darkGreenDotStyle :
+                                                                    tableData?.value?.[index] === "yellow" ? style.yellowDotStyle :
+                                                                        tableData?.value?.[index] === "grey" ? style.greyDotStyle :
+                                                                            tableData?.value?.[index] === "red" ? style.redDotStyle :
+                                                                                tableData?.value?.[index] === "purple" ? style.purpleDotStyle : ''
+                                                            } ${style.alignSelfCenter}
                                             `}
-                                                />
-                                            </Tooltip>
-                                            <p
-                                                className={`
+                                                    > </div>
+
+                                                    <p
+                                                        className={`
                                             ${style.tableDataFontStyle}
                                             ${style.marginLeft5}
                                             ${style.verticalAlignCenter}
                                             ${style.cursorArrow}
                                             ${tableData?.onClickFunction ? `${style.cursorPointer} ${style.textHoverColor}` : ''}
                                         `}
-                                                onClick={
-                                                    tableData?.onClickFunction ? () => tableData?.onClickFunction(data, index) : undefined
-                                                }
-                                            >
-                                                {searchTermForTable?.trim()
-                                                    ? String(tableData?.textValue?.[index] || '')
-                                                        .split(new RegExp(`(${searchTermForTable})`, 'gi'))
-                                                        .map((part, i) =>
-                                                            part.toLowerCase() === searchTermForTable.toLowerCase()
-                                                                ? <span key={i} style={{ backgroundColor: 'yellow' }}>{part}</span>
-                                                                : part
-                                                        )
-                                                    : tableData?.textValue?.[index]}
-                                            </p>
+                                                        onClick={
+                                                            tableData?.onClickFunction ? () => tableData?.onClickFunction(data, index) : undefined
+                                                        }
+                                                    >
+                                                        {searchTermForTable?.trim()
+                                                            ? String(tableData?.textValue?.[index] || '')
+                                                                .split(new RegExp(`(${searchTermForTable})`, 'gi'))
+                                                                .map((part, i) =>
+                                                                    part.toLowerCase() === searchTermForTable.toLowerCase()
+                                                                        ? <span key={i} style={{ backgroundColor: 'yellow' }}>{part}</span>
+                                                                        : part
+                                                                )
+                                                            : tableData?.textValue?.[index]}
+                                                    </p>
+                                                </div>
+                                            </Tooltip>
                                         </div>)
                                         : tableData?.type === "checkbox" ? (
                                             <div key={data.id} className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.justifyCenter} ${style.responsive}`}>

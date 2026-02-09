@@ -175,7 +175,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
     `${applicationCreationType === "LOCUM" ? "Staff Type" : "Staff Type"}`,
     "Department",
     "Status",
-    "Completed %",
+    "Progress",
     "Last Sent",
     // "Reminder Status",
     // "Application Status",
@@ -448,6 +448,22 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
     });
   };
 
+  // const STATIC_PATH = `/${TenantID}/mdAttestation`;
+
+  const getRootDomain = (hostname) => {
+    const parts = hostname.split(".");
+    return parts.slice(-2).join(".");
+  };
+
+  const handleCopy = async () => {
+    const { protocol, hostname } = window.location;
+    const rootDomain = getRootDomain(hostname);
+    const finalUrl = `${protocol}//${rootDomain}`;
+
+    await navigator.clipboard.writeText(finalUrl);
+    SuccessToaster2("Copied Successfully!")
+  };
+
   let checkbox = [];
   let applicantName = [];
   let applicantId = [];
@@ -466,6 +482,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
   let No = [];
   let expiryDate = [];
   let overRideIcon = [];
+  let countDetails = [];
 
   const getTableValues = applicationCreationType === "REAPPOINTMENT" ? () => {
     checkbox = [];
@@ -484,6 +501,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
     dotTooltipValues = [];
     remindTooltipCount = [];
     No = [];
+    countDetails = [];
 
     tableData?.forEach((data, index) => {
       // Checkbox with individual checked state
@@ -540,23 +558,27 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
       if (data?.reappointmentStatus === "NOT_SENT") {
         Percentage.push('grey');
         dotTooltipValues.push('Application Not Sent')
+        countDetails.push(`0%`)
       }
 
       else if (data?.onGoingApplication?.expiryDate && new Date(data?.onGoingApplication?.expiryDate) < new Date()) {
         Percentage.push('red');
-        dotTooltipValues.push(`${data?.onGoingApplication?.completionPercentage}% Past Due`);
+        countDetails.push(`${data?.onGoingApplication?.completionPercentage}%`)
+        dotTooltipValues.push(`Past Due`);
       } else {
         const completionPercentage = data?.onGoingApplication?.completionPercentage;
 
         if (completionPercentage === 0) {
           Percentage.push('red');
+          dotTooltipValues.push(`Not Started Yet`);
         } else if (completionPercentage === 100) {
           Percentage.push('darkgreen');
+          dotTooltipValues.push(`Completed But Not Submitted`);
         } else {
           Percentage.push('yellow');
+          dotTooltipValues.push(`In-Progress`);
         }
-
-        dotTooltipValues.push(`${completionPercentage}%`);
+        countDetails.push(`${completionPercentage}%`)
       }
 
       const reminderCount = data?.onGoingApplication?.reminderLog?.submissionReminders?.length || 0;
@@ -603,7 +625,12 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
       { type: "text", value: applicantTypeName },
       { type: "text", value: department },
       { type: "text", value: reappointment },
-      { type: "dot", value: Percentage, tooltipValue: dotTooltipValues },
+      // { type: "dot", value: Percentage, tooltipValue: dotTooltipValues },
+      // {
+      //   type: "dotWithCount", value: Percentage, tooltipValue: dotTooltipValues, count: countDetails,
+      //   isShowHoverText: true
+      // },
+      { type: "dotWithText", value: Percentage, textValue: countDetails, tooltipValueText: dotTooltipValues },
       { type: "text", value: DateSend, tooltipValueText: remindTooltipCount },
       // { type: "text", value: ReminderCount },
       // { type: "text", value: applicationStatusList },
@@ -808,6 +835,8 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
         handleNavigate={handleNavigate}
         isShowPrint={true}
         isNotLogout={true}
+        isShowURLCopy={true}
+        handleCopy={handleCopy}
       />
       <div className={` ${style.screenPadding}`}>
         <div className={style.bigCardStyle1}>
@@ -815,7 +844,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
             <div>
               <div className={`${style.spaceBetween} ${style.verticalAlignCenter}`}>
                 <div className={`${style.filterType}`}>
-                  Department
+                  Department / Specialty
                 </div>
               </div>
               <div className={style.marginTop10}>
@@ -933,48 +962,26 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
         </div>
         <div className={`${style.bigCardStyle1} ${style.marginTop5}`}>
           <div className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginLeftRight20} ${style.marginBottom10}`}>
-            <Tooltip title={selectedReappointmentStatus === "SENT" ? "Click to Remove Filter" : "Click to Filter Sent Applications"} arrow>
-              <div className={`${selectedReappointmentStatus === "SENT" ? style.filterTypeGreenActive : style.filterTypeGreen} ${style.marginBottom5} ${style.cursorPointer}`} onClick={() => selectedReappointmentStatus ? setSelectedReappointmentStatus("") : setSelectedReappointmentStatus("SENT")}>
-                Sent {tableData?.filter(data => (data?.reappointmentStatus === "SENT"))?.length}
-              </div>
-            </Tooltip>
+
             {/* <div className={style.verticalBorder}></div> */}
             <Tooltip title={selectedReappointmentStatus === "NOT_SENT" ? "Click to Remove Filter" : "Click to Filter Not Sent Applications"} arrow>
               <div className={`${selectedReappointmentStatus === "NOT_SENT" ? style.filterTypeGreyActive : style.filterTypeGrey} ${style.marginBottom5} ${style.cursorPointer}`} onClick={() => selectedReappointmentStatus ? setSelectedReappointmentStatus("") : setSelectedReappointmentStatus("NOT_SENT")}>
                 Not Sent {tableData?.filter(data => data?.reappointmentStatus === "NOT_SENT")?.length}
               </div>
             </Tooltip>
-            {/* <div className={style.verticalBorder}></div> */}
-            <Tooltip title={selectedReappointmentStatus === "RE_SENT" ? "Click to Remove Filter" : "Click to Filter Reminders Sent Applications"} arrow>
-              <div className={`${selectedReappointmentStatus === "RE_SENT" ? style.filterTypeGreyActive : style.filterTypeGrey} ${style.marginLeft30} ${style.marginBottom5} ${style.cursorPointer}`} onClick={() => selectedReappointmentStatus ? setSelectedReappointmentStatus("") : setSelectedReappointmentStatus("RE_SENT")}>
-                Reminders Sent {tableData?.filter(data => data?.reappointmentStatus === "RE_SENT")?.length}
+            <Tooltip title={selectedReappointmentStatus === "SENT" ? "Click to Remove Filter" : "Click to Filter Sent Applications"} arrow>
+              <div className={`${selectedReappointmentStatus === "SENT" ? style.filterTypeGreenActive : style.filterTypeGreen} ${style.marginBottom5} ${style.cursorPointer}`} onClick={() => selectedReappointmentStatus ? setSelectedReappointmentStatus("") : setSelectedReappointmentStatus("SENT")}>
+                Sent {tableData?.filter(data => (data?.reappointmentStatus === "SENT"))?.length}
               </div>
             </Tooltip>
             {/* <div className={style.verticalBorder}></div> */}
-            <Tooltip
-              title={selectedReappointmentSubStatus === "PAST_DUE" ? "Click to Remove Past Due Filter" : "Click to Filter Past Due Applications"}
-              arrow
-            >
-              <div className={`${selectedReappointmentSubStatus === "PAST_DUE" ? style.filterTypeRedActive : style.filterTypeRed} ${style.marginBottom5} ${style.cursorPointer} ${style.flex}`} onClick={() => selectedReappointmentSubStatus === "PAST_DUE" ? setSelectedReappointmentSubStatus("") : setSelectedReappointmentSubStatus("PAST_DUE")}>
-                Past Due {tableData?.filter(data => data?.onGoingApplication?.expiryDate && new Date(data?.onGoingApplication?.expiryDate) < new Date())?.length}
-                {selectedReappointmentSubStatus === "PAST_DUE" && (
-                  <CancelIcon
-                    sx={{
-                      fontSize: 15,
-                      color: "#FFFFFF",
-                    }}
-                    className={`${style.cursorPointer} ${style.marginLeft5}`}
-                    onClick={() => setSelectedReappointmentSubStatus("")}
-                  />
-                )}
-              </div>
-            </Tooltip>
+            {/* <div className={style.verticalBorder}></div> */}
             {/* <div className={style.verticalBorder}></div> */}
             <Tooltip
               title={selectedReappointmentSubStatus === "SUBMISSION_PENDING" ? "Click to Remove 'Submission Pending' Filter" : "Click to Filter Submission Pending Applications"}
               arrow
             >
-              <div className={`${selectedReappointmentSubStatus === "SUBMISSION_PENDING" ? style.filterTypeLightGreenActive : style.filterTypeLightGreen} ${style.marginBottom5} ${style.cursorPointer} ${style.flex}`} onClick={() => selectedReappointmentSubStatus === "SUBMISSION_PENDING" ? setSelectedReappointmentSubStatus("") : setSelectedReappointmentSubStatus("SUBMISSION_PENDING")}>
+              <div className={`${selectedReappointmentSubStatus === "SUBMISSION_PENDING" ? style.filterTypeLightGreenActive : style.filterTypeLightGreen} ${style.marginLeft30} ${style.marginBottom5} ${style.cursorPointer} ${style.flex}`} onClick={() => selectedReappointmentSubStatus === "SUBMISSION_PENDING" ? setSelectedReappointmentSubStatus("") : setSelectedReappointmentSubStatus("SUBMISSION_PENDING")}>
                 Completed but not submitted {tableData?.filter(data => data?.onGoingApplication?.completionPercentage === 100 && data?.onGoingApplication?.status === "CREATED")?.length}
                 {selectedReappointmentSubStatus === "SUBMISSION_PENDING" && (
                   <CancelIcon
@@ -986,6 +993,11 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
                     onClick={() => setSelectedReappointmentSubStatus("")}
                   />
                 )}
+              </div>
+            </Tooltip>
+            <Tooltip title={selectedReappointmentStatus === "RE_SENT" ? "Click to Remove Filter" : "Click to Filter Reminders Sent Applications"} arrow>
+              <div className={`${selectedReappointmentStatus === "RE_SENT" ? style.filterTypeYellowActive : style.filterTypeYellow} ${style.marginBottom5} ${style.cursorPointer}`} onClick={() => selectedReappointmentStatus ? setSelectedReappointmentStatus("") : setSelectedReappointmentStatus("RE_SENT")}>
+                Reminders Sent {tableData?.filter(data => data?.reappointmentStatus === "RE_SENT")?.length}
               </div>
             </Tooltip>
             {/* <div className={style.verticalBorder}></div> */}
@@ -1014,6 +1026,24 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
               <div className={`${selectedReappointmentSubStatus === "NOT_STARTED" ? style.filterTypeRedActive : style.filterTypeRed} ${style.marginBottom5} ${style.cursorPointer} ${style.flex}`} onClick={() => selectedReappointmentSubStatus === "NOT_STARTED" ? setSelectedReappointmentSubStatus("") : setSelectedReappointmentSubStatus("NOT_STARTED")}>
                 Not Yet Started {tableData?.filter(data => data?.onGoingApplication?.completionPercentage === 0)?.length}
                 {selectedReappointmentSubStatus === "NOT_STARTED" && (
+                  <CancelIcon
+                    sx={{
+                      fontSize: 15,
+                      color: "#FFFFFF",
+                    }}
+                    className={`${style.cursorPointer} ${style.marginLeft5}`}
+                    onClick={() => setSelectedReappointmentSubStatus("")}
+                  />
+                )}
+              </div>
+            </Tooltip>
+            <Tooltip
+              title={selectedReappointmentSubStatus === "PAST_DUE" ? "Click to Remove Past Due Filter" : "Click to Filter Past Due Applications"}
+              arrow
+            >
+              <div className={`${selectedReappointmentSubStatus === "PAST_DUE" ? style.filterTypeRedActive : style.filterTypeRed} ${style.marginBottom5} ${style.cursorPointer} ${style.flex}`} onClick={() => selectedReappointmentSubStatus === "PAST_DUE" ? setSelectedReappointmentSubStatus("") : setSelectedReappointmentSubStatus("PAST_DUE")}>
+                Past Due {tableData?.filter(data => data?.onGoingApplication?.expiryDate && new Date(data?.onGoingApplication?.expiryDate) < new Date())?.length}
+                {selectedReappointmentSubStatus === "PAST_DUE" && (
                   <CancelIcon
                     sx={{
                       fontSize: 15,
