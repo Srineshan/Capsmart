@@ -25,6 +25,10 @@ const DescopeLoginDialog = ({ getIsOpen, days }) => {
   const [isContinue, setIsContinue] = useState(false);
   const navigate = useNavigate();
   var cookie = new Cookie();
+  const params = new URLSearchParams(window.location.search);
+  const emailfromUrl = params.get('email');
+  const phoneFromUrl = params.get('phone');
+  const workspaceFromUrl = params.get('workspace');
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState("");
@@ -90,6 +94,10 @@ const DescopeLoginDialog = ({ getIsOpen, days }) => {
     //   fetchData();
     // }
   }, [])
+
+  useEffect(() => {
+    sessionStorage.setItem('workspace', workspaceFromUrl)
+  }, [workspaceFromUrl])
 
   const handlePasswordChange = (event) => {
     setPassword(event.target.value);
@@ -550,7 +558,7 @@ const DescopeLoginDialog = ({ getIsOpen, days }) => {
               onError={(err) => {
                 console.log("Error!", err)
               }}
-              form={{ email: '' }}
+              form={{ email: emailfromUrl || "", phone: phoneFromUrl || "" }}
             />
           </div>
         </div>

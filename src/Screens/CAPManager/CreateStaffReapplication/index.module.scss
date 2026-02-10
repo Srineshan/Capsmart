@@ -141,7 +141,7 @@
 
 .filterTypeGreen {
     border: 1px solid #E8E9E9;
-    border-radius: 8px;
+    border-radius: 20px;
     text-align: left;
     font: normal normal bold 14px/28px var(--font-style);
     letter-spacing: 0px;
@@ -149,6 +149,8 @@
     text-transform: capitalize;
     opacity: 1;
     padding: 0px 15px;
+    background-color: #ffffff;
+    box-shadow: 0px 10px 20px #22292917;
 }
 
 
@@ -168,7 +170,7 @@
 
 .filterTypeGrey {
     border: 1px solid #E8E9E9;
-    border-radius: 8px;
+    border-radius: 20px;
     text-align: left;
     font: normal normal bold 14px/28px var(--font-style);
     letter-spacing: 0px;
@@ -176,6 +178,8 @@
     text-transform: capitalize;
     opacity: 1;
     padding: 0px 15px;
+    background-color: #ffffff;
+    box-shadow: 0px 10px 20px #22292917;
 }
 
 .filterTypeGreyActive {
@@ -193,7 +197,7 @@
 
 .filterTypeRed {
     border: 1px solid #E8E9E9;
-    border-radius: 8px;
+    border-radius: 20px;
     text-align: left;
     font: normal normal bold 14px/28px var(--font-style);
     letter-spacing: 0px;
@@ -201,6 +205,8 @@
     text-transform: capitalize;
     opacity: 1;
     padding: 0px 15px;
+    background-color: #ffffff;
+    box-shadow: 0px 10px 20px #22292917;
 }
 
 .filterTypeRedActive {
@@ -218,7 +224,7 @@
 
 .filterTypeLightGreen {
     border: 1px solid #E8E9E9;
-    border-radius: 8px;
+    border-radius: 20px;
     text-align: left;
     font: normal normal bold 14px/28px var(--font-style);
     letter-spacing: 0px;
@@ -226,6 +232,8 @@
     // text-transform: capitalize;
     opacity: 1;
     padding: 0px 10px;
+    background-color: #ffffff;
+    box-shadow: 0px 10px 20px #22292917;
 }
 
 .filterTypeLightGreenActive {
@@ -243,7 +251,7 @@
 
 .filterTypeYellow {
     border: 1px solid #E8E9E9;
-    border-radius: 8px;
+    border-radius: 20px;
     text-align: left;
     font: normal normal bold 14px/28px var(--font-style);
     letter-spacing: 0px;
@@ -251,6 +259,8 @@
     text-transform: capitalize;
     opacity: 1;
     padding: 0px 15px;
+    background-color: #ffffff;
+    box-shadow: 0px 10px 20px #22292917;
 }
 
 .filterTypeYellowActive {
@@ -342,7 +352,7 @@
 .permanentStaffGrid {
     display: grid;
     // grid-template-columns: 5% 9% 19% 11% 12% 9% 9% 7% 7% 5%;
-    grid-template-columns: 3% 3% 12% 17% 11% 17% 8% 7% 10% 7%;
+    grid-template-columns: 3% 3% 12% 17% 8% 18% 8% 7% 10% 3% 3%;
     grid-gap: 1%;
 }
 

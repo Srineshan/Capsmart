@@ -9,7 +9,9 @@ import CircularProgress from "@mui/material/CircularProgress";
 import TableTwo from "../../../Components/TableDesignTwo";
 import style from './index.module.scss';
 import Checkbox from '@mui/material/Checkbox';
+import Send from './../../../images/mailIcon.png';
 import Resend from './../../../images/Resend.png';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import ResendDisabled from './../../../images/Resend-disabled.png';
 import CommonCheckBox from '../../../Components/CommonFields/CommonCheckBox';
 import { ErrorToaster2, SuccessToaster, SuccessToaster2 } from '../../../utils/toaster';
@@ -179,7 +181,8 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
     "Last Sent",
     // "Reminder Status",
     // "Application Status",
-    "Action"
+    "",
+    ""
   ] : [
     <CommonCheckBox
       size="medium"
@@ -234,9 +237,9 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
         queryParams.append('applicantTypeId', selectedApplicantType);
       }
 
-      // if (applicationStatus && selectedReappointmentStatus !== 'NOT_SENT') {
-      //   queryParams.append('applicationStatus', applicationStatus);
-      // }
+      if (selectedReappointmentSubStatus !== "" && applicationStatus && selectedReappointmentStatus !== 'NOT_SENT') {
+        queryParams.append('applicationStatus', applicationStatus);
+      }
 
       if (selectedReappointmentStatus) {
         queryParams.append('reappointmentStatus', selectedReappointmentStatus);
@@ -286,9 +289,9 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
         queryParams.append('applicantTypeId', selectedApplicantType);
       }
 
-      // if (applicationStatus && selectedReappointmentStatus !== 'NOT_SENT') {
-      //   queryParams.append('applicationStatus', applicationStatus);
-      // }
+      if (selectedReappointmentSubStatus !== "" && applicationStatus && selectedReappointmentStatus !== 'NOT_SENT') {
+        queryParams.append('applicationStatus', applicationStatus);
+      }
 
       if (selectedReappointmentStatus) {
         queryParams.append('reappointmentStatus', selectedReappointmentStatus);
@@ -437,6 +440,18 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
     }
   };
 
+  const handleSend = async (id) => {
+    try {
+      await POST(
+        `application-management-service/staff/${id}/reappoint?sendReappointmentInvite=${true}`
+      );
+      SuccessToaster2("Application mail sent successfully!");
+      await getActiveUserData();
+    } catch (error) {
+      console.error("Failed to send application:", error);
+    }
+  };
+
   const handleNavigate = () => {
     const path =
       applicationCreationType === "LOCUM"
@@ -458,7 +473,18 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
   const handleCopy = async () => {
     const { protocol, hostname } = window.location;
     const rootDomain = getRootDomain(hostname);
-    const finalUrl = `${protocol}//${rootDomain}`;
+    const finalUrl = `${protocol}//${rootDomain}/loginPage?workspace=${'CAP_MANAGER'}`;
+
+    await navigator.clipboard.writeText(finalUrl);
+    SuccessToaster2("Copied Successfully!")
+  };
+
+  // const STATIC_PATH = `/${TenantID}/mdAttestation`;
+
+  const handleSpecificURLCopy = async (email, phone) => {
+    const { protocol, hostname } = window.location;
+    const rootDomain = getRootDomain(hostname);
+    const finalUrl = `${protocol}//${rootDomain}/loginPage?email=${email}&phone=${phone}&workspace=${'CAP_MANAGER'}`;
 
     await navigator.clipboard.writeText(finalUrl);
     SuccessToaster2("Copied Successfully!")
@@ -475,6 +501,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
   let ReminderCount = [];
   let applicationStatusList = [];
   let actionList = [];
+  let copyList = [];
   let emailList = [];
   let applicantNumber = [];
   let dotTooltipValues = [];
@@ -496,6 +523,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
     ReminderCount = [];
     applicationStatusList = [];
     actionList = [];
+    copyList = [];
     emailList = [];
     applicantNumber = [];
     dotTooltipValues = [];
@@ -546,9 +574,24 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
         //   inputProps={{ 'aria-label': `Select ${data.name}` }}
         // />
         (data?.reappointmentStatus === "SENT" || data?.reappointmentStatus === "RE_SENT") ?
-          <div className={style.justifyCenter} onClick={() => handleResend(data.id)}> <Tooltip arrow title={data?.onGoingApplication?.subStatus === 'STARTED' ? "Click to Send Remind Email" : "Click to Resend Email"}><img src={Resend} alt="" className={style.resentIcon} /></Tooltip></div> :
-          <div className={`${style.justifyCenter} ${style.disabled}`}> <Tooltip arrow title="Not Sent"><img src={ResendDisabled} alt="" className={style.resentIcon} /></Tooltip></div>
+          <div className={`${style.justifyCenter} ${style.cursorPointer}`} onClick={() => handleResend(data.id)}> <Tooltip arrow title={data?.onGoingApplication?.subStatus === 'STARTED' ? "Click to Send Remind Email" : "Click to Resend Email"}><img src={Resend} alt="" className={style.resentIcon} /></Tooltip></div> :
+          <div className={`${style.justifyCenter} ${style.cursorPointer}`} onClick={() => handleSend(data.id)}> <Tooltip arrow title="Click to Trigger Application"><img src={Send} alt="" className={style.resentIcon} /></Tooltip></div>
       );
+      copyList.push(
+        <div
+          className={` ${style.alignCenter} ${style.cursorPointer} ${style.marginRight20}`}
+        >
+          <Tooltip title="Copy Specific URL" arrow>
+            <ContentCopyIcon
+              sx={{
+                fontSize: 20,
+                color: "#06617A",
+              }}
+              onClick={() => handleSpecificURLCopy(data?.applicant?.email?.officialEmail, data?.applicant?.mobileNumber ? data?.applicant?.mobileNumber : "")}
+            />
+          </Tooltip>
+        </div>
+      )
       // Percentage.push(
       //   data?.onGoingApplication?.completionPercentage === 0
       //     ? "-"
@@ -635,6 +678,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
       // { type: "text", value: ReminderCount },
       // { type: "text", value: applicationStatusList },
       { type: "icon", icon: actionList },
+      { type: "icon", icon: copyList }
     ]
   } : () => {
     checkbox = [];
@@ -709,7 +753,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
         // />
         (data?.reappointmentStatus === "SENT" || data?.reappointmentStatus === "RE_SENT") ?
           <div className={`${style.justifyCenter} ${style.marginTop10}`} onClick={() => handleResend(data.id)}> <Tooltip arrow title={data?.onGoingApplication?.subStatus === 'STARTED' ? "Click to Send Remind Email" : "Click to Resend Email"}><img src={Resend} alt="" className={style.resentIcon} /></Tooltip></div> :
-          <div className={`${style.justifyCenter} ${style.disabled} ${style.marginTop10}`}> <Tooltip arrow title="Not Sent"><img src={ResendDisabled} alt="" className={style.resentIcon} /></Tooltip></div>
+          <div className={`${style.justifyCenter} ${style.marginTop10}`}> <Tooltip arrow title="Not Sent"><img src={ResendDisabled} alt="" className={style.resentIcon} /></Tooltip></div>
       );
       // Percentage.push(
       //   data?.onGoingApplication?.completionPercentage === 0
@@ -960,8 +1004,8 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
             </div> */}
           </div>
         </div>
-        <div className={`${style.bigCardStyle1} ${style.marginTop5}`}>
-          <div className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginLeftRight20} ${style.marginBottom10}`}>
+        <div className={` ${style.marginTop20}`}>
+          <div className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginBottom10}`}>
 
             {/* <div className={style.verticalBorder}></div> */}
             <Tooltip title={selectedReappointmentStatus === "NOT_SENT" ? "Click to Remove Filter" : "Click to Filter Not Sent Applications"} arrow>
@@ -981,7 +1025,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
               title={selectedReappointmentSubStatus === "SUBMISSION_PENDING" ? "Click to Remove 'Submission Pending' Filter" : "Click to Filter Submission Pending Applications"}
               arrow
             >
-              <div className={`${selectedReappointmentSubStatus === "SUBMISSION_PENDING" ? style.filterTypeLightGreenActive : style.filterTypeLightGreen} ${style.marginLeft30} ${style.marginBottom5} ${style.cursorPointer} ${style.flex}`} onClick={() => selectedReappointmentSubStatus === "SUBMISSION_PENDING" ? setSelectedReappointmentSubStatus("") : setSelectedReappointmentSubStatus("SUBMISSION_PENDING")}>
+              <div className={`${selectedReappointmentSubStatus === "SUBMISSION_PENDING" ? style.filterTypeLightGreenActive : style.filterTypeLightGreen} ${style.marginBottom5} ${style.cursorPointer} ${style.flex}`} onClick={() => selectedReappointmentSubStatus === "SUBMISSION_PENDING" ? setSelectedReappointmentSubStatus("") : setSelectedReappointmentSubStatus("SUBMISSION_PENDING")}>
                 Completed but not submitted {tableData?.filter(data => data?.onGoingApplication?.completionPercentage === 100 && data?.onGoingApplication?.status === "CREATED")?.length}
                 {selectedReappointmentSubStatus === "SUBMISSION_PENDING" && (
                   <CancelIcon

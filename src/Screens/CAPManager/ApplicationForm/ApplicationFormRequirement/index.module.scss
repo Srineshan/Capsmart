@@ -135,6 +135,22 @@
     gap: 1%;
 }
 
+.tableGridValid {
+    display: grid;
+    grid-template-columns: 47% 22% 20% 10%;
+    gap: 1%;
+}
+
+.validCheckIconWrap {
+    display: flex;
+    align-items: center;
+}
+
+.validCheckIcon {
+    color: #2e7d32;
+    font-size: 24px;
+}
+
 .allDocumentsCompleteMessage {
     text-align: left;
     font: normal normal medium 15px/23px var(--font-style);

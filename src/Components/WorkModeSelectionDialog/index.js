@@ -29,6 +29,7 @@ import { Tooltip } from "@mui/material";
 const WorkModeDialog = ({ getIsOpen }) => {
   let cookie = new Cookie();
   const { logout } = useDescope();
+  const workspaceFromSession = sessionStorage.getItem('workspace');
   let userDetails = cookie.get("user");
   let entityId = cookie.get("entityId");
   const users = jwt(userDetails);
@@ -130,6 +131,12 @@ const WorkModeDialog = ({ getIsOpen }) => {
       setUserRoleToDisplay(userRole);
     }
   }, [selectedWorkSpace]);
+
+  useEffect(() => {
+    if (workspaceFromSession && applications?.includes(workspaceFromSession)) {
+      setSelectedWorkSpace(workspaceFromSession)
+    }
+  }, [workspaceFromSession, applications])
 
   useEffect(() => {
     console.log(activeRolesCheck, 'rolesCheck')

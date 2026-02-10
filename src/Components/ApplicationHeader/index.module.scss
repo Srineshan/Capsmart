@@ -12,6 +12,10 @@
     }
 }
 
+.marginTop20 {
+    margin-top: 20px;
+}
+
 @media (max-width: 768px) {
 
     .headerGrid,
@@ -48,7 +52,7 @@
 
 .left,
 .right {
-    width: 120px;
+    width: 280px;
     /* same fixed width */
 }
 
@@ -110,4 +114,31 @@
     justify-self: end;
     display: flex;
     align-items: center;
+}
+
+.alignCenter {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.buttonGreyTextStyle {
+    text-align: center;
+    font: normal normal bold 14px/26px var(--font-style);
+    letter-spacing: 0px;
+    color: #FFFFFF;
+    text-transform: uppercase;
+    opacity: 1
+}
+
+.attestationLinkButton {
+    padding: 10px;
+    height: 35px;
+    background: var(--primary-color) 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 6px #00000029;
+    border: 0.5px solid var(--primary-color);
+    border-radius: 8px;
+    opacity: 1;
+    justify-self: center;
 }

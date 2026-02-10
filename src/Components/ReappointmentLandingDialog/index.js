@@ -3,6 +3,7 @@ import { Dialog, Classes, Icon, Intent } from "@blueprintjs/core";
 // import logo from "./../../images/cambridgeHospital.png";
 import CrossPink from "../../images/crossPink.png";
 import ReappointmentLandingImage from "../../images/reappointmentLandingImage.png";
+import ReappointmentLandingImage26_27 from "../../images/reappointmentLandingImage26_27.png";
 import style from "./index.module.scss";
 import { useNavigate, useParams } from "react-router-dom";
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
@@ -144,7 +145,7 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
     setIs2FAConfirmed(true);
   };
 
-  const handleContinue = () => {
+  const handleContinue = (processReappointment) => {
     if (processReappointment === 'Yes') {
       setIsContinue(true);
       getIsOpen(false);
@@ -213,10 +214,10 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
             <img src={'https://capmanager-dev.s3.us-east-1.amazonaws.com/CAP_Manager.png'} alt="CAPManager Logo" className={`${style.CAPSmartLogoCenterAlign}`} />
           </div>
           <div className={`${style.descriptionStyle} ${style.marginTop}`}>
-            {`Your reappointment application for recredentialing and continuation of privileges for July 1, 2025 to June 30, 2026 at ${title !== 'HapiCare' ? title : ''} has been suspended.`}
+            {`Your reappointment application for recredentialing and continuation of privileges for July 1, 2026 to June 30, 2027 at ${title !== 'HapiCare' ? title : ''} has been suspended.`}
           </div>
           <div className={`${style.descriptionStyle} ${style.marginTop}`}>
-            {`Prior to Jun 30, 2025, if you change your mind, you can click on the link in the application declined notification.`}
+            {`Prior to Jun 30, 2026, if you change your mind, you can click on the link in the application declined notification.`}
           </div>
           <div className={style.alignCenter}>
             <div
@@ -302,12 +303,12 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
             </div>
             <div className={style.reappointmentGrid}>
               <div className={style.imageCard}>
-                <img src={ReappointmentLandingImage} alt="" className={style.reappointmentLandingImage} />
+                <img src={ReappointmentLandingImage26_27} alt="" className={style.reappointmentLandingImage} />
               </div>
               <div className={style.contentCard}>
-                <div className={style.welcomeText}>Your Reappointment Application</div>
+                <div className={style.welcomeText}>Your 2026 - 2027 <br /> Reappointment Application</div>
                 <div className={style.headerData}>
-                  <span style={{ marginLeft: '20px' }}>Your Reappointment Application</span>
+                  <span style={{ marginLeft: '20px' }}>Your 2026 - 2027 <br /> Reappointment Application</span>
                 </div>
                 <div className={`${style.descriptionStyle} ${style.marginTop10}`}>
                   {title !== 'HapiCare' ? title : ''} has automated its credentialing & privileging business functions with CAPManager, an AI solution for end to end credentialing and privileging activities.
@@ -315,17 +316,13 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
                 <div className={`${style.descriptionStyle} ${style.marginTop10}`}>
                   Processing of your Reappointment Application will now be a less burdensome activity.
                 </div>
-                <div className={`${style.reappointmentCard} ${style.marginTop}`}>
+                <div className={`${style.descriptionStyle} ${style.marginTop10}`}>
+                  For this reappointment cycle would you like to process your application.
+                </div>
+                {/* <div className={`${style.reappointmentCard} ${style.marginTop}`}>
                   <div className={`${style.descriptionStyle}`}>
                     For this reappointment cycle would you like to process your application.
                   </div>
-                  {/* <CommonRadio
-                    className={style.leftAlign}
-                    value={processReappointment}
-                    onChange={(e) => setProcessReappointment(e.target.value)}
-                    radioValue={['No', 'Yes']}
-                    label={['No', 'Yes']}
-                  /> */}
                   <ThemeProvider theme={theme}>
                     <FormControl>
                       <RadioGroup
@@ -366,7 +363,7 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
                       </RadioGroup>
                     </FormControl>
                   </ThemeProvider>
-                </div>
+                </div> */}
                 <div className={style.displayInRow}>
                   <div>
                     <Tooltip title={"Click to access User Guides & Tutorials"} arrow>
@@ -381,16 +378,28 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
                     </Tooltip>
                   </div>
                   <div>
-                    <Tooltip title={processReappointment !== '' ? "Click to Begin Reappointment Application" : ""} arrow>
-                      <div
-                        className={`${style.continue} ${style.marginTop} ${style.marginLeft} ${processReappointment !== '' ? '' : style.disable}`}
-                        onClick={processReappointment !== '' ? () => {
-                          handleContinue();
-                        } : () => { }}
-                      >
-                        CONTINUE
-                      </div>
-                    </Tooltip>
+                    {/* <Tooltip title={processReappointment !== '' ? "Click to Begin Reappointment Application" : ""} arrow> */}
+                    <div
+                      className={`${style.no} ${style.marginTop} ${style.marginLeft}`}
+                      onClick={() => {
+                        handleContinue('No');
+                      }}
+                    >
+                      NO
+                    </div>
+                    {/* </Tooltip> */}
+                  </div>
+                  <div>
+                    {/* <Tooltip title={processReappointment !== '' ? "Click to Begin Reappointment Application" : ""} arrow> */}
+                    <div
+                      className={`${style.yes} ${style.marginTop} ${style.marginLeft}`}
+                      onClick={() => {
+                        handleContinue('Yes');
+                      }}
+                    >
+                      YES
+                    </div>
+                    {/* </Tooltip> */}
                   </div>
                 </div>
               </div>
@@ -418,11 +427,11 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
         <div className={style.dialogContent}>
           <div className={style.alignCenter}><WarningAmberIcon sx={{ fontSize: 60, color: '#FF5555' }} /></div>
           <div className={`${style.descriptionStyle} ${style.marginTop}`}>
-            {`You have opted to not continue with your reappointment application for recredentialing and continuation of privileges for July 1, 2025 to June 30, 2026 at ${title !== 'HapiCare' ? title : ''}.`}
+            {`You have opted to not continue with your reappointment application for recredentialing and continuation of privileges for July 1, 2026 to June 30, 2027 at ${title !== 'HapiCare' ? title : ''}.`}
           </div>
           <div className={`${style.descriptionStyle} ${style.marginTop}`}>
             {/* {`If we do not receive a completed reappointment application by ${format(new Date(basicForm?.expiryDate || null), 'MMM dd, yyyy')} your staff position as a ${basicForm?.basicDetails?.applicant?.applicantType}, ${basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory}, will be terminated.`} */}
-            {`If we do not receive a completed reappointment application by Jun 30, 2025 your staff position as a ${basicForm?.basicDetails?.applicant?.applicantType}, ${basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory}, will be terminated.`}
+            {`If we do not receive a completed reappointment application by Jun 30, 2026 your staff position as a ${basicForm?.basicDetails?.applicant?.applicantType}, ${basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory}, will be terminated.`}
           </div>
           <div className={style.spaceBetween}>
             <Tooltip title={"Click to Cancel and Close"} arrow>

@@ -43,10 +43,12 @@ const ApplicationHeader = ({ title, close, closeClick, handleNavigate, isShowPri
     return (
         <div className={`${style.headerCard}`}>
             <div className={`${style.spaceBetween} ${style.verticalAlignCenter}`}>
-                {logo !== null ? (
-                    <img src={logo} alt="Hospital Logo" className={`${style.logo} ${style.left}`} />
-                ) : (<div></div>)
-                }
+                <div>
+                    {logo !== null ? (
+                        <img src={logo} alt="Hospital Logo" className={`${style.logo} ${style.left}`} />
+                    ) : (<div></div>)
+                    }
+                </div>
                 <div className={`${style.titleText} ${style.verticalAlignCenter}`}>{title}</div>
                 <div className={`${style.displayInRowRev}  ${style.right} ${style.rightAlign}`}>
                     {close && (
@@ -75,7 +77,7 @@ const ApplicationHeader = ({ title, close, closeClick, handleNavigate, isShowPri
                             <Tooltip title="Print Report" arrow>
                                 <PrintOutlinedIcon
                                     sx={{
-                                        fontSize: 40,
+                                        fontSize: 30,
                                         color: "#06617A",
                                     }}
                                     onClick={handleNavigate}
@@ -88,18 +90,27 @@ const ApplicationHeader = ({ title, close, closeClick, handleNavigate, isShowPri
                             className={` ${style.alignCenter} ${style.cursorPointer} ${style.marginRight20}`}
                         >
                             <Tooltip title="Copy URL" arrow>
-                                <ContentCopyIcon
+                                {/* <ContentCopyIcon
                                     sx={{
-                                        fontSize: 40,
+                                        fontSize: 30,
                                         color: "#06617A",
                                     }}
                                     onClick={handleCopy}
-                                />
+                                /> */}
+                                <div className={`${style.attestationLinkButton} ${style.cursorPointer}`} onClick={() => handleCopy()}>
+                                    <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                        <ContentCopyIcon sx={{
+                                            fontSize: 20,
+                                            color: "#ffffff",
+                                            marginRight: "10px",
+                                        }} /> COPY LINK
+                                    </div>
+                                </div>
                             </Tooltip>
                         </div>
                     )}
                 </div>
-            </div>
+            </div >
             {
                 showLogoutConfirmation && (
                     <LogoutConfirmation getIsOpen={getIsOpen} closeClick={closeClick} />

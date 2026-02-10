@@ -3317,7 +3317,15 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
           <div className={`${style.applicationCardStyle} ${style.marginTop10}`}>
             <div className={`${style.privilegeCard} ${style.marginTop10}`}>
               <div>
-                <div className={style.privilegeHeading}>
+                <div className={style.twoCol}>
+                  <div className={`${style.privilegeTopHeading}`}>
+                    <strong>2025 - 2026 privileges</strong>
+                  </div>
+                  <div className={`${style.privilegeTopHeading}`}>
+                    <strong>2026 - 2027 privileges</strong>
+                  </div>
+                </div>
+                <div className={`${style.privilegeHeading} ${style.marginTop}`}>
                   <strong>Privilege Category</strong>
                 </div>
                 <div className={style.twoCol}>

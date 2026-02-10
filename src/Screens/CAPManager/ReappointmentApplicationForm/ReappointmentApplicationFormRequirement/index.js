@@ -28,6 +28,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import Close from './../../../../images/close.png';
 import HapiCare from "./../../../../images/PoweredHapiCare.png";
 import { Tooltip } from '@mui/material';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 const ReappointmentApplicationFormRequirement = () => {
     let cookie = new Cookie();
@@ -163,6 +164,8 @@ const ReappointmentApplicationFormRequirement = () => {
         return !hasValidVerified;
     });
 
+    const documentsValidAndVerified = (uploadTable || []).filter((row) => row?.valid && row?.verified);
+
     const getIsDocRequired = (data) => {
         if (!data?.departmentSpecific) {
             return data?.document?.shortName === "Profile Picture" ? "Optional" : data?.required ? 'Required' : 'Recommended';
@@ -241,6 +244,29 @@ const ReappointmentApplicationFormRequirement = () => {
                                             </div>
                                         ) : null)}
                                     </div>
+                                    {documentsValidAndVerified?.length > 0 && (
+                                        <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
+                                            <div className={style.titleTextStyle}>Documents that are Current and Valid</div>
+                                            <div className={`${style.tableHeader} ${style.tableGridValid} ${style.marginTop}`}>
+                                                <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}>Document Type</div>
+                                                <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}>Requirement</div>
+                                                <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}>Status</div>
+                                                <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}></div>
+                                            </div>
+                                            {documentsValidAndVerified.map((row, index) => (
+                                                <div key={row?.rowId ?? index}>
+                                                    <div className={`${style.requiredDocumentCard} ${style.tableGridValid} ${index % 2 === 0 ? style.requiredDocumentCardAlternativeColor : ''} ${style.marginTop5}`}>
+                                                        <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{row?.documentType}</div>
+                                                        <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{row?.requirement ?? ''}</div>
+                                                        <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>Current & Valid</div>
+                                                        <div className={`${style.verticalAlignCenter} ${style.validCheckIconWrap}`}>
+                                                            <CheckCircleIcon className={style.validCheckIcon} />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
                                     {/* <div className={style.marginTop}>
                             <WelcomeCard title={''} description={''} >
                                 {applicantTypeForm !== undefined && 'immunizationHistory' in applicantTypeForm?.properties && (
