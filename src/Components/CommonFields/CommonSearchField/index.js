@@ -46,8 +46,8 @@ const CommonSearchField = ({ searchTerm, setSearchTerm, onChange, searchData, ha
             {isFocused && (
                 <div className={style.searchDropdown}>
                     <div className={style.searchScroll}>
-                        {(searchData || [])?.map((data,index) => (
-                            <div className={isOnClickAvailable ? style.cursorPointer : ''} onClick={isOnClickAvailable ? () => onClickFunc(data,index) : () => { }}>
+                        {(searchData || [])?.map((data, index) => (
+                            <div className={isOnClickAvailable ? style.cursorPointer : ''} onClick={isOnClickAvailable ? () => onClickFunc(data, index) : () => { }}>
                                 <div className={style.padding10}>
                                     <div className={style.marginTop10}>
                                         <div className={style.searchName}>{data?.name}</div>

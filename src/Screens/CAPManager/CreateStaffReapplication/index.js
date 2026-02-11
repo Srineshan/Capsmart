@@ -9,7 +9,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import TableTwo from "../../../Components/TableDesignTwo";
 import style from './index.module.scss';
 import Checkbox from '@mui/material/Checkbox';
-import Send from './../../../images/mailIcon.png';
+import Send from './../../../images/send.png';
 import Resend from './../../../images/Resend.png';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import ResendDisabled from './../../../images/Resend-disabled.png';
@@ -574,14 +574,14 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
         //   inputProps={{ 'aria-label': `Select ${data.name}` }}
         // />
         (data?.reappointmentStatus === "SENT" || data?.reappointmentStatus === "RE_SENT") ?
-          <div className={`${style.justifyCenter} ${style.cursorPointer}`} onClick={() => handleResend(data.id)}> <Tooltip arrow title={data?.onGoingApplication?.subStatus === 'STARTED' ? "Click to Send Remind Email" : "Click to Resend Email"}><img src={Resend} alt="" className={style.resentIcon} /></Tooltip></div> :
-          <div className={`${style.justifyCenter} ${style.cursorPointer}`} onClick={() => handleSend(data.id)}> <Tooltip arrow title="Click to Trigger Application"><img src={Send} alt="" className={style.resentIcon} /></Tooltip></div>
+          <div className={`${style.justifyCenter} ${style.cursorPointer}`} onClick={() => handleResend(data.id)}> <Tooltip arrow title={data?.onGoingApplication?.subStatus === 'STARTED' ? "Click to Send Reminder Email" : "Click to Resend Email"}><img src={Resend} alt="" className={style.resentIcon} /></Tooltip></div> :
+          <div className={`${style.justifyCenter} ${style.cursorPointer}`} onClick={() => handleSend(data.id)}> <Tooltip arrow title="Click to Send Application"><img src={Send} alt="" className={style.resentIcon} /></Tooltip></div>
       );
       copyList.push(
         <div
           className={` ${style.alignCenter} ${style.cursorPointer} ${style.marginRight20}`}
         >
-          <Tooltip title="Copy Specific URL" arrow>
+          <Tooltip title="Copy Specific Application URL" arrow>
             <ContentCopyIcon
               sx={{
                 fontSize: 20,
@@ -752,7 +752,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
         //   inputProps={{ 'aria-label': `Select ${data.name}` }}
         // />
         (data?.reappointmentStatus === "SENT" || data?.reappointmentStatus === "RE_SENT") ?
-          <div className={`${style.justifyCenter} ${style.marginTop10}`} onClick={() => handleResend(data.id)}> <Tooltip arrow title={data?.onGoingApplication?.subStatus === 'STARTED' ? "Click to Send Remind Email" : "Click to Resend Email"}><img src={Resend} alt="" className={style.resentIcon} /></Tooltip></div> :
+          <div className={`${style.justifyCenter} ${style.marginTop10}`} onClick={() => handleResend(data.id)}> <Tooltip arrow title={data?.onGoingApplication?.subStatus === 'STARTED' ? "Click to Send Reminder Email" : "Click to Resend Email"}><img src={Resend} alt="" className={style.resentIcon} /></Tooltip></div> :
           <div className={`${style.justifyCenter} ${style.marginTop10}`}> <Tooltip arrow title="Not Sent"><img src={ResendDisabled} alt="" className={style.resentIcon} /></Tooltip></div>
       );
       // Percentage.push(

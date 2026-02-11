@@ -463,9 +463,12 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         <div className={style.tableContainer}>
             <div className={style.searchPaginationGrid}>
                 <div className={style.marginTop10}>
+                    <div className={`${style.floatLeft} ${(searchTermForTable?.trim() !== "" && searchTermForTable !== undefined) ? style.marginBottom10 : ''}`}>
+                        {searchField}
+                    </div>
                     {/* <div className={style.searchTextStyle}>{`Showing ${searchCount} Results`}</div> */}
                     {(searchTermForTable?.trim() !== "" && searchTermForTable !== undefined) && (
-                        <div className={`${style.chipsContainer} ${style.marginTop10}`}>
+                        <div className={`${style.chipsContainer}`}>
                             <div className={`${style.searchChips} ${style.displayInRow}`}>
                                 <div>{`Showing All Search Results For `} <span className={style.bold}>{`'${searchTermForTable}'`}</span>{` (${searchCount ? searchCount : '-'})`}</div>
                                 <div className={`${style.verticalAlignCenter} ${style.marginLeft10} ${style.cursorPointer}`}
@@ -475,9 +478,6 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                     )}
                 </div>
                 <div className={style.container}>
-                    <div className={`${style.alignBottom}`}>
-                        {searchField}
-                    </div>
                     {
                         !hidePagination && (totalCount || tableData?.length) > 10 &&
                         <Pagination selectPage={getSelectedPage} totalCount={totalCount || tableData?.length} selectedPage={page || 1} onLimitChange={onLimitChange} />

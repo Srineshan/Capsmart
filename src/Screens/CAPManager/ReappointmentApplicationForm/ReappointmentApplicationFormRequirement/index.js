@@ -213,9 +213,9 @@ const ReappointmentApplicationFormRequirement = () => {
                         <div className={style.screenPadding}>
                             <div className={`${style.applicationScreenGrid}`}>
                                 <div>
-                                    <WelcomeCard title={<strong>Before you get started having the documents listed below will expedite the completion of your reappointment application.</strong>} description={''} />
+                                    {/* <WelcomeCard title={<strong>Before you get started having the documents listed below will expedite the completion of your reappointment application.</strong>} description={''} /> */}
                                     <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
-                                        <div className={style.titleTextStyle}> List of Documents to Complete this Application</div>
+                                        <div className={style.titleTextStyle}> Your medical staff record indicates that the following documents are required for your reappointment.</div>
                                         {/* <div className={style.marginTop}>
                                 <RequiredDocumentCard array={basicForm?.documentsRequired?.map(data => ({ title: data?.document?.name }))} />
                             </div> */}
@@ -246,7 +246,7 @@ const ReappointmentApplicationFormRequirement = () => {
                                     </div>
                                     {documentsValidAndVerified?.length > 0 && (
                                         <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
-                                            <div className={style.titleTextStyle}>Documents that are Current and Valid</div>
+                                            <div className={style.titleTextStyle}>Existing current and valid documents on file for reappointment (2026–2027).</div>
                                             <div className={`${style.tableHeader} ${style.tableGridValid} ${style.marginTop}`}>
                                                 <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}>Document Type</div>
                                                 <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}>Requirement</div>

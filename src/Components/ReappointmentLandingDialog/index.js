@@ -8,6 +8,7 @@ import style from "./index.module.scss";
 import { useNavigate, useParams } from "react-router-dom";
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import { Descope, useDescope } from '@descope/react-sdk';
+import RedAlert from './../../images/redAlert.png'
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
@@ -311,7 +312,7 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
                   <span style={{ marginLeft: '20px' }}>Your 2026 - 2027 <br /> Reappointment Application</span>
                 </div>
                 <div className={`${style.descriptionStyle} ${style.marginTop10}`}>
-                  {title !== 'HapiCare' ? title : ''} has automated its credentialing & privileging business functions with CAPManager, an AI solution for end to end credentialing and privileging activities.
+                  {title !== 'HapiCare' ? title : ''} has digitised its credentialing and privileging application processes.
                 </div>
                 <div className={`${style.descriptionStyle} ${style.marginTop10}`}>
                   Processing of your Reappointment Application will now be a less burdensome activity.
@@ -411,7 +412,7 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
           >
             <div className={`${style.verticalAlignCenter} ${style.alignCenter}`}>
               <div className={style.textStyle}>{"YOU HAVE"}</div>
-              <div className={style.daysCountStyle}>{days}</div>
+              <div className={style.daysCountStyle}>{days || '-'}</div>
               <div className={`${style.textStyle}`}>{"DAYS TO COMPLETE"}</div>
             </div>
           </div>
@@ -425,13 +426,16 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
         canEscapeKeyClose={false}
       >
         <div className={style.dialogContent}>
-          <div className={style.alignCenter}><WarningAmberIcon sx={{ fontSize: 60, color: '#FF5555' }} /></div>
+          <div className={style.alignCenter}>
+            {/* <WarningAmberIcon sx={{ fontSize: 60, color: '#FF5555' }} /> */}
+            <img src={RedAlert} className={style.redAlert} />
+          </div>
           <div className={`${style.descriptionStyle} ${style.marginTop}`}>
             {`You have opted to not continue with your reappointment application for recredentialing and continuation of privileges for July 1, 2026 to June 30, 2027 at ${title !== 'HapiCare' ? title : ''}.`}
           </div>
           <div className={`${style.descriptionStyle} ${style.marginTop}`}>
             {/* {`If we do not receive a completed reappointment application by ${format(new Date(basicForm?.expiryDate || null), 'MMM dd, yyyy')} your staff position as a ${basicForm?.basicDetails?.applicant?.applicantType}, ${basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory}, will be terminated.`} */}
-            {`If we do not receive a completed reappointment application by Jun 30, 2026 your staff position as a ${basicForm?.basicDetails?.applicant?.applicantType}, ${basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory}, will be terminated.`}
+            {`If we do not receive a completed reappointment application by Jun 30, 2026 your staff position as a ${basicForm?.basicDetails?.applicant?.applicantType} will be terminated.`}
           </div>
           <div className={style.spaceBetween}>
             <Tooltip title={"Click to Cancel and Close"} arrow>

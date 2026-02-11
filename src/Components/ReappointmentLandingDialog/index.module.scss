@@ -641,3 +641,9 @@
 .hoverText:hover {
     color: var(--primary-color) !important;
 }
+
+.redAlert {
+    height: 70px;
+    width: 70px;
+    object-fit: contain;
+}
