@@ -468,9 +468,12 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                         const rowId = innerData?.rowId; return innerData?.fileType === 'application/pdf' ?
                             (<Tooltip title="Click to View File" arrow>
                                 <img src={PDFDocs} alt="" className={style.docTypeImgStyle} onClick={() => { setIsLoadingDocs(true); setShowFileWithFields(true); getDocument(rowId) }} /> </Tooltip>
-                            ) : innerData?.fileType?.startsWith("image/") ?
+                            ) : innerData?.fileType === 'image/png' || innerData?.fileType?.includes('png') ?
                                 (<Tooltip title="Click to View File" arrow>
-                                    <img src={imgDocs} alt="" className={style.docTypeImgStyle} onClick={() => { setIsLoadingDocs(true); setShowFileWithFields(true); getDocument(rowId) }} /> </Tooltip>) : (<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `${data?.subStatus}` }} onClick={() => { window.open(innerData?.fileURL, '_blank'); }} />)
+                                    <img src={pngDocs} alt="" className={style.docTypeImgStyle} onClick={() => { setIsLoadingDocs(true); setShowFileWithFields(true); getDocument(rowId) }} /> </Tooltip>
+                                ) : innerData?.fileType?.startsWith("image/") ?
+                                    (<Tooltip title="Click to View File" arrow>
+                                        <img src={imgDocs} alt="" className={style.docTypeImgStyle} onClick={() => { setIsLoadingDocs(true); setShowFileWithFields(true); getDocument(rowId) }} /> </Tooltip>) : (<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `${data?.subStatus}` }} onClick={() => { window.open(innerData?.fileURL, '_blank'); }} />)
                     }), 'isShowHoverText': false
                 });
             } else {
@@ -521,7 +524,8 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                 temp.push({
                     "type": "icon", "icon": array?.map(innerData => {
                         if (innerData?.isSkipReason) {
-                            return <RemoveIcon style={{ fontSize: 20 }} className={style.justifyCenter} />;
+                            // return <RemoveIcon style={{ fontSize: 20 }} className={style.justifyCenter} />;
+                            return ''
                         }
                         return (
                             <Tooltip title="Click to Delete" arrow>
@@ -533,7 +537,8 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                 temp.push({
                     type: "icon", icon: array?.map(innerData => {
                         if (innerData?.isSkipReason) {
-                            return <RemoveIcon style={{ fontSize: 20 }} className={style.docTypeEditImgStyle} />;
+                            // return <RemoveIcon style={{ fontSize: 20 }} className={style.docTypeEditImgStyle} />;
+                            return ''
                         }
                         const rowId = innerData?.rowId;
                         return (
