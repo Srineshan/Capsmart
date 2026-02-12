@@ -16,6 +16,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import PDFDocs from './../../../../images/PDFDocs.png';
 import WordDoc from './../../../../images/wordDoc.png';
 import imgDocs from './../../../../images/imgDocs.png';
+import pngDocs from './../../../../images/pngDocs.png';
+import skipDocs from './../../../../images/skipDoc.png';
 import JourneyStep2 from './../../../../images/journeyStep2.png';
 import { Dialog, Classes } from '@blueprintjs/core';
 import CrossPink from "./../../../../images/crossPink.png";
@@ -461,7 +463,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                 temp.push({
                     "type": "icon", "icon": array?.map(innerData => {
                         if (innerData?.isSkipReason) {
-                            return <img src={imgDocs} alt="" className={style.docTypeImgStyle} />;
+                            return <img src={skipDocs} alt="" className={style.docTypeImgStyle} />;
                         }
                         const rowId = innerData?.rowId; return innerData?.fileType === 'application/pdf' ?
                             (<Tooltip title="Click to View File" arrow>
@@ -476,16 +478,16 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                     temp.push({
                         "type": "field", "field": array?.map((innerData, innerIndex) => {
                             if (innerData?.isSkipReason) {
-                                return <span className={style.fullWidth}>{innerData?.documentType}</span>;
+                                return <span className={`${style.fullWidth} ${style.verticalAlignCenter}`}>{innerData?.documentType}</span>;
                             }
-                            return <CommonSelectField
+                            return <div className={style.verticalAlignCenter} style={{ width: '100%' }}><CommonSelectField
                                 value={innerData[data]}
                                 onChange={(e) => handleChange(e.target.value, innerIndex)}
                                 className={style.fullWidth}
                                 valueList={getDropDownValues(innerData[data]) || []}
                                 labelList={getDropDownValues(innerData[data]) || []}
                                 disabledList={getDropDownValues(innerData[data])?.map(data => false)}
-                            />;
+                            /></div>;
                         })
                     });
                 } else if (data === "valid") {
