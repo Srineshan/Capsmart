@@ -161,43 +161,38 @@ const ApplicationFormRequirement = () => {
                                         <ApplicationFieldCard object={applicantTypeForm?.properties?.applicant} gridStyle={style.twoCol} baseKey={'applicant'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
                                     )}
                                 </WelcomeCard>
-                                <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
-                                    <div className={style.titleTextStyle}>Recommended & Required List of Documents to have Readily Available for this Application</div>
-                                    {/* <div className={style.marginTop}>
-                                <RequiredDocumentCard array={basicForm?.documentsRequired?.map(data => ({ title: data?.document?.name }))} />
-                            </div> */}
-                                    {documentsToShow?.length > 0 ? (
-                                        <>
-                                            <div className={`${style.tableHeader} ${style.tableGrid} ${style.marginTop}`}>
-                                                <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}>Document Type</div>
-                                                <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}>Requirements</div>
-                                                <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}></div>
-                                            </div>
-                                            {documentsToShow?.map((data, index) => (
-                                                <div key={data?.document?.id ?? index}>
-                                                    <div className={`${style.requiredDocumentCard} ${style.tableGrid} ${index % 2 === 0 ? style.requiredDocumentCardAlternativeColor : ''}  ${style.marginTop5}`}>
-                                                        <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
-                                                            <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.document?.shortName}</div>
-                                                            {data?.instruction ? (
-                                                                <Tooltip title={data?.instruction} arrow>
-                                                                    <InfoOutlinedIcon sx={{ fontSize: 14, marginLeft: '10px' }} className={style.info} />
-                                                                </Tooltip>
-                                                            ) : (
-                                                                <div></div>
-                                                            )}
-                                                        </div>
-                                                        <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.required ? 'Required' : 'Recommended'}</div>
-                                                        <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.instruction}</div>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </>
-                                    ) : (basicForm?.documentsRequired?.length > 0 ? (
-                                        <div className={`${style.allDocumentsCompleteMessage} ${style.marginTop}`}>
-                                            All required documents have been uploaded and verified.
+                                {documentsToShow?.length > 0 ? (
+                                    <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
+                                        <div className={style.titleTextStyle}>Recommended & Required List of Documents to have Readily Available for this Application</div>
+                                        <div className={`${style.tableHeader} ${style.tableGrid} ${style.marginTop}`}>
+                                            <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}>Document Type</div>
+                                            <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}>Requirements</div>
+                                            <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}></div>
                                         </div>
-                                    ) : null)}
-                                </div>
+                                        {documentsToShow?.map((data, index) => (
+                                            <div key={data?.document?.id ?? index}>
+                                                <div className={`${style.requiredDocumentCard} ${style.tableGrid} ${index % 2 === 0 ? style.requiredDocumentCardAlternativeColor : ''}  ${style.marginTop5}`}>
+                                                    <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
+                                                        <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.document?.shortName}</div>
+                                                        {data?.instruction ? (
+                                                            <Tooltip title={data?.instruction} arrow>
+                                                                <InfoOutlinedIcon sx={{ fontSize: 14, marginLeft: '10px' }} className={style.info} />
+                                                            </Tooltip>
+                                                        ) : (
+                                                            <div></div>
+                                                        )}
+                                                    </div>
+                                                    <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.required ? 'Required' : 'Recommended'}</div>
+                                                    <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.instruction}</div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : basicForm?.documentsRequired?.length > 0 ? (
+                                    <div className={`${style.allDocumentsCurrentValidCard}`}>
+                                        <div className={style.allDocumentsCurrentValidTitle}>All required documents for this application are current and valid</div>
+                                    </div>
+                                ) : null}
                                 {documentsValidAndVerified?.length > 0 && (
                                     <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
                                         <div className={style.titleTextStyle}>Documents that are Current and Valid</div>
@@ -205,20 +200,26 @@ const ApplicationFormRequirement = () => {
                                             <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}>Document Type</div>
                                             <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}>Requirement</div>
                                             <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}>Status</div>
+                                            <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}>Expiration</div>
                                             <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}></div>
                                         </div>
-                                        {documentsValidAndVerified.map((row, index) => (
-                                            <div key={row?.rowId ?? index}>
-                                                <div className={`${style.requiredDocumentCard} ${style.tableGridValid} ${index % 2 === 0 ? style.requiredDocumentCardAlternativeColor : ''} ${style.marginTop5}`}>
-                                                    <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{row?.documentType}</div>
-                                                    <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{row?.requirement ?? ''}</div>
-                                                    <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>Current & Valid</div>
-                                                    <div className={`${style.verticalAlignCenter} ${style.validCheckIconWrap}`}>
-                                                        <CheckCircleIcon className={style.validCheckIcon} />
+                                        {documentsValidAndVerified.map((row, index) => {
+                                            const expirationDate = basicForm?.documents?.documentDetails?.filter(data => data?.rowId === row?.rowId)?.[0]?.expiryDate;
+                                            const expirationText = expirationDate ? format(new Date(expirationDate), 'MMM d, yyyy') : '-';
+                                            return (
+                                                <div key={row?.rowId ?? index}>
+                                                    <div className={`${style.requiredDocumentCard} ${style.tableGridValid} ${index % 2 === 0 ? style.requiredDocumentCardAlternativeColor : ''} ${style.marginTop5}`}>
+                                                        <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{row?.documentType}</div>
+                                                        <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{row?.requirement ?? ''}</div>
+                                                        <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>Current & Valid</div>
+                                                        <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{expirationText !== "-" ? `Will expire on ${expirationText}` : '-'}</div>
+                                                        <div className={`${style.verticalAlignCenter} ${style.validCheckIconWrap}`}>
+                                                            <CheckCircleIcon className={style.validCheckIcon} />
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        ))}
+                                            );
+                                        })}
                                     </div>
                                 )}
                                 {/* <div className={style.marginTop}>

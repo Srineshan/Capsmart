@@ -1334,33 +1334,31 @@ const LocumApplicationFormRequirement = () => {
                                     <div className={style.marginTop}>
                                         <WelcomeCard title={`Before you get started having the documents listed below will expedite the completion of your Locum ${basicForm?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'} Application. You will be required to Sign Off on your Privileges that are listed for your new Locum Term.`} description={''} />
                                     </div>
-                                    <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
-                                        <div className={style.titleTextStyle}> List of Documents to Complete this Application</div>
-                                        {documentsToShow?.length > 0 ? (
-                                            <>
-                                                <div className={`${style.tableHeader} ${style.tableGrid} ${style.marginTop}`}>
-                                                    <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}>Document Type</div>
-                                                    <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}> </div>
-                                                    <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}></div>
-                                                </div>
-                                                {documentsToShow?.map((data, index) => (
-                                                    <div key={data?.document?.id ?? index}>
-                                                        <div className={`${style.requiredDocumentCard} ${style.tableGrid} ${index % 2 === 0 ? style.requiredDocumentCardAlternativeColor : ''}  ${style.marginTop5}`}>
-                                                            <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
-                                                                <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.document?.shortName}</div>
-                                                            </div>
-                                                            <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{getIsDocRequired(data)}</div>
-                                                            <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.instruction}</div>
-                                                        </div>
-                                                    </div>
-                                                ))}
-                                            </>
-                                        ) : (basicForm?.documentsRequired?.length > 0 ? (
-                                            <div className={`${style.allDocumentsCompleteMessage} ${style.marginTop}`}>
-                                                All required documents have been uploaded and verified.
+                                    {documentsToShow?.length > 0 ? (
+                                        <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
+                                            <div className={style.titleTextStyle}>List of Documents to Complete this Application</div>
+                                            <div className={`${style.tableHeader} ${style.tableGrid} ${style.marginTop}`}>
+                                                <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}>Document Type</div>
+                                                <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}> </div>
+                                                <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}></div>
                                             </div>
-                                        ) : null)}
-                                    </div>
+                                            {documentsToShow?.map((data, index) => (
+                                                <div key={data?.document?.id ?? index}>
+                                                    <div className={`${style.requiredDocumentCard} ${style.tableGrid} ${index % 2 === 0 ? style.requiredDocumentCardAlternativeColor : ''}  ${style.marginTop5}`}>
+                                                        <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
+                                                            <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.document?.shortName}</div>
+                                                        </div>
+                                                        <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{getIsDocRequired(data)}</div>
+                                                        <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.instruction}</div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ) : basicForm?.documentsRequired?.length > 0 ? (
+                                        <div className={`${style.allDocumentsCurrentValidCard}`}>
+                                            <div className={style.allDocumentsCurrentValidTitle}>All required documents for your locum application are current and valid</div>
+                                        </div>
+                                    ) : null}
                                     {documentsValidAndVerified?.length > 0 && (
                                         <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
                                             <div className={style.titleTextStyle}>Documents that are Current and Valid</div>
@@ -1368,20 +1366,26 @@ const LocumApplicationFormRequirement = () => {
                                                 <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}>Document Type</div>
                                                 <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}>Requirement</div>
                                                 <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}>Status</div>
+                                                <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}>Expiration</div>
                                                 <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}></div>
                                             </div>
-                                            {documentsValidAndVerified.map((row, index) => (
-                                                <div key={row?.rowId ?? index}>
-                                                    <div className={`${style.requiredDocumentCard} ${style.tableGridValid} ${index % 2 === 0 ? style.requiredDocumentCardAlternativeColor : ''} ${style.marginTop5}`}>
-                                                        <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{row?.documentType}</div>
-                                                        <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{row?.requirement ?? ''}</div>
-                                                        <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>Current & Valid</div>
-                                                        <div className={`${style.verticalAlignCenter} ${style.validCheckIconWrap}`}>
-                                                            <CheckCircleIcon className={style.validCheckIcon} />
+                                            {documentsValidAndVerified.map((row, index) => {
+                                                const expirationDate = basicForm?.documents?.documentDetails?.filter(data => data?.rowId === row?.rowId)?.[0]?.expiryDate;
+                                                const expirationText = expirationDate ? format(new Date(expirationDate), 'MMM d, yyyy') : '-';
+                                                return (
+                                                    <div key={row?.rowId ?? index}>
+                                                        <div className={`${style.requiredDocumentCard} ${style.tableGridValid} ${index % 2 === 0 ? style.requiredDocumentCardAlternativeColor : ''} ${style.marginTop5}`}>
+                                                            <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{row?.documentType}</div>
+                                                            <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{row?.requirement ?? ''}</div>
+                                                            <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>Current & Valid</div>
+                                                            <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{expirationText !== "-" ? `Will expire on ${expirationText}` : '-'}</div>
+                                                            <div className={`${style.verticalAlignCenter} ${style.validCheckIconWrap}`}>
+                                                                <CheckCircleIcon className={style.validCheckIcon} />
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            ))}
+                                                );
+                                            })}
                                         </div>
                                     )}
 

@@ -20,6 +20,7 @@ import ApplicationReferenceDocuments from '../../../../Components/ApplicationRef
 import MenuIcon from "@mui/icons-material/Menu";
 import Close from './../../../../images/close.png';
 import { Tooltip } from '@mui/material';
+import { format } from 'date-fns';
 
 const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [formSchema, setFormSchema] = useState();
@@ -38,6 +39,8 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [allWarningFields, setAllWarningFields] = useState([]);
     const [showValidationDialog, setShowValidationDialog] = useState(false);
     const [showDemographicInfo, setShowDemographicInfo] = useState(true);
+    const [isShowDemographicInfo, setIsShowDemographicInfo] = useState('');
+    const [isShowContactInfo, setIsShowContactInfo] = useState('');
     const [showContactInfo, setShowContactInfo] = useState(true);
     const [viewDemographicInfo, setViewDemographicInfo] = useState(false);
     const [viewContactInfo, setViewContactInfo] = useState(false);
@@ -71,15 +74,15 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
         if (applicationId) { getApplicantProfile() }
     }, [applicationId])
 
-    // useEffect(() => {
-    //     if (formIndex !== undefined) {
-    //         if (basicForm?.forms?.[formIndex]?.data?.contactAddress1 === undefined && basicForm?.forms?.[formIndex]?.data?.contactAddress2 === undefined && basicForm?.forms?.[formIndex]?.data?.contactAddress3 === undefined) {
-    //             setShowContactInfo(true)
-    //         }
-    //         setYesOrNoAddress((basicForm?.forms?.[formIndex]?.data?.contactAddress1 === undefined && basicForm?.forms?.[formIndex]?.data?.contactAddress2 === undefined && basicForm?.forms?.[formIndex]?.data?.contactAddress3 === undefined) ? 'Yes' : (basicForm?.forms?.[formIndex]?.data?.yesOrNoData !== undefined && basicForm?.forms?.[formIndex]?.data?.yesOrNoData?.yesOrNoAddress !== undefined) ? basicForm?.forms?.[formIndex]?.data?.yesOrNoData?.yesOrNoAddress : '');
-    //         setYesOrNoDemographic((basicForm?.forms?.[formIndex]?.data?.yesOrNoData !== undefined && basicForm?.forms?.[formIndex]?.data?.yesOrNoData?.yesOrNoDemographic !== undefined) ? basicForm?.forms?.[formIndex]?.data?.yesOrNoData?.yesOrNoDemographic : '');
-    //     }
-    // }, [formIndex])
+    useEffect(() => {
+        if (formIndex) {
+            // if (basicForm?.forms?.[formIndex]?.data?.contactAddress1 === undefined && basicForm?.forms?.[formIndex]?.data?.contactAddress2 === undefined && basicForm?.forms?.[formIndex]?.data?.contactAddress3 === undefined) {
+            //     setShowContactInfo(true)
+            // }
+            setIsShowContactInfo(basicForm?.forms?.[formIndex]?.data?.yesOrNoData?.isShowContactInfo ? basicForm?.forms?.[formIndex]?.data?.yesOrNoData?.isShowContactInfo : '');
+            setIsShowDemographicInfo(basicForm?.forms?.[formIndex]?.data?.yesOrNoData?.isShowDemographicInfo ? basicForm?.forms?.[formIndex]?.data?.yesOrNoData?.isShowDemographicInfo : '');
+        }
+    }, [formIndex])
 
     useEffect(() => {
         if (basicForm) {
@@ -570,9 +573,16 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
     }
 
     const handleContactAddressSubmit = async (skip) => {
+        let tempData = basicForm?.forms?.[formIndex]?.data !== null ? basicForm?.forms?.[formIndex]?.data : {};
+        tempData.yesOrNoData = {
+            yesOrNoDemographic: yesOrNoDemographic,
+            yesOrNoAddress: yesOrNoAddress,
+            isShowContactInfo: isShowContactInfo !== "" ? isShowContactInfo : 'No',
+            isShowDemographicInfo: isShowDemographicInfo !== "" ? isShowDemographicInfo : 'No'
+        }
         let temp = {
             schemaId: basicForm?.forms?.[formIndex]?.schemaId,
-            data: basicForm?.forms?.[formIndex]?.data,
+            data: tempData,
             unFilledFields: allMissingFields?.map(field => JSON.stringify(field)),
             acknowledged: true
         }
@@ -592,9 +602,9 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
 
     const updateProfileAddress = async () => {
         let addressData = applicantProfile;
-        addressData.contactAddress1 = basicForm?.forms?.[formIndex]?.data.contactAddress1 !== undefined ? basicForm?.forms?.[formIndex]?.data.contactAddress1 : null
-        addressData.contactAddress2 = basicForm?.forms?.[formIndex]?.data.contactAddress2 !== undefined ? basicForm?.forms?.[formIndex]?.data.contactAddress2 : null
-        addressData.contactAddress3 = basicForm?.forms?.[formIndex]?.data.contactAddress3 !== undefined ? basicForm?.forms?.[formIndex]?.data.contactAddress3 : null
+        addressData.contactAddress1 = basicForm?.forms?.[formIndex]?.data?.contactAddress1 !== undefined ? basicForm?.forms?.[formIndex]?.data?.contactAddress1 : null
+        addressData.contactAddress2 = basicForm?.forms?.[formIndex]?.data?.contactAddress2 !== undefined ? basicForm?.forms?.[formIndex]?.data?.contactAddress2 : null
+        addressData.contactAddress3 = basicForm?.forms?.[formIndex]?.data?.contactAddress3 !== undefined ? basicForm?.forms?.[formIndex]?.data?.contactAddress3 : null
         await PUT(`application-management-service/application/${applicationId}/profile`, addressData)
             .then(response => {
                 console.log(response)
@@ -848,133 +858,208 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
 
                     {formSchema !== undefined && "applicant" in formSchema?.properties && (
                         <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
-                            {/* {showDemographicInfo && ( */}
-                            <ApplicationFieldCard
-                                object={formSchema?.properties?.applicant}
-                                gridStyle={style.applicantGrid}
-                                baseKey={"applicant"}
-                                basicForm={basicForm}
-                                setBasicForm={setBasicForm}
-                                isBasicPath={true}
-                                isEdited={isDemographicInfoEdited}
-                                setIsEdited={setIsDemographicInfoEdited}
-                                getAllPath={getAllPath}
-                                getAllLabels={getAllLabels}
-                                getIsSubmitClicked={getMissingFieldsBasicInfo}
-                                warningFields={warningFields?.filter(field => field?.label?.mandatory === true)}
-                                formSchema={formSchemaWholeObject}
-                                isReappointment={true}
-                                dataChangedObject={formSchema?.properties?.isDemographicDataChanged}
-                                isChanged={showDemographicInfo}
-                                setIsChanged={setShowDemographicInfo}
-                                isView={viewDemographicInfo}
-                                setIsView={setViewDemographicInfo}
-                                yesOrNoDemographic={yesOrNoDemographic}
-                                setYesOrNoDemographic={setYesOrNoDemographic}
-                            />
-                            {/* )}
-                            <div className={style.displayInRow}>
-                                <div className={`${style.yesButton}`}><div className={`${style.verticalAlignCenter} ${style.justifyCenter}`} onClick={() => setShowDemographicInfo(true)}>YES</div></div>
-                                <div className={`${style.noButton} ${style.marginLeft}`}><div className={`${style.verticalAlignCenter} ${style.justifyCenter}`}>NO</div></div>
-                            </div> */}
+                            {isShowDemographicInfo !== "Yes" && (
+                                <div>
+                                    <div className={`${style.spaceBetween} ${style.displayInRow} ${style.marginTop10}`}>
+                                        <div className={`${style.demographicText}`}>Has any of your <strong> demographic information</strong> changed on file?</div>
+                                        <div className={`${style.displayInRow} ${style.rightAlign}`}>
+                                            <div className={`${isShowDemographicInfo === "Yes" ? style.noButton : style.yesButton} ${style.cursorPointer} ${style.marginLeft}`}><div className={`${style.verticalAlignCenter} ${style.justifyCenter}`} onClick={() => setIsShowDemographicInfo('Yes')}>YES</div></div>
+                                            <div className={`${isShowDemographicInfo === "No" ? style.noButton : style.yesButton} ${style.cursorPointer} ${style.marginLeft}`}><div className={`${style.verticalAlignCenter} ${style.justifyCenter}`} onClick={isShowContactInfo === "" ? () => setIsShowDemographicInfo('No') : () => { setIsShowDemographicInfo('No'); getAllMissingFields() }}>NO</div></div>
+                                        </div>
+                                    </div>
+                                    <div className={`${style.twoCol} ${style.marginTop}`}>
+                                        <div className={style.twoValueForDemographic}>
+                                            <div className={style.demographicLebelText}>Full Name</div>
+                                            <div className={style.demographicValueText}>{`${basicForm?.applicant?.name?.firstName || ''} ${basicForm?.applicant?.name?.middleName || ''} ${basicForm?.applicant?.name?.lastName || ''}`}</div>
+                                        </div>
+                                        <div></div>
+                                    </div>
+                                    <div className={`${style.twoCol} ${style.marginTop10}`}>
+                                        <div className={style.twoValueForDemographic}>
+                                            <div className={style.demographicLebelText}>Date Of Birth</div>
+                                            <div className={style.demographicValueText}>{basicForm?.applicant?.dateOfBirth ? format(new Date(basicForm?.applicant?.dateOfBirth), 'MMM dd, yyyy') : '-'}</div>
+                                        </div>
+                                        <div className={style.twoValueForDemographic}>
+                                            <div className={style.demographicLebelText}>Phone Number</div>
+                                            <div className={style.demographicValueText}>{basicForm?.applicant?.mobileNumber ? basicForm?.applicant?.mobileNumber : '-'}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {isShowDemographicInfo === "Yes" && (
+                                <ApplicationFieldCard
+                                    object={formSchema?.properties?.applicant}
+                                    gridStyle={style.applicantGrid}
+                                    baseKey={"applicant"}
+                                    basicForm={basicForm}
+                                    setBasicForm={setBasicForm}
+                                    isBasicPath={true}
+                                    isEdited={isDemographicInfoEdited}
+                                    setIsEdited={setIsDemographicInfoEdited}
+                                    getAllPath={getAllPath}
+                                    getAllLabels={getAllLabels}
+                                    getIsSubmitClicked={getMissingFieldsBasicInfo}
+                                    warningFields={warningFields?.filter(field => field?.label?.mandatory === true)}
+                                    formSchema={formSchemaWholeObject}
+                                    isReappointment={true}
+                                    dataChangedObject={formSchema?.properties?.isDemographicDataChanged}
+                                    isChanged={showDemographicInfo}
+                                    setIsChanged={setShowDemographicInfo}
+                                    isView={viewDemographicInfo}
+                                    setIsView={setViewDemographicInfo}
+                                    yesOrNoDemographic={yesOrNoDemographic}
+                                    setYesOrNoDemographic={setYesOrNoDemographic}
+                                />
+                            )}
                         </div>
                     )}
 
                     <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
-                        <div className={`${style.cardTitle} ${style.marginTop10}`}>{formSchema?.properties?.isAddressChanged?.label}</div>
-                        {showContactInfo ? (
-                            <div className={`${style.reappointmentCard} ${style.padding20} ${style.marginTop}`}>
-                                {/* <div
+                        {isShowContactInfo !== "Yes" && (
+                            <div>
+                                <div className={`${style.spaceBetween} ${style.displayInRow} ${style.marginTop10}`}>
+                                    <div className={`${style.demographicText}`}>Have any of the <strong> addresses</strong> we have on file changed?</div>
+                                    <div className={`${style.displayInRow} ${style.rightAlign}`}>
+                                        <div className={`${isShowContactInfo === "Yes" ? style.noButton : style.yesButton} ${style.cursorPointer} ${style.marginLeft}`}><div className={`${style.verticalAlignCenter} ${style.justifyCenter}`} onClick={() => setIsShowContactInfo('Yes')}>YES</div></div>
+                                        <div className={`${isShowContactInfo === "No" ? style.noButton : style.yesButton} ${style.cursorPointer} ${style.marginLeft}`}><div className={`${style.verticalAlignCenter} ${style.justifyCenter}`} onClick={isShowDemographicInfo === "" ? () => setIsShowContactInfo('No') : () => { setIsShowContactInfo('No'); getAllMissingFields() }}>NO</div></div>
+                                    </div>
+                                </div>
+                                <div className={`${style.twoCol} ${style.marginTop}`}>
+                                    <div className={style.twoValueForDemographic}>
+                                        <div className={style.demographicLebelText}>Current Home Address</div>
+                                        <div>
+                                            <div className={style.demographicValueText}>{`${basicForm?.applicant?.contactAddress1?.homeAddress?.streetName || ''} `}</div>
+                                            <div className={style.demographicValueText}>{`${basicForm?.applicant?.contactAddress1?.homeAddress?.city || ''}, ${basicForm?.applicant?.contactAddress1?.homeAddress?.province || ''}, ${basicForm?.applicant?.contactAddress1?.homeAddress?.pinCode || ''}`}</div>
+                                        </div>
+                                    </div>
+                                    <div></div>
+                                </div>
+                                <div className={`${style.twoCol} ${style.marginTop10}`}>
+                                    <div className={style.twoValueForDemographic}>
+                                        <div className={style.demographicLebelText}>Mailing Address</div>
+                                        {basicForm?.forms?.[formIndex]?.data?.contactAddress2?.isMailingAddressSameAsHomeAddress !== "Different Address" ? (
+                                            <div className={style.demographicValueText}>{`${basicForm?.forms?.[formIndex]?.data?.contactAddress2?.isMailingAddressSameAsHomeAddress || ''} `}</div>
+                                        ) : (
+                                            <div>
+                                                <div className={style.demographicValueText}>{`${basicForm?.applicant?.contactAddress2?.mailingAddress?.streetName || ''} `}</div>
+                                                <div className={style.demographicValueText}>{`${basicForm?.applicant?.contactAddress2?.mailingAddress?.city || ''}, ${basicForm?.applicant?.contactAddress2?.mailingAddress?.province || ''}, ${basicForm?.applicant?.contactAddress2?.mailingAddress?.pinCode || ''}`}</div>
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div></div>
+                                </div>
+                                <div className={`${style.twoCol} ${style.marginTop10}`}>
+                                    <div className={style.twoValueForDemographic}>
+                                        <div className={style.demographicLebelText}>Business Address</div>
+                                        {basicForm?.forms?.[formIndex]?.data?.contactAddress3?.isBusinessAddressSameAsHomeAddressOrMailingAddress !== "Different Address" ? (
+                                            <div className={style.demographicValueText}>{`${basicForm?.forms?.[formIndex]?.data?.contactAddress3?.isBusinessAddressSameAsHomeAddressOrMailingAddress || ''} `}</div>
+                                        ) : (
+                                            <div>
+                                                <div className={style.demographicValueText}>{`${basicForm?.applicant?.contactAddress3?.business?.businessAddress?.streetName || ''} `}</div>
+                                                <div className={style.demographicValueText}>{`${basicForm?.applicant?.contactAddress3?.business?.businessAddress?.city || ''}, ${basicForm?.applicant?.contactAddress3?.business?.businessAddress?.province || ''}, ${basicForm?.applicant?.contactAddress3?.business?.businessAddress?.pinCode || ''}`}</div>
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div></div>
+                                </div>
+                            </div>
+                        )}
+                        {isShowContactInfo === "Yes" && (
+                            <>
+                                <div className={`${style.cardTitle} ${style.marginTop10}`}>{formSchema?.properties?.isAddressChanged?.label}</div>
+                                {showContactInfo ? (
+                                    <div className={`${style.reappointmentCard} ${style.padding20} ${style.marginTop}`}>
+                                        {/* <div
                                     className={style.addMoreText}
                                     dangerouslySetInnerHTML={{ __html: object?.items?.label }}
                                 /> */}
-                                {formSchema !== undefined && "contactAddress1" in formSchema?.properties && (
-                                    <div >
-                                        {/* <div className={`${style.applicationCardStyle} `}> */}
-                                        <div className={` ${style.marginTop}`}>
-                                            {/* {showDemographicInfo && ( */}
-                                            <ApplicationFieldCard
-                                                object={formSchema?.properties?.contactAddress1}
-                                                gridStyle={style.homeMailingAddressGrid}
-                                                baseKey={"contactAddress1"}
-                                                basicForm={basicForm}
-                                                setBasicForm={setBasicForm}
-                                                stepPath={`forms[${formIndex}].data`}
-                                                isEdited={isContactInfoEdited}
-                                                setIsEdited={setIsContactInfoEdited}
-                                                getAllPath={getAllPath}
-                                                getAllLabels={getAllLabelsContactAddress}
-                                                getIsSubmitClicked={getIsSubmitClickedForContact}
-                                                warningFields={warningFieldsContact?.filter(field => field?.label?.mandatory === true)}
-                                                formSchema={formSchemaWholeObject}
-                                            />
+                                        {formSchema !== undefined && "contactAddress1" in formSchema?.properties && (
+                                            <div >
+                                                {/* <div className={`${style.applicationCardStyle} `}> */}
+                                                <div className={` ${style.marginTop}`}>
+                                                    {/* {showDemographicInfo && ( */}
+                                                    <ApplicationFieldCard
+                                                        object={formSchema?.properties?.contactAddress1}
+                                                        gridStyle={style.homeMailingAddressGrid}
+                                                        baseKey={"contactAddress1"}
+                                                        basicForm={basicForm}
+                                                        setBasicForm={setBasicForm}
+                                                        stepPath={`forms[${formIndex}].data`}
+                                                        isEdited={isContactInfoEdited}
+                                                        setIsEdited={setIsContactInfoEdited}
+                                                        getAllPath={getAllPath}
+                                                        getAllLabels={getAllLabelsContactAddress}
+                                                        getIsSubmitClicked={getIsSubmitClickedForContact}
+                                                        warningFields={warningFieldsContact?.filter(field => field?.label?.mandatory === true)}
+                                                        formSchema={formSchemaWholeObject}
+                                                    />
 
-                                        </div>
-                                        <CommonDivider />
-                                        {/* </div>
+                                                </div>
+                                                <CommonDivider />
+                                                {/* </div>
                                         <div className={`${style.applicationCardStyle} ${style.marginTop} `}> */}
-                                        <div className={` ${style.marginTop}`}>
-                                            {/* {showDemographicInfo && ( */}
-                                            <ApplicationFieldCard
-                                                object={formSchema?.properties?.contactAddress3}
-                                                gridStyle={style.businessMailingAddressGrid}
-                                                baseKey={"contactAddress3"}
-                                                basicForm={basicForm}
-                                                setBasicForm={setBasicForm}
-                                                stepPath={`forms[${formIndex}].data`}
-                                                isEdited={isContactInfoEdited}
-                                                setIsEdited={setIsContactInfoEdited}
-                                                getAllPath={getAllPath}
-                                                getAllLabels={getAllLabelsContactAddress}
-                                                getIsSubmitClicked={getIsSubmitClickedForContact}
-                                                warningFields={warningFieldsContact?.filter(field => field?.label?.mandatory === true)}
-                                                formSchema={formSchemaWholeObject}
-                                            />
-                                        </div>
-                                        {/* </div> */}
-                                        <CommonDivider />
-                                        <div className={` ${style.marginTop}`}>
-                                            {/* {showDemographicInfo && ( */}
-                                            <ApplicationFieldCard
-                                                object={formSchema?.properties?.contactAddress2}
-                                                gridStyle={style.mailingAddressGrid}
-                                                baseKey={"contactAddress2"}
-                                                basicForm={basicForm}
-                                                setBasicForm={setBasicForm}
-                                                stepPath={`forms[${formIndex}].data`}
-                                                isEdited={isContactInfoEdited}
-                                                setIsEdited={setIsContactInfoEdited}
-                                                getAllPath={getAllPath}
-                                                getAllLabels={getAllLabelsContactAddress}
-                                                getIsSubmitClicked={getIsSubmitClickedForContact}
-                                                warningFields={warningFieldsContact?.filter(field => field?.label?.mandatory === true)}
-                                                formSchema={formSchemaWholeObject}
-                                            />
+                                                <div className={` ${style.marginTop}`}>
+                                                    {/* {showDemographicInfo && ( */}
+                                                    <ApplicationFieldCard
+                                                        object={formSchema?.properties?.contactAddress3}
+                                                        gridStyle={style.businessMailingAddressGrid}
+                                                        baseKey={"contactAddress3"}
+                                                        basicForm={basicForm}
+                                                        setBasicForm={setBasicForm}
+                                                        stepPath={`forms[${formIndex}].data`}
+                                                        isEdited={isContactInfoEdited}
+                                                        setIsEdited={setIsContactInfoEdited}
+                                                        getAllPath={getAllPath}
+                                                        getAllLabels={getAllLabelsContactAddress}
+                                                        getIsSubmitClicked={getIsSubmitClickedForContact}
+                                                        warningFields={warningFieldsContact?.filter(field => field?.label?.mandatory === true)}
+                                                        formSchema={formSchemaWholeObject}
+                                                    />
+                                                </div>
+                                                {/* </div> */}
+                                                <CommonDivider />
+                                                <div className={` ${style.marginTop}`}>
+                                                    {/* {showDemographicInfo && ( */}
+                                                    <ApplicationFieldCard
+                                                        object={formSchema?.properties?.contactAddress2}
+                                                        gridStyle={style.mailingAddressGrid}
+                                                        baseKey={"contactAddress2"}
+                                                        basicForm={basicForm}
+                                                        setBasicForm={setBasicForm}
+                                                        stepPath={`forms[${formIndex}].data`}
+                                                        isEdited={isContactInfoEdited}
+                                                        setIsEdited={setIsContactInfoEdited}
+                                                        getAllPath={getAllPath}
+                                                        getAllLabels={getAllLabelsContactAddress}
+                                                        getIsSubmitClicked={getIsSubmitClickedForContact}
+                                                        warningFields={warningFieldsContact?.filter(field => field?.label?.mandatory === true)}
+                                                        formSchema={formSchemaWholeObject}
+                                                    />
 
-                                        </div>
-                                    </div>
-                                )}
-                                {!viewContactInfo ? (
-                                    <div
-                                        className={`${style.displayInRowRev} ${style.marginTop}`}
-                                    >
-                                        <div className={style.marginLeft}>
-                                            <Tooltip title={isContactInfoEdited ? "Click to Update Contact Address" : ""} arrow>
-                                                <button
-                                                    className={`${style.reappointmentButton} ${isContactInfoEdited ? '' : style.disabledButtonLook}`}
-                                                    onClick={isContactInfoEdited ? () => {
-                                                        // setShowContactInfo(false);
-                                                        getMissingFields()
-                                                        setUpdateFrom('contact')
-                                                        setIsContactInfoEdited(false);
-                                                    } : () => { }}
-                                                    disabled={!isContactInfoEdited}
-                                                >
-                                                    UPDATE
-                                                </button>
-                                            </Tooltip>
-                                        </div>
-                                        {/* <div>
+                                                </div>
+                                            </div>
+                                        )}
+                                        {!viewContactInfo ? (
+                                            <div
+                                                className={`${style.displayInRowRev} ${style.marginTop}`}
+                                            >
+                                                <div className={style.marginLeft}>
+                                                    <Tooltip title={isContactInfoEdited ? "Click to Update Contact Address" : ""} arrow>
+                                                        <button
+                                                            className={`${style.reappointmentButton} ${isContactInfoEdited ? '' : style.disabledButtonLook}`}
+                                                            onClick={isContactInfoEdited ? () => {
+                                                                // setShowContactInfo(false);
+                                                                getMissingFields()
+                                                                setUpdateFrom('contact')
+                                                                setIsContactInfoEdited(false);
+                                                            } : () => { }}
+                                                            disabled={!isContactInfoEdited}
+                                                        >
+                                                            UPDATE
+                                                        </button>
+                                                    </Tooltip>
+                                                </div>
+                                                {/* <div>
                                             <div
                                                 className={`${style.reappointmentButtonOutlined}`}
                                                 onClick={() => {
@@ -984,49 +1069,51 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                                                 CANCEL
                                             </div>
                                         </div> */}
+                                            </div>
+                                        ) : (
+                                            <div
+                                                className={`${style.displayInRowRev} ${style.marginTop}`}
+                                            >
+                                                <div>
+                                                    <Tooltip title={"Click to Close"} arrow>
+                                                        <div
+                                                            className={`${style.reappointmentButton}`}
+                                                            onClick={() => {
+                                                                setShowContactInfo(false); setViewContactInfo(false);
+                                                            }}
+                                                        >
+                                                            CLOSE
+                                                        </div>
+                                                    </Tooltip>
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 ) : (
-                                    <div
-                                        className={`${style.displayInRowRev} ${style.marginTop}`}
-                                    >
-                                        <div>
-                                            <Tooltip title={"Click to Close"} arrow>
+                                    <>
+                                        {/* <div className={`${style.viewMyInfoText} ${style.cursorPointer} ${style.marginTop}`} onClick={() => { setShowContactInfo(true); setViewContactInfo(true) }}>View my information on file</div> */}
+                                        <div
+                                            className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
+                                        >
+                                            <Tooltip title={"Click to mark as Yes"} arrow>
                                                 <div
-                                                    className={`${style.reappointmentButton}`}
-                                                    onClick={() => {
-                                                        setShowContactInfo(false); setViewContactInfo(false);
-                                                    }}
+                                                    className={`${yesOrNoAddress === 'Yes' ? style.reappointmentButton : style.reappointmentButtonOutlined}`}
+                                                    onClick={() => { setShowContactInfo(true); setYesOrNoAddress('Yes') }}
                                                 >
-                                                    CLOSE
+                                                    YES
+                                                </div>
+                                            </Tooltip>
+                                            <Tooltip title={"Click to mark as No"} arrow>
+                                                <div
+                                                    className={`${yesOrNoAddress === 'No' ? style.reappointmentButton : style.reappointmentButtonOutlined} ${style.marginLeft}`}
+                                                    onClick={() => { setShowContactInfo(false); setYesOrNoAddress('No') }}
+                                                >
+                                                    NO
                                                 </div>
                                             </Tooltip>
                                         </div>
-                                    </div>
+                                    </>
                                 )}
-                            </div>
-                        ) : (
-                            <>
-                                {/* <div className={`${style.viewMyInfoText} ${style.cursorPointer} ${style.marginTop}`} onClick={() => { setShowContactInfo(true); setViewContactInfo(true) }}>View my information on file</div> */}
-                                <div
-                                    className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
-                                >
-                                    <Tooltip title={"Click to mark as Yes"} arrow>
-                                        <div
-                                            className={`${yesOrNoAddress === 'Yes' ? style.reappointmentButton : style.reappointmentButtonOutlined}`}
-                                            onClick={() => { setShowContactInfo(true); setYesOrNoAddress('Yes') }}
-                                        >
-                                            YES
-                                        </div>
-                                    </Tooltip>
-                                    <Tooltip title={"Click to mark as No"} arrow>
-                                        <div
-                                            className={`${yesOrNoAddress === 'No' ? style.reappointmentButton : style.reappointmentButtonOutlined} ${style.marginLeft}`}
-                                            onClick={() => { setShowContactInfo(false); setYesOrNoAddress('No') }}
-                                        >
-                                            NO
-                                        </div>
-                                    </Tooltip>
-                                </div>
                             </>
                         )}
                     </div>
@@ -1092,8 +1179,8 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                         <Tooltip title={"Click to Save your Progress and Continue later"} arrow>
                             <div
                                 className={`${style.saveInProgress} ${style.marginTop} ${!isContinueEnabled && yesOrNoAddress === '' && yesOrNoDemographic === ''
-                                        ? style.disabledButtonLook
-                                        : ''
+                                    ? style.disabledButtonLook
+                                    : ''
                                     }`}
                                 onClick={() => {
                                     if (isContinueEnabled && yesOrNoAddress !== '' && yesOrNoDemographic !== '') {
@@ -1121,11 +1208,11 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                             CONTINUE
                         </div> */}
                             <Tooltip title={"Click to Proceed to the Next Step"} arrow>
-                                <div className={` ${style.continue} ${style.marginTop10}  ${!isContinueEnabled && yesOrNoAddress === '' && yesOrNoDemographic === ''
-                                        ? style.disabledButtonLook
-                                        : ''
+                                <div className={` ${style.continue} ${style.marginTop10}  ${!isContinueEnabled || (isShowContactInfo === "" || isShowDemographicInfo === "")
+                                    ? style.disabledButtonLook
+                                    : ''
                                     }`} onClick={() => {
-                                        if (isContinueEnabled && yesOrNoAddress !== '' && yesOrNoDemographic !== '') {
+                                        if (isContinueEnabled && yesOrNoAddress !== '' && yesOrNoDemographic !== '' && isShowContactInfo !== "" && isShowDemographicInfo !== "") {
                                             getAllMissingFields();
                                         }
                                     }}>CONTINUE</div></Tooltip>
@@ -1138,31 +1225,37 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                 </div>
             </div>
             {/* {isOpen && <AIAssistantDialog getIsOpen={getIsOpen} />} */}
-            {isSaveInProgressOpen && (
-                <SaveInProgressDialog getIsOpen={getIsSaveInProgressOpen} />
-            )}
-            {showValidationDialog && (
-                <ValidationDialog
-                    getIsOpen={getIsValidationDialogOpen}
-                    labelList={updateFrom === "Continue"
-                        ? allWarningFields?.filter(field => field?.label?.mandatory !== false && Object.keys(field?.label).length !== 0)
-                        : updateFrom === "contact"
-                            ? warningFieldsContact?.filter(field => field?.label?.mandatory !== false && Object.keys(field?.label).length !== 0)
-                            : warningFields?.filter(field => field?.label?.mandatory !== false && field?.label !== undefined)
-                    }
-                    getSkipClicked={updateFrom === "Continue"
-                        ? getContactSkipClicked
-                        : updateFrom === "contact"
+            {
+                isSaveInProgressOpen && (
+                    <SaveInProgressDialog getIsOpen={getIsSaveInProgressOpen} />
+                )
+            }
+            {
+                showValidationDialog && (
+                    <ValidationDialog
+                        getIsOpen={getIsValidationDialogOpen}
+                        labelList={updateFrom === "Continue"
+                            ? allWarningFields?.filter(field => field?.label?.mandatory !== false && Object.keys(field?.label).length !== 0)
+                            : updateFrom === "contact"
+                                ? warningFieldsContact?.filter(field => field?.label?.mandatory !== false && Object.keys(field?.label).length !== 0)
+                                : warningFields?.filter(field => field?.label?.mandatory !== false && field?.label !== undefined)
+                        }
+                        getSkipClicked={updateFrom === "Continue"
                             ? getContactSkipClicked
-                            : getSkipClicked
-                    }
-                />
-            )}
+                            : updateFrom === "contact"
+                                ? getContactSkipClicked
+                                : getSkipClicked
+                        }
+                    />
+                )
+            }
 
-            {showJourneyDialog && (
-                <ReappointmentJourneyDialog getIsOpen={getIsShowReappointmentJourneyDialog} title={`Great Start! You're On Your Way.`} img={JourneyStep2} formIndex={formIndex} basicForm={basicForm} continueClick={getAllMissingFields} />
-            )}
-        </div>
+            {
+                showJourneyDialog && (
+                    <ReappointmentJourneyDialog getIsOpen={getIsShowReappointmentJourneyDialog} title={`Great Start! You're On Your Way.`} img={JourneyStep2} formIndex={formIndex} basicForm={basicForm} continueClick={getAllMissingFields} />
+                )
+            }
+        </div >
     );
 }
 

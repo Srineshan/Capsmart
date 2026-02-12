@@ -1909,7 +1909,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
       return (
         <>
           <div className={style.padding}>
-            <div className={style.cardTitle}>{`${allStaffPrivilege
+            {/* <div className={style.cardTitle}>{`${allStaffPrivilege
               ?.filter((data) => data?.id === selectedPrivilege)
               ?.map((data) => data?.privilegeSetTitle)[0] !== undefined
               ? allStaffPrivilege
@@ -1917,7 +1917,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                 ?.map((data) => data?.privilegeSetTitle)[0]
                 ?.toUpperCase()
               : ""
-              }`}</div>
+              }`}</div> */}
 
             {selectedPrivilegeForDisplay?.map((data) =>
               data?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ?
@@ -1928,52 +1928,55 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                   />
                 )
                 :
-                data?.privilegeDetails?.corePrivileges?.privilegesByCategories?.map(
-                  (categories, index) => (
-                    <>
-                      <div>
-                        <div className={style.categoryGrid}>
-                          <div className={style.itemLeft}>
-                            <strong>
-                              {categories?.category === null
-                                ? ""
-                                : categories?.category}
-                            </strong>
-                          </div>
-                        </div>
-                        <>
-                          {categories?.privileges?.map((privileges) => (
-                            <div className={style.privilegeCodeGrid}>
-                              <div className={style.itemLeft}>
-                                <strong>{privileges?.privilegeId || ""}</strong>
-                              </div>
-                              <div className={style.itemLeft}>
-                                {privileges?.title || ""}
-                              </div>
-                            </div>
-                          ))}
-                        </>
-                      </div>
-                      {categories?.subCategories?.map((subCategory, subIndex) => (
-                        <div className={style.marginLeft20}>
+                <>
+                  <div className={style.cardTitle}>{data?.privilegeSetTitle}</div>
+                  {data?.privilegeDetails?.corePrivileges?.privilegesByCategories?.map(
+                    (categories, index) => (
+                      <>
+                        <div>
                           <div className={style.categoryGrid}>
-                            <div className={style.itemLeft}><strong>{subCategory?.subCategory === null ? '' : subCategory?.subCategory}</strong></div>
+                            <div className={style.itemLeft}>
+                              <strong>
+                                {categories?.category === null
+                                  ? ""
+                                  : categories?.category}
+                              </strong>
+                            </div>
                           </div>
-                          <>{
-                            subCategory?.privileges?.map(privileges => (
+                          <>
+                            {categories?.privileges?.map((privileges) => (
                               <div className={style.privilegeCodeGrid}>
-                                <div className={style.itemLeft}><strong>{privileges?.privilegeId || ''}</strong></div>
-                                <div className={style.itemLeft}>{privileges?.title || ''}</div>
+                                <div className={style.itemLeft}>
+                                  <strong>{privileges?.privilegeId || ""}</strong>
+                                </div>
+                                <div className={style.itemLeft}>
+                                  {privileges?.title || ""}
+                                </div>
                               </div>
-
-                            ))
-                          }
+                            ))}
                           </>
                         </div>
-                      ))}
-                    </>
-                  )
-                )
+                        {categories?.subCategories?.map((subCategory, subIndex) => (
+                          <div className={style.marginLeft20}>
+                            <div className={style.categoryGrid}>
+                              <div className={style.itemLeft}><strong>{subCategory?.subCategory === null ? '' : subCategory?.subCategory}</strong></div>
+                            </div>
+                            <>{
+                              subCategory?.privileges?.map(privileges => (
+                                <div className={style.privilegeCodeGrid}>
+                                  <div className={style.itemLeft}><strong>{privileges?.privilegeId || ''}</strong></div>
+                                  <div className={style.itemLeft}>{privileges?.title || ''}</div>
+                                </div>
+
+                              ))
+                            }
+                            </>
+                          </div>
+                        ))}
+                      </>
+                    )
+                  )}
+                </>
             )}
             {(selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges
               ?.privilegesByCategories?.[0]?.privileges?.length !== 0 &&
@@ -3141,7 +3144,8 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
     let temp = selectedPrivilegesForDisplayMultiple;
     temp.push(data);
     setSelectedPrivilegesForDisplayMultiple(temp);
-    handleSubmitPrivilegeSet(true, temp)
+    // handleSubmitPrivilegeSet(true, temp)
+    handleSubmitPrivilegeSet();
   };
 
   const handleSelectedAdditionalPrivilegesForDisplayMultiple = (data) => {
@@ -3818,8 +3822,8 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                         maxLength={50}
                         placeholder={'Enter Department Name'}
                         value={getDeptItems(departmentList)?.find(data =>
-                        (data?.specialityId !== "" ? data?.departmentId === selectedDepartment && data?.specialityId === selectedSpeciality
-                          : data?.id === selectedDepartment && data?.specialityId === selectedSpeciality)
+                        (data?.specialityId !== "" ? data?.id === selectedDepartment && data?.specialityId === selectedSpeciality
+                          : data?.id === selectedDepartment)
                         )?.value || ''}
                         required={true}
                       />
@@ -4071,7 +4075,11 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                         <Tooltip title={"Click to mark as Yes"} arrow>
                           <div
                             className={`${style.reappointmentButtonOutlined}`}
-                            onClick={() => handleSubmitPrivilegeSet()}
+                            // onClick={() => handleSubmitPrivilegeSet()}
+                            onClick={() => {
+                              setShowPrivileges(true);
+                              // handleChange(data?.id);
+                            }}
                           >
                             YES
                           </div>
@@ -4555,21 +4563,6 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                 <div
                   className={`${style.privilegeCardWithBorder} ${style.marginTop10}`}
                 >
-                  {hospitalPrivilegeSet?.map((data, index) => (
-                    <div className={style.hospitalPrivilegeSetGrid}>
-                      <div className={`${style.lableStyle} ${style.cursorPointer}`} onClick={() => { handleEditPrivilegesAtOtherHospital(data, index) }}>{data?.hospitalName}</div>
-                      <div className={`${style.lableStyle} ${style.cursorPointer} ${style.primaryColor}`}>{data?.privileges}</div>
-                      <img
-                        src={DeleteIcon}
-                        alt=""
-                        className={`${style.docTypeImgStyle} ${style.marginLeft}`}
-                        onClick={() => {
-                          setHospitalPrivilegeSet(hospitalPrivilegeSet?.filter(privilegeData => data?.hospitalName !== privilegeData?.hospitalName));
-                          setIsSubmit(true);
-                        }}
-                      />
-                    </div>
-                  ))}
                   <div className={style.marginTop}>
                     {/* <CommonTextField
                       value={hospitalName}
@@ -4604,18 +4597,39 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                     <div className={`${style.lableStyle} ${style.marginTop}`}>
                       Privilege Category you have at the Other Hospital
                     </div>
-                    <div className={style.chipsContainer}>
+                    <CommonSelectField
+                      value={hospitalPrivilege}
+                      onChange={(e) => {
+                        let selectedPrivilegeCategoriesAtOtherHospitals = privilegeCategoriesAtOtherHospitals?.filter(data => e?.target?.value === data?.category)?.[0];
+                        setHospitalPrivilege(selectedPrivilegeCategoriesAtOtherHospitals?.category);
+                        setHospitalPrivilegeCategory({
+                          "id": selectedPrivilegeCategoriesAtOtherHospitals?.id,
+                          "name": selectedPrivilegeCategoriesAtOtherHospitals?.category,
+                          "type": selectedPrivilegeCategoriesAtOtherHospitals?.type
+                        })
+                      }}
+                      className={style.fullWidth}
+                      valueList={privilegeCategoriesAtOtherHospitals?.map(data => data?.category)}
+                      labelList={privilegeCategoriesAtOtherHospitals?.map(data => data?.category)}
+                      disabledList={privilegeCategoriesAtOtherHospitals?.map(data => false)}
+                      disabledSelect={false}
+                      label={""}
+                    // required={true}
+                    />
+                    <div className={`${style.chipsContainer} ${style.marginTop}`}>
                       {privilegeCategoriesAtOtherHospitals?.map(data => (
                         <div className={`${style.privilegeCategoryChips} ${hospitalPrivilege === data?.category ? style.privilegeCategoryChipsSelected : ''} 
                         ${style.cursorPointer}
-                         `} onClick={() => {
+                         `}
+                          onClick={() => {
                             setHospitalPrivilege(data?.category);
                             setHospitalPrivilegeCategory({
                               "id": data?.id,
                               "name": data?.category,
                               "type": data?.type
                             })
-                          }}>{data?.category}</div>
+                          }}
+                        >{data?.category}</div>
                       ))}
                     </div>
                   </div>
@@ -4676,6 +4690,24 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                       </div>
                     </Tooltip>
                   </div>
+                  {hospitalPrivilegeSet?.length > 0 && (
+                    <CommonDivider />
+                  )}
+                  {hospitalPrivilegeSet?.map((data, index) => (
+                    <div className={`${style.hospitalPrivilegeSetGrid} ${style.marginTop}`}>
+                      <div className={`${style.lableStyle} ${style.cursorPointer}`} onClick={() => { handleEditPrivilegesAtOtherHospital(data, index) }}>{data?.hospitalName}</div>
+                      <div className={`${style.lableStyle} ${style.cursorPointer} ${style.primaryColor}`}>{data?.privileges}</div>
+                      <img
+                        src={DeleteIcon}
+                        alt=""
+                        className={`${style.docTypeImgStyle} ${style.marginLeft}`}
+                        onClick={() => {
+                          setHospitalPrivilegeSet(hospitalPrivilegeSet?.filter(privilegeData => data?.hospitalName !== privilegeData?.hospitalName));
+                          setIsSubmit(true);
+                        }}
+                      />
+                    </div>
+                  ))}
                 </div>
               </>
             )}
@@ -4763,7 +4795,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
         <div>
           <div className={Classes.DIALOG_BODY}>
             <div className={style.spaceBetween}>
-              <div className={style.heading}>Privilege Set To Request</div>
+              <div className={style.heading}>Privilege Set Requested</div>
               <div className={style.displayInRow}>
                 <img
                   src={CrossPink}
@@ -4887,7 +4919,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
         <div>
           <div className={Classes.DIALOG_BODY}>
             <div className={style.spaceBetween}>
-              <div className={style.heading}>Privilege Set To Request</div>
+              <div className={style.heading}>Privilege Set Requested</div>
               <div className={style.displayInRow}>
                 <img
                   src={CrossPink}

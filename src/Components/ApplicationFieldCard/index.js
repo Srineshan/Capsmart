@@ -137,6 +137,11 @@ const ApplicationFieldCard = ({
     'No': '#14B15A'
   }
 
+  const disclosureRadioColor = {
+    'Yes': '#FF0000',
+    'No': '#06617A'
+  }
+
   console.log(user);
   useEffect(() => {
     renderObjectFields(object);
@@ -160,7 +165,7 @@ const ApplicationFieldCard = ({
             document.createElement("div")
           );
         }
-        
+
         if (!geocoder.current) {
           geocoder.current = new window.google.maps.Geocoder();
         }
@@ -413,13 +418,13 @@ const ApplicationFieldCard = ({
           console.log('Skipping geocoding - no postal code or streetName was recently selected');
           return;
         }
-        
+
         // Wait for geocoder to be initialized
         if (!window.google || !window.google.maps) {
           console.warn('Google Maps not loaded yet');
           return;
         }
-        
+
         if (!geocoder.current) {
           console.warn('Geocoder not initialized, initializing now...');
           geocoder.current = new window.google.maps.Geocoder();
@@ -427,13 +432,13 @@ const ApplicationFieldCard = ({
 
         // Clean and validate Canadian postal code format
         const cleanPostalCode = postalCode.replace(/\s+/g, '').toUpperCase();
-        
+
         // Validate format: must be exactly 6 characters A1A1A1
         if (cleanPostalCode.length !== 6 || !/^[A-Z]\d[A-Z]\d[A-Z]\d$/.test(cleanPostalCode)) {
           console.log('Invalid postal code format:', postalCode, cleanPostalCode);
           return;
         }
-        
+
         // Format with space for geocoding: A1A 1A1
         const formattedPostalCode = `${cleanPostalCode.slice(0, 3)} ${cleanPostalCode.slice(3, 6)}`;
 
@@ -2396,9 +2401,9 @@ const ApplicationFieldCard = ({
                               ? e.target.value
                               : e.target.value.slice(0, fieldData.maxLength)
                             : e.target.value;
-                      
+
                       handleChange(fieldKey, newValue, baseKey);
-                      
+
                       // Trigger geocoding when pinCode is entered
                       if (fieldKey === "pinCode" && newValue) {
                         fetchCityProvinceFromPostalCode(newValue, baseKey);
@@ -3247,6 +3252,7 @@ const ApplicationFieldCard = ({
                   warning={warningFields
                     ?.map((data) => data?.key)
                     ?.includes(`${basicpath}.${baseKey}.${fieldKey}`)}
+                  checkedColor={disclosureRadioColor}
                 />
               )}
             </div>

@@ -337,10 +337,10 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
   const getMissingFields = (data) => {
     let missingKeys = [];
     let hasMandatoryMissingFields = [];
-    if (yesOrNoLMS === '') {
-      missingKeys.push({ label: { label: 'Have you completed all of the CMH assigned LMS Modules for your reappointment?', mandatory: true } });
+    // if (yesOrNoLMS === '') {
+    //   missingKeys.push({ label: { label: 'Have you completed all of the CMH assigned LMS Modules for your reappointment?', mandatory: true } });
 
-    }
+    // }
     if (yesOrNoSuboxone === '') {
       missingKeys.push({ label: { label: 'Do you prescribe Suboxone?', mandatory: true } });
     }
@@ -446,7 +446,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
     let temp = {
       schemaId: basicForm?.forms?.[formIndex]?.schemaId,
       data: {
-        isModulesForReAppointmentCompleted: { response: yesOrNoLMS, date: updatedDateLMS },
+        // isModulesForReAppointmentCompleted: { response: yesOrNoLMS, date: updatedDateLMS },
         doYouPrescribeSuboxone: { response: yesOrNoSuboxone, date: updatedDateSuboxone },
         wishToBeMRP: { response: yesOrNoMRP, date: updatedDateMRP },
         coverageDetails: { covererName: covererName, obstetricsCovererName: obstetricsCovererName, providerType: providerType, obstetricsProviderType: obstetricsProviderType },
@@ -506,7 +506,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
       <div className={`${style.applicationScreenGrid} ${showInfo ? "blurredBackground" : ""}`}>
         <div>
           <ReappointmentProgressCard step={'STEP 11'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={22} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} basicForm={basicForm} />
-          <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
+          {/* <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
             <div className={style.cardTitle}>
               {formSchema?.properties?.isModulesForReAppointmentCompleted?.properties?.response?.label}
             </div>
@@ -548,7 +548,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                 </div>
               </>
             )}
-          </div>
+          </div> */}
           <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
             <div className={style.cardTitle}>
               {formSchema?.properties?.doYouPrescribeSuboxone?.properties?.response?.label}
@@ -1117,10 +1117,10 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
               <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleBackClick()}>BACK</div></Tooltip>
             <Tooltip title={"Click to Proceed to the Next Step"} arrow>
               <div className={`${style.continue} ${style.marginTop} ${((basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children'
-                && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics') ? (yesOrNoLMS !== '' && yesOrNoSuboxone !== '' && yesOrNoMRP !== '')
-                : (yesOrNoLMS !== '' && yesOrNoSuboxone !== '')) ? '' : style.disabledButton}`} onClick={((basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children'
-                  && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics') ? (yesOrNoLMS !== '' && yesOrNoSuboxone !== '' && yesOrNoMRP !== '') :
-                  (yesOrNoLMS !== '' && yesOrNoSuboxone !== '')) ? () => getMissingFields("continue") : () => { }}>CONTINUE</div></Tooltip>
+                && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics') ? (yesOrNoSuboxone !== '' && yesOrNoMRP !== '')
+                : (yesOrNoSuboxone !== '')) ? '' : style.disabledButton}`} onClick={((basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children'
+                  && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics') ? (yesOrNoSuboxone !== '' && yesOrNoMRP !== '') :
+                  (yesOrNoSuboxone !== '')) ? () => getMissingFields("continue") : () => { }}>CONTINUE</div></Tooltip>
           </div>
         </div>
         <div>
@@ -1157,13 +1157,13 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
 
               {/* <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowJourneyDialog(true)}>CONTINUE</div> */}
               <Tooltip title={((basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children'
-                && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics') ? (yesOrNoLMS !== '' && yesOrNoSuboxone !== '' && yesOrNoMRP !== '')
-                : (yesOrNoLMS !== '' && yesOrNoSuboxone !== '')) ? "Click to Proceed to the Next Step" : ""} arrow>
+                && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics') ? (yesOrNoSuboxone !== '' && yesOrNoMRP !== '')
+                : (yesOrNoSuboxone !== '')) ? "Click to Proceed to the Next Step" : ""} arrow>
                 <div className={`${style.continue} ${style.marginTop10} ${((basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children'
-                  && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics') ? (yesOrNoLMS !== '' && yesOrNoSuboxone !== '' && yesOrNoMRP !== '')
-                  : (yesOrNoLMS !== '' && yesOrNoSuboxone !== '')) ? '' : style.disabledButton}`} onClick={((basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children'
-                    && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics') ? (yesOrNoLMS !== '' && yesOrNoSuboxone !== '' && yesOrNoMRP !== '') :
-                    (yesOrNoLMS !== '' && yesOrNoSuboxone !== '')) ? () => getMissingFields("continue") : () => { }}>CONTINUE</div></Tooltip>
+                  && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics') ? (yesOrNoSuboxone !== '' && yesOrNoMRP !== '')
+                  : (yesOrNoSuboxone !== '')) ? '' : style.disabledButton}`} onClick={((basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children'
+                    && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics') ? (yesOrNoSuboxone !== '' && yesOrNoMRP !== '') :
+                    (yesOrNoSuboxone !== '')) ? () => getMissingFields("continue") : () => { }}>CONTINUE</div></Tooltip>
 
             </div>
           </div>

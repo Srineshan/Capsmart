@@ -490,18 +490,18 @@
 .yesButton {
     background: $secondarycolor 0% 0% no-repeat padding-box;
     border-radius: 10px;
-    width: 152px;
+    width: 120px;
     color: var(--primary-color);
-    height: 40px;
+    height: 30px;
     border: 1px solid var(--primary-color);
 }
 
 .noButton {
     background: var(--primary-color) 0% 0% no-repeat padding-box;
     border-radius: 10px;
-    width: 152px;
+    width: 120px;
     color: $secondarycolor;
-    height: 40px;
+    height: 30px;
 }
 
 .displayInRow {
@@ -534,6 +534,30 @@
     letter-spacing: 0px;
     color: #2C2C2C;
     max-width: 95%;
+}
+
+.demographicText {
+    text-align: left;
+    font: normal normal normal 20px/26px var(--font-style);
+    color: $textgrey;
+}
+
+.demographicValueText {
+    text-align: left;
+    font: normal normal normal 16px/23px var(--font-style);
+    color: $textgrey;
+}
+
+.demographicLebelText {
+    text-align: left;
+    font: normal normal bold 16px/23px var(--font-style);
+    color: $textgrey;
+}
+
+.twoValueForDemographic {
+    display: grid;
+    grid-template-columns: 43% 55%;
+    gap: 1%;
 }
 
 .displayInRowRev {
@@ -594,4 +618,8 @@
 .disabledButtonLook:hover {
     opacity: 0.5 !important;
     cursor: not-allowed !important;
+}
+
+.rightAlign {
+    margin-left: auto;
 }

@@ -137,7 +137,7 @@
 
 .tableGridValid {
     display: grid;
-    grid-template-columns: 47% 22% 20% 10%;
+    grid-template-columns: 32% 16% 17% 27% 7%;
     gap: 1%;
 }
 
@@ -156,6 +156,21 @@
     font: normal normal medium 15px/23px var(--font-style);
     letter-spacing: 0px;
     color: #2C2C2C;
+}
+
+.allDocumentsCurrentValidCard {
+    background: #e8f5e9 0% 0% no-repeat padding-box;
+    box-shadow: 0px 5px 20px #52575D4D;
+    border-radius: 20px;
+    border: 1px solid #2e7d32;
+    padding: 20px;
+}
+
+.allDocumentsCurrentValidTitle {
+    text-align: left;
+    font: normal normal bold 20px/26px var(--font-style);
+    letter-spacing: 0px;
+    color: #2e7d32;
 }
 
 .requiredDocumentCardAlternativeColor {

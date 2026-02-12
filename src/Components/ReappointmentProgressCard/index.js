@@ -114,7 +114,7 @@ const ReappointmentProgressCard = ({ dataType, title, timeNumber, timeText, prog
         <div className={style.progressCard}>
             <div className={style.spaceBetween}>
                 <div className={style.displayInRow}>
-                    <div className={style.stepTextStyle}>{`${formIndex + 1}/${basicForm?.forms?.length}`}</div>
+                    <div className={style.stepTextStyle}>{`${(formIndex + 1) || 0}/${basicForm?.forms?.length || 0}`}</div>
                     <div className={`${style.titleTextStyle} ${style.marginLeft}`}>{title}</div>
                     {/* <div className={`${style.dataTypeCollectionsTextStyle}  ${step !== '' ? style.marginLeft : ''}`}>{dataType}</div> */}
                 </div>
