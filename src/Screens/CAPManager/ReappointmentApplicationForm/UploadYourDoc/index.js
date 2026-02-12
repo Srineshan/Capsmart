@@ -100,6 +100,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
     const [deleteData, setDeleteData] = useState();
     const [refetchRefDoc, setRefetchRefDoc] = useState(false);
     const [skipReason, setSkipReason] = useState();
+    const [pendingEditQueue, setPendingEditQueue] = useState([]);
 
     useEffect(() => {
         if (basicForm) {
@@ -203,6 +204,15 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
 
     const getIsOpenFileWithFields = (value) => {
         setShowFileWithFields(value);
+        if (!value && pendingEditQueue.length > 0) {
+            const [nextRowId, ...remaining] = pendingEditQueue;
+            setPendingEditQueue(remaining);
+            setTimeout(() => {
+                setIsLoadingDocs(true);
+                setShowFileWithFields(true);
+                getDocument(nextRowId);
+            }, 300);
+        }
     }
 
     const updateFunc = () => {
@@ -368,6 +378,21 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
             }
             handleSubmitApplicationReq(table)
             setIsLoading(false);
+
+            // Auto-open edit dialog for documents that are not valid or not verified
+            const invalidDocs = response?.data?.filter((doc) =>
+                doc?.id && doc?.documentType?.shortName !== 'Profile Picture' && (!doc?.valid || !doc?.verified)
+            );
+            if (invalidDocs?.length > 0) {
+                const [first, ...rest] = invalidDocs.map((doc) => doc?.id);
+                setPendingEditQueue(rest);
+                setTimeout(() => {
+                    setIsLoadingDocs(true);
+                    setShowFileWithFields(true);
+                    getDocument(first);
+                }, 500);
+            }
+
             return response?.data;
         } catch (error) {
             ErrorToaster('File Upload Failed');
@@ -483,14 +508,14 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                             if (innerData?.isSkipReason) {
                                 return <span className={`${style.fullWidth} ${style.verticalAlignCenter}`}>{innerData?.documentType}</span>;
                             }
-                            return <div className={style.verticalAlignCenter} style={{ width: '100%' }}><CommonSelectField
+                            return <CommonSelectField
                                 value={innerData[data]}
                                 onChange={(e) => handleChange(e.target.value, innerIndex)}
                                 className={style.fullWidth}
                                 valueList={getDropDownValues(innerData[data]) || []}
                                 labelList={getDropDownValues(innerData[data]) || []}
                                 disabledList={getDropDownValues(innerData[data])?.map(data => false)}
-                            /></div>;
+                            />;
                         })
                     });
                 } else if (data === "valid") {
@@ -529,7 +554,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                         }
                         return (
                             <Tooltip title="Click to Delete" arrow>
-                                <img src={DeleteIcon} alt="" className={`${style.docTypeImgStyle} ${style.justifyCenter}`} onClick={() => { setDeleteData(innerData); setShowDeleteConfirmation(true) }} /> </Tooltip>);
+                                <img src={DeleteIcon} alt="" className={`${style.docTypeEditImgStyle} ${style.justifyCenter}`} onClick={() => { setDeleteData(innerData); setShowDeleteConfirmation(true) }} /> </Tooltip>);
                     }), 'isShowHoverText': false
                 });
             }

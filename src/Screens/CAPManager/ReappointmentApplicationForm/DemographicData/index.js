@@ -928,8 +928,8 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                                     <div className={style.twoValueForDemographic}>
                                         <div className={style.demographicLebelText}>Current Home Address</div>
                                         <div>
-                                            <div className={style.demographicValueText}>{`${basicForm?.applicant?.contactAddress1?.homeAddress?.streetName || ''} `}</div>
-                                            <div className={style.demographicValueText}>{`${basicForm?.applicant?.contactAddress1?.homeAddress?.city || ''}, ${basicForm?.applicant?.contactAddress1?.homeAddress?.province || ''}, ${basicForm?.applicant?.contactAddress1?.homeAddress?.pinCode || ''}`}</div>
+                                            <div className={style.demographicValueText}>{`${basicForm?.forms?.[formIndex]?.data?.contactAddress1?.homeAddress?.streetName || ''} `}</div>
+                                            <div className={style.demographicValueText}>{`${basicForm?.forms?.[formIndex]?.data?.contactAddress1?.homeAddress?.city || ''}, ${basicForm?.forms?.[formIndex]?.data?.contactAddress1?.homeAddress?.province || ''}, ${basicForm?.forms?.[formIndex]?.data?.contactAddress1?.homeAddress?.pinCode || ''}`}</div>
                                         </div>
                                     </div>
                                     <div></div>
@@ -941,8 +941,8 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                                             <div className={style.demographicValueText}>{`${basicForm?.forms?.[formIndex]?.data?.contactAddress2?.isMailingAddressSameAsHomeAddress || ''} `}</div>
                                         ) : (
                                             <div>
-                                                <div className={style.demographicValueText}>{`${basicForm?.applicant?.contactAddress2?.mailingAddress?.streetName || ''} `}</div>
-                                                <div className={style.demographicValueText}>{`${basicForm?.applicant?.contactAddress2?.mailingAddress?.city || ''}, ${basicForm?.applicant?.contactAddress2?.mailingAddress?.province || ''}, ${basicForm?.applicant?.contactAddress2?.mailingAddress?.pinCode || ''}`}</div>
+                                                <div className={style.demographicValueText}>{`${basicForm?.forms?.[formIndex]?.data?.contactAddress2?.mailingAddress?.streetName || ''} `}</div>
+                                                <div className={style.demographicValueText}>{`${basicForm?.forms?.[formIndex]?.data?.contactAddress2?.mailingAddress?.city || ''}, ${basicForm?.forms?.[formIndex]?.data?.contactAddress2?.mailingAddress?.province || ''}, ${basicForm?.forms?.[formIndex]?.data?.contactAddress2?.mailingAddress?.pinCode || ''}`}</div>
                                             </div>
                                         )}
                                     </div>
@@ -955,8 +955,8 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                                             <div className={style.demographicValueText}>{`${basicForm?.forms?.[formIndex]?.data?.contactAddress3?.isBusinessAddressSameAsHomeAddressOrMailingAddress || ''} `}</div>
                                         ) : (
                                             <div>
-                                                <div className={style.demographicValueText}>{`${basicForm?.applicant?.contactAddress3?.business?.businessAddress?.streetName || ''} `}</div>
-                                                <div className={style.demographicValueText}>{`${basicForm?.applicant?.contactAddress3?.business?.businessAddress?.city || ''}, ${basicForm?.applicant?.contactAddress3?.business?.businessAddress?.province || ''}, ${basicForm?.applicant?.contactAddress3?.business?.businessAddress?.pinCode || ''}`}</div>
+                                                <div className={style.demographicValueText}>{`${basicForm?.forms?.[formIndex]?.data?.contactAddress3?.business?.businessAddress?.streetName || ''} `}</div>
+                                                <div className={style.demographicValueText}>{`${basicForm?.forms?.[formIndex]?.data?.contactAddress3?.business?.businessAddress?.city || ''}, ${basicForm?.forms?.[formIndex]?.data?.contactAddress3?.business?.businessAddress?.province || ''}, ${basicForm?.forms?.[formIndex]?.data?.contactAddress3?.business?.businessAddress?.pinCode || ''}`}</div>
                                             </div>
                                         )}
                                     </div>
