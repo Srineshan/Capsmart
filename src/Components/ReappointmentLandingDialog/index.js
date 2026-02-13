@@ -312,13 +312,13 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
                   <span style={{ marginLeft: '20px' }}>Your 2026 - 2027 <br /> Reappointment Application</span>
                 </div>
                 <div className={`${style.descriptionStyle} ${style.marginTop10}`}>
-                  {title !== 'HapiCare' ? title : ''} has digitised its credentialing and privileging application processes.
+                  {title !== 'HapiCare' ? title : ''} has digitized its credentialing and privileging application processes.
                 </div>
                 <div className={`${style.descriptionStyle} ${style.marginTop10}`}>
                   Processing of your Reappointment Application will now be a less burdensome activity.
                 </div>
                 <div className={`${style.descriptionStyle} ${style.marginTop10}`}>
-                  For this reappointment cycle would you like to process your application.
+                  <strong> For this reappointment cycle would you like to process your application.</strong>
                 </div>
                 {/* <div className={`${style.reappointmentCard} ${style.marginTop}`}>
                   <div className={`${style.descriptionStyle}`}>

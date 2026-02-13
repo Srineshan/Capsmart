@@ -4,6 +4,7 @@ import CrossPink from "../../images/crossPink.png";
 import { useDescope } from '@descope/react-sdk';
 import CloseIcon from '@mui/icons-material/Close';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import DoneIcon from '@mui/icons-material/Done';
 import style from './index.module.scss';
 import { TenantID, GET } from '../../Screens/dataSaver';
 import Cookies from 'universal-cookie';
@@ -19,6 +20,7 @@ const ApplicationHeader = ({ title, close, closeClick, handleNavigate, isShowPri
     let cookie = new Cookies();
     const [logo, setLogo] = useState(null);
     const [showLogoutConfirmation, setShowLogoutConfirmation] = useState(false);
+    const [isLinkCopied, setIsLinkCopied] = useState(false);
     useEffect(() => {
         const getLogo = async () => {
             try {
@@ -89,22 +91,28 @@ const ApplicationHeader = ({ title, close, closeClick, handleNavigate, isShowPri
                         <div
                             className={` ${style.alignCenter} ${style.cursorPointer} ${style.marginRight20}`}
                         >
-                            <Tooltip title="Copy URL" arrow>
-                                {/* <ContentCopyIcon
-                                    sx={{
-                                        fontSize: 30,
-                                        color: "#06617A",
-                                    }}
-                                    onClick={handleCopy}
-                                /> */}
-                                <div className={`${style.attestationLinkButton} ${style.cursorPointer}`} onClick={() => handleCopy()}>
-                                    <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                        <ContentCopyIcon sx={{
-                                            fontSize: 20,
-                                            color: "#ffffff",
-                                            marginRight: "10px",
-                                        }} /> COPY LINK
-                                    </div>
+                            <Tooltip title={isLinkCopied ? "Link Copied" : "This link provides secure access for staff to access their reappointment application. Please share it with the appropriate individual so they can complete it."} arrow>
+                                <div className={`${style.attestationLinkButton} ${style.cursorPointer}`} onClick={() => {
+                                    handleCopy();
+                                    setIsLinkCopied(true);
+                                }}>
+                                    {isLinkCopied ? (
+                                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                            <DoneIcon sx={{
+                                                fontSize: 20,
+                                                color: "#ffffff",
+                                                marginRight: "10px",
+                                            }} /> LINK COPIED
+                                        </div>
+                                    ) : (
+                                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                            <ContentCopyIcon sx={{
+                                                fontSize: 20,
+                                                color: "#ffffff",
+                                                marginRight: "10px",
+                                            }} /> COPY LINK
+                                        </div>
+                                    )}
                                 </div>
                             </Tooltip>
                         </div>
