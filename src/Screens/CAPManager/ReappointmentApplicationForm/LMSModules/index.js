@@ -11,14 +11,19 @@ import { ErrorToaster, SuccessToaster } from '../../../../utils/toaster';
 import SaveInProgressDialog from '../../../../Components/SaveInProgressDialog';
 import ValidationDialog from '../../../../Components/validationDialog';
 import JourneyStep6 from './../../../../images/journeyStep6.png';
+import RedAlert from './../../../../images/redAlert.png';
 import style from './index.module.scss';
 import WelcomeCard from '../../../../Components/WelcomeCard';
 import ReappointmentProgressCard from '../../../../Components/ReappointmentProgressCard';
 import { format } from 'date-fns';
 import ReappointmentJourneyDialog from '../../../../Components/reappointmentJourneyDialog';
 import { Tooltip } from '@mui/material';
+import TableTwo from '../../../../Components/TableDesignTwo';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import Cookies from 'universal-cookie';
 
 const LMSModules = ({ basicForm, setBasicForm, getPreApplication }) => {
+    const cookie = new Cookies();
     const [formSchema, setFormSchema] = useState();
     const [formSchemaWholeObject, setFormSchemaWholeObject] = useState();
     const [metadata, setMetadata] = useState([]);
@@ -40,8 +45,7 @@ const LMSModules = ({ basicForm, setBasicForm, getPreApplication }) => {
             getFormSchema()
         }
         if (basicForm !== undefined && formIndex !== undefined) {
-            setYesOrNo(basicForm?.forms?.[formIndex]?.data?.yesOrNo !== undefined ? basicForm?.forms?.[formIndex]?.data?.yesOrNo : '');
-            setUpdatedDate(basicForm?.forms?.[formIndex]?.data?.updatedDate !== undefined ? basicForm?.forms?.[formIndex]?.data?.updatedDate : '');
+            // Removed yesOrNo and updatedDate state initialization - using course list table instead
             setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form' || 'Disclosure')?.length === (formIndex + 1)) ? `/reappointmentApplicationForm/${applicationId}/Form/${btoa('PODCheck')}` : `/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
             setNavigateBackURL(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms?.[formIndex - 1]?.formCategory}/${btoa(basicForm?.forms?.[formIndex - 1]?.schemaCategory)}`);
         }
@@ -101,9 +105,7 @@ const LMSModules = ({ basicForm, setBasicForm, getPreApplication }) => {
 
     const getMissingFields = () => {
         let missingKeys = [];
-        if (yesOrNo === '') {
-            missingKeys.push({ label: 'Have you completed all of the CMH assigned LMS Modules for your reappointment?' })
-        }
+        // Validation removed - using table view instead of Yes/No
         if (missingKeys?.length !== 0) {
             setShowValidationDialog(true)
         } else {
@@ -117,9 +119,9 @@ const LMSModules = ({ basicForm, setBasicForm, getPreApplication }) => {
         // if (isEdited) {
         let temp = {
             schemaId: basicForm?.forms?.[formIndex]?.schemaId,
-            data: { yesOrNo: yesOrNo, updatedDate: updatedDate },
+            data: basicForm?.forms?.[formIndex]?.data,
             unFilledFields: warningFields?.map(data => data?.label),
-            acknowledged: data === "skipped" || data === "save" ? false : true
+            acknowledged: true
         }
         await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
             .then(response => {
@@ -165,53 +167,105 @@ const LMSModules = ({ basicForm, setBasicForm, getPreApplication }) => {
     const getIsEdited = (value) => {
         setIsEdited(value)
     }
+
+    // Extract flat list of courses from basicForm.lmsDetails
+    const courses = basicForm?.lmsDetails?.flatMap((item) => item?.courses || []) ?? [];
+
+    const handleCourseClick = (course) => {
+        const lmsUrl = `https://lms.indocaribe.com/descope-login/?ssotoken=${cookie.get("authorization")}`;
+        window.open(lmsUrl, '_blank');
+    }
+
+    const handleViewCertificate = (course) => {
+        if (course?.certificate_details?.view_url) {
+            window.open(course.certificate_details.view_url, '_blank');
+        }
+    }
+
+    const handleDownloadCertificate = (course) => {
+        if (course?.certificate_details?.download_url) {
+            window.open(course.certificate_details.download_url, '_blank');
+        }
+    }
+
+    const actions = [
+        { data: 'View Course', onClick: handleCourseClick, hoverText: 'Open course in LMS' },
+        {
+            data: 'View Certificate',
+            conditionToShow: 'data?.is_course_completed && data?.certificate_details?.view_url',
+            onClick: handleViewCertificate,
+            hoverText: 'View certificate'
+        },
+        // {
+        //     data: 'Download Certificate',
+        //     conditionToShow: 'data?.is_course_completed && data?.certificate_details?.download_url',
+        //     onClick: handleDownloadCertificate,
+        //     hoverText: 'Download certificate'
+        // }
+    ]
+
+    const getCourseTable = () => {
+        let temp = [];
+        // Status icon column
+        temp.push({
+            "type": "icon",
+            "icon": courses?.map((course) => (
+                course?.is_course_completed ? (
+                    <CheckCircleIcon sx={{ fontSize: 24, color: '#14B15A' }} />
+                ) : (
+                    <img src={RedAlert} alt="Not Completed" style={{ width: '24px', height: '24px' }} />
+                )
+            )),
+            'isShowHoverText': false
+        });
+        // Course Name column (clickable)
+        temp.push({
+            "type": "text",
+            "value": courses?.map((course) => course?.course_name),
+            'onClickFunction': handleCourseClick
+        });
+        // Completed On date column
+        temp.push({
+            "type": "text",
+            "value": courses?.map((course) => course?.is_course_completed && course?.course_completion_date ? format(new Date(course.course_completion_date), 'MMM dd, yyyy') : '')
+        });
+        // Action column (View Course, View Certificate, Download Certificate)
+        temp.push({
+            type: "action",
+            value: actions
+        });
+        return temp;
+    }
     return (
         <div>
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
                 <div>
                     <ReappointmentProgressCard step={'STEP 11'} dataType={formSchema?.description} title={formSchemaWholeObject?.title} timeNumber={22} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} basicForm={basicForm} />
+                    <div className={style.marginTop10}>
+                        <WelcomeCard title={<div dangerouslySetInnerHTML={{ __html: "Assigned LMS Modules from Cambridge Memorial Hospital." }} />}
+                            description={<div dangerouslySetInnerHTML={{ __html: "Please ensure all required LMS modules assigned to you are completed before your application is approved." }} />} />
+                    </div>
                     <div className={`${style.applicationCardStyle} ${style.marginTop10}`}>
-                        <div className={style.cardTitle}>
+                        {/* <div className={style.cardTitle}>
                             Have you completed all of the CMH assigned LMS Modules for your reappointment?
+                        </div> */}
+                        <div>
+                            <TableTwo
+                                tableHeaderValues={[
+                                    "",
+                                    "Course Name",
+                                    "Completed On",
+                                    "Action"
+                                ]}
+                                tableDataValues={getCourseTable()}
+                                tableData={courses}
+                                gridStyle={style.courseGridStyle}
+                                actions={actions}
+                                tableSortValues={[]}
+                                heading={"There are no courses available"}
+                                onClickFunction={handleCourseClick}
+                            />
                         </div>
-                        {yesOrNo === '' ? (
-                            <div
-                                className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop}`}
-                            >
-                                <Tooltip title={"Click to mark as Yes"} arrow>
-                                    <div
-                                        className={`${style.reappointmentButtonOutlined}`}
-                                        onClick={() => { setYesOrNo('Yes'); setUpdatedDate(format(new Date(), 'yyyy-MM-dd')) }}
-                                    >
-                                        Yes
-                                    </div>
-                                </Tooltip>
-                                <Tooltip title={"Click to mark as No"} arrow>
-                                    <div
-                                        className={`${style.reappointmentButton} ${style.marginLeft}`}
-                                        onClick={() => { setYesOrNo('No'); setUpdatedDate(format(new Date(), 'yyyy-MM-dd')) }}
-                                    >
-                                        NO
-                                    </div>
-                                </Tooltip>
-                            </div>
-                        ) : (
-                            <>
-                                <div className={`${style.markedAsText} ${style.marginTop}`}><strong>Marked as <span className={yesOrNo === 'Yes' ? style.yesText : style.noText}>{yesOrNo}</span></strong> on {format(new Date(), "MMM dd, yyyy")}</div>
-                                <div
-                                    className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop}`}
-                                >
-                                    <Tooltip title={"Click to Edit Details"} arrow>
-                                        <div
-                                            className={`${style.reappointmentButtonEdit}`}
-                                            onClick={() => setYesOrNo('')}
-                                        >
-                                            Edit
-                                        </div>
-                                    </Tooltip>
-                                </div>
-                            </>
-                        )}
                     </div>
                 </div>
                 <div>

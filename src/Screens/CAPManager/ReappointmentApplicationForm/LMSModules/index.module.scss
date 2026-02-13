@@ -300,3 +300,9 @@
     font: italic normal bold 18px/24px var(--font-style);
     color: #FF5555;
 }
+
+.courseGridStyle {
+    display: grid;
+    grid-template-columns: 5% 59% 25% 7%;
+    gap: 1%;
+}
