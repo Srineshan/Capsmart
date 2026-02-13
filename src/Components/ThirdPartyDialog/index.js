@@ -439,7 +439,7 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData, applicant
                       Period Start To End:
                     </div>
                     <div className={style.detailsText}>
-                      July 1, 2025 To June 30, 2026
+                      July 1, 2026 To June 30, 2027
                     </div>
                   </div>
                   <div className={style.marginTop10}>

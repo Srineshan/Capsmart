@@ -3498,7 +3498,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                                       setSelectedPrivilege(data?.id);
                                     }}
                                   >
-                                    {data?.privilegeSetTitle} {data?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ? data?.descriptiveContent?.esign?.signedDate !== undefined && (<span className={style.signedOnText}>signed on {data?.descriptiveContent?.esign?.signedDate}</span>) : data?.privilegeDetails?.corePrivileges?.esign?.signedDate !== undefined && (<span className={style.signedOnText}>signed on {data?.privilegeDetails?.corePrivileges?.esign?.signedDate}</span>)}
+                                    {data?.privilegeSetTitle} {data?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ? data?.descriptiveContent?.esign?.signedDate !== undefined && (<span className={style.signedOnText}>Signed on {data?.descriptiveContent?.esign?.signedDate}</span>) : data?.privilegeDetails?.corePrivileges?.esign?.signedDate !== undefined && (<span className={style.signedOnText}>Signed on {data?.privilegeDetails?.corePrivileges?.esign?.signedDate}</span>)}
                                   </div>
                                 )
                               )}
@@ -3554,7 +3554,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                               {basicForm?.privileges?.additionalPrivileges?.map(data => (
                                 <div
                                   className={`${style.privilegeHeadingWithHover} ${style.cursorPointer}`} onClick={() => { setShowCurrentPrivileges(true); setCurrentPrivilegesCategory('Additional'); setSelectedPrivilege(data?.id) }}
-                                >{data?.privilegeSetTitle} {data?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ? data?.descriptiveContent?.esign?.signedDate !== undefined && (<span className={style.signedOnText}>signed on {data?.descriptiveContent?.esign?.signedDate}</span>) : data?.privilegeDetails?.corePrivileges?.esign?.signedDate !== undefined && (<span className={style.signedOnText}>signed on {data?.privilegeDetails?.corePrivileges?.esign?.signedDate}</span>)}</div>
+                                >{data?.privilegeSetTitle} {data?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ? data?.descriptiveContent?.esign?.signedDate !== undefined && (<span className={style.signedOnText}>Signed on {data?.descriptiveContent?.esign?.signedDate}</span>) : data?.privilegeDetails?.corePrivileges?.esign?.signedDate !== undefined && (<span className={style.signedOnText}>Signed on {data?.privilegeDetails?.corePrivileges?.esign?.signedDate}</span>)}</div>
                               ))}
                             </>
                           )}
@@ -3972,98 +3972,98 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
             {basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory !== ('Courtesy Staff With Admitting Privileges' || 'Courtesy Staff Without Admitting Privileges') && (
               <>
                 {(
-                  //   basicForm?.privileges?.priorObligatedPrivileges?.length === 0 &&
-                  //   basicForm?.privileges?.obligatedPrivileges?.length === 0) ? (
-                  //   <>
-                  //     <div className={`${style.cardTitle} ${style.marginTop}`}>
-                  //       Select and confirm the Privileges you would like to request.
-                  //     </div>
-                  //     <div
-                  //       className={`${style.privilegeCardWithBorder} ${style.marginTop10}`}
-                  //     >
-                  //       <div className={style.displayInRow}>
-                  //         <div className={style.lableStyle}>Your Department / Division or Speciality : </div>
-                  //         <div className={`${style.lableStyle} ${style.marginLeft}`}><strong>{`${departmentList?.filter((data) => data?.id === selectedDepartment)?.[0]?.departmentName?.name} ${(basicForm?.basicDetails?.departmentSpecialty?.specialty !== "" && basicForm?.basicDetails?.departmentSpecialty?.specialty !== undefined && basicForm?.basicDetails?.departmentSpecialty?.specialty !== null) ? '-' : ''} ${(basicForm?.basicDetails?.departmentSpecialty?.specialty !== "" && basicForm?.basicDetails?.departmentSpecialty?.specialty !== undefined && basicForm?.basicDetails?.departmentSpecialty?.specialty !== null) ? basicForm?.basicDetails?.departmentSpecialty?.specialty : ''}`}</strong></div>
-                  //       </div>
-                  //       <>
-                  //         {staffPrivilege !== undefined && staffPrivilege?.map((data, index) => (
-                  //           <>
-                  //             <Tooltip title={selectedPrivilegesForDisplayMultiple?.map((data) => data?.id)?.includes(data?.id) ? "Click to Remove" : "Click to Request and Sign"} arrow>
-                  //               <div
-                  //                 className={`${style.privilegeConfirmationGrid} ${style.marginTop}`}
-                  //                 onClick={selectedPrivilegesForDisplayMultiple
-                  //                   ?.map((data) => data?.id)
-                  //                   ?.includes(data?.id) ? () => {
-                  //                     handleDeleteSelectedPrrivilege(data?.id)
-                  //                   } : () => {
-                  //                     setIsHistoricalSign(true);
-                  //                     setShowPrivileges(true);
-                  //                     handleChange(data?.id);
-                  //                     ((basicForm?.forms?.[basicForm?.forms?.findIndex(data => data?.schemaCategory === 'UploadYourDoc')]?.data?.setUpYourSignature?.file?.fileURL !== undefined || basicForm?.forms?.[basicForm?.forms?.findIndex(data => data?.schemaCategory === 'UploadYourDoc')]?.data?.setUpYourSignature?.type?.text !== undefined) ? !isHistoricalSign ? setIsShowESignConfirmationDialog(true) : setIsShowESignConfirmationDialog(false) : setIsShowESignDialog(true))
-                  //                   }}
-                  //               >
-                  //                 {selectedPrivilegesForDisplayMultiple
-                  //                   ?.map((data) => data?.id)
-                  //                   ?.includes(data?.id) ? (
-                  //                   <div
-                  //                     className={`${style.iconBackgroundColorSelected} ${style.verticalAlignCenter} ${style.justifyCenter}`}
-                  //                   >
-                  //                     <CheckCircleOutlineIcon
-                  //                       sx={{ fontSize: 15, color: "#FFFFFF" }}
-                  //                     />
-                  //                   </div>
-                  //                 ) : (
-                  //                   <div>
-                  //                   </div>
-                  //                 )}
-                  //                 <div className={style.privilegeHeading}>
-                  //                   {data?.privilegeSetTitle}
-                  //                 </div>
-                  //                 {selectedPrivilegesForDisplayMultiple
-                  //                   ?.map((data) => data?.id)
-                  //                   ?.includes(data?.id) ? (
-                  //                   <div className={`${style.displayInRow} ${style.floatRight}`}>
-                  //                     <span className={style.signedOnText}>signed on {selectedPrivilegesForDisplayMultiple?.filter((privilegeSet) => privilegeSet?.id === data?.id)?.[0]?.privilegeDetails?.corePrivileges?.esign?.signedDate}</span>
-                  //                     <div>
-                  //                       <img
-                  //                         src={DeleteIcon}
-                  //                         alt=""
-                  //                         className={`${style.docTypeImgStyle} ${style.marginLeft} ${style.floatRight}`}
-                  //                       />
-                  //                     </div>
-                  //                   </div>
-                  //                 ) : (
-                  //                   <button
-                  //                     className={`${style.addButton} ${style.marginLeft}`}
-                  //                   >  SELECT
-                  //                   </button>
-                  //                 )}
-                  //               </div>
-                  //             </Tooltip>
-                  //             {index !== staffPrivilege?.length - 1 && (
-                  //               <CommonDivider />
-                  //             )}
-                  //           </>
-                  //         ))}
-                  //       </>
+                  basicForm?.privileges?.priorObligatedPrivileges?.length === 0 &&
+                  basicForm?.privileges?.obligatedPrivileges?.length === 0) ? (
+                  <>
+                    <div className={`${style.cardTitle} ${style.marginTop}`}>
+                      Select and confirm the Privileges you would like to request.
+                    </div>
+                    <div
+                      className={`${style.privilegeCardWithBorder} ${style.marginTop10}`}
+                    >
+                      <div className={style.displayInRow}>
+                        <div className={style.lableStyle}>Your Department / Division or Speciality : </div>
+                        <div className={`${style.lableStyle} ${style.marginLeft}`}><strong>{`${departmentList?.filter((data) => data?.id === selectedDepartment)?.[0]?.departmentName?.name} ${(basicForm?.basicDetails?.departmentSpecialty?.specialty !== "" && basicForm?.basicDetails?.departmentSpecialty?.specialty !== undefined && basicForm?.basicDetails?.departmentSpecialty?.specialty !== null) ? '-' : ''} ${(basicForm?.basicDetails?.departmentSpecialty?.specialty !== "" && basicForm?.basicDetails?.departmentSpecialty?.specialty !== undefined && basicForm?.basicDetails?.departmentSpecialty?.specialty !== null) ? basicForm?.basicDetails?.departmentSpecialty?.specialty : ''}`}</strong></div>
+                      </div>
+                      <>
+                        {staffPrivilege !== undefined && staffPrivilege?.map((data, index) => (
+                          <>
+                            <Tooltip title={selectedPrivilegesForDisplayMultiple?.map((data) => data?.id)?.includes(data?.id) ? "Click to Remove" : "Click to Request and Sign"} arrow>
+                              <div
+                                className={`${style.privilegeConfirmationGrid} ${style.marginTop}`}
+                                onClick={selectedPrivilegesForDisplayMultiple
+                                  ?.map((data) => data?.id)
+                                  ?.includes(data?.id) ? () => {
+                                    handleDeleteSelectedPrrivilege(data?.id)
+                                  } : () => {
+                                    setIsHistoricalSign(true);
+                                    setShowPrivileges(true);
+                                    handleChange(data?.id);
+                                    ((basicForm?.forms?.[basicForm?.forms?.findIndex(data => data?.schemaCategory === 'UploadYourDoc')]?.data?.setUpYourSignature?.file?.fileURL !== undefined || basicForm?.forms?.[basicForm?.forms?.findIndex(data => data?.schemaCategory === 'UploadYourDoc')]?.data?.setUpYourSignature?.type?.text !== undefined) ? !isHistoricalSign ? setIsShowESignConfirmationDialog(true) : setIsShowESignConfirmationDialog(false) : setIsShowESignDialog(true))
+                                  }}
+                              >
+                                {selectedPrivilegesForDisplayMultiple
+                                  ?.map((data) => data?.id)
+                                  ?.includes(data?.id) ? (
+                                  <div
+                                    className={`${style.iconBackgroundColorSelected} ${style.verticalAlignCenter} ${style.justifyCenter}`}
+                                  >
+                                    <CheckCircleOutlineIcon
+                                      sx={{ fontSize: 15, color: "#FFFFFF" }}
+                                    />
+                                  </div>
+                                ) : (
+                                  <div>
+                                  </div>
+                                )}
+                                <div className={style.privilegeHeading}>
+                                  {data?.privilegeSetTitle}
+                                </div>
+                                {selectedPrivilegesForDisplayMultiple
+                                  ?.map((data) => data?.id)
+                                  ?.includes(data?.id) ? (
+                                  <div className={`${style.displayInRow} ${style.floatRight}`}>
+                                    <span className={style.signedOnText}>signed on {selectedPrivilegesForDisplayMultiple?.filter((privilegeSet) => privilegeSet?.id === data?.id)?.[0]?.privilegeDetails?.corePrivileges?.esign?.signedDate}</span>
+                                    <div>
+                                      <img
+                                        src={DeleteIcon}
+                                        alt=""
+                                        className={`${style.docTypeImgStyle} ${style.marginLeft} ${style.floatRight}`}
+                                      />
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <button
+                                    className={`${style.addButton} ${style.marginLeft}`}
+                                  >  SELECT
+                                  </button>
+                                )}
+                              </div>
+                            </Tooltip>
+                            {index !== staffPrivilege?.length - 1 && (
+                              <CommonDivider />
+                            )}
+                          </>
+                        ))}
+                      </>
 
-                  //       <div
-                  //         className={`${style.displayInRowRev} ${style.verticalAlignCenter} ${style.marginTop}`}
-                  //       >
-                  //         <div
-                  //           className={`${style.reappointmentButton} ${style.marginLeft}`}
-                  //           onClick={() => {
-                  //             setIsEditPrivilege(false);
-                  //             setIsUpdateClicked(true);
-                  //             handleSubmit();
-                  //           }}
-                  //         >
-                  //           SAVE
-                  //         </div>
-                  //       </div>
-                  //     </div>
-                  //   </>
-                  // ) : (
+                      <div
+                        className={`${style.displayInRowRev} ${style.verticalAlignCenter} ${style.marginTop}`}
+                      >
+                        <div
+                          className={`${style.reappointmentButton} ${style.marginLeft}`}
+                          onClick={() => {
+                            setIsEditPrivilege(false);
+                            setIsUpdateClicked(true);
+                            handleSubmit();
+                          }}
+                        >
+                          SAVE
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                ) : (
                   <>
                     <div className={`${style.cardTitle} ${style.marginTop}`}>
                       Do you want to keep your current Privilege Set(s)?
@@ -4228,7 +4228,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                                       ?.includes(data?.id) ? (
                                       // <Tooltip title="Click To Remove">
                                       <div className={`${style.displayInRow} ${style.floatRight}`}>
-                                        <span className={style.signedOnText}>signed on {selectedPrivilegesForDisplayMultiple?.filter((privilegeSet) => privilegeSet?.id === data?.id)?.[0]?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ? selectedPrivilegesForDisplayMultiple?.filter((privilegeSet) => privilegeSet?.id === data?.id)?.[0]?.descriptiveContent?.esign?.signedDate : selectedPrivilegesForDisplayMultiple?.filter((privilegeSet) => privilegeSet?.id === data?.id)?.[0]?.privilegeDetails?.corePrivileges?.esign?.signedDate}</span>
+                                        <span className={style.signedOnText}>Signed on {selectedPrivilegesForDisplayMultiple?.filter((privilegeSet) => privilegeSet?.id === data?.id)?.[0]?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ? selectedPrivilegesForDisplayMultiple?.filter((privilegeSet) => privilegeSet?.id === data?.id)?.[0]?.descriptiveContent?.esign?.signedDate : selectedPrivilegesForDisplayMultiple?.filter((privilegeSet) => privilegeSet?.id === data?.id)?.[0]?.privilegeDetails?.corePrivileges?.esign?.signedDate}</span>
                                         <div>
                                           <img
                                             src={DeleteIcon}
@@ -4438,7 +4438,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                                   <div className={style.privilegeHeading}>{data?.privilegeSetTitle}</div>
                                   {selectedAdditionalPrivilegesForDisplayMultiple?.map(data => data?.id)?.includes(data?.id) ? (
                                     <div className={`${style.displayInRow} ${style.floatRight}`}>
-                                      <span className={style.signedOnText}>signed on {selectedAdditionalPrivilegesForDisplayMultiple?.filter((privilegeSet) => privilegeSet?.id === data?.id)?.[0]?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ? selectedAdditionalPrivilegesForDisplayMultiple?.filter((privilegeSet) => privilegeSet?.id === data?.id)?.[0]?.descriptiveContent?.esign?.signedDate : selectedAdditionalPrivilegesForDisplayMultiple?.filter((privilegeSet) => privilegeSet?.id === data?.id)?.[0]?.privilegeDetails?.corePrivileges?.esign?.signedDate}</span>
+                                      <span className={style.signedOnText}>Signed on {selectedAdditionalPrivilegesForDisplayMultiple?.filter((privilegeSet) => privilegeSet?.id === data?.id)?.[0]?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ? selectedAdditionalPrivilegesForDisplayMultiple?.filter((privilegeSet) => privilegeSet?.id === data?.id)?.[0]?.descriptiveContent?.esign?.signedDate : selectedAdditionalPrivilegesForDisplayMultiple?.filter((privilegeSet) => privilegeSet?.id === data?.id)?.[0]?.privilegeDetails?.corePrivileges?.esign?.signedDate}</span>
                                       <div>
                                         <img
                                           src={DeleteIcon}

@@ -215,7 +215,7 @@ const ReappointmentApplicationFormRequirement = () => {
                                 <div>
                                     {/* <WelcomeCard title={<strong>Before you get started having the documents listed below will expedite the completion of your reappointment application.</strong>} description={''} /> */}
                                     {documentsToShow?.length > 0 ? (
-                                        <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
+                                        <div className={`${style.applicationCardStyle}`}>
                                             <div className={style.titleTextStyle}>Your medical staff record indicates that the following documents are required for your reappointment.</div>
                                             <div className={`${style.tableHeader} ${style.tableGrid} ${style.marginTop}`}>
                                                 <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}>Document Type</div>
@@ -240,8 +240,8 @@ const ReappointmentApplicationFormRequirement = () => {
                                         </div>
                                     ) : null}
                                     {documentsValidAndVerified?.length > 0 && (
-                                        <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
-                                            <div className={style.titleTextStyle}>Existing current and valid documents on file for reappointment (2026–2027).</div>
+                                        <div className={`${style.applicationCardStyle} ${documentsToShow?.length > 0 ? style.marginTop : ''}`}>
+                                            <div className={style.titleTextStyle}>Existing current and valid documents on file for your reappointment (2026–2027).</div>
                                             <div className={`${style.tableHeader} ${style.tableGridValid} ${style.marginTop}`}>
                                                 <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}>Document Type</div>
                                                 <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}>Requirement</div>
@@ -251,14 +251,16 @@ const ReappointmentApplicationFormRequirement = () => {
                                             </div>
                                             {documentsValidAndVerified.map((row, index) => {
                                                 const expirationDate = basicForm?.documents?.documentDetails?.filter(data => data?.rowId === row?.rowId)?.[0]?.expiryDate;
+                                                const expiryInPast = expirationDate && new Date(expirationDate) < new Date(format(new Date(), 'yyyy-MM-dd'));
                                                 const expirationText = expirationDate ? format(new Date(expirationDate), 'MMM d, yyyy') : '-';
+                                                const expirationDisplay = !expirationDate || expiryInPast ? '-' : `Will expire on ${expirationText}`;
                                                 return (
                                                     <div key={row?.rowId ?? index}>
                                                         <div className={`${style.requiredDocumentCard} ${style.tableGridValid} ${index % 2 === 0 ? style.requiredDocumentCardAlternativeColor : ''} ${style.marginTop5}`}>
                                                             <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{row?.documentType}</div>
                                                             <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{row?.requirement ?? ''}</div>
                                                             <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>Current & Valid</div>
-                                                            <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{expirationText !== "-" ? `Will expire on ${expirationText}` : '-'}</div>
+                                                            <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{expirationDisplay}</div>
                                                             <div className={`${style.verticalAlignCenter} ${style.validCheckIconWrap}`}>
                                                                 <CheckCircleIcon className={style.validCheckIcon} />
                                                             </div>
