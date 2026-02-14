@@ -168,8 +168,9 @@ const LMSModules = ({ basicForm, setBasicForm, getPreApplication }) => {
         setIsEdited(value)
     }
 
-    // Extract flat list of courses from basicForm.lmsDetails
-    const courses = basicForm?.lmsDetails?.flatMap((item) => item?.courses || []) ?? [];
+    // lmsDetails is a single object { total_courses, courses }; support both _course_completed and is_course_completed from API
+    const rawCourses = Array.isArray(basicForm?.lmsDetails) ? basicForm.lmsDetails.flatMap((item) => item?.courses || []) : (basicForm?.lmsDetails?.courses ?? []);
+    const courses = (rawCourses || []).map((c) => ({ ...c, is_course_completed: c._course_completed ?? c.is_course_completed }));
 
     const handleCourseClick = (course) => {
         const lmsUrl = `https://lms.indocaribe.com/descope-login/?ssotoken=${cookie.get("authorization")}`;
