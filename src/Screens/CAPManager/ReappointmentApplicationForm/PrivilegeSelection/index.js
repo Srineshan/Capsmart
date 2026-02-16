@@ -53,6 +53,7 @@ import ESignDialog from "../../../../Components/ESignDialog";
 import { Tooltip } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import Close from './../../../../images/close.png';
+import { FamilyRestroomOutlined } from "@mui/icons-material";
 
 const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFormat }) => {
   const [isSigned, setIsSigned] = useState(false);
@@ -912,6 +913,8 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
     const bothObligatedEmptyForForm =
       (!Array.isArray(currentObligatedForForm) || currentObligatedForForm.length === 0) &&
       (!Array.isArray(currentPriorObligatedForForm) || currentPriorObligatedForForm.length === 0);
+    const isFirstPrivilegeSetSubmitForForm =
+      !basicForm?.forms?.[formIndex]?.data?.privilegeSetChangeUpdated && isUpdated;
 
     if (isUpdated) {
       let mergedArray = [
@@ -931,12 +934,15 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
       const bothObligatedEmpty =
         (!Array.isArray(currentObligated) || currentObligated.length === 0) &&
         (!Array.isArray(currentPriorObligated) || currentPriorObligated.length === 0);
+      const isFirstPrivilegeSetSubmit =
+        !basicForm?.forms?.[formIndex]?.data?.privilegeSetChangeUpdated && isUpdated;
       const hasCurrentObligated = Array.isArray(currentObligated) && currentObligated.length > 0;
-      const priorObligatedPrivileges = bothObligatedEmpty
-        ? []
-        : !basicForm?.forms?.[formIndex]?.data?.privilegeSetChangeUpdated
-          ? (hasCurrentObligated ? currentObligated : [])
-          : basicForm?.privileges?.priorObligatedPrivileges;
+      const priorObligatedPrivileges =
+        bothObligatedEmpty || isFirstPrivilegeSetSubmit
+          ? []
+          : !basicForm?.forms?.[formIndex]?.data?.privilegeSetChangeUpdated
+            ? (hasCurrentObligated ? currentObligated : [])
+            : basicForm?.privileges?.priorObligatedPrivileges;
 
       let temp = {
         obligatedPrivileges: isDelete ? privileges : mergedArray,
@@ -944,6 +950,12 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
         priorAdditionalPrivileges: basicForm?.privileges?.priorAdditionalPrivileges,
         priorObligatedPrivileges,
       };
+      // let temp = {
+      //   obligatedPrivileges: [],
+      //   additionalPrivileges: basicForm?.privileges?.additionalPrivileges,
+      //   priorAdditionalPrivileges: basicForm?.privileges?.priorAdditionalPrivileges,
+      //   priorObligatedPrivileges: [],
+      // };
       console.log("data", temp);
       await POST(`application-management-service/application/${applicationId}/privileges`, temp)
     } else {
@@ -972,12 +984,14 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
       data: {
         privilegeChangeYesOrNo: basicForm?.forms?.[formIndex]?.data?.departmentChangeYesOrNo !== undefined ? basicForm?.forms?.[formIndex]?.data?.departmentChangeYesOrNo : '',
         departmentChangeYesOrNo: basicForm?.forms?.[formIndex]?.data?.departmentChangeYesOrNo !== undefined ? basicForm?.forms?.[formIndex]?.data?.departmentChangeYesOrNo : '',
-        privilegeSetChangeYesOrNo: isUpdated ? (bothObligatedEmptyForForm ? 'No' : privilegeSetChangeYesOrNo) : 'Yes',
+        privilegeSetChangeYesOrNo: isUpdated ? (isFirstPrivilegeSetSubmitForForm ? 'No' : privilegeSetChangeYesOrNo) : 'Yes',
+        // privilegeSetChangeYesOrNo: '',
         additionalPrivilegeChangeYesOrNo: basicForm?.forms?.[formIndex]?.data?.additionalPrivilegeChangeYesOrNo !== undefined ? basicForm?.forms?.[formIndex]?.data?.additionalPrivilegeChangeYesOrNo : '',
         privilegeAtOtherHospitalYesOrNo: basicForm?.forms?.[formIndex]?.data?.privilegeAtOtherHospitalYesOrNo !== undefined ? basicForm?.forms?.[formIndex]?.data?.privilegeAtOtherHospitalYesOrNo : '',
         privilegeChangeUpdated: basicForm?.forms?.[formIndex]?.data?.privilegeChangeUpdated !== undefined ? basicForm?.forms?.[formIndex]?.data?.privilegeChangeUpdated : false,
         departmentChangeUpdated: basicForm?.forms?.[formIndex]?.data?.departmentChangeUpdated !== undefined ? basicForm?.forms?.[formIndex]?.data?.departmentChangeUpdated : false,
         privilegeSetChangeUpdated: true,
+        // privilegeSetChangeUpdated: false,
         additionalPrivilegeChangeUpdated: basicForm?.forms?.[formIndex]?.data?.additionalPrivilegeChangeUpdated !== undefined ? basicForm?.forms?.[formIndex]?.data?.additionalPrivilegeChangeUpdated : false,
         privilegeAtOtherHospitalUpdated: basicForm?.forms?.[formIndex]?.data?.privilegeAtOtherHospitalUpdated !== undefined ? basicForm?.forms?.[formIndex]?.data?.privilegeAtOtherHospitalUpdated : false,
       },
@@ -996,6 +1010,8 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
     const bothAdditionalEmptyForForm =
       (!Array.isArray(currentAdditionalForForm) || currentAdditionalForForm.length === 0) &&
       (!Array.isArray(currentPriorAdditionalForForm) || currentPriorAdditionalForForm.length === 0);
+    const isFirstAdditionalPrivilegeSubmitForForm =
+      !basicForm?.forms?.[formIndex]?.data?.additionalPrivilegeChangeUpdated && isUpdated;
 
     if (isUpdated) {
       let mergedArray = [
@@ -1011,11 +1027,19 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
       }, []);
 
       const currentAdditional = basicForm?.privileges?.additionalPrivileges;
+      const currentPriorAdditional = basicForm?.privileges?.priorAdditionalPrivileges;
+      const bothAdditionalEmpty =
+        (!Array.isArray(currentAdditional) || currentAdditional.length === 0) &&
+        (!Array.isArray(currentPriorAdditional) || currentPriorAdditional.length === 0);
+      const isFirstAdditionalPrivilegeSubmit =
+        !basicForm?.forms?.[formIndex]?.data?.additionalPrivilegeChangeUpdated && isUpdated;
       const hasCurrentAdditional = Array.isArray(currentAdditional) && currentAdditional.length > 0;
       const priorAdditionalPrivileges =
-        !basicForm?.forms?.[formIndex]?.data?.additionalPrivilegeChangeUpdated
-          ? (hasCurrentAdditional ? currentAdditional : [])
-          : basicForm?.privileges?.priorAdditionalPrivileges;
+        bothAdditionalEmpty || isFirstAdditionalPrivilegeSubmit
+          ? []
+          : !basicForm?.forms?.[formIndex]?.data?.additionalPrivilegeChangeUpdated
+            ? (hasCurrentAdditional ? currentAdditional : [])
+            : basicForm?.privileges?.priorAdditionalPrivileges;
 
       let temp = {
         obligatedPrivileges: basicForm?.privileges?.obligatedPrivileges,
@@ -1023,6 +1047,12 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
         priorAdditionalPrivileges,
         priorObligatedPrivileges: basicForm?.privileges?.priorObligatedPrivileges
       };
+      // let temp = {
+      //   obligatedPrivileges: basicForm?.privileges?.obligatedPrivileges,
+      //   additionalPrivileges: [],
+      //   priorAdditionalPrivileges: [],
+      //   priorObligatedPrivileges: basicForm?.privileges?.priorObligatedPrivileges
+      // };
       console.log("data", temp);
       await POST(`application-management-service/application/${applicationId}/privileges`, temp)
     } else {
@@ -1052,12 +1082,14 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
         privilegeChangeYesOrNo: basicForm?.forms?.[formIndex]?.data?.departmentChangeYesOrNo !== undefined ? basicForm?.forms?.[formIndex]?.data?.departmentChangeYesOrNo : '',
         departmentChangeYesOrNo: basicForm?.forms?.[formIndex]?.data?.departmentChangeYesOrNo !== undefined ? basicForm?.forms?.[formIndex]?.data?.departmentChangeYesOrNo : '',
         privilegeSetChangeYesOrNo: basicForm?.forms?.[formIndex]?.data?.privilegeSetChangeYesOrNo !== undefined ? basicForm?.forms?.[formIndex]?.data?.privilegeSetChangeYesOrNo : '',
-        additionalPrivilegeChangeYesOrNo: isUpdated ? (bothAdditionalEmptyForForm ? 'No' : additionalPrivilegeChangeYesOrNo) : 'No',
+        additionalPrivilegeChangeYesOrNo: isUpdated ? (isFirstAdditionalPrivilegeSubmitForForm ? 'Yes' : additionalPrivilegeChangeYesOrNo) : 'No',
+        // additionalPrivilegeChangeYesOrNo: '',
         privilegeAtOtherHospitalYesOrNo: basicForm?.forms?.[formIndex]?.data?.privilegeAtOtherHospitalYesOrNo !== undefined ? basicForm?.forms?.[formIndex]?.data?.privilegeAtOtherHospitalYesOrNo : '',
         privilegeChangeUpdated: basicForm?.forms?.[formIndex]?.data?.privilegeChangeUpdated !== undefined ? basicForm?.forms?.[formIndex]?.data?.privilegeChangeUpdated : false,
         departmentChangeUpdated: basicForm?.forms?.[formIndex]?.data?.departmentChangeUpdated !== undefined ? basicForm?.forms?.[formIndex]?.data?.departmentChangeUpdated : false,
         privilegeSetChangeUpdated: basicForm?.forms?.[formIndex]?.data?.privilegeSetChangeUpdated !== undefined ? basicForm?.forms?.[formIndex]?.data?.privilegeSetChangeUpdated : false,
         additionalPrivilegeChangeUpdated: true,
+        // additionalPrivilegeChangeUpdated: false,
         privilegeAtOtherHospitalUpdated: basicForm?.forms?.[formIndex]?.data?.privilegeAtOtherHospitalUpdated !== undefined ? basicForm?.forms?.[formIndex]?.data?.privilegeAtOtherHospitalUpdated : false,
       },
       unFilledFields: basicForm?.forms?.[formIndex]?.unFilledFields,
@@ -3861,20 +3893,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                       <div className={`${style.privilegeContentCard} ${style.marginTop10}`}>
                         <div className={`${style.privilegeHeadingCurrent}`}>Current</div>
                         {basicForm?.privileges?.priorAdditionalPrivileges?.length === 0 ? (
-                          <>
-                            {basicForm?.privileges?.additionalPrivileges?.length === 0 ? (
-                              <div className={style.privilegeHeading}>None</div>
-                            ) : (
-                              <>
-                                {basicForm?.privileges?.additionalPrivileges?.map(data => (
-                                  <div
-                                    className={`${style.privilegeHeading} `}
-                                  // onClick={() => { setShowCurrentPrivileges(true); handleChangeAdditional(data?.id); setCurrentPrivilegesCategory('Additional') }}
-                                  >{data?.privilegeSetTitle}</div>
-                                ))}
-                              </>
-                            )}
-                          </>
+                          <div className={style.privilegeHeading}>Not Available</div>
                         ) : (
                           <>
                             {basicForm?.privileges?.priorAdditionalPrivileges?.map(data => (
