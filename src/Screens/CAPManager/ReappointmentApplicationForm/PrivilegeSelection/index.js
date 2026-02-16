@@ -950,12 +950,6 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
         priorAdditionalPrivileges: basicForm?.privileges?.priorAdditionalPrivileges,
         priorObligatedPrivileges,
       };
-      // let temp = {
-      //   obligatedPrivileges: [],
-      //   additionalPrivileges: basicForm?.privileges?.additionalPrivileges,
-      //   priorAdditionalPrivileges: basicForm?.privileges?.priorAdditionalPrivileges,
-      //   priorObligatedPrivileges: [],
-      // };
       console.log("data", temp);
       await POST(`application-management-service/application/${applicationId}/privileges`, temp)
     } else {
@@ -1047,12 +1041,6 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
         priorAdditionalPrivileges,
         priorObligatedPrivileges: basicForm?.privileges?.priorObligatedPrivileges
       };
-      // let temp = {
-      //   obligatedPrivileges: basicForm?.privileges?.obligatedPrivileges,
-      //   additionalPrivileges: [],
-      //   priorAdditionalPrivileges: [],
-      //   priorObligatedPrivileges: basicForm?.privileges?.priorObligatedPrivileges
-      // };
       console.log("data", temp);
       await POST(`application-management-service/application/${applicationId}/privileges`, temp)
     } else {
@@ -3522,7 +3510,11 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
     let temp = selectedPrivilegesForDisplayMultiple;
     temp.push(data);
     setSelectedPrivilegesForDisplayMultiple(temp);
-    handleSubmitPrivilegeSet(true, temp)
+    if (privilegeSetChangeYesOrNo === 'Yes') {
+      handleSubmitPrivilegeSet()
+    } else {
+      handleSubmitPrivilegeSet(true, temp)
+    }
   };
 
   const handleSelectedAdditionalPrivilegesForDisplayMultiple = (data) => {
@@ -3795,28 +3787,28 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                       >
                         <div className={`${style.privilegeHeadingCurrent}`}>Current</div>
                         {basicForm?.privileges?.priorObligatedPrivileges?.length === 0 ?
-                          // basicForm?.privileges?.obligatedPrivileges?.length === 0 ? 
-                          (
-                            <div className={style.privilegeHeading}>Not Available</div>
-                          )
-                          //  : (
-                          //   <>
-                          //     {basicForm?.privileges?.obligatedPrivileges?.map(
-                          //       (data) => (
-                          //         <div className={style.privilegeHeading}
-                          //         // className={`${style.privilegeHeadingWithHover} ${style.cursorPointer}`}
-                          //         // onClick={() => {
-                          //         //   setShowCurrentPrivileges(true);
-                          //         //   setCurrentPrivilegesCategory('Basic')
-                          //         //   handleChange(data?.id);
-                          //         // }}
-                          //         >
-                          //           {data?.privilegeSetTitle}
-                          //         </div>
-                          //       )
-                          //     )}
-                          //   </>
-                          // )
+                          basicForm?.forms?.[formIndex]?.data?.privilegeSetChangeUpdated ?
+                            (
+                              <div className={style.privilegeHeading}>Not Available</div>
+                            )
+                            : (
+                              <>
+                                {basicForm?.privileges?.obligatedPrivileges?.map(
+                                  (data) => (
+                                    <div className={style.privilegeHeading}
+                                    // className={`${style.privilegeHeadingWithHover} ${style.cursorPointer}`}
+                                    // onClick={() => {
+                                    //   setShowCurrentPrivileges(true);
+                                    //   setCurrentPrivilegesCategory('Basic')
+                                    //   handleChange(data?.id);
+                                    // }}
+                                    >
+                                      {data?.privilegeSetTitle}
+                                    </div>
+                                  )
+                                )}
+                              </>
+                            )
                           : (
                             <>
                               {basicForm?.privileges?.priorObligatedPrivileges?.map(
@@ -3892,18 +3884,39 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                     <div className={style.twoCol}>
                       <div className={`${style.privilegeContentCard} ${style.marginTop10}`}>
                         <div className={`${style.privilegeHeadingCurrent}`}>Current</div>
-                        {basicForm?.privileges?.priorAdditionalPrivileges?.length === 0 ? (
-                          <div className={style.privilegeHeading}>Not Available</div>
-                        ) : (
-                          <>
-                            {basicForm?.privileges?.priorAdditionalPrivileges?.map(data => (
-                              <div
-                                className={`${style.privilegeHeading} `}
-                              // onClick={() => { setShowCurrentPrivileges(true); setCurrentPrivilegesCategory('Additional') }}
-                              >{data?.privilegeSetTitle}</div>
-                            ))}
-                          </>
-                        )}
+                        {basicForm?.privileges?.priorAdditionalPrivileges?.length === 0 ?
+                          basicForm?.forms?.[formIndex]?.data?.additionalPrivilegeChangeUpdated ?
+                            (
+                              <div className={style.privilegeHeading}>Not Available</div>
+                            )
+                            : (
+                              <>
+                                {basicForm?.privileges?.additionalPrivileges?.map(
+                                  (data) => (
+                                    <div className={style.privilegeHeading}
+                                    // className={`${style.privilegeHeadingWithHover} ${style.cursorPointer}`}
+                                    // onClick={() => {
+                                    //   setShowCurrentPrivileges(true);
+                                    //   handleChangeAdditional(data?.id);
+                                    //   setCurrentPrivilegesCategory('Additional')
+                                    // }}
+                                    >
+                                      {data?.privilegeSetTitle}
+                                    </div>
+                                  )
+                                )}
+                              </>
+                            )
+                          : (
+                            <>
+                              {basicForm?.privileges?.priorAdditionalPrivileges?.map(data => (
+                                <div
+                                  className={`${style.privilegeHeading} `}
+                                // onClick={() => { setShowCurrentPrivileges(true); setCurrentPrivilegesCategory('Additional') }}
+                                >{data?.privilegeSetTitle}</div>
+                              ))}
+                            </>
+                          )}
                       </div>
                       {basicForm?.forms?.[formIndex]?.data?.additionalPrivilegeChangeYesOrNo !== '' && basicForm?.forms?.[formIndex]?.data?.additionalPrivilegeChangeYesOrNo !== undefined && (
                         <div className={`${style.privilegeContentChangeCard} ${style.marginTop10}`}>
@@ -4442,6 +4455,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                             // onClick={() => handleSubmitPrivilegeSet()}
                             onClick={() => {
                               setShowPrivileges(true);
+                              setPrivilegeSetChangeYesOrNo('Yes');
                               // handleChange(data?.id);
                             }}
                           >
