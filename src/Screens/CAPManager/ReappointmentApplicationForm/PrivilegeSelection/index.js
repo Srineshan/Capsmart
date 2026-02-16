@@ -907,6 +907,12 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
   }
 
   const handleSubmitPrivilegeSet = async (isUpdated, privileges, isDelete) => {
+    const currentObligatedForForm = basicForm?.privileges?.obligatedPrivileges;
+    const currentPriorObligatedForForm = basicForm?.privileges?.priorObligatedPrivileges;
+    const bothObligatedEmptyForForm =
+      (!Array.isArray(currentObligatedForForm) || currentObligatedForForm.length === 0) &&
+      (!Array.isArray(currentPriorObligatedForForm) || currentPriorObligatedForForm.length === 0);
+
     if (isUpdated) {
       let mergedArray = [
         ...basicForm?.privileges?.obligatedPrivileges,
@@ -920,11 +926,23 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
         return unique;
       }, []);
 
+      const currentObligated = basicForm?.privileges?.obligatedPrivileges;
+      const currentPriorObligated = basicForm?.privileges?.priorObligatedPrivileges;
+      const bothObligatedEmpty =
+        (!Array.isArray(currentObligated) || currentObligated.length === 0) &&
+        (!Array.isArray(currentPriorObligated) || currentPriorObligated.length === 0);
+      const hasCurrentObligated = Array.isArray(currentObligated) && currentObligated.length > 0;
+      const priorObligatedPrivileges = bothObligatedEmpty
+        ? []
+        : !basicForm?.forms?.[formIndex]?.data?.privilegeSetChangeUpdated
+          ? (hasCurrentObligated ? currentObligated : [])
+          : basicForm?.privileges?.priorObligatedPrivileges;
+
       let temp = {
         obligatedPrivileges: isDelete ? privileges : mergedArray,
         additionalPrivileges: basicForm?.privileges?.additionalPrivileges,
         priorAdditionalPrivileges: basicForm?.privileges?.priorAdditionalPrivileges,
-        priorObligatedPrivileges: !basicForm?.forms?.[formIndex]?.data?.privilegeSetChangeUpdated ? basicForm?.privileges?.obligatedPrivileges : basicForm?.privileges?.priorObligatedPrivileges
+        priorObligatedPrivileges,
       };
       console.log("data", temp);
       await POST(`application-management-service/application/${applicationId}/privileges`, temp)
@@ -954,7 +972,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
       data: {
         privilegeChangeYesOrNo: basicForm?.forms?.[formIndex]?.data?.departmentChangeYesOrNo !== undefined ? basicForm?.forms?.[formIndex]?.data?.departmentChangeYesOrNo : '',
         departmentChangeYesOrNo: basicForm?.forms?.[formIndex]?.data?.departmentChangeYesOrNo !== undefined ? basicForm?.forms?.[formIndex]?.data?.departmentChangeYesOrNo : '',
-        privilegeSetChangeYesOrNo: isUpdated ? privilegeSetChangeYesOrNo : 'Yes',
+        privilegeSetChangeYesOrNo: isUpdated ? (bothObligatedEmptyForForm ? 'No' : privilegeSetChangeYesOrNo) : 'Yes',
         additionalPrivilegeChangeYesOrNo: basicForm?.forms?.[formIndex]?.data?.additionalPrivilegeChangeYesOrNo !== undefined ? basicForm?.forms?.[formIndex]?.data?.additionalPrivilegeChangeYesOrNo : '',
         privilegeAtOtherHospitalYesOrNo: basicForm?.forms?.[formIndex]?.data?.privilegeAtOtherHospitalYesOrNo !== undefined ? basicForm?.forms?.[formIndex]?.data?.privilegeAtOtherHospitalYesOrNo : '',
         privilegeChangeUpdated: basicForm?.forms?.[formIndex]?.data?.privilegeChangeUpdated !== undefined ? basicForm?.forms?.[formIndex]?.data?.privilegeChangeUpdated : false,
@@ -973,6 +991,12 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
   }
 
   const handleSubmitAdditionalPrivilegeSet = async (isUpdated, privileges, isDelete) => {
+    const currentAdditionalForForm = basicForm?.privileges?.additionalPrivileges;
+    const currentPriorAdditionalForForm = basicForm?.privileges?.priorAdditionalPrivileges;
+    const bothAdditionalEmptyForForm =
+      (!Array.isArray(currentAdditionalForForm) || currentAdditionalForForm.length === 0) &&
+      (!Array.isArray(currentPriorAdditionalForForm) || currentPriorAdditionalForForm.length === 0);
+
     if (isUpdated) {
       let mergedArray = [
         ...basicForm?.privileges?.additionalPrivileges,
@@ -986,10 +1010,17 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
         return unique;
       }, []);
 
+      const currentAdditional = basicForm?.privileges?.additionalPrivileges;
+      const hasCurrentAdditional = Array.isArray(currentAdditional) && currentAdditional.length > 0;
+      const priorAdditionalPrivileges =
+        !basicForm?.forms?.[formIndex]?.data?.additionalPrivilegeChangeUpdated
+          ? (hasCurrentAdditional ? currentAdditional : [])
+          : basicForm?.privileges?.priorAdditionalPrivileges;
+
       let temp = {
         obligatedPrivileges: basicForm?.privileges?.obligatedPrivileges,
         additionalPrivileges: isDelete ? privileges : mergedArray,
-        priorAdditionalPrivileges: !basicForm?.forms?.[formIndex]?.data?.additionalPrivilegeChangeUpdated ? basicForm?.privileges?.additionalPrivileges : basicForm?.privileges?.priorAdditionalPrivileges,
+        priorAdditionalPrivileges,
         priorObligatedPrivileges: basicForm?.privileges?.priorObligatedPrivileges
       };
       console.log("data", temp);
@@ -1021,7 +1052,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
         privilegeChangeYesOrNo: basicForm?.forms?.[formIndex]?.data?.departmentChangeYesOrNo !== undefined ? basicForm?.forms?.[formIndex]?.data?.departmentChangeYesOrNo : '',
         departmentChangeYesOrNo: basicForm?.forms?.[formIndex]?.data?.departmentChangeYesOrNo !== undefined ? basicForm?.forms?.[formIndex]?.data?.departmentChangeYesOrNo : '',
         privilegeSetChangeYesOrNo: basicForm?.forms?.[formIndex]?.data?.privilegeSetChangeYesOrNo !== undefined ? basicForm?.forms?.[formIndex]?.data?.privilegeSetChangeYesOrNo : '',
-        additionalPrivilegeChangeYesOrNo: isUpdated ? additionalPrivilegeChangeYesOrNo : 'No',
+        additionalPrivilegeChangeYesOrNo: isUpdated ? (bothAdditionalEmptyForForm ? 'No' : additionalPrivilegeChangeYesOrNo) : 'No',
         privilegeAtOtherHospitalYesOrNo: basicForm?.forms?.[formIndex]?.data?.privilegeAtOtherHospitalYesOrNo !== undefined ? basicForm?.forms?.[formIndex]?.data?.privilegeAtOtherHospitalYesOrNo : '',
         privilegeChangeUpdated: basicForm?.forms?.[formIndex]?.data?.privilegeChangeUpdated !== undefined ? basicForm?.forms?.[formIndex]?.data?.privilegeChangeUpdated : false,
         departmentChangeUpdated: basicForm?.forms?.[formIndex]?.data?.departmentChangeUpdated !== undefined ? basicForm?.forms?.[formIndex]?.data?.departmentChangeUpdated : false,
@@ -3459,8 +3490,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
     let temp = selectedPrivilegesForDisplayMultiple;
     temp.push(data);
     setSelectedPrivilegesForDisplayMultiple(temp);
-    // handleSubmitPrivilegeSet(true, temp)
-    handleSubmitPrivilegeSet();
+    handleSubmitPrivilegeSet(true, temp)
   };
 
   const handleSelectedAdditionalPrivilegesForDisplayMultiple = (data) => {
@@ -5164,8 +5194,8 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                           (selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.nonCorePrivileges?.privilegesByCategories?.[0]?.privileges?.length === 0 &&
                             selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.nonCorePrivileges?.privilegesByCategories?.[0]?.privileges?.length !== undefined)) &&
                         getIsRestrictedValuesFilled(selectedPrivilegeForDisplay?.[0]?.privilegeDetails
-                                ?.restrictedPrivileges?.privilegesByCategories?.[0]
-                                ?.privileges)))
+                          ?.restrictedPrivileges?.privilegesByCategories?.[0]
+                          ?.privileges)))
                     ? ""
                     : style.disabledButton
                     }`}
@@ -5205,8 +5235,8 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                           (selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.nonCorePrivileges?.privilegesByCategories?.[0]?.privileges?.length === 0 &&
                             selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.nonCorePrivileges?.privilegesByCategories?.[0]?.privileges?.length !== undefined)) &&
                         getIsRestrictedValuesFilled(selectedPrivilegeForDisplay?.[0]?.privilegeDetails
-                                ?.restrictedPrivileges?.privilegesByCategories?.[0]
-                                ?.privileges)))
+                          ?.restrictedPrivileges?.privilegesByCategories?.[0]
+                          ?.privileges)))
                       ? () => {
                         setShowPrivileges(false);
                         handleSelectedPrivilegesForDisplayMultiple(
@@ -5309,8 +5339,8 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                           (selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails?.nonCorePrivileges?.privilegesByCategories?.[0]?.privileges?.length === 0 &&
                             selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails?.nonCorePrivileges?.privilegesByCategories?.[0]?.privileges?.length !== undefined)) &&
                         getIsAdditionalRestrictedValuesFilled(selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
-                                ?.restrictedPrivileges?.privilegesByCategories?.[0]
-                                ?.privileges)))
+                          ?.restrictedPrivileges?.privilegesByCategories?.[0]
+                          ?.privileges)))
                       ? ""
                       : style.disabledButton
                     }`}
@@ -5350,8 +5380,8 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                           (selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails?.nonCorePrivileges?.privilegesByCategories?.[0]?.privileges?.length === 0 &&
                             selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails?.nonCorePrivileges?.privilegesByCategories?.[0]?.privileges?.length !== undefined)) &&
                         getIsAdditionalRestrictedValuesFilled(selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
-                                ?.restrictedPrivileges?.privilegesByCategories?.[0]
-                                ?.privileges)))
+                          ?.restrictedPrivileges?.privilegesByCategories?.[0]
+                          ?.privileges)))
                       ? () => {
                         setShowAdditionalPrivileges(false);
                         handleSelectedAdditionalPrivilegesForDisplayMultiple(
@@ -5394,9 +5424,9 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                         !selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails?.nonCorePrivileges?.privilegesByCategories?.length ||
                         (selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails?.nonCorePrivileges?.privilegesByCategories?.[0]?.privileges?.length === 0 &&
                           selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails?.nonCorePrivileges?.privilegesByCategories?.[0]?.privileges?.length !== undefined))) &&
-                        getIsAdditionalRestrictedValuesFilled(selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
-                              ?.restrictedPrivileges?.privilegesByCategories?.[0]
-                              ?.privileges)))
+                      getIsAdditionalRestrictedValuesFilled(selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
+                        ?.restrictedPrivileges?.privilegesByCategories?.[0]
+                        ?.privileges)))
                   }
                 >
                   CONTINUE
