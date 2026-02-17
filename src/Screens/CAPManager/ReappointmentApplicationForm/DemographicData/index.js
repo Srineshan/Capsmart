@@ -927,17 +927,23 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                                 <div className={`${style.twoCol} ${style.marginTop}`}>
                                     <div className={style.twoValueForDemographic}>
                                         <div className={style.demographicLebelText}>Current Home Address</div>
-                                        <div>
-                                            <div className={style.demographicValueText}>{`${basicForm?.forms?.[formIndex]?.data?.contactAddress1?.homeAddress?.streetName || ''} `}</div>
-                                            <div className={style.demographicValueText}>{`${basicForm?.forms?.[formIndex]?.data?.contactAddress1?.homeAddress?.city || ''}, ${basicForm?.forms?.[formIndex]?.data?.contactAddress1?.homeAddress?.province || ''}, ${basicForm?.forms?.[formIndex]?.data?.contactAddress1?.homeAddress?.pinCode || ''}`}</div>
-                                        </div>
+                                        {!basicForm?.forms?.[formIndex]?.data?.contactAddress1 ? (
+                                            <div className={style.demographicValueText}>{`Not Available`}</div>
+                                        ) : (
+                                            <div>
+                                                <div className={style.demographicValueText}>{`${basicForm?.forms?.[formIndex]?.data?.contactAddress1?.homeAddress?.streetName || ''} `}</div>
+                                                <div className={style.demographicValueText}>{`${basicForm?.forms?.[formIndex]?.data?.contactAddress1?.homeAddress?.city || ''}, ${basicForm?.forms?.[formIndex]?.data?.contactAddress1?.homeAddress?.province || ''}, ${basicForm?.forms?.[formIndex]?.data?.contactAddress1?.homeAddress?.pinCode || ''}`}</div>
+                                            </div>
+                                        )}
                                     </div>
                                     <div></div>
                                 </div>
                                 <div className={`${style.twoCol} ${style.marginTop10}`}>
                                     <div className={style.twoValueForDemographic}>
                                         <div className={style.demographicLebelText}>Mailing Address</div>
-                                        {basicForm?.forms?.[formIndex]?.data?.contactAddress2?.isMailingAddressSameAsHomeAddress !== "Different Address" ? (
+                                        {!basicForm?.forms?.[formIndex]?.data?.contactAddress2 ? (
+                                            <div className={style.demographicValueText}>{`Not Available`}</div>
+                                        ) : (basicForm?.forms?.[formIndex]?.data?.contactAddress2?.isMailingAddressSameAsHomeAddress !== "Different Address" && basicForm?.forms?.[formIndex]?.data?.contactAddress2?.isMailingAddressSameAsHomeAddress) ? (
                                             <div className={style.demographicValueText}>{`${basicForm?.forms?.[formIndex]?.data?.contactAddress2?.isMailingAddressSameAsHomeAddress || ''} `}</div>
                                         ) : (
                                             <div>
@@ -951,7 +957,9 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                                 <div className={`${style.twoCol} ${style.marginTop10}`}>
                                     <div className={style.twoValueForDemographic}>
                                         <div className={style.demographicLebelText}>Business Address</div>
-                                        {basicForm?.forms?.[formIndex]?.data?.contactAddress3?.isBusinessAddressSameAsHomeAddressOrMailingAddress !== "Different Address" ? (
+                                        {!basicForm?.forms?.[formIndex]?.data?.contactAddress3 ? (
+                                            <div className={style.demographicValueText}>{`Not Available`}</div>
+                                        ) : (basicForm?.forms?.[formIndex]?.data?.contactAddress3?.isBusinessAddressSameAsHomeAddressOrMailingAddress !== "Different Address" && basicForm?.forms?.[formIndex]?.data?.contactAddress3?.isBusinessAddressSameAsHomeAddressOrMailingAddress) ? (
                                             <div className={style.demographicValueText}>{`${basicForm?.forms?.[formIndex]?.data?.contactAddress3?.isBusinessAddressSameAsHomeAddressOrMailingAddress || ''} `}</div>
                                         ) : (
                                             <div>

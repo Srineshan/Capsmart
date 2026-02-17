@@ -183,6 +183,14 @@ const LMSModules = ({ basicForm, setBasicForm, getPreApplication }) => {
         }
     }
 
+    const handleCourseNameClick = (course) => {
+        if (course?.is_course_completed && course?.certificate_details?.view_url) {
+            handleViewCertificate(course);
+        } else {
+            handleCourseClick(course);
+        }
+    }
+
     const handleDownloadCertificate = (course) => {
         if (course?.certificate_details?.download_url) {
             window.open(course.certificate_details.download_url, '_blank');
@@ -190,7 +198,12 @@ const LMSModules = ({ basicForm, setBasicForm, getPreApplication }) => {
     }
 
     const actions = [
-        { data: 'View Course', onClick: handleCourseClick, hoverText: 'Open course in LMS' },
+        {
+            data: 'View Course',
+            onClick: handleCourseClick,
+            hoverText: 'Open course in LMS',
+            conditionToShow: '!data?.is_course_completed'
+        },
         {
             data: 'View Certificate',
             conditionToShow: 'data?.is_course_completed && data?.certificate_details?.view_url',
@@ -219,11 +232,11 @@ const LMSModules = ({ basicForm, setBasicForm, getPreApplication }) => {
             )),
             'isShowHoverText': false
         });
-        // Course Name column (clickable)
+        // Course Name column (clickable: View Certificate for completed with certificate, else View Course)
         temp.push({
             "type": "text",
             "value": courses?.map((course) => course?.course_name),
-            'onClickFunction': handleCourseClick
+            'onClickFunction': handleCourseNameClick
         });
         // Completed On date column
         temp.push({
@@ -264,7 +277,7 @@ const LMSModules = ({ basicForm, setBasicForm, getPreApplication }) => {
                                 actions={actions}
                                 tableSortValues={[]}
                                 heading={"There are no courses available"}
-                                onClickFunction={handleCourseClick}
+                                onClickFunction={handleCourseNameClick}
                             />
                         </div>
                     </div>
