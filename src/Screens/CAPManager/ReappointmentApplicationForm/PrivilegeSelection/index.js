@@ -3692,10 +3692,10 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
               <div>
                 <div className={style.twoCol}>
                   <div className={`${style.privilegeTopHeading}`}>
-                    <strong>2025 - 2026 privileges</strong>
+                    <strong>2025 - 2026 Privileges</strong>
                   </div>
                   <div className={`${style.privilegeTopHeading}`}>
-                    <strong>2026 - 2027 privileges</strong>
+                    <strong>2026 - 2027 Privileges</strong>
                   </div>
                 </div>
                 <div className={`${style.privilegeHeading} ${style.marginTop}`}>
