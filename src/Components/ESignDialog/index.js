@@ -11,6 +11,8 @@ import CommonSelectField from '../CommonFields/CommonSelectField';
 import { getValueByPath } from '../../utils/formatting';
 import { useParams } from 'react-router-dom';
 import { Tooltip } from '@mui/material';
+import Cookies from 'universal-cookie';
+import jwt from 'jwt-decode';
 
 const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, basicForm, setBasicForm, getPreApplication, hideCross, isHideTypeStyle }) => {
     const [isContinue, setIsContinue] = useState(false);
@@ -22,6 +24,12 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
     const [applicantProfile, setApplicantProfile] = useState();
     const [formIndex, setFormIndex] = useState();
     const { section, step } = useParams()
+    let cookie = new Cookies();
+    let userDetails = cookie.get('user');
+    const users = jwt(userDetails);
+    const [userData, setUserData] = useState();
+    const [title, setTitle] = useState('');
+    const [initial, setInitial] = useState('');
     let eSignImg = getValueByPath(basicForm, `forms[${formIndex}].data.setUpYourSignature.file`);
     let eSignTypeContent = getValueByPath(basicForm, `forms[${formIndex}].data.setUpYourSignature.type.text`);
     let eSignTypeContentStyle = getValueByPath(basicForm, `forms[${formIndex}].data.setUpYourSignature.type.style`);
@@ -61,6 +69,21 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
         setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === "UploadYourDoc"))
     }, [basicForm, step])
 
+    useEffect(() => {
+        if (applicantProfile?.id) {
+            setUserDetails();
+        }
+    }, [applicantProfile?.id])
+
+    const setUserDetails = async () => {
+        if (applicantProfile?.id) {
+            const { data: userData } = await GET(`user-management-service/user/${applicantProfile.id}`);
+            console.log("userdataaaa" + JSON.stringify(userData))
+            setUserData(userData)
+            setInitial(userData?.esignature?.initial || '')
+            setTitle(userData?.esignature?.title || '')
+        }
+    }
 
     const getApplicantProfile = async () => {
         const { data: profile } = await GET(
@@ -127,6 +150,34 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
                 console.log(response?.data);
                 let temp = tempValue;
                 temp[baseKey].file = response?.data?.file;
+
+                // Update user signature via UpdateESignature API
+                if (users?.id) {
+                    let eSignDTO = {
+                        initial: initial,
+                        title: title,
+                        file: {
+                            filePath: "string",
+                            fileName: `signature.png`,
+                            fileURL: "string",
+                            fileType: "string"
+                        },
+                        type: userData?.esignature?.type
+                    };
+                    const userSignatureFormData = new FormData();
+                    userSignatureFormData.append('eSignDTO', new Blob([JSON.stringify(eSignDTO)], {
+                        type: "application/json"
+                    }));
+                    userSignatureFormData.append('file', blob, fileName?.fileName);
+                    try {
+                        await PUT(`user-management-service/user/${users.id}/updateESignature`, userSignatureFormData);
+                        // Refresh user data after successful update
+                        await setUserDetails();
+                    } catch (error) {
+                        console.error('Error updating user signature:', error);
+                    }
+                }
+
                 handleSubmitApplicationReq(temp)
             } catch (error) {
                 ErrorToaster('File Upload Failed');
@@ -147,6 +198,31 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
             }
             temp[baseKey].type.text = eSignType;
             temp[baseKey].type.style = selectedESignTypeStyle;
+
+            // Update user signature via UpdateESignature API
+            if (users?.id) {
+                let eSignDTO = {
+                    initial: initial,
+                    title: title,
+                    type: {
+                        text: eSignType,
+                        style: selectedESignTypeStyle
+                    },
+                    file: userData?.esignature?.file || applicantProfile?.esignature?.file
+                };
+                const formData = new FormData();
+                formData.append('eSignDTO', new Blob([JSON.stringify(eSignDTO)], {
+                    type: "application/json"
+                }));
+                try {
+                    await PUT(`user-management-service/user/${users.id}/updateESignature`, formData);
+                    // Refresh user data after successful update
+                    await setUserDetails();
+                } catch (error) {
+                    console.error('Error updating user signature:', error);
+                }
+            }
+
             handleSubmitApplicationReq(temp)
         }
         let data = applicantProfile;
