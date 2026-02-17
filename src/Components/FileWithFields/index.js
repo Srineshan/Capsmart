@@ -51,23 +51,31 @@ const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicati
         removeAfterPrint: true,
     });
 
+    const isEmptyValue = (value, fieldType, fieldName) => {
+        if (value === undefined || value === null) return true;
+        if (typeof value === 'string' && value.trim() === '') return true;
+        if ((fieldName === 'creditOrHours' || fieldName === 'credits') && (value === 0 || value === '')) return true;
+        return false;
+    };
+
     const renderFields = (field, index) => {
-        console.log('field', field)
+        const value = changedData?.[field?.name];
+        const hasNoValue = isEmptyValue(value, field?.fieldType, field?.name);
+        const showWarning = hasNoValue;
+
         switch (field.fieldType) {
             case "textbox":
                 return (
                     <div key={index}>
                         <CommonTextField
-                            value={changedData?.[field?.name]}
+                            value={value}
                             className={style.fullWidth}
                             onChange={(e) => { setChangedData({ ...changedData, [field.name]: (field.name === "creditOrHours" || field.name === "credits") ? e.target.value !== "" ? parseFloat(e.target.value) : 0 : e.target.value }); setIsEdited(true) }}
                             maxLength={50}
                             placeholder={''}
                             label={field.label}
                             required={false}
-                            // type={fieldData.type}
-                            warning={false}
-
+                            warning={showWarning}
                         />
                     </div>
                 );
@@ -78,8 +86,8 @@ const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicati
                             {field.label}
                         </div>
                         <TextArea
-                            value={changedData?.[field?.name]}
-                            className={`${style.fullWidth} ${style.marginTop10}`}
+                            value={value}
+                            className={`${style.fullWidth} ${style.marginTop10} ${showWarning ? style.fieldWarningBorder : ''}`}
                             onChange={(e) => { setChangedData({ ...changedData, [field.name]: e.target.value }); setIsEdited(true) }}
                             maxLength={50}
                             placeholder={''}
@@ -90,13 +98,13 @@ const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicati
             case "cellNumber":
                 return (
                     <CommonPhoneField
-                        value={changedData?.[field?.name]}
+                        value={value}
                         className={style.fullWidth}
                         onChange={(e) => { setChangedData({ ...changedData, [field.name]: e.target.value }); setIsEdited(true) }}
                         placeholder={''}
                         label={field.label}
                         required={false}
-                        warning={false}
+                        warning={showWarning}
                     />
                 );
             case "datepicker":
@@ -105,9 +113,9 @@ const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicati
                         ? new Date(changedData.test_date)
                         : null;
 
-                const dateValue = changedData?.[field?.name]
-                    ? parseISO(changedData[field.name])
-                    : null;
+                const dateValue = value ? parseISO(value) : null;
+                const dateHasNoValue = (value === undefined || value === null || value === '');
+                const dateInvalid = value && !isValid(parseISO(value));
                 return (
                     <CommonDateField
                         className={style.fullWidth}
@@ -117,14 +125,12 @@ const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicati
                         value={dateValue}
                         onChange={(newValue) => {
                             if (newValue && isValid(newValue)) {
-                                // Format to backend-compatible string (yyyy-MM-dd'T'00:00)
                                 const backendFormattedDate = format(newValue, "yyyy-MM-dd'T'00:00");
                                 setChangedData({
                                     ...changedData,
                                     [field.name]: backendFormattedDate
                                 });
                             } else {
-                                // Clear the field if invalid
                                 setChangedData({
                                     ...changedData,
                                     [field.name]: null
@@ -146,13 +152,11 @@ const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicati
                                     ...params.inputProps,
                                     placeholder: 'DD/MM/YYYY',
                                 }}
-                                color={""}
+                                color={dateHasNoValue || dateInvalid ? "error" : ""}
                                 fullWidth
-                                error={changedData?.[field.name] && !isValid(parseISO(changedData[field.name]))}
+                                error={dateInvalid || dateHasNoValue}
                                 helperText={
-                                    changedData?.[field.name] && !isValid(parseISO(changedData[field.name]))
-                                        ? "Invalid date"
-                                        : ""
+                                    dateInvalid ? "Invalid date" : dateHasNoValue ? "Could not find data" : ""
                                 }
                             />
                         )}
@@ -161,20 +165,17 @@ const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicati
                     />
                 );
             default:
-                console.log('field', field)
                 return (
                     <div key={index}>
                         <CommonTextField
-                            value={changedData?.[field?.name]}
+                            value={value}
                             className={style.fullWidth}
                             onChange={(e) => { setChangedData({ ...changedData, [field.name]: (field.name === "creditOrHours" || field.name === "credits") ? e.target.value !== "" ? parseFloat(e.target.value) : 0 : e.target.value }); setIsEdited(true) }}
                             maxLength={50}
                             placeholder={''}
                             label={field.label}
                             required={false}
-                            // type={fieldData.type}
-                            warning={false}
-
+                            warning={showWarning}
                         />
                     </div>
                 );

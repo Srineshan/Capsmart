@@ -1202,7 +1202,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
         <DeleteConfirmation
           getShowDeleteConfirmation={getShowDeleteConfirmation}
           getDeleteConfirmation={getDeleteConfirmation}
-          confirmationText="Do you want to delete this uploaded document?"
+          confirmationText="Do you want to Delete this Uploaded Document?"
         />
       )}
     </div>

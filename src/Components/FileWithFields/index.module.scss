@@ -145,3 +145,14 @@
     grid-template-columns: 1fr 1fr;
     gap: 10px;
 }
+
+.fieldWarningBorder {
+    border: 1px solid #cc0000;
+    border-radius: 4px;
+
+    &:focus {
+        outline: none;
+        border-color: #cc0000;
+        box-shadow: 0 0 0 1px #cc0000;
+    }
+}

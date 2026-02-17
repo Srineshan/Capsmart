@@ -3278,7 +3278,7 @@ const HistoricalData = () => {
             showDeleteConfirmation && (
               <DeleteConfirmationDialog getShowDeleteConfirmation={getShowDeleteConfirmation}
                 getDeleteConfirmation={getDeleteConfirmation}
-                confirmationText="Do you want to delete this Uploaded Signed Privilege Set?" />
+                confirmationText="Do you want to Delete this Uploaded Signed Privilege Set?" />
             )
           }
         </>

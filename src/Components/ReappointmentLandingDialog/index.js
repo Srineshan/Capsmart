@@ -103,6 +103,19 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
     setBasicForm(basicForm)
   }
 
+  const handleLogout = () => {
+    cookie.remove("user", { path: "/" });
+    cookie.remove("entityId", { path: "/" });
+    cookie.remove("authorization", {
+      path: "/",
+      domain: window.location.hostname?.split('.')?.length >= 3 ? window.location.hostname?.split('.')?.slice(-2)?.join('.') : window.location.hostname
+    });
+    sessionStorage.setItem('applicationCreationType', 'REAPPOINTMENT');
+    sessionStorage.removeItem('selectedTab');
+    logout()
+    navigate('/')
+  }
+
   const handlePasswordChange = (event) => {
     setPassword(event.target.value);
     setIsPasswordStrong(true);
@@ -223,7 +236,7 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
           <div className={style.alignCenter}>
             <div
               className={`${style.continue} ${style.marginTop}`}
-              onClick={() => logout()}
+              onClick={() => handleLogout()}
             >
               Okay
             </div>
