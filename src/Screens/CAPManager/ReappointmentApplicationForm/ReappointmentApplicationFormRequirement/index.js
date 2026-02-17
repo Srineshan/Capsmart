@@ -316,7 +316,7 @@ const ReappointmentApplicationFormRequirement = () => {
                                     </div>
                                     <div className={`${style.stickyContainer} ${isDoItLaterOpen ? style.hiddenStickyContainer : ""}`}>
                                         <Tooltip title={"Click to Open the Interactive Training Guide"} arrow>
-                                            <div className={`${style.userGuideButton} ${style.marginTop}`} onClick={() => window.open('https://xd.adobe.com/view/df41ec43-33b6-4fa1-9418-33d1cf1690f7-8a12/?fullscreen')}>Interactive Step-by-Step Training Guide</div></Tooltip>
+                                            <div className={`${style.userGuideButton} ${style.marginTop}`} onClick={() => window.open('https://xd.adobe.com/view/3a6af754-2f94-4f66-a3df-cb9acb5be566-6f39/?fullscreen')}>Interactive Step-by-Step Training Guide</div></Tooltip>
                                         <Tooltip title={"Click to Download the PDF Training Guidee"} arrow>
                                             <div className={`${style.userGuideButton} ${style.marginTop10}`} onClick={() => window.open('https://capm-prod-entity-mgmt-service.s3.ca-central-1.amazonaws.com/Step-by-Step+User+Guide.pdf')}>PDF Step-by-Step Training Guide</div></Tooltip>
                                         <Tooltip title={"Click to Save and Do It Later"} arrow>

@@ -485,11 +485,11 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
           <div className={`${style.descriptionStyle} ${style.justifyCenter} ${style.marginTop}`}><strong>How Would You Like To Get Started?</strong></div>
           <div className={`${style.descriptionStyle} ${style.justifyCenter} ${style.marginTop}`}>Select Your Preferred Guide for a Seamless Reappointment Application</div>
           <div className={style.userGuideGrid}>
-            <div className={`${style.verticalAlignCenter} ${style.cursorPointer}`} onClick={() => window.open('https://xd.adobe.com/view/df41ec43-33b6-4fa1-9418-33d1cf1690f7-8a12/?fullscreen')}>
+            <div className={`${style.verticalAlignCenter} ${style.cursorPointer}`} onClick={() => window.open('https://xd.adobe.com/view/3a6af754-2f94-4f66-a3df-cb9acb5be566-6f39/?fullscreen')}>
               <img src="https://capm-prod-entity-mgmt-service.s3.ca-central-1.amazonaws.com/Interactive+guide.png"
                 alt="Interactive Guide" className={style.iconStyleUserGuide} />
             </div>
-            <div className={`${style.cursorPointer} ${style.marginTop}`} onClick={() => window.open('https://xd.adobe.com/view/df41ec43-33b6-4fa1-9418-33d1cf1690f7-8a12/?fullscreen')}>
+            <div className={`${style.cursorPointer} ${style.marginTop}`} onClick={() => window.open('https://xd.adobe.com/view/3a6af754-2f94-4f66-a3df-cb9acb5be566-6f39/?fullscreen')}>
               <p className={`${style.descriptionStyle} ${style.hoverText}`}>
                 <strong>Go through this Interactive Step-by-Step Training Guide</strong>
               </p>

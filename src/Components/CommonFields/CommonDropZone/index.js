@@ -29,9 +29,9 @@ const CommonDropZone = ({ title, description, changeHandler, maxFiles, isDisable
                 'image/jpg': [],
                 'application/pdf': []
             }}
-            maxFiles={maxFiles ? maxFiles : 3}
+            maxFiles={maxFiles ? maxFiles : 10}
             onDropRejected={(fileRejections) => {
-                alert(`You can upload only ${maxFiles ? maxFiles : 3} files at a time`);
+                alert(`You can upload only ${maxFiles ? maxFiles : 10} files at a time`);
             }}
         >
             {({ getRootProps, getInputProps }) => (
