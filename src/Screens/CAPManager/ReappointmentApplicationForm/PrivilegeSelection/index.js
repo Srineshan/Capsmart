@@ -761,12 +761,12 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
           console.log(error);
         });
       if (showPrivilegeResetError) {
-        let temp = {
+        let temp = dedupePrivilegePayload({
           obligatedPrivileges: [],
           additionalPrivileges: basicForm?.privileges?.additionalPrivileges,
           priorAdditionalPrivileges: basicForm?.privileges?.priorAdditionalPrivileges,
           priorObligatedPrivileges: basicForm?.privileges?.priorObligatedPrivileges,
-        };
+        });
         await POST(`application-management-service/application/${applicationId}/privileges`, temp)
           .then((response) => {
             getPreApplication();
@@ -907,6 +907,24 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
     fetchPaymentListData()
   }
 
+  const uniquePrivilegesById = (arr) => {
+    if (!Array.isArray(arr)) return [];
+    return arr.reduce((unique, current) => {
+      if (!unique.some((obj) => obj.id === current.id)) {
+        unique.push(current);
+      }
+      return unique;
+    }, []);
+  };
+
+  const dedupePrivilegePayload = (payload) => ({
+    ...payload,
+    obligatedPrivileges: uniquePrivilegesById(payload.obligatedPrivileges),
+    priorObligatedPrivileges: uniquePrivilegesById(payload.priorObligatedPrivileges),
+    additionalPrivileges: uniquePrivilegesById(payload.additionalPrivileges),
+    priorAdditionalPrivileges: uniquePrivilegesById(payload.priorAdditionalPrivileges),
+  });
+
   const handleSubmitPrivilegeSet = async (isUpdated, privileges, isDelete) => {
     const currentObligatedForForm = basicForm?.privileges?.obligatedPrivileges;
     const currentPriorObligatedForForm = basicForm?.privileges?.priorObligatedPrivileges;
@@ -944,31 +962,41 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
             ? (hasCurrentObligated ? currentObligated : [])
             : basicForm?.privileges?.priorObligatedPrivileges;
 
-      let temp = {
+      let temp = dedupePrivilegePayload({
         obligatedPrivileges: isDelete ? privileges : mergedArray,
         additionalPrivileges: basicForm?.privileges?.additionalPrivileges,
         priorAdditionalPrivileges: basicForm?.privileges?.priorAdditionalPrivileges,
         priorObligatedPrivileges,
-      };
+      });
       console.log("data", temp);
       await POST(`application-management-service/application/${applicationId}/privileges`, temp)
     } else {
-      if (!basicForm?.forms?.[formIndex]?.data?.privilegeSetChangeUpdated) {
-        let temp = {
-          obligatedPrivileges: basicForm?.privileges?.obligatedPrivileges,
+      // Yes flow: keep existing obligated; set priorObligated only if not already updated
+      const currentObligated = basicForm?.privileges?.obligatedPrivileges;
+      const currentPrior = basicForm?.privileges?.priorObligatedPrivileges;
+      const privilegeSetChangeUpdated = basicForm?.forms?.[formIndex]?.data?.privilegeSetChangeUpdated;
+
+      if (!privilegeSetChangeUpdated) {
+        // Not yet updated: obligated stays as is, move a copy of current obligated to priorObligated
+        const obligatedCopy = Array.isArray(currentObligated) ? [...currentObligated] : [];
+        const priorObligatedCopy = Array.isArray(currentObligated) ? [...currentObligated] : [];
+        let temp = dedupePrivilegePayload({
+          obligatedPrivileges: obligatedCopy,
           additionalPrivileges: basicForm?.privileges?.additionalPrivileges,
           priorAdditionalPrivileges: basicForm?.privileges?.priorAdditionalPrivileges,
-          priorObligatedPrivileges: basicForm?.privileges?.obligatedPrivileges
-        };
+          priorObligatedPrivileges: priorObligatedCopy
+        });
         console.log("data", temp);
         await POST(`application-management-service/application/${applicationId}/privileges`, temp)
       } else {
-        let temp = {
-          obligatedPrivileges: basicForm?.privileges?.priorObligatedPrivileges,
+        // Already updated and Yes: prior (last year's) data should become current obligated; send copies so backend gets two distinct arrays
+        const priorCopy = Array.isArray(currentPrior) ? [...currentPrior] : [];
+        let temp = dedupePrivilegePayload({
+          obligatedPrivileges: priorCopy,
           additionalPrivileges: basicForm?.privileges?.additionalPrivileges,
           priorAdditionalPrivileges: basicForm?.privileges?.priorAdditionalPrivileges,
-          priorObligatedPrivileges: basicForm?.privileges?.priorObligatedPrivileges
-        };
+          priorObligatedPrivileges: Array.isArray(currentPrior) ? [...currentPrior] : []
+        });
         console.log("data", temp);
         await POST(`application-management-service/application/${applicationId}/privileges`, temp)
       }
@@ -1029,37 +1057,37 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
         !basicForm?.forms?.[formIndex]?.data?.additionalPrivilegeChangeUpdated && isUpdated;
       const hasCurrentAdditional = Array.isArray(currentAdditional) && currentAdditional.length > 0;
       const priorAdditionalPrivileges =
-        bothAdditionalEmpty || isFirstAdditionalPrivilegeSubmit
+        bothAdditionalEmpty
           ? []
           : !basicForm?.forms?.[formIndex]?.data?.additionalPrivilegeChangeUpdated
             ? (hasCurrentAdditional ? currentAdditional : [])
             : basicForm?.privileges?.priorAdditionalPrivileges;
 
-      let temp = {
+      let temp = dedupePrivilegePayload({
         obligatedPrivileges: basicForm?.privileges?.obligatedPrivileges,
         additionalPrivileges: isDelete ? privileges : mergedArray,
         priorAdditionalPrivileges,
         priorObligatedPrivileges: basicForm?.privileges?.priorObligatedPrivileges
-      };
+      });
       console.log("data", temp);
       await POST(`application-management-service/application/${applicationId}/privileges`, temp)
     } else {
       if (!basicForm?.forms?.[formIndex]?.data?.additionalPrivilegeChangeUpdated) {
-        let temp = {
+        let temp = dedupePrivilegePayload({
           obligatedPrivileges: basicForm?.privileges?.obligatedPrivileges,
           additionalPrivileges: [],
           priorAdditionalPrivileges: basicForm?.privileges?.additionalPrivileges,
           priorObligatedPrivileges: basicForm?.privileges?.priorObligatedPrivileges
-        };
+        });
         console.log("data", temp);
         await POST(`application-management-service/application/${applicationId}/privileges`, temp)
       } else {
-        let temp = {
+        let temp = dedupePrivilegePayload({
           obligatedPrivileges: basicForm?.privileges?.obligatedPrivileges,
           additionalPrivileges: [],
           priorAdditionalPrivileges: basicForm?.privileges?.priorAdditionalPrivileges,
           priorObligatedPrivileges: basicForm?.privileges?.priorObligatedPrivileges
-        };
+        });
         console.log("data", temp);
         await POST(`application-management-service/application/${applicationId}/privileges`, temp)
       }
@@ -3507,12 +3535,15 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
   };
 
   const handleSelectedPrivilegesForDisplayMultiple = (data) => {
+    console.log('PrivilegeCheck')
     let temp = selectedPrivilegesForDisplayMultiple;
     temp.push(data);
     setSelectedPrivilegesForDisplayMultiple(temp);
     if (privilegeSetChangeYesOrNo === 'Yes') {
+      console.log('PrivilegeCheck')
       handleSubmitPrivilegeSet()
     } else {
+      console.log('PrivilegeCheck')
       handleSubmitPrivilegeSet(true, temp)
     }
   };
@@ -3833,14 +3864,14 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                           className={`${style.privilegeContentChangeCard} ${style.marginTop10}`}
                         >
                           <div className={`${style.privilegeHeadingReappointment}`}>
-                            Change for Reappointment
+                            Signed Privileges
                           </div>
                           {privilegeSetChangeYesOrNo === "Yes" ? (
                             <>
-                              <div className={style.privilegeHeading}>
+                              {/* <div className={style.privilegeHeading}>
                                 Same Privileges Requested
-                              </div>
-                              {/* {basicForm?.privileges?.obligatedPrivileges?.map(
+                              </div> */}
+                              {basicForm?.privileges?.obligatedPrivileges?.map(
                                 (data) => (
                                   <div
                                     className={`${style.privilegeHeadingWithHover} ${style.cursorPointer}`}
@@ -3850,10 +3881,10 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                                       setSelectedPrivilege(data?.id);
                                     }}
                                   >
-                                    {data?.privilegeSetTitle} {data?.privilegeDetails?.corePrivileges?.esign?.signedDate !== undefined && (<span className={style.signedOnText}>signed on {data?.privilegeDetails?.corePrivileges?.esign?.signedDate}</span>)}
+                                    {data?.privilegeSetTitle} {data?.privilegeDetails?.corePrivileges?.esign?.signedDate !== undefined && (<span className={style.signedOnText}>Signed on {data?.privilegeDetails?.corePrivileges?.esign?.signedDate}</span>)}
                                   </div>
                                 )
-                              )} */}
+                              )}
                             </>
                           ) : (
                             <>
@@ -3920,14 +3951,14 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                       </div>
                       {basicForm?.forms?.[formIndex]?.data?.additionalPrivilegeChangeYesOrNo !== '' && basicForm?.forms?.[formIndex]?.data?.additionalPrivilegeChangeYesOrNo !== undefined && (
                         <div className={`${style.privilegeContentChangeCard} ${style.marginTop10}`}>
-                          <div className={`${style.privilegeHeadingReappointment}`}>{additionalPrivilegeChangeYesOrNo === 'No' ? 'Privileges Requested' : 'Change for Reappointment'}</div>
+                          <div className={`${style.privilegeHeadingReappointment}`}>{additionalPrivilegeChangeYesOrNo === 'No' ? 'Privileges Requested' : 'Additional Privileges Requested'}</div>
                           {additionalPrivilegeChangeYesOrNo === 'No' ? (
                             <div className={`${style.privilegeHeading}`}>None</div>
                           ) : (
                             <>
-                              <div className={style.privilegeHeading}>
+                              {/* <div className={style.privilegeHeading}>
                                 Additional Privilege Requested
-                              </div>
+                              </div> */}
                               {basicForm?.privileges?.additionalPrivileges?.map(data => (
                                 <div
                                   className={`${style.privilegeHeadingWithHover} ${style.cursorPointer}`} onClick={() => { setShowCurrentPrivileges(true); setCurrentPrivilegesCategory('Additional'); setSelectedPrivilege(data?.id) }}
@@ -4400,7 +4431,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                                   ?.map((data) => data?.id)
                                   ?.includes(data?.id) ? (
                                   <div className={`${style.displayInRow} ${style.floatRight}`}>
-                                    <span className={style.signedOnText}>signed on {selectedPrivilegesForDisplayMultiple?.filter((privilegeSet) => privilegeSet?.id === data?.id)?.[0]?.privilegeDetails?.corePrivileges?.esign?.signedDate || selectedPrivilegesForDisplayMultiple?.filter((privilegeSet) => privilegeSet?.id === data?.id)?.[0]?.privilegeDetails?.nonCorePrivileges?.esign?.signedDate}</span>
+                                    <span className={style.signedOnText}>Signed on {selectedPrivilegesForDisplayMultiple?.filter((privilegeSet) => privilegeSet?.id === data?.id)?.[0]?.privilegeDetails?.corePrivileges?.esign?.signedDate || selectedPrivilegesForDisplayMultiple?.filter((privilegeSet) => privilegeSet?.id === data?.id)?.[0]?.privilegeDetails?.nonCorePrivileges?.esign?.signedDate}</span>
                                     <div>
                                       <img
                                         src={DeleteIcon}
@@ -4606,7 +4637,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                                       ?.includes(data?.id) ? (
                                       // <Tooltip title="Click To Remove">
                                       <div className={`${style.displayInRow} ${style.floatRight}`}>
-                                        <span className={style.signedOnText}>Signed on {selectedPrivilegesForDisplayMultiple?.filter((privilegeSet) => privilegeSet?.id === data?.id)?.[0]?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ? selectedPrivilegesForDisplayMultiple?.filter((privilegeSet) => privilegeSet?.id === data?.id)?.[0]?.descriptiveContent?.esign?.signedDate : (selectedPrivilegesForDisplayMultiple?.filter((privilegeSet) => privilegeSet?.id === data?.id)?.[0]?.privilegeDetails?.corePrivileges?.esign?.signedDate || selectedPrivilegesForDisplayMultiple?.filter((privilegeSet) => privilegeSet?.id === data?.id)?.[0]?.privilegeDetails?.nonCorePrivileges?.esign?.signedDate)}</span>
+                                        <span className={`${style.signedOnText} ${style.verticalAlignCenter}`}>Signed on {selectedPrivilegesForDisplayMultiple?.filter((privilegeSet) => privilegeSet?.id === data?.id)?.[0]?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ? selectedPrivilegesForDisplayMultiple?.filter((privilegeSet) => privilegeSet?.id === data?.id)?.[0]?.descriptiveContent?.esign?.signedDate : (selectedPrivilegesForDisplayMultiple?.filter((privilegeSet) => privilegeSet?.id === data?.id)?.[0]?.privilegeDetails?.corePrivileges?.esign?.signedDate || selectedPrivilegesForDisplayMultiple?.filter((privilegeSet) => privilegeSet?.id === data?.id)?.[0]?.privilegeDetails?.nonCorePrivileges?.esign?.signedDate)}</span>
                                         <div>
                                           <img
                                             src={DeleteIcon}
@@ -4816,7 +4847,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                                   <div className={style.privilegeHeading}>{data?.privilegeSetTitle}</div>
                                   {selectedAdditionalPrivilegesForDisplayMultiple?.map(data => data?.id)?.includes(data?.id) ? (
                                     <div className={`${style.displayInRow} ${style.floatRight}`}>
-                                      <span className={style.signedOnText}>Signed on {selectedAdditionalPrivilegesForDisplayMultiple?.filter((privilegeSet) => privilegeSet?.id === data?.id)?.[0]?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ? selectedAdditionalPrivilegesForDisplayMultiple?.filter((privilegeSet) => privilegeSet?.id === data?.id)?.[0]?.descriptiveContent?.esign?.signedDate : (selectedAdditionalPrivilegesForDisplayMultiple?.filter((privilegeSet) => privilegeSet?.id === data?.id)?.[0]?.privilegeDetails?.corePrivileges?.esign?.signedDate || selectedAdditionalPrivilegesForDisplayMultiple?.filter((privilegeSet) => privilegeSet?.id === data?.id)?.[0]?.privilegeDetails?.nonCorePrivileges?.esign?.signedDate)}</span>
+                                      <span className={`${style.signedOnText} ${style.verticalAlignCenter}`}>Signed on {selectedAdditionalPrivilegesForDisplayMultiple?.filter((privilegeSet) => privilegeSet?.id === data?.id)?.[0]?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ? selectedAdditionalPrivilegesForDisplayMultiple?.filter((privilegeSet) => privilegeSet?.id === data?.id)?.[0]?.descriptiveContent?.esign?.signedDate : (selectedAdditionalPrivilegesForDisplayMultiple?.filter((privilegeSet) => privilegeSet?.id === data?.id)?.[0]?.privilegeDetails?.corePrivileges?.esign?.signedDate || selectedAdditionalPrivilegesForDisplayMultiple?.filter((privilegeSet) => privilegeSet?.id === data?.id)?.[0]?.privilegeDetails?.nonCorePrivileges?.esign?.signedDate)}</span>
                                       <div>
                                         <img
                                           src={DeleteIcon}
