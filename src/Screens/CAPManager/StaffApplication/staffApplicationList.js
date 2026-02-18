@@ -288,6 +288,7 @@ const StaffApplicationList = ({
     "Applicant Type",
     // "Department",
     "Docs",
+    "CE",
     // "Data & Disclosures",
     "CRs",
     "Notes",
@@ -302,6 +303,7 @@ const StaffApplicationList = ({
     "Dept / Division",
     // "Department",
     "Docs",
+    "CE",
     // "Data & Disclosures",
     "CRs",
     "Notes",
@@ -318,6 +320,7 @@ const StaffApplicationList = ({
     "Dept / Division",
     // "Department",
     "Docs",
+    "CE",
     // "Data & Disclosures",
     "CRs",
     "Notes",
@@ -334,6 +337,7 @@ const StaffApplicationList = ({
     "Dept / Division",
     "Assign To",
     "Docs",
+    "CE",
     "CRs",
     "Notes",
     // "Task list",
@@ -367,6 +371,7 @@ const StaffApplicationList = ({
     // "CEO",
     "Assign To",
     "Docs",
+    "CE",
     "CRs",
     "Notes",
     // "Dept. Head",
@@ -385,6 +390,7 @@ const StaffApplicationList = ({
     // "CEO",
     "Assign To",
     "Docs",
+    "CE",
     "CRs",
     "Notes",
     // "Dept. Head",
@@ -2322,6 +2328,9 @@ const StaffApplicationList = ({
   let docs = [];
   let docsHoverText = [];
   let docsIcon = [];
+  let ce = [];
+  let ceHoverText = [];
+  let ceIcon = [];
   let dataStatus = [];
   let disclosures = [];
   let crs = [];
@@ -2376,6 +2385,9 @@ const StaffApplicationList = ({
     docs = [];
     docsHoverText = [];
     docsIcon = [];
+    ce = [];
+    ceHoverText = [];
+    ceIcon = [];
     dataStatus = [];
     // disclosures = [];
     crs = [];
@@ -2498,6 +2510,37 @@ const StaffApplicationList = ({
       // } else {
       //   docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#FEC106` }} />);
       // }
+      // Process CE (Continuing Education) from lmsDetails
+      const rawCourses = Array.isArray(data?.lmsDetails) ? data.lmsDetails.flatMap((item) => item?.courses || []) : (data?.lmsDetails?.courses ?? []);
+      const courses = (rawCourses || []).map((c) => ({ ...c, is_course_completed: c._course_completed ?? c.is_course_completed }));
+      const completedCount = courses.filter(c => c.is_course_completed).length;
+      const totalCourses = courses.length;
+      ce.push(totalCourses === 0 ? "-" : `${completedCount}/${totalCourses}`);
+      const ceHoverTextArray = courses?.length > 0
+        ? courses.map((course, index) => {
+          const completedIndicator = course?.is_course_completed
+            ? <CircleIcon style={{ color: '#00C07F', fontSize: '12px', marginRight: '5px' }} />
+            : <CircleIcon style={{ color: '#FF6562', fontSize: '12px', marginRight: '5px' }} />;
+          return (
+            <div key={index} className={style.fullWidth}>
+              <span>
+                {completedIndicator} {course?.course_name || '-'}
+              </span>
+              {index !== courses.length - 1 && (
+                <hr style={{ margin: '5px 0 -10px 0px' }} />
+              )}
+            </div>
+          );
+        })
+        : ["-"];
+      ceHoverText.push(ceHoverTextArray);
+      if (totalCourses === 0 || completedCount === 0) {
+        ceIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#b0a6a6' }} />);
+      } else if (completedCount < totalCourses) {
+        ceIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#FEC106' }} />);
+      } else if (completedCount === totalCourses) {
+        ceIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#00C07F' }} />);
+      }
       // dataStatus.push(data?.dataStatus || "green");
       // dataStatus.push(data?.dataStatus === "REVIEW_INPROGRESS"
       //   ? "yellow"
@@ -2592,6 +2635,13 @@ const StaffApplicationList = ({
         isShowHoverText: true,
         icon: docsIcon,
       },
+      {
+        type: "iconWithCount",
+        value: ce,
+        hoverText: ceHoverText,
+        isShowHoverText: true,
+        icon: ceIcon,
+      },
       // { type: "dot", value: dataStatus },
       // { "type": "iconWithCount", "value": disclosures, "hoverText": docsHoverText, 'isShowHoverText': true, "icon": docsIcon },
       {
@@ -2628,6 +2678,9 @@ const StaffApplicationList = ({
     docs = [];
     docsHoverText = [];
     docsIcon = [];
+    ce = [];
+    ceHoverText = [];
+    ceIcon = [];
     dataStatus = [];
     // disclosures = [];
     crs = [];
@@ -2727,7 +2780,37 @@ const StaffApplicationList = ({
       } else if (data?.documents?.uploadedCount === data?.documents?.verifiedCount) {
         docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#00C07F' }} />);
       }
-
+      // Process CE (Continuing Education) from lmsDetails
+      const rawCourses = Array.isArray(data?.lmsDetails) ? data.lmsDetails.flatMap((item) => item?.courses || []) : (data?.lmsDetails?.courses ?? []);
+      const courses = (rawCourses || []).map((c) => ({ ...c, is_course_completed: c._course_completed ?? c.is_course_completed }));
+      const completedCount = courses.filter(c => c.is_course_completed).length;
+      const totalCourses = courses.length;
+      ce.push(totalCourses === 0 ? "-" : `${completedCount}/${totalCourses}`);
+      const ceHoverTextArray = courses?.length > 0
+        ? courses.map((course, index) => {
+          const completedIndicator = course?.is_course_completed
+            ? <CircleIcon style={{ color: '#00C07F', fontSize: '12px', marginRight: '5px' }} />
+            : <CircleIcon style={{ color: '#FF6562', fontSize: '12px', marginRight: '5px' }} />;
+          return (
+            <div key={index} className={style.fullWidth}>
+              <span>
+                {completedIndicator} {course?.course_name || '-'}
+              </span>
+              {index !== courses.length - 1 && (
+                <hr style={{ margin: '5px 0 -10px 0px' }} />
+              )}
+            </div>
+          );
+        })
+        : ["-"];
+      ceHoverText.push(ceHoverTextArray);
+      if (totalCourses === 0 || completedCount === 0) {
+        ceIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#b0a6a6' }} />);
+      } else if (completedCount < totalCourses) {
+        ceIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#FEC106' }} />);
+      } else if (completedCount === totalCourses) {
+        ceIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#00C07F' }} />);
+      }
       // else if (data?.documents?.verifiedCount === 0) {
       //   docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#94979A` }} />);
       // } else {
@@ -2844,6 +2927,13 @@ const StaffApplicationList = ({
         hoverText: docsHoverText,
         isShowHoverText: true,
         icon: docsIcon,
+      },
+      {
+        type: "iconWithCount",
+        value: ce,
+        hoverText: ceHoverText,
+        isShowHoverText: true,
+        icon: ceIcon,
       },
       // { type: "dot", value: dataStatus },
       // { "type": "iconWithCount", "value": disclosures, "hoverText": docsHoverText, 'isShowHoverText': true, "icon": docsIcon },
@@ -3015,7 +3105,37 @@ const StaffApplicationList = ({
       } else if (data?.documents?.uploadedCount === data?.documents?.verifiedCount) {
         docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#00C07F' }} />);
       }
-
+      // Process CE (Continuing Education) from lmsDetails
+      const rawCourses = Array.isArray(data?.lmsDetails) ? data.lmsDetails.flatMap((item) => item?.courses || []) : (data?.lmsDetails?.courses ?? []);
+      const courses = (rawCourses || []).map((c) => ({ ...c, is_course_completed: c._course_completed ?? c.is_course_completed }));
+      const completedCount = courses.filter(c => c.is_course_completed).length;
+      const totalCourses = courses.length;
+      ce.push(totalCourses === 0 ? "-" : `${completedCount}/${totalCourses}`);
+      const ceHoverTextArray = courses?.length > 0
+        ? courses.map((course, index) => {
+          const completedIndicator = course?.is_course_completed
+            ? <CircleIcon style={{ color: '#00C07F', fontSize: '12px', marginRight: '5px' }} />
+            : <CircleIcon style={{ color: '#FF6562', fontSize: '12px', marginRight: '5px' }} />;
+          return (
+            <div key={index} className={style.fullWidth}>
+              <span>
+                {completedIndicator} {course?.course_name || '-'}
+              </span>
+              {index !== courses.length - 1 && (
+                <hr style={{ margin: '5px 0 -10px 0px' }} />
+              )}
+            </div>
+          );
+        })
+        : ["-"];
+      ceHoverText.push(ceHoverTextArray);
+      if (totalCourses === 0 || completedCount === 0) {
+        ceIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#b0a6a6' }} />);
+      } else if (completedCount < totalCourses) {
+        ceIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#FEC106' }} />);
+      } else if (completedCount === totalCourses) {
+        ceIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#00C07F' }} />);
+      }
       // else if (data?.documents?.verifiedCount === 0) {
       //   docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#94979A` }} />);
       // } else {
@@ -3143,6 +3263,13 @@ const StaffApplicationList = ({
         hoverText: docsHoverText,
         isShowHoverText: true,
         icon: docsIcon,
+      },
+      {
+        type: "iconWithCount",
+        value: ce,
+        hoverText: ceHoverText,
+        isShowHoverText: true,
+        icon: ceIcon,
       },
       // { type: "dot", value: dataStatus },
       // { "type": "iconWithCount", "value": disclosures, "hoverText": docsHoverText, 'isShowHoverText': true, "icon": docsIcon },
@@ -7717,15 +7844,17 @@ const StaffApplicationList = ({
                                         : selectedTab === "OverrideRequest" && (applicationType === "LOCUM" || applicationType === "NEW")
                                           ? style.locumOverrideStaffGrid
                                           : selectedTab === "clarificationsRequired" && applicationType === "NEW"
-                                            ? style.applicantStaffGrid
+                                            ? style.applicantStaffClarificationGrid
                                             : selectedTab === "clarificationsRequired" && (applicationType === "REAPPOINTMENT")
-                                              ? style.applicantStaffReappointGrid
-                                              : selectedTab === "rejected"
-                                                ? style.rejectedStaffGrid
-                                                // :[];
+                                              ? style.applicantStaffReappointClarificationGrid
+                                              : selectedTab === "clarificationsRequired" && applicationType === "LOCUM"
+                                                ? style.applicantLocumStaffClarificationGrid
+                                                : selectedTab === "rejected"
+                                                  ? style.rejectedStaffGrid
+                                                  // :[];
 
-                                                // : style.approvedStaffGrid;
-                                                : style.applicantStaffReappointGrid;
+                                                  // : style.approvedStaffGrid;
+                                                  : style.applicantStaffReappointGrid;
 
   return (
     <>
