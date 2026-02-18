@@ -533,17 +533,12 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
               </div>
             ) : (
               <>
-                <div className={`${style.markedAsText} ${style.marginTop10}`}><strong>Marked as <span className={yesOrNoLMS === 'Yes' ? style.yesText : style.noText}>{yesOrNoLMS}</span></strong> on {format(new Date(updatedDateLMS), "MMM dd, yyyy")}</div>
-                <div
-                  className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
-                >
-                  <Tooltip title={"Click to View & Modify"} arrow>
-                    <div
-                      className={`${style.reappointmentButtonEdit}`}
-                      onClick={() => setYesOrNoLMS('')}
-                    >
-                      VIEW TO MODIFY
-                    </div>
+                <div className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}>
+                  <div className={style.markedAsText}>
+                    <strong>Marked as <span className={yesOrNoLMS === 'Yes' ? style.yesText : style.noText}>{yesOrNoLMS}</span></strong> on {format(new Date(updatedDateLMS), "MMM dd, yyyy")}
+                  </div>
+                  <Tooltip title={"Click to Modify"} arrow>
+                    <button type="button" className={`${style.addButton}`} onClick={() => setYesOrNoLMS('')}>MODIFY</button>
                   </Tooltip>
                 </div>
               </>
@@ -576,17 +571,17 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
               </div>
             ) : (
               <>
-                <div className={`${style.markedAsText} ${style.marginTop10}`}><strong>Marked as <span className={yesOrNoSuboxone === 'Yes' ? style.yesText : style.noText}>{yesOrNoSuboxone}</span></strong> on {format(new Date(updatedDateSuboxone || new Date()), "MMM dd, yyyy")}</div>
-                <div
-                  className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
-                >
+                <div className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}>
+                  <div className={style.markedAsText}>
+                    <strong>Marked as <span className={yesOrNoSuboxone === 'Yes' ? style.yesText : style.noText}>{yesOrNoSuboxone}</span></strong> on {format(new Date(updatedDateSuboxone || new Date()), "MMM dd, yyyy")}
+                  </div>
+                  {/* VIEW TO MODIFY - kept for reference
                   <Tooltip title={"Click to View & Modify"} arrow>
-                    <div
-                      className={`${style.reappointmentButtonEdit}`}
-                      onClick={() => setYesOrNoSuboxone('')}
-                    >
-                      VIEW TO MODIFY
-                    </div>
+                    <div className={`${style.reappointmentButtonEdit}`} onClick={() => setYesOrNoSuboxone('')}>VIEW TO MODIFY</div>
+                  </Tooltip>
+                  */}
+                  <Tooltip title={"Click to Modify"} arrow>
+                    <button type="button" className={`${style.addButton} ${style.marginLeft}`} onClick={() => setYesOrNoSuboxone('')}>MODIFY</button>
                   </Tooltip>
                 </div>
               </>
@@ -620,17 +615,17 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                 </div>
               ) : (
                 <>
-                  <div className={`${style.markedAsText} ${style.marginTop10}`}><strong>Marked as <span className={yesOrNoMRP === 'Yes' ? style.yesText : style.noText}>{yesOrNoMRP}</span></strong> on {format(new Date(updatedDateMRP), "MMM dd, yyyy")}</div>
-                  <div
-                    className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
-                  >
+                  <div className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}>
+                    <div className={style.markedAsText}>
+                      <strong>Marked as <span className={yesOrNoMRP === 'Yes' ? style.yesText : style.noText}>{yesOrNoMRP}</span></strong> on {format(new Date(updatedDateMRP), "MMM dd, yyyy")}
+                    </div>
+                    {/* VIEW TO MODIFY - kept for reference
                     <Tooltip title={"Click to View & Modify"} arrow>
-                      <div
-                        className={`${style.reappointmentButtonEdit}`}
-                        onClick={() => setYesOrNoMRP('')}
-                      >
-                        VIEW TO MODIFY
-                      </div>
+                      <div className={`${style.reappointmentButtonEdit}`} onClick={() => setYesOrNoMRP('')}>VIEW TO MODIFY</div>
+                    </Tooltip>
+                    */}
+                    <Tooltip title={"Click to Modify"} arrow>
+                      <button type="button" className={`${style.addButton} ${style.marginLeft}`} onClick={() => setYesOrNoMRP('')}>MODIFY</button>
                     </Tooltip>
                   </div>
                 </>

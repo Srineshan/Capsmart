@@ -553,13 +553,15 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                                 </div>
                             ) : (
                                 <>
-                                    <div className={`${style.markedAsText} ${style.marginTop10}`}><strong>Marked as <span className={yesOrNoCMETranscript === 'Yes' ? style.yesText : style.noText}>{yesOrNoCMETranscript}</span></strong> on {format(new Date(updatedDateCMETranscript), "MMM dd, yyyy")}</div>
-                                    <div
-                                        className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
-                                    >
-                                        <Tooltip title={"Click to View & Modify"} arrow>
-                                            <div
-                                                className={`${style.reappointmentButtonEdit}`}
+                                    <div className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}>
+                                        <div className={style.markedAsText}>
+                                            <strong>Marked as <span className={yesOrNoCMETranscript === 'Yes' ? style.yesText : style.noText}>{yesOrNoCMETranscript}</span></strong> on {format(new Date(updatedDateCMETranscript), "MMM dd, yyyy")}
+                                        </div>
+                                        {/* VIEW TO MODIFY - kept for reference: div.reappointmentButtonEdit with onClick (show confirmation or setYesOrNoCMETranscript('')) */}
+                                        <Tooltip title={"Click to Modify"} arrow>
+                                            <button
+                                                type="button"
+                                                className={`${style.addButton}`}
                                                 onClick={() => {
                                                     const matchedForm = basicForm?.forms?.find(
                                                         form =>
@@ -576,10 +578,9 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                                                         setYesOrNoCMETranscript('');
                                                     }
                                                 }}
-
                                             >
-                                                VIEW TO MODIFY
-                                            </div>
+                                                MODIFY
+                                            </button>
                                         </Tooltip>
                                     </div>
                                 </>
@@ -999,16 +1000,13 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                                 </div>
                             ) : (
                                 <>
-                                    <div className={`${style.markedAsText} ${style.marginTop10}`}><strong>Marked as <span className={yesOrNoCME === 'Yes' ? style.yesText : style.noText}>{yesOrNoCME}</span></strong> on {format(new Date(updatedDateCME), "MMM dd, yyyy")}</div>
-                                    <div
-                                        className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
-                                    >
-                                        <div
-                                            className={`${style.reappointmentButtonEdit}`}
-                                            onClick={() => setYesOrNoCME('')}
-                                        >
-                                            VIEW TO MODIFY
+                                    <div className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}>
+                                        <div className={style.markedAsText}>
+                                            <strong>Marked as <span className={yesOrNoCME === 'Yes' ? style.yesText : style.noText}>{yesOrNoCME}</span></strong> on {format(new Date(updatedDateCME), "MMM dd, yyyy")}
                                         </div>
+                                        <Tooltip title={"Click to Modify"} arrow>
+                                            <button type="button" className={`${style.addButton}`} onClick={() => setYesOrNoCME('')}>MODIFY</button>
+                                        </Tooltip>
                                     </div>
                                 </>
                             )}

@@ -520,6 +520,18 @@
     opacity: 1;
 }
 
+.addButton {
+    border: 0.5px solid var(--primary-color);
+    border-radius: 5px;
+    width: auto;
+    background: var(--primary-color) 0% 0% no-repeat padding-box;
+    color: #FFFFFF;
+    font: normal normal normal 14px/18px var(--font-style);
+    cursor: pointer;
+    padding: 0px 10px;
+    margin-left: 10px;
+}
+
 .cardTitle {
     text-align: left;
     font: normal normal bold 20px/26px var(--font-style);

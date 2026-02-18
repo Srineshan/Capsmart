@@ -4048,23 +4048,25 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                 <>
                   {!isPrivilegeCategoryChanging && (
                     <>
-                      <div
-                        className={`${style.markedAsText} ${style.marginTop10}`}
-                      >
-                        <strong>
-                          Marked as <span className={privilegeChangeYesOrNo === 'Yes' ? style.yesText : style.noText}>{privilegeChangeYesOrNo}</span>
-                        </strong>{" "}
-                      </div>
-                      <div
-                        className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
-                      >
+                      <div className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}>
+                        <div className={style.markedAsText}>
+                          <strong>
+                            Marked as <span className={privilegeChangeYesOrNo === 'Yes' ? style.yesText : style.noText}>{privilegeChangeYesOrNo}</span>
+                          </strong>{" "}
+                        </div>
+                        {/* VIEW TO MODIFY - kept for reference
                         <Tooltip title={"Click to View & Modify"} arrow>
-                          <div
-                            className={`${style.reappointmentButtonEdit}`}
+                          <div className={`${style.reappointmentButtonEdit}`} onClick={() => { setPrivilegeChangeYesOrNo('') }}>VIEW TO MODIFY</div>
+                        </Tooltip>
+                        */}
+                        <Tooltip title={"Click to Modify"} arrow>
+                          <button
+                            type="button"
+                            className={`${style.addButton} ${style.marginLeft}`}
                             onClick={() => { setPrivilegeChangeYesOrNo('') }}
                           >
-                            VIEW TO MODIFY
-                          </div>
+                            MODIFY
+                          </button>
                         </Tooltip>
                       </div>
                     </>
@@ -4288,24 +4290,26 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                 <>
                   {/* {!isDepartmentChanging ? ( */}
                   <>
-                    <div
-                      className={`${style.markedAsText} ${style.marginTop10}`}
-                    >
-                      <strong>
-                        Marked as{" "}
-                        <span className={departmentChangeYesOrNo === 'Yes' ? style.yesText : style.noText}>{departmentChangeYesOrNo === 'Yes' ? 'Same as Before' : 'Changed'}</span>
-                      </strong>{" "}
-                    </div>
-                    <div
-                      className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
-                    >
+                    <div className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}>
+                      <div className={style.markedAsText}>
+                        <strong>
+                          Marked as{" "}
+                          <span className={departmentChangeYesOrNo === 'Yes' ? style.yesText : style.noText}>{departmentChangeYesOrNo === 'Yes' ? 'Same as Before' : 'Changed'}</span>
+                        </strong>{" "}
+                      </div>
+                      {/* VIEW TO MODIFY - kept for reference
                       <Tooltip title={"Click to View & Modify"} arrow>
-                        <div
-                          className={`${style.reappointmentButtonEdit}`}
+                        <div className={`${style.reappointmentButtonEdit}`} onClick={() => setDepartmentChangeYesOrNo('')}>VIEW TO MODIFY</div>
+                      </Tooltip>
+                      */}
+                      <Tooltip title={"Click to Modify"} arrow>
+                        <button
+                          type="button"
+                          className={`${style.addButton} ${style.marginLeft}`}
                           onClick={() => setDepartmentChangeYesOrNo('')}
                         >
-                          VIEW TO MODIFY
-                        </div>
+                          MODIFY
+                        </button>
                       </Tooltip>
                     </div>
                   </>
@@ -4506,24 +4510,26 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                       <>
                         {!isPrivilegeSetChanging && (
                           <>
-                            <div
-                              className={`${style.markedAsText} ${style.marginTop10}`}
-                            >
-                              <strong>
-                                Marked as{" "}
-                                <span className={privilegeSetChangeYesOrNo === 'Yes' ? style.yesText : style.noText}>{privilegeSetChangeYesOrNo}</span>
-                              </strong>{" "}
-                            </div>
-                            <div
-                              className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
-                            >
+                            <div className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}>
+                              <div className={style.markedAsText}>
+                                <strong>
+                                  Marked as{" "}
+                                  <span className={privilegeSetChangeYesOrNo === 'Yes' ? style.yesText : style.noText}>{privilegeSetChangeYesOrNo}</span>
+                                </strong>{" "}
+                              </div>
+                              {/* VIEW TO MODIFY - kept for reference
                               <Tooltip title={"Click to View & Modify"} arrow>
-                                <div
-                                  className={`${style.reappointmentButtonEdit}`}
+                                <div className={`${style.reappointmentButtonEdit}`} onClick={() => { setIsEditPrivilege(true); setPrivilegeSetChangeYesOrNo('') }}>VIEW TO MODIFY</div>
+                              </Tooltip>
+                              */}
+                              <Tooltip title={"Click to Modify"} arrow>
+                                <button
+                                  type="button"
+                                  className={`${style.addButton} ${style.marginLeft}`}
                                   onClick={() => { setIsEditPrivilege(true); setPrivilegeSetChangeYesOrNo('') }}
                                 >
-                                  VIEW TO MODIFY
-                                </div>
+                                  MODIFY
+                                </button>
                               </Tooltip>
                             </div>
                           </>
@@ -4727,24 +4733,26 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                   <>
                     {!isAdditionalPrivilegeCategoryChanging && (
                       <>
-                        <div
-                          className={`${style.markedAsText} ${style.marginTop10}`}
-                        >
-                          <strong>
-                            Marked as{" "}
-                            <span className={additionalPrivilegeChangeYesOrNo === 'Yes' ? style.yesText : style.noText}>{additionalPrivilegeChangeYesOrNo}</span>
-                          </strong>{" "}
-                        </div>
-                        <div
-                          className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
-                        >
+                        <div className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}>
+                          <div className={style.markedAsText}>
+                            <strong>
+                              Marked as{" "}
+                              <span className={additionalPrivilegeChangeYesOrNo === 'Yes' ? style.yesText : style.noText}>{additionalPrivilegeChangeYesOrNo}</span>
+                            </strong>{" "}
+                          </div>
+                          {/* VIEW TO MODIFY - kept for reference
                           <Tooltip title={"Click to View & Modify"} arrow>
-                            <div
-                              className={`${style.reappointmentButtonEdit}`}
+                            <div className={`${style.reappointmentButtonEdit}`} onClick={() => { setIsEditAdditionalPrivileges(true); setAdditionalPrivilegeChangeYesOrNo('') }}>VIEW TO MODIFY</div>
+                          </Tooltip>
+                          */}
+                          <Tooltip title={"Click to Modify"} arrow>
+                            <button
+                              type="button"
+                              className={`${style.addButton} ${style.marginLeft}`}
                               onClick={() => { setIsEditAdditionalPrivileges(true); setAdditionalPrivilegeChangeYesOrNo('') }}
                             >
-                              VIEW TO MODIFY
-                            </div>
+                              MODIFY
+                            </button>
                           </Tooltip>
                         </div>
                       </>
@@ -4928,24 +4936,26 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                       <>
                         {!privilegesMaintainedInOtherHositals && (
                           <>
-                            <div
-                              className={`${style.markedAsText} ${style.marginTop10}`}
-                            >
-                              <strong>
-                                Marked as{" "}
-                                <span className={privilegeAtOtherHospitalYesOrNo === 'Yes' ? style.yesText : style.noText}>{privilegeAtOtherHospitalYesOrNo}</span>
-                              </strong>{" "}
-                            </div>
-                            <div
-                              className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
-                            >
+                            <div className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}>
+                              <div className={style.markedAsText}>
+                                <strong>
+                                  Marked as{" "}
+                                  <span className={privilegeAtOtherHospitalYesOrNo === 'Yes' ? style.yesText : style.noText}>{privilegeAtOtherHospitalYesOrNo}</span>
+                                </strong>{" "}
+                              </div>
+                              {/* VIEW TO MODIFY - kept for reference
                               <Tooltip title={"Click to View & Modify"} arrow>
-                                <div
-                                  className={`${style.reappointmentButtonEdit}`}
+                                <div className={`${style.reappointmentButtonEdit}`} onClick={() => { setIsEditPrivilegeAtOtherHospitals(true); setPrivilegesMaintainedInOtherHositals(false); setPrivilegeAtOtherHospitalYesOrNo('') }}>VIEW TO MODIFY</div>
+                              </Tooltip>
+                              */}
+                              <Tooltip title={"Click to Modify"} arrow>
+                                <button
+                                  type="button"
+                                  className={`${style.addButton} ${style.marginLeft}`}
                                   onClick={() => { setIsEditPrivilegeAtOtherHospitals(true); setPrivilegesMaintainedInOtherHositals(false); setPrivilegeAtOtherHospitalYesOrNo('') }}
                                 >
-                                  VIEW TO MODIFY
-                                </div>
+                                  MODIFY
+                                </button>
                               </Tooltip>
                             </div>
                           </>

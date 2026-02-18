@@ -104,9 +104,13 @@
 }
 
 .addButton {
-    margin-top: 8px;
-    padding: 0px 10px !important;
-    margin-left: 10px;
+    border: 0.5px solid var(--primary-color);
+    border-radius: 5px;
+    width: auto;
+    background: var(--primary-color) 0% 0% no-repeat padding-box;
+    color: #FFFFFF;
+    font: normal normal normal 14px/18px var(--font-style);
+    cursor: pointer;
 }
 
 .applicationCardStyle {

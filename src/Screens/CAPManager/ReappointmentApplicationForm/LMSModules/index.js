@@ -256,8 +256,8 @@ const LMSModules = ({ basicForm, setBasicForm, getPreApplication }) => {
                 <div>
                     <ReappointmentProgressCard step={'STEP 11'} dataType={formSchema?.description} title={formSchemaWholeObject?.title} timeNumber={22} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} basicForm={basicForm} />
                     <div className={style.marginTop10}>
-                        <WelcomeCard title={<div dangerouslySetInnerHTML={{ __html: `<strong>There are Learning Management Courses shown below for you to complete for this reappointment cycle.</strong> ` }} />}
-                            description={<div dangerouslySetInnerHTML={{ __html: "These are required to be completed prior to approval by the BOD of your Privileges at Cambridge Memorial Hospital." }} />} />
+                        <WelcomeCard title={<div dangerouslySetInnerHTML={{ __html: formSchema?.properties?.instruction?.label }} />}
+                            description={<div dangerouslySetInnerHTML={{ __html: formSchema?.properties?.instruction?.description }} />} />
                     </div>
                     <div className={`${style.applicationCardStyle} ${style.marginTop10}`}>
                         {/* <div className={style.cardTitle}>
