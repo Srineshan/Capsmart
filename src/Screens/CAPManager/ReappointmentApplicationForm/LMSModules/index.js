@@ -20,6 +20,7 @@ import ReappointmentJourneyDialog from '../../../../Components/reappointmentJour
 import { Tooltip } from '@mui/material';
 import TableTwo from '../../../../Components/TableDesignTwo';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CardMembershipIcon from '@mui/icons-material/CardMembership';
 import Cookies from 'universal-cookie';
 
 const LMSModules = ({ basicForm, setBasicForm, getPreApplication }) => {
@@ -204,17 +205,12 @@ const LMSModules = ({ basicForm, setBasicForm, getPreApplication }) => {
             hoverText: 'Open course in LMS',
             conditionToShow: '!data?.is_course_completed'
         },
-        {
-            data: 'View Certificate',
-            conditionToShow: 'data?.is_course_completed && data?.certificate_details?.view_url',
-            onClick: handleViewCertificate,
-            hoverText: 'View certificate'
-        },
+        // View Certificate moved to icon column before Action
         // {
-        //     data: 'Download Certificate',
-        //     conditionToShow: 'data?.is_course_completed && data?.certificate_details?.download_url',
-        //     onClick: handleDownloadCertificate,
-        //     hoverText: 'Download certificate'
+        //     data: 'View Certificate',
+        //     conditionToShow: 'data?.is_course_completed && data?.certificate_details?.view_url',
+        //     onClick: handleViewCertificate,
+        //     hoverText: 'View certificate'
         // }
     ]
 
@@ -243,7 +239,27 @@ const LMSModules = ({ basicForm, setBasicForm, getPreApplication }) => {
             "type": "text",
             "value": courses?.map((course) => course?.is_course_completed && course?.course_completion_date ? format(new Date(course.course_completion_date), 'MMM dd, yyyy') : '')
         });
-        // Action column (View Course, View Certificate, Download Certificate)
+        // View Certificate icon column (before Action): show icon when completed and has certificate URL
+        temp.push({
+            type: 'field',
+            field: courses?.map((course) =>
+                course?.is_course_completed && course?.certificate_details?.view_url ? (
+                    <div key={course?.course_id ?? course?.course_name} className={style.verticalAlignCenter} style={{ width: '100%', minHeight: '100%' }}>
+                        <Tooltip title="View certificate" arrow>
+                            <CardMembershipIcon
+                                sx={{ fontSize: 22, color: 'var(--primary-color)', cursor: 'pointer' }}
+                                onClick={() => handleViewCertificate(course)}
+                            />
+                        </Tooltip>
+                    </div>
+                ) : (
+                    <div key={course?.course_id ?? course?.course_name} className={style.verticalAlignCenter} style={{ width: '100%' }}>
+                        <span />
+                    </div>
+                )
+            )
+        });
+        // Action column (Go to Course for incomplete only)
         temp.push({
             type: "action",
             value: actions
@@ -269,6 +285,7 @@ const LMSModules = ({ basicForm, setBasicForm, getPreApplication }) => {
                                     "",
                                     "Course Name",
                                     "Completed On",
+                                    "",
                                     "Action"
                                 ]}
                                 tableDataValues={getCourseTable()}
