@@ -68,6 +68,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
     const [replaceFileIndex, setReplaceFileIndex] = useState(-1);
     const [showFileDisplayDialog, setShowFileDisplayDialog] = useState(false);
     const [showFileWithFields, setShowFileWithFields] = useState(false);
+    const [fileData, setFileData] = useState();
     const [fields, setFields] = useState([]);
     const [fileMetadata, setFileMetadata] = useState();
     const [file, setFile] = useState();
@@ -388,6 +389,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
             `document-management-service/document/${rowId}`
         );
         console.log(response);
+        setFileData(response);
         setFields(response?.fields);
         setFile(response?.file);
         setFileMetadata(response?.metaData);
@@ -1135,7 +1137,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                 <ReappointmentJourneyDialog getIsOpen={getIsShowReappointmentJourneyDialog} title={`Leveling Up! Keep Up The Good Work.`} img={JourneyStep2} formIndex={formIndex} basicForm={basicForm} continueClick={handleContinue} />
             )}
             {showFileWithFields && (
-                <FileWithFields getIsOpen={getIsOpenFileWithFields} fields={fields} metadata={fileMetadata} file={file} schemaId={basicForm?.forms?.[formIndex]?.schemaId} applicationDocumentId={applicationDocumentId} getPreApplication={getPreApplication} />
+                <FileWithFields getIsOpen={getIsOpenFileWithFields} fields={fields} metadata={fileMetadata} file={file} schemaId={basicForm?.forms?.[formIndex]?.schemaId} applicationDocumentId={applicationDocumentId} getPreApplication={getPreApplication} fileData={fileData} />
             )}
             <Dialog
                 isOpen={isShowUploadValidation}

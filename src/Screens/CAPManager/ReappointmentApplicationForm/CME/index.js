@@ -80,6 +80,21 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
     const [checkingCondition, setCheckingCondition] = useState([]);
     const [showCmeConfirmationDialog, setShowCmeConfirmationDialog] = useState(false);
 
+    // If CME Credit Summary doc exists in UploadYourDoc table -> do nothing. If it doesn't exist, check skipReason -> auto-mark CME transcript as No.
+    const normalizeKey = (shortName) => (shortName || '').trim().toLowerCase().replace(/\s+/g, '_');
+    const getCmeCreditSummarySkipFromUploadYourDoc = (form) => {
+        const uploadForm = form?.forms?.find((f) => f?.schemaCategory === 'UploadYourDoc');
+        const table = uploadForm?.data?.table ?? [];
+        const cmeDocExists = table.some((row) => row?.documentType === 'CME Credit Summary');
+        if (cmeDocExists) return null;
+        const skipReason = uploadForm?.data?.skipReason;
+        if (!skipReason || typeof skipReason !== 'object') return null;
+        const cmeKey = normalizeKey('CME Credit Summary');
+        const skipReasonText = skipReason[cmeKey];
+        if (!skipReasonText) return null;
+        return { skipReasonText };
+    };
+
     useEffect(() => {
         if (basicForm && !formSchema) {
             getFormSchema()
@@ -90,13 +105,19 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
             if (basicForm?.forms[formIndex]?.data !== null) {
                 setYesOrNoCME(basicForm?.forms[formIndex]?.data?.yesOrNoCME !== undefined ? basicForm?.forms[formIndex]?.data?.yesOrNoCME : (basicForm?.forms?.[formIndex]?.data?.cmeCertificates?.length !== 0 && basicForm?.forms?.[formIndex]?.data?.cmeCertificates?.length !== undefined) ? 'Yes' : 'No');
             }
-            if (basicForm?.forms[formIndex]?.data !== null) {
-                setYesOrNoCMETranscript(basicForm?.forms?.[formIndex]?.data?.cmeTranscripts !== undefined ? 'Yes' : basicForm?.forms[formIndex]?.data?.yesOrNoCMETranscript !== undefined ? basicForm?.forms[formIndex]?.data?.yesOrNoCMETranscript : 'No');
-            }
+        }
+        // Check UploadYourDoc skip reason as soon as basicForm is available (works on first load when CME form data is null)
+        const cmeSkip = basicForm ? getCmeCreditSummarySkipFromUploadYourDoc(basicForm) : null;
+        if (cmeSkip) {
+            setYesOrNoCMETranscript('No');
+            setUpdatedDateCMETranscript(format(new Date(), "yyyy-MM-dd'T'00:00"));
+            setNotes(cmeSkip.skipReasonText);
+        } else if (basicForm !== undefined && formIndex !== undefined && basicForm?.forms?.[formIndex]?.data !== null) {
+            setYesOrNoCMETranscript(basicForm?.forms?.[formIndex]?.data?.cmeTranscripts !== undefined ? 'Yes' : basicForm?.forms[formIndex]?.data?.yesOrNoCMETranscript !== undefined ? basicForm?.forms[formIndex]?.data?.yesOrNoCMETranscript : 'No');
+            setNotes(basicForm?.forms?.[formIndex]?.data?.notes !== undefined ? basicForm?.forms?.[formIndex]?.data?.notes : '');
         }
         setIsSigned((basicForm?.forms?.[formIndex]?.esign?.esign !== undefined && basicForm?.forms?.[formIndex]?.acknowledged) ? true : false);
         setIsChecked(basicForm?.forms?.[formIndex]?.acknowledged);
-        setNotes(basicForm?.forms?.[formIndex]?.data?.notes !== undefined ? basicForm?.forms?.[formIndex]?.data?.notes : '')
     }, [basicForm, formIndex])
 
     useEffect(() => {

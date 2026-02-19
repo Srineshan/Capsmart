@@ -53,6 +53,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
   const [isShowESignConfirmationDialog, setIsShowESignConfirmationDialog] = useState(false);
   const [replaceFileIndex, setReplaceFileIndex] = useState(-1);
   const [showFileWithFields, setShowFileWithFields] = useState(false);
+  const [fileData, setFileData] = useState();
   const [fields, setFields] = useState([]);
   const [fileMetadata, setFileMetadata] = useState();
   const [fileRecord, setFileRecord] = useState();
@@ -338,6 +339,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
     const { data: response } = await GET(
       `document-management-service/document/${rowId}`,
     );
+    setFileData(response);
     setFields(response?.fields);
     setFileMetadata(response?.metaData);
     setFileRecord(response?.file);
@@ -1124,6 +1126,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
           schemaId={basicForm?.forms?.[formIndex]?.schemaId}
           applicationDocumentId={applicationDocumentId}
           getPreApplication={getPreApplication}
+          fileData={fileData}
         />
       )}
       <Dialog

@@ -14,9 +14,9 @@ import CommonDateField from '../CommonFields/CommonDateField';
 import { TextField, Tooltip } from '@mui/material';
 import { PUT } from '../../Screens/dataSaver';
 import { useParams } from 'react-router-dom';
-import { format, isValid, parseISO } from 'date-fns';
+import { format, isPast, isValid, parseISO } from 'date-fns';
 
-const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicationDocumentId, getPreApplication, applicationIdFromEdit }) => {
+const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicationDocumentId, getPreApplication, applicationIdFromEdit, fileData = {} }) => {
     const [isContinue, setIsContinue] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
     const [isPrintClicked, setIsPrintClicked] = useState(false);
@@ -114,8 +114,11 @@ const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicati
                         : null;
 
                 const dateValue = value ? parseISO(value) : null;
+                const dateExpired = isPast(parseISO(changedData?.[field?.name])) && field?.name === "expiry_date";
                 const dateHasNoValue = (value === undefined || value === null || value === '');
                 const dateInvalid = value && !isValid(parseISO(value));
+
+                console.log(fileData, 'fileData')
                 return (
                     <CommonDateField
                         className={style.fullWidth}
@@ -152,11 +155,11 @@ const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicati
                                     ...params.inputProps,
                                     placeholder: 'DD/MM/YYYY',
                                 }}
-                                color={dateHasNoValue || dateInvalid ? "error" : ""}
+                                color={dateHasNoValue || dateExpired || dateInvalid ? "error" : ""}
                                 fullWidth
-                                error={dateInvalid || dateHasNoValue}
+                                error={dateInvalid || dateExpired || dateHasNoValue}
                                 helperText={
-                                    dateInvalid ? "Invalid date" : dateHasNoValue ? "Could not find data" : ""
+                                    dateInvalid ? "Invalid date" : dateHasNoValue ? "Could not find data" : dateExpired ? "Expired" : ""
                                 }
                             />
                         )}
