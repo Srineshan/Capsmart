@@ -40,7 +40,7 @@ const Applicant = () => {
                     navigate(localStorage?.getItem('initialRoute'));
                     localStorage?.removeItem('initialRoute')
                 } else {
-                    if (applicationForm?.[applicationForm?.length - 1]?.status !== 'CREATED') {
+                    if (applicationForm?.[applicationForm?.length - 1]?.status !== 'CREATED' && applicationForm?.[applicationForm?.length - 1]?.status !== "DECLINED") {
                         navigate('/applicationSubmitted');
                     } else {
                         if (applicationForm?.[applicationForm?.length - 1]?.lastSavedSection !== null && applicationForm?.[applicationForm?.length - 1]?.lastSavedSection !== "") {

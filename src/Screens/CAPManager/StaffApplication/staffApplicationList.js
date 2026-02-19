@@ -288,7 +288,7 @@ const StaffApplicationList = ({
     "Applicant Type",
     // "Department",
     "Docs",
-    "CE",
+    "EDU",
     // "Data & Disclosures",
     "CRs",
     "Notes",
@@ -303,7 +303,7 @@ const StaffApplicationList = ({
     "Dept / Division",
     // "Department",
     "Docs",
-    "CE",
+    "EDU",
     // "Data & Disclosures",
     "CRs",
     "Notes",
@@ -320,7 +320,7 @@ const StaffApplicationList = ({
     "Dept / Division",
     // "Department",
     "Docs",
-    "CE",
+    "EDU",
     // "Data & Disclosures",
     "CRs",
     "Notes",
@@ -337,7 +337,7 @@ const StaffApplicationList = ({
     "Dept / Division",
     "Assign To",
     "Docs",
-    "CE",
+    "EDU",
     "CRs",
     "Notes",
     // "Task list",
@@ -371,7 +371,7 @@ const StaffApplicationList = ({
     // "CEO",
     "Assign To",
     "Docs",
-    "CE",
+    "EDU",
     "CRs",
     "Notes",
     // "Dept. Head",
@@ -390,7 +390,7 @@ const StaffApplicationList = ({
     // "CEO",
     "Assign To",
     "Docs",
-    "CE",
+    "EDU",
     "CRs",
     "Notes",
     // "Dept. Head",
@@ -2510,7 +2510,7 @@ const StaffApplicationList = ({
       // } else {
       //   docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#FEC106` }} />);
       // }
-      // Process CE (Continuing Education) from lmsDetails
+      // Process EDU (Continuing Education) from lmsDetails
       const rawCourses = Array.isArray(data?.lmsDetails) ? data.lmsDetails.flatMap((item) => item?.courses || []) : (data?.lmsDetails?.courses ?? []);
       const courses = (rawCourses || []).map((c) => ({ ...c, is_course_completed: c._course_completed ?? c.is_course_completed }));
       const completedCount = courses.filter(c => c.is_course_completed).length;
@@ -2780,7 +2780,7 @@ const StaffApplicationList = ({
       } else if (data?.documents?.uploadedCount === data?.documents?.verifiedCount) {
         docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#00C07F' }} />);
       }
-      // Process CE (Continuing Education) from lmsDetails
+      // Process EDU (Continuing Education) from lmsDetails
       const rawCourses = Array.isArray(data?.lmsDetails) ? data.lmsDetails.flatMap((item) => item?.courses || []) : (data?.lmsDetails?.courses ?? []);
       const courses = (rawCourses || []).map((c) => ({ ...c, is_course_completed: c._course_completed ?? c.is_course_completed }));
       const completedCount = courses.filter(c => c.is_course_completed).length;
@@ -3105,7 +3105,7 @@ const StaffApplicationList = ({
       } else if (data?.documents?.uploadedCount === data?.documents?.verifiedCount) {
         docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#00C07F' }} />);
       }
-      // Process CE (Continuing Education) from lmsDetails
+      // Process EDU (Continuing Education) from lmsDetails
       const rawCourses = Array.isArray(data?.lmsDetails) ? data.lmsDetails.flatMap((item) => item?.courses || []) : (data?.lmsDetails?.courses ?? []);
       const courses = (rawCourses || []).map((c) => ({ ...c, is_course_completed: c._course_completed ?? c.is_course_completed }));
       const completedCount = courses.filter(c => c.is_course_completed).length;

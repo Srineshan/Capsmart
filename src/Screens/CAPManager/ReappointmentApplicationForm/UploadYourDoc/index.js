@@ -756,7 +756,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                     <div className={style.uploadContainer}>
                         <div className={style.fileImportingMsg}>We are importing your documents and extracting the required data.</div>
                         <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
-                        <div className={style.fileImportingMsg}>Please wait! Do not close your browser window.</div>
+                        <div className={style.fileImportingMsg}>Please wait! This may take a few seconds. Do not close your browser window.</div>
                         {/* <div className={style.rotating_text}>
                             {['text', 'text 2', 'text 3', 'text 4']?.map((message) => (
                                 <span key={message}>{message}</span>
