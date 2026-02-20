@@ -42,7 +42,10 @@ import Popover from "@mui/material/Popover";
 import style from "./index.module.scss";
 import WarningAmberRoundedIcon from '@mui/icons-material/WarningAmberRounded';
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CardMembershipIcon from '@mui/icons-material/CardMembership';
 import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined';
+import RedAlert from "./../../images/redAlert.png";
 import KeyboardArrowUpOutlinedIcon from '@mui/icons-material/KeyboardArrowUpOutlined';
 import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
@@ -2212,7 +2215,50 @@ const NewActiveApplication = ({
     return temp;
   }
 
-
+  const getLmsCourseTable = (courses) => {
+    if (!courses || !Array.isArray(courses)) return [];
+    const handleViewCertificateLms = (course) => {
+      if (course?.certificate_details?.view_url) window.open(course.certificate_details.view_url, '_blank');
+    };
+    const temp = [];
+    temp.push({
+      type: 'icon',
+      icon: courses?.map((course) =>
+        course?.is_course_completed ? (
+          <CheckCircleIcon sx={{ fontSize: 24, color: '#14B15A' }} />
+        ) : (
+          <img src={RedAlert} alt="Not Completed" style={{ width: '24px', height: '24px' }} />
+        )
+      ),
+      isShowHoverText: false
+    });
+    temp.push({
+      type: 'text',
+      value: courses?.map((course) => course?.course_name)
+    });
+    temp.push({
+      type: 'text',
+      value: courses?.map((course) => (course?.is_course_completed && course?.course_completion_date ? format(new Date(course.course_completion_date), 'MMM dd, yyyy') : ''))
+    });
+    temp.push({
+      type: 'field',
+      field: courses?.map((course) =>
+        course?.is_course_completed && course?.certificate_details?.view_url ? (
+          <div key={course?.course_id ?? course?.course_name} className={style.verticalAlignCenter} style={{ width: '100%', minHeight: '100%' }}>
+            <Tooltip title="View certificate" arrow>
+              <CardMembershipIcon
+                sx={{ fontSize: 22, color: 'var(--primary-color)', cursor: 'pointer' }}
+                onClick={() => handleViewCertificateLms(course)}
+              />
+            </Tooltip>
+          </div>
+        ) : (
+          <div key={course?.course_id ?? course?.course_name} className={style.verticalAlignCenter} style={{ width: '100%', minHeight: '100%' }}><span /></div>
+        )
+      )
+    });
+    return temp;
+  }
 
   const getFileFields = (value) => {
     console.log(value);
@@ -3143,6 +3189,25 @@ const NewActiveApplication = ({
               )}
           </>
         );
+      case "LMS":
+        return (() => {
+          const rawCourses = Array.isArray(form?.lmsDetails) ? (form?.lmsDetails || []).flatMap((item) => item?.courses || []) : (form?.lmsDetails?.courses ?? []);
+          const courses = (rawCourses || []).map((c) => ({ ...c, is_course_completed: c._course_completed ?? c.is_course_completed }));
+          return (
+            <>
+              <TableTwo
+                tableHeaderValues={['', 'Course Name', 'Completed On', '']}
+                tableDataValues={getLmsCourseTable(courses)}
+                tableData={courses}
+                gridStyle={style.lmsCourseGridStyle}
+                actions={[]}
+                tableSortValues={[]}
+                heading="There are no courses available"
+                onClickFunction={() => {}}
+              />
+            </>
+          );
+        })();
       case "MEDICAL_DIRECTIVES":
         console.log("MEDICAL_DIRECTIVES Table Data:", form?.forms?.[formIndex]?.data?.table);
         return (
@@ -4365,6 +4430,28 @@ const NewActiveApplication = ({
               )}
           </>
         );
+      case "LMS":
+        return (() => {
+          const rawCourses = Array.isArray(form?.lmsDetails) ? (form?.lmsDetails || []).flatMap((item) => item?.courses || []) : (form?.lmsDetails?.courses ?? []);
+          const courses = (rawCourses || []).map((c) => ({ ...c, is_course_completed: c._course_completed ?? c.is_course_completed }));
+          return (
+            <>
+              <div className={style.marginTop20}>
+                <TableTwo
+                  tableHeaderValues={['', 'Course Name', 'Completed On', '']}
+                  tableDataValues={getLmsCourseTable(courses)}
+                  tableData={courses}
+                  gridStyle={style.lmsCourseGridStyle}
+                  actions={[]}
+                  tableSortValues={[]}
+                  heading="There are no courses available"
+                  onClickFunction={() => {}}
+                  hidePagination={true}
+                />
+              </div>
+            </>
+          );
+        })();
       case "MEDICAL_DIRECTIVES":
         return (
           <>

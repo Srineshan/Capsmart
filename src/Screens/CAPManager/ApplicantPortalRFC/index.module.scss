@@ -626,6 +626,12 @@
     gap: 1%;
 }
 
+.lmsCourseGridStyle {
+    display: grid;
+    grid-template-columns: 8% 52% 25% 15%;
+    gap: 1%;
+}
+
 .lableReadOnlyStyleInPOD {
     text-align: left;
     font: normal normal normal 18px/24px var(--font-style);

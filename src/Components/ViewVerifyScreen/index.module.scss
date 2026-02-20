@@ -4925,6 +4925,12 @@ input[type="number"] {
   gap: 1%;
 }
 
+.lmsCourseGridStyle {
+  display: grid;
+  grid-template-columns: 8% 52% 25% 15%;
+  gap: 1%;
+}
+
 .blueSignImgStyle {
   height: 30px;
   width: auto;
