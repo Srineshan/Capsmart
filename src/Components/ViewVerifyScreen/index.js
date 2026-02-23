@@ -3203,7 +3203,7 @@ const NewActiveApplication = ({
                 actions={[]}
                 tableSortValues={[]}
                 heading="There are no courses available"
-                onClickFunction={() => {}}
+                onClickFunction={() => { }}
               />
             </>
           );
@@ -4445,7 +4445,7 @@ const NewActiveApplication = ({
                   actions={[]}
                   tableSortValues={[]}
                   heading="There are no courses available"
-                  onClickFunction={() => {}}
+                  onClickFunction={() => { }}
                   hidePagination={true}
                 />
               </div>

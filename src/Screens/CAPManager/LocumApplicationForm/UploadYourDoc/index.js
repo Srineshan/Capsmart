@@ -16,6 +16,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import PDFDocs from './../../../../images/PDFDocs.png';
 import WordDoc from './../../../../images/wordDoc.png';
 import imgDocs from './../../../../images/imgDocs.png';
+import pngDocs from './../../../../images/pngDocs.png';
+import skipDocs from './../../../../images/skipDoc.png';
 import JourneyStep2 from './../../../../images/journeyStep2.png';
 import { Dialog, Classes } from '@blueprintjs/core';
 import CrossPink from "./../../../../images/crossPink.png";
@@ -100,6 +102,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
     const [deleteData, setDeleteData] = useState();
     const [refetchRefDoc, setRefetchRefDoc] = useState(false);
     const [skipReason, setSkipReason] = useState();
+    const [pendingEditQueue, setPendingEditQueue] = useState([]);
 
     useEffect(() => {
         if (basicForm == null || formIndex === undefined) return;
@@ -210,6 +213,15 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
 
     const getIsOpenFileWithFields = (value) => {
         setShowFileWithFields(value);
+        if (!value && pendingEditQueue.length > 0) {
+            const [nextRowId, ...remaining] = pendingEditQueue;
+            setPendingEditQueue(remaining);
+            setTimeout(() => {
+                setIsLoadingDocs(true);
+                setShowFileWithFields(true);
+                getDocument(nextRowId);
+            }, 300);
+        }
     }
 
     const updateFunc = () => {
@@ -375,6 +387,20 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
             }
             handleSubmitApplicationReq(table)
             setIsLoading(false);
+
+            const invalidDocs = response?.data?.filter((doc) =>
+                doc?.id && doc?.documentType?.shortName !== 'Profile Picture' && (!doc?.valid || !doc?.verified)
+            );
+            if (invalidDocs?.length > 0) {
+                const [first, ...rest] = invalidDocs.map((doc) => doc?.id);
+                setPendingEditQueue(rest);
+                setTimeout(() => {
+                    setIsLoadingDocs(true);
+                    setShowFileWithFields(true);
+                    getDocument(first);
+                }, 500);
+            }
+
             return response?.data;
         } catch (error) {
             ErrorToaster('File Upload Failed');
@@ -465,83 +491,51 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
 
     const getApplicantValues = (array) => {
         let temp = [];
-        console.log(array, 'array')
         Object.keys(formSchema?.properties?.table?.tableHeaders || {})?.map((data, index) => {
             if (data === "file") {
                 temp.push({
-                    "type": "icon", "icon": array?.map(innerData => {
-                        const rowId = innerData?.rowId; return innerData?.fileType === 'application/pdf' ?
-                            (<Tooltip title="Click to Open" arrow>
-                                <img src={PDFDocs} alt="" className={style.docTypeImgStyle} onClick={() => { setIsLoadingDocs(true); setShowFileWithFields(true); getDocument(rowId) }} /> </Tooltip>
-                            ) : innerData?.fileType?.startsWith("image/") ?
-                                (<Tooltip title="Click to Open" arrow>
-                                    <img src={imgDocs} alt="" className={style.docTypeImgStyle} onClick={() => { setIsLoadingDocs(true); setShowFileWithFields(true); getDocument(rowId) }} /> </Tooltip>) : (<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `${data?.subStatus}` }} onClick={() => { window.open(innerData?.fileURL, '_blank'); }} />)
-                    }), 'isShowHoverText': false
+                    type: "icon", icon: array?.map(innerData => {
+                        if (innerData?.isSkipReason) return <img src={skipDocs} alt="" className={style.docTypeImgStyle} />;
+                        const rowId = innerData?.rowId;
+                        return innerData?.fileType === 'application/pdf' ?
+                            (<Tooltip key={rowId} title="Click to Open" arrow><img src={PDFDocs} alt="" className={style.docTypeImgStyle} onClick={() => { setIsLoadingDocs(true); setShowFileWithFields(true); getDocument(rowId) }} /> </Tooltip>)
+                            : innerData?.fileType === 'image/png' || innerData?.fileType?.includes('png') ?
+                                (<Tooltip key={rowId} title="Click to Open" arrow><img src={pngDocs} alt="" className={style.docTypeImgStyle} onClick={() => { setIsLoadingDocs(true); setShowFileWithFields(true); getDocument(rowId) }} /> </Tooltip>)
+                                : innerData?.fileType?.startsWith("image/") ?
+                                    (<Tooltip key={rowId} title="Click to Open" arrow><img src={imgDocs} alt="" className={style.docTypeImgStyle} onClick={() => { setIsLoadingDocs(true); setShowFileWithFields(true); getDocument(rowId) }} /> </Tooltip>)
+                                    : (<TextSnippetOutlinedIcon key={rowId} style={{ fontSize: 20 }} onClick={() => { window.open(innerData?.fileURL, '_blank'); }} />);
+                    }), isShowHoverText: false
                 });
             } else {
                 if (data === "documentType") {
                     temp.push({
-                        "type": "field", "field": array?.map((innerData, innerIndex) => <CommonSelectField
-                            value={innerData[data]}
-                            onChange={(e) => handleChange(e.target.value, innerIndex)}
-                            className={style.fullWidth}
-                            // firstOptionLabel={fieldData.label}
-                            // firstOptionValue={fieldData.label}
-                            valueList={getDropDownValues(innerData[data]) || []}
-                            labelList={getDropDownValues(innerData[data]) || []}
-                            disabledList={getDropDownValues(innerData[data])?.map(data => false)}
-                        />)
+                        type: "field", field: array?.map((innerData, innerIndex) => {
+                            if (innerData?.isSkipReason) return <span key={innerIndex} className={`${style.fullWidth} ${style.verticalAlignCenter}`}>{innerData?.documentType}</span>;
+                            return <CommonSelectField key={innerIndex} value={innerData[data]} onChange={(e) => handleChange(e.target.value, innerIndex)} className={style.fullWidth} valueList={getDropDownValues(innerData[data]) || []} labelList={getDropDownValues(innerData[data]) || []} disabledList={getDropDownValues(innerData[data])?.map(() => false)} />;
+                        })
                     });
                 } else if (data === "valid") {
-                    temp.push({ "type": "icon", "icon": array?.map(innerData => innerData?.documentType === 'Profile Picture' ? <RemoveIcon style={{ fontSize: 20, marginLeft: 13 }} /> : innerData[data] ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A`, marginLeft: 13 }} /> : <WarningAmberRoundedIcon style={{ fontSize: 20, color: `#FF6562`, marginLeft: 13 }} />), 'isShowHoverText': false });
+                    temp.push({ type: "icon", icon: array?.map(innerData => innerData?.isSkipReason ? <RemoveIcon style={{ fontSize: 20, marginLeft: 13 }} /> : innerData?.documentType === 'Profile Picture' ? <RemoveIcon style={{ fontSize: 20, marginLeft: 13 }} /> : innerData[data] ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A`, marginLeft: 13 }} /> : <WarningAmberRoundedIcon style={{ fontSize: 20, color: `#FF6562`, marginLeft: 13 }} />), isShowHoverText: false });
                 } else if (data === "verified") {
-                    temp.push({ "type": "icon", "icon": array?.map(innerData => innerData?.documentType === 'Profile Picture' ? <RemoveIcon style={{ fontSize: 20, marginLeft: 20 }} /> : innerData[data] ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A`, marginLeft: 20 }} /> : <WarningAmberRoundedIcon style={{ fontSize: 20, color: `#FF6562`, marginLeft: 20 }} />), 'isShowHoverText': false });
+                    temp.push({ type: "icon", icon: array?.map(innerData => innerData?.isSkipReason ? <RemoveIcon style={{ fontSize: 20, marginLeft: 20 }} /> : innerData?.documentType === 'Profile Picture' ? <RemoveIcon style={{ fontSize: 20, marginLeft: 20 }} /> : innerData[data] ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A`, marginLeft: 20 }} /> : <WarningAmberRoundedIcon style={{ fontSize: 20, color: `#FF6562`, marginLeft: 20 }} />), isShowHoverText: false });
                 } else {
                     temp.push({
-                        "type": "text",
-                        "value": array?.map(innerData => {
+                        type: "text",
+                        value: array?.map(innerData => {
+                            if (innerData?.isSkipReason) return innerData[data] ? <span>{innerData[data]}</span> : null;
                             const rowId = innerData?.rowId;
-                            return innerData[data] && (
-                                <Tooltip title="Click to Open" arrow>
-                                    <span
-                                        onClick={() => {
-                                            setIsLoadingDocs(true); setShowFileWithFields(true); getDocument(rowId)
-                                        }}
-                                    >
-                                        {innerData[data]}
-                                    </span>
-                                </Tooltip>
-                            );
+                            return innerData[data] && (<Tooltip key={rowId} title="Click to Open" arrow><span onClick={() => { setIsLoadingDocs(true); setShowFileWithFields(true); getDocument(rowId) }}>{innerData[data]}</span></Tooltip>);
                         })
                     });
                 }
             }
             if (index === Object.keys(formSchema?.properties?.table?.tableHeaders || {})?.length - 1) {
-                // temp.push({ "type": "action", "value": array?.map(innerData => actions) })
-                temp.push({
-                    "type": "icon", "icon": array?.map(innerData =>
-                        <Tooltip title="Click to Delete" arrow>
-                            <img src={DeleteIcon} alt="" className={`${style.docTypeImgStyle} ${style.cursorPointer}`} onClick={() => { setDeleteData(innerData); setShowDeleteConfirmation(true) }} />
-                        </Tooltip>
-                    ), 'isShowHoverText': false
-                });
+                temp.push({ type: "icon", icon: array?.map(innerData => innerData?.isSkipReason ? '' : (<Tooltip key={innerData?.rowId} title="Click to Delete" arrow><img src={DeleteIcon} alt="" className={`${style.docTypeEditImgStyle} ${style.cursorPointer}`} onClick={() => { setDeleteData(innerData); setShowDeleteConfirmation(true) }} /></Tooltip>)), isShowHoverText: false });
             }
             if (index === Object.keys(formSchema?.properties?.table?.tableHeaders || {})?.length - 1) {
-                // temp.push({ "type": "action", "value": array?.map(innerData => actions) })
-                temp.push({
-                    type: "icon", icon: array?.map(innerData => {
-                        const rowId = innerData?.rowId;
-                        return (
-                            <Tooltip title="Click to Edit" arrow>
-                                <ModeEditOutlinedIcon alt="" className={`${style.docTypeEditImgStyle} ${style.cursorPointer}`} onClick={() => { setIsLoadingDocs(true); setShowFileWithFields(true); getDocument(rowId); }} />
-                            </Tooltip>
-                        );
-                    }),
-                    isShowHoverText: false
-                });
+                temp.push({ type: "icon", icon: array?.map(innerData => innerData?.isSkipReason ? '' : (<Tooltip key={innerData?.rowId} title="Click to Edit" arrow><ModeEditOutlinedIcon alt="" className={`${style.docTypeEditImgStyle} ${style.cursorPointer}`} onClick={() => { setIsLoadingDocs(true); setShowFileWithFields(true); getDocument(innerData?.rowId); }} /></Tooltip>)), isShowHoverText: false });
             }
-        })
-        console.log(temp, array, basicForm?.documentsRequired?.map(data => data?.document?.shortName), 'doc value check')
+        });
         return temp;
     }
 
@@ -879,27 +873,30 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                             />
                         </div>
                         <div ref={tableRef} className={style.tableContainer}>
-                            {tempValue?.table?.length !== 0 && tempValue?.table !== undefined && (
-                                <TableTwo
-                                    tableHeaderValues={[
-                                        "",
-                                        "File Uploaded",
-                                        "Document Type",
-                                        "",
-                                        "Verified",
-                                        "Valid",
-                                        "",
-                                    ]}
-                                    tableDataValues={getApplicantValues(tempValue?.table)}
-                                    tableData={tempValue?.table || []}
-                                    gridStyle={style.gridStyle}
-                                    actions={actions}
-                                    // scrollStyle={style.contractScrollStyle}
-                                    tableSortValues={[]}
-                                    heading={"You have not yet uploaded any documents."}
-                                    onClickFunction={() => { }}
-                                />
-                            )}
+                            {(() => {
+                                const uploadedDocTypes = (tempValue?.table || []).map((row) => row?.documentType);
+                                const skipReasonRows = Object.entries(skipReason || {}).filter(([, v]) => v).reduce((acc, [normKey, reason]) => {
+                                    const doc = basicForm?.documentsRequired?.find((d) => normalizeKey(d?.document?.shortName) === normKey);
+                                    const shortName = doc?.document?.shortName;
+                                    if (shortName && !uploadedDocTypes?.includes(shortName)) {
+                                        acc.push({ documentType: shortName, fileUploaded: reason, isSkipReason: true, rowId: `skip-${normKey}` });
+                                    }
+                                    return acc;
+                                }, []);
+                                const combinedTableData = [...(tempValue?.table || []), ...skipReasonRows];
+                                return combinedTableData.length > 0 && (
+                                    <TableTwo
+                                        tableHeaderValues={["", "File Uploaded", "Document Type", "", "Verified", "Valid", "", ""]}
+                                        tableDataValues={getApplicantValues(combinedTableData)}
+                                        tableData={combinedTableData}
+                                        gridStyle={style.gridStyle}
+                                        actions={actions}
+                                        tableSortValues={[]}
+                                        heading={"You have not yet uploaded any documents."}
+                                        onClickFunction={() => { }}
+                                    />
+                                );
+                            })()}
                         </div>
                         <input
                             type="file"

@@ -12,7 +12,11 @@ import ModeEditOutlinedIcon from '@mui/icons-material/ModeEditOutlined';
 import DoneIcon from '@mui/icons-material/Done';
 import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined';
 import PdfDoc from './../../../../images/pdfDoc.png';
+import PDFDocs from './../../../../images/PDFDocs.png';
 import ImgDoc from './../../../../images/imgDoc.png';
+import imgDocs from './../../../../images/imgDocs.png';
+import pngDocs from './../../../../images/pngDocs.png';
+import skipDocs from './../../../../images/skipDoc.png';
 import DeleteIcon from './../../../../images/deleteHcRow.png';
 import CrossPink from './../../../../images/crossPink.png';
 import Close from './../../../../images/close.png';
@@ -69,6 +73,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [deleteData, setDeleteData] = useState();
   const [refetchRefDoc, setRefetchRefDoc] = useState(false);
+  const [pendingEditQueue, setPendingEditQueue] = useState([]);
 
   const canadaData = sessionStorage.getItem('canadaData') !== 'undefined'
     ? JSON.parse(sessionStorage.getItem('canadaData') || '{}')
@@ -324,6 +329,20 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
         });
         await handleSubmitApplicationReq(table);
         setIsLoading(false);
+
+        const invalidDocs = responseData?.filter(
+          (doc) => doc?.id && doc?.documentType?.shortName !== 'Profile Picture' && (!doc?.valid || !doc?.verified)
+        );
+        if (invalidDocs?.length > 0) {
+          const [first, ...rest] = invalidDocs.map((doc) => doc?.id);
+          setPendingEditQueue(rest);
+          setTimeout(() => {
+            setIsLoadingDocs(true);
+            setShowFileWithFields(true);
+            getDocument(first);
+          }, 500);
+        }
+
         return responseData;
       } catch (error) {
         ErrorToaster2('File Upload Failed');
@@ -533,7 +552,18 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
 
   const getIsOpen = (value) => setIsShowESignDialog(value);
   const getIsShowFileDialog = (value) => setShowFileDisplayDialog(value);
-  const getIsOpenFileWithFields = (value) => setShowFileWithFields(value);
+  const getIsOpenFileWithFields = (value) => {
+    setShowFileWithFields(value);
+    if (!value && pendingEditQueue.length > 0) {
+      const [nextRowId, ...remaining] = pendingEditQueue;
+      setPendingEditQueue(remaining);
+      setTimeout(() => {
+        setIsLoadingDocs(true);
+        setShowFileWithFields(true);
+        getDocument(nextRowId);
+      }, 300);
+    }
+  };
   const getIsOpenESignConfirmation = (value) => setIsShowESignConfirmationDialog(value);
 
   const getShowDeleteConfirmation = (value) => setShowDeleteConfirmation(value);
@@ -563,29 +593,30 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
     const temp = [];
 
     Object.keys(headers).forEach((key, index) => {
-      // Skip columns that we no longer display (size).
-      if (key?.toLowerCase() === 'size' || key?.toLowerCase() === 'filesize') {
-        return;
-      }
+      if (key?.toLowerCase() === 'size' || key?.toLowerCase() === 'filesize') return;
 
       if (key === 'file') {
         temp.push({
           type: 'icon',
           icon: array?.map((innerData) => {
+            if (innerData?.isSkipReason) {
+              return <img src={skipDocs} alt="" className={style.docTypeImgStyle} />;
+            }
             const rowId = innerData?.rowId;
-            return (
-              <Tooltip title="Click to View File" arrow>
-                <img
-                  src={innerData?.fileType?.startsWith('image/') ? ImgDoc : PdfDoc}
-                  alt=""
-                  className={style.docTypeImgStyle}
-                  onClick={() => {
-                    setIsLoadingDocs(true);
-                    setShowFileWithFields(true);
-                    getDocument(rowId);
-                  }}
-                />
+            return innerData?.fileType === 'application/pdf' ? (
+              <Tooltip key={rowId} title="Click to View File" arrow>
+                <img src={PDFDocs} alt="" className={style.docTypeImgStyle} onClick={() => { setIsLoadingDocs(true); setShowFileWithFields(true); getDocument(rowId); }} />
               </Tooltip>
+            ) : innerData?.fileType === 'image/png' || innerData?.fileType?.includes('png') ? (
+              <Tooltip key={rowId} title="Click to View File" arrow>
+                <img src={pngDocs} alt="" className={style.docTypeImgStyle} onClick={() => { setIsLoadingDocs(true); setShowFileWithFields(true); getDocument(rowId); }} />
+              </Tooltip>
+            ) : innerData?.fileType?.startsWith('image/') ? (
+              <Tooltip key={rowId} title="Click to View File" arrow>
+                <img src={imgDocs} alt="" className={style.docTypeImgStyle} onClick={() => { setIsLoadingDocs(true); setShowFileWithFields(true); getDocument(rowId); }} />
+              </Tooltip>
+            ) : (
+              <TextSnippetOutlinedIcon key={rowId} style={{ fontSize: 20 }} onClick={() => window.open(innerData?.fileURL, '_blank')} />
             );
           }),
           isShowHoverText: false,
@@ -593,28 +624,28 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
       } else if (key === 'documentType') {
         temp.push({
           type: 'field',
-          field: array?.map((innerData, innerIndex) => (
-            <CommonSelectField
-              value={innerData[key]}
-              onChange={(e) => handleChange(e.target.value, innerIndex)}
-              className={style.fullWidth}
-              valueList={getDropDownValues(innerData[key]) || []}
-              labelList={getDropDownValues(innerData[key]) || []}
-              disabledList={(getDropDownValues(innerData[key]) || []).map(() => false)}
-            />
-          )),
+          field: array?.map((innerData, innerIndex) => {
+            if (innerData?.isSkipReason) {
+              return <span key={innerIndex} className={`${style.fullWidth} ${style.verticalAlignCenter}`}>{innerData?.documentType}</span>;
+            }
+            return (
+              <CommonSelectField
+                key={innerIndex}
+                value={innerData[key]}
+                onChange={(e) => handleChange(e.target.value, innerIndex)}
+                className={style.fullWidth}
+                valueList={getDropDownValues(innerData[key]) || []}
+                labelList={getDropDownValues(innerData[key]) || []}
+                disabledList={(getDropDownValues(innerData[key]) || []).map(() => false)}
+              />
+            );
+          }),
         });
       } else if (key === 'valid') {
         temp.push({
           type: 'icon',
           icon: array?.map((innerData) =>
-            innerData?.documentType === 'Profile Picture' ? (
-              <RemoveIcon style={{ fontSize: 20 }} />
-            ) : innerData[key] ? (
-              <CheckCircleRoundedIcon style={{ fontSize: 20, color: '#25BF6A' }} />
-            ) : (
-              <WarningAmberRoundedIcon style={{ fontSize: 20, color: '#FF6562' }} />
-            ),
+            innerData?.isSkipReason ? <RemoveIcon style={{ fontSize: 20, marginLeft: 13 }} /> : innerData?.documentType === 'Profile Picture' ? <RemoveIcon style={{ fontSize: 20, marginLeft: 13 }} /> : innerData[key] ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: '#25BF6A', marginLeft: 13 }} /> : <WarningAmberRoundedIcon style={{ fontSize: 20, color: '#FF6562', marginLeft: 13 }} />
           ),
           isShowHoverText: false,
         });
@@ -622,13 +653,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
         temp.push({
           type: 'icon',
           icon: array?.map((innerData) =>
-            innerData?.documentType === 'Profile Picture' ? (
-              <RemoveIcon style={{ fontSize: 20 }} />
-            ) : innerData[key] ? (
-              <CheckCircleRoundedIcon style={{ fontSize: 20, color: '#25BF6A' }} />
-            ) : (
-              <WarningAmberRoundedIcon style={{ fontSize: 20, color: '#FF6562' }} />
-            ),
+            innerData?.isSkipReason ? <RemoveIcon style={{ fontSize: 20, marginLeft: 20 }} /> : innerData?.documentType === 'Profile Picture' ? <RemoveIcon style={{ fontSize: 20, marginLeft: 20 }} /> : innerData[key] ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: '#25BF6A', marginLeft: 20 }} /> : <WarningAmberRoundedIcon style={{ fontSize: 20, color: '#FF6562', marginLeft: 20 }} />
           ),
           isShowHoverText: false,
         });
@@ -636,19 +661,12 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
         temp.push({
           type: 'text',
           value: array?.map((innerData) => {
+            if (innerData?.isSkipReason) return innerData[key] ? <span>{innerData[key]}</span> : null;
             const rowId = innerData?.rowId;
             if (!innerData[key]) return '';
             return (
-              <Tooltip title="Click to View File" arrow>
-                <span
-                  onClick={() => {
-                    setIsLoadingDocs(true);
-                    setShowFileWithFields(true);
-                    getDocument(rowId);
-                  }}
-                >
-                  {innerData[key]}
-                </span>
+              <Tooltip key={rowId} title="Click to View File" arrow>
+                <span onClick={() => { setIsLoadingDocs(true); setShowFileWithFields(true); getDocument(rowId); }}>{innerData[key]}</span>
               </Tooltip>
             );
           }),
@@ -658,35 +676,24 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
       if (index === Object.keys(headers).length - 1) {
         temp.push({
           type: 'icon',
-          icon: array?.map((innerData) => (
-            <Tooltip title="Click to Delete" arrow>
-              <img
-                src={DeleteIcon}
-                alt=""
-                className={`${style.docTypeImgStyle} ${style.justifyCenter}`}
-                onClick={() => {
-                  setDeleteData(innerData);
-                  setShowDeleteConfirmation(true);
-                }}
-              />
-            </Tooltip>
-          )),
+          icon: array?.map((innerData) =>
+            innerData?.isSkipReason ? '' : (
+              <Tooltip key={innerData?.rowId} title="Click to Delete" arrow>
+                <img src={DeleteIcon} alt="" className={`${style.docTypeEditImgStyle} ${style.justifyCenter}`} onClick={() => { setDeleteData(innerData); setShowDeleteConfirmation(true); }} />
+              </Tooltip>
+            )
+          ),
           isShowHoverText: false,
         });
         temp.push({
           type: 'icon',
-          icon: array?.map((innerData) => (
-            <Tooltip title="Click to Edit" arrow>
-              <ModeEditOutlinedIcon
-                className={style.docTypeEditImgStyle}
-                onClick={() => {
-                  setIsLoadingDocs(true);
-                  setShowFileWithFields(true);
-                  getDocument(innerData?.rowId);
-                }}
-              />
-            </Tooltip>
-          )),
+          icon: array?.map((innerData) =>
+            innerData?.isSkipReason ? '' : (
+              <Tooltip key={innerData?.rowId} title="Click to Edit" arrow>
+                <ModeEditOutlinedIcon className={style.docTypeEditImgStyle} onClick={() => { setIsLoadingDocs(true); setShowFileWithFields(true); getDocument(innerData?.rowId); }} />
+              </Tooltip>
+            )
+          ),
           isShowHoverText: false,
         });
       }
@@ -695,39 +702,46 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
     return temp;
   };
 
-  const normalizeKey = (shortName) => shortName.trim().toLowerCase().replace(/\s+/g, "_");
+  const normalizeKey = (shortName) => (shortName || '').trim().toLowerCase().replace(/\s+/g, '_');
 
   const handleSkipReason = async (shortName, reason) => {
     const key = normalizeKey(shortName);
     let temp;
     setSkipReason((prev) => {
-      const updated = {
-        ...prev,
-        [key]: reason,
-      };
+      const updated = { ...prev, [key]: reason };
       temp = updated;
       return updated;
     });
-    tempValue.skipReason = temp;
+    const updatedTempValue = { ...tempValue, skipReason: temp };
     const payload = {
       schemaId: basicForm?.forms?.[formIndex]?.schemaId,
-      data: tempValue,
+      data: updatedTempValue,
     };
-    await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, payload,)
+    await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, payload)
       .then((response) => {
         setBasicForm(response?.data);
+        getPreApplication();
         SuccessToaster('Application Updated Successfully');
       })
       .catch((error) => {
         console.error(error);
         ErrorToaster('Unexpected Error Updating Application');
       });
-  }
+  };
 
   const missingDocs = getMissingDocs();
   const tableValues = tempValue?.table || [];
+  const uploadedDocTypes = (tempValue?.table || []).map((row) => row?.documentType);
+  const skipReasonRows = Object.entries(skipReason || {}).filter(([, v]) => v).reduce((acc, [normKey, reason]) => {
+    const doc = basicForm?.documentsRequired?.find((d) => normalizeKey(d?.document?.shortName) === normKey);
+    const shortName = doc?.document?.shortName;
+    if (shortName && !uploadedDocTypes?.includes(shortName)) {
+      acc.push({ documentType: shortName, fileUploaded: reason, isSkipReason: true, rowId: `skip-${normKey}` });
+    }
+    return acc;
+  }, []);
+  const combinedTableData = [...tableValues, ...skipReasonRows];
 
-  // Documents that are not yet uploaded + verified + valid (to show in the required/recommended list)
   const documentsToShow = useMemo(() => {
     const required = basicForm?.documentsRequired || [];
     return required.filter((data) => {
@@ -911,11 +925,11 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
               </div>
             )}
             <div ref={tableRef} className={style.tableContainer}>
-              {tableValues?.length > 0 && (
+              {combinedTableData?.length > 0 && (
                 <TableTwo
                   tableHeaderValues={['', 'File Uploaded', 'Document Type', '', 'Verified', 'Valid', '', '']}
-                  tableDataValues={getApplicantValues(tableValues)}
-                  tableData={tableValues}
+                  tableDataValues={getApplicantValues(combinedTableData)}
+                  tableData={combinedTableData}
                   gridStyle={style.gridStyle}
                   heading="You have not yet uploaded any documents."
                   onClickFunction={() => { }}
