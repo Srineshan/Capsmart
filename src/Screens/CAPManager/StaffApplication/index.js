@@ -26,7 +26,8 @@ import OverrideRequestDialog from "../../../Components/OverrideRequestDialog";
 import OverrideApprovalDialog from "../../../Components/OverrideApprovalDialog";
 import OverrideDeclineDialog from "../../../Components/OverrideDeclineDialog";
 import IdleTimer from '../../../Components/IdleTimer';
-import DepartmentTrackerDialog from '../../../Components/DepartmentTrackerDialog'
+import DepartmentTrackerDialog from '../../../Components/DepartmentTrackerDialog';
+import EduSmartCoursesTrackerDialog from '../../../Components/EduSmartCoursesTrackerDialog';
 import PDFGenerateBox from '../../../Components/PdfGenerate'
 import { fileLoadingURL, FormatPhoneNumber, FormatPostalCode } from "../../../utils/formatting";
 import MDTrackerDialog from '../../../Components/MDTrackerDialog';
@@ -58,6 +59,7 @@ const StaffApplication = () => {
     const [showOverRideRequestApprovalDialog, setShowOverRideRequestApprovalDialog] = useState(false);
     const [showOverRideRequestDeclineDialog, setShowOverRideRequestDeclineDialog] = useState(false);
     const [showDeptTrackerDialog, setShowDeptTrackerDialog] = useState(false);
+    const [showEduSmartCoursesDialog, setShowEduSmartCoursesDialog] = useState(false);
     const [showMdTrackerDialog, setShowMdTrackerDialog] = useState(false);
     const [showTimerDialog, setShowTimerDialog] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -155,6 +157,10 @@ const StaffApplication = () => {
 
     const getDeptTrackerDialog = (value) => {
         setShowDeptTrackerDialog(value);
+    };
+
+    const getEduSmartCoursesDialog = (value) => {
+        setShowEduSmartCoursesDialog(value);
     };
 
     const getMdTrackerDialog = (value) => {
@@ -255,6 +261,7 @@ const StaffApplication = () => {
                         getOverRideRequestDeclineDialog={getOverRideRequestDeclineDialog}
                         //   getCCDateDialog={getCCDateDialog}
                         getDeptTrackerDialog={getDeptTrackerDialog}
+                        getEduSmartCoursesDialog={getEduSmartCoursesDialog}
                         getPdfGenerateBox={getPdfGenerateBox}
                         getloading={getloading}
                         getStaffView={getStaffView}
@@ -346,6 +353,9 @@ const StaffApplication = () => {
             )} */}
             {showDeptTrackerDialog && (
                 <DepartmentTrackerDialog isLoading={isLoading} getloading={getloading} getIsOpen={getDeptTrackerDialog} getActiveApplicationView={getActiveApplicationView} getNotesDialog={getNotesDialog} />
+            )}
+            {showEduSmartCoursesDialog && (
+                <EduSmartCoursesTrackerDialog isLoading={isLoading} getIsOpen={getEduSmartCoursesDialog} />
             )}
             {showMdTrackerDialog && (
                 <MDTrackerDialog isLoading={isLoading} getloading={getloading} getIsOpen={getMdTrackerDialog} />

@@ -86,6 +86,7 @@ const StaffApplicationList = ({
   getTitleCounts,
   showNotesDialog,
   getDeptTrackerDialog,
+  getEduSmartCoursesDialog,
   getMdTrackerDialog,
   getOverRideRequestDialog,
   getOverRideRequestApprovalDialog,
@@ -1302,6 +1303,10 @@ const StaffApplicationList = ({
 
   const onClickMdTrackerDialog = (data) => {
     getMdTrackerDialog(true);
+  };
+
+  const onClickEduSmartCoursesDialog = () => {
+    getEduSmartCoursesDialog(true);
   };
 
   const onClickViewAndVerifyFunction = (data) => {
@@ -8060,6 +8065,29 @@ const StaffApplicationList = ({
                     </div>
                   </div>
                 ) : null}
+
+                {/* {(applicationType === "REAPPOINTMENT" || applicationType === "LOCUM" && ((workModeType === "Staff Manager") || (workModeType === "Department Head") || (workModeType === "Credentialing Committee"))) ? (
+                  <div className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
+                    <div className={`${style.spaceBetween} ${style.marginLeftRight10}`}>
+                      <div className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}>
+                        EduSmart courses
+                      </div>
+                    </div>
+
+                    <div
+                      style={{
+                        maxHeight: "200px",
+                        overflowY: "auto",
+                        scrollbarWidth: "thin",
+                        scrollbarColor: "gray transparent",
+                      }}
+                    >
+                      <Tooltip title={'Click to View Current Status'} arrow>
+                        <div className={`${style.viewCurrentStatusText} ${style.marginTop10} ${style.cursorPointer}`} onClick={() => onClickEduSmartCoursesDialog()}>VIEW CURRENT STATUS</div>
+                      </Tooltip>
+                    </div>
+                  </div>
+                ) : null} */}
 
                 {(applicationType === "REAPPOINTMENT" && ((workModeType === "Staff Manager") || (workModeType === "Department Head") || (workModeType === "Credentialing Committee"))) ? (
                   <div className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
