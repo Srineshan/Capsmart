@@ -57,6 +57,17 @@ const LMSModules = ({ basicForm, setBasicForm, getPreApplication, applicationId 
         setFormIndex(basicForm?.forms?.findIndex((data) => data?.schemaCategory === atob(step)));
     }, [basicForm, step]);
 
+    // Refetch course/table data when user returns to this window after completing course in LMS (e.g. Go to Course opens new tab)
+    useEffect(() => {
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === 'visible' && getPreApplication) {
+                getPreApplication();
+            }
+        };
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+        return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+    }, [getPreApplication]);
+
     const getIsValidationDialogOpen = (value) => {
         setShowValidationDialog(value);
     };
