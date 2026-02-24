@@ -11,14 +11,20 @@ import { ErrorToaster, SuccessToaster } from '../../../../utils/toaster';
 import SaveInProgressDialog from '../../../../Components/SaveInProgressDialog';
 import ValidationDialog from '../../../../Components/validationDialog';
 import JourneyStep6 from './../../../../images/journeyStep6.png';
+import RedAlert from './../../../../images/redAlert.png';
 import style from './index.module.scss';
 import WelcomeCard from '../../../../Components/WelcomeCard';
 import ReappointmentProgressCard from '../../../../Components/ReappointmentProgressCard';
 import { format } from 'date-fns';
 import ReappointmentJourneyDialog from '../../../../Components/reappointmentJourneyDialog';
 import { Tooltip } from '@mui/material';
+import TableTwo from '../../../../Components/TableDesignTwo';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CardMembershipIcon from '@mui/icons-material/CardMembership';
+import Cookies from 'universal-cookie';
 
 const LMSModules = ({ basicForm, setBasicForm, getPreApplication }) => {
+    const cookie = new Cookies();
     const [formSchema, setFormSchema] = useState();
     const [formSchemaWholeObject, setFormSchemaWholeObject] = useState();
     const [metadata, setMetadata] = useState([]);
@@ -31,22 +37,20 @@ const LMSModules = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [formIndex, setFormIndex] = useState();
     const { applicationId, section, step } = useParams();
     const [navigateURL, setNavigateURL] = useState();
-    const [yesOrNo, setYesOrNo] = useState('');
-    const [updatedDate, setUpdatedDate] = useState('');
+    const [navigateBackURL, setNavigateBackURL] = useState();
     const [showJourneyDialog, setShowJourneyDialog] = useState(false);
     useEffect(() => {
         if (basicForm && !formSchema) {
             getFormSchema()
         }
         if (basicForm !== undefined && formIndex !== undefined) {
-            setYesOrNo(basicForm?.forms?.[formIndex]?.data?.yesOrNo !== undefined ? basicForm?.forms?.[formIndex]?.data?.yesOrNo : '');
-            setUpdatedDate(basicForm?.forms?.[formIndex]?.data?.updatedDate !== undefined ? basicForm?.forms?.[formIndex]?.data?.updatedDate : '');
-            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form' || 'Disclosure')?.length === (formIndex + 1)) ? `/locumApplicationForm/${applicationId}/Form/PODCheck` : `/locumApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${basicForm?.forms[formIndex + 1]?.schemaCategory}`)
+            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form' || 'Disclosure')?.length === (formIndex + 1)) ? `/locumApplicationForm/${applicationId}/Form/${btoa('PODCheck')}` : `/locumApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
+            setNavigateBackURL(`/locumApplicationForm/${applicationId}/${basicForm?.forms?.[formIndex - 1]?.formCategory}/${btoa(basicForm?.forms?.[formIndex - 1]?.schemaCategory)}`);
         }
-    }, [basicForm, formIndex])
+    }, [basicForm, formIndex, applicationId])
 
     useEffect(() => {
-        setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === step))
+        setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === atob(step)))
     }, [basicForm, step])
 
     // Refetch course/table data when user returns to this window after completing course in LMS (e.g. Go to Course opens new tab)
@@ -87,6 +91,7 @@ const LMSModules = ({ basicForm, setBasicForm, getPreApplication }) => {
     }
 
     const getIsSaveInProgressOpen = (value) => {
+        handleSubmitApplicationReq("save");
         setIsSaveInProgressOpen(value);
     }
 
@@ -108,25 +113,21 @@ const LMSModules = ({ basicForm, setBasicForm, getPreApplication }) => {
 
     const getMissingFields = () => {
         let missingKeys = [];
-        if (yesOrNo === '') {
-            missingKeys.push({ label: 'Have you completed all of the CMH assigned LMS Modules for your reappointment?' })
-        }
         if (missingKeys?.length !== 0) {
             setShowValidationDialog(true)
         } else {
-            handleSubmitApplicationReq()
+            handleSubmitApplicationReq("continue")
         }
         setWarningFields(missingKeys)
         console.log('Metadata', missingKeys)
     }
 
     const handleSubmitApplicationReq = async (data) => {
-        // if (isEdited) {
         let temp = {
             schemaId: basicForm?.forms?.[formIndex]?.schemaId,
-            data: { yesOrNo: yesOrNo, updatedDate: updatedDate },
+            data: basicForm?.forms?.[formIndex]?.data,
             unFilledFields: warningFields?.map(data => data?.label),
-            acknowledged: data === "skipped" ? false : true
+            acknowledged: true
         }
         await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
             .then(response => {
@@ -134,27 +135,23 @@ const LMSModules = ({ basicForm, setBasicForm, getPreApplication }) => {
                 setBasicForm(response?.data)
                 SuccessToaster("Application Updated Successfully");
                 getPreApplication();
-                if (sessionStorage.getItem('fromSummary') === "true") {
-                    navigate(-1);
-                }
-                else {
-                    navigate(navigateURL)
-
+                if (data !== "save") {
+                    if (sessionStorage.getItem('fromSummary') === "true") {
+                        navigate(-1);
+                    }
+                    else {
+                        navigate(navigateURL)
+                    }
                 }
             })
             .catch((error) => {
                 console.log(error)
                 ErrorToaster("Unexpected Error Updating Application");
             });
-        // } else {
-        //     if (sessionStorage.getItem('fromSummary') === "true") {
-        //         navigate(-1);
-        //     }
-        //     else {
-        //         navigate(navigateURL)
+    }
 
-        //     }
-        // }
+    const handleBackClick = () => {
+        navigate(navigateBackURL)
     }
 
     const getValueByPath = (obj, path) => {
@@ -166,72 +163,138 @@ const LMSModules = ({ basicForm, setBasicForm, getPreApplication }) => {
     const getIsEdited = (value) => {
         setIsEdited(value)
     }
+
+    // lmsDetails is a single object { total_courses, courses }; support both _course_completed and is_course_completed from API
+    const rawCourses = Array.isArray(basicForm?.lmsDetails) ? basicForm.lmsDetails.flatMap((item) => item?.courses || []) : (basicForm?.lmsDetails?.courses ?? []);
+    const courses = (rawCourses || []).map((c) => ({ ...c, is_course_completed: c._course_completed ?? c.is_course_completed }));
+
+    const handleCourseClick = (course) => {
+        const lmsUrl = `https://lms.indocaribe.com/descope-login/?ssotoken=${cookie.get("authorization")}`;
+        window.open(lmsUrl, '_blank');
+    }
+
+    const handleViewCertificate = (course) => {
+        if (course?.certificate_details?.view_url) {
+            window.open(course.certificate_details.view_url, '_blank');
+        }
+    }
+
+    const handleCourseNameClick = (course) => {
+        if (course?.is_course_completed && course?.certificate_details?.view_url) {
+            handleViewCertificate(course);
+        } else {
+            handleCourseClick(course);
+        }
+    }
+
+    const handleDownloadCertificate = (course) => {
+        if (course?.certificate_details?.download_url) {
+            window.open(course.certificate_details.download_url, '_blank');
+        }
+    }
+
+    const actions = [
+        {
+            data: 'Go to Course',
+            onClick: handleCourseClick,
+            hoverText: 'Open course in LMS',
+            conditionToShow: '!data?.is_course_completed'
+        },
+    ]
+
+    const getCourseTable = () => {
+        let temp = [];
+        temp.push({
+            "type": "icon",
+            "icon": courses?.map((course) => (
+                course?.is_course_completed ? (
+                    <CheckCircleIcon sx={{ fontSize: 24, color: '#14B15A' }} />
+                ) : (
+                    <img src={RedAlert} alt="Not Completed" style={{ width: '24px', height: '24px' }} />
+                )
+            )),
+            'isShowHoverText': false
+        });
+        temp.push({
+            "type": "text",
+            "value": courses?.map((course) => course?.course_name),
+            'onClickFunction': handleCourseNameClick
+        });
+        temp.push({
+            "type": "text",
+            "value": courses?.map((course) => course?.is_course_completed && course?.course_completion_date ? format(new Date(course.course_completion_date), 'MMM dd, yyyy') : '')
+        });
+        temp.push({
+            type: 'field',
+            field: courses?.map((course) =>
+                course?.is_course_completed && course?.certificate_details?.view_url ? (
+                    <div key={course?.course_id ?? course?.course_name} className={style.verticalAlignCenter} style={{ width: '100%', minHeight: '100%' }}>
+                        <Tooltip title="View certificate" arrow>
+                            <CardMembershipIcon
+                                sx={{ fontSize: 22, color: 'var(--primary-color)', cursor: 'pointer' }}
+                                onClick={() => handleViewCertificate(course)}
+                            />
+                        </Tooltip>
+                    </div>
+                ) : (
+                    <div key={course?.course_id ?? course?.course_name} className={style.verticalAlignCenter} style={{ width: '100%' }}>
+                        <span />
+                    </div>
+                )
+            )
+        });
+        temp.push({
+            type: "action",
+            value: actions
+        });
+        return temp;
+    }
+
     return (
         <div>
-            <div className={style.applicationScreenGrid}>
-                <ReappointmentProgressCard step={'STEP 11'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={22} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} basicForm={basicForm} />
-                <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
-            </div>
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
                 <div>
-                    <div className={`${style.applicationCardStyle}`}>
-                        <div className={style.cardTitle}>
-                            Have you completed all of the CMH assigned LMS Modules for your reappointment?
+                    <ReappointmentProgressCard step={'STEP 11'} dataType={formSchema?.description} title={formSchemaWholeObject?.title} timeNumber={22} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} basicForm={basicForm} />
+                    <div className={style.marginTop10}>
+                        <WelcomeCard title={<div dangerouslySetInnerHTML={{ __html: formSchema?.properties?.instruction?.label }} />}
+                            description={<div dangerouslySetInnerHTML={{ __html: formSchema?.properties?.instruction?.description }} />} />
+                    </div>
+                    <div className={`${style.applicationCardStyle} ${style.marginTop10}`}>
+                        <div>
+                            <TableTwo
+                                tableHeaderValues={[
+                                    "",
+                                    "Course Name",
+                                    "Completed On",
+                                    "",
+                                    "Action"
+                                ]}
+                                tableDataValues={getCourseTable()}
+                                tableData={courses}
+                                gridStyle={style.courseGridStyle}
+                                actions={actions}
+                                tableSortValues={[]}
+                                heading={"There are no courses available"}
+                                onClickFunction={handleCourseNameClick}
+                            />
                         </div>
-                        {yesOrNo === '' ? (
-                            <div
-                                className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop}`}
-                            >
-                                <Tooltip title={"Click to mark as Yes"} arrow>
-                                    <div
-                                        className={`${style.reappointmentButtonOutlined}`}
-                                        onClick={() => { setYesOrNo('Yes'); setUpdatedDate(format(new Date(), 'yyyy-MM-dd')) }}
-                                    >
-                                        Yes
-                                    </div>
-                                </Tooltip>
-                                <Tooltip title={"Click to mark as No"} arrow>
-                                    <div
-                                        className={`${style.reappointmentButton} ${style.marginLeft}`}
-                                        onClick={() => { setYesOrNo('No'); setUpdatedDate(format(new Date(), 'yyyy-MM-dd')) }}
-                                    >
-                                        NO
-                                    </div>
-                                </Tooltip>
-                            </div>
-                        ) : (
-                            <>
-                                <div className={`${style.markedAsText} ${style.marginTop}`}><strong>Marked as <span className={yesOrNo === 'Yes' ? style.yesText : style.noText}>{yesOrNo}</span></strong> on {format(new Date(), "MMM dd, yyyy")}</div>
-                                <div
-                                    className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop}`}
-                                >
-                                    <Tooltip title={"Click to Edit Details"} arrow>
-                                        <div
-                                            className={`${style.reappointmentButtonEdit}`}
-                                            onClick={() => setYesOrNo('')}
-                                        >
-                                            Edit
-                                        </div>
-                                    </Tooltip>
-                                </div>
-                            </>
-                        )}
                     </div>
                 </div>
                 <div>
-                    <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
+                    <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
+                    <div className={style.marginTop}>
+                        <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
+                    </div>
                     <div className={`${style.stickyContainer} ${isSaveInProgressOpen || showValidationDialog || showJourneyDialog ? style.hiddenStickyContainer : ""}`}>
+                        <Tooltip title={"Click to Skip This Step and Continue Later"} arrow> <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div></Tooltip>
                         <Tooltip title={"Click to Save your Progress and Continue later"} arrow>
-                            <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
-                        </Tooltip>
+                            <div className={`${style.saveInProgress} ${style.marginTop10}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div></Tooltip>
+
                         <div className={style.twoColForButton}>
                             <Tooltip title={"Click to Go Back to the Previous Step"} arrow>
-                                <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
-                            </Tooltip>
-                            {/* <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowJourneyDialog(true)}>CONTINUE</div> */}
+                                <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleBackClick()}>BACK</div></Tooltip>
                             <Tooltip title={"Click to Proceed to the Next Step"} arrow>
-                                <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()}>CONTINUE</div>
-                            </Tooltip>
+                                <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()}>CONTINUE</div></Tooltip>
                         </div>
                     </div>
                     <div className={style.marginTop}>

@@ -4839,6 +4839,11 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                       </div>
                       {selectedAdditionalDepartment !== '' && (
                         <>
+                          {additionalStaffPrivilege?.length === 0 && (
+                            <div className={`${style.lableStyle} ${style.redText} ${style.marginTop}`}>
+                              {'The selected Department / Division or Specialty does not have an associated Privilege Set.'}
+                            </div>
+                          )}
                           {additionalStaffPrivilege?.map((data, index) => (
                             <>
                               <Tooltip title={selectedAdditionalPrivilegesForDisplayMultiple?.map(data => data?.id)?.includes(data?.id) ? "Click to Remove" : "Click to Request and Sign"} arrow>
