@@ -1,0 +1,108 @@
+@import "../../index.scss";
+
+.referenceDocumentParentCard {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 5px 20px #52575D1A;
+    border-radius: 12px;
+    padding: 20px;
+    border: 0.4000000059604645px solid #e5e6e6;
+    margin-bottom: 140px;
+
+    @media (max-width: 768px) {
+        background: var(--primary-color);
+        border: var(--primary-color);
+    }
+}
+
+.referenceDocumentCard {
+    background: $secondarycolor 0% 0% no-repeat padding-box;
+    border: 0.4000000059604645px solid var(--primary-color);
+    border-radius: 4px;
+    opacity: 0.75;
+    padding: 10px;
+}
+
+.referenceDocumentTitle {
+    text-align: left;
+    font: normal normal bold 17px/27px var(--font-style);
+    letter-spacing: 0px;
+    color: $textgrey;
+    text-transform: capitalize;
+
+    @media (max-width: 768px) {
+        color: #FFF;
+    }
+}
+
+.docTypeImgStyle {
+    height: 20px;
+    width: auto;
+    object-fit: contain;
+}
+
+.marginTop {
+    margin-top: 20px;
+}
+
+.marginTop10 {
+    margin-top: 10px;
+}
+
+.displayInRow {
+    display: flex;
+    flex-direction: row;
+}
+
+.spaceBetween {
+    display: flex;
+    justify-content: space-between;
+}
+
+.verticalAlignCenter {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.justifyCenter {
+    display: flex;
+    justify-content: center;
+}
+
+.fullWidth {
+    width: 100%;
+}
+
+.documentNameStyle {
+    text-align: left;
+    font: normal normal normal 14px/20px var(--font-style);
+    letter-spacing: 0px;
+    color: $textgrey;
+    text-transform: capitalize;
+    margin-left: 5px;
+    cursor: pointer;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+}
+
+.checkBackground {
+    background-color: #25BF6A;
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+}
+
+.documentsGrid {
+    display: grid;
+    grid-template-columns: 91% 8%;
+    gap: 1%;
+}
+
+.cursorPointer {
+    cursor: pointer;
+}
+
+.info {
+    cursor: pointer;
+    flex-shrink: 0;
+}
