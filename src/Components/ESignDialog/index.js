@@ -148,8 +148,14 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
                 const response = await POST(`application-management-service/application/${applicationId}/files`, formData);
                 SuccessToaster('File Uploaded Successfully');
                 console.log(response?.data);
-                let temp = tempValue;
-                temp[baseKey].file = response?.data?.file;
+                // Build payload from a copy so we don't mutate parent's tempValue
+                let temp = {
+                    ...tempValue,
+                    [baseKey]: {
+                        ...(tempValue?.[baseKey] || {}),
+                        file: response?.data?.file
+                    }
+                };
 
                 // Update user signature via UpdateESignature API
                 if (users?.id) {
@@ -178,7 +184,7 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
                     }
                 }
 
-                handleSubmitApplicationReq(temp)
+                await handleSubmitApplicationReq(temp)
             } catch (error) {
                 ErrorToaster('File Upload Failed');
                 console.error(error);
@@ -189,15 +195,18 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
                 ErrorToaster2("Signature shouldn't be empty");
                 return;
             }
-            let temp = tempValue;
-            if (temp?.[baseKey]?.type === undefined) {
-                if (temp?.[baseKey] === undefined) {
-                    temp[baseKey] = {}
+            // Build payload from a copy so we don't mutate parent's tempValue
+            let temp = {
+                ...tempValue,
+                [baseKey]: {
+                    ...(tempValue?.[baseKey] || {}),
+                    type: {
+                        ...(tempValue?.[baseKey]?.type || {}),
+                        text: eSignType,
+                        style: selectedESignTypeStyle
+                    }
                 }
-                temp[baseKey].type = {}
-            }
-            temp[baseKey].type.text = eSignType;
-            temp[baseKey].type.style = selectedESignTypeStyle;
+            };
 
             // Update user signature via UpdateESignature API
             if (users?.id) {
@@ -223,7 +232,7 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
                 }
             }
 
-            handleSubmitApplicationReq(temp)
+            await handleSubmitApplicationReq(temp);
         }
         let data = applicantProfile;
         data.signature.updated = true;
@@ -246,12 +255,14 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
         }
         console.log(temp, data)
         await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
-            .then(response => {
+            .then(async (response) => {
                 console.log(response)
-                setBasicForm(response?.data)
-                getPreApplication()
+                // Update state from PUT response first (may include full application)
+                setBasicForm(response?.data);
                 SuccessToaster("Application Updated Successfully");
-                getIsOpen(false)
+                // Refetch so signature and rest of app state stay in sync; await so we don't close until refetch completes (avoids stale overwrite)
+                if (getPreApplication) await getPreApplication();
+                getIsOpen(false);
             })
             .catch((error) => {
                 console.log(error)

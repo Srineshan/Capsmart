@@ -84,7 +84,9 @@ const EduSmartCoursesTrackerDialog = ({ getIsOpen, isLoading }) => {
   const [departmentList, setDepartmentList] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState('');
   const [selectedServiceArea, setSelectedServiceArea] = useState("");
+  const [selectedApplicationType, setSelectedApplicationType] = useState('REAPPOINTMENT');
   const [applicantType, setApplicantType] = useState([]);
+  const [LMSList, setLMSList] = useState();
   const [selectedApplicantType, setSelectedApplicantType] = useState('');
   const selectedDepartmentName = departmentList?.find(data => data?.id === selectedDepartment)?.departmentName?.name;
   const selectedApplicantTypeName = applicantType?.find(data => data?.id === selectedApplicantType)?.applicantType;
@@ -138,9 +140,20 @@ const EduSmartCoursesTrackerDialog = ({ getIsOpen, isLoading }) => {
     }
   };
 
+  const getLMSList = async () => {
+    try {
+      const departmentParam = selectedDepartment || selectedServiceArea ? `&departmentSpecialties=${selectedDepartment}%23${selectedServiceArea}` : "";
+      const { data: lms } = await GET(`application-management-service/application/lmsTracker?applicationCreationType=${selectedApplicationType}&positionType=${selectedApplicationType === 'LOCUM_RENEWAL' ? 'LOCUM' : 'PERMANENT'}&searchText=${searchTerm}&sortBy=${sortValue}&sortByField=${sortField}&limit=${limit}&offset=${page - 1}&isPaginationRequired=${false}${departmentParam}`);
+      setLMSList(lms || {});
+    } catch (error) {
+      console.error("Error fetching applicant types:", error);
+    }
+  };
+
   useEffect(() => {
     getDepartmentList();
     getApplicantType();
+    getLMSList();
   }, [showFilter]);
 
   useEffect(() => {
@@ -317,6 +330,18 @@ const EduSmartCoursesTrackerDialog = ({ getIsOpen, isLoading }) => {
                     </Tooltip>
                   </div>
                 )}
+                {selectedApplicationType && (
+                  <div className={`${style.filterBackground} ${style.displayInRow}`}>
+                    <div className={`${style.filtertextStyle} ${style.marginRight5}`}>Filter by {selectedApplicationType === "NEW" ? 'New' : selectedApplicationType === "REAPPOINTMENT" ? 'Reappointment' : 'Locum'}</div>
+                    <Tooltip title="Remove" arrow>
+                      <CancelOutlinedIcon
+                        sx={{ fontSize: 15, color: "#06617A" }}
+                        className={style.cursorPointer}
+                        onClick={() => { setSelectedApplicationType(''); }}
+                      />
+                    </Tooltip>
+                  </div>
+                )}
                 {selectedApplicantType && (
                   <div className={`${style.filterBackground} ${style.displayInRow} ${style.marginLeft5}`}>
                     <div className={`${style.filtertextStyle} ${style.marginRight5}`}>Filter by {selectedApplicantTypeName}</div>
@@ -386,6 +411,20 @@ const EduSmartCoursesTrackerDialog = ({ getIsOpen, isLoading }) => {
                     labelList={applicantType?.map(data => data?.applicantType)}
                     disabledList={applicantType?.map(() => false)}
                     label={'Staff Type'}
+                    required={false}
+                  />
+                </div>
+                <div>
+                  <CommonSelectField
+                    value={selectedApplicationType}
+                    onChange={(e) => setSelectedApplicationType(e.target.value)}
+                    className={style.fullWidth}
+                    firstOptionLabel={'All'}
+                    firstOptionValue={''}
+                    valueList={['NEW', 'REAPPOINTMENT', 'LOCUM_RENEWAL']}
+                    labelList={['New', 'Reappointment', 'Locum']}
+                    disabledList={['New', 'Reappointment', 'Locum']?.map(() => false)}
+                    label={'Application Type'}
                     required={false}
                   />
                 </div>
