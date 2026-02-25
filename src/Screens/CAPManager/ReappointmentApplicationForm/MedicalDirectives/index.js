@@ -29,6 +29,7 @@ import { Tooltip } from '@mui/material';
 import MenuIcon from "@mui/icons-material/Menu";
 import Close from './../../../../images/close.png';
 import FileDisplayDialog from '../../../../Components/fileDisplayDialog';
+import PaymentReceipt from '../../../../Components/PaymentReceipt';
 
 const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFormat, name }) => {
     const [formSchema, setFormSchema] = useState();
@@ -635,6 +636,11 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                         <div className={`${style.infoContainer} ${showInfo ? style.show : ""}`}>
                             <img src={Close} alt="Close" className={style.closeIcon} onClick={() => setShowInfo(false)} />
                             <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
+                            {(basicForm?.payment?.invoice?.fileURL !== undefined) && (
+                                <div className={style.marginTop}>
+                                    <PaymentReceipt basicForm={basicForm} />
+                                </div>
+                            )}
                             <div className={style.marginTop}>
                                 <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                             </div>

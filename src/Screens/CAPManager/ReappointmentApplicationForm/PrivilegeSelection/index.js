@@ -54,6 +54,7 @@ import { Tooltip } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import Close from './../../../../images/close.png';
 import { FamilyRestroomOutlined } from "@mui/icons-material";
+import PaymentReceipt from "../../../../Components/PaymentReceipt";
 
 const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFormat }) => {
   const [isSigned, setIsSigned] = useState(false);
@@ -5167,6 +5168,11 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                 user={"First Mi Last"}
                 applyingFor={"{Doctor} Applying As {Associate}"}
               />
+              {(basicForm?.payment?.invoice?.fileURL !== undefined) && (
+                <div className={style.marginTop}>
+                  <PaymentReceipt basicForm={basicForm} />
+                </div>
+              )}
               <div className={style.marginTop}>
                 <ApplicationAssistanceCard
                   user={"Neena Greenly"}

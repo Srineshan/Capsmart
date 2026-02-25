@@ -18,6 +18,7 @@ import ReappointmentJourneyDialog from '../../../../Components/reappointmentJour
 import MenuIcon from "@mui/icons-material/Menu";
 import Close from './../../../../images/close.png';
 import { Tooltip } from '@mui/material';
+import PaymentReceipt from '../../../../Components/PaymentReceipt';
 
 const MedicalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [formSchema, setFormSchema] = useState();
@@ -282,6 +283,11 @@ const MedicalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
                         <div className={`${style.infoContainer} ${showInfo ? style.show : ""}`}>
                             <img src={Close} alt="Close" className={style.closeIcon} onClick={() => setShowInfo(false)} />
                             <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
+                            {(basicForm?.payment?.invoice?.fileURL !== undefined) && (
+                                <div className={style.marginTop}>
+                                    <PaymentReceipt basicForm={basicForm} />
+                                </div>
+                            )}
                             <div className={style.marginTop}>
                                 <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                             </div>

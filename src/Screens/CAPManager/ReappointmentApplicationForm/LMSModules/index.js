@@ -22,6 +22,7 @@ import TableTwo from '../../../../Components/TableDesignTwo';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CardMembershipIcon from '@mui/icons-material/CardMembership';
 import Cookies from 'universal-cookie';
+import PaymentReceipt from '../../../../Components/PaymentReceipt';
 
 const LMSModules = ({ basicForm, setBasicForm, getPreApplication }) => {
     const cookie = new Cookies();
@@ -311,6 +312,11 @@ const LMSModules = ({ basicForm, setBasicForm, getPreApplication }) => {
                 </div>
                 <div>
                     <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
+                    {(basicForm?.payment?.invoice?.fileURL !== undefined) && (
+                        <div className={style.marginTop}>
+                            <PaymentReceipt basicForm={basicForm} />
+                        </div>
+                    )}
                     <div className={style.marginTop}>
                         <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                     </div>

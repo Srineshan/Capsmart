@@ -50,6 +50,7 @@ import ApplicationReferenceDocuments from '../../../../Components/ApplicationRef
 import { Tooltip } from '@mui/material';
 import FileWithFields from '../../../../Components/FileWithFields';
 import DeleteConfirmation from '../../../../Components/DeleteConfirmation';
+import PaymentReceipt from '../../../../Components/PaymentReceipt';
 
 const stripePromise = loadStripe("your-publishable-key");
 
@@ -1067,6 +1068,11 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                         <div className={`${style.infoContainer} ${showInfo ? style.show : ""}`}>
                             <img src={Close} alt="Close" className={style.closeIcon} onClick={() => setShowInfo(false)} />
                             <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
+                            {(basicForm?.payment?.invoice?.fileURL !== undefined) && (
+                                <div className={style.marginTop}>
+                                    <PaymentReceipt basicForm={basicForm} />
+                                </div>
+                            )}
                             <div className={style.marginTop}>
                                 <ApplicationAssistanceCard
                                     user={"Neena Greenly"}

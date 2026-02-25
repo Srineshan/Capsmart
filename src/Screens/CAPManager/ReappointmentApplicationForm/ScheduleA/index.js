@@ -22,6 +22,7 @@ import SaveInProgressDialog from '../../../../Components/SaveInProgressDialog';
 import { dataLoadingGIF } from '../../../../utils/formatting';
 import { Tooltip } from '@mui/material';
 import Cookies from 'universal-cookie';
+import PaymentReceipt from '../../../../Components/PaymentReceipt';
 
 const ScheduleA = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApplication }) => {
     const [isChecked, setIsChecked] = useState(false);
@@ -305,6 +306,11 @@ const ScheduleA = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
                 </div>
                 <div>
                     <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
+                    {(basicForm?.payment?.invoice?.fileURL !== undefined) && (
+                        <div className={style.marginTop}>
+                            <PaymentReceipt basicForm={basicForm} />
+                        </div>
+                    )}
                     <div className={style.marginTop}>
                         <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                     </div>

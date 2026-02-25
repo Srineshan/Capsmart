@@ -34,6 +34,7 @@ import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import CmeFileConfirmation from '../../../../Components/CmeFileConfirmationDiaog';
+import PaymentReceipt from '../../../../Components/PaymentReceipt';
 
 const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFormat, name }) => {
     const [formSchema, setFormSchema] = useState();
@@ -1070,6 +1071,11 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                         <div className={`${style.infoContainer} ${showInfo ? style.show : ""}`}>
                             <img src={Close} alt="Close" className={style.closeIcon} onClick={() => setShowInfo(false)} />
                             <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
+                            {(basicForm?.payment?.invoice?.fileURL !== undefined) && (
+                                <div className={style.marginTop}>
+                                    <PaymentReceipt basicForm={basicForm} />
+                                </div>
+                            )}
                             <div className={style.marginTop}>
                                 <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                             </div>

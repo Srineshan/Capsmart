@@ -21,7 +21,7 @@ const PaymentReceipt = ({ basicForm }) => {
 
   return (
     <div className={style.referenceDocumentParentCard}>
-      <div className={style.referenceDocumentTitle}>Your {basicForm?.privilegeCategoryType === "LOCUM" ? `Locum ${basicForm?.reappointmentType === "EXTENSION" ? 'Extension' : basicForm?.creationType === "NEW" ? "" : 'Renewal'}` : basicForm?.creationType === "NEW" ? "" : 'Reappointment'} Documents</div>
+      <div className={style.referenceDocumentTitle}>Your {basicForm?.privilegeCategoryType === "LOCUM" ? `Locum ${basicForm?.reappointmentType === "EXTENSION" ? 'Extension' : basicForm?.creationType === "NEW" ? "" : 'Renewal'}` : basicForm?.creationType === "NEW" ? "" : 'Reappointment'} Payment Receipt</div>
       {(basicForm?.payment?.invoice?.fileURL !== undefined) ? (
         <>
           {basicForm?.payment?.invoice?.fileURL !== undefined && (
@@ -41,7 +41,7 @@ const PaymentReceipt = ({ basicForm }) => {
                       <div
                         className={style.documentNameStyle}
                       >
-                        Payment Receipt
+                        2026 - 2027 Reappointment Payment Receipt
                       </div>
                     </div>
                     {/* <div

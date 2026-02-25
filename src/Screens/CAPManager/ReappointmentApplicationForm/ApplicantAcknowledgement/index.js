@@ -24,6 +24,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import Close from './../../../../images/close.png';
 import { Tooltip } from '@mui/material';
 import Cookies from 'universal-cookie';
+import PaymentReceipt from '../../../../Components/PaymentReceipt';
 
 const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApplication }) => {
     const [isChecked, setIsChecked] = useState(false);
@@ -324,6 +325,11 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
                             <Tooltip title={"Click to Close"} arrow>
                                 <img src={Close} alt="Close" className={style.closeIcon} onClick={() => setShowInfo(false)} /></Tooltip>
                             <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
+                            {(basicForm?.payment?.invoice?.fileURL !== undefined) && (
+                                <div className={style.marginTop}>
+                                    <PaymentReceipt basicForm={basicForm} />
+                                </div>
+                            )}
                             <div className={style.marginTop}>
                                 <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                             </div>
