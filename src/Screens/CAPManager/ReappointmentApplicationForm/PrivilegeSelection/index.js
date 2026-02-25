@@ -3985,7 +3985,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                           {(basicForm?.basicDetails?.existingCredentialingPrivilegeCategory !== null && basicForm?.basicDetails?.existingCredentialingPrivilegeCategory?.priorHospitalPrivileges !== null && basicForm?.basicDetails?.existingCredentialingPrivilegeCategory?.priorHospitalPrivileges?.length !== 0)
                             ? basicForm?.basicDetails?.existingCredentialingPrivilegeCategory?.priorHospitalPrivileges?.map(data => (
                               <div>{data?.privileges}</div>
-                            )) : (basicForm?.basicDetails?.existingCredentialingPrivilegeCategory !== null && basicForm?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges !== null && basicForm?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges?.length !== 0)
+                            )) : (basicForm?.basicDetails?.existingCredentialingPrivilegeCategory !== null && basicForm?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges !== null && basicForm?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges?.length !== 0 && !basicForm?.forms?.[formIndex]?.data?.privilegeAtOtherHospitalUpdated)
                               ? basicForm?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges?.map(data => (
                                 <div>{data?.privileges}</div>
                               ))
