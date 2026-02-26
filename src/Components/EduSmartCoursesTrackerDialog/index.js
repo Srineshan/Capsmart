@@ -15,60 +15,6 @@ import PrintOutlinedIcon from "@mui/icons-material/PrintOutlined";
 import { useReactToPrint } from "react-to-print";
 import { GET } from "../../Screens/dataSaver";
 
-// Dummy data for EduSmart courses - replace with API call later
-const DUMMY_EDUSMART_DATA = [
-  {
-    id: 1,
-    staff: { firstName: "John", lastName: "Smith" },
-    staffType: "Physician",
-    department: "Surgery",
-    noOfCourses: 5,
-    noOfCoursesNotStarted: 1,
-    noOfCoursesInProgress: 2,
-    noOfCoursesCompleted: 2,
-  },
-  {
-    id: 2,
-    staff: { firstName: "Jane", lastName: "Doe" },
-    staffType: "Nurse Practitioner",
-    department: "Cardiology",
-    noOfCourses: 8,
-    noOfCoursesNotStarted: 0,
-    noOfCoursesInProgress: 3,
-    noOfCoursesCompleted: 5,
-  },
-  {
-    id: 3,
-    staff: { firstName: "Robert", lastName: "Johnson" },
-    staffType: "Physician",
-    department: "Emergency Medicine",
-    noOfCourses: 4,
-    noOfCoursesNotStarted: 2,
-    noOfCoursesInProgress: 1,
-    noOfCoursesCompleted: 1,
-  },
-  {
-    id: 4,
-    staff: { firstName: "Sarah", lastName: "Williams" },
-    staffType: "Dentist",
-    department: "Dental",
-    noOfCourses: 6,
-    noOfCoursesNotStarted: 1,
-    noOfCoursesInProgress: 2,
-    noOfCoursesCompleted: 3,
-  },
-  {
-    id: 5,
-    staff: { firstName: "Michael", lastName: "Brown" },
-    staffType: "Physician",
-    department: "Internal Medicine",
-    noOfCourses: 3,
-    noOfCoursesNotStarted: 0,
-    noOfCoursesInProgress: 0,
-    noOfCoursesCompleted: 3,
-  },
-];
-
 const EduSmartCoursesTrackerDialog = ({ getIsOpen, isLoading }) => {
   const componentRef = useRef(null);
   const [tableData, setTableData] = useState([]);
@@ -86,7 +32,7 @@ const EduSmartCoursesTrackerDialog = ({ getIsOpen, isLoading }) => {
   const [selectedServiceArea, setSelectedServiceArea] = useState("");
   const [selectedApplicationType, setSelectedApplicationType] = useState('REAPPOINTMENT');
   const [applicantType, setApplicantType] = useState([]);
-  const [LMSList, setLMSList] = useState();
+  const [LMSList, setLMSList] = useState([]);
   const [selectedApplicantType, setSelectedApplicantType] = useState('');
   const selectedDepartmentName = departmentList?.find(data => data?.id === selectedDepartment)?.departmentName?.name;
   const selectedApplicantTypeName = applicantType?.find(data => data?.id === selectedApplicantType)?.applicantType;
@@ -141,62 +87,81 @@ const EduSmartCoursesTrackerDialog = ({ getIsOpen, isLoading }) => {
   };
 
   const getLMSList = async () => {
+    setIsLoadingImage(true);
     try {
-      const departmentParam = selectedDepartment || selectedServiceArea ? `&departmentSpecialties=${selectedDepartment}%23${selectedServiceArea}` : "";
-      const { data: lms } = await GET(`application-management-service/application/lmsTracker?applicationCreationType=${selectedApplicationType}&positionType=${selectedApplicationType === 'LOCUM_RENEWAL' ? 'LOCUM' : 'PERMANENT'}&searchText=${searchTerm}&sortBy=${sortValue}&sortByField=${sortField}&limit=${limit}&offset=${page - 1}&isPaginationRequired=${false}${departmentParam}`);
-      setLMSList(lms || {});
+      const departmentParam =
+        selectedDepartment || selectedServiceArea
+          ? `&departmentSpecialties=${selectedDepartment}%23${selectedServiceArea}`
+          : "";
+      const applicantTypeParam = selectedApplicantType
+        ? `&applicantTypeId=${selectedApplicantType}`
+        : "";
+      const { data: lms } = await GET(
+        `application-management-service/application/lmsTracker?applicationCreationType=${selectedApplicationType}&positionType=${selectedApplicationType === "LOCUM_RENEWAL" ? "LOCUM" : "PERMANENT"}&searchText=${searchTermForTable}&sortBy=${sortValue}&sortByField=${sortField}&limit=${limit}&offset=${page - 1}&isPaginationRequired=${true}${departmentParam}${applicantTypeParam}`
+      );
+      setLMSList(lms?.applications || []);
     } catch (error) {
-      console.error("Error fetching applicant types:", error);
+      console.error("Error fetching LMS list:", error);
     }
+    setIsLoadingImage(false);
   };
 
+  // Static reference data
   useEffect(() => {
     getDepartmentList();
     getApplicantType();
-    getLMSList();
-  }, [showFilter]);
+  }, []);
 
+  // All filters/sort/search/pagination drive API query
   useEffect(() => {
-    // Using dummy data for now - replace with API call later
-    const loadData = () => {
-      setIsLoadingImage(true);
-      let filteredData = [...DUMMY_EDUSMART_DATA];
+    getLMSList();
+  }, [
+    selectedDepartment,
+    selectedServiceArea,
+    selectedApplicantType,
+    selectedApplicationType,
+    searchTermForTable,
+    sortField,
+    sortValue,
+    page,
+    limit,
+  ]);
 
-      // Apply department filter (dummy - filter by department name for now)
-      if (selectedDepartment) {
-        const deptName = departmentList?.find(d => d?.id === selectedDepartment)?.departmentName?.name;
-        if (deptName) {
-          filteredData = filteredData.filter(item => item.department === deptName);
-        }
-      }
+  // Map API response to table rows (no extra filtering – all filters from API)
+  useEffect(() => {
 
-      // Apply staff type filter
-      if (selectedApplicantType) {
-        const staffTypeName = applicantType?.find(a => a?.id === selectedApplicantType)?.applicantType;
-        if (staffTypeName) {
-          filteredData = filteredData.filter(item => item.staffType === staffTypeName);
-        }
-      }
 
-      // Apply search filter
-      if (searchTermForTable.trim()) {
-        const searchLower = searchTermForTable.toLowerCase();
-        filteredData = filteredData.filter(item => {
-          const fullName = `${item.staff?.firstName || ''} ${item.staff?.lastName || ''}`.toLowerCase();
-          return fullName.includes(searchLower) ||
-            (item.staffType || '').toLowerCase().includes(searchLower) ||
-            (item.department || '').toLowerCase().includes(searchLower);
-        });
-      }
+    const mappedData = LMSList?.map((item) => {
+      const courses = item?.lmsDetails?.courses || [];
+      const totalCourses = courses.length;
+      const completedCourses = courses.filter(
+        (c) => c._course_completed || c.is_course_completed
+      ).length;
+      const inProgressCourses = courses.filter(
+        (c) => c.course_status === "in_progress"
+      ).length;
+      const notStartedCourses =
+        totalCourses - completedCourses - inProgressCourses;
 
-      setTableData(filteredData);
-      setTotalCount(filteredData.length);
-      setSearchount(filteredData.length);
-      setIsLoadingImage(false);
-    };
+      return {
+        id: item.id,
+        staff: {
+          firstName: item?.basicDetails?.applicant?.name?.firstName,
+          lastName: item?.basicDetails?.applicant?.name?.lastName,
+        },
+        staffType: item?.basicDetails?.applicant?.applicantType,
+        department: item?.basicDetails?.departmentSpecialty?.department,
+        noOfCourses: totalCourses,
+        noOfCoursesNotStarted: notStartedCourses,
+        noOfCoursesInProgress: inProgressCourses,
+        noOfCoursesCompleted: completedCourses,
+      };
+    });
 
-    loadData();
-  }, [selectedDepartment, selectedServiceArea, selectedApplicantType, searchTermForTable, showFilter]);
+    setTableData(mappedData);
+    setTotalCount(mappedData.length);
+    setSearchount(mappedData.length);
+  }, [LMSList]);
 
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
@@ -237,7 +202,7 @@ const EduSmartCoursesTrackerDialog = ({ getIsOpen, isLoading }) => {
     "No.",
     "Staff",
     "Staff Type",
-    "Dept",
+    "Department",
     "No. of Courses",
     "No. of Courses Not Started",
     "No. of Courses In Progress",
@@ -245,7 +210,7 @@ const EduSmartCoursesTrackerDialog = ({ getIsOpen, isLoading }) => {
     "Action"
   ];
 
-  const colSortValues = [false, true, true, true, true, true, true, true, false];
+  const colSortValues = [false, true, true, true, false, false, false, false, false];
 
   const eduSmartActionsData = [
     {

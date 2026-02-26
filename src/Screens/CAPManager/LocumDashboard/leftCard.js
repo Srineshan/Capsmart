@@ -43,7 +43,7 @@ const LeftCard = ({ getDataToUseInReport, isLoading }) => {
     const [contractContinuationPolicy, setContractContinuationPolicy] = useState('ALL');
     const [contractStatus, setContractStatus] = useState('ACTIVE');
     const [podType, setPodType] = useState('Medical Staff Membership & Privileges');
-    const [reportingTimePeriod, setReportingTimePeriod] = useState('Current Month');
+    const [reportingTimePeriod, setReportingTimePeriod] = useState('2026 - 2027');
     const [selectedSites, setSelectedSites] = useState([]);
     const [selectedSitesToSend, setSelectedSitesToSend] = useState([]);
     const [selectedContractsToSend, setSelectedContractsToSend] = useState([]);
@@ -479,6 +479,12 @@ const LeftCard = ({ getDataToUseInReport, isLoading }) => {
         } else if (reportingTimePeriod === 'Last Year') {
             setFrom(new Date(new Date(lastyear.getFullYear(), 0, 1)));
             setTo(subDays(startOfYear(new Date()), 1));
+        } else if (reportingTimePeriod === '2025 - 2026') {
+            setFrom(new Date(2025, 6, 1));
+            setTo(new Date(2026, 5, 30));
+        } else if (reportingTimePeriod === '2026 - 2027') {
+            setFrom(new Date(2026, 6, 1));
+            setTo(new Date(2027, 5, 30));
         } else {
             return;
         }
@@ -870,14 +876,16 @@ const LeftCard = ({ getDataToUseInReport, isLoading }) => {
                             disabled={isLoading}
                             className={`${style.textAlignLeft} ${style.Font}`}
                         >
-                            <MenuItem value={'Current Week'} disabled={isLoading}>Current Week</MenuItem>
+                            {/* <MenuItem value={'Current Week'} disabled={isLoading}>Current Week</MenuItem>
                             <MenuItem value={'Last Week'} disabled={isLoading}>Last Week</MenuItem>
                             <MenuItem value={'Current Month'} disabled={isLoading}>Current Month</MenuItem>
                             <MenuItem value={'Last Month'} disabled={isLoading}>Last Month</MenuItem>
                             <MenuItem value={'Current Qtr'} disabled={isLoading}>Current Quarter</MenuItem>
                             <MenuItem value={'Last Qtr'} disabled={isLoading}>Last Quarter</MenuItem>
                             <MenuItem value={'Current Year'} disabled={isLoading}>Current Year</MenuItem>
-                            <MenuItem value={'Last Year'} disabled={isLoading}>Last Year</MenuItem>
+                            <MenuItem value={'Last Year'} disabled={isLoading}>Last Year</MenuItem> */}
+                            <MenuItem value={'2025 - 2026'} disabled={isLoading}>2025 - 2026</MenuItem>
+                            <MenuItem value={'2026 - 2027'} disabled={isLoading}>2026 - 2027</MenuItem>
                             <MenuItem value={'Custom'} disabled={isLoading}>Custom</MenuItem>
                         </Select>
                     </FormControl>

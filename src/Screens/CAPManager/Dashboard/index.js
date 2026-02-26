@@ -77,7 +77,7 @@ const Dashboard = () => {
 
     const getDashboard = async (signal) => {
         setIsLoading(true);
-        const { data: dashboard } = await GET(`application-management-service/report/staffReappointment/dashboard?applicantTypeId=${dataToUseInReport?.selectedStaffType}&privilegingCategoryId=${dataToUseInReport?.selectedPrivilegeCategory}&departmentSpecialties=${dataToUseInReport?.selectedDepartments}`, { signal });
+        const { data: dashboard } = await GET(`application-management-service/report/staffReappointment/dashboard?applicantTypeId=${dataToUseInReport?.selectedStaffType}&privilegingCategoryId=${dataToUseInReport?.selectedPrivilegeCategory}&departmentSpecialties=${dataToUseInReport?.selectedDepartments}&startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}`, { signal });
         let tempFunnel = [{
             name: 'Reappointments',
             data: [
@@ -226,7 +226,7 @@ const Dashboard = () => {
                         </div>
                         <div ref={componentRef} className={style.margin20WithoutTop}>
                             <div className={`${style.selectedFilterCard}`}>
-                                <div className={style.selectedFiltersHeadingText}>{`2025 - 2026 Permanent Staff Reappointment Cycle for ${dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.departmentName?.name).join(', ') || 'All Departments'}`}</div>
+                                <div className={style.selectedFiltersHeadingText}>{`Permanent Staff Reappointment Cycle for ${dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.departmentName?.name).join(', ') || 'All Departments'}`}</div>
                                 <div className={`${style.grid4} ${style.marginTop20}`}>
                                     <div className={style.selectedFiltersText}>Current Date: {format(new Date(), 'MMM dd, yyyy')}</div>
                                     <div className={style.selectedFiltersText}>{dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.departmentName?.name).join(', ') || 'All Departments'}</div>
@@ -263,7 +263,7 @@ const Dashboard = () => {
                             <div className={`${style.grid2} ${style.marginTop20}`}>
                                 <div>
                                     <div className={style.chartHeader}>
-                                        <div className={style.chartHeaderText}>2025 - 2026 Permanent Staff Reappointment</div>
+                                        <div className={style.chartHeaderText}>Permanent Staff Reappointment</div>
                                     </div>
                                     <div className={style.chartBody}>
                                         {funnelSeries?.length > 0 && (

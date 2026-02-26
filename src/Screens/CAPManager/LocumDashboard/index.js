@@ -79,7 +79,7 @@ const LocumDashboard = () => {
 
     const getDashboard = async (signal) => {
         setIsLoading(true);
-        const { data: dashboard } = await GET(`application-management-service/report/staffReappointment/dashboard?applicantTypeId=${dataToUseInReport?.selectedStaffType}&privilegingCategoryId=${dataToUseInReport?.selectedPrivilegeCategory}&departmentSpecialties=${dataToUseInReport?.selectedDepartments}&creationType=REAPPOINTMENT&type=LOCUM&reappointmentType=${dataToUseInReport?.locumStatus}`, { signal });
+        const { data: dashboard } = await GET(`application-management-service/report/staffReappointment/dashboard?applicantTypeId=${dataToUseInReport?.selectedStaffType}&privilegingCategoryId=${dataToUseInReport?.selectedPrivilegeCategory}&departmentSpecialties=${dataToUseInReport?.selectedDepartments}&creationType=REAPPOINTMENT&type=LOCUM&reappointmentType=${dataToUseInReport?.locumStatus}&startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}`, { signal });
         let tempFunnel = [{
             name: 'Reappointments',
             data: [
@@ -245,7 +245,7 @@ const LocumDashboard = () => {
                         </div>
                         <div ref={componentRef} className={style.margin20WithoutTop}>
                             <div className={`${style.selectedFilterCard}`}>
-                                <div className={style.selectedFiltersHeadingText}>{`2025 - 2026 Active Locum Staff Dashboard for ${dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.departmentName?.name).join(', ') || 'All Departments'}`}</div>
+                                <div className={style.selectedFiltersHeadingText}>{`Active Locum Staff Dashboard for ${dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.departmentName?.name).join(', ') || 'All Departments'}`}</div>
                                 <div className={`${style.grid4} ${style.marginTop20}`}>
                                     <div className={style.selectedFiltersText}>Current Date: {format(new Date(), 'MMM dd, yyyy')}</div>
                                     <div className={style.selectedFiltersText}>{dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.departmentName?.name).join(', ') || 'All Departments'}</div>
@@ -282,7 +282,7 @@ const LocumDashboard = () => {
                             <div className={`${style.grid2} ${style.marginTop20}`}>
                                 <div>
                                     <div className={style.chartHeader}>
-                                        <div className={style.chartHeaderText}>{`2025 - 2026 Locum Staff ${dataToUseInReport?.locumStatus === "EXTENSION" ? 'Extension' : 'Renewal'}s`}</div>
+                                        <div className={style.chartHeaderText}>{`Locum Staff ${dataToUseInReport?.locumStatus === "EXTENSION" ? 'Extension' : 'Renewal'}s`}</div>
                                     </div>
                                     <div className={style.chartBody}>
                                         {funnelSeries?.length > 0 && (
