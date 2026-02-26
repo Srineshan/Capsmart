@@ -871,18 +871,18 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                                     <div className={`${style.twoCol} ${style.marginTop}`}>
                                         <div className={style.twoValueForDemographic}>
                                             <div className={style.demographicLebelText}>Full Name</div>
-                                            <div className={style.demographicValueText}>{`${basicForm?.applicant?.name?.firstName || ''} ${basicForm?.applicant?.name?.middleName || ''} ${basicForm?.applicant?.name?.lastName || ''}`}</div>
+                                            <div className={style.demographicValueText}>{`${basicForm?.basicDetails?.applicant?.name?.firstName || ''} ${basicForm?.basicDetails?.applicant?.name?.middleName || ''} ${basicForm?.basicDetails?.applicant?.name?.lastName || ''}`}</div>
                                         </div>
                                         <div></div>
                                     </div>
                                     <div className={`${style.twoCol} ${style.marginTop10}`}>
                                         <div className={style.twoValueForDemographic}>
                                             <div className={style.demographicLebelText}>Date Of Birth</div>
-                                            <div className={style.demographicValueText}>{basicForm?.applicant?.dateOfBirth ? format(new Date(basicForm?.applicant?.dateOfBirth), 'MMM dd, yyyy') : '-'}</div>
+                                            <div className={style.demographicValueText}>{basicForm?.basicDetails?.applicant?.dateOfBirth ? format(new Date(basicForm?.basicDetails?.applicant?.dateOfBirth), 'MMM dd, yyyy') : '-'}</div>
                                         </div>
                                         <div className={style.twoValueForDemographic}>
                                             <div className={style.demographicLebelText}>Phone Number</div>
-                                            <div className={style.demographicValueText}>{basicForm?.applicant?.mobileNumber ? basicForm?.applicant?.mobileNumber : '-'}</div>
+                                            <div className={style.demographicValueText}>{basicForm?.basicDetails?.applicant?.cellPhone ? basicForm?.basicDetails?.applicant?.cellPhone : '-'}</div>
                                         </div>
                                     </div>
                                 </div>
