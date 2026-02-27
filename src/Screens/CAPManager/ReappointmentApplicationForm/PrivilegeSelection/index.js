@@ -232,7 +232,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
       // CASE A: User said NO to additional privileges
       shouldEnable = baseRequirementsMet;
     }
-    else if (additionalPrivilegeChangeYesOrNo === 'Yes') {
+    else if (additionalPrivilegeChangeYesOrNo === 'Yes' && isAdditionalPrivilegeCategoryChanging) {
       // CASE B: User said YES to additional privileges
       const hasValidDepartment = (
         selectedAdditionalDepartment != null &&
@@ -245,6 +245,14 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
         baseRequirementsMet &&
         isAdditionalPrivilegeCategoryChanging &&
         hasValidDepartment &&
+        hasAdditionalPrivileges
+      );
+    } else if (additionalPrivilegeChangeYesOrNo) {
+      // CASE C: User said YES & Default View
+      const hasAdditionalPrivileges = basicForm?.privileges?.additionalPrivileges?.length > 0;
+
+      shouldEnable = (
+        baseRequirementsMet &&
         hasAdditionalPrivileges
       );
     }
