@@ -137,10 +137,13 @@ const EduSmartCoursesTrackerDialog = ({ getIsOpen, isLoading }) => {
       const courses = item?.lmsDetails?.courses || [];
       const totalCourses = courses.length;
       const completedCourses = courses.filter(
-        (c) => c._course_completed || c.is_course_completed
+        (c) =>
+          c?._course_completed === true ||
+          c?.is_course_completed === true ||
+          c?.course_status === "completed"
       ).length;
       const inProgressCourses = courses.filter(
-        (c) => c.course_status === "in_progress"
+        (c) => c?.course_status === "in_progress"
       ).length;
       const notStartedCourses =
         totalCourses - completedCourses - inProgressCourses;
@@ -166,6 +169,8 @@ const EduSmartCoursesTrackerDialog = ({ getIsOpen, isLoading }) => {
     setSearchount(mappedData.length);
     setIsLoadingImage(false);
   }, [LMSList, dateFormat]);
+
+  const [printMode, setPrintMode] = useState("BY_STAFF"); // BY_STAFF | COURSE_NOT_COMPLETED | COURSE_COMPLETED | BY_DEPARTMENT
 
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
@@ -202,7 +207,7 @@ const EduSmartCoursesTrackerDialog = ({ getIsOpen, isLoading }) => {
     }
   };
 
-  const headerValues = [
+  const headerValuesByStaff = [
     "No.",
     "Staff",
     "Staff Type",
@@ -214,6 +219,27 @@ const EduSmartCoursesTrackerDialog = ({ getIsOpen, isLoading }) => {
     "Action"
   ];
 
+  const headerValuesByCourseNotCompleted = [
+    "Staff",
+    "Staff Type",
+    "Department",
+    "Action",
+  ];
+
+  const headerValuesByCourseCompleted = [
+    "Staff",
+    "Staff Type",
+    "Department",
+    "Certificate",
+  ];
+
+  const headerValues =
+    printMode === "COURSE_NOT_COMPLETED"
+      ? headerValuesByCourseNotCompleted
+      : printMode === "COURSE_COMPLETED"
+        ? headerValuesByCourseCompleted
+        : headerValuesByStaff;
+
   const colSortValues = [false, true, true, true, false, false, false, false, false];
 
   const eduSmartActionsData = [
@@ -222,7 +248,17 @@ const EduSmartCoursesTrackerDialog = ({ getIsOpen, isLoading }) => {
       requiredValue: "boolean",
       onClick: (data) => {
         // Placeholder for action - add navigation or dialog later
-        console.log("View clicked for:", data);
+        console.log("Reminder clicked for:", data);
+      },
+    },
+  ];
+
+  const courseActionsData = [
+    {
+      data: "Send Reminder",
+      requiredValue: "boolean",
+      onClick: (data) => {
+        console.log("Send reminder for course row:", data);
       },
     },
   ];
@@ -236,7 +272,7 @@ const EduSmartCoursesTrackerDialog = ({ getIsOpen, isLoading }) => {
     }
   };
 
-  const getTableValues = () => {
+  const getStaffTableValues = (rows) => {
     const No = [];
     const staff = [];
     const staffType = [];
@@ -251,7 +287,7 @@ const EduSmartCoursesTrackerDialog = ({ getIsOpen, isLoading }) => {
     const noOfCoursesCompletedHover = [];
     const action = [];
 
-    tableData?.map((data, index) => {
+    (rows || [])?.map((data, index) => {
       No.push(index + 1 + ".");
       staff.push(
         `${formatFirstNameLastName(data?.staff?.firstName, data?.staff?.lastName)}` || "-"
@@ -261,10 +297,13 @@ const EduSmartCoursesTrackerDialog = ({ getIsOpen, isLoading }) => {
 
       const courses = data?.courses || [];
       const completedCourses = courses.filter(
-        (c) => c._course_completed || c.is_course_completed
+        (c) =>
+          c?._course_completed === true ||
+          c?.is_course_completed === true ||
+          c?.course_status === "completed"
       );
       const inProgressCourses = courses.filter(
-        (c) => c.course_status === "in_progress"
+        (c) => c?.course_status === "in_progress"
       );
       const completedIds = new Set(
         completedCourses.map((c) => c.course_id || c.course_name)
@@ -424,6 +463,160 @@ const EduSmartCoursesTrackerDialog = ({ getIsOpen, isLoading }) => {
     ];
   };
 
+  const getCourseNotCompletedTableValues = (rows) => {
+    const staff = [];
+    const staffType = [];
+    const department = [];
+    const action = [];
+
+    (rows || []).forEach((data) => {
+      staff.push(
+        `${formatFirstNameLastName(
+          data?.staff?.firstName,
+          data?.staff?.lastName
+        )}` || "-"
+      );
+      staffType.push(data?.staffType || "-");
+      department.push(data?.department || "-");
+      action.push(true);
+    });
+
+    return [
+      { type: "text", value: staff },
+      { type: "text", value: staffType },
+      { type: "text", value: department },
+      { type: "action", value: action },
+    ];
+  };
+
+  const getCourseCompletedTableValues = (rows, courseId) => {
+    const staff = [];
+    const staffType = [];
+    const department = [];
+    const certificateField = [];
+
+    (rows || []).forEach((data) => {
+      staff.push(
+        `${formatFirstNameLastName(
+          data?.staff?.firstName,
+          data?.staff?.lastName
+        )}` || "-"
+      );
+      staffType.push(data?.staffType || "-");
+      department.push(data?.department || "-");
+
+      const course =
+        data?.courses?.find((c) => {
+          const key = c?.course_id || c?.course_name;
+          const isCompleted =
+            c?._course_completed === true ||
+            c?.is_course_completed === true ||
+            c?.course_status === "completed";
+          return key === courseId && isCompleted;
+        }) || null;
+
+      const hasCertificate = !!(
+        course?.certificate_details?.view_url ||
+        course?.certificate_details?.download_url
+      );
+
+      if (course && hasCertificate) {
+        certificateField.push(
+          <div
+            key={courseId + (data?.id || "")}
+            className={style.verticalAlignCenter}
+            style={{ width: "100%", minHeight: "100%" }}
+          >
+            <Tooltip title="View certificate" arrow>
+              <CardMembershipIcon
+                sx={{
+                  fontSize: 22,
+                  color: "#06617A",
+                  cursor: "pointer",
+                }}
+                onClick={() => handleCertificateClick(course)}
+              />
+            </Tooltip>
+          </div>
+        );
+      } else {
+        certificateField.push(
+          <div
+            key={courseId + (data?.id || "")}
+            className={style.verticalAlignCenter}
+            style={{ width: "100%" }}
+          >
+            <span />
+          </div>
+        );
+      }
+    });
+
+    return [
+      { type: "text", value: staff },
+      { type: "text", value: staffType },
+      { type: "text", value: department },
+      { type: "field", field: certificateField },
+    ];
+  };
+
+  const getDisplayTableData = () => {
+    // BY_STAFF uses the full tableData as-is
+    return tableData || [];
+  };
+
+  const displayTableData = getDisplayTableData();
+  const displayTotalCount = displayTableData?.length || 0;
+
+  const buildDepartmentGroups = () => {
+    const map = new Map();
+    (tableData || []).forEach((row) => {
+      const dept = row?.department || "No Department";
+      if (!map.has(dept)) {
+        map.set(dept, []);
+      }
+      map.get(dept).push(row);
+    });
+    return Array.from(map.entries()).map(([department, rows]) => ({
+      department,
+      rows,
+    }));
+  };
+
+  const buildCourseGroups = (showCompleted) => {
+    const map = new Map();
+    (tableData || []).forEach((row) => {
+      const courses = row?.courses || [];
+      courses.forEach((course) => {
+        const key = course?.course_id || course?.course_name;
+        if (!key) return;
+        const isCompleted =
+          course?._course_completed === true ||
+          course?.is_course_completed === true ||
+          course?.course_status === "completed";
+        const hasCertificate = !!(
+          course?.certificate_details?.view_url ||
+          course?.certificate_details?.download_url
+        );
+        const matches = showCompleted
+          ? isCompleted && hasCertificate // Completed view: only when certificate is available
+          : !isCompleted; // Not completed view: anything not completed
+        if (!matches) return;
+
+        if (!map.has(key)) {
+          map.set(key, {
+            id: key,
+            name: course?.course_name || key,
+            rows: [],
+          });
+        }
+        // attach course context to the row for later certificate lookup
+        map.get(key).rows.push(row);
+      });
+    });
+    return Array.from(map.values());
+  };
+
   return (
     <>
       {isLoadingImage && (
@@ -442,8 +635,34 @@ const EduSmartCoursesTrackerDialog = ({ getIsOpen, isLoading }) => {
         <div>
           <div className={Classes.DIALOG_BODY}>
             <div className={style.spaceBetween}>
-              <div className={`${style.heading}`}>
-                EduSmart Courses Status Tracker
+              <div className={`${style.displayInRow}`}>
+                <div className={`${style.heading} ${style.displayInRow}`}>
+                  EduSmart Courses Status Tracker
+                </div>
+                <div className={`${style.alignCenter} ${style.marginLeft}`}>
+                  <CommonSelectField
+                    value={printMode}
+                    onChange={(e) => setPrintMode(e.target.value)}
+                    className={style.printModeSelect}
+                    firstOptionLabel={''}
+                    firstOptionValue={''}
+                    valueList={[
+                      "BY_STAFF",
+                      "COURSE_NOT_COMPLETED",
+                      "COURSE_COMPLETED",
+                      "BY_DEPARTMENT",
+                    ]}
+                    labelList={[
+                      "By Staff",
+                      "By Course (Not Completed)",
+                      "By Course (Completed)",
+                      "By Department",
+                    ]}
+                    disabledList={[false, false, false, false]}
+                    label={""}
+                    required={false}
+                  />
+                </div>
               </div>
               <div className={style.displayInRow}>
                 {(selectedDepartment && workModeType !== "Department Head") && (
@@ -492,7 +711,17 @@ const EduSmartCoursesTrackerDialog = ({ getIsOpen, isLoading }) => {
                   </Tooltip>
                 </div>
                 <div className={`${style.alignCenter} ${style.cursorPointer} ${style.marginLeft10}`}>
-                  <Tooltip title="Print Data" arrow>
+                  <Tooltip
+                    title={`Print – ${printMode === "BY_STAFF"
+                      ? "By Staff"
+                      : printMode === "COURSE_NOT_COMPLETED"
+                        ? "By Course (Not Completed)"
+                        : printMode === "COURSE_COMPLETED"
+                          ? "By Course (Completed)"
+                          : "By Department"
+                      }`}
+                    arrow
+                  >
                     <PrintOutlinedIcon
                       sx={{ fontSize: 25, color: "#06617A" }}
                       onClick={handlePrint}
@@ -560,27 +789,27 @@ const EduSmartCoursesTrackerDialog = ({ getIsOpen, isLoading }) => {
             )}
 
             <div className={`${style.marginTop10}`} ref={componentRef}>
-              <div>
+              {printMode === "BY_STAFF" && (
                 <div className={`${style.bigCardStyle} ${style.marginTop20}`}>
                   {isLoading ? (
                     <div className={`${style.verticalAlignCenter} ${style.justifyCenter}`}>
                       <CircularProgress sx={{ color: "#06617A" }} />
                     </div>
                   ) : (
-                    <div className={`${style.reduceMarginTop10} ${style.margin20} staffApplicationList`}>
+                    <div className={`${style.reduceMarginTop10} staffApplicationList`}>
                       <TableTwo
                         tableHeaderValues={headerValues}
-                        tableDataValues={getTableValues()}
-                        tableData={tableData}
+                        tableDataValues={getStaffTableValues(displayTableData)}
+                        tableData={displayTableData}
                         gridStyle={style.eduSmartCoursesGrid}
                         actions={eduSmartActionsData}
-                        scrollStyle={style.contractScrollStyle}
+                        // scrollStyle={style.contractScrollStyle}
                         tableSortValues={colSortValues}
                         heading={"There are no records to display"}
                         getHandleSort={getHandleSort}
                         sortValue={{ sortBy: sortValue, sortByField: sortField }}
                         getSelectedPage={getSelectedPage}
-                        totalCount={totalCount}
+                        totalCount={displayTotalCount}
                         page={page}
                         searchTermForTable={searchTermForTable}
                         searchCount={searchCount}
@@ -600,7 +829,109 @@ const EduSmartCoursesTrackerDialog = ({ getIsOpen, isLoading }) => {
                     </div>
                   )}
                 </div>
-              </div>
+              )}
+
+              {printMode === "BY_DEPARTMENT" && (
+                <div className={style.printSection}>
+                  {buildDepartmentGroups().map((group) => (
+                    <div key={group.department} className={style.printBlock}>
+                      <h4 className={style.printHeading}>{group.department}</h4>
+                      <div className={`${style.bigCardStyle}`}>
+                        <div className={`${style.reduceMarginTop10} staffApplicationList`}>
+                          <TableTwo
+                            tableHeaderValues={headerValues}
+                            tableDataValues={getStaffTableValues(group.rows)}
+                            tableData={group.rows}
+                            gridStyle={style.eduSmartCoursesGrid}
+                            actions={eduSmartActionsData}
+                            // scrollStyle={style.contractScrollStyle}
+                            tableSortValues={colSortValues}
+                            heading={"There are no records to display"}
+                            getHandleSort={getHandleSort}
+                            sortValue={{ sortBy: sortValue, sortByField: sortField }}
+                            getSelectedPage={() => { }}
+                            totalCount={group.rows.length}
+                            page={1}
+                            searchTermForTable={""}
+                            searchCount={group.rows.length}
+                            setSearchTermForTable={() => { }}
+                            onLimitChange={() => { }}
+                            searchField={null}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {printMode === "COURSE_NOT_COMPLETED" && (
+                <div className={style.printSection}>
+                  {buildCourseGroups(false).map((group) => (
+                    <div key={group.id} className={style.printBlock}>
+                      <h4 className={style.printHeading}>{group.name}</h4>
+                      <div className={`${style.bigCardStyle}`}>
+                        <div className={`${style.reduceMarginTop10} staffApplicationList`}>
+                          <TableTwo
+                            tableHeaderValues={headerValues}
+                            tableDataValues={getCourseNotCompletedTableValues(group.rows)}
+                            tableData={group.rows}
+                            gridStyle={style.eduSmartStaffAndDeptGrid}
+                            actions={courseActionsData}
+                            // scrollStyle={style.contractScrollStyle}
+                            tableSortValues={colSortValues}
+                            heading={"There are no records to display"}
+                            getHandleSort={getHandleSort}
+                            sortValue={{ sortBy: sortValue, sortByField: sortField }}
+                            getSelectedPage={() => { }}
+                            totalCount={group.rows.length}
+                            page={1}
+                            searchTermForTable={""}
+                            searchCount={group.rows.length}
+                            setSearchTermForTable={() => { }}
+                            onLimitChange={() => { }}
+                            searchField={null}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {printMode === "COURSE_COMPLETED" && (
+                <div className={style.printSection}>
+                  {buildCourseGroups(true).map((group) => (
+                    <div key={group.id} className={style.printBlock}>
+                      <h4 className={style.printHeading}>{group.name}</h4>
+                      <div className={`${style.bigCardStyle}`}>
+                        <div className={`${style.reduceMarginTop10} staffApplicationList`}>
+                          <TableTwo
+                            tableHeaderValues={headerValues}
+                            tableDataValues={getCourseCompletedTableValues(group.rows, group.id)}
+                            tableData={group.rows}
+                            gridStyle={style.eduSmartStaffAndDeptGrid}
+                            actions={[]}
+                            // scrollStyle={style.contractScrollStyle}
+                            tableSortValues={colSortValues}
+                            heading={"There are no records to display"}
+                            getHandleSort={getHandleSort}
+                            sortValue={{ sortBy: sortValue, sortByField: sortField }}
+                            getSelectedPage={() => { }}
+                            totalCount={group.rows.length}
+                            page={1}
+                            searchTermForTable={""}
+                            searchCount={group.rows.length}
+                            setSearchTermForTable={() => { }}
+                            onLimitChange={() => { }}
+                            searchField={null}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>
