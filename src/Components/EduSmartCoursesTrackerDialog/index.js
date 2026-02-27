@@ -5,6 +5,7 @@ import style from "./index.module.scss";
 import TableTwo from "../TableDesignTwo";
 import CircularProgress from "@mui/material/CircularProgress";
 import { formatFirstNameLastName } from "../../utils/formatting";
+import { format } from "date-fns";
 import LoadingScreen from "../LoadingScreen";
 import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
@@ -12,6 +13,7 @@ import CommonSelectField from '../CommonFields/CommonSelectField';
 import CommonSearchField from "../CommonFields/CommonSearchField";
 import { Tooltip } from "@mui/material";
 import PrintOutlinedIcon from "@mui/icons-material/PrintOutlined";
+import CardMembershipIcon from "@mui/icons-material/CardMembership";
 import { useReactToPrint } from "react-to-print";
 import { GET } from "../../Screens/dataSaver";
 
@@ -129,9 +131,9 @@ const EduSmartCoursesTrackerDialog = ({ getIsOpen, isLoading }) => {
 
   // Map API response to table rows (no extra filtering – all filters from API)
   useEffect(() => {
+    setIsLoadingImage(true);
 
-
-    const mappedData = LMSList?.map((item) => {
+    const mappedData = (LMSList || []).map((item) => {
       const courses = item?.lmsDetails?.courses || [];
       const totalCourses = courses.length;
       const completedCourses = courses.filter(
@@ -145,6 +147,7 @@ const EduSmartCoursesTrackerDialog = ({ getIsOpen, isLoading }) => {
 
       return {
         id: item.id,
+        courses,
         staff: {
           firstName: item?.basicDetails?.applicant?.name?.firstName,
           lastName: item?.basicDetails?.applicant?.name?.lastName,
@@ -161,7 +164,8 @@ const EduSmartCoursesTrackerDialog = ({ getIsOpen, isLoading }) => {
     setTableData(mappedData);
     setTotalCount(mappedData.length);
     setSearchount(mappedData.length);
-  }, [LMSList]);
+    setIsLoadingImage(false);
+  }, [LMSList, dateFormat]);
 
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
@@ -203,10 +207,10 @@ const EduSmartCoursesTrackerDialog = ({ getIsOpen, isLoading }) => {
     "Staff",
     "Staff Type",
     "Department",
-    "No. of Courses",
-    "No. of Courses Not Started",
-    "No. of Courses In Progress",
-    "No. of Courses Completed",
+    "Courses",
+    "Not Started",
+    "In Progress",
+    "Completed",
     "Action"
   ];
 
@@ -214,7 +218,7 @@ const EduSmartCoursesTrackerDialog = ({ getIsOpen, isLoading }) => {
 
   const eduSmartActionsData = [
     {
-      data: "View",
+      data: "Send Reminder",
       requiredValue: "boolean",
       onClick: (data) => {
         // Placeholder for action - add navigation or dialog later
@@ -223,15 +227,28 @@ const EduSmartCoursesTrackerDialog = ({ getIsOpen, isLoading }) => {
     },
   ];
 
+  const handleCertificateClick = (course) => {
+    const certificateUrl =
+      course?.certificate_details?.view_url ||
+      course?.certificate_details?.download_url;
+    if (certificateUrl) {
+      window.open(certificateUrl, "_blank");
+    }
+  };
+
   const getTableValues = () => {
     const No = [];
     const staff = [];
     const staffType = [];
     const department = [];
     const noOfCourses = [];
+    const noOfCoursesHover = [];
     const noOfCoursesNotStarted = [];
+    const noOfCoursesNotStartedHover = [];
     const noOfCoursesInProgress = [];
+    const noOfCoursesInProgressHover = [];
     const noOfCoursesCompleted = [];
+    const noOfCoursesCompletedHover = [];
     const action = [];
 
     tableData?.map((data, index) => {
@@ -241,10 +258,136 @@ const EduSmartCoursesTrackerDialog = ({ getIsOpen, isLoading }) => {
       );
       staffType.push(data?.staffType || "-");
       department.push(data?.department || "-");
-      noOfCourses.push(data?.noOfCourses ?? "-");
-      noOfCoursesNotStarted.push(data?.noOfCoursesNotStarted ?? "-");
-      noOfCoursesInProgress.push(data?.noOfCoursesInProgress ?? "-");
-      noOfCoursesCompleted.push(data?.noOfCoursesCompleted ?? "-");
+
+      const courses = data?.courses || [];
+      const completedCourses = courses.filter(
+        (c) => c._course_completed || c.is_course_completed
+      );
+      const inProgressCourses = courses.filter(
+        (c) => c.course_status === "in_progress"
+      );
+      const completedIds = new Set(
+        completedCourses.map((c) => c.course_id || c.course_name)
+      );
+      const inProgressIds = new Set(
+        inProgressCourses.map((c) => c.course_id || c.course_name)
+      );
+      const notStartedCoursesList = courses.filter((c) => {
+        const key = c.course_id || c.course_name;
+        return !completedIds.has(key) && !inProgressIds.has(key);
+      });
+
+      const totalCourses = data?.noOfCourses ?? courses.length ?? 0;
+      const notStartedCount =
+        data?.noOfCoursesNotStarted ?? notStartedCoursesList.length ?? 0;
+      const inProgressCount =
+        data?.noOfCoursesInProgress ?? inProgressCourses.length ?? 0;
+      const completedCount =
+        data?.noOfCoursesCompleted ?? completedCourses.length ?? 0;
+
+      // Total courses count + hover (only when > 0)
+      if (totalCourses > 0) {
+        noOfCourses.push(totalCourses);
+        const totalHoverArray = courses.map((course, idx) => (
+          <div key={idx}>
+            <span>{course?.course_name || "-"}</span>
+            {idx !== courses.length - 1 && (
+              <hr style={{ margin: "5px 0 -10px 0px" }} />
+            )}
+          </div>
+        ));
+        noOfCoursesHover.push(totalHoverArray);
+      } else {
+        noOfCourses.push("-");
+        noOfCoursesHover.push(["-"]);
+      }
+
+      // Not started count + hover (only when > 0)
+      if (notStartedCount > 0) {
+        noOfCoursesNotStarted.push(notStartedCount);
+        const notStartedHoverArray = notStartedCoursesList.map(
+          (course, idx) => (
+            <div key={idx}>
+              <span>{course?.course_name || "-"}</span>
+              {idx !== notStartedCoursesList.length - 1 && (
+                <hr style={{ margin: "5px 0 -10px 0px" }} />
+              )}
+            </div>
+          )
+        );
+        noOfCoursesNotStartedHover.push(notStartedHoverArray);
+      } else {
+        noOfCoursesNotStarted.push("-");
+        noOfCoursesNotStartedHover.push(["-"]);
+      }
+
+      // In-progress count + hover (only when > 0)
+      if (inProgressCount > 0) {
+        noOfCoursesInProgress.push(inProgressCount);
+        const inProgressHoverArray = inProgressCourses.map((course, idx) => (
+          <div key={idx}>
+            <span>{course?.course_name || "-"}</span>
+            {idx !== inProgressCourses.length - 1 && (
+              <hr style={{ margin: "5px 0 -10px 0px" }} />
+            )}
+          </div>
+        ));
+        noOfCoursesInProgressHover.push(inProgressHoverArray);
+      } else {
+        noOfCoursesInProgress.push("-");
+        noOfCoursesInProgressHover.push(["-"]);
+      }
+
+      // Completed count + hover (only when > 0; with completion date + certificate icon)
+      if (completedCount > 0) {
+        noOfCoursesCompleted.push(completedCount);
+        const completedHoverArray = completedCourses.map((course, idx) => {
+          const completionDate =
+            course?.course_completion_date &&
+              !Number.isNaN(new Date(course.course_completion_date))
+              ? format(
+                new Date(course.course_completion_date),
+                dateFormat
+              )
+              : null;
+          const hasCertificate = !!(
+            course?.certificate_details?.view_url ||
+            course?.certificate_details?.download_url
+          );
+
+          return (
+            <div
+              key={idx}
+              style={{ display: "flex", alignItems: "center", gap: 4 }}
+            >
+              <span>
+                {course?.course_name || "-"}
+                {completionDate
+                  ? ` — ${completionDate}`
+                  : " — Completion date N/A"}
+              </span>
+              {hasCertificate && (
+                <CardMembershipIcon
+                  sx={{
+                    fontSize: 24,
+                    color: "#FFFFFF", // default white for better contrast on dark hover
+                    cursor: "pointer",
+                  }}
+                  onClick={() => handleCertificateClick(course)}
+                />
+              )}
+              {idx !== completedCourses.length - 1 && (
+                <hr style={{ margin: "5px 0 -10px 0px" }} />
+              )}
+            </div>
+          );
+        });
+        noOfCoursesCompletedHover.push(completedHoverArray);
+      } else {
+        noOfCoursesCompleted.push("-");
+        noOfCoursesCompletedHover.push(["-"]);
+      }
+
       action.push(true);
     });
 
@@ -253,10 +396,30 @@ const EduSmartCoursesTrackerDialog = ({ getIsOpen, isLoading }) => {
       { type: "text", value: staff },
       { type: "text", value: staffType },
       { type: "text", value: department },
-      { type: "text", value: noOfCourses },
-      { type: "text", value: noOfCoursesNotStarted },
-      { type: "text", value: noOfCoursesInProgress },
-      { type: "text", value: noOfCoursesCompleted },
+      {
+        type: "countWithHover",
+        value: noOfCourses,
+        hoverText: noOfCoursesHover,
+        isShowHoverText: true,
+      },
+      {
+        type: "countWithHover",
+        value: noOfCoursesNotStarted,
+        hoverText: noOfCoursesNotStartedHover,
+        isShowHoverText: true,
+      },
+      {
+        type: "countWithHover",
+        value: noOfCoursesInProgress,
+        hoverText: noOfCoursesInProgressHover,
+        isShowHoverText: true,
+      },
+      {
+        type: "countWithHover",
+        value: noOfCoursesCompleted,
+        hoverText: noOfCoursesCompletedHover,
+        isShowHoverText: true,
+      },
       { type: "action", value: action },
     ];
   };

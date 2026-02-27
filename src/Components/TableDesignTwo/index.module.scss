@@ -306,6 +306,16 @@
     max-width: 280px;
 }
 
+
+.countWithHoverCard {
+    min-height: 35px;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    color: #F5F9FD;
+    max-width: 280px;
+}
+
 .siteCard {
     height: 35px;
     padding: 0 10px;
@@ -326,6 +336,7 @@
 .dividerStyle {
     height: 1px;
     border-bottom: 1px solid $secondarycolor;
+    width: 100%;
 }
 
 .popoverStyle>* {
