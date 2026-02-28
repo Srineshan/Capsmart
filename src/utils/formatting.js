@@ -3,8 +3,8 @@ import { ErrorToaster } from './toaster';
 import Payment from "payment";
 import dataLoadinglogo from '../images/loaderCommon.gif';
 
-const LMS_SSO_API_URL = 'https://medcarehub.com/api/edusmart-app/external-sso-login';
-const LMS_SSO_SECRET_KEY = 'ObjtG7caoRqTcAh06f7BkmbU6JIf3uezigMLAa78';
+const LMS_SSO_API_URL = process.env.REACT_APP_LMS_SSO_API_URL;
+const LMS_SSO_SECRET_KEY = process.env.REACT_APP_LMS_SSO_SECRET_KEY;
 
 /**
  * Fetches the LMS redirect URL from the external SSO API.
@@ -15,6 +15,10 @@ export const getLMSRedirectUrl = async (ssoToken) => {
   if (!ssoToken) {
     ErrorToaster('SSO token is required to access LMS');
     throw new Error('SSO token is required');
+  }
+  if (!LMS_SSO_API_URL || !LMS_SSO_SECRET_KEY) {
+    ErrorToaster('LMS SSO configuration is missing. Please check REACT_APP_LMS_SSO_API_URL and REACT_APP_LMS_SSO_SECRET_KEY in .env');
+    throw new Error('LMS SSO configuration is missing');
   }
   try {
     const { data } = await axios.post(LMS_SSO_API_URL, {
