@@ -49,6 +49,7 @@ import KeyboardArrowUpOutlinedIcon from '@mui/icons-material/KeyboardArrowUpOutl
 import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
+import CardMembershipIcon from '@mui/icons-material/CardMembership';
 import ApplicationDecline from "../../Screens/CAPManager/StaffApplication/applicationDeclineDialog";
 import ApplicationHeader from "../../Components/ApplicationHeader";
 import ApplicantDetailNotesView from '../../Components/ApplicantDetailNotesView';
@@ -84,6 +85,7 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
   const [renewedDocumentRequired, setRenewedDocumentRequired] = useState();
   const [expireDocumentCount, setExpireDocumentCount] = useState();
   const [applicationsDetails, setApplicationsDetails] = useState();
+  const [LMSDetails, setLMSDetails] = useState();
   const [notesDetails, setNotesDetails] = useState(null);
   const [applicationsMedicalDirectives, setApplicationsMedicalDirectives] = useState();
   const [attestedMDCount, setAttestedMDCount] = useState();
@@ -123,6 +125,12 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
   const appointmentColSortValues = [false, false, false, false, false, , false, false, false];
   const MDHeaderValues = ["", "Title", "", "MD ID", "Attestation Due Date", "Last Updated"];
   const MDColSortValues = [false, false, false, false, false, , false];
+  const eduSmartHeaderValues = ["Course Name", "Times Completed", "Last Completed", "Action"];
+  const eduSmartColSortValues = [false, false, false, false];
+  const eduSmartCompletionHeaderValues = ["Course Name", "Status", "Completion Date", "Certificate"];
+  const eduSmartCompletionColSortValues = [false, false, false, false];
+  const [showEduSmartDialog, setShowEduSmartDialog] = useState(false);
+  const [selectedEduSmartCourse, setSelectedEduSmartCourse] = useState(null);
   const toggleMDFilter = (filterType) => {
     setSelectedMDFilter((prevFilter) => prevFilter === filterType ? null : filterType);
   };
@@ -221,6 +229,17 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
     },
   ];
 
+  const eduSmartCourseActionsData = [
+    {
+      data: "View",
+      requiredValue: "boolean",
+      onClick: (row) => {
+        setSelectedEduSmartCourse(row);
+        setShowEduSmartDialog(true);
+      },
+    },
+  ];
+
   const getEditInfoDetailsDialogOpen = (value) => {
     setShowEditInfoDialog(value)
   };
@@ -297,6 +316,10 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
   let textTooltipValues = [];
   let allMedicalDirectives = [];
   let allDocumentDetails = [];
+  let eduSmartCourseNames = [];
+  let eduSmartCompletionCounts = [];
+  let eduSmartLastCompletedDates = [];
+  let eduSmartActions = [];
 
   const getDocsTableValues = () => {
     documentType = [];
@@ -559,15 +582,76 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
     ];
   };
 
+  const getEduSmartTableValues = () => {
+    eduSmartCourseNames = [];
+    eduSmartCompletionCounts = [];
+    eduSmartLastCompletedDates = [];
+    eduSmartActions = [];
+
+    const courseItems = LMSDetails?.courseAndCompletions || [];
+
+    courseItems.forEach((item) => {
+      const name = item?.course?.course_name || "-";
+      const completions = Array.isArray(item?.completions)
+        ? item.completions
+        : [];
+
+      const completionsCount = completions.length;
+
+      // Find last completed date among completions
+      const completedDates = completions
+        .filter(
+          (c) =>
+            c?._course_completed === true ||
+            c?.is_course_completed === true ||
+            c?.course_status === "completed"
+        )
+        .map((c) => c?.course_completion_date)
+        .filter(Boolean);
+
+      let lastCompletedFormatted = "-";
+      if (completedDates.length > 0) {
+        const latest = completedDates
+          .map((d) => new Date(d))
+          .filter((d) => !Number.isNaN(d.getTime()))
+          .sort((a, b) => b.getTime() - a.getTime())[0];
+        if (latest) {
+          lastCompletedFormatted = format(latest, dateFormat);
+        }
+      }
+
+      eduSmartCourseNames.push(name);
+      eduSmartCompletionCounts.push(completionsCount);
+      eduSmartLastCompletedDates.push(lastCompletedFormatted);
+      eduSmartActions.push(true);
+    });
+
+    return [
+      {
+        type: "text",
+        value: eduSmartCourseNames,
+        onClickFunction: (row) => {
+          setSelectedEduSmartCourse(row);
+          setShowEduSmartDialog(true);
+        },
+      },
+      { type: "text", value: eduSmartCompletionCounts },
+      { type: "text", value: eduSmartLastCompletedDates },
+      { type: "action", value: eduSmartActions },
+    ];
+  };
+
   useEffect(() => {
     getPreApplication();
     getPreApplicationDocuments();
     getPreApplicationDetails();
+    getLMSHistory()
   }, [applicationId]);
 
   useEffect(() => {
-    if (form?.applicant?.id)
+    if (form?.applicant?.id) {
       getPreApplicationMedicalDirectives();
+    }
   }, [form?.applicant?.id]);
 
 
@@ -626,6 +710,15 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
       console.error('Error fetching application Documents:', error);
     }
   };
+
+  const getLMSHistory = async () => {
+    try {
+      const { data: lmsHistory } = await GET(`application-management-service/staff/${applicationId}/lmsHistory`);
+      setLMSDetails(lmsHistory);
+    } catch (error) {
+      console.error('Error fetching application Documents:', error);
+    }
+  }
 
   const getPreApplicationMedicalDirectives = async () => {
     try {
@@ -741,6 +834,87 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
   let tableMDDataValues = getMDTableValues();
   // let actionsMD = mDActionsData;
   let gridStyleMD = style.medicalDirectiveViewGrid;
+  let tableEduSmartHeaderValues = eduSmartHeaderValues;
+  let tableEduSmartSortValues = eduSmartColSortValues;
+  let tableEduSmartDataValues = getEduSmartTableValues();
+  let gridStyleEduSmart = style.eduSmartGrid;
+  const getEduSmartCompletionTableValues = () => {
+    const courseItem = selectedEduSmartCourse;
+    const rows = courseItem?.completions || [];
+
+    const courseNames = [];
+    const statusList = [];
+    const completionDates = [];
+    const certificateField = [];
+
+    rows.forEach((c, idx) => {
+      courseNames.push(c?.course_name || "-");
+
+      const isCompleted =
+        c?._course_completed === true ||
+        c?.is_course_completed === true ||
+        c?.course_status === "completed";
+      const statusText = isCompleted
+        ? "Completed"
+        : c?.course_status || "Not Completed";
+      statusList.push(statusText);
+
+      const completionDate =
+        c?.course_completion_date &&
+          !Number.isNaN(new Date(c.course_completion_date))
+          ? format(new Date(c.course_completion_date), dateFormat)
+          : "-";
+      completionDates.push(completionDate);
+
+      const hasCertificate = !!(
+        c?.certificate_details?.view_url ||
+        c?.certificate_details?.download_url
+      );
+
+      if (isCompleted && hasCertificate) {
+        certificateField.push(
+          <div
+            key={idx}
+            className={style.verticalAlignCenter}
+            style={{ width: "100%", minHeight: "100%" }}
+          >
+            <Tooltip title="View certificate" arrow>
+              <CardMembershipIcon
+                sx={{
+                  fontSize: 22,
+                  color: "#06617A",
+                  cursor: "pointer",
+                }}
+                onClick={() => {
+                  const url =
+                    c?.certificate_details?.view_url ||
+                    c?.certificate_details?.download_url;
+                  if (url) window.open(url, "_blank");
+                }}
+              />
+            </Tooltip>
+          </div>
+        );
+      } else {
+        certificateField.push(
+          <div
+            key={idx}
+            className={style.verticalAlignCenter}
+            style={{ width: "100%" }}
+          >
+            <span />
+          </div>
+        );
+      }
+    });
+
+    return [
+      { type: "text", value: courseNames },
+      { type: "text", value: statusList },
+      { type: "text", value: completionDates },
+      { type: "field", field: certificateField },
+    ];
+  };
 
   return (
     <>
@@ -1238,6 +1412,78 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
                     )}
                   </div>
                 </div>
+                {LMSDetails?.courseAndCompletions?.length > 0 && (
+                  <div className={`${style.marginTop20}`}>
+                    <div className={`${style.cardLeftStyle} ${style.padding30}`}>
+                      <div className={`${style.spaceBetween} ${style.alignItemCenter}`}>
+                        <div className={`${style.documentTextStyle}`}>
+                          <img src={CAPManagerSmallLogo} alt="img" className={style.LogoIcon} />{" "}
+                          <span>EduSmart Course History</span>
+                        </div>
+                        <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
+                          <div
+                            className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
+                            onClick={() => toggleExpand("section4")}
+                          >
+                            {expandStates.section4 ? (
+                              <Tooltip title={"Click to Minimize"} arrow>
+                                <RemoveIcon
+                                  sx={{
+                                    fontSize: 20,
+                                    color: "#94979A",
+                                    cursor: "pointer",
+                                  }}
+                                />
+                              </Tooltip>
+                            ) : (
+                              <Tooltip title={"Click to Expand"} arrow>
+                                <AddIcon
+                                  sx={{
+                                    fontSize: 20,
+                                    color: "#94979A",
+                                    cursor: "pointer",
+                                  }}
+                                />
+                              </Tooltip>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      {expandStates.section4 && (
+                        <div>
+                          <CommonDivider />
+                          <div className={`${style.bigCardStyle}`}>
+                            {isLoading ? (
+                              <div
+                                className={`${style.verticalAlignCenter} ${style.justifyCenter}`}
+                              >
+                                <CircularProgress sx={{ color: "#06617A" }} />
+                              </div>
+                            ) : (
+                              <div>
+                                <div
+                                  className={`${style.reduceMarginTop10} ${style.margin20} staffApplicationList`}
+                                >
+                                  <TableTwo
+                                    tableHeaderValues={tableEduSmartHeaderValues}
+                                    tableDataValues={tableEduSmartDataValues}
+                                    tableData={LMSDetails?.courseAndCompletions || []}
+                                    gridStyle={gridStyleEduSmart}
+                                    scrollStyle={style.contractScrollStyle}
+                                    tableSortValues={tableEduSmartSortValues}
+                                    heading={"There are no EduSmart courses to display"}
+                                    onClickFunction={() => { }}
+                                    actions={eduSmartCourseActionsData}
+                                  />
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
             <div>
@@ -1343,6 +1589,55 @@ const ApplicantDetailsViewScreen = ({ getApplicantDetailsViewScreen, isLoading, 
           getPreApplication={getPreApplicationDocuments}
           applicationIdFromEdit={applicationId}
         />
+      )}
+      {showEduSmartDialog && selectedEduSmartCourse && (
+        <Dialog
+          isOpen={showEduSmartDialog}
+          onClose={() => setShowEduSmartDialog(false)}
+          className={`${style.eSignDialog} ${style.eSignDialogBackground}`}
+          canOutsideClickClose={true}
+          canEscapeKeyClose={true}
+        >
+          <div>
+            <div className={Classes.DIALOG_BODY}>
+              <div className={style.spaceBetween}>
+                <div className={style.heading}>
+                  EduSmart Course Completions –{" "}
+                  {selectedEduSmartCourse?.course?.course_name ||
+                    selectedEduSmartCourse?.course?.course_id}
+                </div>
+                <Tooltip title={"Click to Close"} arrow>
+                  <img
+                    src={CrossPink}
+                    alt="cross"
+                    className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft10}`}
+                    onClick={() => setShowEduSmartDialog(false)}
+                  />
+                </Tooltip>
+              </div>
+              <div className={`${style.marginTop10}`}>
+                <div className={`${style.bigCardStyle} ${style.marginTop20}`}>
+                  <div
+                    className={`${style.reduceMarginTop10} ${style.margin20} staffApplicationList`}
+                  >
+                    <TableTwo
+                      tableHeaderValues={eduSmartCompletionHeaderValues}
+                      tableDataValues={getEduSmartCompletionTableValues()}
+                      tableData={selectedEduSmartCourse?.completions || []}
+                      gridStyle={style.eduSmartStaffAndDeptGrid}
+                      tableSortValues={eduSmartCompletionColSortValues}
+                      heading={
+                        "There are no completion records available for this course"
+                      }
+                      onClickFunction={() => { }}
+                      actions={[]}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </Dialog>
       )}
       <input
         type="file"
