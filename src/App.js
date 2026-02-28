@@ -18,6 +18,7 @@ import {
   isTablet,
 } from "react-device-detect";
 import { SuccessToaster, ErrorToaster, ErrorToaster2 } from "./utils/toaster";
+import { getLMSRedirectUrl } from "./utils/formatting";
 import axios from "axios";
 import jwt from "jwt-decode";
 import { isSessionTokenExpired, useSession, getSessionToken, useDescope } from '@descope/react-sdk';
@@ -1139,7 +1140,7 @@ const App = ({ props }) => {
   const LoginRoute = () => {
     console.log('login route', Auth())
     // const navigate = useNavigate();
-    const fetchData = () => {
+    const fetchData = async () => {
       console.log('login route', Auth())
       const initialRoute = localStorage.getItem("initialRoute");
       isHapicareUser = isHapicareUser !== undefined ? isHapicareUser : sessionStorage.getItem('masterEntity') === 'true' ? true : sessionStorage.getItem('masterEntity') === 'false' ? false : undefined;
@@ -1225,7 +1226,13 @@ const App = ({ props }) => {
           } else if (lmsRoles?.length === 1) {
             console.log("LoginRole", roles, lmsRoles[0])
             sessionStorage.setItem("workModeType", lmsRoles[0]);
-            window.location.href = `https://lms.indocaribe.com/descope-login/?ssotoken=${cookie.get("authorization")}`;
+            try {
+              const redirectUrl = await getLMSRedirectUrl(cookie.get("user"));
+              window.location.href = redirectUrl;
+            } catch (err) {
+              ErrorToaster('Unable to open LMS');
+            }
+            return;
           } else {
             sessionStorage.setItem("workModeType", roles[0]);
             let isAppUser =

@@ -25,6 +25,8 @@ import CommonSelectField from "../CommonFields/CommonSelectField";
 import CommonDivider from "../CommonFields/CommonDivider";
 import { useDescope } from "@descope/react-sdk";
 import { Tooltip } from "@mui/material";
+import { getLMSRedirectUrl } from "../../utils/formatting";
+import { ErrorToaster } from "../../utils/toaster";
 
 const WorkModeDialog = ({ getIsOpen }) => {
   let cookie = new Cookie();
@@ -263,8 +265,13 @@ const WorkModeDialog = ({ getIsOpen }) => {
     window.location.pathname = `/mdManager/libraries/${entityId}/${entitySiteList?.[0]?.sites?.[0]?.departmentList?.departments?.[0]?.id}`;
   }
 
-  const handleLMSRoute = () => {
-    window.location.href = `https://lms.indocaribe.com/descope-login/?ssotoken=${cookie.get("authorization")}`;
+  const handleLMSRoute = async () => {
+    try {
+      const redirectUrl = await getLMSRedirectUrl(cookie.get("user"));
+      window.location.href = redirectUrl;
+    } catch (err) {
+      ErrorToaster('Unable to open LMS');
+    }
   }
 
   return (

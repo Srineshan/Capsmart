@@ -8,6 +8,7 @@ import ApplicationReferenceDocuments from '../../../../Components/ApplicationRef
 import { GET, PUT } from '../../../dataSaver';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ErrorToaster, SuccessToaster } from '../../../../utils/toaster';
+import { getLMSRedirectUrl } from '../../../../utils/formatting';
 import SaveInProgressDialog from '../../../../Components/SaveInProgressDialog';
 import ValidationDialog from '../../../../Components/validationDialog';
 import JourneyStep6 from './../../../../images/journeyStep6.png';
@@ -184,9 +185,13 @@ const LMSModules = ({ basicForm, setBasicForm, getPreApplication }) => {
     const rawCourses = Array.isArray(basicForm?.lmsDetails) ? basicForm.lmsDetails.flatMap((item) => item?.courses || []) : (basicForm?.lmsDetails?.courses ?? []);
     const courses = (rawCourses || []).map((c) => ({ ...c, is_course_completed: c._course_completed ?? c.is_course_completed }));
 
-    const handleCourseClick = (course) => {
-        const lmsUrl = `https://lms.indocaribe.com/descope-login/?ssotoken=${cookie.get("authorization")}`;
-        window.open(lmsUrl, '_blank');
+    const handleCourseClick = async (course) => {
+        try {
+            const lmsUrl = await getLMSRedirectUrl(cookie.get("user"));
+            window.open(lmsUrl, '_blank');
+        } catch (err) {
+            ErrorToaster('Unable to open LMS');
+        }
     }
 
     const handleViewCertificate = (course) => {

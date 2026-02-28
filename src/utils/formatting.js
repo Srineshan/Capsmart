@@ -1,6 +1,40 @@
+import axios from "axios";
 import { ErrorToaster } from './toaster';
 import Payment from "payment";
 import dataLoadinglogo from '../images/loaderCommon.gif';
+
+const LMS_SSO_API_URL = 'https://medcarehub.com/api/edusmart-app/external-sso-login';
+const LMS_SSO_SECRET_KEY = 'ObjtG7caoRqTcAh06f7BkmbU6JIf3uezigMLAa78';
+
+/**
+ * Fetches the LMS redirect URL from the external SSO API.
+ * @param {string} ssoToken - SSO token from cookie (e.g. cookie.get("user"))
+ * @returns {Promise<string>} - Resolves to redirect_url, rejects on error
+ */
+export const getLMSRedirectUrl = async (ssoToken) => {
+  if (!ssoToken) {
+    ErrorToaster('SSO token is required to access LMS');
+    throw new Error('SSO token is required');
+  }
+  try {
+    const { data } = await axios.post(LMS_SSO_API_URL, {
+      secret_key: LMS_SSO_SECRET_KEY,
+      sso_token: ssoToken,
+    }, {
+      headers: { 'Content-Type': 'application/json' },
+    });
+    if (data?.status !== '200' || !data?.data?.redirect_url) {
+      ErrorToaster(data?.message || 'Failed to get LMS redirect URL');
+      throw new Error(data?.message || 'Invalid response from LMS SSO API');
+    }
+    return data?.data?.redirect_url;
+  } catch (err) {
+    if (err?.response?.data?.message) {
+      ErrorToaster(err.response.data.message);
+    }
+    throw err;
+  }
+};
 
 export const FormatPhoneNumber = (value) => {
   if (!value) return value;
