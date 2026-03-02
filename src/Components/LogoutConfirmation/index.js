@@ -9,12 +9,14 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { ErrorToaster } from '../../utils/toaster';
 import { useDescope } from '@descope/react-sdk';
 import { Tooltip } from '@mui/material';
+import { callLMSSSOLogout } from '../../utils/formatting';
 
 const LogoutConfirmation = ({ getIsOpen }) => {
     const navigate = useNavigate();
     const { logout } = useDescope();
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
+        await callLMSSSOLogout();
         var cookies = new Cookie();
         cookies.remove("user", { path: "/" });
         cookies.remove("entityId", { path: "/" });

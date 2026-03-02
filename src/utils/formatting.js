@@ -40,6 +40,23 @@ export const getLMSRedirectUrl = async (ssoToken) => {
   }
 };
 
+/**
+ * Calls the LMS external SSO logout API.
+ * Fire-and-forget; does not block local logout on failure.
+ */
+export const callLMSSSOLogout = async () => {
+  const url = process.env.REACT_APP_LMS_SSO_LOGOUT_API_URL;
+  if (!url) return;
+  try {
+    await axios.post(url, {}, {
+      headers: { 'Content-Type': 'application/json' },
+    });
+  } catch (err) {
+    // Log but don't block logout
+    console.warn('LMS SSO logout request failed:', err?.message);
+  }
+};
+
 export const FormatPhoneNumber = (value) => {
   if (!value) return value;
 

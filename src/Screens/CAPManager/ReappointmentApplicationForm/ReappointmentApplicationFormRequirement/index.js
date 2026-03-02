@@ -20,7 +20,7 @@ import { ErrorToaster, SuccessToaster } from '../../../../utils/toaster';
 import ApplicationFieldCard from '../../../../Components/ApplicationFieldCard';
 import Cookie from "universal-cookie";
 import { differenceInDays, format } from 'date-fns';
-import { dataLoadingGIF } from '../../../../utils/formatting';
+import { dataLoadingGIF, callLMSSSOLogout } from '../../../../utils/formatting';
 // import { logout } from '../../../utils/auth';
 import ReappointmentLandingDialog from '../../../../Components/ReappointmentLandingDialog';
 import DoItLaterDialog from '../../../../Components/DoItLaterDialog';
@@ -142,7 +142,8 @@ const ReappointmentApplicationFormRequirement = () => {
     //     return remainingDays > 0 ? remainingDays : 0;
     // }
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
+        await callLMSSSOLogout();
         cookie.remove("user", { path: "/" });
         cookie.remove("entityId", { path: "/" });
         cookie.remove("authorization", {

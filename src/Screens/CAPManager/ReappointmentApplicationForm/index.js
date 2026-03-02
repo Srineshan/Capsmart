@@ -24,7 +24,7 @@ import PatientConcern from './PatientConcern';
 import PrivilegeStatusHospital from './PrivilegeStatusOtherHospital';
 import LoadingScreen from '../../../Components/LoadingScreen';
 import HapiCare from "./../../../images/PoweredHapiCare.png";
-import { dataLoadingGIF } from '../../../utils/formatting';
+import { dataLoadingGIF, callLMSSSOLogout } from '../../../utils/formatting';
 import ScheduleA from './ScheduleA';
 import ScheduleB from './ScheduleB';
 import { useDescope } from '@descope/react-sdk';
@@ -77,7 +77,8 @@ const ReappointmentApplicationForm = () => {
         setIsLoading(false);
     }
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
+        await callLMSSSOLogout();
         var cookies = new Cookie();
         cookies.remove("user", { path: "/" });
         cookies.remove("entityId", { path: "/" });
