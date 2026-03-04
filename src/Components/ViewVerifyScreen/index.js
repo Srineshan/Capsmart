@@ -1993,6 +1993,7 @@ const NewActiveApplication = ({
       console.error("Array is undefined or not an array:", array);
       return [];
     }
+    const validDocsOnly = array.filter((d) => !d?.isSkipReason);
     let schema = allFormSchemas?.[index]?.formSchema?.schema
     let temp = [];
     console.log(array, 'arrayyyyyy')
@@ -2030,12 +2031,13 @@ const NewActiveApplication = ({
                 if (innerData?.isSkipReason) {
                   return <RemoveIcon key={innerData?.rowId} style={{ fontSize: 20, marginLeft: 20 }} />;
                 }
+                const validIndex = validDocsOnly.findIndex((d) => d === innerData);
                 return innerData?.isVerified === true
                   ? (
                     <div key={innerData?.rowId} className={`${style.greenButtonSmall} ${style.cursorPointer}`}>
                       <Tooltip title={"Click to Revert Acceptance"} arrow>
                         <div className={`${style.buttonGreyTextStyle2} ${style.alignCenter}`}
-                          onClick={() => handleVerifyClickDocs(array, idx)}
+                          onClick={() => handleVerifyClickDocs(validDocsOnly, validIndex)}
                         >
                           Accepted
                         </div>
@@ -2045,7 +2047,7 @@ const NewActiveApplication = ({
                     <div key={innerData?.rowId} className={`${style.purpleButtonSmall} ${style.cursorPointer}`}>
                       <Tooltip title={"Click to Accept"} arrow>
                         <div className={`${style.buttonGreyTextStyle2} ${style.alignCenter}`}
-                          onClick={() => handleVerifyClickDocs(array, idx)}
+                          onClick={() => handleVerifyClickDocs(validDocsOnly, validIndex)}
                         >
                           Accept
                         </div>
