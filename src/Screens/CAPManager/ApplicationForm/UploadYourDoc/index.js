@@ -905,9 +905,9 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                               className={`${style.fullWidth} ${style.verticalAlignCenter}`}
                               firstOptionLabel={'Select A Reason For Skipping This Document'}
                               firstOptionValue={''}
-                              valueList={['Current Document Not Available', 'Replacement Document Requested']}
-                              labelList={['Current Document Not Available', 'Replacement Document Requested']}
-                              disabledList={['Current Document Not Available', 'Replacement Document Requested'].map(() => false)}
+                              valueList={data?.document?.shortName === 'N95 Mask Fit Test' ? ['Awaiting Replacement'] : ['Current Document Not Available', 'Replacement Document Requested']}
+                              labelList={data?.document?.shortName === 'N95 Mask Fit Test' ? ['Awaiting Replacement'] : ['Current Document Not Available', 'Replacement Document Requested']}
+                              disabledList={(data?.document?.shortName === 'N95 Mask Fit Test' ? ['Awaiting Replacement'] : ['Current Document Not Available', 'Replacement Document Requested']).map(() => false)}
                             />
                             {/* {data?.instruction} */}
                           </div>
