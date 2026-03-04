@@ -15,6 +15,7 @@ import Verified from "./../../images/verifiedImage.png";
 import CrossPink from "./../../images/crossPink.png";
 import ToBeVerified from "./../../images/toBeVerifiedImage.png";
 import DeleteIcon from "./../../images/deleteHcRow.png";
+import skipDocs from "./../../images/skipDoc.png";
 import CheckIcon from '@mui/icons-material/Check';
 import ClearIcon from '@mui/icons-material/Clear';
 import Tooltip from "@mui/material/Tooltip";
@@ -1969,6 +1970,24 @@ const NewActiveApplication = ({
     ];
   }
 
+  const normalizeKey = (shortName) => (shortName || '').trim().toLowerCase().replace(/\s+/g, '_');
+
+  const getCombinedUploadTableData = (formIndex) => {
+    const tableValues = form?.forms?.[formIndex]?.data?.table || [];
+    const skipReason = form?.forms?.[formIndex]?.data?.skipReason || {};
+    const documentsRequired = form?.documentsRequired || [];
+    const uploadedDocTypes = (tableValues || []).map((row) => row?.documentType);
+    const skipReasonRows = Object.entries(skipReason).filter(([, v]) => v).reduce((acc, [normKey, reason]) => {
+      const doc = documentsRequired?.find((d) => normalizeKey(d?.document?.shortName) === normKey);
+      const shortName = doc?.document?.shortName;
+      if (shortName && !uploadedDocTypes?.includes(shortName)) {
+        acc.push({ documentType: shortName, fileUploaded: reason, isSkipReason: true, rowId: `skip-${normKey}` });
+      }
+      return acc;
+    }, []);
+    return [...tableValues, ...skipReasonRows];
+  };
+
   const getApplicantValues = (array, index) => {
     if (!array || !Array.isArray(array)) {
       console.error("Array is undefined or not an array:", array);
@@ -1979,67 +1998,69 @@ const NewActiveApplication = ({
     console.log(array, 'arrayyyyyy')
     console.log("allFormSchemas?.[index]?.formSchema?.schema", allFormSchemas?.[index]?.formSchema?.schema);
 
-    Object.keys(schema?.properties?.table?.tableHeaders || {})?.map((data, index) => {
+    Object.keys(schema?.properties?.table?.tableHeaders || {})?.map((data, colIndex) => {
       if (data === "file") {
         temp.push({
           "type": "icon",
-          "icon": array?.map(innerData => innerData?.fileType === 'application/pdf' ?
-            <img src={PdfDoc} alt="" className={style.docTypeImgStyle} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData) }} />
-            : innerData?.fileType?.startsWith("image/") ?
-              <img src={ImgDoc} alt="" className={style.docTypeImgStyle} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData) }} />
-              : <TextSnippetOutlinedIcon style={{ fontSize: 20, color: `${data?.subStatus}` }} onClick={() => { window.open(innerData?.fileURL, '_blank'); }} />),
+          "icon": array?.map(innerData => {
+            if (innerData?.isSkipReason) {
+              return <img key={innerData?.rowId} src={skipDocs} alt="" className={style.docTypeImgStyle} />;
+            }
+            return innerData?.fileType === 'application/pdf' ?
+              <img src={PdfDoc} alt="" className={style.docTypeImgStyle} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData) }} />
+              : innerData?.fileType?.startsWith("image/") ?
+                <img src={ImgDoc} alt="" className={style.docTypeImgStyle} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData) }} />
+                : <TextSnippetOutlinedIcon style={{ fontSize: 20, color: `${data?.subStatus}` }} onClick={() => { window.open(innerData?.fileURL, '_blank'); }} />;
+          }),
           'isShowHoverText': false
         });
       } else {
         if (data === "valid") {
           temp.push({
             "type": "icon",
-            "icon": array?.map(innerData => innerData[data] ?
-              <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A` }} />
-              : <WarningAmberRoundedIcon style={{ fontSize: 20, color: `#FF6562` }} />),
+            "icon": array?.map(innerData =>
+              innerData?.isSkipReason ? <RemoveIcon key={innerData?.rowId} style={{ fontSize: 20, marginLeft: 13 }} /> : innerData?.documentType === 'Profile Picture' ? <RemoveIcon key={innerData?.rowId} style={{ fontSize: 20, marginLeft: 13 }} /> : innerData[data] ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A` }} /> : <WarningAmberRoundedIcon style={{ fontSize: 20, color: `#FF6562` }} />),
             'isShowHoverText': false
           });
         } else if (data === "verified") {
-          // Check if staffView is true
           if (!staffView) {
-            console.log("staffView is true");
-            console.log("StaffView", staffView)
-            // If staffView is true, push the CheckCircleRoundedIcon
             temp.push({
               "type": "icon",
-              "icon": array?.map((innerData, index) => (
-                innerData?.isVerified === true
+              "icon": array?.map((innerData, idx) => {
+                if (innerData?.isSkipReason) {
+                  return <RemoveIcon key={innerData?.rowId} style={{ fontSize: 20, marginLeft: 20 }} />;
+                }
+                return innerData?.isVerified === true
                   ? (
-                    <div className={`${style.greenButtonSmall} ${style.cursorPointer}`}>
+                    <div key={innerData?.rowId} className={`${style.greenButtonSmall} ${style.cursorPointer}`}>
                       <Tooltip title={"Click to Revert Acceptance"} arrow>
                         <div className={`${style.buttonGreyTextStyle2} ${style.alignCenter}`}
-                          onClick={() => handleVerifyClickDocs(array, index)}
+                          onClick={() => handleVerifyClickDocs(array, idx)}
                         >
                           Accepted
                         </div>
                       </Tooltip>
                     </div>
                   ) : (
-                    <div className={`${style.purpleButtonSmall} ${style.cursorPointer}`}>
+                    <div key={innerData?.rowId} className={`${style.purpleButtonSmall} ${style.cursorPointer}`}>
                       <Tooltip title={"Click to Accept"} arrow>
                         <div className={`${style.buttonGreyTextStyle2} ${style.alignCenter}`}
-                          onClick={() => handleVerifyClickDocs(array, index)}
+                          onClick={() => handleVerifyClickDocs(array, idx)}
                         >
                           Accept
                         </div>
                       </Tooltip>
                     </div>
-                  )
-              ))
+                  );
+              })
             });
-
           }
           else {
             temp.push({
               "type": "icon",
-              "icon": array?.map((innerData, index) => (
-                <CheckCircleRoundedIcon style={{ fontSize: 20, color: '#25BF6A' }} />
-              )),
+              "icon": array?.map(innerData =>
+                innerData?.isSkipReason ? <RemoveIcon key={innerData?.rowId} style={{ fontSize: 20, marginLeft: 20 }} /> : <CheckCircleRoundedIcon style={{ fontSize: 20, color: '#25BF6A' }} />
+              ),
               'isShowHoverText': false
             });
           }
@@ -2048,9 +2069,13 @@ const NewActiveApplication = ({
           temp.push({
             "type": "text",
             "value": array.map(innerData =>
-              <div className={style.cursorPointer} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData); }}>
-                {innerData[data]}
-              </div>
+              innerData?.isSkipReason ? (
+                <span key={innerData?.rowId}>{innerData[data] ?? ''}</span>
+              ) : (
+                <div key={innerData?.rowId} className={style.cursorPointer} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData); }}>
+                  {innerData[data]}
+                </div>
+              )
             )
           });
         }
@@ -3147,11 +3172,11 @@ const NewActiveApplication = ({
   const renderFieldsBasedOnStep = (data, index) => {
     let formIndex = form?.forms?.findIndex(formData => formData?.schemaCategory === data?.schemaCategory);
     switch (data?.schemaCategory) {
-      case "UploadYourDoc":
-        console.log("UploadYourDoc Table Data:", form?.forms?.[formIndex]?.data?.table);
+      case "UploadYourDoc": {
+        const combinedUploadTable = getCombinedUploadTableData(formIndex);
         return (
           <div>
-            {form?.forms?.[formIndex]?.data?.table?.length !== 0 && (
+            {combinedUploadTable?.length > 0 && (
               <TableTwo
                 tableHeaderValues={[
                   "",
@@ -3162,11 +3187,10 @@ const NewActiveApplication = ({
                   "Valid",
                   "",
                 ]}
-                tableDataValues={getApplicantValues(form?.forms?.[formIndex]?.data?.table, index)}
-                tableData={form?.forms?.[formIndex]?.data?.table || []}
+                tableDataValues={getApplicantValues(combinedUploadTable, index)}
+                tableData={combinedUploadTable}
                 gridStyle={style.uploadYourDocGrid}
                 actions={[]}
-                // scrollStyle={style.contractScrollStyle}
                 tableSortValues={[]}
                 heading={"There are no Records for you to manage"}
                 onClickFunction={() => { }}
@@ -3175,6 +3199,7 @@ const NewActiveApplication = ({
             )}
           </div>
         );
+      }
       case "CME":
         return (
           <>
@@ -4247,10 +4272,11 @@ const NewActiveApplication = ({
   const renderFieldsBasedOnStepReappointment = (data, index) => {
     let formIndex = form?.forms?.findIndex(formData => formData?.schemaCategory === data?.schemaCategory);
     switch (data?.schemaCategory) {
-      case "UploadYourDoc":
+      case "UploadYourDoc": {
+        const combinedUploadTable = getCombinedUploadTableData(formIndex);
         return (
           <>
-            {form?.forms?.[formIndex]?.data?.table?.length !== 0 && (
+            {combinedUploadTable?.length > 0 && (
               <TableTwo
                 tableHeaderValues={[
                   "",
@@ -4261,11 +4287,10 @@ const NewActiveApplication = ({
                   "Valid",
                   "",
                 ]}
-                tableDataValues={getApplicantValues(form?.forms?.[formIndex]?.data?.table, index)}
-                tableData={form?.forms?.[formIndex]?.data?.table || []}
+                tableDataValues={getApplicantValues(combinedUploadTable, index)}
+                tableData={combinedUploadTable}
                 gridStyle={style.uploadYourDocGrid}
                 actions={[]}
-                // scrollStyle={style.contractScrollStyle}
                 tableSortValues={[]}
                 heading={"There are no Records for you to manage"}
                 onClickFunction={() => { }}
@@ -4275,6 +4300,7 @@ const NewActiveApplication = ({
             )}
           </>
         );
+      }
       case "CME":
         return (
           <>
