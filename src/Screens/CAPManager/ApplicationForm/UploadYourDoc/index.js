@@ -749,6 +749,10 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
         (tableData) => tableData?.documentType === data?.document?.shortName
       );
       const hasUploadedVerifiedValid = matchingRows.some((row) => row?.verified && row?.valid);
+      // Don't show Profile Picture in the list if uploaded but not yet verified/valid
+      if (data?.document?.shortName === 'Profile Picture' && matchingRows?.length > 0 && !hasUploadedVerifiedValid) {
+        return false;
+      }
       return !hasUploadedVerifiedValid;
     });
   }, [basicForm?.documentsRequired, tempValue?.table]);
