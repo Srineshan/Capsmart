@@ -849,12 +849,14 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                 );
                                 const isUploadedVerifiedValid = matchingRows.some((row) => row?.verified && row?.valid);
                                 const isRequired = getIsDocRequired(data?.document?.shortName) === 'Required';
-                                const showSkipDropdown = isRequired && !isUploadedVerifiedValid;
+                                const isMissingRequired = isRequired && !isUploadedVerifiedValid;
+                                const canShowSkipReason = (data?.allowSkipReason === true || data?.document?.allowSkipReason === true || data?.document?.shortName === 'N95 Mask Fit Test');
+                                const showSkipDropdown = isMissingRequired && canShowSkipReason;
                                 const hasSkip = Boolean(skipReason?.[key]);
                                 const borderClass =
                                     hasSkip || isUploadedVerifiedValid
                                         ? style.greenBorder
-                                        : showSkipDropdown
+                                        : isMissingRequired
                                             ? style.redBorder
                                             : !isUploadedVerifiedValid
                                                 ? style.yellowBorder

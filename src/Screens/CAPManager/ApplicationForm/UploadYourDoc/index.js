@@ -899,16 +899,28 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                           <div
                             className={` ${style.fullWidth}`}
                           >
-                            <CommonSelectField
-                              value={skipReason?.[normalizeKey(data?.document?.shortName)] ? skipReason?.[normalizeKey(data?.document?.shortName)] : ''}
-                              onChange={(e) => handleSkipReason(data?.document?.shortName, e.target.value)}
-                              className={`${style.fullWidth} ${style.verticalAlignCenter}`}
-                              firstOptionLabel={'Select A Reason For Skipping This Document'}
-                              firstOptionValue={''}
-                              valueList={data?.document?.shortName === 'N95 Mask Fit Test' ? ['Awaiting Replacement'] : ['Current Document Not Available', 'Replacement Document Requested']}
-                              labelList={data?.document?.shortName === 'N95 Mask Fit Test' ? ['Awaiting Replacement'] : ['Current Document Not Available', 'Replacement Document Requested']}
-                              disabledList={(data?.document?.shortName === 'N95 Mask Fit Test' ? ['Awaiting Replacement'] : ['Current Document Not Available', 'Replacement Document Requested']).map(() => false)}
-                            />
+                            {(data?.allowSkipReason === true || data?.document?.allowSkipReason === true || data?.document?.shortName === 'N95 Mask Fit Test') ? (
+                              <CommonSelectField
+                                value={skipReason?.[normalizeKey(data?.document?.shortName)] ? skipReason?.[normalizeKey(data?.document?.shortName)] : ''}
+                                onChange={(e) => handleSkipReason(data?.document?.shortName, e.target.value)}
+                                className={`${style.fullWidth} ${style.verticalAlignCenter}`}
+                                firstOptionLabel={'Select A Reason For Skipping This Document'}
+                                firstOptionValue={''}
+                                valueList={data?.document?.shortName === 'N95 Mask Fit Test' ? ['Awaiting Replacement'] : ['Current Document Not Available', 'Replacement Document Requested']}
+                                labelList={data?.document?.shortName === 'N95 Mask Fit Test' ? ['Awaiting Replacement'] : ['Current Document Not Available', 'Replacement Document Requested']}
+                                disabledList={(data?.document?.shortName === 'N95 Mask Fit Test' ? ['Awaiting Replacement'] : ['Current Document Not Available', 'Replacement Document Requested']).map(() => false)}
+                              />
+                            ) : (tempValue?.table && tempValue?.table?.filter(
+                              (tableData) =>
+                                tableData?.documentType ===
+                                data?.document?.shortName
+                            )?.length !== 0) ? (
+                              <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>
+                                Already Uploaded
+                              </div>
+                            ) : (
+                              <span />
+                            )}
                             {/* {data?.instruction} */}
                           </div>
                         ) : (tempValue?.table && tempValue?.table?.filter(
