@@ -56,6 +56,7 @@ import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined';
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import { Tooltip } from "@mui/material";
+// import CardMembershipIcon from '@mui/icons-material/CardMembership';
 import ReappointmentReportDialog from "./ReappointmentReportDialog";
 import Resend from './../../../images/Resend.png';
 import ResendDisabled from './../../../images/Resend-disabled.png';
@@ -2526,11 +2527,29 @@ const StaffApplicationList = ({
           const completedIndicator = course?.is_course_completed
             ? <CircleIcon style={{ color: '#00C07F', fontSize: '12px', marginRight: '5px' }} />
             : <CircleIcon style={{ color: '#FF6562', fontSize: '12px', marginRight: '5px' }} />;
+
+          const isCompleted =
+            course?._course_completed === true ||
+            course?.is_course_completed === true ||
+            course?.course_status === "completed";
+          const completionDate =
+            course?.course_completion_date &&
+              !Number.isNaN(new Date(course.course_completion_date))
+              ? format(new Date(course.course_completion_date), dateFormat)
+              : null;
+          const hasCertificate = false;
+
           return (
             <div key={index} className={style.fullWidth}>
               <span>
                 {completedIndicator} {course?.course_name || '-'}
+                {completionDate
+                  ? ` — ${completionDate}`
+                  : isCompleted
+                    ? " — Completion date N/A"
+                    : ""}
               </span>
+              {/* Certificate icon removed for now */}
               {index !== courses.length - 1 && (
                 <hr style={{ margin: '5px 0 -10px 0px' }} />
               )}
@@ -2796,11 +2815,32 @@ const StaffApplicationList = ({
           const completedIndicator = course?.is_course_completed
             ? <CircleIcon style={{ color: '#00C07F', fontSize: '12px', marginRight: '5px' }} />
             : <CircleIcon style={{ color: '#FF6562', fontSize: '12px', marginRight: '5px' }} />;
+
+          const isCompleted =
+            course?._course_completed === true ||
+            course?.is_course_completed === true ||
+            course?.course_status === "completed";
+          const completionDate =
+            course?.course_completion_date &&
+              !Number.isNaN(new Date(course.course_completion_date))
+              ? format(new Date(course.course_completion_date), dateFormat)
+              : null;
+          const hasCertificate = !!(
+            course?.certificate_details?.view_url ||
+            course?.certificate_details?.download_url
+          );
+
           return (
             <div key={index} className={style.fullWidth}>
               <span>
                 {completedIndicator} {course?.course_name || '-'}
+                {completionDate
+                  ? ` — ${completionDate}`
+                  : isCompleted
+                    ? " — Completion date N/A"
+                    : ""}
               </span>
+              {/* Certificate icon removed for now */}
               {index !== courses.length - 1 && (
                 <hr style={{ margin: '5px 0 -10px 0px' }} />
               )}
@@ -3121,11 +3161,32 @@ const StaffApplicationList = ({
           const completedIndicator = course?.is_course_completed
             ? <CircleIcon style={{ color: '#00C07F', fontSize: '12px', marginRight: '5px' }} />
             : <CircleIcon style={{ color: '#FF6562', fontSize: '12px', marginRight: '5px' }} />;
+
+          const isCompleted =
+            course?._course_completed === true ||
+            course?.is_course_completed === true ||
+            course?.course_status === "completed";
+          const completionDate =
+            course?.course_completion_date &&
+              !Number.isNaN(new Date(course.course_completion_date))
+              ? format(new Date(course.course_completion_date), dateFormat)
+              : null;
+          const hasCertificate = !!(
+            course?.certificate_details?.view_url ||
+            course?.certificate_details?.download_url
+          );
+
           return (
             <div key={index} className={style.fullWidth}>
               <span>
                 {completedIndicator} {course?.course_name || '-'}
+                {completionDate
+                  ? ` — ${completionDate}`
+                  : isCompleted
+                    ? " — Completion date N/A"
+                    : ""}
               </span>
+              {/* Certificate icon removed for now */}
               {index !== courses.length - 1 && (
                 <hr style={{ margin: '5px 0 -10px 0px' }} />
               )}
