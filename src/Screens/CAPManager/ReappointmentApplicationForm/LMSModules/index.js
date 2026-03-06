@@ -129,11 +129,33 @@ const LMSModules = ({ basicForm, setBasicForm, getPreApplication }) => {
     }
 
     const handleSubmitApplicationReq = async (data) => {
-        // if (isEdited) {
+        // All courses must be completed for acknowledged === true
+        const rawCoursesForAck = Array.isArray(basicForm?.lmsDetails)
+            ? basicForm.lmsDetails.flatMap((item) => item?.courses || [])
+            : (basicForm?.lmsDetails?.courses ?? []);
+        const coursesForAck = (rawCoursesForAck || []).map((c) => ({
+            ...c,
+            is_course_completed: c._course_completed ?? c.is_course_completed,
+        }));
+        const areAllCoursesCompleted = (coursesForAck || []).every(
+            (c) =>
+                c?._course_completed === true ||
+                c?.is_course_completed === true ||
+                c?.course_status === 'completed'
+        );
+        const incompleteCourseNames = (coursesForAck || [])
+            .filter(
+                (c) =>
+                    !(c?._course_completed === true ||
+                        c?.is_course_completed === true ||
+                        c?.course_status === 'completed')
+            )
+            .map((c) => c?.course_name || c?.name || c?.course_id || 'Course');
+
         let temp = {
             schemaId: basicForm?.forms?.[formIndex]?.schemaId,
             data: basicForm?.forms?.[formIndex]?.data,
-            unFilledFields: warningFields?.map(data => data?.label),
+            unFilledFields: incompleteCourseNames,
             acknowledged: true
         }
         await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)

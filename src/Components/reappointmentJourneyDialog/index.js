@@ -64,9 +64,11 @@ const ReappointmentJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, im
     const MiscellaneousQuestion = basicForm?.forms?.find(form => form?.schemaCategory === 'MISCELLANEOUS_QUESTIONS');
     const ScheduleA = basicForm?.forms?.find(form => form?.schemaCategory === 'ScheduleA');
     const ScheduleB = basicForm?.forms?.find(form => form?.schemaCategory === 'ScheduleB');
+    const lmsForm = basicForm?.forms?.find(form => form?.schemaCategory === 'LMS');
 
 
     const unFilledFields = uploadDocForm?.unFilledFields ?? [];
+    const lmsUnfilledFields = lmsForm?.unFilledFields ?? [];
     const documentsRequired = basicForm?.documentsRequired ?? [];
     const requiredDocNames = documentsRequired?.filter(doc => getIsDocRequired(doc?.document?.shortName) === "Required")?.map(doc => doc?.document?.shortName);
     const missingRequiredDocs = requiredDocNames?.filter(name => unFilledFields?.includes(name));
@@ -119,9 +121,12 @@ const ReappointmentJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, im
     let hasMissingScheduleA = ScheduleAUpdate?.includes("skipped");
     let hasMissingScheduleB = ScheduleBUpdate?.includes("skipped");
 
+    // LMS: use unFilledFields from LMS form (incomplete course names)
+    const hasIncompleteLmsCourses = (lmsUnfilledFields || [])?.length !== 0;
+
     // const isSubmissionBlocked = missingRequiredDocs?.length !== 0 || hasMandatoryTrueDemoGraphicData?.length !== 0 || hasMandatoryTrueprofessionalConduct?.length !== 0 || hasMandatoryTruecriminalHistory?.length !== 0 || hasMandatoryTruemedicalHistory?.length !== 0 || hasMandatoryTrueprivilegeAtOtherHosiptal !== 0 || hasMandatoryTruepatientConern !== 0 || hasMandatoryTrueCME || hasMandatoryTruemedicalDirectives || hasMandatoryTrueMiscellaneousQuestion !== 0
     // const isSubmissionBlocked = missingRequiredDocs?.length !== 0 || hasMandatoryTrueDemoGraphicData?.length !== 0 || hasMandatoryTrueprofessionalConduct?.length !== 0 || hasMandatoryTruecriminalHistory?.length !== 0 || hasMandatoryTruemedicalHistory?.length !== 0 || hasMandatoryTrueprivilegeAtOtherHosiptal !== 0 || hasMandatoryTruepatientConern !== 0
-    const isSubmissionBlocked = missingRequiredDocs?.length !== 0 || hasMandatoryTrueDemoGraphicData?.length !== 0 || hasMandatoryTrueprofessionalConduct?.length !== 0 || hasMandatoryTruecriminalHistory?.length !== 0 || hasMandatoryTruemedicalHistory?.length !== 0 || hasMandatoryTrueprivilegeAtOtherHosiptal?.length !== 0 || hasMandatoryTruepatientConern?.length !== 0 || hasMandatoryTrueCME || hasMandatoryTruemedicalDirectives || hasMandatoryTrueMiscellaneousQuestion.length !== 0 || hasMissingScheduleA || hasMissingScheduleB
+    const isSubmissionBlocked = missingRequiredDocs?.length !== 0 || hasMandatoryTrueDemoGraphicData?.length !== 0 || hasMandatoryTrueprofessionalConduct?.length !== 0 || hasMandatoryTruecriminalHistory?.length !== 0 || hasMandatoryTruemedicalHistory?.length !== 0 || hasMandatoryTrueprivilegeAtOtherHosiptal?.length !== 0 || hasMandatoryTruepatientConern?.length !== 0 || hasMandatoryTrueCME || hasMandatoryTruemedicalDirectives || hasMandatoryTrueMiscellaneousQuestion.length !== 0 || hasMissingScheduleA || hasMissingScheduleB || hasIncompleteLmsCourses
 
     const handleLogout = () => {
         var cookies = new Cookie();
@@ -187,11 +192,18 @@ const ReappointmentJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, im
                                             <div className={style.spaceBetween}>
                                                 <div className={style.displayInRow}>
                                                     <div>
-                                                        <div className={`${(!data?.acknowledged || errorSchema === data?.schemaCategory || (data?.schemaCategory === 'UploadYourDoc' && missingRequiredDocs?.length !== 0) || (data?.schemaCategory === 'DemographicData' && hasMandatoryTrueDemoGraphicData?.length !== 0) || (data?.schemaCategory === 'ProfessionalConduct' && hasMandatoryTrueprofessionalConduct?.length !== 0) || (data?.schemaCategory === 'CriminalHistory' && hasMandatoryTruecriminalHistory?.length !== 0) || (data?.schemaCategory === 'MedicalHistory' && hasMandatoryTruemedicalHistory?.length !== 0) || (data?.schemaCategory === 'PRIVILEGE_STATUS_AT_HOSPITAL' && hasMandatoryTrueprivilegeAtOtherHosiptal?.length !== 0) || (data?.schemaCategory === 'PATIENT_CONCERN_DISCLOSURE' && hasMandatoryTruepatientConern?.length !== 0) || (data?.schemaCategory === 'MEDICAL_DIRECTIVES' && hasMandatoryTruemedicalDirectives) || (data?.schemaCategory === 'CME' && hasMandatoryTrueCME) || (data?.schemaCategory === 'MISCELLANEOUS_QUESTIONS' && hasMandatoryTrueMiscellaneousQuestion?.length !== 0) || (data?.schemaCategory === 'ScheduleA' && hasMissingScheduleA) || (data?.schemaCategory === 'ScheduleB' && hasMissingScheduleB)) ? style.completedItemsTextRed : style.completedItemsText} ${disclosureList?.includes(data?.schemaCategory) ? style.marginLeft : ''}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/reappointmentApplicationForm/${applicationId}/${data?.formCategory}/${btoa(data?.schemaCategory)}`); getIsOpen(false) }}>{data?.title}</div>
+                                                        <div className={`${(!data?.acknowledged || errorSchema === data?.schemaCategory || (data?.schemaCategory === 'UploadYourDoc' && missingRequiredDocs?.length !== 0) || (data?.schemaCategory === 'LMS' && hasIncompleteLmsCourses) || (data?.schemaCategory === 'DemographicData' && hasMandatoryTrueDemoGraphicData?.length !== 0) || (data?.schemaCategory === 'ProfessionalConduct' && hasMandatoryTrueprofessionalConduct?.length !== 0) || (data?.schemaCategory === 'CriminalHistory' && hasMandatoryTruecriminalHistory?.length !== 0) || (data?.schemaCategory === 'MedicalHistory' && hasMandatoryTruemedicalHistory?.length !== 0) || (data?.schemaCategory === 'PRIVILEGE_STATUS_AT_HOSPITAL' && hasMandatoryTrueprivilegeAtOtherHosiptal?.length !== 0) || (data?.schemaCategory === 'PATIENT_CONCERN_DISCLOSURE' && hasMandatoryTruepatientConern?.length !== 0) || (data?.schemaCategory === 'MEDICAL_DIRECTIVES' && hasMandatoryTruemedicalDirectives) || (data?.schemaCategory === 'CME' && hasMandatoryTrueCME) || (data?.schemaCategory === 'MISCELLANEOUS_QUESTIONS' && hasMandatoryTrueMiscellaneousQuestion?.length !== 0) || (data?.schemaCategory === 'ScheduleA' && hasMissingScheduleA) || (data?.schemaCategory === 'ScheduleB' && hasMissingScheduleB)) ? style.completedItemsTextRed : style.completedItemsText} ${disclosureList?.includes(data?.schemaCategory) ? style.marginLeft : ''}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/reappointmentApplicationForm/${applicationId}/${data?.formCategory}/${btoa(data?.schemaCategory)}`); getIsOpen(false) }}>{data?.title}</div>
                                                         {(data?.schemaCategory === 'UploadYourDoc' && missingRequiredDocs?.length !== 0) && (
                                                             data?.unFilledFields?.filter(innerData => missingRequiredDocs?.includes(innerData))?.map((innerData, innerIndex) => (
                                                                 <div key={innerIndex} className={`${style.completedItemsTextRed} ${style.marginLeft}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/reappointmentApplicationForm/${applicationId}/Form/${btoa(data?.schemaCategory)}`); getIsOpen(false); }}>
                                                                     {innerData}
+                                                                </div>
+                                                            ))
+                                                        )}
+                                                        {(data?.schemaCategory === 'LMS' && hasIncompleteLmsCourses) && (
+                                                            (data?.unFilledFields || [])?.map((courseName, innerIndex) => (
+                                                                <div key={innerIndex} className={`${style.completedItemsTextRed} ${style.marginLeft}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/reappointmentApplicationForm/${applicationId}/${data?.formCategory}/${btoa(data?.schemaCategory)}`); getIsOpen(false); }}>
+                                                                    {courseName}
                                                                 </div>
                                                             ))
                                                         )}
@@ -202,6 +214,7 @@ const ReappointmentJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, im
                                                 <div>
                                                     {(!data?.acknowledged || errorSchema === data?.schemaCategory ||
                                                         (data?.schemaCategory === 'UploadYourDoc' && missingRequiredDocs?.length !== 0) ||
+                                                        (data?.schemaCategory === 'LMS' && hasIncompleteLmsCourses) ||
                                                         (data?.schemaCategory === 'DemographicData' && hasMandatoryTrueDemoGraphicData?.length !== 0) ||
                                                         (data?.schemaCategory === 'ProfessionalConduct' && hasMandatoryTrueprofessionalConduct?.length !== 0) ||
                                                         (data?.schemaCategory === 'CriminalHistory' && hasMandatoryTruecriminalHistory?.length !== 0) ||

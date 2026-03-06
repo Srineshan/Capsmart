@@ -145,8 +145,10 @@ const ReappointmentProgressCard = ({ dataType, title, timeNumber, timeText, prog
                             const ScheduleA = basicForm?.forms?.find(form => form?.schemaCategory === 'ScheduleA');
                             const ScheduleB = basicForm?.forms?.find(form => form?.schemaCategory === 'ScheduleB');
                             const acknowledgment = basicForm?.forms?.find(form => form?.schemaCategory === 'ApplicantAcknowledgement');
+                            const lmsForm = basicForm?.forms?.find(form => form?.schemaCategory === 'LMS');
 
                             const unFilledFields = uploadDocForm?.unFilledFields ?? [];
+                            const lmsUnfilledFields = lmsForm?.unFilledFields ?? [];
                             const documentsRequired = basicForm?.documentsRequired ?? [];
                             const demographicDataUnfilledFields = demographicData?.unFilledFields ?? [];
                             const professionalConductUnfilledFields = professionalConductDisclosure?.unFilledFields ?? [];
@@ -212,6 +214,9 @@ const ReappointmentProgressCard = ({ dataType, title, timeNumber, timeText, prog
                                 let hasMandatoryFalse = CMEUnfilledFields?.includes("inProgress");
 
                                 dotClass = hasMandatoryTrue ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
+                            } else if (data?.schemaCategory === 'LMS') {
+                                const hasIncompleteLmsCourses = (lmsUnfilledFields || []).length > 0;
+                                dotClass = hasIncompleteLmsCourses ? style.reddotStyle : style.dotStyle;
                             } else if (data?.schemaCategory === 'MISCELLANEOUS_QUESTIONS') {
                                 let hasMandatoryTrue = MiscellaneousQuestionUnfilledFields?.some(field => JSON.parse(field)?.label?.mandatory === true);
                                 let hasMandatoryFalse = MiscellaneousQuestionUnfilledFields?.some(field => JSON.parse(field)?.label?.mandatory !== true);
