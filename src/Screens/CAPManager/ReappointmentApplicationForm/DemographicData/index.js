@@ -77,13 +77,45 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
 
     useEffect(() => {
         if (formIndex) {
-            // if (basicForm?.forms?.[formIndex]?.data?.contactAddress1 === undefined && basicForm?.forms?.[formIndex]?.data?.contactAddress2 === undefined && basicForm?.forms?.[formIndex]?.data?.contactAddress3 === undefined) {
-            //     setShowContactInfo(true)
-            // }
+            // Restore previously saved Yes/No choices from form data
             setIsShowContactInfo(basicForm?.forms?.[formIndex]?.data?.yesOrNoData?.isShowContactInfo ? basicForm?.forms?.[formIndex]?.data?.yesOrNoData?.isShowContactInfo : '');
             setIsShowDemographicInfo(basicForm?.forms?.[formIndex]?.data?.yesOrNoData?.isShowDemographicInfo ? basicForm?.forms?.[formIndex]?.data?.yesOrNoData?.isShowDemographicInfo : '');
         }
     }, [formIndex])
+
+    // Auto-open sections when key demographic or contact info is missing,
+    // regardless of previous Yes/No answer, so user can provide required data.
+    useEffect(() => {
+        if (!basicForm || formIndex === undefined) return;
+
+        const applicant = basicForm?.basicDetails?.applicant;
+        const isDemographicMissing =
+            !applicant?.name?.firstName ||
+            !applicant?.name?.lastName ||
+            !applicant?.dateOfBirth;
+
+        if (isDemographicMissing) {
+            setIsShowDemographicInfo('Yes');
+        }
+
+        const contactData = basicForm?.forms?.[formIndex]?.data;
+        const home = contactData?.contactAddress1?.homeAddress;
+        const mailing = contactData?.contactAddress2?.mailingAddress;
+
+        const isContactMissing =
+            !home?.streetName ||
+            !home?.city ||
+            !home?.province ||
+            !home?.pinCode ||
+            !mailing?.streetName ||
+            !mailing?.city ||
+            !mailing?.province ||
+            !mailing?.pinCode;
+
+        if (isContactMissing) {
+            setIsShowContactInfo('Yes');
+        }
+    }, [basicForm, formIndex]);
 
     useEffect(() => {
         if (basicForm) {
@@ -743,7 +775,6 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
         ) {
             allMissingKeys = allMissingKeys.filter(data => !businessAddressKeys.includes(data?.key));
         }
-
         // Validate business phone format
         const phonePath = `forms[${formIndex}].data.contactAddress3.business.businessPhone`;
         const phoneValue = getValueByPath(basicForm, phonePath);
@@ -1192,7 +1223,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                         <Tooltip title={"Click to Skip This Step and Continue Later"} arrow> <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div></Tooltip>
                         <Tooltip title={"Click to Save your Progress and Continue later"} arrow>
                             <div
-                                className={`${style.saveInProgress} ${style.marginTop} ${!isContinueEnabled && yesOrNoAddress === '' && yesOrNoDemographic === ''
+                                className={`${style.saveInProgress} ${style.marginTop10} ${!isContinueEnabled && yesOrNoAddress === '' && yesOrNoDemographic === ''
                                     ? style.disabledButtonLook
                                     : ''
                                     }`}

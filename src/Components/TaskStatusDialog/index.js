@@ -15,7 +15,7 @@ import CommonSelectField from "../CommonFields/CommonSelectField";
 import jsPDF from "jspdf";
 import CommonRadio from "../CommonFields/CommonRadio";
 
-const TaskStatusDialog = ({ getIsOpen, selectedTab }) => {
+const TaskStatusDialog = ({ getIsOpen, selectedTab, isSetupDialog = false }) => {
   const [isPrintClicked, setIsPrintClicked] = useState(false);
   const [selectedOption, setSelectedOption] = useState({});
   const [task, setTask] = useState([]);
@@ -28,6 +28,8 @@ const TaskStatusDialog = ({ getIsOpen, selectedTab }) => {
   const [privilege, setPrivilege] = useState('');
   const [fileName, setFileName] = useState("");
   const [file, setFile] = useState({});
+  const [setupChecklist, setSetupChecklist] = useState([]);
+  const [isSetupLoading, setIsSetupLoading] = useState(false);
   const workModeType = sessionStorage.getItem('workModeType')
   const applicationType = sessionStorage.getItem('applicationCreationType') ?? 'REAPPOINTMENT';
   const base64String = pdfBase64?.split(',')[1]; // Remove prefix
@@ -37,6 +39,24 @@ const TaskStatusDialog = ({ getIsOpen, selectedTab }) => {
     getPreApplication();
     // getApplication();
   }, []);
+
+  useEffect(() => {
+    if (isSetupDialog) {
+      const fetchChecklist = async () => {
+        setIsSetupLoading(true);
+        try {
+          const { data } = await GET(`entity-service/checklist`);
+          setSetupChecklist(data || []);
+        } catch (error) {
+          ErrorToaster("Unable to load setup checklist");
+        } finally {
+          setIsSetupLoading(false);
+        }
+      };
+
+      fetchChecklist();
+    }
+  }, [isSetupDialog]);
 
   console.log("selectedTabselectedTab", selectedTab)
   useEffect(() => {
@@ -259,6 +279,246 @@ const TaskStatusDialog = ({ getIsOpen, selectedTab }) => {
 
   //   return true; // If all tasks are completed, make it clickable
   // };
+  // };
+
+  const renderSetupContent = () => {
+    return (
+      <>
+        <div className={style.spaceBetween}>
+          <div className={style.heading}>
+            Setup Your New Applicant Processing Checklist &amp; Task Manager
+          </div>
+          <div className={style.displayInRow}>
+            <img
+              src={CrossPink}
+              alt="cross"
+              className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft}`}
+              onClick={() => {
+                getIsOpen(false);
+              }}
+            />
+          </div>
+        </div>
+        <div className={style.setupDescription}>
+          CAPManger includes a checklist and an automated task manager with workflow
+          and processing of new staff applicants. This helps to keep staff manager on
+          top of any items that need to be addressed for applicants in the process of
+          getting Credentialed and Privileged.
+        </div>
+        <div className={style.dialogBody}>
+          {isSetupLoading ? (
+            <div className={style.setupLoading}>Loading checklist…</div>
+          ) : (
+            (setupChecklist || []).map((item, index) => (
+              <div
+                key={index}
+                className={`${style.gridContainer} ${style.shadowdown} ${style.marginTop} ${style.setupRow}`}
+                onClick={() => {
+                  // Placeholder for future setup click behavior
+                }}
+              >
+                <div />
+                <div className={style.task}>{item?.taskName}</div>
+                <div />
+                <div className={style.setupAction}>
+                  <div className={style.setupActionContent}>
+                    <div className={style.setupIconBackground}>
+                      <WarningIcon className={style.setupIconRight} />
+                    </div>
+                    <span className={style.setupText}>Setup</span>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </>
+    );
+  };
+
+  const renderTaskContent = () => {
+    return (
+      <>
+        <div className={style.spaceBetween}>
+          <div className={style.heading}>
+            Application Processing Tasks For:
+          </div>
+          <div className={style.displayInRow}>
+            <div
+              className={`${isPrintClicked && style.addStyle} ${style.alignCenter
+                } ${style.cursorPointer} ${style.marginRight}`}
+            >
+              <PrintOutlinedIcon
+                sx={{
+                  fontSize: isPrintClicked ? 20 : 25,
+                  color: isPrintClicked ? "#fff" : "#06617A",
+                }}
+                onClick={handlePrintClick}
+              />
+            </div>
+            <img
+              src={CrossPink}
+              alt="cross"
+              className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft}`}
+              onClick={() => {
+                getIsOpen(false);
+              }}
+            />
+          </div>
+        </div>
+        <div ref={componentRef} className={`${style.pagebreak}`}>
+          <div className={`${style.spaceBetween}`}>
+            <div className={`${style.fontstyle} ${style.marginTop10}`}>
+              {/* {formDetails?.basicDetails?.applicant?.name?.firstName},{" "}
+              {formDetails?.basicDetails?.applicant?.name?.lastName}{" "} */}
+              {formDetails?.basicDetails?.applicant?.name?.firstName
+                ? formDetails.basicDetails.applicant.name.firstName.charAt(0).toUpperCase() +
+                formDetails.basicDetails.applicant.name.firstName.slice(1).toLowerCase()
+                : ""}{", "}
+              {formDetails?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{" "}
+              <span className={`${style.fontstyleassociate}`}>
+                {formDetails?.basicDetails?.applicant?.applicantType} |{" "}
+                {
+                  formDetails?.basicDetails?.credentialingPrivilegeCategory
+                    ?.credentialingCategory
+                }
+              </span>
+            </div>
+            {/* <div className={`${style.referenceFont} ${style.marginRight30}`}>
+              IT Reference info
+              <ContentCopyIcon className={`${style.copyicon}`} />
+            </div> */}
+          </div>
+          <div className={`${style.dialogBody}`}>
+            {task?.map((taskData, index) => {
+              const isNotCompleted = taskData?.taskStatus === "NOT_COMPLETED";
+              const isInProgress = taskData?.taskStatus === "INPROGRESS";
+              const showSelect =
+                taskData?.taskAction === "TASK_STATUS_UPDATE_ONLY" ||
+                taskData?.taskAction === "SEND_NON_CAPSMART_FORM_INTERNAL_SOURCE_URL";
+
+              const formattedDate = format(
+                new Date(taskData?.lastModifiedDate),
+                "MMM dd, yyyy"
+              );
+
+              // Get dependent tasks array or empty array if none exist
+              const dependentTasks = taskData?.constraintDependedTasks || [];
+
+              // Function to check if a task is incomplete
+              const isTaskIncomplete = (task) => {
+                return task?.taskStatus === "INPROGRESS" || task?.taskStatus === "NOT_COMPLETED";
+              };
+
+              // Check if all dependent tasks are completed
+              const isDependentTaskCompleted = dependentTasks.length === 0 ? true :
+                dependentTasks.every(dependentTask => {
+                  // Find the parent task data using the dependent task ID
+                  const parentTask = task.find(t => t?.id === dependentTask?.id);
+
+                  // Log for debugging
+                  console.log({
+                    dependentTaskId: dependentTask?.id,
+                    parentTaskFound: !!parentTask,
+                    parentTaskStatus: parentTask?.taskStatus,
+                    isIncomplete: parentTask ? isTaskIncomplete(parentTask) : false
+                  });
+
+                  // Return true if parent task is completed (not incomplete)
+                  return parentTask ? !isTaskIncomplete(parentTask) : false;
+                });
+
+              console.log('Task ID:', taskData?.id, 'Dependent tasks completed:', isDependentTaskCompleted);
+              // if (dependentTasks && dependentTasks.length > 0) {
+              //   isDependentTaskCompleted = dependentTasks.every(task => task?.id && task?.taskStatus === "COMPLETED");
+              // }
+
+              // const isDependentTaskCompleted = () => {
+              //   const dependentTasks = taskData?.constraintDependedTasks;
+
+              //   // If no dependent tasks, allow interaction
+              //   if (!dependentTasks || dependentTasks.length === 0) {
+              //     return true;
+              //   }
+
+              //   // Check if any dependent task is not completed
+              //   for (let i = 0; i < dependentTasks.length; i++) {
+              //     const task = dependentTasks[i];
+              //     if (task?.id && task?.taskUpdateStatus?.status !== "COMPLETED_OR_DONE") {
+              //       return true; // Found an incomplete dependent task
+              //     }
+              //   }
+
+              //   return true; // All dependent tasks are completed
+              // };
+
+
+              return (
+                <div
+                  key={index}
+                  className={`${style.gridContainer} ${style.shadowdown} ${style.marginTop}`}
+                  style={{ pointerEvents: isDependentTaskCompleted ? "auto" : "none", opacity: isDependentTaskCompleted ? 1 : 0.5 }}
+                >
+                  {isNotCompleted ? (
+                    <WarningIcon className={style.warning} />
+                  ) : isInProgress ? (
+                    <WarningIcon className={style.progress} />
+                  ) : (
+                    <TaskAltIcon className={style.correcticon} />
+                  )}
+                  <div className={style.task}>{taskData?.taskName}
+                    {/* {taskData?.taskName === 'Logistics Form for IT' && <div className={style.requestForm} onClick={() => window.open(taskData?.formLink?.url, '_blank')}>{taskData?.formLink?.urlLabel?.text}</div>} */}
+                  </div>
+                  <div>
+                    {showSelect ? (
+                      <div className={style.sentstatus}>
+                        Status
+                        <div>
+                          {/* <CommonSelectField
+                              value={selectedOption[taskData.id] || taskData?.taskUpdateStatus?.status}
+                              onChange={(e) => handleChange(taskData.id, e, taskData?.statusLabels?.filter((data) => e.target.value === data.status)?.map((statusLabel) => statusLabel?.label)?.[0])}
+                              className={`${style.fullWidth}`}
+                              valueList={taskData?.statusLabels.map((statusLabel) => `${statusLabel?.status}`)}
+                              labelList={taskData?.statusLabels.map((statusLabel) => `${statusLabel?.label}`)}
+                              disabledList={taskData?.statusLabels.map(() => false)}
+                            /> */}
+                          <CommonRadio
+                            onChange={(e) => handleChange(taskData.id, e, taskData?.statusLabels?.filter((data) => e.target.value === data.status)?.map((statusLabel) => statusLabel?.label)?.[0])}
+                            value={selectedOption[taskData.id] || taskData?.taskUpdateStatus?.status}
+                            radioValue={taskData?.statusLabels.map((statusLabel) => `${statusLabel?.status}`)}
+                            label={taskData?.statusLabels.map((statusLabel) => `${statusLabel?.label}`)}
+                          />
+                        </div>
+                      </div>
+                    ) : (
+                      <div className={style.sentto}>
+                        {isNotCompleted ? "Ready To Send" : `${taskData?.activityExecutionPromptLabel?.text} on ${formattedDate}`}
+                      </div>
+                    )}
+                  </div>
+                  <div>
+                    {showSelect ? (
+                      <div className={style.date}>
+                        Last updated on
+                        <div>{formattedDate}</div>
+                      </div>
+                    ) : (
+                      <div
+                        className={style.Resend}
+                        onClick={() => tasksendapplication(taskData?.id)}
+                      >
+                        {isNotCompleted ? taskData?.activityExecutionPromptLabel?.text : "Resend"}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </>
+    );
+  };
 
   return (
     <Dialog
@@ -270,183 +530,7 @@ const TaskStatusDialog = ({ getIsOpen, selectedTab }) => {
     >
       <div>
         <div className={Classes.DIALOG_BODY}>
-          <div className={style.spaceBetween}>
-            <div className={style.heading}>
-              Application Processing Tasks For:
-            </div>
-            <div className={style.displayInRow}>
-              <div
-                className={`${isPrintClicked && style.addStyle} ${style.alignCenter
-                  } ${style.cursorPointer} ${style.marginRight}`}
-              >
-                <PrintOutlinedIcon
-                  sx={{
-                    fontSize: isPrintClicked ? 20 : 25,
-                    color: isPrintClicked ? "#fff" : "#06617A",
-                  }}
-                  onClick={handlePrintClick}
-                />
-              </div>
-              <img
-                src={CrossPink}
-                alt="cross"
-                className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft}`}
-                onClick={() => {
-                  getIsOpen(false);
-                }}
-              />
-            </div>
-          </div>
-          <div ref={componentRef} className={`${style.pagebreak}`}>
-            <div className={`${style.spaceBetween}`}>
-              <div className={`${style.fontstyle} ${style.marginTop10}`}>
-                {/* {formDetails?.basicDetails?.applicant?.name?.firstName},{" "}
-              {formDetails?.basicDetails?.applicant?.name?.lastName}{" "} */}
-                {formDetails?.basicDetails?.applicant?.name?.firstName
-                  ? formDetails.basicDetails.applicant.name.firstName.charAt(0).toUpperCase() +
-                  formDetails.basicDetails.applicant.name.firstName.slice(1).toLowerCase()
-                  : ""}{", "}
-                {formDetails?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{" "}
-                <span className={`${style.fontstyleassociate}`}>
-                  {formDetails?.basicDetails?.applicant?.applicantType} |{" "}
-                  {
-                    formDetails?.basicDetails?.credentialingPrivilegeCategory
-                      ?.credentialingCategory
-                  }
-                </span>
-              </div>
-              {/* <div className={`${style.referenceFont} ${style.marginRight30}`}>
-              IT Reference info
-              <ContentCopyIcon className={`${style.copyicon}`} />
-            </div> */}
-            </div>
-            <div className={`${style.dialogBody}`}>
-              {task?.map((taskData, index) => {
-                const isNotCompleted = taskData?.taskStatus === "NOT_COMPLETED";
-                const isInProgress = taskData?.taskStatus === "INPROGRESS";
-                const showSelect =
-                  taskData?.taskAction === "TASK_STATUS_UPDATE_ONLY" ||
-                  taskData?.taskAction === "SEND_NON_CAPSMART_FORM_INTERNAL_SOURCE_URL";
-
-                const formattedDate = format(
-                  new Date(taskData?.lastModifiedDate),
-                  "MMM dd, yyyy"
-                );
-
-                // Get dependent tasks array or empty array if none exist
-                const dependentTasks = taskData?.constraintDependedTasks || [];
-
-                // Function to check if a task is incomplete
-                const isTaskIncomplete = (task) => {
-                  return task?.taskStatus === "INPROGRESS" || task?.taskStatus === "NOT_COMPLETED";
-                };
-
-                // Check if all dependent tasks are completed
-                const isDependentTaskCompleted = dependentTasks.length === 0 ? true :
-                  dependentTasks.every(dependentTask => {
-                    // Find the parent task data using the dependent task ID
-                    const parentTask = task.find(t => t?.id === dependentTask?.id);
-
-                    // Log for debugging
-                    console.log({
-                      dependentTaskId: dependentTask?.id,
-                      parentTaskFound: !!parentTask,
-                      parentTaskStatus: parentTask?.taskStatus,
-                      isIncomplete: parentTask ? isTaskIncomplete(parentTask) : false
-                    });
-
-                    // Return true if parent task is completed (not incomplete)
-                    return parentTask ? !isTaskIncomplete(parentTask) : false;
-                  });
-
-                console.log('Task ID:', taskData?.id, 'Dependent tasks completed:', isDependentTaskCompleted);
-                // if (dependentTasks && dependentTasks.length > 0) {
-                //   isDependentTaskCompleted = dependentTasks.every(task => task?.id && task?.taskStatus === "COMPLETED");
-                // }
-
-                // const isDependentTaskCompleted = () => {
-                //   const dependentTasks = taskData?.constraintDependedTasks;
-
-                //   // If no dependent tasks, allow interaction
-                //   if (!dependentTasks || dependentTasks.length === 0) {
-                //     return true;
-                //   }
-
-                //   // Check if any dependent task is not completed
-                //   for (let i = 0; i < dependentTasks.length; i++) {
-                //     const task = dependentTasks[i];
-                //     if (task?.id && task?.taskUpdateStatus?.status !== "COMPLETED_OR_DONE") {
-                //       return true; // Found an incomplete dependent task
-                //     }
-                //   }
-
-                //   return true; // All dependent tasks are completed
-                // };
-
-
-                return (
-                  <div
-                    key={index}
-                    className={`${style.gridContainer} ${style.shadowdown} ${style.marginTop}`}
-                    style={{ pointerEvents: isDependentTaskCompleted ? "auto" : "none", opacity: isDependentTaskCompleted ? 1 : 0.5 }}
-                  >
-                    {isNotCompleted ? (
-                      <WarningIcon className={style.warning} />
-                    ) : isInProgress ? (
-                      <WarningIcon className={style.progress} />
-                    ) : (
-                      <TaskAltIcon className={style.correcticon} />
-                    )}
-                    <div className={style.task}>{taskData?.taskName}
-                      {/* {taskData?.taskName === 'Logistics Form for IT' && <div className={style.requestForm} onClick={() => window.open(taskData?.formLink?.url, '_blank')}>{taskData?.formLink?.urlLabel?.text}</div>} */}
-                    </div>
-                    <div>
-                      {showSelect ? (
-                        <div className={style.sentstatus}>
-                          Status
-                          <div>
-                            {/* <CommonSelectField
-                              value={selectedOption[taskData.id] || taskData?.taskUpdateStatus?.status}
-                              onChange={(e) => handleChange(taskData.id, e, taskData?.statusLabels?.filter((data) => e.target.value === data.status)?.map((statusLabel) => statusLabel?.label)?.[0])}
-                              className={`${style.fullWidth}`}
-                              valueList={taskData?.statusLabels.map((statusLabel) => `${statusLabel?.status}`)}
-                              labelList={taskData?.statusLabels.map((statusLabel) => `${statusLabel?.label}`)}
-                              disabledList={taskData?.statusLabels.map(() => false)}
-                            /> */}
-                            <CommonRadio
-                              onChange={(e) => handleChange(taskData.id, e, taskData?.statusLabels?.filter((data) => e.target.value === data.status)?.map((statusLabel) => statusLabel?.label)?.[0])}
-                              value={selectedOption[taskData.id] || taskData?.taskUpdateStatus?.status}
-                              radioValue={taskData?.statusLabels.map((statusLabel) => `${statusLabel?.status}`)}
-                              label={taskData?.statusLabels.map((statusLabel) => `${statusLabel?.label}`)}
-                            />
-                          </div>
-                        </div>
-                      ) : (
-                        <div className={style.sentto}>
-                          {isNotCompleted ? "Ready To Send" : `${taskData?.activityExecutionPromptLabel?.text} on ${formattedDate}`}
-                        </div>
-                      )}
-                    </div>
-                    <div>
-                      {showSelect ? (
-                        <div className={style.date}>
-                          Last updated on
-                          <div>{formattedDate}</div>
-                        </div>
-                      ) : (
-                        <div
-                          className={style.Resend}
-                          onClick={() => tasksendapplication(taskData?.id)}
-                        >
-                          {isNotCompleted ? taskData?.activityExecutionPromptLabel?.text : "Resend"}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+          {isSetupDialog ? renderSetupContent() : renderTaskContent()}
         </div>
       </div>
     </Dialog>
