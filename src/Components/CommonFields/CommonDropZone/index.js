@@ -6,6 +6,8 @@ import Papa from "papaparse";
 import Dropzone from "react-dropzone";
 
 import style from './index.module.scss'
+const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB
+
 const CommonDropZone = ({ title, description, changeHandler, maxFiles, isDisabled }) => {
 
     const dropzoneStyle = {
@@ -17,6 +19,21 @@ const CommonDropZone = ({ title, description, changeHandler, maxFiles, isDisable
         borderRadius: 5,
     }
 
+    const getRejectionErrorMessage = (fileRejections) => {
+        const hasFileTooLarge = fileRejections.some(({ errors }) =>
+            errors.some((err) => err.code === 'file-too-large')
+        );
+        const hasTooManyFiles = fileRejections.some(({ errors }) =>
+            errors.some((err) => err.code === 'too-many-files')
+        );
+        if (hasFileTooLarge) {
+            return 'File size must be less than 5 MB.';
+        }
+        if (hasTooManyFiles) {
+            return `You can upload only ${maxFiles ?? 10} files at a time`;
+        }
+        return 'One or more files could not be uploaded. Please check file type and size.';
+    }
 
     return (
         <Dropzone
@@ -29,9 +46,10 @@ const CommonDropZone = ({ title, description, changeHandler, maxFiles, isDisable
                 'image/jpg': [],
                 'application/pdf': []
             }}
-            maxFiles={maxFiles ? maxFiles : 10}
+            maxFiles={maxFiles ?? 10}
+            maxSize={MAX_FILE_SIZE_BYTES}
             onDropRejected={(fileRejections) => {
-                alert(`You can upload only ${maxFiles ? maxFiles : 10} files at a time`);
+                alert(getRejectionErrorMessage(fileRejections));
             }}
         >
             {({ getRootProps, getInputProps }) => (

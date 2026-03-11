@@ -19,7 +19,7 @@ import ReappointmentJourneyDialog from '../../../../Components/reappointmentJour
 import ApplicationSubmitDialog from '../../../../Components/ApplicationSubmitDialog';
 import ApplicationReferenceDocuments from '../../../../Components/ApplicationReferenceDocuments';
 import SaveInProgressDialog from '../../../../Components/SaveInProgressDialog';
-import { dataLoadingGIF } from '../../../../utils/formatting';
+import { corsUrl, dataLoadingGIF } from '../../../../utils/formatting';
 import MenuIcon from "@mui/icons-material/Menu";
 import Close from './../../../../images/close.png';
 import LocumProgressCard from '../../../../Components/LocumProgressCard';
@@ -56,7 +56,7 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
             try {
                 const { data } = await GET(`entity-service/entity/${cookie.get('entityId')}`);
                 if (data && data.logo?.file?.fileURL) {
-                    setLogo(data.logo.file.fileURL);
+                    setLogo(`${corsUrl}/${data.logo.file.fileURL}`);
                 }
             } catch (error) {
                 console.error("Error fetching logo:", error);

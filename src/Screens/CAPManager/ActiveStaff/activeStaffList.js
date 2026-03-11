@@ -119,6 +119,46 @@ const ActiveStaffList = ({
     getStaffView(true);
   };
 
+  const onClickDeactivateFunction = async (data) => {
+    const staffId = data?.id;
+    if (!staffId) {
+      ErrorToaster("Unable to deactivate: staff id is missing.");
+      return;
+    }
+    const staffStatusUpdateDTO = {
+      status: "INACTIVE",
+      reason: {
+        notes: "",
+      },
+      updatedBy: {
+        id: userDetailsFetchOption?.id ?? "",
+        name: {
+          firstName: userDetailsFetchOption?.name?.firstName ?? "",
+          lastName: userDetailsFetchOption?.name?.lastName ?? "",
+          middleName: userDetailsFetchOption?.name?.middleName ?? "",
+        },
+        email: {
+          officialEmail: userDetailsFetchOption?.email?.officialEmail ?? "",
+        },
+      },
+    };
+    const formData = new FormData();
+    formData.append(
+      "staffStatusUpdateDTO",
+      new Blob([JSON.stringify(staffStatusUpdateDTO)], { type: "application/json" })
+    );
+    try {
+      await PUT(`application-management-service/staff/${staffId}/updateStatus`, formData);
+      SuccessToaster("Staff deactivated successfully.");
+      getActiveUserData(selectedTab);
+      setReFetchMetaData(true);
+      getTitleCounts?.();
+    } catch (error) {
+      console.error("Deactivate staff error:", error);
+      ErrorToaster(error?.response?.data?.message || "Failed to deactivate staff.");
+    }
+  };
+
   const onClickReappointmentFunction = (data) => {
     reappointmentApplication(data?.id);
     sessionStorage.setItem("applicationId", data?.id);
@@ -772,6 +812,11 @@ const ActiveStaffList = ({
       requiredValue: "boolean",
       onClick: onClickViewAndVerifyFunction,
       conditionToShow: `data?.currentApplication?.id`
+    },
+    {
+      data: "Deactivate",
+      requiredValue: "boolean",
+      onClick: onClickDeactivateFunction,
     },
     // { 'data': 'Send for Committee Review', 'requiredValue': 'boolean', "onClick": '' },
     // { 'data': 'Send Reminder for Required Documents', 'requiredValue': 'boolean', "onClick": '' },

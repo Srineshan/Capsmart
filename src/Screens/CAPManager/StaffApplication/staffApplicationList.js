@@ -2559,11 +2559,11 @@ const StaffApplicationList = ({
         : ["-"];
       ceHoverText.push(ceHoverTextArray);
       if (totalCourses === 0 || completedCount === 0) {
-        ceIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#b0a6a6' }} />);
+        ceIcon.push(<div className={`${style.greyDotStyle}`}></div>);
       } else if (completedCount < totalCourses) {
-        ceIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#FEC106' }} />);
+        ceIcon.push(<div className={`${style.yellowDotStyle}`}></div>);
       } else if (completedCount === totalCourses) {
-        ceIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#00C07F' }} />);
+        ceIcon.push(<div className={`${style.greenDotStyle}`}></div>);
       }
       // dataStatus.push(data?.dataStatus || "green");
       // dataStatus.push(data?.dataStatus === "REVIEW_INPROGRESS"
@@ -2850,11 +2850,11 @@ const StaffApplicationList = ({
         : ["-"];
       ceHoverText.push(ceHoverTextArray);
       if (totalCourses === 0 || completedCount === 0) {
-        ceIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#b0a6a6' }} />);
+        ceIcon.push(<div className={`${style.greyDotStyle}`}></div>);
       } else if (completedCount < totalCourses) {
-        ceIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#FEC106' }} />);
+        ceIcon.push(<div className={`${style.yellowDotStyle}`}></div>);
       } else if (completedCount === totalCourses) {
-        ceIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#00C07F' }} />);
+        ceIcon.push(<div className={`${style.greenDotStyle}`}></div>);
       }
       // else if (data?.documents?.verifiedCount === 0) {
       //   docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#94979A` }} />);
@@ -3196,11 +3196,11 @@ const StaffApplicationList = ({
         : ["-"];
       ceHoverText.push(ceHoverTextArray);
       if (totalCourses === 0 || completedCount === 0) {
-        ceIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#b0a6a6' }} />);
+        ceIcon.push(<div className={`${style.greyDotStyle}`}></div>);
       } else if (completedCount < totalCourses) {
-        ceIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#FEC106' }} />);
+        ceIcon.push(<div className={`${style.yellowDotStyle}`}></div>);
       } else if (completedCount === totalCourses) {
-        ceIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#00C07F' }} />);
+        ceIcon.push(<div className={`${style.greenDotStyle}`}></div>);
       }
       // else if (data?.documents?.verifiedCount === 0) {
       //   docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#94979A` }} />);
