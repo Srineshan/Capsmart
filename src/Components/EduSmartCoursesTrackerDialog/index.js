@@ -133,8 +133,6 @@ const EduSmartCoursesTrackerDialog = ({ getIsOpen, isLoading }) => {
 
   // Map API response to table rows (no extra filtering – all filters from API)
   useEffect(() => {
-    setIsLoadingImage(true);
-
     const mappedData = (LMSList || []).map((item) => {
       const courses = item?.lmsDetails?.courses || [];
       const totalCourses = courses.length;
@@ -170,7 +168,6 @@ const EduSmartCoursesTrackerDialog = ({ getIsOpen, isLoading }) => {
     setTableData(mappedData);
     setTotalCount(mappedData.length);
     setSearchount(mappedData.length);
-    setIsLoadingImage(false);
   }, [LMSList, dateFormat]);
 
   const [printMode, setPrintMode] = useState("BY_STAFF"); // BY_STAFF | COURSE_NOT_COMPLETED | COURSE_COMPLETED | BY_DEPARTMENT
@@ -656,7 +653,7 @@ const EduSmartCoursesTrackerDialog = ({ getIsOpen, isLoading }) => {
 
   return (
     <>
-      {isLoadingImage && (
+      {(isLoadingImage || isLoading) && (
         <div className={style.loadingOverlay}>
           <LoadingScreen />
         </div>
@@ -828,7 +825,7 @@ const EduSmartCoursesTrackerDialog = ({ getIsOpen, isLoading }) => {
             <div className={`${style.marginTop10}`} ref={componentRef}>
               {printMode === "BY_STAFF" && (
                 <div className={`${style.bigCardStyle} ${style.marginTop20}`}>
-                  {isLoading ? (
+                  {isLoadingImage || isLoading ? (
                     <div className={`${style.verticalAlignCenter} ${style.justifyCenter}`}>
                       <CircularProgress sx={{ color: "#06617A" }} />
                     </div>
