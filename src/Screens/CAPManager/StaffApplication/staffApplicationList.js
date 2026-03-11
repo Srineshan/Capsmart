@@ -8078,7 +8078,7 @@ const StaffApplicationList = ({
 
                 {(applicationType === "REAPPOINTMENT" || applicationType === "LOCUM" && ((workModeType === "Staff Manager") || (workModeType === "Department Head") || (workModeType === "Credentialing Committee"))) ? (
                   <div className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
-                    <div className={`${style.spaceBetween} ${style.marginLeftRight10}`}>
+                    <div className={`${style.spaceBetween} `}>
                       <div className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}>
                         {applicationType === "REAPPOINTMENT" ? "Reappointments Status Tracker" : "Locum Staff Status Tracker"}
                         {/* (
@@ -8129,9 +8129,9 @@ const StaffApplicationList = ({
 
                 {(applicationType === "REAPPOINTMENT" || applicationType === "LOCUM" && ((workModeType === "Staff Manager") || (workModeType === "Department Head") || (workModeType === "Credentialing Committee"))) ? (
                   <div className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
-                    <div className={`${style.spaceBetween} ${style.marginLeftRight10}`}>
+                    <div className={`${style.spaceBetween}`}>
                       <div className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}>
-                        EduSmart courses
+                        EduSmart Courses Completion Status
                       </div>
                     </div>
 
@@ -8144,7 +8144,7 @@ const StaffApplicationList = ({
                       }}
                     >
                       <Tooltip title={'Click to View Current Status'} arrow>
-                        <div className={`${style.viewCurrentStatusText} ${style.marginTop10} ${style.cursorPointer}`} onClick={() => onClickEduSmartCoursesDialog()}>VIEW CURRENT STATUS</div>
+                        <div className={`${style.viewCurrentStatusText} ${style.cursorPointer} ${style.marginTop10}`} onClick={() => onClickEduSmartCoursesDialog()}>VIEW CURRENT STATUS</div>
                       </Tooltip>
                     </div>
                   </div>
@@ -8152,7 +8152,7 @@ const StaffApplicationList = ({
 
                 {(applicationType === "REAPPOINTMENT" && ((workModeType === "Staff Manager") || (workModeType === "Department Head") || (workModeType === "Credentialing Committee"))) ? (
                   <div className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
-                    <div className={`${style.spaceBetween} ${style.marginLeftRight10}`}>
+                    <div className={`${style.spaceBetween}`}>
                       <div className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}>
                         MD Attestation Status Tracker
                       </div>

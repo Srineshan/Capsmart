@@ -15,7 +15,8 @@ import { Tooltip } from "@mui/material";
 import PrintOutlinedIcon from "@mui/icons-material/PrintOutlined";
 import CardMembershipIcon from "@mui/icons-material/CardMembership";
 import { useReactToPrint } from "react-to-print";
-import { GET } from "../../Screens/dataSaver";
+import { GET, POST } from "../../Screens/dataSaver";
+import { SuccessToaster, ErrorToaster, SuccessToaster2, ErrorToaster2 } from "../../utils/toaster";
 
 const EduSmartCoursesTrackerDialog = ({ getIsOpen, isLoading }) => {
   const componentRef = useRef(null);
@@ -242,14 +243,31 @@ const EduSmartCoursesTrackerDialog = ({ getIsOpen, isLoading }) => {
 
   const colSortValues = [false, true, true, true, false, false, false, false, false];
 
+  const handleSendReminder = async (row) => {
+    const id = row?.id;
+    if (!id) {
+      ErrorToaster2("Unable to send reminder: id is missing.");
+      return;
+    }
+
+    try {
+      await POST("application-management-service/lms/sendReminder", [{ id }]);
+      SuccessToaster2("Reminder sent successfully.");
+    } catch (error) {
+      console.error("Error sending reminder:", error);
+      ErrorToaster2(
+        error?.response?.data?.message || "Failed to send reminder."
+      );
+    }
+  };
+
   const eduSmartActionsData = [
     {
       data: "Send Reminder",
       requiredValue: "boolean",
-      onClick: (data) => {
-        // Placeholder for action - add navigation or dialog later
-        console.log("Reminder clicked for:", data);
-      },
+      onClick: handleSendReminder,
+      conditionToShow:
+        "data?.noOfCourses > 0 && data?.noOfCoursesCompleted !== data?.noOfCourses",
     },
   ];
 
