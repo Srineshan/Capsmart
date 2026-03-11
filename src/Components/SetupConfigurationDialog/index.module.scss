@@ -1,0 +1,428 @@
+@import "../../index.scss";
+
+.setupConfigDialog {
+  width: 95vw !important;
+  max-width: 1400px;
+  height: 90vh;
+
+  .bp3-dialog-container {
+    margin: 2vh auto;
+  }
+
+  .bp3-dialog {
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    border-radius: 12px;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .bp3-dialog-body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+.marginLeft {
+  margin-left: 10px;
+}
+
+.twoCol {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.fullWidth {
+  width: 100%;
+}
+
+.setupConfigWrap {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #fff;
+}
+
+.setupConfigHeader {
+  flex-shrink: 0;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid #EDEDF3;
+}
+
+.setupConfigTitleRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.setupConfigTitle {
+  margin: 0;
+  font: normal normal bold 22px var(--font-style);
+  color: var(--primary-color);
+  text-transform: capitalize;
+}
+
+.setupConfigHeaderRight {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.setupStatus {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font: normal normal normal 14px var(--font-style);
+  color: #646d82;
+}
+
+.setupStatusDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #FEC106;
+}
+
+.crossStyle {
+  height: 18px;
+  width: 18px;
+}
+
+.cursorPointer {
+  cursor: pointer;
+}
+
+.setupConfigBody {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 55% 45%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.singleColumn {
+  grid-template-columns: 1fr;
+}
+
+.setupConfigLeft {
+  overflow-y: auto;
+  padding: 20px 24px 24px;
+  border-right: 1px solid #EDEDF3;
+  position: relative;
+}
+
+.setupConfigLoading {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.9);
+  font: normal normal normal 14px var(--font-style);
+  color: #646d82;
+  z-index: 1;
+}
+
+.sectionLabel {
+  font: normal normal bold 16px var(--font-style);
+  color: #171338;
+  margin-bottom: 6px;
+}
+
+.instructionText {
+  font: normal normal normal 13px var(--font-style);
+  color: #94979A;
+  margin: 0 0 20px 0;
+}
+
+.formSection {
+  margin-bottom: 20px;
+}
+
+.sectionHeading {
+  font: normal normal bold 14px var(--font-style);
+  color: #171338;
+  margin-bottom: 10px;
+  background: #F3F4F4 0% 0% no-repeat padding-box;
+  padding: 5px;
+}
+
+.fieldLabel {
+  font: normal normal bold 14px var(--font-style);
+  color: #171338;
+  margin-bottom: 6px;
+}
+
+.helperText {
+  font: normal normal normal 12px var(--font-style);
+  color: #94979A;
+}
+
+.textAreaField {
+  margin-top: 6px;
+
+  & textarea {
+    min-height: 80px;
+  }
+}
+
+.ckeditorField {
+  margin-top: 6px;
+  border: 1px solid #EDEDF3;
+  border-radius: 8px;
+  overflow: hidden;
+
+  :global(.ck-editor__editable) {
+    min-height: 110px;
+  }
+}
+
+.displayInRow {
+  display: flex;
+  flex-direction: row;
+}
+
+.addMoreRow {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.flex1 {
+  flex: 1;
+  min-width: 0;
+}
+
+.addMoreButton {
+  margin-top: 12px;
+  padding: 8px 20px;
+  background: var(--primary-color);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font: normal normal bold 13px var(--font-style);
+  cursor: pointer;
+}
+
+.chipRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  background: #E9E9F0;
+  border-radius: 20px;
+  font: normal normal normal 13px var(--font-style);
+  color: #171338;
+}
+
+.chipRemove {
+  margin-left: 6px;
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+.setupConfigRight {
+  overflow-y: auto;
+  padding: 20px;
+  background: #F9F9FB;
+}
+
+.previewTitle {
+  font: normal normal bold 16px var(--font-style);
+  color: #171338;
+  margin-bottom: 12px;
+}
+
+.previewTo {
+  font: normal normal normal 13px var(--font-style);
+  color: #646d82;
+  margin-bottom: 8px;
+}
+
+.previewRecipientRow {
+  margin-bottom: 6px;
+  font: normal normal normal 13px var(--font-style);
+  color: #171338;
+}
+
+.previewRecipientLabel {
+  font-weight: bold;
+  margin-right: 4px;
+}
+
+.previewRecipientChips {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.previewChipRemove {
+  margin-left: 6px;
+  cursor: pointer;
+  opacity: 0.8;
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+.previewChip {
+  display: inline-block;
+  padding: 4px 10px;
+  background: #E9E9F0;
+  border-radius: 6px;
+  margin-left: 4px;
+}
+
+.previewSubject {
+  padding: 12px;
+  background: #FFE5E5;
+  border-radius: 6px;
+  font: normal normal bold 14px var(--font-style);
+  color: #171338;
+  margin-bottom: 12px;
+}
+
+.previewBranding {
+  font: normal normal normal 12px var(--font-style);
+  color: #94979A;
+  margin-bottom: 16px;
+}
+
+.previewBody {
+  background: #fff;
+  border: 1px solid #EDEDF3;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.previewBodyTitle {
+  font: normal normal bold 16px var(--font-style);
+  color: #171338;
+  margin-bottom: 4px;
+}
+
+.previewBodySubtitle {
+  font: normal normal bold 14px var(--font-style);
+  color: var(--primary-color);
+  margin-bottom: 12px;
+}
+
+.previewIntro {
+  font: normal normal normal 13px var(--font-style);
+  color: #171338;
+  margin: 0 0 12px 0;
+  line-height: 1.5;
+}
+
+.previewDetails {
+  font: normal normal normal 13px var(--font-style);
+  color: #171338;
+  margin-bottom: 12px;
+  line-height: 1.6;
+}
+
+.previewDetailsTitle {
+  font: normal normal bold 13px var(--font-style);
+  margin-bottom: 6px;
+}
+
+.previewClosing {
+  font: normal normal normal 13px var(--font-style);
+  color: #171338;
+  margin: 0 0 12px 0;
+  line-height: 1.5;
+}
+
+.previewContactBox {
+  border: 1px solid #EDEDF3;
+  background: #FFFFFF;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+}
+
+.previewContactName {
+  font: normal normal bold 13px var(--font-style);
+  color: #171338;
+  margin-bottom: 2px;
+}
+
+.previewContactRole {
+  font: normal normal normal 12px var(--font-style);
+  color: #646d82;
+  margin-bottom: 2px;
+}
+
+.previewContactMeta {
+  font: normal normal normal 12px var(--font-style);
+  color: #646d82;
+}
+
+.previewAttachment {
+  font: normal normal normal 13px var(--font-style);
+  color: var(--primary-color);
+}
+
+.setupConfigFooter {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  border-top: 1px solid #EDEDF3;
+  background: #fff;
+}
+
+.footerRight {
+  display: flex;
+  gap: 12px;
+}
+
+.backButton {
+  padding: 10px 24px;
+  background: #fff;
+  border: 1px solid #EDEDF3;
+  border-radius: 6px;
+  font: normal normal bold 14px var(--font-style);
+  color: #646d82;
+  cursor: pointer;
+}
+
+.saveExitButton,
+.saveContinueButton {
+  padding: 10px 24px;
+  background: var(--primary-color);
+  border: none;
+  border-radius: 6px;
+  font: normal normal bold 14px var(--font-style);
+  color: #fff;
+  cursor: pointer;
+}
+
+.saveContinueButton {
+  background: var(--primary-color);
+}
+
+@media (max-width: 1024px) {
+  .setupConfigBody {
+    grid-template-columns: 1fr;
+  }
+
+  .setupConfigRight {
+    border-top: 1px solid #EDEDF3;
+  }
+}

@@ -14,6 +14,7 @@ import { format } from "date-fns";
 import CommonSelectField from "../CommonFields/CommonSelectField";
 import jsPDF from "jspdf";
 import CommonRadio from "../CommonFields/CommonRadio";
+import SetupConfigurationDialog from "../SetupConfigurationDialog";
 
 const TaskStatusDialog = ({ getIsOpen, selectedTab, isSetupDialog = false }) => {
   const [isPrintClicked, setIsPrintClicked] = useState(false);
@@ -30,6 +31,7 @@ const TaskStatusDialog = ({ getIsOpen, selectedTab, isSetupDialog = false }) => 
   const [file, setFile] = useState({});
   const [setupChecklist, setSetupChecklist] = useState([]);
   const [isSetupLoading, setIsSetupLoading] = useState(false);
+  const [selectedSetupItem, setSelectedSetupItem] = useState(null);
   const workModeType = sessionStorage.getItem('workModeType')
   const applicationType = sessionStorage.getItem('applicationCreationType') ?? 'REAPPOINTMENT';
   const base64String = pdfBase64?.split(',')[1]; // Remove prefix
@@ -313,9 +315,7 @@ const TaskStatusDialog = ({ getIsOpen, selectedTab, isSetupDialog = false }) => 
               <div
                 key={index}
                 className={`${style.gridContainer} ${style.shadowdown} ${style.marginTop} ${style.setupRow}`}
-                onClick={() => {
-                  // Placeholder for future setup click behavior
-                }}
+                onClick={() => setSelectedSetupItem(item)}
               >
                 <div />
                 <div className={style.task}>{item?.taskName}</div>
@@ -521,19 +521,30 @@ const TaskStatusDialog = ({ getIsOpen, selectedTab, isSetupDialog = false }) => 
   };
 
   return (
-    <Dialog
-      isOpen={getIsOpen}
-      onClose={() => getIsOpen(false)}
-      className={`${style.eSignDialog} ${style.eSignDialogBackground}`}
-      canOutsideClickClose={false}
-      canEscapeKeyClose={false}
-    >
-      <div>
-        <div className={Classes.DIALOG_BODY}>
-          {isSetupDialog ? renderSetupContent() : renderTaskContent()}
+    <>
+      <Dialog
+        isOpen={getIsOpen}
+        onClose={() => getIsOpen(false)}
+        className={`${style.eSignDialog} ${style.eSignDialogBackground}`}
+        canOutsideClickClose={false}
+        canEscapeKeyClose={false}
+      >
+        <div>
+          <div className={Classes.DIALOG_BODY}>
+            {isSetupDialog ? renderSetupContent() : renderTaskContent()}
+          </div>
         </div>
-      </div>
-    </Dialog>
+      </Dialog>
+
+      {isSetupDialog && selectedSetupItem && (
+        <SetupConfigurationDialog
+          getIsOpen={(open) => {
+            if (!open) setSelectedSetupItem(null);
+          }}
+          selectedItem={selectedSetupItem}
+        />
+      )}
+    </>
   );
 };
 

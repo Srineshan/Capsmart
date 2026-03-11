@@ -27,6 +27,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
   const navigate = useNavigate();
   const [isExpanded, setIsExpanded] = useState(true);
   const [selectedOption, setSelectedOption] = useState({});
+  const [isBulkSending, setIsBulkSending] = useState(false);
   const [tableData, setTableData] = useState([]);
   const [sortField, setSortField] = useState("REAPPOINTMENT_STATUS");
   const [sortValue, setSortValue] = useState("DESCENDING");
@@ -327,11 +328,13 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
   };
 
   const reappointmentApplicationbulk = async () => {
+    if (isBulkSending) return;
     if (checkedIds?.length === 0) {
       console.log('No checked IDs to process');
       return;
     }
 
+    setIsBulkSending(true);
     try {
       const response = await POST(
         `application-management-service/staff/reappoint/bulk`,
@@ -344,15 +347,19 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
       getActiveUserData();
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsBulkSending(false);
     }
   };
 
   const reappointmentApplicationResendbulk = async () => {
+    if (isBulkSending) return;
     if (checkedIds?.length === 0) {
       console.log('No checked IDs to process');
       return;
     }
 
+    setIsBulkSending(true);
     try {
       const response = await POST(
         `application-management-service/staff/resendReappointmentEmail/bulk`,
@@ -365,6 +372,8 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
       getActiveUserData();
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsBulkSending(false);
     }
   };
 
@@ -1211,8 +1220,9 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
               {!(selectedReappointmentStatus === "NOT_SENT" && applicationCreationType === "LOCUM") && (
                 <Tooltip title={selectedReappointmentStatus === "SENT" || selectedReappointmentStatus === "RE_SENT" ? "Click to Resend Reappointment Application" : "Click to Send Reappointment Application"} disableHoverListener={!(checkedIds?.length > 0)} arrow>
                   <div
-                    className={`${style.continue} ${style.marginTop} ${style.marginLeft}`}
+                    className={`${style.continue} ${style.marginTop} ${style.marginLeft} ${isBulkSending ? style.disabledButtonLook : ''}`}
                     onClick={() => {
+                      if (isBulkSending) return;
                       if (isDataAvailable && checkedIds?.length > 0) {
                         if (selectedReappointmentStatus === "SENT" || selectedReappointmentStatus === "RE_SENT") {
                           reappointmentApplicationResendbulk();
@@ -1221,8 +1231,10 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
                         }
                       }
                     }}
-                    disabled={!isDataAvailable && checkedIds?.length === 0}
-                    style={{ opacity: isDataAvailable && checkedIds?.length > 0 ? 1 : 0.5 }}
+                    style={{
+                      opacity: isDataAvailable && checkedIds?.length > 0 && !isBulkSending ? 1 : 0.5,
+                      pointerEvents: isBulkSending ? "none" : "auto",
+                    }}
 
                   >
                     {(selectedReappointmentStatus === "SENT" || selectedReappointmentStatus === "RE_SENT" || applicationCreationType === "LOCUM" || isAllSent) ? `RESEND ${applicationCreationType === "LOCUM" ? '' : 'REAPPOINTMENT'} APPLICATION` : 'SEND REAPPOINTMENT APPLICATION'}
