@@ -17,6 +17,7 @@ import CardMembershipIcon from "@mui/icons-material/CardMembership";
 import { useReactToPrint } from "react-to-print";
 import { GET, POST } from "../../Screens/dataSaver";
 import { SuccessToaster, ErrorToaster, SuccessToaster2, ErrorToaster2 } from "../../utils/toaster";
+import axios from "axios";
 
 const EduSmartCoursesTrackerDialog = ({ getIsOpen, isLoading }) => {
   const componentRef = useRef(null);
@@ -158,6 +159,7 @@ const EduSmartCoursesTrackerDialog = ({ getIsOpen, isLoading }) => {
         },
         staffType: item?.basicDetails?.applicant?.applicantType,
         department: item?.basicDetails?.departmentSpecialty?.department,
+        applicantId: item?.applicant?.id,
         noOfCourses: totalCourses,
         noOfCoursesNotStarted: notStartedCourses,
         noOfCoursesInProgress: inProgressCourses,
@@ -243,6 +245,11 @@ const EduSmartCoursesTrackerDialog = ({ getIsOpen, isLoading }) => {
 
   const colSortValues = [false, true, true, true, false, false, false, false, false];
 
+  const getLMSUsername = async (id) => {
+    const { data: userData } = await GET(`user-management-service/user/${id}`);
+    return userData?.lmsUserName;
+  };
+
   const handleSendReminder = async (row) => {
     const id = row?.id;
     if (!id) {
@@ -271,15 +278,27 @@ const EduSmartCoursesTrackerDialog = ({ getIsOpen, isLoading }) => {
     },
   ];
 
-  const courseActionsData = [
-    {
-      data: "Send Reminder",
-      requiredValue: "boolean",
-      onClick: (data) => {
-        console.log("Send reminder for course row:", data);
-      },
-    },
-  ];
+  const handleResetCourse = async (row, courseId) => {
+    try {
+      const applicantId = row?.applicantId;
+      const username = applicantId ? await getLMSUsername(applicantId) : null;
+
+      if (!courseId || !username) {
+        ErrorToaster2("Missing course id or LMS username to reset course.");
+        return;
+      }
+
+      await axios.post("https://lms.indocaribe.com/custom-api/reset-course/", {
+        course_id: courseId,
+        username,
+      });
+
+      SuccessToaster2("Course has been reset successfully.");
+    } catch (error) {
+      console.error("Error resetting course:", error);
+      ErrorToaster2("Failed to reset course. Please try again.");
+    }
+  };
 
   const handleCertificateClick = (course) => {
     const certificateUrl =
@@ -895,7 +914,18 @@ const EduSmartCoursesTrackerDialog = ({ getIsOpen, isLoading }) => {
                             tableDataValues={getCourseNotCompletedTableValues(group.rows)}
                             tableData={group.rows}
                             gridStyle={style.eduSmartStaffAndDeptGrid}
-                            actions={courseActionsData}
+                            actions={[
+                              {
+                                data: "Send Reminder",
+                                requiredValue: "boolean",
+                                onClick: handleSendReminder,
+                              },
+                              {
+                                data: "Reset Course",
+                                requiredValue: "boolean",
+                                onClick: (row) => handleResetCourse(row, group.id),
+                              },
+                            ]}
                             // scrollStyle={style.contractScrollStyle}
                             tableSortValues={colSortValues}
                             heading={"There are no records to display"}
