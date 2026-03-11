@@ -24,6 +24,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CardMembershipIcon from '@mui/icons-material/CardMembership';
 import Cookies from 'universal-cookie';
 import PaymentReceipt from '../../../../Components/PaymentReceipt';
+import { Dialog, Classes } from '@blueprintjs/core';
 
 const LMSModules = ({ basicForm, setBasicForm, getPreApplication }) => {
     const cookie = new Cookies();
@@ -43,6 +44,7 @@ const LMSModules = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [yesOrNo, setYesOrNo] = useState('');
     const [updatedDate, setUpdatedDate] = useState('');
     const [showJourneyDialog, setShowJourneyDialog] = useState(false);
+    const [showLmsGuidanceDialog, setShowLmsGuidanceDialog] = useState(false);
     useEffect(() => {
         if (basicForm && !formSchema) {
             getFormSchema()
@@ -216,6 +218,11 @@ const LMSModules = ({ basicForm, setBasicForm, getPreApplication }) => {
         }
     }
 
+    const handleContinueToEduSmart = async () => {
+        handleCourseClick();
+        setShowLmsGuidanceDialog(false);
+    };
+
     const handleViewCertificate = (course) => {
         if (course?.certificate_details?.view_url) {
             window.open(course.certificate_details.view_url, '_blank');
@@ -226,7 +233,8 @@ const LMSModules = ({ basicForm, setBasicForm, getPreApplication }) => {
         if (course?.is_course_completed && course?.certificate_details?.view_url) {
             handleViewCertificate(course);
         } else {
-            handleCourseClick(course);
+            setShowLmsGuidanceDialog(true)
+            // handleCourseClick(course);
         }
     }
 
@@ -239,7 +247,7 @@ const LMSModules = ({ basicForm, setBasicForm, getPreApplication }) => {
     const actions = [
         {
             data: 'Go to Course',
-            onClick: handleCourseClick,
+            onClick: () => setShowLmsGuidanceDialog(true),
             hoverText: 'Open course in LMS',
             conditionToShow: '!data?.is_course_completed'
         },
@@ -375,6 +383,41 @@ const LMSModules = ({ basicForm, setBasicForm, getPreApplication }) => {
             )}
             {showJourneyDialog && (
                 <ReappointmentJourneyDialog getIsOpen={getIsShowReappointmentJourneyDialog} title={`Almost There! Don't Give Up Now`} img={JourneyStep6} formIndex={formIndex} basicForm={basicForm} continueClick={getMissingFields} />
+            )}
+            {showLmsGuidanceDialog && (
+                <Dialog
+                    isOpen={showLmsGuidanceDialog}
+                    onClose={() => setShowLmsGuidanceDialog(false)}
+                    className={`${style.errorDialog} ${style.errorDialogBackground}`}
+                    canOutsideClickClose={true}
+                    canEscapeKeyClose={true}
+                >
+                    <div className={Classes.DIALOG_BODY}>
+                        <div className={style.spaceBetween}>
+                            <div className={style.heading}>LMS Course Completion Guidance</div>
+                        </div>
+                        <div style={{ fontWeight: 700, color: '#D92D20', margin: '16px 0 8px' }}>
+                            IMPORTANT FOR YOU TO KNOW
+                        </div>
+                        <p>
+                            Please note that the LMS courses require you to go through the course content for a period of time before
+                            proceeding to completing their respective quiz section.
+                        </p>
+                        <p>
+                            If you proceed to the quiz section <b>without first going through the course content</b>, the LMS <b> will not
+                                recognize or record your responses</b> to the questions and will not mark the course as completed.
+                        </p>
+                        <div style={{ display: 'flex', justifyContent: 'center', marginTop: 24 }}>
+                            <button
+                                type="button"
+                                className={style.reappointmentButton}
+                                onClick={handleContinueToEduSmart}
+                            >
+                                CONTINUE TO EDUSMART
+                            </button>
+                        </div>
+                    </div>
+                </Dialog>
             )}
         </div>
     )

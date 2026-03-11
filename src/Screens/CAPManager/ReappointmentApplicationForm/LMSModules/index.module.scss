@@ -306,3 +306,20 @@
     grid-template-columns: 5% 59% 15% 5% 11%;
     gap: 1%;
 }
+
+.errorDialog {
+    height: 75%;
+    overflow: hidden;
+    width: 50% !important;
+}
+
+.errorDialogBackground {
+    background: #ffffff 0% 0% no-repeat padding-box;
+    padding: 10px 20px 0px 20px;
+    border-radius: 20px !important;
+}
+
+.heading {
+    font: normal normal 600 20px/28px var(--font-style);
+    color: var(--primary-color);
+}

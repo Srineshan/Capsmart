@@ -52,3 +52,173 @@
 .cursorPointer {
     cursor: pointer !important;
 }
+
+.sizeErrorDialog {
+    max-width: 640px;
+}
+
+.errorDialog {
+    height: 75%;
+    overflow: hidden;
+    width: 60% !important;
+}
+
+.errorDialogBackground {
+    background: #ffffff 0% 0% no-repeat padding-box;
+    padding: 10px 20px 0px 20px;
+    border-radius: 20px !important;
+}
+
+.sizeErrorHeader {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.sizeErrorIcon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+.sizeErrorIconImg {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+}
+
+.sizeErrorTitle {
+    font: normal normal 600 20px/28px var(--font-style);
+    color: #2C2C2C;
+}
+
+.sizeErrorMainText {
+    margin-top: 8px;
+    margin-bottom: 12px;
+    color: #D92D20;
+    font: normal normal 500 14px/20px var(--font-style);
+}
+
+.sizeErrorList {
+    margin: 0 0 12px 40px;
+    padding: 0;
+    font: normal normal 400 14px/20px var(--font-style);
+    color: #2C2C2C;
+}
+
+.sizeErrorSubText {
+    margin-top: 4px;
+    margin-bottom: 16px;
+    font: normal normal 400 14px/20px var(--font-style);
+    color: #2C2C2C;
+}
+
+.sizeErrorHelpLink {
+    border: none;
+    background: none;
+    padding: 0;
+    color: #06617A;
+    font: normal normal 600 14px/20px var(--font-style);
+    text-decoration: underline;
+    cursor: pointer;
+    margin-bottom: 16px;
+}
+
+.sizeErrorActions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.secondaryButton {
+    border-radius: 4px;
+    border: 1px solid #06617A;
+    background: #FFFFFF;
+    padding: 6px 16px;
+    font: normal normal 600 14px/20px var(--font-style);
+    color: #06617A;
+    cursor: pointer;
+    width: 180px;
+}
+
+.primaryButton {
+    border-radius: 4px;
+    border: 1px solid #06617A;
+    background: #06617A;
+    padding: 6px 24px;
+    font: normal normal 600 14px/20px var(--font-style);
+    color: #FFFFFF;
+    cursor: pointer;
+    width: 180px;
+}
+
+.helpDialog {
+    max-width: 720px;
+}
+
+.helpHeader {
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.helpIcon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #E6F3FF;
+    margin-right: 8px;
+}
+
+.helpIconImg {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+}
+
+.helpTitle {
+    font: normal normal 600 20px/28px var(--font-style);
+    color: #2C2C2C;
+}
+
+.helpIntro {
+    font: normal normal 400 16px/20px var(--font-style);
+    color: #2C2C2C;
+    margin-bottom: 16px;
+}
+
+.helpSection {
+    margin-bottom: 16px;
+}
+
+.helpSectionTitle {
+    font: normal normal 600 16px/20px var(--font-style);
+    color: #2C2C2C;
+}
+
+.helpSectionSubtitle {
+    font: normal normal 400 14px/18px var(--font-style);
+    color: #6B6B6B;
+    margin-bottom: 4px;
+}
+
+.helpOrderedList {
+    margin: 10px 0 0 40px;
+    padding: 0;
+    font: normal normal 400 16px/20px var(--font-style);
+    color: #2C2C2C;
+}
+
+.helpActions {
+    display: flex;
+    justify-content: center;
+    margin-top: 16px;
+}
