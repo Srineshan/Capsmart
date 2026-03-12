@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { Dialog, Classes } from "@blueprintjs/core";
 import CrossPink from "../../images/crossPink.png";
 import style from "./index.module.scss";
@@ -617,9 +617,10 @@ const EduSmartCoursesTrackerDialog = ({ getIsOpen, isLoading }) => {
     }));
   };
 
-  const buildCourseGroups = (showCompleted) => {
+  const buildCourseGroups = (showCompleted, sourceRows) => {
     const map = new Map();
-    (tableData || []).forEach((row) => {
+    const rows = sourceRows || tableData || [];
+    rows.forEach((row) => {
       const courses = row?.courses || [];
       courses.forEach((course) => {
         const key = course?.course_id || course?.course_name;
@@ -650,6 +651,14 @@ const EduSmartCoursesTrackerDialog = ({ getIsOpen, isLoading }) => {
     });
     return Array.from(map.values());
   };
+
+  const sortedTableDataByName = useMemo(() => {
+    return [...(tableData || [])].sort((a, b) => {
+      const nameA = `${a?.staff?.firstName ?? ""} ${a?.staff?.lastName ?? ""}`.toLowerCase();
+      const nameB = `${b?.staff?.firstName ?? ""} ${b?.staff?.lastName ?? ""}`.toLowerCase();
+      return nameA.localeCompare(nameB);
+    });
+  }, [tableData]);
 
   return (
     <>
@@ -901,7 +910,7 @@ const EduSmartCoursesTrackerDialog = ({ getIsOpen, isLoading }) => {
 
               {printMode === "COURSE_NOT_COMPLETED" && (
                 <div className={style.printSection}>
-                  {buildCourseGroups(false).map((group) => (
+                  {buildCourseGroups(false, sortedTableDataByName).map((group) => (
                     <div key={group.id} className={style.printBlock}>
                       <h4 className={style.printHeading}>{group.name}</h4>
                       <div className={`${style.bigCardStyle}`}>
