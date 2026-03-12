@@ -175,6 +175,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
   const [selectedValue, setSelectedValue] = useState("NA");
   const [dontUpdatePrivilegeState, setDontUpdatePrivilegeState] = useState(false);
   const [isSubmit, setIsSubmit] = useState(false);
+  const [continueErrors, setContinueErrors] = useState([]);
   const theme = createTheme({
     palette: {
       error: {
@@ -219,6 +220,32 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
 
   useEffect(() => {
     let shouldEnable = false;
+    let errorList = [];
+
+    if (privilegeChangeYesOrNo === '')
+      errorList.push('Do you want to keep your current Privilege Category?')
+    if (departmentChangeYesOrNo === '')
+      errorList.push('Confirm your Department / Division or Specialty for this Reappointment?')
+    if ((privilegeSetChangeYesOrNo === '' || basicForm?.privileges?.obligatedPrivileges?.length === 0) && !(basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory === 'Courtesy Staff With Admitting Privileges' ||
+      basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory === 'Courtesy Staff Without Admitting Privileges')) {
+      if ((
+        basicForm?.privileges?.priorObligatedPrivileges?.length === 0 &&
+        basicForm?.privileges?.obligatedPrivileges?.length === 0)) {
+        errorList.push('Select and confirm the Privileges you would like to request.')
+      } else {
+        errorList.push('Do you want to keep your current Privilege Set(s)?')
+      }
+    }
+    if ((additionalPrivilegeChangeYesOrNo === '' || (additionalPrivilegeChangeYesOrNo === 'Yes' && basicForm?.privileges?.additionalPrivileges?.length === 0)) && !(basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory === 'Courtesy Staff With Admitting Privileges' ||
+      basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory === 'Courtesy Staff Without Admitting Privileges'))
+      errorList.push('Would you like to request any additional set of Privileges?')
+    if (privilegeAtOtherHospitalYesOrNo === '')
+      errorList.push('Do you maintain Privileges at Other Hospital(s)?')
+    // if ((basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory === 'Courtesy Staff With Admitting Privileges' ||
+    //   basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory === 'Courtesy Staff Without Admitting Privileges') && hospitalPrivilegeSet?.length === 0)
+    //   errorList.push(`You cannot hold courtesy privileges at ${title} ${" "}
+    //     without having privileges at another
+    //     hospital.`)
 
     // ===== 1. BASE REQUIREMENTS (ALWAYS NEEDED) =====
     const baseRequirementsMet = (
@@ -272,11 +299,13 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
         basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory === 'Courtesy Staff Without Admitting Privileges') &&
       privilegeChangeYesOrNo !== '' &&
       privilegeAtOtherHospitalYesOrNo === 'Yes' &&
+      // hospitalPrivilegeSet?.length > 0 &&
       departmentChangeYesOrNo !== '') {
       shouldEnable = true;
     }
 
     setIsContinueEnabled(shouldEnable);
+    setContinueErrors(errorList);
   }, [
     // All dependencies
     privilegeChangeYesOrNo,
@@ -4402,7 +4431,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                       Select and confirm the Privileges you would like to request.
                     </div>
                     <div
-                      className={`${style.privilegeCardWithRedBorder} ${style.marginTop10}`}
+                      className={`${basicForm?.privileges?.obligatedPrivileges?.length === 0 ? style.privilegeCardWithRedBorder : style.privilegeCardWithBorder} ${style.marginTop10}`}
                     >
                       <div className={style.displayInRow}>
                         <div className={style.lableStyle}>Your Department / Division or Speciality : </div>
@@ -4622,7 +4651,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                           </div>
                         ) : ( */}
                         <div
-                          className={`${style.privilegeCardWithBorder} ${style.marginTop10}`}
+                          className={`${basicForm?.privileges?.obligatedPrivileges?.length === 0 ? style.privilegeCardWithRedBorder : style.privilegeCardWithBorder} ${style.marginTop10}`}
                         >
                           <div className={style.displayInRow}>
                             <div className={style.lableStyle}>Your Department / Division or Speciality : </div>
@@ -4654,17 +4683,25 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                                         />
                                       </div>
                                     ) : (
-                                      <div>
-                                        {/* <div
-                                  className={`${style.iconBackgroundColor} ${style.verticalAlignCenter} ${style.justifyCenter}`}
-                                >
-                                  <WarningAmberIcon
-                                    sx={{ fontSize: 15, color: "#FFFFFF" }}
-                                  />
-                                </div> */}
-                                      </div>
+                                      <FormGroup>
+                                        <FormControlLabel sx={{ m: 0 }} control={<Checkbox
+                                          checked={selectedPrivilegesForDisplayMultiple?.map((data) => data?.id)?.includes(data?.id)}
+                                          sx={{
+                                            cursor: "pointer",
+                                            '&.Mui-checked': {
+                                              color: "#06617A",
+                                            },
+                                            '&.Mui-disabled': {
+                                              color: 'rgba(0, 0, 0, 0.26)',
+                                            },
+                                            '& .MuiSvgIcon-root': {
+                                              fontSize: 26,  // Adjust the size here
+                                            },
+                                            p: 0
+                                          }} />} />
+                                      </FormGroup>
                                     )}
-                                    <div className={style.privilegeHeading}>
+                                    <div className={`${style.privilegeHeadingBold} ${style.verticalAlignCenter}`}>
                                       {data?.privilegeSetTitle}
                                     </div>
                                     {selectedPrivilegesForDisplayMultiple
@@ -4789,7 +4826,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                   </>
                 )}
                 {isAdditionalPrivilegeCategoryChanging && (
-                  <div className={`${style.privilegeCardWithBorder} ${style.marginTop10}`}>
+                  <div className={`${basicForm?.privileges?.additionalPrivileges?.length === 0 ? style.privilegeCardWithRedBorder : style.privilegeCardWithBorder} ${style.marginTop10}`}>
                     <>
                       <div>
                         {/* <CommonSelectField
@@ -4882,11 +4919,25 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                                   {selectedAdditionalPrivilegesForDisplayMultiple?.map(data => data?.id)?.includes(data?.id) ? (
                                     <div className={`${style.iconBackgroundColorSelected} ${style.verticalAlignCenter} ${style.justifyCenter}`}><CheckCircleOutlineIcon sx={{ fontSize: 15, color: '#FFFFFF' }} /></div>
                                   ) : (
-                                    <div>
-                                      {/* <div className={`${style.iconBackgroundColor} ${style.verticalAlignCenter} ${style.justifyCenter}`}><WarningAmberIcon sx={{ fontSize: 15, color: '#FFFFFF' }} /></div> */}
-                                    </div>
+                                    <FormGroup>
+                                      <FormControlLabel sx={{ m: 0 }} control={<Checkbox
+                                        checked={selectedAdditionalPrivilegesForDisplayMultiple?.map((data) => data?.id)?.includes(data?.id)}
+                                        sx={{
+                                          cursor: "pointer",
+                                          '&.Mui-checked': {
+                                            color: "#06617A",
+                                          },
+                                          '&.Mui-disabled': {
+                                            color: 'rgba(0, 0, 0, 0.26)',
+                                          },
+                                          '& .MuiSvgIcon-root': {
+                                            fontSize: 26,  // Adjust the size here
+                                          },
+                                          p: 0
+                                        }} />} />
+                                    </FormGroup>
                                   )}
-                                  <div className={style.privilegeHeading}>{data?.privilegeSetTitle}</div>
+                                  <div className={`${style.privilegeHeadingBold} ${style.verticalAlignCenter}`}>{data?.privilegeSetTitle}</div>
                                   {selectedAdditionalPrivilegesForDisplayMultiple?.map(data => data?.id)?.includes(data?.id) ? (
                                     <div className={`${style.displayInRow} ${style.floatRight}`}>
                                       <span className={`${style.signedOnText} ${style.verticalAlignCenter}`}>Signed on {selectedAdditionalPrivilegesForDisplayMultiple?.filter((privilegeSet) => privilegeSet?.id === data?.id)?.[0]?.privilegeSpecificationType === "DESCRIPTIVEDOCUMENT" ? selectedAdditionalPrivilegesForDisplayMultiple?.filter((privilegeSet) => privilegeSet?.id === data?.id)?.[0]?.descriptiveContent?.esign?.signedDate : (selectedAdditionalPrivilegesForDisplayMultiple?.filter((privilegeSet) => privilegeSet?.id === data?.id)?.[0]?.privilegeDetails?.corePrivileges?.esign?.signedDate || selectedAdditionalPrivilegesForDisplayMultiple?.filter((privilegeSet) => privilegeSet?.id === data?.id)?.[0]?.privilegeDetails?.nonCorePrivileges?.esign?.signedDate)}</span>
@@ -5229,15 +5280,28 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
               >
                 BACK
               </div> */}
-            <Tooltip title={"Click to Proceed to the Next Step"} arrow>
-              <div
-                className={`${style.continue} ${style.marginTop10} ${!isContinueEnabled ? style.disabledButton : ''}`}
-                onClick={isContinueEnabled ? () => {
-                  handleContinueClick()
-                } : () => { }}
-              >
-                CONTINUE
+            <Tooltip title={!isContinueEnabled
+              ?
+              <div>
+                {continueErrors?.length > 0 && (
+                  <div>To proceed you have to answer the following questions. </div>
+                )}
+                <br />
+                {continueErrors?.map((err, i) => (
+                  <div key={i}>{`${i + 1}. ${err}`}</div>
+                ))}
               </div>
+              : "Click to Proceed to the Next Step"} arrow>
+              <span>
+                <div
+                  className={`${style.continue} ${style.marginTop10} ${!isContinueEnabled ? style.disabledButton : ''}`}
+                  onClick={isContinueEnabled ? () => {
+                    handleContinueClick()
+                  } : () => { }}
+                >
+                  CONTINUE
+                </div>
+              </span>
             </Tooltip>
             {/* </div> */}
           </div>
