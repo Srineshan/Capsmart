@@ -428,7 +428,9 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
         let temp = {
             clarificationRequiredFor: clarificationRequiredForTitle,
             clarificationTitle: rejectSubject,
-            clarificationDescription: rejectClarification,
+            clarificationDescription: rejectClarification?.replace(/&nbsp;/g, ' ')
+                ?.replace(/<p>\s*<\/p>/g, '')
+                ?.trim(),
             clarificationRequiredFrom: "APPLICANT",
             clarificationRequestType: rejectClarificationType,
             clarificationRequestedBy: {

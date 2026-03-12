@@ -50,11 +50,12 @@ import { fileLoadingURL } from "../../../../utils/formatting";
 import LoadingScreen from "../../../../Components/LoadingScreen";
 import ESignConfirmationDialog from "../../../../Components/ESignConfirmation";
 import ESignDialog from "../../../../Components/ESignDialog";
-import { Tooltip } from "@mui/material";
+import { Checkbox, FormGroup, Tooltip } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import Close from './../../../../images/close.png';
 import { FamilyRestroomOutlined } from "@mui/icons-material";
 import PaymentReceipt from "../../../../Components/PaymentReceipt";
+import CommonCheckBox from "../../../../Components/CommonFields/CommonCheckBox";
 
 const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFormat }) => {
   const [isSigned, setIsSigned] = useState(false);
@@ -224,7 +225,8 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
       privilegeChangeYesOrNo !== '' &&
       privilegeSetChangeYesOrNo !== '' &&
       privilegeAtOtherHospitalYesOrNo !== '' &&
-      departmentChangeYesOrNo !== ''
+      departmentChangeYesOrNo !== '' &&
+      basicForm?.privileges?.obligatedPrivileges?.length > 0
     );
 
     // ===== 2. CHECK ADDITIONAL PRIVILEGE CASES =====
@@ -4400,7 +4402,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                       Select and confirm the Privileges you would like to request.
                     </div>
                     <div
-                      className={`${style.privilegeCardWithBorder} ${style.marginTop10}`}
+                      className={`${style.privilegeCardWithRedBorder} ${style.marginTop10}`}
                     >
                       <div className={style.displayInRow}>
                         <div className={style.lableStyle}>Your Department / Division or Speciality : </div>
@@ -4411,7 +4413,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                           <>
                             <Tooltip title={selectedPrivilegesForDisplayMultiple?.map((data) => data?.id)?.includes(data?.id) ? "Click to Remove" : "Click to Request and Sign"} arrow>
                               <div
-                                className={`${style.privilegeConfirmationGrid} ${style.marginTop}`}
+                                className={`${style.privilegeConfirmationGrid} ${style.marginTop10}`}
                                 onClick={selectedPrivilegesForDisplayMultiple
                                   ?.map((data) => data?.id)
                                   ?.includes(data?.id) ? () => {
@@ -4434,10 +4436,27 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                                     />
                                   </div>
                                 ) : (
-                                  <div>
-                                  </div>
+                                  // <div></div>
+                                  // <CommonCheckBox />
+                                  <FormGroup>
+                                    <FormControlLabel sx={{ m: 0 }} control={<Checkbox
+                                      checked={selectedPrivilegesForDisplayMultiple?.map((data) => data?.id)?.includes(data?.id)}
+                                      sx={{
+                                        cursor: "pointer",
+                                        '&.Mui-checked': {
+                                          color: "#06617A",
+                                        },
+                                        '&.Mui-disabled': {
+                                          color: 'rgba(0, 0, 0, 0.26)',
+                                        },
+                                        '& .MuiSvgIcon-root': {
+                                          fontSize: 26,  // Adjust the size here
+                                        },
+                                        p: 0
+                                      }} />} />
+                                  </FormGroup>
                                 )}
-                                <div className={style.privilegeHeading}>
+                                <div className={`${style.privilegeHeadingBold} ${style.verticalAlignCenter}`}>
                                   {data?.privilegeSetTitle}
                                 </div>
                                 {selectedPrivilegesForDisplayMultiple
@@ -4454,10 +4473,11 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                                     </div>
                                   </div>
                                 ) : (
-                                  <button
-                                    className={`${style.addButton} ${style.marginLeft}`}
-                                  >  SELECT
-                                  </button>
+                                  // <button
+                                  //   className={`${style.addButton} ${style.marginLeft}`}
+                                  // >  SELECT
+                                  // </button>
+                                  <div></div>
                                 )}
                               </div>
                             </Tooltip>
@@ -4468,7 +4488,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                         ))}
                       </>
 
-                      <div
+                      {/* <div
                         className={`${style.displayInRowRev} ${style.verticalAlignCenter} ${style.marginTop}`}
                       >
                         <div
@@ -4481,7 +4501,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                         >
                           SAVE
                         </div>
-                      </div>
+                      </div> */}
                     </div>
                   </>
                 ) : (

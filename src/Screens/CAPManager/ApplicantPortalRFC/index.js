@@ -543,7 +543,9 @@ const ApplicantPortalRFC = () => {
             clarificationResponseBy: "APPLICANT",
             responseMethod: '',
             title: respondentName,
-            clarificationDescription: cleanedUserNotes,
+            clarificationDescription: userNotes?.replace(/&nbsp;/g, ' ')
+                ?.replace(/<p>\s*<\/p>/g, '')
+                ?.trim(),
             attachedDocuments: files,
         };
         if (clarificationType !== undefined && clarificationType !== "" && clarificationType !== null && clarificationType !== 'NA') {
@@ -953,7 +955,7 @@ const ApplicantPortalRFC = () => {
                                     actions={[]}
                                     tableSortValues={[]}
                                     heading="There are no courses available"
-                                    onClickFunction={() => {}}
+                                    onClickFunction={() => { }}
                                     hidePagination={true}
                                 />
                             </div>
