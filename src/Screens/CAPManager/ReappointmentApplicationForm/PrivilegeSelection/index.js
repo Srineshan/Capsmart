@@ -4423,9 +4423,9 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
             </>
             {basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory !== ('Courtesy Staff With Admitting Privileges' || 'Courtesy Staff Without Admitting Privileges') && (
               <>
-                {(
+                {((
                   basicForm?.privileges?.priorObligatedPrivileges?.length === 0 &&
-                  basicForm?.privileges?.obligatedPrivileges?.length === 0) ? (
+                  basicForm?.privileges?.obligatedPrivileges?.length === 0) || (basicForm?.privileges?.priorObligatedPrivileges?.length === 0 && basicForm?.forms?.[formIndex]?.data?.privilegeSetChangeUpdated)) ? (
                   <>
                     <div className={`${style.cardTitle} ${style.marginTop}`}>
                       Select and confirm the Privileges you would like to request.
@@ -4493,7 +4493,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                                   ?.map((data) => data?.id)
                                   ?.includes(data?.id) ? (
                                   <div className={`${style.displayInRow} ${style.floatRight}`}>
-                                    <span className={style.signedOnText}>Signed on {selectedPrivilegesForDisplayMultiple?.filter((privilegeSet) => privilegeSet?.id === data?.id)?.[0]?.privilegeDetails?.corePrivileges?.esign?.signedDate || selectedPrivilegesForDisplayMultiple?.filter((privilegeSet) => privilegeSet?.id === data?.id)?.[0]?.privilegeDetails?.nonCorePrivileges?.esign?.signedDate}</span>
+                                    <span className={`${style.signedOnText} ${style.verticalAlignCenter}`}>Signed on {selectedPrivilegesForDisplayMultiple?.filter((privilegeSet) => privilegeSet?.id === data?.id)?.[0]?.privilegeDetails?.corePrivileges?.esign?.signedDate || selectedPrivilegesForDisplayMultiple?.filter((privilegeSet) => privilegeSet?.id === data?.id)?.[0]?.privilegeDetails?.nonCorePrivileges?.esign?.signedDate}</span>
                                     <div>
                                       <img
                                         src={DeleteIcon}
