@@ -671,7 +671,7 @@ const StaffApplicationList = ({
     false,
     false,
     true,
-    false
+    true
   ] : [
     false,
     true,
@@ -2384,6 +2384,7 @@ const StaffApplicationList = ({
 
   const getApplicantValues = applicationType === "NEW" ? () => {
     dot = [];
+    dotTooltipValues = [];
     applicantName = [];
     applicantId = [];
     applicantType = [];
@@ -2695,6 +2696,7 @@ const StaffApplicationList = ({
     ];
   } : applicationType === "REAPPOINTMENT" ? () => {
     dot = [];
+    dotTooltipValues = [];
     applicantName = [];
     applicantId = [];
     applicantType = [];
@@ -2747,6 +2749,10 @@ const StaffApplicationList = ({
           : workflow?.currentLevelStatus === "COMPLETED" ? "green"
             : "grey";
         dot.push(color);
+        const tempTooltip = workflow?.currentLevelStatus === "IN_PROGRESS" ? "Review In Progress"
+          : workflow?.currentLevelStatus === "COMPLETED" ? "Review Completed"
+            : "Review Not Started";
+        dotTooltipValues.push(tempTooltip)
         console.log("Matching workflow found:", {
           role: workflow?.role,
           status: workflow?.currentLevelStatus,

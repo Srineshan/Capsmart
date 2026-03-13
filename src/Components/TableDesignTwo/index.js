@@ -787,7 +787,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                                     pointerEvents: 'auto',
                                                                     '& > *': { pointerEvents: 'none' },
                                                                     zIndex: 1,
-                                                                    width: "280px",
+                                                                    maxWidth: "500px",
                                                                     margin: "0 auto",
                                                                     padding: "8px",
                                                                     color: "white",

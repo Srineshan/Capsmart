@@ -3575,9 +3575,9 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
   };
 
   const handleSelectedPrivilegesForDisplayMultiple = (data) => {
-    console.log('PrivilegeCheck')
     let temp = selectedPrivilegesForDisplayMultiple;
     temp.push(data);
+    console.log('PrivilegeCheck', temp, privilegeSetChangeYesOrNo)
     setSelectedPrivilegesForDisplayMultiple(temp);
     if (privilegeSetChangeYesOrNo === 'Yes') {
       console.log('PrivilegeCheck')
@@ -4448,6 +4448,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                                   ?.includes(data?.id) ? () => {
                                     handleDeleteSelectedPrrivilege(data?.id)
                                   } : () => {
+                                    setPrivilegeSetChangeYesOrNo('No');
                                     setIsHistoricalSign(true);
                                     setShowPrivileges(true);
                                     handleChange(data?.id);
