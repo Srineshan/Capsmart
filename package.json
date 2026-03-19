@@ -39,6 +39,8 @@
     "@testing-library/user-event": "^13.5.0",
     "@webspellchecker/wproofreader-ckeditor5": "^3.1.2",
     "@webspellchecker/wproofreader-sdk-js": "^1.1.1",
+    "ajv": "^8.12.0",
+    "ajv-keywords": "^5.1.0",
     "apexcharts": "^3.35.3",
     "awesome-react-calculator": "^1.1.0",
     "axios": "^0.27.2",
@@ -102,8 +104,8 @@
     "xlsx": "^0.18.5"
   },
   "scripts": {
-    "start": "NODE_OPTIONS='--max-old-space-size=8192' react-scripts start",
-    "build": "NODE_OPTIONS='--max-old-space-size=8192' react-scripts build",
+    "start": "set NODE_OPTIONS=--max-old-space-size=8192 && react-scripts start",
+    "build": "set NODE_OPTIONS=--max-old-space-size=8192 && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
