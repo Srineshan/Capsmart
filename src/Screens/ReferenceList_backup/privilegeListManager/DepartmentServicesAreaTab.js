@@ -1,0 +1,39 @@
+// import React, { useState, useEffect } from "react";
+// import TileApplication from "../../../Components/TileApplication";
+// import style from "./index.module.scss";
+
+// const DepartmentServicesAreaTab = ({ getSelectedTab, selectedTab }) => {
+//   return (
+//     <div className={`${style.tabs}`}>
+//       <TileApplication
+//         selectedTab={selectedTab}
+//         getSelectedTab={getSelectedTab}
+//         tileLabel="Department/Services Area Specific Priviliges"
+//         tileCount={1}
+//         currentTile="permanentStaff"
+//       />
+//     </div>
+//   );
+// };
+
+// export default DepartmentServicesAreaTab;
+
+import React from "react";
+import TileApplication from "../../../Components/TileApplication";
+import style from "./index.module.scss";
+
+const DepartmentServicesAreaTab = ({ getSelectedTab, selectedTab }) => {
+  return (
+    <div className={style.tabs}>
+      <TileApplication
+        selectedTab={selectedTab}
+        getSelectedTab={getSelectedTab}
+        tileLabel="Department/Services Area Specific Privileges"
+        tileCount={1}
+        currentTile="permanentStaff"
+      />
+    </div>
+  );
+};
+
+export default DepartmentServicesAreaTab;

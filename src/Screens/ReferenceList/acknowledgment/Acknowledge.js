@@ -1,349 +1,280 @@
 import React, { Fragment, useState, useEffect } from "react";
 import Navbar from "../../../Components/Navbar";
-import { Checkbox, Icon, Intent } from "@blueprintjs/core";
 import style from "./../index.module.scss";
-import { GET, DELETE, POST, TenantID } from "../../dataSaver";
-import AddNewDepartments from "../addNewDepartments";
-import { SuccessToaster, ErrorToaster } from "../../../utils/toaster";
-import { format } from "date-fns";
-import LevelTwoHeader from "../../../Components/LevelTwoHeader";
-import CommonCheckBox from "../../../Components/CommonFields/CommonCheckBox";
-import CommonPurpleCheckBox from "../../../Components/CommonFields/CommonPurpleCheckBox";
-import SearchBar from "../../../Components/SearchBar";
+import { GET, PUT } from "../../dataSaver";
 import { formatInTimeZone } from "date-fns-tz";
 import { siteTimeZone, timeZoneAbbreviation } from "../../../utils/formatting";
+import { SuccessToaster } from "../../../utils/toaster";
+import LevelTwoHeader from "../../../Components/LevelTwoHeader";
 import ReferenceListCommonTable from "../common/Table";
 import ApplicantSideBar from "../common/SideBar";
 import { ReferenceListActionButton } from "../common/ReferenceListActionButton";
-import Breadcrumbs from "@mui/material/Breadcrumbs";
 import Typography from "@mui/material/Typography";
+import AcknowledgmentDialog from "./AcknowledgmentDialog";
 
 const Acknowledge = () => {
-  const [isSelected, setIsSelected] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(true);
-  const [showAddEntityDialog, setShowAddEntityDialog] = useState(false);
-  const [applicantTypeList, setApplicantTypeList] = useState([]);
-
-  const [entityDetails, setEntityDetails] = useState({});
-  const [selectedIndex, setSelectedIndex] = useState(0);
-
-  const [siteTypeId, setSiteTypeId] = useState("");
-  const [selectedEntityType, setSelectedEntityType] = useState("");
-  const [entityTypes, setEntityTypes] = useState([]);
-  const [applicantTypes, setApplicantTypes] = useState([]);
-  const [departmentServiceMaster, setDepartmentServiceMaster] = useState([]);
-  const [departmentService, setDepartmentService] = useState([]);
-  const [documents, setDocuments] = useState([]);
-  const [selectedDepartmentServiceArea, setSelectedDepartmentServiceArea] =
-    useState([]);
-  const [selectedDepartmentService, setSelectedDepartmentService] = useState(
-    {}
-  );
-  const [isEdit, setIsEdit] = useState(false);
-  const [entityId, setEntityId] = useState("");
-  const [lastUpdatedDate, setLastUpdatedDate] = useState("");
-  const [applicantId, setApplicantId] = useState("");
-  const [selectAllList, setSelectAllList] = useState([]);
-  const [checkedAll, setCheckedAll] = useState(false);
-  const [searchKey, setSearchKey] = useState("");
-  const [selectedApplicantType, setSelectedApplicantType] = useState("");
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [entityId, setEntityId]                         = useState("");
+  const [lastUpdatedDate, setLastUpdatedDate]           = useState("");
+  const [applicantTypeList, setApplicantTypeList]       = useState([]);
+  const [siteList, setSiteList]                         = useState([]);
+  const [selectedSiteName, setSelectedSiteName]         = useState("");
   const [acknowledgementForms, setAcknowledgementForms] = useState([]);
+  const [isDialogOpen, setIsDialogOpen]                 = useState(false);
+  const [isEdit, setIsEdit]                             = useState(false);
+  const [editData, setEditData]                         = useState(null);
+  const [isDone, setIsDone]                             = useState(false);
 
-  const sites = ["SITE NAME", "SITE NAME"];
+  // applicantId is only used to pass down to Table.js for delete/refetch —
+  // we no longer use it to FILTER the GET call (API returns [] when filtered)
+  const [applicantId, setApplicantId]                   = useState("");
 
-  const applicantType = [
-    {
-      name: "Acknowledge Title",
-      type: "Yes",
-      requirment: "Required",
-      lastUpdated: "Aug 16, 2024",
-    },
-    {
-      name: "Acknowledge Title",
-      type: "No",
-      requirment: "NA",
-      lastUpdated: "Aug 16, 2024",
-    },
-    {
-      name: "Acknowledge Title",
-      type: "Yes",
-      requirment: "Required",
-      lastUpdated: "Aug 16, 2024",
-    },
-    {
-      name: "Acknowledge Title",
-      type: "No",
-      requirment: "NA",
-      lastUpdated: "Aug 16, 2024",
-    },
-  ];
+  const tableHeadKeys = ["ACKNOWLEDGEMENT TITLE", "DISCLAIMER", "SIGNATURE", "LAST UPDATED"];
+  const tableDataKeys = ["title", "disclaimer", "esignatureRequiredOnEachPage", "lastModifiedDate"];
 
-  const tableHeadKeys = [
-    "ACKNOWLEDGE TITLE",
-    "DISCLAIMAR",
-    "SIGNATURE",
-    "LAST UPDATED",
-  ];
-  const tableDataKeys = [
-    "title",
-    "disclaimer",
-    "esignatureRequiredOnEachPage",
-    "lastModifiedDate",
-  ];
-
-  useEffect(() => {
-    if (entityId !== "" && entityId !== undefined) {
-      getLastModifiedDate();
-    }
-  }, [entityId]);
-
-  useEffect(() => {
-    getApplicantType();
-  }, []);
-
-  useEffect(() => {
-    getAcknowledgement(applicantId);
-  }, [applicantId]);
-
-  const getApplicantType = async () => {
-    const { data: types } = await GET("entity-service/applicantType");
-    setApplicantTypeList(types);
-  };
-
-  const getIsExpanded = (value) => {
-    setIsExpanded(value);
-  };
-
-  const getAddEntityDialog = (value) => {
-    setShowAddEntityDialog(value);
-  };
-
-  const getEntity = async () => {
-    const { data: entity } = await GET(`entity-service/entity`);
-    setEntityDetails(entity);
-    setEntityId(entity?.[0]?.id);
-  };
-
-  const getAcknowledgement = async (id) => {
-    if (id !== "") {
-      const { data: acknowledgementForm } = await GET(
-        `entity-service/acknowledgementForm?applicantTypeId=${id}`
-      );
-      setAcknowledgementForms(acknowledgementForm);
-    }
-  };
-
-  const getLastModifiedDate = async () => {
-    const { data: lastModifiedDate } = await GET(
-      `entity-service/referenceList/entity/${entityId}`
-    );
-    const date = new Date(lastModifiedDate.departments?.lastModified);
-    setLastUpdatedDate(
-      `${formatInTimeZone(
-        date,
-        siteTimeZone(),
-        "MMM d, yyyy HH:mm"
-      )} ${timeZoneAbbreviation()}`
-    );
-  };
-
-  const getAddEntityTypes = async (data) => {
-    await POST(`entity-service/document/?${TenantID}`, data);
-  };
-
-  const getEntityTypes = async () => {
-    console.log("TenantID", TenantID);
-
-    const { data: entityType } = await GET(
-      `entity-service/document/?${TenantID}`
-    );
-
-    setDocuments(entityType);
-    const allApplicantTypes = entityType.flatMap(
-      (entity) => entity.applicantTypes || []
-    );
-
-    setApplicantTypes(allApplicantTypes);
-
-    // // console.log(entityType?.sites)
-    // if (entityType?.sites?.length !== 0) {
-    //   setSiteTypeId(entityType?.sites?.[0]?.siteType?.id);
-    //   setSelectedEntityType(entityType?.sites?.[0]?.siteType?.type);
-    //   setEntityTypes(entityType?.sites);
-    // }
-    console.log(applicantTypes);
-  };
-
-  const getDepartmentServiceMaster = async () => {
-    const { data: departmentServiceMaster } = await GET(
-      `entity-service/departmentMaster/refListView?siteTypeId=${siteTypeId}`
-    );
-    setDepartmentServiceMaster(departmentServiceMaster);
-  };
-
-  const getDepartmentService = async () => {
-    const { data: departmentService } = await GET(
-      `entity-service/department/refListView?X-tenantID=${TenantID}&siteTypeId=${siteTypeId}&searchText=${searchKey}`
-    );
-    setDepartmentService(departmentService);
-  };
-
-  useEffect(() => {
-    if (applicantTypeList.length > 0) {
-      setSelectedApplicantType(
-        applicantTypeList?.filter((data) => data?.id === applicantId)[0]
-          ?.applicantType
-      );
-    }
-  }, [applicantTypeList, applicantId]);
-
-  useEffect(() => {
-    let tempDepartmentService = departmentServiceMaster
-      ?.filter(
-        (data) =>
-          !departmentService.some(
-            (customerData) =>
-              customerData?.departmentGroupBy.name ===
-              data?.departmentGroupBy.name
-          )
-      )
-      ?.map((data) => {
-        return { ...data };
-      });
-
-    setSelectAllList(tempDepartmentService);
-
-    let allChecked = true;
-
-    if (tempDepartmentService.length > selectedDepartmentServiceArea.length) {
-      allChecked = false;
-    }
-
-    if (allChecked) {
-      setCheckedAll(true);
-    } else {
-      setCheckedAll(false);
-    }
-  }, [selectedDepartmentServiceArea]);
-
+  // ── Boot ─────────────────────────────────────────────────
   useEffect(() => {
     getEntity();
-    getEntityTypes();
+    getSites();
+    getApplicantTypes();
+    // Fetch ALL acknowledgement forms — no applicantTypeId filter
+    getAcknowledgement();
   }, []);
 
   useEffect(() => {
-    if (siteTypeId !== "" && siteTypeId !== undefined) {
-      getDepartmentServiceMaster();
-      getDepartmentService();
-    }
-  }, [siteTypeId, entityDetails, searchKey]);
+    if (entityId) getLastModifiedDate(entityId);
+  }, [entityId]);
 
-  const handleSiteClick = (siteName) => {
-    setSelectedApplicantType(siteName);
+  // Seed applicantId (for Table.js delete/refetch) from first applicantType record
+  useEffect(() => {
+    if (applicantTypeList.length > 0 && !applicantId) {
+      setApplicantId(applicantTypeList[0]?.id || "");
+    }
+  }, [applicantTypeList]);
+
+  useEffect(() => {
+    if (siteList.length > 0 && !selectedSiteName) {
+      setSelectedSiteName(getSiteDisplayName(siteList[0]));
+    }
+  }, [siteList]);
+
+  // ── Display helpers ───────────────────────────────────────
+  const getSiteDisplayName = (site) => {
+    const raw = site?.siteName?.siteName || site?.siteName?.name || site?.siteName || site?.name || "";
+    return typeof raw === "string" ? raw : String(raw);
   };
 
-  const handleOpenDialog = () => {
+  const getSiteTypeName = (site) => {
+    const raw = site?.siteType?.siteTypeName || site?.siteType?.name || site?.siteType || site?.siteTypeName || "";
+    return typeof raw === "string" ? raw : "";
+  };
+
+  const normalizeRow = (row) => ({
+    ...row,
+    title:                        row?.title || row?.name || "",
+    disclaimer:                   row?.disclaimer,
+    esignatureRequiredOnEachPage: row?.esignatureRequiredOnEachPage ?? row?.signatureRequired ?? false,
+    lastModifiedDate:             row?.lastModifiedDate || row?.lastModified || row?.updatedAt || row?.modifiedDate || null,
+  });
+
+  // ── API calls ─────────────────────────────────────────────
+  const getEntity = async () => {
+    try {
+      const { data } = await GET("entity-service/entity");
+      if (data?.[0]) setEntityId(data[0].id);
+    } catch (e) { console.error("entity:", e); }
+  };
+
+  const getSites = async () => {
+    try {
+      const { data } = await GET("entity-service/sites");
+      setSiteList(data || []);
+    } catch (e) { console.error("sites:", e); }
+  };
+
+  const getApplicantTypes = async () => {
+    try {
+      const { data } = await GET("entity-service/applicantType");
+      setApplicantTypeList(data || []);
+    } catch (e) { console.error("applicantType:", e); }
+  };
+
+  const getLastModifiedDate = async (id) => {
+    try {
+      const { data } = await GET(`entity-service/referenceList/entity/${id}`);
+      const ts = data?.acknowledgementForms?.lastModified || data?.departments?.lastModified;
+      const date = new Date(ts);
+      if (!isNaN(date))
+        setLastUpdatedDate(`${formatInTimeZone(date, siteTimeZone(), "MMM d, yyyy HH:mm")} ${timeZoneAbbreviation()}`);
+    } catch (e) { console.error("lastModified:", e); }
+  };
+
+  // ── CORE FETCH — NO applicantTypeId filter ────────────────
+  // The ?applicantTypeId= filter returns [] even after save.
+  // Fetching all forms works correctly.
+  const getAcknowledgement = async () => {
+    try {
+      const { data } = await GET("entity-service/acknowledgementForm");
+      console.log("[Acknowledge] all forms:", data?.length, data);
+      setAcknowledgementForms((data || []).map(normalizeRow));
+    } catch (e) { console.error("acknowledgementForm:", e); }
+  };
+
+  // ── Sidebar handlers ──────────────────────────────────────
+  const handleTileSelect = (_siteId) => {
+    setIsDone(false);
+    getAcknowledgement();
+  };
+
+  const handleSiteClick = (siteName) => {
+    setSelectedSiteName(typeof siteName === "string" ? siteName : String(siteName || ""));
+    getAcknowledgement();
+  };
+
+  // ── Dialog handlers ───────────────────────────────────────
+  const handleOpenAddDialog = () => {
+    setEditData(null);
+    setIsEdit(false);
     setIsDialogOpen(true);
   };
 
-  const handleCloseDialog = () => {
+  const handleOpenEditDialog = (data) => {
+    setEditData(data);
+    setIsEdit(true);
+    setIsDialogOpen(true);
+  };
+
+  // needRefetch=true is passed by AcknowledgmentDialog after successful save
+  const handleCloseDialog = (needRefetch = false) => {
     setIsDialogOpen(false);
+    setIsEdit(false);
+    setEditData(null);
+    if (needRefetch) getAcknowledgement();
   };
 
-  const getSelectedTile = (data) => {
-    setApplicantId(data);
-    getAcknowledgement(data);
+  // ── Footer buttons ────────────────────────────────────────
+  const handleSaveInProgress = async () => {
+    try {
+      await PUT(
+        `entity-service/referenceList/entity/${entityId}`,
+        JSON.stringify({ acknowledgementForms: { status: "IN_PROGRESS", lastModified: new Date().toISOString() } })
+      );
+    } catch (e) { console.warn("saveInProgress:", e); }
+    finally {
+      SuccessToaster("Saved as in progress.");
+      getAcknowledgement();
+      setIsDone(true);
+    }
   };
 
+  const handleMarkAsDone = async () => {
+    try {
+      await PUT(
+        `entity-service/referenceList/entity/${entityId}`,
+        JSON.stringify({ acknowledgementForms: { status: "DONE", lastModified: new Date().toISOString() } })
+      );
+    } catch (e) { console.warn("markAsDone:", e); }
+    finally {
+      setIsDone(true);
+      SuccessToaster("Marked as done.");
+      window.location.href = "/referencelist";
+    }
+  };
+
+  // ── Derived ───────────────────────────────────────────────
+  const hasRows = acknowledgementForms.length > 0;
+
+  const enrichedSideBarList = siteList.map((s) => ({
+    ...s,
+    count: acknowledgementForms.length,
+  }));
+
+  // ── Render ────────────────────────────────────────────────
   return (
     <Fragment>
       <Navbar />
-      <div className={` ${style.applicantTypeBackground}`}>
+      <div className={style.applicantTypeBackground}>
         <div className={style.padding20}>
-          <div>
-            <LevelTwoHeader
-              getAddEntityDialog={getAddEntityDialog}
-              heading={"Acknowledgement Forms by Industries"}
-              updatedTime={`UPDATED ON ${lastUpdatedDate}`}
-              path={"/Screens/ReferenceList/customerAdminDashboard"}
-              callingFrom={"Customer Admin"}
-              needHeader={false}
-              tileType={"Acknowedgement"}
-              documents={acknowledgementForms}
-              getEntityTypes={getEntityTypes}
-              getAddEntityTypes={getAddEntityTypes}
-              handleOpenDialog={handleOpenDialog}
-              handleClose={handleCloseDialog}
-            />
-          </div>
-          <div
-            className={`${isExpanded ? style.bigCardGrid : style.smallCardGrid
-              }`}
-          >
+
+          <LevelTwoHeader
+            heading={"Acknowledgement Forms by Industries"}
+            updatedTime={lastUpdatedDate ? `UPDATED ON ${lastUpdatedDate}` : ""}
+            path={"/Screens/ReferenceList/customerAdminDashboard"}
+            callingFrom={"Customer Admin"}
+            needHeader={false}
+            tileType={"Acknowedgement"}
+            onAddClick={handleOpenAddDialog}
+            onCloseLevel2={() => setIsDialogOpen(false)}
+          />
+
+          <div className={style.bigCardGrid}>
+
             <ApplicantSideBar
-              applicantType={applicantTypeList?.map(
-                (data) => data?.applicantType
-              )}
-              siteType={applicantTypeList?.map((data) => data?.siteType)}
-              siteTitle={"All Applicant Type"}
+              applicantType={siteList.map(getSiteDisplayName)}
+              siteType={siteList.map(getSiteTypeName)}
+              selectedTile={handleTileSelect}
               onSelectSite={handleSiteClick}
               tileType={"Acknowedgement"}
-              selectedTile={getSelectedTile}
-              sideBarList={applicantTypeList}
+              sideBarList={enrichedSideBarList}
+              siteDropdown={false}
             />
+
             <div className={style.applicantList}>
-              <div className={`${style.Tabletitle} `}>
+
+              <div className={style.Tabletitle}>
                 <Typography className={style.tableTitleContent}>
-                  {`${selectedApplicantType}`}
+                  {selectedSiteName || "All Sites"}
                 </Typography>
-                <Typography
-                  className={`${style.tableTitleContentArrow} ${style.tableTitleContent}`}
-                >
+                <Typography className={`${style.tableTitleContentArrow} ${style.tableTitleContent}`}>
                   {">"}
                 </Typography>
                 <Typography className={style.tableTitleContent}>
                   All Acknowledgement Forms
                 </Typography>
               </div>
-              <ReferenceListCommonTable
-                applicantTypes={acknowledgementForms}
-                applicantNotice={
-                  "Applicant types are ordered as they will appear on forms. To change the order, click and drag "
-                }
-                tableDataKeys={tableDataKeys}
-                tableHeadKeys={tableHeadKeys}
-                groupFirstTwoColumn={true}
-                tileType={"Acknowedgement"}
-                documents={acknowledgementForms}
-                getAddEntityTypes={getAddEntityTypes}
-                handleClose={handleCloseDialog}
-              />
+
+              {hasRows ? (
+                <ReferenceListCommonTable
+                  applicantTypes={acknowledgementForms}
+                  applicantNotice="Acknowledgement forms are ordered as they will appear."
+                  tableDataKeys={tableDataKeys}
+                  tableHeadKeys={tableHeadKeys}
+                  tileType={"Acknowedgement"}
+                  groupFirstTwoColumn={true}
+                  onEditClick={handleOpenEditDialog}
+                  applicantId={applicantId}
+                  refetchStaffPrivileges={getAcknowledgement}
+                />
+              ) : (
+                <div className={style.emptyStateContainer}>
+                  <div className={style.emptyStateIcon}>▲</div>
+                  <p className={style.emptyStateText}>
+                    Acknowledgement forms need to be created and setup in order to be
+                    made available as a default list for accounts that are created.
+                  </p>
+                </div>
+              )}
+
               <ReferenceListActionButton
                 button1={"Save In-Progress"}
-                button2={" Mark as Done"}
+                button2={"Mark as Done"}
+                onButton1Click={handleSaveInProgress}
+                onButton2Click={handleMarkAsDone}
+                button2Active={isDone || hasRows}
               />
             </div>
           </div>
         </div>
-
-        {showAddEntityDialog && (
-          <AddNewDepartments
-            getAddEntityDialog={getAddEntityDialog}
-            callingFrom={"Customer Admin"}
-            isEdit={isEdit}
-            getEntityData={getDepartmentService}
-            selectedDepart={selectedDepartmentService}
-            selectedTitle={selectedEntityType}
-            siteTypeId={siteTypeId}
-            departmentList={departmentService}
-          />
-        )}
-        <div className={style.spaceBetween}>
-          <p className={style.poweredBy}>Powered by - HapiCare</p>
-          <p className={style.poweredBy}>© HapiCare</p>
-        </div>
       </div>
+
+      {isDialogOpen && (
+        <AcknowledgmentDialog
+          open={isDialogOpen}
+          handleClose={handleCloseDialog}
+          selectedAcknowledgement={editData}
+          isEdit={isEdit}
+          applicantTypeList={applicantTypeList}
+        />
+      )}
     </Fragment>
   );
 };

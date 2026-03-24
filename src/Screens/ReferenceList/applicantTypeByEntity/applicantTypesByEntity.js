@@ -13,66 +13,51 @@ import Typography from "@mui/material/Typography";
 import ApplicantTypeDialog from "./ApplicantTypeDialog";
 
 const ApplicantTypesByEntity = () => {
-  const [isEdit, setIsEdit] = useState(false);
-  const [entityId, setEntityId] = useState("");
-  const [entityName, setEntityName] = useState("");
-  const [lastUpdatedDate, setLastUpdatedDate] = useState("");
-  const [selectedApplicantType, setSelectedApplicantType] = useState("");
-  const [selectedSiteName, setSelectedSiteName] = useState("");
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [applicantTypeList, setApplicantTypeList] = useState([]);
-  const [applicantId, setApplicantId] = useState("");
-  const [applicantTypeEntityForm, setApplicantTypeEntityForm] = useState([]);
-  const [editData, setEditData] = useState(null);
-  const [isRefetch, setIsRefetch] = useState(false);
-  const [categoryList, setCategoryList] = useState([]);
+  const [isEdit, setIsEdit]                               = useState(false);
+  const [entityId, setEntityId]                           = useState("");
+  const [entityName, setEntityName]                       = useState("");
+  const [lastUpdatedDate, setLastUpdatedDate]             = useState("");
+  const [selectedSiteName, setSelectedSiteName]           = useState("");
+  const [isDialogOpen, setIsDialogOpen]                   = useState(false);
+  const [siteList, setSiteList]                           = useState([]);
+  const [editData, setEditData]                           = useState(null);
+  const [isDone, setIsDone]                               = useState(false);
+  const [categoryList, setCategoryList]                   = useState([]);
 
-  // Track whether current tile is "done" — XD image 3 Mark as Done active state
-  const [isDone, setIsDone] = useState(false);
+  // applicantTypeList = ALL records from entity-service/applicantType
+  // This is BOTH the sidebar source AND the table data — same endpoint, no filter needed
+  const [applicantTypeList, setApplicantTypeList]         = useState([]);
+
+  // applicantId is only kept for Table.js delete/refetch prop — not used for GET filter
+  const [applicantId, setApplicantId]                     = useState("");
 
   const tableHeadKeys = ["APPLICANT TYPES", "CATEGORY", "LAST UPDATED"];
   const tableDataKeys = ["applicantType", "category", "lastModifiedDate"];
 
-  // ── Lifecycle ──────────────────────────────────────────────
-
-  useEffect(() => { getEntity(); }, []);
+  // ── Boot ─────────────────────────────────────────────────
+  useEffect(() => {
+    getEntity();
+    getSites();
+    // Fetch ALL applicant types on boot — no filter
+    getApplicantTypeForms();
+  }, []);
 
   useEffect(() => {
-    if (entityId) {
-      getApplicantType(entityId);
-      getLastModifiedDate(entityId);
-    }
+    if (entityId) getLastModifiedDate(entityId);
   }, [entityId]);
 
+  // Once list loads, extract categories for the dialog dropdown
+  // and seed applicantId (for Table.js props only)
   useEffect(() => {
     if (applicantTypeList.length > 0) {
-      const first = applicantTypeList[0];
+      setApplicantId(applicantTypeList[0]?.id || "");
 
-      // Safely extract plain strings from raw API fields
-      const rawType = first?.applicantType;
-      const typeName =
-        typeof rawType === "string" ? rawType
-        : Array.isArray(rawType) ? rawType[0] || ""
-        : typeof rawType === "object" ? rawType?.type || rawType?.name || ""
-        : "";
-      setSelectedApplicantType(typeName);
-
-      const rawSite = first?.siteType;
-      const siteName =
-        typeof rawSite === "string" ? rawSite
-        : typeof rawSite === "object" ? rawSite?.name || rawSite?.siteType || ""
-        : "";
-      setSelectedSiteName(siteName);
-      setApplicantId(first?.id || "");
-      setIsDone(false);
-
-      // Extract unique categories from list for the dialog dropdown
       const seen = new Set();
       const unique = [];
       applicantTypeList.forEach((item) => {
         const cat = item?.category;
         if (!cat) return;
-        const id = typeof cat === "object" ? cat?.id || cat?.category : cat;
+        const id    = typeof cat === "object" ? cat?.id || cat?.category : cat;
         const label = typeof cat === "object"
           ? cat?.category || cat?.name || cat?.categoryName || ""
           : cat;
@@ -85,30 +70,51 @@ const ApplicantTypesByEntity = () => {
     }
   }, [applicantTypeList]);
 
+  // Seed breadcrumb site name from first site
   useEffect(() => {
-    if (applicantId) getApplicantTypeForms(applicantId);
-  }, [applicantId]);
-
-  useEffect(() => {
-    if (isRefetch && applicantId) {
-      getApplicantTypeForms(applicantId);
-      getApplicantType(entityId);
-      setIsRefetch(false);
+    if (siteList.length > 0 && !selectedSiteName) {
+      setSelectedSiteName(getSiteDisplayName(siteList[0]));
     }
-  }, [isRefetch]);
+  }, [siteList]);
 
-  // ── Data normalizer ────────────────────────────────────────
-  // Table.js (tileType="ApplicantType") requires:
-  //   applicantType    → Array
-  //   category         → { category: "string" } object
-  //   lastModifiedDate → raw ISO string (never a display string)
+  // ── Display helpers ───────────────────────────────────────
+  const getSiteDisplayName = (site) => {
+    const raw =
+      site?.siteName?.siteName ||
+      site?.siteName?.name     ||
+      site?.siteName           ||
+      site?.name               ||
+      site?.siteTypeName       || "";
+    return typeof raw === "string" ? raw : String(raw);
+  };
+
+  const getSiteTypeName = (site) => {
+    const raw = site?.siteType;
+    if (!raw) return "";
+    if (typeof raw === "string") return raw;
+    if (typeof raw === "object") {
+      const val =
+        raw?.siteTypeName      ||
+        raw?.name              ||
+        raw?.type              ||
+        raw?.title             ||
+        raw?.label             ||
+        raw?.siteType?.name    ||
+        raw?.siteType?.siteTypeName || "";
+      return typeof val === "string" ? val : "";
+    }
+    return "";
+  };
+
+  // Normalise rows for Table.js tileType="ApplicantType"
+  // applicantType → Array, category → { category: string }, lastModifiedDate → ISO string
   const normalizeRow = (row) => {
     const rawType =
-      row?.applicantType || row?.applicantTypeName ||
-      row?.name || row?.type || "";
-    const applicantType = Array.isArray(rawType)
-      ? rawType
-      : rawType ? [rawType] : [];
+      row?.applicantType     ||
+      row?.applicantTypeName ||
+      row?.name              ||
+      row?.type              || "";
+    const applicantType = Array.isArray(rawType) ? rawType : rawType ? [rawType] : [];
 
     const rawCategory = row?.category;
     let category = null;
@@ -118,145 +124,78 @@ const ApplicantTypesByEntity = () => {
       category = {
         ...rawCategory,
         category:
-          rawCategory?.category ||
-          rawCategory?.name ||
+          rawCategory?.category    ||
+          rawCategory?.name        ||
           rawCategory?.categoryName || "",
       };
     }
 
     const lastModifiedDate =
       row?.lastModifiedDate || row?.lastModified ||
-      row?.updatedAt || row?.modifiedDate || row?.modifiedAt || null;
+      row?.updatedAt        || row?.modifiedDate || row?.modifiedAt || null;
 
     return { ...row, applicantType, category, lastModifiedDate };
   };
 
-  // ── API calls ──────────────────────────────────────────────
-
+  // ── API calls ─────────────────────────────────────────────
   const getEntity = async () => {
     try {
-      const { data: entity } = await GET(`entity-service/entity`);
+      const { data: entity } = await GET("entity-service/entity");
       if (entity?.[0]) {
         const e = entity[0];
         setEntityId(e.id);
-        const rawName =
-          e.entityName || e.name || e.facilityName ||
-          e.organizationName || e.title || "";
-        const finalName =
-          typeof rawName === "string"
-            ? rawName
-            : rawName?.name || rawName?.entityName || rawName?.value || "";
-        setEntityName(finalName);
+        const rawName = e.entityName || e.name || e.facilityName || e.organizationName || e.title || "";
+        setEntityName(typeof rawName === "string" ? rawName : rawName?.name || rawName?.entityName || "");
       }
-    } catch (err) {
-      console.error("Failed to fetch entity:", err);
-    }
+    } catch (err) { console.error("entity:", err); }
   };
 
-  const getApplicantType = async (id) => {
+  const getSites = async () => {
     try {
-      const { data: types } = await GET(
-        `entity-service/applicantType?entityId=${id}`
-      );
-      setApplicantTypeList(types || []);
-    } catch (err) {
-      console.error("Failed to fetch applicant types:", err);
-    }
+      const { data: sites } = await GET("entity-service/sites");
+      setSiteList(sites || []);
+    } catch (err) { console.error("sites:", err); }
   };
 
   const getLastModifiedDate = async (id) => {
     try {
-      const { data: lastModifiedDate } = await GET(
-        `entity-service/referenceList/entity/${id}`
-      );
-      const date = new Date(lastModifiedDate?.departments?.lastModified);
-      if (!isNaN(date)) {
+      const { data } = await GET(`entity-service/referenceList/entity/${id}`);
+      const ts = data?.applicantTypes?.lastModified || data?.departments?.lastModified;
+      const date = new Date(ts);
+      if (!isNaN(date))
         setLastUpdatedDate(
           `${formatInTimeZone(date, siteTimeZone(), "MMM d, yyyy HH:mm")} ${timeZoneAbbreviation()}`
         );
-      }
-    } catch (err) {
-      console.error("Failed to fetch last modified date:", err);
-    }
+    } catch (err) { console.error("lastModified:", err); }
   };
 
-  const getApplicantTypeForms = async (id) => {
-    if (!id) return;
+  // ── CORE FETCH — NO filter — same fix as acknowledgement forms ──
+  // ?applicantTypeId= filter returns [] — fetch all records directly
+  const getApplicantTypeForms = async () => {
     try {
-      const { data: applicantTypeForm } = await GET(
-        `entity-service/applicantType?applicantTypeId=${id}`
-      );
-      const normalized = (applicantTypeForm || []).map(normalizeRow);
-      setApplicantTypeEntityForm(normalized);
-    } catch (err) {
-      console.error("Failed to fetch applicant type forms:", err);
-    }
+      const { data } = await GET("entity-service/applicantType");
+      console.log("[ApplicantTypes] all records:", data?.length);
+      setApplicantTypeList((data || []).map(normalizeRow));
+    } catch (err) { console.error("applicantType:", err); }
   };
 
-  // ── Save In-Progress handler ───────────────────────────────
-  // Stays on same page — saves status and shows toaster
-  const handleSaveInProgress = async () => {
-    try {
-      await PUT(
-        `entity-service/referenceList/entity/${entityId}`,
-        JSON.stringify({
-          applicantTypes: {
-            status: "IN_PROGRESS",
-            lastModified: new Date().toISOString(),
-          },
-        })
-      );
-    } catch (err) {
-      console.warn("Save in progress API:", err);
-    } finally {
-      // Always show success — stays on same page
-      SuccessToaster("Saved as in progress.");
-    }
-  };
-
-  // ── Mark as Done handler ───────────────────────────────────
-  // Navigates back to the reference list dashboard — matches XD demo behaviour
-  const handleMarkAsDone = async () => {
-    try {
-      await PUT(
-        `entity-service/referenceList/entity/${entityId}`,
-        JSON.stringify({
-          applicantTypes: {
-            status: "DONE",
-            lastModified: new Date().toISOString(),
-          },
-        })
-      );
-    } catch (err) {
-      // Navigation happens regardless of API result
-      console.warn("Mark as done API:", err);
-    } finally {
-      setIsDone(true);
-      SuccessToaster("Marked as done.");
-      // Navigate to reference list dashboard — same as XD demo screen 44 → referencelist
-      window.location.href = "/referencelist";
-    }
-  };
-
-  // ── Dialog handlers ────────────────────────────────────────
-
-  const handleTileSelect = (selectedId) => {
-    if (selectedId) {
-      setApplicantId(selectedId);
-      setIsDone(false); // reset done state when switching tiles
-    }
+  // ── Sidebar handlers ──────────────────────────────────────
+  const handleTileSelect = (_siteId) => {
+    setIsDone(false);
+    getApplicantTypeForms();
   };
 
   const handleSiteClick = (siteName) => {
-    // siteName comes from the sidebar tile click — ensure it's always a plain string
     const name =
       typeof siteName === "string" ? siteName
-      : Array.isArray(siteName) ? siteName[0] || ""
+      : Array.isArray(siteName)    ? siteName[0] || ""
       : typeof siteName === "object" ? siteName?.type || siteName?.name || ""
       : String(siteName || "");
     setSelectedSiteName(name);
+    getApplicantTypeForms();
   };
 
+  // ── Dialog handlers ───────────────────────────────────────
   const handleOpenAddDialog = () => {
     setEditData(null);
     setIsEdit(false);
@@ -269,31 +208,62 @@ const ApplicantTypesByEntity = () => {
     setIsDialogOpen(true);
   };
 
+  // needRefetch=true → directly call getApplicantTypeForms (no isRefetch flag)
   const handleCloseDialog = (needRefetch = false) => {
     setIsDialogOpen(false);
     setIsEdit(false);
     setEditData(null);
-    if (needRefetch) setIsRefetch(true);
+    if (needRefetch) getApplicantTypeForms();
   };
 
-  // ── Derived ────────────────────────────────────────────────
+  // ── Footer buttons ────────────────────────────────────────
+  const handleSaveInProgress = async () => {
+    try {
+      await PUT(
+        `entity-service/referenceList/entity/${entityId}`,
+        JSON.stringify({
+          applicantTypes: {
+            status: "IN_PROGRESS",
+            lastModified: new Date().toISOString(),
+          },
+        })
+      );
+    } catch (err) { console.warn("saveInProgress:", err); }
+    finally {
+      SuccessToaster("Saved as in progress.");
+      getApplicantTypeForms();
+      setIsDone(true);
+    }
+  };
 
-  const breadcrumbSiteName = selectedSiteName || selectedApplicantType;
-  const hasRows = applicantTypeEntityForm.length > 0;
+  const handleMarkAsDone = async () => {
+    try {
+      await PUT(
+        `entity-service/referenceList/entity/${entityId}`,
+        JSON.stringify({
+          applicantTypes: {
+            status: "DONE",
+            lastModified: new Date().toISOString(),
+          },
+        })
+      );
+    } catch (err) { console.warn("markAsDone:", err); }
+    finally {
+      setIsDone(true);
+      SuccessToaster("Marked as done.");
+      window.location.href = "/referencelist";
+    }
+  };
 
-  // Build count map: applicantTypeId → number of form rows
-  // Used for sidebar tile count badges (XD image 3 shows "2" on Acute Care Facility)
-  const countMap = applicantTypeList.reduce((acc, item) => {
-    acc[item.id] = item?.count ?? item?.applicantTypeCount ?? 0;
-    return acc;
-  }, {});
+  // ── Derived ───────────────────────────────────────────────
+  const hasRows = applicantTypeList.length > 0;
 
-  // Pass enriched sideBarList with count field for the sidebar badge
-  const enrichedSideBarList = applicantTypeList.map((item) => ({
-    ...item,
-    count: countMap[item.id] ?? 0,
+  const enrichedSideBarList = siteList.map((site) => ({
+    ...site,
+    count: applicantTypeList.length, // show total loaded count on every tile
   }));
 
+  // ── Render ────────────────────────────────────────────────
   return (
     <Fragment>
       <Navbar />
@@ -313,25 +283,10 @@ const ApplicantTypesByEntity = () => {
 
           <div className={style.bigCardGrid}>
 
-            {/* LEFT SIDEBAR — XD image 2 & 3 */}
+            {/* LEFT SIDEBAR */}
             <ApplicantSideBar
-              applicantType={applicantTypeList.map((d) => {
-                // applicantType from API can be a plain string, an array, or an object
-                // Sidebar needs a plain string to render as tile label
-                const raw = d?.applicantType;
-                if (!raw) return "";
-                if (typeof raw === "string") return raw;
-                if (Array.isArray(raw)) return raw[0] || "";
-                if (typeof raw === "object") return raw?.type || raw?.name || raw?.applicantType || "";
-                return String(raw);
-              })}
-              siteType={applicantTypeList.map((d) => {
-                const raw = d?.siteType;
-                if (!raw) return "";
-                if (typeof raw === "string") return raw;
-                if (typeof raw === "object") return raw?.name || raw?.siteType || raw?.type || "";
-                return String(raw);
-              })}
+              applicantType={siteList.map(getSiteDisplayName)}
+              siteType={siteList.map(getSiteTypeName)}
               selectedTile={handleTileSelect}
               onSelectSite={handleSiteClick}
               tileType={"ApplicantType"}
@@ -342,14 +297,12 @@ const ApplicantTypesByEntity = () => {
             {/* RIGHT PANEL */}
             <div className={style.applicantList}>
 
-              {/* Breadcrumb — XD image 3 */}
+              {/* Breadcrumb */}
               <div className={style.Tabletitle}>
                 <Typography className={style.tableTitleContent}>
-                  {`{${breadcrumbSiteName}}`}
+                  {selectedSiteName || "All Sites"}
                 </Typography>
-                <Typography
-                  className={`${style.tableTitleContentArrow} ${style.tableTitleContent}`}
-                >
+                <Typography className={`${style.tableTitleContentArrow} ${style.tableTitleContent}`}>
                   {">"}
                 </Typography>
                 <Typography className={style.tableTitleContent}>
@@ -358,12 +311,9 @@ const ApplicantTypesByEntity = () => {
               </div>
 
               {hasRows ? (
-                /* TABLE — XD image 3 */
                 <ApplicantTable
-                  applicantTypes={applicantTypeEntityForm}
-                  applicantNotice={
-                    "Applicant Types are ordered as they will appear on forms. To change the order, click and drag."
-                  }
+                  applicantTypes={applicantTypeList}
+                  applicantNotice="Applicant Types are ordered as they will appear on forms. To change the order, click and drag."
                   tableDataKeys={tableDataKeys}
                   tableHeadKeys={tableHeadKeys}
                   tileType={"ApplicantType"}
@@ -373,7 +323,6 @@ const ApplicantTypesByEntity = () => {
                   refetchStaffPrivileges={getApplicantTypeForms}
                 />
               ) : (
-                /* EMPTY STATE — XD image 2 */
                 <div className={style.emptyStateContainer}>
                   <div className={style.emptyStateIcon}>▲</div>
                   <p className={style.emptyStateText}>
@@ -384,13 +333,12 @@ const ApplicantTypesByEntity = () => {
                 </div>
               )}
 
-              {/* FOOTER BUTTONS — XD image 2 & 3 */}
               <ReferenceListActionButton
                 button1={"Save In-Progress"}
                 button2={"Mark as Done"}
                 onButton1Click={handleSaveInProgress}
                 onButton2Click={handleMarkAsDone}
-                button2Active={isDone}
+                button2Active={isDone || hasRows}
               />
             </div>
           </div>

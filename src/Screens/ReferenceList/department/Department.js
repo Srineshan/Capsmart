@@ -1,304 +1,446 @@
-import React, { Fragment, useState, useEffect } from "react";
+import React, { Fragment, useState, useEffect, useRef } from "react";
 import Navbar from "../../../Components/Navbar";
-import { Checkbox, Icon, Intent } from "@blueprintjs/core";
-import style from "./../index.module.scss";
-import { GET, DELETE, POST, TenantID } from "../../dataSaver";
-import AddNewDepartments from "../addNewDepartments";
-import { SuccessToaster, ErrorToaster } from "../../../utils/toaster";
-import { format } from "date-fns";
-import LevelTwoHeader from "../../../Components/LevelTwoHeader";
-import CommonCheckBox from "../../../Components/CommonFields/CommonCheckBox";
-import CommonPurpleCheckBox from "../../../Components/CommonFields/CommonPurpleCheckBox";
-import SearchBar from "../../../Components/SearchBar";
+import style from "./department.module.scss";
+import { GET, POST, DELETE, PUT, TenantID } from "../../dataSaver";
 import { formatInTimeZone } from "date-fns-tz";
 import { siteTimeZone, timeZoneAbbreviation } from "../../../utils/formatting";
-import ApplicantTable from "../common/Table";
-import ApplicantSideBar from "../common/SideBar";
-import { ReferenceListActionButton } from "../common/ReferenceListActionButton";
-import { Typography } from "@material-ui/core";
+import { SuccessToaster, ErrorToaster } from "../../../utils/toaster";
+import LevelTwoHeader from "../../../Components/LevelTwoHeader";
 import DepartmentDialog from "./DepartmentDialog";
 
-const Departments = () => {
-  const [isSelected, setIsSelected] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(true);
-  const [showAddEntityDialog, setShowAddEntityDialog] = useState(false);
-  const [tableData, setTableData] = useState();
-  const [entityDetails, setEntityDetails] = useState({});
-  const [selectedIndex, setSelectedIndex] = useState(0);
+// Persist custom list across navigation within the same session
+const STORAGE_KEY = "dept_customList";
 
-  const [siteTypeId, setSiteTypeId] = useState("");
-  const [selectedEntityType, setSelectedEntityType] = useState("");
-  const [entityTypes, setEntityTypes] = useState([]);
-  const [departmentServiceMaster, setDepartmentServiceMaster] = useState([]);
-  const [departmentService, setDepartmentService] = useState([]);
-  const [selectedDepartmentServiceArea, setSelectedDepartmentServiceArea] =
-    useState([]);
-  const [selectedDepartmentService, setSelectedDepartmentService] = useState(
-    {}
-  );
-  const [isEdit, setIsEdit] = useState(false);
+const Departments = () => {
   const [entityId, setEntityId] = useState("");
   const [lastUpdatedDate, setLastUpdatedDate] = useState("");
+  const [siteTypeId, setSiteTypeId] = useState("");
 
-  const [selectAllList, setSelectAllList] = useState([]);
-  const [checkedAll, setCheckedAll] = useState(false);
-  const [searchKey, setSearchKey] = useState("");
-  const [selectedApplicantType, setSelectedApplicantType] = useState("");
-  const [sites, setSites] = useState([]);
+  // Left panel
+  const [standardList, setStandardList] = useState([]);
+  const [expandedGroups, setExpandedGroups] = useState({});
+  const [selectedStandardItems, setSelectedStandardItems] = useState([]);
+
+  // Right panel — single source of truth
+  const [customList, setCustomList] = useState([]);
+  const initialLoadDone = useRef(false);
+
+  const [isSaving, setIsSaving] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [applicantTypeList, setApplicantTypeList] = useState([]);
-  const [applicantId, setApplicantId] = useState("");
-  const [departmentForms, setDepartmentForms] = useState([]);
-  const [editData, setEditData] = useState();
-  const [isRefetch, setIsRefetch] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
+  const [editData, setEditData] = useState(null);
 
-  const tableHeadKeys = [
-    // "ID",
-    // "TITLE",
-    "DEPARTMENT",
-    // "TYPE",
-    // "POD",
-    "CREATED DATE",
-    "LAST UPDATED",
-  ];
-  const tableDataKeys = ["departmentName", "createdDate", "lastModifiedDate"];
-  useEffect(() => {
-    if (entityId !== "" && entityId !== undefined) {
-      getLastModifiedDate();
-    }
-  }, [entityId]);
+  // ── Helper: get display name from any item shape ───────────
+  const getItemName = (item) =>
+    item?.departmentGroupBy?.name ||
+    item?.departmentName?.name ||
+    item?.name || "";
 
-  const getIsExpanded = (value) => {
-    setIsExpanded(value);
+  const getChildren = (item) =>
+    item?.departments || item?.children || item?.serviceAreas || [];
+
+  // ── Helper: update customList and persist to sessionStorage ─
+  const updateCustomList = (newList) => {
+    setCustomList(newList);
+    try {
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(newList));
+    } catch (e) {}
   };
 
-  const getAddEntityDialog = (value) => {
-    setShowAddEntityDialog(value);
-  };
-
-  useEffect(() => {
-    if (isRefetch) {
-      getStaffPrivileges(applicantId);
-    }
-  }, [isRefetch]);
-
-  const getEntity = async () => {
-    const { data: entity } = await GET(`entity-service/entity`);
-    setEntityDetails(entity);
-    setEntityId(entity?.[0]?.id);
-  };
-
-  const getAddEntityTypes = async (data) => {
-    await POST(`entity-service/document/?${TenantID}`, data);
-  };
-
-  const getLastModifiedDate = async () => {
-    const { data: lastModifiedDate } = await GET(
-      `entity-service/referenceList/entity/${entityId}`
-    );
-    const date = new Date(lastModifiedDate.departments?.lastModified);
-    setLastUpdatedDate(
-      `${formatInTimeZone(
-        date,
-        siteTimeZone(),
-        "MMM d, yyyy HH:mm"
-      )} ${timeZoneAbbreviation()}`
-    );
-  };
-
-  const getEntityTypes = async () => {
-    const { data: entityType } = await GET(`entity-service/department`);
-
-    if (entityType) {
-      const allSites = entityType.flatMap((entity) => entity.sites || []);
-      setEntityTypes(allSites);
-
-      setTableData(entityType);
-    }
-  };
-
-  const getDepartmentServiceMaster = async () => {
-    const { data: departmentServiceMaster } = await GET(
-      `entity-service/departmentMaster/refListView?siteTypeId=${siteTypeId}`
-    );
-    setDepartmentServiceMaster(departmentServiceMaster);
-  };
-
-  const getDepartmentService = async () => {
-    const { data: departmentService } = await GET(
-      `entity-service/department/refListView?X-tenantID=${TenantID}&siteTypeId=${siteTypeId}&searchText=${searchKey}`
-    );
-    setDepartmentService(departmentService);
-  };
-
-  useEffect(() => {
-    let tempDepartmentService = departmentServiceMaster
-      ?.filter(
-        (data) =>
-          !departmentService.some(
-            (customerData) =>
-              customerData?.departmentGroupBy.name ===
-              data?.departmentGroupBy.name
-          )
-      )
-      ?.map((data) => {
-        return { ...data };
-      });
-
-    setSelectAllList(tempDepartmentService);
-
-    let allChecked = true;
-
-    if (tempDepartmentService.length > selectedDepartmentServiceArea.length) {
-      allChecked = false;
-    }
-
-    if (allChecked) {
-      setCheckedAll(true);
-    } else {
-      setCheckedAll(false);
-    }
-  }, [selectedDepartmentServiceArea]);
+  // ── Lifecycle ──────────────────────────────────────────────
 
   useEffect(() => {
     getEntity();
-    getEntityTypes();
+    getSites();
   }, []);
 
   useEffect(() => {
-    if (siteTypeId !== "" && siteTypeId !== undefined) {
-      getDepartmentServiceMaster();
-      getDepartmentService();
-    }
-  }, [siteTypeId, entityDetails, searchKey]);
+    if (entityId) getLastModifiedDate(entityId);
+  }, [entityId]);
 
   useEffect(() => {
-    if (entityTypes.length > 0) {
-      setSelectedApplicantType(entityTypes[0]?.name);
-    }
-  }, [entityTypes]);
+    if (siteTypeId && !initialLoadDone.current) {
+      initialLoadDone.current = true;
+      getStandardList();
 
-  const handleSiteClick = (siteName) => {
-    setSelectedApplicantType(siteName);
+      // Restore from sessionStorage if available (user navigated back)
+      try {
+        const stored = sessionStorage.getItem(STORAGE_KEY);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed) && parsed.length >= 0) {
+            setCustomList(parsed);
+            return; // Use stored list — don't fetch from API
+          }
+        }
+      } catch (e) {}
+
+      // First visit — load from API
+      loadCustomListFromAPI();
+    }
+  }, [siteTypeId]);
+
+  // ── API calls ──────────────────────────────────────────────
+
+  const getEntity = async () => {
+    try {
+      const { data: entity } = await GET(`entity-service/entity`);
+      if (entity?.[0]) setEntityId(entity[0].id);
+    } catch (err) {}
   };
 
-  const handleCloseDialog = (needRefetch = false) => {
-    setIsDialogOpen(false);
-    setIsRefetch(needRefetch);
+  const getSites = async () => {
+    try {
+      const { data: sites } = await GET(`entity-service/sites`);
+      if (sites?.length > 0) {
+        const first = sites[0];
+        const id =
+          first?.siteTypeId?.id ||
+          first?.siteType?.id ||
+          first?.siteTypeId ||
+          first?.id;
+        setSiteTypeId(id);
+      }
+    } catch (err) {}
   };
 
-  useEffect(() => {
-    if (applicantTypeList && applicantTypeList.length > 0) {
-      setSelectedApplicantType(applicantTypeList[0]?.applicantType || "");
-    }
-  }, [applicantTypeList]);
+  const getLastModifiedDate = async (id) => {
+    try {
+      const { data } = await GET(`entity-service/referenceList/entity/${id}`);
+      const date = new Date(data?.departments?.lastModified);
+      if (!isNaN(date)) {
+        setLastUpdatedDate(
+          `${formatInTimeZone(date, siteTimeZone(), "MMM d, yyyy HH:mm")} ${timeZoneAbbreviation()}`
+        );
+      }
+    } catch (err) {}
+  };
 
-  const getStaffPrivileges = async (id) => {
-    if (id !== "") {
-      const { data: staffPrivilegesForm } = await GET(
-        `entity-service/department?applicantTypeId=${id}`
+  const getStandardList = async () => {
+    try {
+      const { data } = await GET(
+        `entity-service/departmentMaster/refListView?siteTypeId=${siteTypeId}`
       );
-      setIsRefetch(false);
-      setDepartmentForms(staffPrivilegesForm);
+      setStandardList(data || []);
+    } catch (err) {}
+  };
+
+  // Called only on first visit — result stored in sessionStorage
+  const loadCustomListFromAPI = async () => {
+    try {
+      const { data } = await GET(
+        `entity-service/department/refListView?X-tenantID=${TenantID}&siteTypeId=${siteTypeId}&searchText=`
+      );
+      updateCustomList(data || []);
+    } catch (err) {}
+  };
+
+  // ── SELECT ─────────────────────────────────────────────────
+  // Adds checked items to customList locally (marked as _pending)
+  // Does NOT call API — user must click SAVE
+  const handleSelect = () => {
+    if (selectedStandardItems.length === 0) return;
+
+    const existingNames = new Set(customList.map((c) => getItemName(c)));
+    const toAdd = selectedStandardItems
+      .filter((item) => !existingNames.has(getItemName(item)))
+      .map((item) => ({ ...item, _pending: true }));
+
+    if (toAdd.length > 0) {
+      updateCustomList([...customList, ...toAdd]);
+    }
+    setSelectedStandardItems([]);
+  };
+
+  // ── SAVE ───────────────────────────────────────────────────
+  // POSTs only _pending items to API
+  // On success: removes _pending flag, stays on page
+  const handleSave = async () => {
+    const pendingItems = customList.filter((item) => item._pending);
+
+    if (pendingItems.length === 0) {
+      SuccessToaster("Nothing new to save.");
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      const payload = pendingItems.map((item) => ({
+        departmentName: { name: getItemName(item) },
+        serviceAreas: getChildren(item).map((child) => ({
+          name: child?.name || child?.serviceName || "",
+        })),
+        siteTypeId: siteTypeId,
+      }));
+
+      await POST("entity-service/department", JSON.stringify(payload));
+      SuccessToaster("Saved successfully.");
+
+      // Remove _pending flag from all items
+      const updatedList = customList.map(({ _pending, ...rest }) => rest);
+      updateCustomList(updatedList);
+    } catch (err) {
+      ErrorToaster(err?.message || "Failed to save.");
+    } finally {
+      setIsSaving(false);
     }
   };
 
-  const getSelectedTile = (data) => {
-    setApplicantId(data);
-    getStaffPrivileges(data);
+  // ── DELETE ─────────────────────────────────────────────────
+  // Removes from customList and sessionStorage immediately
+  // API delete attempted but result ignored (backend returns 500)
+  const handleDeleteCustomItem = async (item) => {
+    const name = getItemName(item);
+
+    // Remove from list and update sessionStorage right away
+    const updated = customList.filter((c) => getItemName(c) !== name);
+    updateCustomList(updated);
+    SuccessToaster("Removed.");
+
+    // Attempt API delete — ignore errors
+    if (item?.id && !item._pending) {
+      try {
+        await DELETE(`entity-service/department/${item.id}`);
+      } catch (err) {
+        // Backend 500 — item already removed from local state and sessionStorage
+        // Won't reappear because we use sessionStorage as source of truth
+      }
+    }
   };
 
-  const getApplicantType = async () => {
-    const { data: types } = await GET("entity-service/applicantType");
-    console.log("applicantType", types);
-    setApplicantTypeList(types);
+  // ── Expand/Collapse ────────────────────────────────────────
+  const toggleGroup = (key) => {
+    setExpandedGroups((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
-  useEffect(() => {
-    getApplicantType();
-  }, []);
+  // ── Checkbox ───────────────────────────────────────────────
+  const toggleStandardItem = (item) => {
+    const name = getItemName(item);
+    setSelectedStandardItems((prev) => {
+      const exists = prev.some((s) => getItemName(s) === name);
+      return exists
+        ? prev.filter((s) => getItemName(s) !== name)
+        : [...prev, item];
+    });
+  };
+
+  const isStandardItemSelected = (item) =>
+    selectedStandardItems.some((s) => getItemName(s) === getItemName(item));
+
+  // ── Render ─────────────────────────────────────────────────
 
   return (
     <Fragment>
       <Navbar />
-      <div className={` ${style.applicantTypeBackground}`}>
-        <div className={style.padding20}>
-          <div>
-            <LevelTwoHeader
-              heading={"Department & service areas by applicant types"}
-              updatedTime={`UPDATED ON ${lastUpdatedDate}`}
-              path={"/Screens/ReferenceList/department/department"}
-              callingFrom={"Customer Admin"}
-              needHeader={false}
-              tileType={"Departments"}
-              onAddClick={() => setIsDialogOpen(true)}
-              onCloseLevel2={() => setIsDialogOpen(false)}
-            />
-          </div>
-          <div
-            className={`${
-              isExpanded ? style.bigCardGrid : style.smallCardGrid
-            }`}
-          >
-            <ApplicantSideBar
-              applicantType={applicantTypeList?.map(
-                (data) => data?.applicantType
-              )}
-              siteType={applicantTypeList?.map((data) => data?.siteType)}
-              selectedTile={getSelectedTile}
-              onSelectSite={handleSiteClick}
-              tileType={"Departments"}
-              sideBarList={applicantTypeList}
-              siteDropdown={true}
-            />
-            <div className={style.applicantList}>
-              <div className={`${style.Tabletitle} `}>
-                <Typography className={style.tableTitleContent}>
-                  {`{${selectedApplicantType}}`}
-                </Typography>
-                <Typography
-                  className={`${style.tableTitleContentArrow} ${style.tableTitleContent}`}
-                >
-                  {">"}
-                </Typography>
-                <Typography className={style.tableTitleContent}>
-                  All DEPARTMENT FORM
-                </Typography>
+      <div className={style.departmentPageBackground}>
+        <div className={style.departmentPadding}>
+
+          <LevelTwoHeader
+            heading={"Departments / Service Areas for Customer Site"}
+            updatedTime={lastUpdatedDate ? `UPDATED ON ${lastUpdatedDate}` : ""}
+            path={"/Screens/ReferenceList/department/department"}
+            callingFrom={"Customer Admin"}
+            needHeader={false}
+            tileType={"Departments"}
+            onAddClick={() => {
+              setEditData(null);
+              setIsEdit(false);
+              setIsDialogOpen(true);
+            }}
+            onCloseLevel2={() => { window.location.href = "/referencelist"; }}
+          />
+
+          <div className={style.departmentTwoPanelGrid}>
+
+            {/* LEFT: Standard List */}
+            <div className={style.departmentPanel}>
+              <div className={style.departmentPanelHeader}>
+                STANDARD LIST IN USE - DEFAULT
               </div>
-              {tableData && (
-                <ApplicantTable
-                  applicantTypes={departmentForms}
-                  applicantNotice={
-                    "Applicant types are ordered as they will appear on forms. To change the order, click and drag "
-                  }
-                  tableDataKeys={tableDataKeys}
-                  tableHeadKeys={tableHeadKeys}
-                  tileType={"Departments"}
-                  groupFirstTwoColumn={true}
-                  documents={departmentForms}
-                  onEditClick={(data) => {
-                    console.log(data);
-                    setIsEdit(true);
+              <div className={style.departmentPanelBody}>
+                {(() => {
+                  // Hide standard items already in custom list (matches XD demo)
+                  const customNames = new Set(customList.map((c) => getItemName(c)));
+                  const filteredStandard = standardList.filter(
+                    (item) => !customNames.has(getItemName(item))
+                  );
+                  return filteredStandard.length === 0 ? (
+                    <p className={style.departmentEmptyText}>
+                      No standard departments available.
+                    </p>
+                  ) : filteredStandard.map((item, index) => {
+                    const name = getItemName(item);
+                    const children = getChildren(item);
+                    const isExpanded = expandedGroups[name];
+                    const isChecked = isStandardItemSelected(item);
+
+                    return (
+                      <div key={index} className={style.departmentGroupRow}>
+                        <div
+                          className={`${style.departmentGroupItem} ${
+                            isChecked ? style.departmentGroupItemActive : ""
+                          }`}
+                        >
+                          <input
+                            type="checkbox"
+                            className={style.departmentCheckbox}
+                            checked={isChecked}
+                            onChange={() => toggleStandardItem(item)}
+                          />
+                          <span
+                            className={style.departmentGroupName}
+                            onClick={() => toggleStandardItem(item)}
+                          >
+                            {name}
+                          </span>
+                          {children.length > 0 && (
+                            <button
+                              className={style.departmentExpandBtn}
+                              onClick={() => toggleGroup(name)}
+                            >
+                              {isExpanded ? "−" : "+"}
+                            </button>
+                          )}
+                        </div>
+                        {isExpanded && children.map((child, ci) => (
+                          <div key={ci} className={style.departmentChildItem}>
+                            <span className={style.departmentChildName}>
+                              {child?.name || child?.serviceName || ""}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  });
+                })()}
+              </div>
+            </div>
+
+            {/* SELECT Button */}
+            <div className={style.departmentSelectCol}>
+              <button
+                className={style.departmentSelectBtn}
+                onClick={handleSelect}
+                disabled={selectedStandardItems.length === 0}
+              >
+                SELECT
+                <span className={style.departmentSelectArrow}>▶</span>
+              </button>
+            </div>
+
+            {/* RIGHT: My Custom List */}
+            <div className={style.departmentPanel}>
+              <div className={style.departmentPanelHeader}>
+                MY CUSTOM LIST TO USE
+                <button
+                  className={style.departmentAddBtn}
+                  onClick={() => {
+                    setEditData(null);
+                    setIsEdit(false);
                     setIsDialogOpen(true);
-                    setEditData(data);
                   }}
-                />
-              )}
-              <ReferenceListActionButton
-                button1={"Save In-Progress"}
-                button2={" Mark as Done"}
-              />
+                >+</button>
+              </div>
+              <div className={style.departmentPanelBody}>
+                {customList.length === 0 ? (
+                  <p className={style.departmentEmptyText}>
+                    Select from the default list on the left, edit to change
+                    labels as needed, and also add new departments by clicking
+                    the add icon.
+                  </p>
+                ) : (
+                  customList.map((item, index) => {
+                    const name = getItemName(item);
+                    const children = getChildren(item);
+                    const isExpanded = expandedGroups[`c_${name}`];
+                    const isPending = item._pending === true;
+
+                    return (
+                      <div key={index} className={style.departmentGroupRow}>
+                        <div
+                          className={`${style.departmentGroupItem} ${style.departmentGroupItemActive}`}
+                        >
+                          {children.length > 0 && (
+                            <button
+                              className={style.departmentExpandBtn}
+                              onClick={() => toggleGroup(`c_${name}`)}
+                            >
+                              {isExpanded ? "−" : "+"}
+                            </button>
+                          )}
+                          <span className={style.departmentGroupName}>
+                            {name}
+                            {isPending && (
+                              <span style={{ fontSize: "10px", color: "#aaa", marginLeft: 6 }}>
+                                (unsaved)
+                              </span>
+                            )}
+                          </span>
+                          <div className={style.departmentActions}>
+                            <button
+                              className={style.departmentActionBtn}
+                              onClick={() => {
+                                setEditData(item);
+                                setIsEdit(true);
+                                setIsDialogOpen(true);
+                              }}
+                            >✏️</button>
+                            <button
+                              className={style.departmentActionBtn}
+                              onClick={() => handleDeleteCustomItem(item)}
+                            >🗑️</button>
+                          </div>
+                        </div>
+                        {isExpanded && children.map((child, ci) => (
+                          <div key={ci} className={style.departmentChildItem}>
+                            <span className={style.departmentChildName}>
+                              {child?.name || child?.serviceName || ""}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  })
+                )}
+              </div>
             </div>
           </div>
+
+          {/* SAVE */}
+          <div className={style.departmentSaveRow}>
+            <button
+              className={style.departmentSaveBtn}
+              onClick={handleSave}
+              disabled={isSaving}
+            >
+              {isSaving ? "SAVING..." : "SAVE"}
+            </button>
+          </div>
+
         </div>
       </div>
 
       {isDialogOpen && (
         <DepartmentDialog
           open={isDialogOpen}
-          handleClose={handleCloseDialog}
+          handleClose={(needRefetch, newItem) => {
+            setIsDialogOpen(false);
+            setIsEdit(false);
+            setEditData(null);
+            if (needRefetch && newItem) {
+              // Append new item directly — never reload from API (avoids deleted items reappearing)
+              const current = (() => {
+                try {
+                  const stored = sessionStorage.getItem(STORAGE_KEY);
+                  return stored ? JSON.parse(stored) : customList;
+                } catch (e) { return customList; }
+              })();
+              updateCustomList([...current, newItem]);
+            }
+          }}
           selectedApplicant={editData}
           isEdit={isEdit}
+          currentSiteTypeId={siteTypeId}
         />
       )}
     </Fragment>
