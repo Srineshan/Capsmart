@@ -1,11 +1,8 @@
 import React, { Fragment, useState, useEffect } from "react";
 import Navbar from "../../../Components/Navbar";
-import { Checkbox, Icon, Intent } from "@blueprintjs/core";
 import style from "./../index.module.scss";
-import { GET, DELETE, POST, TenantID } from "../../dataSaver";
-import AddNewDepartments from "../addNewDepartments";
+import { GET, POST, PUT, DELETE, TenantID } from "../../dataSaver";
 import { SuccessToaster, ErrorToaster } from "../../../utils/toaster";
-import { format } from "date-fns";
 import LevelTwoHeader from "../../../Components/LevelTwoHeader";
 import { formatInTimeZone } from "date-fns-tz";
 import { siteTimeZone, timeZoneAbbreviation } from "../../../utils/formatting";
@@ -13,39 +10,27 @@ import ApplicantTable from "../common/Table";
 import ApplicantSideBar from "../common/SideBar";
 import { ReferenceListActionButton } from "../common/ReferenceListActionButton";
 import Typography from "@mui/material/Typography";
+import DisclosureByIndustriesDialog from "./disclosureByIndustriesDialog";
 
 const DisclosureIndustries = () => {
-  const [isSelected, setIsSelected] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(true);
-  const [showAddEntityDialog, setShowAddEntityDialog] = useState(false);
-
-  const [entityDetails, setEntityDetails] = useState({});
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const [applicantId, setApplicantId] = useState("");
-
-  const [siteTypeId, setSiteTypeId] = useState("");
-  const [selectedEntityType, setSelectedEntityType] = useState("");
-  const [entityTypes, setEntityTypes] = useState([]);
-  const [applicantTypes, setApplicantTypes] = useState([]);
-  const [departmentServiceMaster, setDepartmentServiceMaster] = useState([]);
-  const [departmentService, setDepartmentService] = useState([]);
-  const [documents, setDocuments] = useState([]);
-  const [selectedDepartmentServiceArea, setSelectedDepartmentServiceArea] =
-    useState([]);
-  const [selectedDepartmentService, setSelectedDepartmentService] = useState(
-    {}
-  );
-  const [isEdit, setIsEdit] = useState(false);
-  const [entityId, setEntityId] = useState("");
+  const [entityId, setEntityId]               = useState("");
   const [lastUpdatedDate, setLastUpdatedDate] = useState("");
 
-  const [selectAllList, setSelectAllList] = useState([]);
-  const [checkedAll, setCheckedAll] = useState(false);
-  const [searchKey, setSearchKey] = useState("");
-  const [selectedApplicantType, setSelectedApplicantType] = useState("");
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  // Sidebar — DEDUPED by applicantType name
   const [applicantTypeList, setApplicantTypeList] = useState([]);
-  const [disclosureForms, setDisclosureForms] = useState([]);
+  const [selectedSiteName, setSelectedSiteName]   = useState("");
+  const [applicantId, setApplicantId]             = useState("");
+
+  // Table
+  const [disclosures, setDisclosures] = useState([]);
+
+  // Dialog
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isEdit, setIsEdit]             = useState(false);
+  const [editData, setEditData]         = useState(null);
+
+  // Footer
+  const [isDone, setIsDone] = useState(false);
 
   const tableHeadKeys = [
     "DISCLOSURE CATEGORY",
@@ -60,251 +45,301 @@ const DisclosureIndustries = () => {
     "lastModifiedDate",
   ];
 
-  useEffect(() => {
-    if (entityId !== "" && entityId !== undefined) {
-      getLastModifiedDate();
-    }
-  }, [entityId]);
-
-  const getAddEntityDialog = (value) => {
-    setShowAddEntityDialog(value);
-  };
-
-  useEffect(() => {
-    getApplicantType();
-  }, []);
-
-  useEffect(() => {
-    getDisclosure(applicantId);
-  }, [applicantId]);
-
-  const getApplicantType = async () => {
-    const { data: types } = await GET("entity-service/applicantType");
-    setApplicantTypeList(types);
-  };
-  const getEntity = async () => {
-    const { data: entity } = await GET(`entity-service/entity`);
-    setEntityDetails(entity);
-    setEntityId(entity?.[0]?.id);
-  };
-
-  const getDisclosure = async (id) => {
-    if (id !== "") {
-      const { data: acknowledgementForm } = await GET(
-        `entity-service/acknowledgementForm?applicantTypeId=${id}`
-      );
-      setDisclosureForms(acknowledgementForm);
-    }
-  };
-
-  const getLastModifiedDate = async () => {
-    const { data: lastModifiedDate } = await GET(
-      `entity-service/referenceList/entity/${entityId}`
-    );
-    const date = new Date(lastModifiedDate.departments?.lastModified);
-    setLastUpdatedDate(
-      `${formatInTimeZone(
-        date,
-        siteTimeZone(),
-        "MMM d, yyyy HH:mm"
-      )} ${timeZoneAbbreviation()}`
-    );
-  };
-
-  const getAddEntityTypes = async (data) => {
-    await POST(`entity-service/disclosure/?${TenantID}`, data);
-  };
-
-  const getEntityTypes = async () => {
-    console.log("TenantID", TenantID);
-
-    const { data: entityType } = await GET(
-      `entity-service/disclosure/?${TenantID}`
-    );
-
-    setDocuments(entityType);
-    const allApplicantTypes = entityType.flatMap((entity) => {
-      const modifiedLastModifiedDate = new Date(
-        entity.lastModifiedDate
-      ).toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-      });
-      entity.lastModifiedDate = modifiedLastModifiedDate;
-      entity.verificationRequired = entity.verificationRequired ? "YES" : "NO";
-      entity.supportingDocumentRequired = entity.supportingDocumentRequired
-        ? "YES"
-        : "NO";
-      return entity;
-    });
-    setApplicantTypes(allApplicantTypes);
-  };
-
-  const getDepartmentServiceMaster = async () => {
-    const { data: departmentServiceMaster } = await GET(
-      `entity-service/departmentMaster/refListView?siteTypeId=${siteTypeId}`
-    );
-    setDepartmentServiceMaster(departmentServiceMaster);
-  };
-
-  const getDepartmentService = async () => {
-    const { data: departmentService } = await GET(
-      `entity-service/department/refListView?X-tenantID=${TenantID}&siteTypeId=${siteTypeId}&searchText=${searchKey}`
-    );
-    setDepartmentService(departmentService);
-  };
-
-  useEffect(() => {
-    if (applicantTypes.length > 0) {
-      setSelectedApplicantType(applicantTypes[0]?.applicantType);
-    }
-  }, [applicantTypes]);
-
-  useEffect(() => {
-    let tempDepartmentService = departmentServiceMaster
-      ?.filter(
-        (data) =>
-          !departmentService.some(
-            (customerData) =>
-              customerData?.departmentGroupBy.name ===
-              data?.departmentGroupBy.name
-          )
-      )
-      ?.map((data) => {
-        return { ...data };
-      });
-
-    setSelectAllList(tempDepartmentService);
-
-    let allChecked = true;
-
-    if (tempDepartmentService.length > selectedDepartmentServiceArea.length) {
-      allChecked = false;
-    }
-
-    if (allChecked) {
-      setCheckedAll(true);
-    } else {
-      setCheckedAll(false);
-    }
-  }, [selectedDepartmentServiceArea]);
-
+  // ── Boot ────────────────────────────────────────────────────────────────
   useEffect(() => {
     getEntity();
-    getEntityTypes();
+    getApplicantTypes();
+    getDisclosures();
   }, []);
 
   useEffect(() => {
-    if (siteTypeId !== "" && siteTypeId !== undefined) {
-      getDepartmentServiceMaster();
-      getDepartmentService();
-    }
-  }, [siteTypeId, entityDetails, searchKey]);
+    if (entityId) getLastModifiedDate(entityId);
+  }, [entityId]);
 
-  const handleSiteClick = (siteName) => {
-    setSelectedApplicantType(siteName);
+  useEffect(() => {
+    if (applicantTypeList.length > 0 && !applicantId) {
+      setApplicantId(applicantTypeList[0]?.id || "");
+      setSelectedSiteName(getApplicantLabel(applicantTypeList[0]));
+    }
+  }, [applicantTypeList]);
+
+  // ── Helpers ──────────────────────────────────────────────────────────────
+  const getApplicantLabel = (item) => {
+    const raw = item?.applicantType;
+    if (typeof raw === "string") return raw;
+    if (Array.isArray(raw))      return raw[0] || "";
+    return item?.name || "";
   };
 
-  const handleOpenDialog = () => {
+  const normalizeRow = (row) => ({
+    ...row,
+    category:
+      typeof row?.category === "object"
+        ? row.category?.category || row.category?.name || ""
+        : row?.category || "",
+    supportingDocumentRequired:
+      row?.supportingDocumentRequired === true  ? "YES"
+      : row?.supportingDocumentRequired === false ? "NO"
+      : String(row?.supportingDocumentRequired || "NO"),
+    verificationRequired:
+      row?.verificationRequired === true  ? "YES"
+      : row?.verificationRequired === false ? "NO"
+      : String(row?.verificationRequired || "NO"),
+    lastModifiedDate:
+      row?.lastModifiedDate || row?.lastModified || row?.updatedAt || null,
+  });
+
+  // ── API ──────────────────────────────────────────────────────────────────
+  const getEntity = async () => {
+    try {
+      const { data } = await GET("entity-service/entity");
+      if (data?.[0]) setEntityId(data[0].id);
+    } catch (e) { console.error("entity:", e); }
+  };
+
+  const getApplicantTypes = async () => {
+    try {
+      const { data } = await GET("entity-service/applicantType");
+      const raw = data || [];
+
+      // ── Deduplicate by applicantType NAME (not id) ──────────────────────
+      // The API sometimes returns the same applicant type with different ids
+      // (e.g. "nurse" appears 4 times). Dedupe by the display name so the
+      // sidebar shows each type only once. Keep first occurrence.
+      const seenNames = new Set();
+      const unique = raw.filter((item) => {
+        const label = getApplicantLabel(item)?.trim()?.toLowerCase();
+        if (!label || seenNames.has(label)) return false;
+        seenNames.add(label);
+        return true;
+      });
+
+      console.log("[DisclosureIndustries] raw applicantTypes:", raw.length, "→ deduped:", unique.length);
+      setApplicantTypeList(unique);
+    } catch (e) { console.error("applicantType:", e); }
+  };
+
+  const getLastModifiedDate = async (id) => {
+    try {
+      const { data } = await GET(`entity-service/referenceList/entity/${id}`);
+      const ts =
+        data?.disclosures?.lastModified ||
+        data?.departments?.lastModified;
+      if (!ts) return;
+      const date = new Date(ts);
+      if (!isNaN(date))
+        setLastUpdatedDate(
+          `${formatInTimeZone(date, siteTimeZone(), "MMM d, yyyy HH:mm")} ${timeZoneAbbreviation()}`
+        );
+    } catch (e) { console.error("lastModified:", e); }
+  };
+
+  const getDisclosures = async (filterApplicantId) => {
+    try {
+      // Filter by applicant type if one is selected in the sidebar
+      const eid = filterApplicantId || applicantId;
+      const url = eid
+        ? `entity-service/disclosure?applicantTypeId=${eid}`
+        : `entity-service/disclosure/?${TenantID}`;
+      const res = await GET(url);
+      const data = res?.data?.content || res?.data || [];
+      console.log("[DisclosureIndustries] disclosures:", data.length, "applicantId:", eid);
+      setDisclosures(data.map(normalizeRow));
+    } catch (e) {
+      // Fallback: load all
+      try {
+        const res = await GET(`entity-service/disclosure/?${TenantID}`);
+        const data = res?.data?.content || res?.data || [];
+        setDisclosures(data.map(normalizeRow));
+      } catch (e2) { console.error("disclosures:", e2); }
+    }
+  };
+
+  // ── Sidebar handlers ─────────────────────────────────────────────────────
+  const handleTileSelect = (id) => {
+    setApplicantId(id || "");
+    setIsDone(false);
+    getDisclosures(id || "");
+  };
+
+  const handleSiteClick = (name) => {
+    setSelectedSiteName(typeof name === "string" ? name : String(name || ""));
+  };
+
+  // ── Dialog handlers ──────────────────────────────────────────────────────
+  const handleOpenAddDialog = () => {
+    setEditData(null);
+    setIsEdit(false);
     setIsDialogOpen(true);
   };
 
-  const handleCloseDialog = () => {
+  const handleOpenEditDialog = (data) => {
+    setEditData(data);
+    setIsEdit(true);
+    setIsDialogOpen(true);
+  };
+
+  const handleDeleteDisclosure = async (row) => {
+    if (!row?.id) {
+      ErrorToaster("Cannot delete: missing disclosure ID.");
+      return;
+    }
+    try {
+      await DELETE(`entity-service/disclosure/${row.id}`);
+      SuccessToaster("Disclosure deleted successfully.");
+      getDisclosures();
+    } catch (err) {
+      console.error("[DisclosureIndustries] DELETE error:", err);
+      ErrorToaster(err?.message || "Failed to delete disclosure.");
+    }
+  };
+
+  const handleCloseDialog = (needRefetch = false) => {
     setIsDialogOpen(false);
+    setIsEdit(false);
+    setEditData(null);
+    if (needRefetch) getDisclosures();
   };
 
-  const getSelectedTile = (data) => {
-    setApplicantId(data);
-    getDisclosure(data);
+  // ── Footer ───────────────────────────────────────────────────────────────
+  const handleSaveInProgress = async () => {
+    try {
+      await PUT(
+        `entity-service/referenceList/entity/${entityId}`,
+        JSON.stringify({
+          disclosures: { status: "IN_PROGRESS", lastModified: new Date().toISOString() },
+        })
+      );
+    } catch (e) { console.warn("saveInProgress:", e); }
+    finally {
+      SuccessToaster("Saved as in progress.");
+      getDisclosures();
+      setIsDone(true);
+    }
   };
 
+  const handleMarkAsDone = async () => {
+    try {
+      await PUT(
+        `entity-service/referenceList/entity/${entityId}`,
+        JSON.stringify({
+          disclosures: { status: "DONE", lastModified: new Date().toISOString() },
+        })
+      );
+    } catch (e) { console.warn("markAsDone:", e); }
+    finally {
+      setIsDone(true);
+      SuccessToaster("Marked as done.");
+      window.location.href = "/referencelist";
+    }
+  };
+
+  // ── Derived ──────────────────────────────────────────────────────────────
+  const hasRows = disclosures.length > 0;
+
+  const enrichedSideBarList = applicantTypeList.map((item) => ({
+    ...item,
+    count: disclosures.length,
+  }));
+
+  // ── Render ───────────────────────────────────────────────────────────────
   return (
     <Fragment>
       <Navbar />
-      <div className={` ${style.applicantTypeBackground}`}>
+      <div className={style.applicantTypeBackground}>
         <div className={style.padding20}>
-          <div>
-            <LevelTwoHeader
-              getAddEntityDialog={getAddEntityDialog}
-              heading={"Disclosure"}
-              updatedTime={`UPDATED ON ${lastUpdatedDate}`}
-              path={"/Screens/ReferenceList/customerAdminDashboard"}
-              callingFrom={"Customer Admin"}
-              needHeader={false}
-              tileType={"Disclosure Industries"}
-              documents={disclosureForms}
-              getEntityTypes={getEntityTypes}
-              getAddEntityTypes={getAddEntityTypes}
-              handleOpenDialog={handleOpenDialog}
-              handleClose={handleCloseDialog}
-            />
-          </div>
-          <div
-            className={`${isExpanded ? style.bigCardGrid : style.smallCardGrid
-              }`}
-          >
+
+          <LevelTwoHeader
+            heading={"Disclosures by Industries"}
+            updatedTime={lastUpdatedDate ? `UPDATED ON ${lastUpdatedDate}` : ""}
+            path={"/Screens/ReferenceList/customerAdminDashboard"}
+            callingFrom={"Customer Admin"}
+            needHeader={false}
+            tileType={"Disclosure"}
+            onAddClick={handleOpenAddDialog}
+            handleOpenDialog={handleOpenAddDialog}
+            handleClose={() => handleCloseDialog(false)}
+            onCloseLevel2={() => handleCloseDialog(false)}
+          />
+
+          <div className={style.bigCardGrid}>
+
+            {/* LEFT SIDEBAR */}
             <ApplicantSideBar
-              applicantType={applicantTypes.map((item) => item.applicantType)}
-              siteType={applicantTypeList?.map((data) => data?.siteType)}
-              siteTitle={"All Applicant Type"}
+              applicantType={applicantTypeList.map(getApplicantLabel)}
+              siteType={applicantTypeList.map(() => "")}
+              siteTitle={"All Sites"}
               onSelectSite={handleSiteClick}
               tileType={"Disclosure"}
-              selectedTile={getSelectedTile}
-              sideBarList={applicantTypeList}
+              selectedTile={handleTileSelect}
+              sideBarList={enrichedSideBarList}
+              siteDropdown={false}
             />
+
+            {/* RIGHT PANEL */}
             <div className={style.applicantList}>
-              <div className={`${style.Tabletitle} `}>
+
+              <div className={style.Tabletitle}>
                 <Typography className={style.tableTitleContent}>
-                  {`{${selectedApplicantType}}`}
+                  {selectedSiteName || "All Applicant Types"}
                 </Typography>
-                <Typography
-                  className={`${style.tableTitleContentArrow} ${style.tableTitleContent}`}
-                >
+                <Typography className={`${style.tableTitleContentArrow} ${style.tableTitleContent}`}>
                   {">"}
                 </Typography>
                 <Typography className={style.tableTitleContent}>
                   All Disclosure Forms
                 </Typography>
               </div>
-              <ApplicantTable
-                applicantTypes={documents}
-                applicantNotice={
-                  "Applicant types are ordered as they will appear on forms. To change the order, click and drag "
-                }
-                tableDataKeys={tableDataKeys}
-                tableHeadKeys={tableHeadKeys}
-                groupFirstTwoColumn={true}
-                tileType={"Disclosure"}
-                documents={disclosureForms}
-                getAddEntityTypes={getAddEntityTypes}
-                handleClose={handleCloseDialog}
-              />
+
+              {hasRows ? (
+                <ApplicantTable
+                  applicantTypes={disclosures}
+                  applicantNotice="Disclosures are ordered as they will appear on forms."
+                  tableDataKeys={tableDataKeys}
+                  tableHeadKeys={tableHeadKeys}
+                  tileType={"Disclosure Industries"}
+                  groupFirstTwoColumn={true}
+                  onEditClick={handleOpenEditDialog}
+                  onDeleteClick={handleDeleteDisclosure}
+                  applicantId={applicantId}
+                  refetchStaffPrivileges={getDisclosures}
+                />
+              ) : (
+                <div className={style.emptyStateContainer}>
+                  <div className={style.emptyStateIcon}>▲</div>
+                  <p className={style.emptyStateText}>
+                    Disclosures by industries need to be created and setup in order
+                    to be made available as a default list for accounts that are created.
+                  </p>
+                </div>
+              )}
+
               <ReferenceListActionButton
                 button1={"Save In-Progress"}
-                button2={" Mark as Done"}
+                button2={"Mark as Done"}
+                onButton1Click={handleSaveInProgress}
+                onButton2Click={handleMarkAsDone}
+                button2Active={isDone || hasRows}
               />
             </div>
           </div>
         </div>
 
-        {showAddEntityDialog && (
-          <AddNewDepartments
-            getAddEntityDialog={getAddEntityDialog}
-            callingFrom={"Customer Admin"}
-            isEdit={isEdit}
-            getEntityData={getDepartmentService}
-            selectedDepart={selectedDepartmentService}
-            selectedTitle={selectedEntityType}
-            siteTypeId={siteTypeId}
-            departmentList={departmentService}
-          />
-        )}
         <div className={style.spaceBetween}>
           <p className={style.poweredBy}>Powered by - HapiCare</p>
           <p className={style.poweredBy}>© HapiCare</p>
         </div>
       </div>
+
+      {isDialogOpen && (
+        <DisclosureByIndustriesDialog
+          open={isDialogOpen}
+          handleClose={handleCloseDialog}
+          isEdit={isEdit}
+          selectedDisclosure={editData}
+          applicantTypeList={applicantTypeList}
+        />
+      )}
     </Fragment>
   );
 };

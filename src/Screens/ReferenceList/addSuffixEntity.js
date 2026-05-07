@@ -8,11 +8,35 @@ import {
   Checkbox,
 } from "@blueprintjs/core";
 import style from "./index.module.scss";
-import AddHealthcareGroup from "./../../images/addGroupBlue.png";
 import { POST, PUT, TenantID } from "../dataSaver";
-import ArrowDown from "./../../images/arrowDown.png";
 import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
 import { useEffect } from "react";
+
+// ── Country flag dropdown ─────────────────────────────────────────────────────
+const COUNTRY_LIST = [
+  { code: "us", name: "USA",         label: "United States"        },
+  { code: "gb", name: "UK",          label: "United Kingdom"       },
+  { code: "ca", name: "Canada",      label: "Canada"               },
+  { code: "au", name: "Australia",   label: "Australia"            },
+  { code: "in", name: "India",       label: "India"                },
+  { code: "de", name: "Germany",     label: "Germany"              },
+  { code: "fr", name: "France",      label: "France"               },
+  { code: "sg", name: "Singapore",   label: "Singapore"            },
+  { code: "ae", name: "UAE",         label: "United Arab Emirates" },
+  { code: "nz", name: "New Zealand", label: "New Zealand"          },
+];
+
+const FlagImg = ({ code, size = 20 }) => (
+  <img
+    src={`https://flagcdn.com/w${size}/${code}.png`}
+    srcSet={`https://flagcdn.com/w${size * 2}/${code}.png 2x`}
+    width={size}
+    height={Math.round(size * 0.67)}
+    alt={code.toUpperCase()}
+    style={{ objectFit: "cover", borderRadius: 2, flexShrink: 0 }}
+    onError={(e) => { e.target.style.display = "none"; }}
+  />
+);
 
 const AddSuffixEntity = ({
   getAddEntityDialog,
@@ -30,7 +54,9 @@ const AddSuffixEntity = ({
   const [createdDate, setCreatedDate] = useState("");
   const [addSuffix, setAddSuffix] = useState(true);
 
-  console.log("selectedEntiy", selectedEntity);
+  // ── Country dropdown state ─────────────────────────────────────────────────
+  const [selectedCountry, setSelectedCountry]         = useState(COUNTRY_LIST[0]);
+  const [countryDropdownOpen, setCountryDropdownOpen] = useState(false);
 
   const saveSubmitHandler = async (type) => {
     const isPresent = tableEntityData.find((p) => p.suffix === entityName);
@@ -118,25 +144,54 @@ const AddSuffixEntity = ({
           <p className={style.extensionStyle}>
             {`Add / Edit Suffix For ${selectedTitle}`}
           </p>
-          <div className={`${style.displayInRow}`}>
-            <div className={`${style.displayInRow} ${style.marginRight20}`}>
-              <img
-                src={
-                  "https://upload.wikimedia.org/wikipedia/en/thumb/a/a4/Flag_of_the_United_States.svg/125px-Flag_of_the_United_States.svg.png"
-                }
-                alt="refresh"
-                className={`${style.headerFlag} ${style.marginRight15}`}
-              />
-              <span
-                className={`${style.headerCountryName} ${style.marginLeft10}`}
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            {/* ── Country dropdown ── */}
+            <div style={{ position: "relative" }}>
+              <button
+                onClick={() => setCountryDropdownOpen((p) => !p)}
+                style={{
+                  display: "flex", alignItems: "center", gap: 6,
+                  background: "#f5f5f5", border: "1px solid #ccc",
+                  borderRadius: 4, padding: "4px 10px", cursor: "pointer",
+                  font: "normal normal 600 13px/18px var(--font-style)",
+                  color: "#333",
+                }}
               >
-                USA
-              </span>
-              <img
-                src={ArrowDown}
-                className={`${style.colorFileStyle2} ${style.marginLeft10}  ${style.marginTop10}`}
-                alt=""
-              />
+                <FlagImg code={selectedCountry.code} size={20} />
+                <span>{selectedCountry.name}</span>
+                <span style={{ fontSize: 9, color: "#777", marginLeft: 2 }}>▾</span>
+              </button>
+              {countryDropdownOpen && (
+                <>
+                  <div
+                    style={{ position: "fixed", inset: 0, zIndex: 9998 }}
+                    onClick={() => setCountryDropdownOpen(false)}
+                  />
+                  <div style={{
+                    position: "absolute", top: "110%", right: 0, zIndex: 9999,
+                    background: "#fff", border: "1px solid #ddd", borderRadius: 6,
+                    boxShadow: "0 6px 20px rgba(0,0,0,0.15)", minWidth: 220,
+                    maxHeight: 280, overflowY: "auto",
+                  }}>
+                    {COUNTRY_LIST.map((c) => (
+                      <div
+                        key={c.code}
+                        onClick={() => { setSelectedCountry(c); setCountryDropdownOpen(false); }}
+                        style={{
+                          display: "flex", alignItems: "center", gap: 10,
+                          padding: "9px 14px", cursor: "pointer", fontSize: 13,
+                          backgroundColor: c.code === selectedCountry.code ? "#e8f4f7" : "transparent",
+                          fontWeight: c.code === selectedCountry.code ? 600 : 400,
+                        }}
+                      >
+                        <FlagImg code={c.code} size={20} />
+                        <span style={{ flex: 1 }}>{c.label}</span>
+                        <span style={{ color: "#aaa", fontSize: 11 }}>{c.name}</span>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
             </div>
             <Icon
               icon="cross"

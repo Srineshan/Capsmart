@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Dialog, Classes, Icon, Intent } from "@blueprintjs/core";
+import { makeStyles } from "@material-ui/core/styles";
 import { TextField } from "@mui/material";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
@@ -8,62 +9,67 @@ import style from "./../index.module.scss";
 import { ErrorToaster, SuccessToaster } from "../../../utils/toaster";
 import { GET, POST, PUT } from "../../dataSaver";
 
-const DepartmentDialog = ({
-  open,
-  handleClose,   // (needRefetch: bool, newItem?: object) => void
-  isEdit,
-  selectedApplicant,
-  currentSiteTypeId,
-}) => {
-  const [sites, setSites]                   = useState([]);
+const useStyles = makeStyles({ switch: { color: "primary" } });
+
+const DepartmentDialog = ({ open, handleClose, isEdit, selectedApplicant, currentSiteTypeId }) => {
+  const classes = useStyles();
+
+  // Site dropdown
+  const [sites, setSites] = useState([]);
   const [selectedSiteId, setSelectedSiteId] = useState("");
-  const [departName, setDepartName]         = useState("");
-  const [aliasName1, setAliasName1]         = useState("");
-  const [aliasName2, setAliasName2]         = useState("");
-  const [serviceAreas, setServiceAreas]     = useState([
+
+  // Department fields
+  const [departName, setDepartName] = useState("");
+  const [aliasName1, setAliasName1] = useState("");
+  const [aliasName2, setAliasName2] = useState("");
+
+  // Service areas — supports multiple via ADD MORE
+  const [serviceAreas, setServiceAreas] = useState([
     { name: "", aliasName1: "", aliasName2: "" },
   ]);
-  const [isSubmitting, setIsSubmitting]     = useState(false);
 
-  // Load sites on mount
-  useEffect(() => { fetchSites(); }, []);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // ── Fetch sites for dropdown ──────────────────────────────
+  useEffect(() => {
+    fetchSites();
+  }, []);
 
   const fetchSites = async () => {
     try {
       const { data } = await GET("entity-service/sites");
-      const list = data || [];
-      setSites(list);
-      if (list.length > 0) setSelectedSiteId(list[0].id);
-    } catch (err) { console.error("Failed to fetch sites:", err); }
+      const siteList = data || [];
+      setSites(siteList);
+      // Always auto-select using site.id (the site record id, not siteTypeId)
+      if (siteList.length > 0) {
+        setSelectedSiteId(siteList[0].id);
+      }
+    } catch (err) {
+      console.error("Failed to fetch sites:", err);
+    }
   };
 
-  // Populate fields in edit mode
+  // ── Populate fields in edit mode ──────────────────────────
   useEffect(() => {
-    if (!open) return;
-    if (isEdit && selectedApplicant) {
-      setDepartName(
-        selectedApplicant?.departmentName?.name ||
-        selectedApplicant?.departmentGroupBy?.name ||
-        selectedApplicant?.name || ""
-      );
-      setAliasName1(selectedApplicant?.aliasName1 || "");
-      setAliasName2(selectedApplicant?.aliasName2 || "");
-      const areas = selectedApplicant?.serviceAreas?.length > 0
-        ? selectedApplicant.serviceAreas.map((a) => ({
-            name: a?.name || a?.serviceName || "",
-            aliasName1: a?.aliasName1 || "",
-            aliasName2: a?.aliasName2 || "",
-          }))
-        : [{ name: "", aliasName1: "", aliasName2: "" }];
-      setServiceAreas(areas);
-      const sid =
-        selectedApplicant?.siteTypeId?.id ||
-        selectedApplicant?.siteId?.id     ||
-        selectedApplicant?.siteTypeId     ||
-        selectedApplicant?.siteId         || "";
-      if (sid) setSelectedSiteId(sid);
-    } else {
-      resetFormFields();
+    if (open) {
+      if (isEdit && selectedApplicant) {
+        setDepartName(selectedApplicant.departmentName?.name || "");
+        setAliasName1(selectedApplicant.aliasName1 || "");
+        setAliasName2(selectedApplicant.aliasName2 || "");
+        const areas = selectedApplicant.serviceAreas?.length > 0
+          ? selectedApplicant.serviceAreas.map((a) => ({
+              name: a.name || "",
+              aliasName1: a.aliasName1 || "",
+              aliasName2: a.aliasName2 || "",
+            }))
+          : [{ name: "", aliasName1: "", aliasName2: "" }];
+        setServiceAreas(areas);
+        if (selectedApplicant.siteTypeId?.id) {
+          setSelectedSiteId(selectedApplicant.siteTypeId.id);
+        }
+      } else {
+        resetFormFields();
+      }
     }
   }, [open, isEdit, selectedApplicant]);
 
@@ -76,34 +82,39 @@ const DepartmentDialog = ({
 
   const handleDialogClose = () => {
     resetFormFields();
-    handleClose(false, null);
+    handleClose(false);
   };
 
+  // ── ADD MORE — adds another service area row ──────────────
   const handleAddMore = () => {
-    setServiceAreas((prev) => [...prev, { name: "", aliasName1: "", aliasName2: "" }]);
+    setServiceAreas((prev) => [
+      ...prev,
+      { name: "", aliasName1: "", aliasName2: "" },
+    ]);
   };
 
-  const removeServiceArea = (index) => {
-    if (serviceAreas.length === 1) return;
-    setServiceAreas((prev) => prev.filter((_, i) => i !== index));
-  };
-
+  // ── Update a specific service area field ──────────────────
   const updateServiceArea = (index, field, value) => {
     setServiceAreas((prev) =>
       prev.map((area, i) => (i === index ? { ...area, [field]: value } : area))
     );
   };
 
+  // ── Get site name for display ─────────────────────────────
   const getSiteName = (site) => {
     if (!site) return "";
     const raw = site?.siteName;
+    // siteName can be: string, { siteName: "..." }, { name: "..." }, or object
     if (typeof raw === "string" && raw) return raw;
-    if (typeof raw === "object" && raw) return raw?.siteName || raw?.name || raw?.type || "";
+    if (typeof raw === "object" && raw !== null) {
+      return raw?.siteName || raw?.name || raw?.type || "";
+    }
     return site?.name || site?.type || site?.siteTypeName || "";
   };
 
+  // ── SAVE handler ──────────────────────────────────────────
   // isSaveAndExit = true  → SAVE & CLOSE
-  // isSaveAndExit = false → SAVE & ADD MORE (stay open, clear fields)
+  // isSaveAndExit = false → SAVE & ADD More (keep dialog open)
   const SaveSubmitHandler = async (isSaveAndExit) => {
     if (!departName.trim()) {
       ErrorToaster("Department Name is required.");
@@ -112,14 +123,14 @@ const DepartmentDialog = ({
 
     setIsSubmitting(true);
 
-    const payload = {
+    const formattedData = {
       departmentName: { name: departName.trim() },
-      aliasName1:     aliasName1.trim(),
-      aliasName2:     aliasName2.trim(),
-      serviceAreas:   serviceAreas
+      aliasName1: aliasName1.trim(),
+      aliasName2: aliasName2.trim(),
+      serviceAreas: serviceAreas
         .filter((a) => a.name.trim())
         .map((a) => ({
-          name:       a.name.trim(),
+          name: a.name.trim(),
           aliasName1: a.aliasName1.trim(),
           aliasName2: a.aliasName2.trim(),
         })),
@@ -128,48 +139,43 @@ const DepartmentDialog = ({
 
     try {
       if (!isEdit) {
-        await POST("entity-service/department", JSON.stringify([payload]));
+        await POST(
+          "entity-service/department",
+          JSON.stringify([formattedData])
+        );
         SuccessToaster("Department added successfully.");
-
+        resetFormFields();
         if (isSaveAndExit) {
-          // ✅ Pass new item back to parent so it can append to local state
-          // without reloading from API (which would bring back deleted items)
+          // Pass new item back so parent can append to list without API reload
           const newItem = {
-            name:           departName.trim(),
-            departmentName: { name: departName.trim() },
-            aliasName1:     aliasName1.trim(),
-            aliasName2:     aliasName2.trim(),
-            serviceAreas:   payload.serviceAreas,
+            departmentName: { name: formattedData.departmentName.name },
+            departmentGroupBy: { name: formattedData.departmentName.name },
+            serviceAreas: formattedData.serviceAreas,
+            name: formattedData.departmentName.name,
           };
           handleClose(true, newItem);
-        } else {
-          // SAVE & ADD MORE — stay open, clear fields
-          resetFormFields();
         }
+        // SAVE & ADD More: stay open with cleared fields
       } else {
-        const id = selectedApplicant?.id;
-        if (!id) { ErrorToaster("Cannot update: missing department ID."); return; }
-        await PUT(`entity-service/department/${id}`, JSON.stringify([payload]));
+        const id = selectedApplicant.id;
+        await PUT(
+          `entity-service/department/${id}`,
+          JSON.stringify([formattedData])
+        );
         SuccessToaster("Department updated successfully.");
+        resetFormFields();
         if (isSaveAndExit) {
-          // ✅ Pass null for newItem on edit — parent will refresh in place
           handleClose(true, null);
-        } else {
-          resetFormFields();
         }
       }
     } catch (err) {
-      console.error("[DepartmentDialog] Save error:", err);
-      const msg =
-        err?.response?.data?.message ||
-        err?.data?.message           ||
-        err?.message                 ||
-        "Something went wrong. Check console for details.";
-      ErrorToaster(msg);
+      ErrorToaster(err?.message || "Something went wrong. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  // ── Render ────────────────────────────────────────────────
 
   return (
     <Dialog
@@ -179,9 +185,12 @@ const DepartmentDialog = ({
     >
       <div className={`${Classes.DIALOG_BODY} ${style.extensionDialogBackground}`}>
 
+        {/* Header */}
         <div className={style.spaceBetween}>
           <p className={style.extensionStyle}>
-            {isEdit ? "Edit Department / Service Area" : "Add Department / Service Area"}
+            {isEdit
+              ? "Edit Department / Service Area"
+              : "Add Department / Service Area"}
           </p>
           <Icon
             icon="cross"
@@ -208,9 +217,13 @@ const DepartmentDialog = ({
                   return site ? getSiteName(site) : value;
                 }}
               >
-                {sites.length === 0 && <MenuItem disabled value="">No sites available</MenuItem>}
+                {sites.length === 0 && (
+                  <MenuItem disabled value="">No sites available</MenuItem>
+                )}
                 {sites.map((site) => (
-                  <MenuItem key={site.id} value={site.id}>{getSiteName(site)}</MenuItem>
+                  <MenuItem key={site.id} value={site.id}>
+                    {getSiteName(site)}
+                  </MenuItem>
                 ))}
               </Select>
             </FormControl>
@@ -223,67 +236,66 @@ const DepartmentDialog = ({
               placeholder="Department Name"
               value={departName}
               onChange={(e) => setDepartName(e.target.value)}
-              fullWidth size="small"
+              fullWidth
+              size="small"
             />
           </div>
 
-          {/* Alias Names */}
+          {/* Alias Name */}
           <div className={`${style.extentionGrid} ${style.marginTop20}`}>
             <div className={style.entityLableStyle}>Alias Name</div>
-            <div style={{ display: "flex", gap: 12 }}>
+            <div style={{ display: "flex", gap: "12px" }}>
               <TextField
-                placeholder="Alias Name 1" value={aliasName1}
-                onChange={(e) => setAliasName1(e.target.value)} fullWidth size="small"
+                placeholder="Alias Name 1"
+                value={aliasName1}
+                onChange={(e) => setAliasName1(e.target.value)}
+                fullWidth
+                size="small"
               />
               <TextField
-                placeholder="Alias Name 2" value={aliasName2}
-                onChange={(e) => setAliasName2(e.target.value)} fullWidth size="small"
+                placeholder="Alias Name 2"
+                value={aliasName2}
+                onChange={(e) => setAliasName2(e.target.value)}
+                fullWidth
+                size="small"
               />
             </div>
           </div>
 
           <div className={`${style.ReferenceListEntityBorder} ${style.marginTop20}`} />
 
-          {/* Service Areas */}
+          {/* Service Areas — one per ADD MORE click */}
           {serviceAreas.map((area, index) => (
             <div
               key={index}
               className={`${style.marginTop20} ${style.addHealthCareBoxStyle}`}
-              style={{ position: "relative" }}
             >
-              {serviceAreas.length > 1 && (
-                <button
-                  onClick={() => removeServiceArea(index)}
-                  style={{
-                    position: "absolute", top: 8, right: 8,
-                    background: "none", border: "none",
-                    color: "#d32f2f", cursor: "pointer", fontSize: 16,
-                  }}
-                  title="Remove"
-                >×</button>
-              )}
               <div className={style.extentionGrid}>
-                <div className={style.entityLableStyle}>
-                  Service Area Name {serviceAreas.length > 1 ? index + 1 : ""}
-                </div>
+                <div className={style.entityLableStyle}>Service Name *</div>
                 <TextField
-                  placeholder="Service Name" value={area.name}
+                  placeholder="Service Name"
+                  value={area.name}
                   onChange={(e) => updateServiceArea(index, "name", e.target.value)}
-                  fullWidth size="small"
+                  fullWidth
+                  size="small"
                 />
               </div>
               <div className={`${style.extentionGrid} ${style.marginTop20}`}>
                 <div className={style.entityLableStyle}>Alias Name</div>
-                <div style={{ display: "flex", gap: 12 }}>
+                <div style={{ display: "flex", gap: "12px" }}>
                   <TextField
-                    placeholder="Alias Name 1" value={area.aliasName1}
+                    placeholder="Alias Name 1"
+                    value={area.aliasName1}
                     onChange={(e) => updateServiceArea(index, "aliasName1", e.target.value)}
-                    fullWidth size="small"
+                    fullWidth
+                    size="small"
                   />
                   <TextField
-                    placeholder="Alias Name 2" value={area.aliasName2}
+                    placeholder="Alias Name 2"
+                    value={area.aliasName2}
                     onChange={(e) => updateServiceArea(index, "aliasName2", e.target.value)}
-                    fullWidth size="small"
+                    fullWidth
+                    size="small"
                   />
                 </div>
               </div>
@@ -291,29 +303,35 @@ const DepartmentDialog = ({
           ))}
         </div>
 
+        {/* ADD MORE button */}
         <div className={`${style.spaceBetween} ${style.marginTop20}`}>
           <div />
-          <button className={style.outlinedButton} onClick={handleAddMore} disabled={isSubmitting}>
-            ADD MORE SERVICE AREA
+          <button
+            className={style.outlinedButton}
+            onClick={handleAddMore}
+          >
+            ADD MORE
           </button>
         </div>
 
+        {/* Action buttons */}
         <div className={`${style.floatRight} ${style.marginTop20}`}>
           <button
             className={style.outlinedButton}
             onClick={() => SaveSubmitHandler(false)}
             disabled={isSubmitting}
           >
-            {isSubmitting ? "SAVING…" : "SAVE & ADD MORE"}
+            SAVE &amp; ADD More
           </button>
           <button
             className={`${style.buttonStyle} ${style.marginLeft20}`}
             onClick={() => SaveSubmitHandler(true)}
             disabled={isSubmitting}
           >
-            {isSubmitting ? "SAVING…" : "SAVE & CLOSE"}
+            SAVE &amp; CLOSE
           </button>
         </div>
+
       </div>
     </Dialog>
   );

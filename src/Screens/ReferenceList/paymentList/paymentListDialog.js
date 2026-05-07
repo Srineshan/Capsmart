@@ -184,6 +184,19 @@ const PaymentListDialog = ({
     }
   };
 
+  // Save & Add More — saves then resets form fields but keeps dialog open
+  const handleAddMore = async () => {
+    const payload = preparePayload();
+    try {
+      await POST("entity-service/paymentAndFeeDetails", payload);
+      SuccessToaster("Saved! You can add another entry.");
+      resetDialogFields();
+      handleClose(true, true); // needRefetch=true, keepOpen=true
+    } catch (error) {
+      ErrorToaster("Failed to add Payment and Fee Details.");
+    }
+  };
+
   const handleUpdate = async () => {
     const payload = preparePayload();
     try {
@@ -388,7 +401,7 @@ const PaymentListDialog = ({
             </button>
             <button
               className={`${style.buttonStyle} ${style.marginLeft20}`}
-              onClick={isEdit ? handleUpdate : handleAdd}
+              onClick={isEdit ? handleUpdate : handleAddMore}
             >
               Save & Add More
             </button>

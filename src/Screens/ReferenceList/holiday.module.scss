@@ -1,0 +1,434 @@
+/* ─────────────────────────────────────────────────────────────
+   holiday.module.scss — matches XD demo screen 65
+   ───────────────────────────────────────────────────────────── */
+
+.holPageBg {
+  background-color: #f0f0f6;
+  padding: 20px;
+  box-sizing: border-box;
+  min-height: 100vh;
+}
+
+.holBigGrid {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 0;
+  align-items: start;
+}
+
+.holSmallGrid {
+  display: grid;
+  grid-template-columns: 30px 1fr;
+  gap: 0;
+  align-items: start;
+}
+
+/* ── PAGE HEADER — outside white card ── */
+.holPageHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 4px 12px 4px;
+  gap: 12px;
+}
+
+.holPageHeaderLeft {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.holPageTitle {
+  font: normal normal 700 13px/20px var(--font-style);
+  color: #1a1a1a;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  white-space: nowrap;
+}
+
+.holPageUpdated {
+  font: normal normal normal 11px/16px var(--font-style);
+  color: #9e9e9e;
+  white-space: nowrap;
+}
+
+.holPageHeaderRight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.holCountryBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #f5f5f5;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 5px 10px;
+  cursor: pointer;
+  font: normal normal 600 13px/18px var(--font-style);
+  color: #333;
+  min-width: 80px;
+  &:hover { background: #eee; }
+}
+
+.holCountryArrow { font-size: 9px; color: #777; margin-left: 2px; }
+
+.holCountryDropdown {
+  position: absolute;
+  top: 110%;
+  right: 0;
+  z-index: 9999;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+  min-width: 200px;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.holCountryOption {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  cursor: pointer;
+  font-size: 13px;
+  &:hover { background-color: #f5fbfc !important; }
+}
+
+.holCloseBtn {
+  background: none;
+  border: none;
+  font-size: 22px;
+  line-height: 1;
+  color: #52575d;
+  cursor: pointer;
+  padding: 2px 4px;
+  opacity: 0.7;
+  &:hover { opacity: 1; }
+}
+
+/* ── WHITE CARD ── */
+.holCard {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  overflow: hidden;
+}
+
+/* ✅ Two-column grid with GAP between panels — matches XD demo
+   Left panel: narrow (270px), right panel: fills rest
+   Gap creates visible white space between the two boxes */
+.holDemoGrid {
+  display: grid;
+  grid-template-columns: 270px 1fr;
+  gap: 16px;          /* ✅ gap between left and right panel */
+  padding: 16px;      /* ✅ padding so gap shows as white space */
+  min-height: 500px;
+  align-items: start;
+  background: #fff; /* ✅ white — panels sit inside white card */
+}
+
+/* ── LEFT: Industry sidebar — bordered box ── */
+.holIndustryPanel {
+  background: #fff;
+  border: 1px solid #d0d0e0;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+/* Industry row */
+.holIndustryRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+  border-bottom: 1px solid #ebebeb;
+  background: #fff;
+  transition: background 0.12s;
+
+  &:hover { background: #f5fbfc; }
+}
+
+/* ✅ Active industry row — teal background */
+.holIndustryRowActive {
+  background-color: var(--primary-color) !important;
+}
+
+.holFolderIconSm {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  flex-shrink: 0;
+  /* ✅ Dark teal color — not violet, not white */
+  filter: invert(35%) sepia(60%) saturate(600%) hue-rotate(155deg) brightness(85%);
+}
+
+/* White folder on teal active row */
+.holFolderIconWhite {
+  filter: brightness(10) !important;
+}
+
+/* ✅ Industry name — LEFT aligned, not centred */
+.holIndustryName {
+  flex: 1;
+  font: normal normal 600 12px/18px var(--font-style);
+  color: #2d2d2d;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  text-align: left;      /* ✅ force left */
+}
+
+/* When active, name is white */
+.holIndustryRowActive .holIndustryName { color: #fff; }
+
+/* ✅ +/− toggle button — right side of industry row */
+.holIndustryToggle {
+  width: 20px;
+  height: 20px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: #52575d;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+/* Active toggle — white border and text on teal */
+.holIndustryToggleActive {
+  border-color: rgba(255,255,255,0.7) !important;
+  color: #fff !important;
+}
+
+/* ✅ Expanded content below active industry row */
+.holIndustryExpanded {
+  background: #eef2f9;
+  border-bottom: 1px solid #ebebeb;
+}
+
+/* Year / Country dropdown row */
+.holDropdownRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px 8px 24px;
+  cursor: pointer;
+  border-bottom: 1px solid #dce4f0;
+  background: #eef2f9;
+  transition: background 0.1s;
+  &:hover { background: #e0eaf7; }
+}
+
+.holDropdownLabel {
+  flex: 1;
+  font: normal normal 600 11px/16px var(--font-style);
+  color: var(--primary-color);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  text-align: left;
+}
+
+.holDropdownArrow { font-size: 10px; color: var(--primary-color); }
+
+.holDropdownList {
+  background: #fff;
+  border-bottom: 1px solid #ebebeb;
+}
+
+.holDropdownItem {
+  display: flex;
+  align-items: center;
+  padding: 7px 14px 7px 32px;
+  cursor: pointer;
+  font: normal normal normal 12px/18px var(--font-style);
+  color: #2d2d2d;
+  border-bottom: 1px solid #f5f5f5;
+  text-align: left;
+  transition: background 0.1s;
+  &:hover { background: #f5fbfc; }
+}
+
+.holDropdownItemActive {
+  background: #eaf6f9 !important;
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+.holDropdownEmpty {
+  padding: 10px 14px 10px 32px;
+  font: normal normal normal 12px/18px var(--font-style);
+  color: #9e9e9e;
+}
+
+/* "Add Year" clickable text inside dropdown */
+.holAddYearLink {
+  color: var(--primary-color);
+  cursor: pointer;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+/* "+ ADD YEAR" row at bottom of expanded industry */
+.holAddYearRow {
+  padding: 8px 14px 8px 24px;
+  font: normal normal 600 11px/16px var(--font-style);
+  color: var(--primary-color);
+  cursor: pointer;
+  border-top: 1px dashed #c0d0e8;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  &:hover { background: #e0eaf7; }
+}
+
+/* ── RIGHT: Holiday table — bordered box ── */
+.holTablePanel {
+  background: #fff;
+  border: 1px solid #d0d0e0;
+  border-radius: 6px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Teal table header */
+.holTableHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  background-color: var(--primary-color);
+  flex-shrink: 0;
+  border-radius: 6px 6px 0 0;
+}
+
+/* ✅ Table title — LEFT aligned */
+.holTableTitle {
+  flex: 1;
+  font: normal normal 600 12px/18px var(--font-style);
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-align: left;
+}
+
+/* ✅ Add button — circle with + perfectly centered inside */
+.holTableAddBtn {
+  background: none;
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  color: #fff;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;          /* ✅ circle */
+  display: flex;
+  align-items: center;         /* ✅ vertical center */
+  justify-content: center;     /* ✅ horizontal center */
+  flex-shrink: 0;
+  margin-left: 12px;           /* ✅ gap between title and circle */
+  opacity: 0.92;
+  transition: opacity 0.15s, background 0.15s;
+
+  &:hover {
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.2);
+  }
+}
+
+/* Sub-header: country + year */
+.holTableSubHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 16px;
+  background: #eaf6f9;
+  border-bottom: 1px solid #d0eaf0;
+  font: normal normal 600 12px/18px var(--font-style);
+  color: var(--primary-color);
+  flex-shrink: 0;
+  text-align: left;
+}
+
+/* Empty state */
+.holTableEmpty {
+  padding: 40px 20px;
+  text-align: center;
+  font: normal normal normal 13px/20px var(--font-style);
+  color: #9e9e9e;
+}
+
+/* Holiday data rows */
+.holTableRow {
+  display: grid;
+  grid-template-columns: 2fr 1.5fr 1fr 0.8fr 0.8fr 70px;
+  align-items: center;
+  padding: 9px 16px;
+  border-bottom: 1px solid #f0f0f0;
+  gap: 8px;
+  transition: background 0.1s;
+  &:hover { background: #f5fbfc; }
+}
+
+.holTableRowAlt { background: #fafafa; }
+
+.holTdName {
+  font: normal normal 500 13px/20px var(--font-style);
+  color: #2d2d2d;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: left;
+}
+
+.holTdDate {
+  font: normal normal normal 12px/18px var(--font-style);
+  color: #52575d;
+  white-space: nowrap;
+}
+
+.holTdDay {
+  font: normal normal normal 12px/18px var(--font-style);
+  color: #8a8a8a;
+}
+
+.holTdType {
+  font: normal normal normal 12px/18px var(--font-style);
+  color: #52575d;
+  text-transform: capitalize;
+}
+
+.holTdState {
+  font: normal normal normal 12px/18px var(--font-style);
+  color: #52575d;
+}
+
+.holTableActions {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.holActionIcon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  cursor: pointer;
+  opacity: 0.75;
+  &:hover { opacity: 1; }
+}

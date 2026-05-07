@@ -26,6 +26,7 @@ import MileageRateForCustomers from "./Screens/ReferenceList/mileageRateForCusto
 import GeneralConfigurationForCustomers from "./Screens/ReferenceList/generalConfigurationForCustomers";
 import LoginDialog from "./Components/LoginDialog";
 import Departments from "./Screens/ReferenceList/department/Department";
+import RegionalCallResponsibilities from "./Screens/ReferenceList/regionalCallResponsibilities/RegionalCallResponsibilities";
 import ApplicantTypesByEntity from "./Screens/ReferenceList/applicantTypeByEntity/applicantTypesByEntity";
 import Speciality from "./Screens/ReferenceList/speciality/Speciality";
 import AcknowledgementReview from "./Screens/CAPManager/ApplicationForm/AcknowledgementReview";
@@ -154,6 +155,9 @@ const ContractedServiceProvidedByIndustries = React.lazy(() =>
 );
 const DisclosureIndustries = React.lazy(() =>
   import("./Screens/ReferenceList/disclosureByIndustries/DisclosureIndustries")
+);
+const ProfessionalConductDisclosure = React.lazy(() =>
+  import("./Screens/ReferenceList/professionalConductDisclosure/ProfessionalConductDisclosure")
 );
 const PrivilegeListMaster = React.lazy(() =>
   import("./Screens/ReferenceList/privilegeListMaster/PrivilegeListMaster")
@@ -1503,6 +1507,10 @@ const App = ({ props }) => {
                   element={<ProtectedRoute><DisclosureIndustries /></ProtectedRoute>}
                 />
                 <Route
+                  path="/referenceList/professionalConductDisclosure"
+                  element={<ProtectedRoute><ProfessionalConductDisclosure /></ProtectedRoute>}
+                />
+                <Route
                   path="/referenceList/contractedServiceProviderByIndustries"
                   element={<ProtectedRoute><ContractedServiceProvidedByIndustries /></ProtectedRoute>}
                 />
@@ -1601,6 +1609,10 @@ const App = ({ props }) => {
                 <Route
                   path="/referenceList/department/department"
                   element={<ProtectedRoute><Departments /></ProtectedRoute>}
+                />
+                <Route
+                  path="/referenceList/regionalCallResponsibilities"
+                  element={<ProtectedRoute><RegionalCallResponsibilities /></ProtectedRoute>}
                 />
                 <Route
                   path="/referenceList/staffPrivilegesByDepartment"

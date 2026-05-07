@@ -1,170 +1,144 @@
 import React, { useEffect, useState } from "react";
-import {
-  Dialog,
-  Classes,
-  Icon,
-  Intent,
-  InputGroup,
-  RadioGroup,
-  Radio,
-} from "@blueprintjs/core";
+import { Dialog, Classes, Icon, Intent } from "@blueprintjs/core";
 import style from "./index.module.scss";
 import { GET, POST } from "../dataSaver";
 import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { index } from "d3";
-import ArrowDown from "./../../images/arrowDown.png";
 
-const AddHolidayType = ({ getAddEntityDialog }) => {
-  const [industry, setIndustry] = useState([]);
+const AddHolidayType = ({
+  open,                  // boolean — controls dialog visibility
+  getAddEntityDialog,    // callback(false) to close
+  onSuccess,             // optional: called after successful save
+  preSelectedIndustryId, // ✅ pre-selects the currently active industry
+}) => {
+  const [industry, setIndustry]         = useState([]);
   const [industryName, setIndustryName] = useState("");
-  const [years, setYears] = useState("");
+  const [years, setYears]               = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Year list: 2021 → 2050
+  const dynamicYears = [];
+  for (let y = 2021; y <= 2050; y++) dynamicYears.push(y);
+
+  const handleClose = () => getAddEntityDialog(false);
+
+  useEffect(() => {
+    if (open) GetIndustryData();
+  }, [open]);
+
+  // ✅ Pre-select active industry when list loads
+  useEffect(() => {
+    if (industry.length > 0) {
+      setIndustryName(preSelectedIndustryId || industry[0]?.id || "");
+      setYears(new Date().getFullYear()); // default to current year
+    }
+  }, [industry, preSelectedIndustryId]);
 
   const GetIndustryData = async () => {
-    const { data: Industrydata } = await GET(`entity-service/industryMaster`);
-    setIndustry(Industrydata);
+    try {
+      const { data } = await GET("entity-service/industryMaster");
+      setIndustry(data || []);
+    } catch (e) { console.error("industryMaster:", e); }
   };
-
-  const useDynamicYears = ({ startingYear, numberOfYears }) => {
-    const dynamicYears = [];
-    for (let year = startingYear; year < startingYear + numberOfYears; year++) {
-      dynamicYears.push(year);
-    }
-    return dynamicYears;
-  };
-
-  const dynamicYears = useDynamicYears({
-    startingYear: 2023,
-    numberOfYears: 28,
-  });
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
+    if (!industryName) { ErrorToaster("Please select an Industry."); return; }
+    if (!years)        { ErrorToaster("Please select a Year."); return; }
 
-    let data = {
-      year: `${years}`,
-      industryId: {
-        id: industryName,
-      },
-      customized: true,
-    };
-
-    await POST("entity-service/yearMaster", JSON.stringify(data))
-      .then((response) => {
-        SuccessToaster("Year Added Successfully");
-        getAddEntityDialog(false);
-      })
-      .catch((error) => {
-        ErrorToaster(error);
-      });
+    setIsSubmitting(true);
+    try {
+      await POST(
+        "entity-service/yearMaster",
+        JSON.stringify({ year: `${years}`, industryId: { id: industryName }, customized: true })
+      );
+      SuccessToaster("Year Added Successfully");
+      if (onSuccess) onSuccess();
+      else handleClose();
+    } catch (error) {
+      ErrorToaster(error?.message || "Something went wrong.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
-
-  useEffect(() => {
-    GetIndustryData();
-  }, []);
-
-  useEffect(() => {
-    setIndustryName(industry?.[0]?.id);
-    setYears(dynamicYears?.[0]);
-  }, [industry]);
 
   return (
     <Dialog
-      isOpen={getAddEntityDialog}
-      onClose={() => getAddEntityDialog(false)}
+      isOpen={open}
+      onClose={handleClose}
       className={`${style.healthCareDialogStyle} ${style.dialogPaddingBottom}`}
     >
-      <div
-        className={`${Classes.DIALOG_BODY} ${style.extensionDialogBackground}`}
-      >
+      <div className={`${Classes.DIALOG_BODY} ${style.extensionDialogBackground}`}>
+
+        {/* ✅ Header: clean title + × only — removed broken Wikipedia flag image */}
         <div className={style.spaceBetween}>
-          <p className={style.extensionStyle}>Company Holiday</p>
-          <div className={`${style.displayInRow}`}>
-            <div className={`${style.displayInRow} ${style.marginRight20}`}>
-              <img
-                src={
-                  "https://upload.wikimedia.org/wikipedia/en/thumb/a/a4/Flag_of_the_United_States.svg/125px-Flag_of_the_United_States.svg.png"
-                }
-                alt="refresh"
-                className={`${style.headerFlag} ${style.marginRight15}`}
-              />
-              <span
-                className={`${style.headerCountryName} ${style.marginLeft10}`}
-              >
-                USA
-              </span>
-              <img
-                src={ArrowDown}
-                className={`${style.colorFileStyle2} ${style.marginLeft10}  ${style.marginTop10}`}
-                alt=""
-              />
-            </div>
-            <Icon
-              icon="cross"
-              size={20}
-              intent={Intent.DANGER}
-              className={style.dialogCrossStyle}
-              onClick={() => getAddEntityDialog(false)}
-            />
-          </div>
+          <p className={style.extensionStyle}>Add Holiday Year</p>
+          <Icon
+            icon="cross"
+            size={20}
+            intent={Intent.DANGER}
+            className={style.dialogCrossStyle}
+            onClick={handleClose}
+          />
         </div>
-        <div className={style.ReferenceListEntityBorder}></div>
-        <div className={`${style.addHealthCareBoxStyle}`}>
-          <div className={`${style.editHealthCareGrid2}`}>
-            <div className={style.entityLableStyle}>Industry Name</div>
+
+        <div className={style.ReferenceListEntityBorder} />
+
+        <div className={style.addHealthCareBoxStyle}>
+
+          {/* Industry dropdown — pre-selects active industry */}
+          <div className={style.editHealthCareGrid2}>
+            <div className={style.entityLableStyle}>Industry Name *</div>
             <div className={style.displayInRow}>
               <select
-                name="class"
-                id="Class"
                 value={industryName}
                 onChange={(e) => setIndustryName(e.target.value)}
                 className={`${style.halfWidth} ${style.selectDropdownInputBox}`}
               >
-                {industry.map((data, index) => (
-                  <option key={index} value={data.id}>
-                    {data.industry}
+                <option value="">Select Industry</option>
+                {industry.map((data) => (
+                  <option key={data.id} value={data.id}>
+                    {data.industry || data.name}
                   </option>
                 ))}
               </select>
             </div>
           </div>
 
+          {/* Year dropdown — starts from 2021, includes 2026 */}
           <div className={`${style.editHealthCareGrid2} ${style.marginTop20}`}>
-            <div className={style.entityLableStyle}>YEAR</div>
+            <div className={style.entityLableStyle}>Year *</div>
             <div className={style.displayInRow}>
               <select
-                name="class"
-                id="Class"
                 value={years}
                 onChange={(e) => setYears(e.target.value)}
                 className={`${style.halfWidth} ${style.selectDropdownInputBox}`}
               >
-                {dynamicYears.map((year, index) => (
-                  <option key={index} value={year}>
-                    {year}
-                  </option>
+                <option value="">Select Year</option>
+                {dynamicYears.map((year) => (
+                  <option key={year} value={year}>{year}</option>
                 ))}
               </select>
             </div>
           </div>
         </div>
-        <div>
-          <div className={`${style.floatRight} ${style.marginTop20}`}>
-            <button
-              className={style.outlinedButton}
-              onClick={() => getAddEntityDialog(false)}
-            >
-              CANCEL
-            </button>
-            <button
-              onClick={onSubmitHandler}
-              className={`${style.buttonStyle} ${style.marginLeft20}`}
-            >
-              SAVE
-            </button>
-          </div>
+
+        <div className={`${style.floatRight} ${style.marginTop20}`}>
+          <button
+            className={style.outlinedButton}
+            onClick={handleClose}
+            disabled={isSubmitting}
+          >
+            CANCEL
+          </button>
+          <button
+            onClick={onSubmitHandler}
+            className={`${style.buttonStyle} ${style.marginLeft20}`}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "SAVING..." : "SAVE"}
+          </button>
         </div>
+
       </div>
     </Dialog>
   );

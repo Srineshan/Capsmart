@@ -99,34 +99,31 @@ const ApplicantTypeDialog = ({
       let mapped = [];
 
       if (isApplicantTypeRecords) {
+        // Extract unique categories from applicantType records
         const seen = new Set();
         list.forEach((item) => {
-          // Try category field first, then siteType field
-          const cat = item?.category || item?.siteType;
+          const cat = item?.category;
           if (!cat) return;
-          const id = typeof cat === "object" ? cat?.id || cat?.category || cat?.type : cat;
+          const id = typeof cat === "object" ? cat?.id || cat?.category : cat;
           const label = typeof cat === "object"
-            ? cat?.category || cat?.name || cat?.type || ""
+            ? cat?.category || cat?.name || ""
             : cat;
-          // Filter out junk "string" test values
-          if (id && label && label.toLowerCase() !== "string" && !seen.has(id)) {
+          if (id && !seen.has(id)) {
             seen.add(id);
             mapped.push({ id, type: label });
           }
         });
       } else {
-        // Direct category records — filter junk
-        mapped = list
-          .map((item) => ({
-            id: item.id,
-            type:
-              (typeof item.category === "string" ? item.category : null) ||
-              (typeof item.categoryName === "string" ? item.categoryName : null) ||
-              (typeof item.name === "string" ? item.name : null) ||
-              (typeof item.type === "string" ? item.type : null) ||
-              "",
-          }))
-          .filter((item) => item.type && item.type.toLowerCase() !== "string");
+        // Direct category records
+        mapped = list.map((item) => ({
+          id: item.id,
+          type:
+            (typeof item.category === "string" ? item.category : null) ||
+            (typeof item.categoryName === "string" ? item.categoryName : null) ||
+            (typeof item.name === "string" ? item.name : null) ||
+            (typeof item.type === "string" ? item.type : null) ||
+            "",
+        }));
       }
 
       console.log("Fetched and mapped categories:", mapped);
@@ -195,15 +192,7 @@ const ApplicantTypeDialog = ({
         SuccessToaster("Applicant Type Added Successfully");
         resetDialogFields();
         if (isSaveAndExit) {
-          // ✅ Pass newItem back so parent appends it directly (no API reload)
-          const newItem = {
-            applicantType:    enterApplicant.trim(),
-            description:      description.trim(),
-            category:         saveData.category || null,
-            lastModifiedDate: new Date().toISOString(),
-            _justAdded:       true,
-          };
-          handleClose(true, newItem);
+          handleClose(true); // triggers parent refetch
         }
       } else {
         await PUT(
@@ -213,7 +202,7 @@ const ApplicantTypeDialog = ({
         SuccessToaster("Applicant Type Updated Successfully");
         resetDialogFields();
         if (isSaveAndExit) {
-          handleClose(true, null); // null = edit, parent updates in place
+          handleClose(true);
         }
       }
     } catch (error) {
@@ -301,13 +290,11 @@ const ApplicantTypeDialog = ({
                 {!isCategoryLoading && applicantCategories.length === 0 && (
                   <MenuItem disabled value="">No categories available</MenuItem>
                 )}
-                {applicantCategories
-                  .filter((item) => item.type && item.type.toLowerCase() !== "string")
-                  .map((item) => (
-                    <MenuItem value={item.id} key={item.id}>
-                      {item.type}
-                    </MenuItem>
-                  ))}
+                {applicantCategories.map((item) => (
+                  <MenuItem value={item.id} key={item.id}>
+                    {item.type}
+                  </MenuItem>
+                ))}
               </Select>
             </FormControl>
           </div>

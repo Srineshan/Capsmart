@@ -1,272 +1,291 @@
-import React, { Fragment, useState, useEffect } from "react";
+import React, { Fragment, useState, useEffect, useRef } from "react";
 import Navbar from "../../../Components/Navbar";
-import { Checkbox, Icon, Intent } from "@blueprintjs/core";
 import style from "./../index.module.scss";
-import { GET, DELETE, POST, TenantID } from "../../dataSaver";
-import AddNewDepartments from "../addNewDepartments";
-import { SuccessToaster, ErrorToaster } from "../../../utils/toaster";
-import { format } from "date-fns";
-import LevelTwoHeader from "../../../Components/LevelTwoHeader";
-import CommonCheckBox from "../../../Components/CommonFields/CommonCheckBox";
-import CommonPurpleCheckBox from "../../../Components/CommonFields/CommonPurpleCheckBox";
-import SearchBar from "../../../Components/SearchBar";
+import { GET, PUT } from "../../dataSaver";
 import { formatInTimeZone } from "date-fns-tz";
 import { siteTimeZone, timeZoneAbbreviation } from "../../../utils/formatting";
+import { SuccessToaster } from "../../../utils/toaster";
+import LevelTwoHeader from "../../../Components/LevelTwoHeader";
 import ApplicantTable from "../common/Table";
 import ApplicantSideBar from "../common/SideBar";
-import { ReferenceListActionButton } from "../common/ReferenceListActionButton";
-import Breadcrumbs from "@mui/material/Breadcrumbs";
 import Typography from "@mui/material/Typography";
+import ConsentsDialog from "./consentsDialog";
 
 const Consents = () => {
-  const [isSelected, setIsSelected] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(true);
-  const [showAddEntityDialog, setShowAddEntityDialog] = useState(false);
+  const [entityId, setEntityId]                   = useState("");
+  const [lastUpdatedDate, setLastUpdatedDate]     = useState("");
   const [applicantTypeList, setApplicantTypeList] = useState([]);
+  const [siteList, setSiteList]                   = useState([]);
+  const [selectedSiteName, setSelectedSiteName]   = useState("");
+  const [consentForms, setConsentForms]           = useState([]);
+  const [isDialogOpen, setIsDialogOpen]           = useState(false);
+  const [isEdit, setIsEdit]                       = useState(false);
+  const [editData, setEditData]                   = useState(null);
+  const [isDone, setIsDone]                       = useState(false);
+  const [applicantId, setApplicantId]             = useState("");
 
-  const [entityDetails, setEntityDetails] = useState({});
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  // Ref to the LevelTwoHeader wrapper — used to intercept the Add New click
+  const headerRef = useRef(null);
 
-  const [siteTypeId, setSiteTypeId] = useState("");
-  const [selectedEntityType, setSelectedEntityType] = useState("");
-  const [entityTypes, setEntityTypes] = useState([]);
-  const [applicantTypes, setApplicantTypes] = useState([]);
-  const [departmentServiceMaster, setDepartmentServiceMaster] = useState([]);
-  const [departmentService, setDepartmentService] = useState([]);
-  const [documents, setDocuments] = useState([]);
-  const [selectedDepartmentServiceArea, setSelectedDepartmentServiceArea] =
-    useState([]);
-  const [selectedDepartmentService, setSelectedDepartmentService] = useState(
-    {}
-  );
-  const [isEdit, setIsEdit] = useState(false);
-  const [entityId, setEntityId] = useState("");
-  const [lastUpdatedDate, setLastUpdatedDate] = useState("");
+  const tableHeadKeys = ["CONSENT FORM", "ALERT NOTE", "SIGNATURE", "LAST UPDATED"];
+  const tableDataKeys = ["title", "alertNote", "esignatureRequired", "lastModifiedData"];
 
-  const [selectAllList, setSelectAllList] = useState([]);
-  const [checkedAll, setCheckedAll] = useState(false);
-  const [searchKey, setSearchKey] = useState("");
-  const [selectedApplicantType, setSelectedApplicantType] = useState("");
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [consentForms, setConsentForms] = useState([]);
-  const [applicantId, setApplicantId] = useState("");
-
-  const tableHeadKeys = [
-    "CONSENT FORM",
-    "ALERT NOTE",
-    "SIGNATURE",
-    "LAST UPDATED",
-  ];
-
-  const tableDataKeys = [
-    "title",
-    "alertNote",
-    "esignatureRequired",
-    "lastModifiedData",
-  ];
+  // ── Boot ─────────────────────────────────────────────────
+  useEffect(() => {
+    getEntity();
+    getSites();
+    getApplicantTypes();
+    getConsentForms();
+  }, []);
 
   useEffect(() => {
-    if (entityId !== "" && entityId !== undefined) {
-      getLastModifiedDate();
-    }
+    if (entityId) getLastModifiedDate(entityId);
   }, [entityId]);
 
   useEffect(() => {
-    getApplicantType();
+    if (applicantTypeList.length > 0 && !applicantId) {
+      setApplicantId(applicantTypeList[0]?.id || "");
+    }
+  }, [applicantTypeList]);
+
+  useEffect(() => {
+    if (siteList.length > 0 && !selectedSiteName) {
+      setSelectedSiteName(getSiteDisplayName(siteList[0]));
+    }
+  }, [siteList]);
+
+  // ── Intercept LevelTwoHeader's internal "+ Add New" click ─
+  // LevelTwoHeader renders its own dialog for Consent tileType.
+  // We capture the click on the "+ Add New" button before it reaches
+  // LevelTwoHeader's handler, stop propagation, and open our ConsentsDialog.
+  useEffect(() => {
+    const wrapper = headerRef.current;
+    if (!wrapper) return;
+
+    const interceptAddNew = (e) => {
+      // Find if the clicked element is the "+ Add New" button
+      const btn = e.target.closest("button, [role='button'], a");
+      if (!btn) return;
+      const text = btn.textContent?.trim().toLowerCase() || "";
+      const isAddNew =
+        text.includes("add new") ||
+        text.includes("add") ||
+        btn.classList.toString().toLowerCase().includes("add");
+      if (isAddNew) {
+        e.stopPropagation();
+        e.preventDefault();
+        openAddDialog();
+      }
+    };
+
+    // Use capture phase so we intercept before LevelTwoHeader's handler
+    wrapper.addEventListener("click", interceptAddNew, true);
+    return () => wrapper.removeEventListener("click", interceptAddNew, true);
   }, []);
 
-  // useEffect(() => {
-  //   getConsent(applicantId);
-  // }, [applicantId]);
-
-  const getApplicantType = async () => {
-    const { data: types } = await GET("entity-service/applicantType");
-    setApplicantTypeList(types);
+  // ── Display helpers ───────────────────────────────────────
+  const getSiteDisplayName = (site) => {
+    const raw =
+      site?.siteName?.siteName ||
+      site?.siteName?.name     ||
+      site?.siteName           ||
+      site?.name               || "";
+    return typeof raw === "string" ? raw : String(raw);
   };
 
-  const getIsExpanded = (value) => {
-    setIsExpanded(value);
+  const getSiteTypeName = (site) => {
+    const raw =
+      site?.siteType?.siteTypeName ||
+      site?.siteType?.name         ||
+      site?.siteType               ||
+      site?.siteTypeName           || "";
+    return typeof raw === "string" ? raw : "";
   };
 
-  const getAddEntityDialog = (value) => {
-    setShowAddEntityDialog(value);
+  const normalizeRow = (row) => {
+    const alertNote = (() => {
+      const val = row?.alertNote;
+      if (!val) return "";
+      if (typeof val === "string") return val;
+      if (typeof val === "object") return val?.note || val?.text || val?.value || "";
+      return String(val);
+    })();
+
+    return {
+      ...row,
+      title:              row?.title || row?.name || "",
+      alertNote,
+      esignatureRequired: row?.esignatureRequired ?? row?.signatureRequired ?? false,
+      lastModifiedData:
+        row?.lastModifiedDate ||
+        row?.lastModified     ||
+        row?.updatedAt        ||
+        row?.modifiedDate     ||
+        row?.createdDate      || null,
+    };
   };
 
+  // ── API calls ─────────────────────────────────────────────
   const getEntity = async () => {
-    const { data: entity } = await GET(`entity-service/entity`);
-    setEntityDetails(entity);
-    setEntityId(entity?.[0]?.id);
+    try {
+      const { data } = await GET("entity-service/entity");
+      if (data?.[0]) setEntityId(data[0].id);
+    } catch (e) { console.error("entity:", e); }
   };
 
-  const getConsent = async (id) => {
-    if (id !== "") {
-      const { data: consentForm } = await GET(
-        `entity-service/consentForm?applicantTypeId=${id}`
-      );
-      setConsentForms(consentForm);
-      console.log(consentForm);
-    }
+  const getSites = async () => {
+    try {
+      const { data } = await GET("entity-service/sites");
+      setSiteList(data || []);
+    } catch (e) { console.error("sites:", e); }
   };
 
-  const getLastModifiedDate = async () => {
-    const { data: lastModifiedDate } = await GET(
-      `entity-service/referenceList/entity/${entityId}`
-    );
-    const date = new Date(lastModifiedDate.departments?.lastModified);
-    setLastUpdatedDate(
-      `${formatInTimeZone(
-        date,
-        siteTimeZone(),
-        "MMM d, yyyy HH:mm"
-      )} ${timeZoneAbbreviation()}`
-    );
+  const getApplicantTypes = async () => {
+    try {
+      const { data } = await GET("entity-service/applicantType");
+      setApplicantTypeList(data || []);
+    } catch (e) { console.error("applicantType:", e); }
   };
 
-  const getSelectedTile = (data) => {
-    setApplicantId(data);
-    getConsent(data);
+  const getLastModifiedDate = async (id) => {
+    try {
+      const { data } = await GET(`entity-service/referenceList/entity/${id}`);
+      const ts = data?.consentForms?.lastModified || data?.departments?.lastModified;
+      const date = new Date(ts);
+      if (!isNaN(date))
+        setLastUpdatedDate(
+          `${formatInTimeZone(date, siteTimeZone(), "MMM d, yyyy HH:mm")} ${timeZoneAbbreviation()}`
+        );
+    } catch (e) { console.error("lastModified:", e); }
   };
 
-  const getAddEntityTypes = async (data) => {
-    await POST(`entity-service/document/?${TenantID}`, data);
+  const getConsentForms = async () => {
+    try {
+      const { data } = await GET("entity-service/consentForm");
+      setConsentForms((data || []).map(normalizeRow));
+    } catch (e) { console.error("consentForm:", e); }
   };
 
-  const getEntityTypes = async () => {
-    console.log("TenantID", TenantID);
-
-    const { data: entityType } = await GET(
-      `entity-service/consentForm/?${TenantID}`
-    );
-
-    setDocuments(entityType);
-    const allApplicantTypes = entityType.flatMap(
-      (entity) => entity.applicantTypes || []
-    );
-
-    setApplicantTypes(allApplicantTypes);
-
-    // // console.log(entityType?.sites)
-    // if (entityType?.sites?.length !== 0) {
-    //   setSiteTypeId(entityType?.sites?.[0]?.siteType?.id);
-    //   setSelectedEntityType(entityType?.sites?.[0]?.siteType?.type);
-    //   setEntityTypes(entityType?.sites);
-    // }
-    console.log(applicantTypes);
-  };
-
-  const getDepartmentServiceMaster = async () => {
-    const { data: departmentServiceMaster } = await GET(
-      `entity-service/departmentMaster/refListView?siteTypeId=${siteTypeId}`
-    );
-    setDepartmentServiceMaster(departmentServiceMaster);
-  };
-
-  const getDepartmentService = async () => {
-    const { data: departmentService } = await GET(
-      `entity-service/department/refListView?X-tenantID=${TenantID}&siteTypeId=${siteTypeId}&searchText=${searchKey}`
-    );
-    setDepartmentService(departmentService);
-  };
-
-  useEffect(() => {
-    if (applicantTypes.length > 0) {
-      setSelectedApplicantType(applicantTypes[0]?.applicantType);
-    }
-  }, [applicantTypes]);
-
-  useEffect(() => {
-    let tempDepartmentService = departmentServiceMaster
-      ?.filter(
-        (data) =>
-          !departmentService.some(
-            (customerData) =>
-              customerData?.departmentGroupBy.name ===
-              data?.departmentGroupBy.name
-          )
-      )
-      ?.map((data) => {
-        return { ...data };
-      });
-
-    setSelectAllList(tempDepartmentService);
-
-    let allChecked = true;
-
-    if (tempDepartmentService.length > selectedDepartmentServiceArea.length) {
-      allChecked = false;
-    }
-
-    if (allChecked) {
-      setCheckedAll(true);
-    } else {
-      setCheckedAll(false);
-    }
-  }, [selectedDepartmentServiceArea]);
-
-  useEffect(() => {
-    getEntity();
-    getEntityTypes();
-  }, []);
-
-  useEffect(() => {
-    if (siteTypeId !== "" && siteTypeId !== undefined) {
-      getDepartmentServiceMaster();
-      getDepartmentService();
-    }
-  }, [siteTypeId, entityDetails, searchKey]);
-
-  const handleSiteClick = (siteName) => {
-    setSelectedApplicantType(siteName);
-  };
-
-  const handleOpenDialog = () => {
+  // ── Dialog handlers ───────────────────────────────────────
+  const openAddDialog = () => {
+    setEditData(null);
+    setIsEdit(false);
     setIsDialogOpen(true);
   };
 
-  const handleCloseDialog = () => {
-    setIsDialogOpen(false);
+  const handleOpenEditDialog = (data) => {
+    setEditData(data);
+    setIsEdit(true);
+    setIsDialogOpen(true);
   };
 
+  const handleCloseDialog = (needRefetch = false) => {
+    setIsDialogOpen(false);
+    setIsEdit(false);
+    setEditData(null);
+    if (needRefetch) getConsentForms();
+  };
+
+  // Passed to LevelTwoHeader — it calls this but we also intercept via DOM
+  const handleOpenDialog = () => openAddDialog();
+  const handleCloseLevel2 = () => handleCloseDialog(false);
+
+  // ── Sidebar handlers ──────────────────────────────────────
+  const handleTileSelect = (_siteId) => {
+    setIsDone(false);
+    getConsentForms();
+  };
+
+  const handleSiteClick = (siteName) => {
+    setSelectedSiteName(typeof siteName === "string" ? siteName : String(siteName || ""));
+    getConsentForms();
+  };
+
+  // ── Footer buttons ────────────────────────────────────────
+  const handleSaveInProgress = async () => {
+    try {
+      await PUT(
+        `entity-service/referenceList/entity/${entityId}`,
+        JSON.stringify({
+          consentForms: { status: "IN_PROGRESS", lastModified: new Date().toISOString() },
+        })
+      );
+    } catch (e) { console.warn("saveInProgress:", e); }
+    finally {
+      SuccessToaster("Saved as in progress.");
+      getConsentForms();
+      setIsDone(true);
+    }
+  };
+
+  const handleMarkAsDone = async () => {
+    try {
+      await PUT(
+        `entity-service/referenceList/entity/${entityId}`,
+        JSON.stringify({
+          consentForms: { status: "DONE", lastModified: new Date().toISOString() },
+        })
+      );
+    } catch (e) { console.warn("markAsDone:", e); }
+    finally {
+      setIsDone(true);
+      SuccessToaster("Marked as done.");
+      window.location.href = "/referencelist";
+    }
+  };
+
+  // ── Derived ───────────────────────────────────────────────
+  const hasRows = consentForms.length > 0;
+
+  const enrichedSideBarList = siteList.map((s) => ({
+    ...s,
+    count: consentForms.length,
+  }));
+
+  // ── Render ────────────────────────────────────────────────
   return (
     <Fragment>
       <Navbar />
-      <div className={` ${style.applicantTypeBackground}`}>
+      <div className={style.applicantTypeBackground}>
         <div className={style.padding20}>
-          <div>
+
+          {/*
+            Wrapper div with ref — captures click events in capture phase.
+            Any click on "+ Add New" is intercepted here BEFORE LevelTwoHeader
+            handles it, so our ConsentsDialog opens instead of the internal one.
+          */}
+          <div ref={headerRef}>
             <LevelTwoHeader
-              getAddEntityDialog={getAddEntityDialog}
               heading={"Consent Forms by Industries"}
-              updatedTime={`UPDATED ON ${lastUpdatedDate}`}
+              updatedTime={lastUpdatedDate ? `UPDATED ON ${lastUpdatedDate}` : ""}
               path={"/Screens/ReferenceList/customerAdminDashboard"}
               callingFrom={"Customer Admin"}
               needHeader={false}
               tileType={"Consent"}
-              documents={consentForms}
-              getEntityTypes={getEntityTypes}
-              getAddEntityTypes={getAddEntityTypes}
               handleOpenDialog={handleOpenDialog}
-              handleClose={handleCloseDialog}
+              onAddClick={handleOpenDialog}
+              onCloseLevel2={handleCloseLevel2}
+              handleClose={handleCloseLevel2}
             />
           </div>
-          <div
-            className={`${isExpanded ? style.bigCardGrid : style.smallCardGrid
-              }`}
-          >
+
+          <div className={style.bigCardGrid}>
+
             <ApplicantSideBar
-              applicantType={applicantTypeList?.map(
-                (data) => data?.applicantType
-              )}
-              siteType={applicantTypeList?.map((data) => data?.siteType)}
-              siteTitle={"All Applicant Type"}
+              applicantType={siteList.map(getSiteDisplayName)}
+              siteType={siteList.map(getSiteTypeName)}
+              selectedTile={handleTileSelect}
               onSelectSite={handleSiteClick}
               tileType={"Consent"}
-              selectedTile={getSelectedTile}
-              sideBarList={applicantTypeList}
+              sideBarList={enrichedSideBarList}
+              siteDropdown={false}
             />
+
             <div className={style.applicantList}>
-              <div className={`${style.Tabletitle} `}>
+
+              <div className={style.Tabletitle}>
                 <Typography className={style.tableTitleContent}>
-                  {`{${selectedApplicantType}}`}
+                  {selectedSiteName || "All Sites"}
                 </Typography>
                 <Typography
                   className={`${style.tableTitleContentArrow} ${style.tableTitleContent}`}
@@ -274,48 +293,67 @@ const Consents = () => {
                   {">"}
                 </Typography>
                 <Typography className={style.tableTitleContent}>
-                  All Consent Form
+                  All Consent Forms
                 </Typography>
               </div>
-              <ApplicantTable
-                applicantTypes={consentForms}
-                applicantNotice={
-                  "Applicant types are ordered as they will appear on forms. To change the order, click and drag "
-                }
-                tableDataKeys={tableDataKeys}
-                tableHeadKeys={tableHeadKeys}
-                groupFirstTwoColumn={true}
-                tileType={"Consent"}
-                documents={documents}
-                getAddEntityTypes={getAddEntityTypes}
-                handleClose={handleCloseDialog}
-                refetch={() => getConsent(applicantId)}
-              />
-              <ReferenceListActionButton
-                button1={"Save In-Progress"}
-                button2={" Mark as Done"}
-              />
+
+              {hasRows ? (
+                <ApplicantTable
+                  applicantTypes={consentForms}
+                  applicantNotice="Consent forms are ordered as they will appear. To change the order, click and drag."
+                  tableDataKeys={tableDataKeys}
+                  tableHeadKeys={tableHeadKeys}
+                  tileType={"Consent"}
+                  groupFirstTwoColumn={true}
+                  onEditClick={handleOpenEditDialog}
+                  applicantId={applicantId}
+                  refetchStaffPrivileges={getConsentForms}
+                />
+              ) : (
+                <div className={style.emptyStateContainer}>
+                  <div className={style.emptyStateIcon}>▲</div>
+                  <p className={style.emptyStateText}>
+                    Consent forms need to be created and setup in order to be
+                    made available as a default list for accounts that are created.
+                  </p>
+                </div>
+              )}
+
+              <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 20 }}>
+                <button
+                  onClick={handleMarkAsDone}
+                  disabled={!(isDone || hasRows)}
+                  style={{
+                    backgroundColor: "#06617A",
+                    color: "#fff",
+                    border: "none",
+                    borderRadius: 6,
+                    padding: "10px 24px",
+                    fontSize: 14,
+                    fontWeight: 600,
+                    cursor: (isDone || hasRows) ? "pointer" : "not-allowed",
+                    opacity: (isDone || hasRows) ? 1 : 0.6,
+                    letterSpacing: "0.5px",
+                  }}
+                >
+                  MARK AS DONE
+                </button>
+              </div>
             </div>
           </div>
         </div>
-
-        {showAddEntityDialog && (
-          <AddNewDepartments
-            getAddEntityDialog={getAddEntityDialog}
-            callingFrom={"Customer Admin"}
-            isEdit={isEdit}
-            getEntityData={getDepartmentService}
-            selectedDepart={selectedDepartmentService}
-            selectedTitle={selectedEntityType}
-            siteTypeId={siteTypeId}
-            departmentList={departmentService}
-          />
-        )}
-        <div className={style.spaceBetween}>
-          <p className={style.poweredBy}>Powered by - HapiCare</p>
-          <p className={style.poweredBy}>© HapiCare</p>
-        </div>
       </div>
+
+      {/* Our ConsentsDialog — the single source of truth for add/edit */}
+      {isDialogOpen && (
+        <ConsentsDialog
+          open={isDialogOpen}
+          handleClose={handleCloseDialog}
+          selectedConsent={editData}
+          isEdit={isEdit}
+          applicantTypeList={applicantTypeList}
+        />
+      )}
     </Fragment>
   );
 };

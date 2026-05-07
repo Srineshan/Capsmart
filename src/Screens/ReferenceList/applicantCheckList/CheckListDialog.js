@@ -55,9 +55,37 @@ const useStyles = makeStyles({
   },
 });
 
+// Country list for the dialog dropdown
+const COUNTRY_LIST = [
+  { code: "us", name: "USA",       label: "United States"        },
+  { code: "gb", name: "UK",        label: "United Kingdom"       },
+  { code: "ca", name: "Canada",    label: "Canada"               },
+  { code: "au", name: "Australia", label: "Australia"            },
+  { code: "in", name: "India",     label: "India"                },
+  { code: "de", name: "Germany",   label: "Germany"              },
+  { code: "fr", name: "France",    label: "France"               },
+  { code: "sg", name: "Singapore", label: "Singapore"            },
+  { code: "ae", name: "UAE",       label: "United Arab Emirates" },
+  { code: "nz", name: "NZ",        label: "New Zealand"          },
+];
+
+// Inject flag-icons CSS
+const injectFlagIconsCSS = () => {
+  if (document.getElementById("flag-icons-css")) return;
+  const link = document.createElement("link");
+  link.id = "flag-icons-css";
+  link.rel = "stylesheet";
+  link.href = "https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/6.6.6/css/flag-icons.min.css";
+  document.head.appendChild(link);
+};
+
 const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
   const [isConstraintsRequired, setIsConstraintsRequired] = useState(false);
   const [isApplicantInformation, setIsApplicantInformation] = useState(false);
+
+  // Country dropdown state
+  const [selectedCountry, setSelectedCountry] = useState(COUNTRY_LIST[0]);
+  const [countryDropdownOpen, setCountryDropdownOpen] = useState(false);
 
   const [activityTitle, setActivityTitle] = useState("");
   const [promptLabel, setPromptLabel] = useState("");
@@ -119,6 +147,7 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
   const [taskCompleteStatus2, setTaskCompleteStatus2] = useState("");
   const [documentLabel, setDocumentLabel] = useState("");
   const [file, setFile] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false); // Track save in progress
   const [sendAsCompleteType, setSendAsCompleteType] = useState("");
   const [isToFormDetailsChecked, setIsToFormDetailsChecked] = useState(false); // State to track checkbox
   const [isCCFormDetailsChecked, setIsCCFormDetailsChecked] = useState(false); // State to track checkbox
@@ -227,6 +256,7 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
   const classes = useStyles();
 
   useEffect(() => {
+    injectFlagIconsCSS();
     fetchApplicantTypes();
     fetchDepartmentTypes();
   }, []);
@@ -680,83 +710,60 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
     setSendAsCompleteType(selectedId);
   };
 
-  const changeHandler = async (event) => {
-    const selectedFile = event[0]; // Assuming only one file is selected
+  const changeHandler = async (filesArray) => {
+    const files = Array.isArray(filesArray) ? filesArray : [filesArray];
+    if (!files.length) return;
 
-    setFile(event);
+    let successCount = 0;
+    let lastUploadedFile = null;
 
-    if (selectedFile) {
-      // Extract file metadata before uploading
-      const fileName = selectedFile.name;
-      const fileFormat = fileName.split(".").pop();
-      const fileSize = selectedFile.size;
-      const lastModifiedDate = new Date(
-        selectedFile.lastModified
-      ).toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-      });
-
-      console.log("File metadata:", {
-        fileFormat,
-        fileSize,
-        lastModifiedDate,
-      });
-
-      const formData = new FormData();
-
-      const fileNameData = {
-        fileName: fileName,
-        fileFormat,
-        fileSize,
-        lastModifiedDate,
-      };
-
-      formData.append(
-        "fileDTO",
-        new Blob([JSON.stringify(fileNameData)], {
-          type: "application/json",
-        })
-      );
-      formData.append("file", selectedFile);
-
-      // setFile(event);
-      // let fileName = {
-      //   fileName: event[0]?.name,
-      // };
-      // const formData = new FormData();
-
-      // if (event[0] !== null) {
-      //   formData.append(
-      //     "fileDTO",
-      //     new Blob([JSON.stringify(fileName)], {
-      //       type: "application/json",
-      //     })
-      //   );
-      //   formData.append("file", event[0]);
+    for (const selectedFile of files) {
+      if (!selectedFile) continue;
       try {
-        const response = await POST(`entity-service/checklist/file`, formData);
-        SuccessToaster("File Uploaded Successfully");
+        const fileName     = selectedFile.name;
+        const fileFormat   = fileName.split(".").pop();
+        const fileSize     = selectedFile.size;
+        const lastModifiedDate = new Date(selectedFile.lastModified).toLocaleDateString("en-US", {
+          year: "numeric", month: "short", day: "numeric",
+        });
+
+        const formData = new FormData();
+        formData.append(
+          "fileDTO",
+          new Blob([JSON.stringify({ fileName, fileFormat, fileSize, lastModifiedDate })], {
+            type: "application/json",
+          })
+        );
+        formData.append("file", selectedFile);
+
+        const response = await POST("entity-service/checklist/file", formData);
         const uploadedFile = response?.data;
-        const updatedFileData = {
-          filePath: uploadedFile.filePath,
-          fileName: uploadedFile.fileName,
-          fileURL: uploadedFile.fileURL,
+        lastUploadedFile = {
+          filePath: uploadedFile?.filePath,
+          fileName:  uploadedFile?.fileName  || fileName,
+          fileURL:   uploadedFile?.fileURL,
           fileFormat,
           fileSize,
           lastModifiedDate,
         };
-        console.log("updatedFileData", updatedFileData);
-        setFile(updatedFileData);
+        successCount++;
       } catch (error) {
-        ErrorToaster("File Upload Failed");
-        console.error(error);
+        console.error("File upload failed:", selectedFile?.name, error);
+        ErrorToaster(`Upload failed: ${selectedFile?.name}`);
       }
+    }
+
+    if (successCount > 0) {
+      setFile(lastUploadedFile);
+      SuccessToaster(
+        successCount === 1
+          ? "File uploaded successfully."
+          : `${successCount} files uploaded successfully.`
+      );
     }
   };
 
-  const handleSubmit = async () => {
+  const handleSubmitInternal = async (shouldClose = true) => {
     const formattedApplicantTypes = selectedApplicantValues.map((value) => {
       const selectedType = applicantTypes.find((type) => type.id === value);
       return {
@@ -944,31 +951,43 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
         },
       };
     }
-    // if (!isEdit) {
-    //   await POST("entity-service/checklist", JSON.stringify(data))
-    //     .then((response) => {
-    //       SuccessToaster("CheckList Form Added Successfully");
-    //       setResponseData(response);
-    //       handleClose(true);
-    //     })
-    //     .catch((error) => {
-    //       ErrorToaster(error);
-    //     });
-    // } else {
-    //   await PUT(
-    //     `entity-service/checklist/${selectedApplicant?.id}`,
-    //     JSON.stringify(data)
-    //   )
-    //     .then((response) => {
-    //       SuccessToaster("CheckList Form Updated Successfully");
-    //       setResponseData(response); // Store the response data
+    setIsSubmitting(true);
+    try {
+      console.log("[CheckListDialog] Saving payload:", JSON.stringify(data, null, 2));
+      if (!isEdit) {
+        const response = await POST("entity-service/checklist", JSON.stringify(data));
+        console.log("[CheckListDialog] POST response:", response);
+        SuccessToaster("CheckList Form Added Successfully");
+        setResponseData(response);
+        if (shouldClose) handleClose(true);
+        else resetForm();
+      } else {
+        const response = await PUT(
+          `entity-service/checklist/${selectedApplicant?.id}`,
+          JSON.stringify(data)
+        );
+        console.log("[CheckListDialog] PUT response:", response);
+        SuccessToaster("CheckList Form Updated Successfully");
+        setResponseData(response);
+        if (shouldClose) handleClose(true);
+        else resetForm();
+      }
+    } catch (error) {
+      console.error("[CheckListDialog] Save error:", error);
+      ErrorToaster(error?.message || "Something went wrong. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
-    //       handleClose(true);
-    //     })
-    //     .catch((error) => {
-    //       ErrorToaster(error);
-    //     });
-    // }
+  // SAVE & EXIT wrapper — must be async to properly await the POST/PUT
+  const handleSubmit = async () => {
+    try {
+      await handleSubmitInternal(true);
+    } catch (e) {
+      console.error("[handleSubmit] error:", e);
+      ErrorToaster(e?.message || "Save failed. Please try again.");
+    }
   };
 
   const handlePreviewClick = () => {
@@ -1020,29 +1039,76 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
       <div
         className={`${Classes.DIALOG_BODY} ${style.extensionDialogBackground}`}
       >
-        <div className={style.spaceBetween}>
-          <p
-            className={style.extensionStyle}
-          >{`Application Processing Task/Activity`}</p>
-          <div className={`${style.floatRight} ${style.imageSpaceAlignment2}`}>
-            <div className={style.marginRight20}>
-              <img
-                src={WritingFile}
-                className={style.dialogCrossStyle}
-                alt="Writing File"
-              />
-            </div>
-            <div>
-              <Icon
-                icon="cross"
-                size={30}
-                intent={Intent.DANGER}
-                className={style.dialogCrossStyle}
-                onClick={() => {
-                  handleClose();
-                }}
-              />
-            </div>
+        <div className={style.spaceBetween} style={{ alignItems: "center" }}>
+          {/* Country dropdown — fully working with flag-icons */}
+          <div style={{ position: "relative" }}>
+            <button
+              onClick={() => setCountryDropdownOpen((p) => !p)}
+              style={{
+                display: "flex", alignItems: "center", gap: 6,
+                background: "#f5f6fa", border: "1px solid #dee2e6", borderRadius: 6,
+                padding: "5px 10px", cursor: "pointer", fontSize: 13, color: "#333", fontWeight: 500,
+              }}
+            >
+              <span className={`fi fi-${selectedCountry.code}`}
+                style={{ width: 20, height: 14, borderRadius: 2, display: "inline-block" }} />
+              <span>{selectedCountry.name}</span>
+              <span style={{ fontSize: 10, color: "#888" }}>▼</span>
+            </button>
+
+            {/* Dropdown panel */}
+            {countryDropdownOpen && (
+              <div style={{
+                position: "absolute", top: "calc(100% + 4px)", left: 0, zIndex: 9999,
+                background: "#fff", border: "1px solid #dee2e6", borderRadius: 8,
+                boxShadow: "0 4px 16px rgba(0,0,0,0.12)", minWidth: 200, overflow: "hidden",
+              }}>
+                {COUNTRY_LIST.map((c) => (
+                  <div
+                    key={c.code}
+                    onClick={() => { setSelectedCountry(c); setCountryDropdownOpen(false); }}
+                    style={{
+                      display: "flex", alignItems: "center", gap: 10,
+                      padding: "9px 14px", cursor: "pointer", fontSize: 13,
+                      backgroundColor: selectedCountry.code === c.code ? "#f0f9fb" : "transparent",
+                      fontWeight: selectedCountry.code === c.code ? 600 : 400,
+                    }}
+                    onMouseEnter={(e) => { if (selectedCountry.code !== c.code) e.currentTarget.style.backgroundColor = "#f5f6fa"; }}
+                    onMouseLeave={(e) => { if (selectedCountry.code !== c.code) e.currentTarget.style.backgroundColor = "transparent"; }}
+                  >
+                    <span className={`fi fi-${c.code}`}
+                      style={{ width: 22, height: 15, borderRadius: 2, display: "inline-block", flexShrink: 0 }} />
+                    <span>{c.label}</span>
+                    {selectedCountry.code === c.code && (
+                      <span style={{ marginLeft: "auto", color: "#06617A" }}>✓</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Close dropdown on outside click */}
+          {countryDropdownOpen && (
+            <div style={{ position: "fixed", inset: 0, zIndex: 9998 }}
+              onClick={() => setCountryDropdownOpen(false)} />
+          )}
+
+          {/* Title */}
+          <p className={style.extensionStyle} style={{ margin: 0, flex: 1, textAlign: "center" }}>
+            Application Processing Task / Activity
+          </p>
+
+          {/* Right: writing icon + close */}
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <img src={WritingFile} className={style.dialogCrossStyle} alt="Writing File" />
+            <Icon
+              icon="cross"
+              size={30}
+              intent={Intent.DANGER}
+              className={style.dialogCrossStyle}
+              onClick={() => handleClose()}
+            />
           </div>
         </div>
         <div className={style.ReferenceListEntityBorder}></div>
@@ -1059,7 +1125,14 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
                 SelectDisplayProps={{
                   style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 },
                 }}
-                renderValue={() => "Select Applicant Type"} // Keep placeholder when nothing selected
+                renderValue={(selected) =>
+                  selected?.length === 0
+                    ? "Select Applicant Type"
+                    : applicantTypes
+                        .filter((t) => selected.includes(t.id))
+                        .map((t) => t.type)
+                        .join(", ")
+                }
               >
                 {applicantTypes.map((data, index) => (
                   <MenuItem value={data?.id} key={index}>
@@ -1109,7 +1182,14 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
                 SelectDisplayProps={{
                   style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 },
                 }}
-                renderValue={() => "Select Applicant Type"}
+                renderValue={(selected) =>
+                  selected?.length === 0
+                    ? "Select Department / Service Area"
+                    : departmentTypes
+                        .filter((t) => selected.includes(t.id))
+                        .map((t) => t.type)
+                        .join(", ")
+                }
               >
                 {departmentTypes.map((data, index) => (
                   <MenuItem value={data?.id} key={index}>
@@ -1201,7 +1281,6 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
                     className={style.fullWidth}
                     onChange={(e) => setActivityTitle(e.target.value)}
                     placeholder={"Send Email To Switchboard"}
-                    required={true}
                   />
                 </Box>
                 <Box width={"50%"}>
@@ -1213,7 +1292,6 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
                     className={style.fullWidth}
                     onChange={(e) => setPromptLabel(e.target.value)}
                     placeholder={"Send To Switchboard"}
-                    required={true}
                   />
                 </Box>
               </Box>
@@ -1239,7 +1317,6 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
                   className={style.fullWidth}
                   multiple
                   placeholder={"name@gmail.com"}
-                  required={true}
                   onChange={(e) => setInputToEmailValue(e.target.value)}
                   onKeyDown={handleKeyPress} // Call when pressing keys
                 />
@@ -1284,7 +1361,6 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
                   className={style.fullWidth}
                   multiple
                   placeholder={"name@gmail.com"}
-                  required={true}
                   onChange={(e) => setInputCCEmailValue(e.target.value)}
                   onKeyDown={handleCCKeyPress} // Call when pressing keys
                 />
@@ -1314,7 +1390,6 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
                       value={emailSubject} // Set value to the state
                       onChange={(e) => setEmailSubject(e.target.value)} // Inline handler
                       placeholder={"Swichboard Notification"}
-                      required={true}
                       sx={{ width: "100%" }}
                     />
                   </Box>
@@ -1325,7 +1400,7 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
                 <div className={style.entityLableStyle}>EMAIL CONTENTS*</div>
                 <CKEditor
                   editor={ClassicEditor}
-                  data={editorCompleteContent}
+                  data={editorContent}
                   onChange={handleEditorChange(setEditorContent)}
                   config={{
                     placeholder: " ",
@@ -1424,7 +1499,6 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
                   placeholder={
                     "Add To Outlook For Medical & Professional Staff"
                   }
-                  required={true}
                 />
               </div>
               <div className={style.marginTop20}>
@@ -1467,7 +1541,6 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
                       className={style.fullWidth}
                       onChange={(e) => setTaskDefaultStatus2(e.target.value)}
                       placeholder={"Enter Applicant Type"}
-                      required={true}
                     ></CommonInputField>
                   </Box>
                 </Box>
@@ -1509,7 +1582,6 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
                           setTaskInprogressStatus2(e.target.value)
                         }
                         placeholder={"Enter Applicant Type"}
-                        required={true}
                       ></CommonInputField>
                     </Box>
                   </Box>
@@ -1552,7 +1624,6 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
                         className={style.fullWidth}
                         onChange={(e) => setTaskCompleteStatus2(e.target.value)}
                         placeholder={"Enter Applicant Type"}
-                        required={true}
                       ></CommonInputField>
                     </Box>
                   </Box>
@@ -1571,7 +1642,6 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
                   className={style.fullWidth}
                   onChange={(e) => setActivityTitle(e.target.value)}
                   placeholder={"IT Logistics From To Get Completed"}
-                  required={true}
                 />
               </div>
               <div className={style.marginTop20}>
@@ -1633,7 +1703,6 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
                       className={style.fullWidth}
                       onChange={(e) => setTaskDefaultStatus(e.target.value)}
                       placeholder={"Logistics From Not Send To IT"}
-                      required={true}
                     ></CommonInputField>
                   </Box>
                 </Box>
@@ -1678,7 +1747,6 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
                           setTaskInprogressStatus(e.target.value)
                         }
                         placeholder={"Logistics From  Send To IT"}
-                        required={true}
                       ></CommonInputField>
                     </Box>
                   </Box>
@@ -1721,7 +1789,6 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
                         className={style.fullWidth}
                         onChange={(e) => setTaskCompleteStatus(e.target.value)}
                         placeholder={"Logistics From Processed By IT"}
-                        required={true}
                       ></CommonInputField>
                     </Box>
                   </Box>
@@ -1741,7 +1808,6 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
                     className={style.fullWidth}
                     onChange={(e) => setActivityTitle(e.target.value)}
                     placeholder={"Send Parking Lot instructions"}
-                    required={true}
                   />
                 </Box>
                 <Box width={"50%"}>
@@ -1753,7 +1819,6 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
                     className={style.fullWidth}
                     onChange={(e) => setPromptLabel(e.target.value)}
                     placeholder={"Send To Applicant"}
-                    required={true}
                   />
                 </Box>
               </Box>
@@ -1802,7 +1867,6 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
                   className={style.fullWidth}
                   multiple
                   placeholder={"name@gmail.com"}
-                  required={true}
                   onChange={(e) => setInputToDocumentEmailValue(e.target.value)}
                   onKeyDown={handleKeyDocumentPress} // Call when pressing keys
                 />
@@ -1842,7 +1906,6 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
                   className={style.fullWidth}
                   multiple
                   placeholder={"name@gmail.com"}
-                  required={true}
                   onChange={(e) => setInputCCDocumentEmailValue(e.target.value)}
                   onKeyDown={handleCCDocumentKeyPress} // Call when pressing keys
                 />
@@ -1872,7 +1935,6 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
                       value={emailDocumentSubject} // Set value to the state
                       onChange={(e) => setEmailDocumentSubject(e.target.value)} // Inline handler
                       placeholder={"Swichboard Notification"}
-                      required={true}
                       sx={{ width: "100%" }}
                     />
                   </Box>
@@ -1958,7 +2020,6 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
                     className={style.fullWidth}
                     onChange={(e) => setActivityTitle(e.target.value)}
                     placeholder={"Send Email To Switchboard"}
-                    required={true}
                   />
                 </Box>
                 <Box width={"50%"}>
@@ -1970,7 +2031,6 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
                     className={style.fullWidth}
                     onChange={(e) => setPromptLabel(e.target.value)}
                     placeholder={"Send To Switchboard"}
-                    required={true}
                   />
                 </Box>
               </Box>
@@ -1991,7 +2051,6 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
                   className={style.fullWidth}
                   multiple
                   placeholder={"name@gmail.com"}
-                  required={true}
                   onChange={(e) => setInputToCompleteEmailValue(e.target.value)}
                   onKeyDown={handleKeyCompletePress} // Call when pressing keys
                 />
@@ -2030,7 +2089,6 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
                   className={style.fullWidth}
                   multiple
                   placeholder={"name@gmail.com"}
-                  required={true}
                   onChange={(e) => setInputCCCompleteEmailValue(e.target.value)}
                   onKeyDown={handleCCCompleteKeyPress} // Call when pressing keys
                 />
@@ -2060,7 +2118,6 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
                       value={emailCompleteSubject} // Set value to the state
                       onChange={(e) => setEmailCompleteSubject(e.target.value)} // Inline handler
                       placeholder={"Swichboard Notification"}
-                      required={true}
                       sx={{ width: "100%" }}
                     />
                   </Box>
@@ -2246,7 +2303,6 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
                     className={style.fullWidth}
                     onChange={(e) => setActivityTitle(e.target.value)}
                     placeholder={"Send Email To Switchboard"}
-                    required={true}
                   />
                 </Box>
                 <Box width={"50%"}>
@@ -2258,7 +2314,6 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
                     className={style.fullWidth}
                     onChange={(e) => setPromptLabel(e.target.value)}
                     placeholder={"Send To Switchboard"}
-                    required={true}
                   />
                 </Box>
               </Box>
@@ -2281,7 +2336,6 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
                   className={style.fullWidth}
                   multiple
                   placeholder={"name@gmail.com"}
-                  required={true}
                   onChange={(e) =>
                     setInputToFormDetailsEmailValue(e.target.value)
                   }
@@ -2325,7 +2379,6 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
                   className={style.fullWidth}
                   multiple
                   placeholder={"name@gmail.com"}
-                  required={true}
                   onChange={(e) =>
                     setInputCCFormDetailsEmailValue(e.target.value)
                   }
@@ -2359,7 +2412,6 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
                         setEmailFormDetailsSubject(e.target.value)
                       }
                       placeholder={"Swichboard Notification"}
-                      required={true}
                       sx={{ width: "100%" }}
                     />
                   </Box>
@@ -2404,7 +2456,6 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
                       className={style.fullWidth}
                       // onChange={(e) => setActivityTitle(e.target.value)}
                       placeholder={"Send Email To Switchboard"}
-                      required={true}
                     />
                   </Box>
                   <Box width={"50%"}>
@@ -2416,7 +2467,6 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
                       className={style.fullWidth}
                       onChange={(e) => setCompleteLabel(e.target.value)}
                       placeholder={"Click to Complete form"}
-                      required={true}
                     />
                   </Box>
                 </Box>
@@ -2519,7 +2569,6 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
                 <CommonInputField
                   value={notelabel}
                   placeholder={"Outlook ID"}
-                  required={true}
                   onChange={(e) => setNoteLabel(e.target.value)} // Update state inline
                 />
                 <div className={style.entityLableStyle}>DISPLAY OPTION</div>
@@ -2549,33 +2598,56 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
           </div>
         </div>
         <div style={{ display: "flex", justifyContent: "space-between" }}>
-          <div className={`${style.marginTop20} `} style={{ float: "left" }}>
+          <div className={`${style.marginTop20}`} style={{ display: "flex", gap: 12 }}>
             <button
               className={`${style.outlinedButton} ${style.borderRadius10}`}
               onClick={handlePreviewClick}
+              disabled={isSubmitting}
             >
               PREVIEW
             </button>
 
-            {!selectedValue && (
-              <button
-                className={`${style.outlinedButton} ${style.borderRadius10} ${style.marginLeft20}`}
-              >
-                BULK UPOAD
-              </button>
-            )}
+            {/* BULK UPLOAD — always visible, wired to hidden file input */}
+            <input
+              type="file"
+              id="checklist-bulk-upload"
+              multiple
+              accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.xls,.xlsx,.txt"
+              style={{ display: "none" }}
+              onChange={(e) => {
+                if (e.target.files?.[0]) changeHandler(Array.from(e.target.files));
+                e.target.value = "";
+              }}
+            />
+            <button
+              className={`${style.outlinedButton} ${style.borderRadius10}`}
+              onClick={() => document.getElementById("checklist-bulk-upload").click()}
+              disabled={isSubmitting}
+            >
+              BULK UPLOAD
+            </button>
           </div>
           <div className={`${style.floatRight} ${style.marginTop20}`}>
             <button
               className={`${style.outlinedButton} ${style.borderRadius10}`}
               onClick={handleSubmit}
+              disabled={isSubmitting}
             >
-              SAVE & EXIT
+              {isSubmitting ? "SAVING..." : "SAVE & EXIT"}
             </button>
             <button
               className={`${style.buttonStyle} ${style.marginLeft20} ${style.borderRadius10}`}
+              disabled={isSubmitting}
+              onClick={async () => {
+                try {
+                  await handleSubmitInternal(false);
+                } catch (e) {
+                  console.error("[SAVE & ADD MORE] error:", e);
+                  ErrorToaster(e?.message || "Save failed. Please try again.");
+                }
+              }}
             >
-              SAVE & ADD MORE
+              {isSubmitting ? "SAVING..." : "SAVE & ADD MORE"}
             </button>
           </div>
         </div>

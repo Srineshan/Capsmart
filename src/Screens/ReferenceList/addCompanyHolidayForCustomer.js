@@ -4,19 +4,18 @@ import {
   Classes,
   Icon,
   Intent,
-  TextArea,
   InputGroup,
-  Button,
 } from "@blueprintjs/core";
-import ArrowDown from "./../../images/arrowDown.png";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import TextField from "@mui/material/TextField";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
 import { ErrorToaster, SuccessToaster } from "./../../utils/toaster";
 import { POST, PUT, TenantID } from "./../dataSaver";
 import style from "./index.module.scss";
-import CrossPink from "./../../images/crossPink.png";
 
 const AddCompanyHolidayForCustomer = ({
   getAddCompanyHolidayDialog,
@@ -25,184 +24,227 @@ const AddCompanyHolidayForCustomer = ({
   selectedYear,
   getHolidayData,
 }) => {
-  const [eventType, setEventType] = useState("");
-  const [eventName, setEventName] = useState("");
-  const [eventDate, setEventDate] = useState(new Date());
-  const [country, setCountry] = useState("USA");
-  const [year, setYear] = useState("");
-  const [stateName, setStateName] = useState("");
-  const [holidayId, setHolidayId] = useState("");
+  const [eventType, setEventType]   = useState("");
+  const [eventName, setEventName]   = useState("");
+  const [eventDate, setEventDate]   = useState(new Date());
+  const [country, setCountry]       = useState("USA");
+  const [year, setYear]             = useState("");
+  const [stateName, setStateName]   = useState("");
+  const [holidayId, setHolidayId]   = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  console.log(selectedHoliday);
+  // Derive the day-of-week label from eventDate
+  const dayOfWeek = eventDate
+    ? new Intl.DateTimeFormat("en-US", { weekday: "long" }).format(new Date(eventDate))
+    : "";
+
   useEffect(() => {
-    if (isEdit) {
-      setEventType(selectedHoliday?.eventType);
-      setEventName(selectedHoliday?.eventName);
-      setEventDate(selectedHoliday?.eventDate);
-      setStateName(selectedHoliday?.stateName);
-      setCountry(selectedHoliday?.country);
-      setHolidayId(selectedHoliday?.id);
-      setYear(selectedHoliday?.year);
+    if (isEdit && selectedHoliday) {
+      setEventType(selectedHoliday?.eventType || "");
+      setEventName(selectedHoliday?.eventName || "");
+      setEventDate(selectedHoliday?.eventDate ? new Date(selectedHoliday.eventDate) : new Date());
+      setStateName(selectedHoliday?.stateName || "");
+      setCountry(selectedHoliday?.country    || "USA");
+      setHolidayId(selectedHoliday?.id       || "");
+      setYear(selectedHoliday?.year          || "");
+    } else {
+      resetFields();
     }
   }, [isEdit, selectedHoliday]);
 
+  const resetFields = () => {
+    setEventType("");
+    setEventName("");
+    setEventDate(new Date());
+    setStateName("");
+    setCountry("USA");
+    setYear("");
+    setHolidayId("");
+  };
+
+  const validate = () => {
+    if (!eventType) {
+      ErrorToaster("Please select an Event Type.");
+      return false;
+    }
+    if (!eventName.trim()) {
+      ErrorToaster("Holiday Event Name is required.");
+      return false;
+    }
+    if (eventType === "STATE" && !stateName.trim()) {
+      ErrorToaster("State Name is required for State events.");
+      return false;
+    }
+    return true;
+  };
+
   const handleSave = async () => {
-    if (isEdit) {
-      let data = {
-        id: holidayId,
-        eventType: eventType,
-        stateName: stateName,
-        eventName: eventName,
-        eventDate: eventDate,
-        country: country,
-        entityId: {
-          id: TenantID,
-        },
-        year: year,
-        customized: true,
-      };
-      await PUT(`entity-service/holiday/${holidayId}`, JSON.stringify(data))
-        .then((response) => {
-          SuccessToaster("Event Updated Successfully");
-          getAddCompanyHolidayDialog(false);
-          getHolidayData();
-        })
-        .catch((error) => {
-          ErrorToaster(error);
-        });
-    } else {
-      let data = [
-        {
+    if (!validate()) return;
+    setIsSubmitting(true);
+
+    try {
+      if (isEdit) {
+        const data = {
+          id:        holidayId,
           eventType: eventType,
           stateName: stateName,
-          eventName: eventName,
+          eventName: eventName.trim(),
           eventDate: eventDate,
-          country: country,
-          entityId: {
-            id: TenantID,
-          },
-          year: selectedYear,
+          country:   country,
+          entityId:  { id: TenantID },
+          year:      year,
           customized: true,
-        },
-      ];
-      await POST("entity-service/holiday", JSON.stringify(data))
-        .then((response) => {
-          SuccessToaster("Event Added Successfully");
-          getAddCompanyHolidayDialog(false);
-          getHolidayData();
-        })
-        .catch((error) => {
-          ErrorToaster(error);
-        });
+        };
+        await PUT(`entity-service/holiday/${holidayId}`, JSON.stringify(data));
+        SuccessToaster("Event Updated Successfully");
+      } else {
+        const data = [{
+          eventType:  eventType,
+          stateName:  stateName,
+          eventName:  eventName.trim(),
+          eventDate:  eventDate,
+          country:    country,
+          entityId:   { id: TenantID },
+          year:       selectedYear,
+          customized: true,
+        }];
+        await POST("entity-service/holiday", JSON.stringify(data));
+        SuccessToaster("Event Added Successfully");
+      }
+      getHolidayData();
+      getAddCompanyHolidayDialog(false);
+    } catch (error) {
+      ErrorToaster(error?.message || "Something went wrong.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
     <Dialog
-      isOpen={getAddCompanyHolidayDialog}
+      isOpen={true}
       onClose={() => getAddCompanyHolidayDialog(false)}
       className={`${style.healthCareDialogStyle} ${style.dialogPaddingBottom}`}
     >
-      <div
-        className={`${Classes.DIALOG_BODY} ${style.extensionDialogBackground}`}
-      >
+      <div className={`${Classes.DIALOG_BODY} ${style.extensionDialogBackground}`}>
+
+        {/* Header */}
         <div className={style.spaceBetween}>
           <p className={style.extensionStyle}>
             {isEdit ? "Edit" : "Add"} Company Holiday
           </p>
-          <img
-            src={CrossPink}
-            alt=""
-            className={`${style.colorFileStyle2} ${style.marginLeft20}`}
+          <Icon
+            icon="cross"
+            size={20}
+            intent={Intent.DANGER}
+            className={style.dialogCrossStyle}
             onClick={() => getAddCompanyHolidayDialog(false)}
           />
         </div>
-        <div className={style.ReferenceListEntityBorder}></div>
-        <div className={`${style.addHealthCareBoxStyle}`}>
-          <div className={`${style.editHealthCareGrid2}`}>
-            <div className={style.entityLableStyle}>Event Type*</div>
-            <div className={style.displayInRow}>
-              <select
-                name="class"
-                id="Class"
+
+        <div className={style.ReferenceListEntityBorder} />
+
+        <div className={style.addHealthCareBoxStyle}>
+
+          {/* Event Type */}
+          <div className={style.editHealthCareGrid2}>
+            <div className={style.entityLableStyle}>Event Type *</div>
+            <FormControl fullWidth size="small">
+              <Select
                 value={eventType}
-                onChange={(e) => setEventType(e.target.value)}
-                className={`${style.halfWidth} ${style.transparentBackground}`}
+                onChange={(e) => {
+                  setEventType(e.target.value);
+                  if (e.target.value !== "STATE") setStateName("");
+                }}
+                displayEmpty
+                renderValue={(val) =>
+                  val ? (val === "FEDERAL" ? "Federal" : "State")
+                      : <span style={{ color: "#9e9e9e" }}>Select Event Type</span>
+                }
+                SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 14 } }}
               >
-                <option value="">Select Event Type</option>
-                <option value="FEDERAL">Federal</option>
-                <option value="STATE">State</option>
-              </select>
-            </div>
+                <MenuItem value="FEDERAL">Federal</MenuItem>
+                <MenuItem value="STATE">State</MenuItem>
+              </Select>
+            </FormControl>
           </div>
-          <div
-            className={`${style.ReferenceListEntityBorder} ${style.marginTop20}`}
-          ></div>
-          <div className={style.editHealthCareGrid1}>
-            <p></p>
-          </div>
-          <div className={`${style.addHealthCareBoxStyle}`}>
-            <div className={`${style.editHealthCareGrid2}`}>
-              <div className={style.entityLableStyle}>Holiday Event Name*</div>
-              <div className={style.displayInRow}>
-                <InputGroup
-                  value={eventName}
-                  onChange={(e) => setEventName(e.target.value)}
-                  className={style.fullWidth}
-                />
-              </div>
+
+          {/* State Name — shown only when eventType === STATE */}
+          {eventType === "STATE" && (
+            <div className={`${style.editHealthCareGrid2} ${style.marginTop20}`}>
+              <div className={style.entityLableStyle}>State Name *</div>
+              <InputGroup
+                value={stateName}
+                className={style.fullWidth}
+                placeholder="Enter State Name"
+                onChange={(e) => setStateName(e.target.value)}
+              />
             </div>
-            <div
-              className={`${style.AddCompanyHolidayGrid1} ${style.marginTop20}`}
-            >
-              <div className={style.entityLableStyle}>Event date*</div>
+          )}
+
+          <div className={`${style.ReferenceListEntityBorder} ${style.marginTop20}`} />
+
+          {/* Holiday Event Name + Event Date */}
+          <div className={`${style.addHealthCareBoxStyle} ${style.marginTop10}`}>
+
+            <div className={style.editHealthCareGrid2}>
+              <div className={style.entityLableStyle}>Holiday Event Name *</div>
+              <InputGroup
+                value={eventName}
+                className={style.fullWidth}
+                placeholder="Enter Holiday Event Name"
+                onChange={(e) => setEventName(e.target.value)}
+              />
+            </div>
+
+            <div className={`${style.AddCompanyHolidayGrid1} ${style.marginTop20}`}>
+              <div className={style.entityLableStyle}>Event Date *</div>
               <div className={style.displayInRow}>
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
                   <DatePicker
-                    InputProps={{
-                      style: {
-                        fontSize: 14,
-                        height: 30,
-                      },
-                    }}
                     value={eventDate}
-                    onChange={(e) => {
-                      setEventDate(e);
-                    }}
+                    onChange={(val) => setEventDate(val)}
+                    inputFormat="MM/dd/yyyy"
+                    InputProps={{ style: { fontSize: 14, height: 36 } }}
                     renderInput={(params) => (
                       <TextField
                         {...params}
-                        inputProps={{
-                          ...params.inputProps,
-                          placeholder: "MM/DD/YYYY",
-                        }}
+                        size="small"
+                        inputProps={{ ...params.inputProps, placeholder: "MM/DD/YYYY" }}
                       />
                     )}
                   />
                 </LocalizationProvider>
               </div>
-              <p className={`${style.entityLableStyle2}`}>
-                auto: Display day of the week
-              </p>
+              {/* Auto display day of week */}
+              {dayOfWeek && (
+                <p className={style.entityLableStyle2} style={{ color: "#06617A", marginTop: 4 }}>
+                  {dayOfWeek}
+                </p>
+              )}
+              <p className={style.entityLableStyle2}>auto: Display day of the week</p>
             </div>
           </div>
         </div>
-        <div>
-          <div className={`${style.floatRight} ${style.marginTop20}`}>
-            <button
-              className={style.outlinedButton}
-              onClick={() => getAddCompanyHolidayDialog(false)}
-            >
-              CANCEL
-            </button>
-            <button
-              className={`${style.buttonStyle} ${style.marginLeft20}`}
-              onClick={() => handleSave()}
-            >
-              SAVE
-            </button>
-          </div>
+
+        {/* Footer */}
+        <div className={`${style.floatRight} ${style.marginTop20}`}>
+          <button
+            className={style.outlinedButton}
+            onClick={() => getAddCompanyHolidayDialog(false)}
+            disabled={isSubmitting}
+          >
+            CANCEL
+          </button>
+          <button
+            className={`${style.buttonStyle} ${style.marginLeft20}`}
+            onClick={handleSave}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "SAVING..." : "SAVE"}
+          </button>
         </div>
+
       </div>
     </Dialog>
   );

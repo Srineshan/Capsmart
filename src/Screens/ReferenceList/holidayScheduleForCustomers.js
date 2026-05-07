@@ -1,548 +1,534 @@
 import React, { Fragment, useState, useEffect } from "react";
 import Navbar from "../../Components/Navbar";
 import SideBar from "./../../Components/Sidebar";
-import { Checkbox, Icon, Intent } from "@blueprintjs/core";
-import AddNewEntity from "./../../images/addEntity.png";
-import SelectArrow from "./../../images/selectArrow.png";
-import OpenFolderBlue from "./../../images/openFolderBlue.png";
-import CloseFolderBlue from "./../../images/closeFolderBlue.png";
 import IndustriesEntityFolder from "./../../images/industriesEntityFolder.png";
 import DeleteHcRow from "./../../images/deleteHcRow.png";
 import EditHcRow from "./../../images/editHcRow.png";
-import CrossPink from "./../../images/crossPink.png";
-import AddCompanyHolidayForCustomer from "./addCompanyHolidayForCustomer";
+import AddCompanyHoliday from "./addCompanyHoliday";
+import AddHolidayType from "./addHolidayType";
 import { GET, DELETE, POST, TenantID } from "./../dataSaver";
 import { ErrorToaster, SuccessToaster } from "./../../utils/toaster";
-import { Link } from "react-router-dom";
 import { format } from "date-fns";
 import DeleteConfirmation from "../../Components/DeleteConfirmation";
-
-import style from "./index.module.scss";
-import LevelTwoHeader from "../../Components/LevelTwoHeader";
-import CommonPurpleCheckBox from "../../Components/CommonFields/CommonPurpleCheckBox";
+import style from "./holiday.module.scss";
 import { formatInTimeZone } from "date-fns-tz";
 import { siteTimeZone, timeZoneAbbreviation } from "../../utils/formatting";
 
+const FlagImg = ({ code, size = 20 }) => (
+  <img
+    src={`https://flagcdn.com/w${size}/${code}.png`}
+    srcSet={`https://flagcdn.com/w${size * 2}/${code}.png 2x`}
+    width={size}
+    height={Math.round(size * 0.67)}
+    alt={code.toUpperCase()}
+    style={{ objectFit: "cover", borderRadius: 2, flexShrink: 0 }}
+    onError={(e) => { e.target.style.display = "none"; }}
+  />
+);
+
+const COUNTRY_LIST = [
+  { code: "us", name: "USA",         label: "United States"        },
+  { code: "gb", name: "UK",          label: "United Kingdom"       },
+  { code: "ca", name: "Canada",      label: "Canada"               },
+  { code: "au", name: "Australia",   label: "Australia"            },
+  { code: "in", name: "India",       label: "India"                },
+  { code: "de", name: "Germany",     label: "Germany"              },
+  { code: "fr", name: "France",      label: "France"               },
+  { code: "sg", name: "Singapore",   label: "Singapore"            },
+  { code: "ae", name: "UAE",         label: "United Arab Emirates" },
+  { code: "nz", name: "New Zealand", label: "New Zealand"          },
+];
+
 const HolidayScheduleForCustomers = () => {
-  const [isSelected, setIsSelected] = useState(false);
-  const [showAddCompanyDialog, setShowAddCompanyDialog] = useState(false);
+  // ── Industries ─────────────────────────────────────────────
+  const [industryList, setIndustryList]           = useState([]);
+  // ✅ activeIndustryIdx tracks which industry is expanded (−)
+  // null = all collapsed
+  const [activeIndustryIdx, setActiveIndustryIdx] = useState(null);
+  const [activeIndustry, setActiveIndustry]       = useState(null);
 
-  const [holidayDataMaster, setHolidayDataMaster] = useState([]);
-  const [holidayCustomerData, setHolidayCustomerData] = useState([]);
+  // ── Per-industry year lists (keyed by industry id) ─────────
+  // ✅ Cache year lists so we don't re-fetch on every click
+  const [yearCache, setYearCache] = useState({});
 
-  const [selectedIndustry, setSelectedIndustry] = useState("");
-  const [country, setCountry] = useState("USA");
-  const [years, setYears] = useState([]);
-  const [isEdit, setIsEdit] = useState(false);
+  // ── Selected year & country per industry ───────────────────
+  const [selectedYear, setSelectedYear]       = useState("");
+  const [yearOpen, setYearOpen]               = useState(false);
+  const [selectedCountry, setSelectedCountry] = useState(COUNTRY_LIST[0]);
+  const [countryOpen, setCountryOpen]         = useState(false);
+
+  // ── Holiday data (right panel) ─────────────────────────────
+  const [holidayData, setHolidayData] = useState([]);
+
+  // ── Dialogs ────────────────────────────────────────────────
+  const [showAddDialog, setShowAddDialog]                   = useState(false);
+  const [showAddYearDialog, setShowAddYearDialog]           = useState(false);
+  const [isEdit, setIsEdit]                                 = useState(false);
+  const [selectedHoliday, setSelectedHoliday]               = useState({});
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
-  const [holidayId, setHolidayId] = useState("");
-  const [isExpanded, setIsExpanded] = useState(true);
-  const [selectedYear, setSelectedYear] = useState("");
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const [selectedHolidayMaster, setSelectedHolidayMaster] = useState({});
-  const [selectedHolidayItems, setSelectedHolidayItems] = useState([]);
-  const [entityId, setEntityId] = useState("");
-  const [lastUpdatedDate, setLastUpdatedDate] = useState("");
+  const [holidayId, setHolidayId]                           = useState("");
 
-  const [selectAllList, setSelectAllList] = useState([]);
-  const [checkedAll, setCheckedAll] = useState(false);
+  // ── Misc ───────────────────────────────────────────────────
+  const [lastUpdatedDate, setLastUpdatedDate]   = useState("");
+  const [isExpanded, setIsExpanded]             = useState(true);
+  const [headerCountry, setHeaderCountry]       = useState(COUNTRY_LIST[0]);
+  const [headerCountryOpen, setHeaderCountryOpen] = useState(false);
 
-  const getAddCompanyHolidayDialog = (value) => {
-    setShowAddCompanyDialog(value);
-  };
+  // ── Boot ──────────────────────────────────────────────────
+  useEffect(() => { getIndustries(); getLastModifiedDate(); }, []);
 
-  const getIsExpanded = (value) => {
-    setIsExpanded(value);
-  };
-
+  // When active industry changes → fetch its years
   useEffect(() => {
-    getIndustryData();
-  }, []);
-
-  useEffect(() => {
-    if (selectedIndustry !== undefined) {
-      getIndustryData();
-      getYearMasterData();
+    if (activeIndustry) {
+      fetchYearsForIndustry(activeIndustry.id);
     }
-  }, [selectedIndustry]);
+  }, [activeIndustry]);
 
+  // When year or country changes → fetch holiday data
   useEffect(() => {
-    if (entityId !== "" && entityId !== undefined) {
-      getLastModifiedDate();
+    if (activeIndustry && selectedYear) {
+      fetchHolidayData();
+    } else {
+      setHolidayData([]);
     }
-  }, [entityId]);
+  }, [activeIndustry, selectedYear, selectedCountry]);
 
-  const getIndustryData = async () => {
-    const { data: entity } = await GET(`entity-service/entity/${TenantID}`);
-    setSelectedIndustry(entity?.industryId?.id);
-    setEntityId(entity?.id);
-  };
-
+  // ── API ───────────────────────────────────────────────────
   const getLastModifiedDate = async () => {
-    const { data: lastModifiedDate } = await GET(
-      `entity-service/referenceList/entity/${entityId}`
-    );
-    const date = new Date(lastModifiedDate.holidayList?.lastModified);
-    setLastUpdatedDate(
-      `${formatInTimeZone(date, siteTimeZone(), "MMM d, yyyy HH:mm")} ${timeZoneAbbreviation()}`
-    );
+    try {
+      const { data: entity } = await GET(`entity-service/entity/${TenantID}`);
+      const entityId = entity?.id;
+      if (!entityId) return;
+      const { data } = await GET(`entity-service/referenceList/entity/${entityId}`);
+      const date = new Date(data?.holidayList?.lastModified);
+      if (!isNaN(date))
+        setLastUpdatedDate(
+          `${formatInTimeZone(date, siteTimeZone(), "MMM d, yyyy HH:mm")} ${timeZoneAbbreviation()}`
+        );
+    } catch (e) {}
   };
 
-  const getYearMasterData = async () => {
-    const { data: yearsData } = await GET(
-      `entity-service/yearMaster?industryId=${selectedIndustry}`
-    );
-    setYears(yearsData);
-    setSelectedYear(yearsData?.[0]?.year);
+  const getIndustries = async () => {
+    try {
+      const { data } = await GET("entity-service/industryMaster");
+      const list = data || [];
+      setIndustryList(list);
+      // ✅ Auto-expand first industry on load
+      if (list.length > 0) {
+        setActiveIndustryIdx(0);
+        setActiveIndustry(list[0]);
+      }
+    } catch (e) { console.error("industryMaster:", e); }
   };
 
-  const getHolidayMasterData = async () => {
-    const { data: holidayDataMaster } = await GET(
-      `entity-service/holidayMaster?industryId=${selectedIndustry}&country=${country}&year=${selectedYear}`
-    );
-    setHolidayDataMaster(holidayDataMaster);
-  };
-
-  const getHolidayData = async () => {
-    const { data: holidayData } = await GET(
-      `entity-service/holiday?country=${country}&year=${selectedYear}`
-    );
-    setHolidayCustomerData(holidayData);
-  };
-
-  const handleClickSelected = (index, data) => {
-    if (selectedIndex === index) {
-      return setSelectedIndex("0");
+  // ✅ Fetch years using the CLICKED industry's own id — not entity's industryId
+  const fetchYearsForIndustry = async (industryId) => {
+    if (yearCache[industryId]) {
+      // Already fetched — restore from cache
+      const cached = yearCache[industryId];
+      if (cached.length > 0) setSelectedYear(cached[0]?.year);
+      else setSelectedYear("");
+      return;
     }
-    setSelectedIndex(index);
-    setSelectedYear(data?.year);
-  };
-
-  const handleSelectHolidayMaster = (e, innerData) => {
-    if (e.target.checked) {
-      setSelectedHolidayItems([...selectedHolidayItems, innerData]);
-    } else {
-      setSelectedHolidayItems(
-        selectedHolidayItems
-          ?.filter((data) => data?.id !== innerData?.id)
-          ?.map((data) => data)
-      );
-    }
-  };
-
-  const selectAll = (value) => {
-    if (value) {
-      let tempHoliday = holidayDataMaster
-        ?.filter(
-          (data) =>
-            !holidayCustomerData.some(
-              (customerData) => customerData?.eventName === data?.eventName
-            )
-        )
-        ?.map((data) => {
-          return { ...data };
-        });
-      setSelectedHolidayItems(tempHoliday);
-    } else {
-      setSelectedHolidayItems([]);
-    }
-    setCheckedAll(value);
-  };
-
-  useEffect(() => {
-    let tempHoliday = holidayDataMaster
-      ?.filter(
-        (data) =>
-          !holidayCustomerData.some(
-            (customerData) => customerData?.eventName === data?.eventName
-          )
-      )
-      ?.map((data) => {
-        return { ...data };
+    try {
+      const { data } = await GET(`entity-service/yearMaster?industryId=${industryId}`);
+      // ✅ Deduplicate by year value — prevents duplicate entries like 2024 appearing twice
+      const seen = new Set();
+      const list = (data || []).filter((y) => {
+        const key = String(y.year);
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
       });
-
-    setSelectAllList(tempHoliday);
-
-    let allChecked = true;
-
-    if (tempHoliday.length > selectedHolidayItems.length) {
-      allChecked = false;
-    }
-
-    if (allChecked) {
-      setCheckedAll(true);
-    } else {
-      setCheckedAll(false);
-    }
-  }, [selectedHolidayItems]);
-
-  const handlePostHoliday = async () => {
-    setIsSelected(true);
-
-    let data = selectedHolidayItems?.map((data) => ({
-      ...data,
-      customized: true,
-      entityId: { id: TenantID },
-    }));
-    if (selectedHolidayItems?.length !== 0) {
-      await POST("entity-service/holiday", JSON.stringify(data))
-        .then((response) => {
-          SuccessToaster("Holiday Added Successfully");
-          getHolidayData();
-          setSelectedHolidayItems([]);
-          getLastModifiedDate();
-        })
-        .catch((error) => {
-          ErrorToaster(error);
-        });
-    } else {
-      ErrorToaster(
-        "Select some Holiday from Standard List to add in My Custom List"
-      );
+      setYearCache((prev) => ({ ...prev, [industryId]: list }));
+      if (list.length > 0) setSelectedYear(list[0]?.year);
+      else setSelectedYear("");
+    } catch (e) {
+      console.error("yearMaster:", e);
+      setSelectedYear("");
     }
   };
 
+  // ✅ Fetch holiday master data for selected industry/year/country
+  const fetchHolidayData = async () => {
+    try {
+      const { data } = await GET(
+        `entity-service/holidayMaster?industryId=${activeIndustry.id}&country=${selectedCountry.name}&year=${selectedYear}`
+      );
+      setHolidayData(data || []);
+    } catch (e) { console.error("holidayMaster:", e); setHolidayData([]); }
+  };
+
+  // ── Delete holiday ─────────────────────────────────────────
   const handleDeleteHoliday = async (id) => {
-    await DELETE(`entity-service/holiday/${id}`)
-      .then((response) => {
-        SuccessToaster("Holiday Deleted Successfully");
-        getHolidayData();
-        getLastModifiedDate();
-      })
-      .catch((error) => {
-        ErrorToaster(error);
-      });
+    try {
+      await DELETE(`entity-service/holidayMaster/${id}`);
+      SuccessToaster("Holiday Deleted Successfully");
+      fetchHolidayData();
+    } catch (err) { ErrorToaster(err?.message || "Failed to delete."); }
   };
 
-  const handleDelete = (id) => {
-    setHolidayId(id);
-    setShowDeleteConfirmation(true);
-  };
+  const handleDelete              = (id) => { setHolidayId(id); setShowDeleteConfirmation(true); };
+  const getShowDeleteConfirmation = (v)  => setShowDeleteConfirmation(v);
+  const getDeleteConfirmation     = (v)  => { if (v) handleDeleteHoliday(holidayId); };
 
-  const getShowDeleteConfirmation = (value) => {
-    setShowDeleteConfirmation(value);
-  };
-
-  const getDeleteConfirmation = (value) => {
-    if (value) {
-      // deleteHoliday(holidayId);
+  // ✅ Toggle industry expand/collapse
+  const handleIndustryClick = (idx, industry) => {
+    if (activeIndustryIdx === idx) {
+      // ✅ Clicking − collapses
+      setActiveIndustryIdx(null);
+      setActiveIndustry(null);
+      setHolidayData([]);
+      setSelectedYear("");
+    } else {
+      // ✅ Clicking + expands
+      setActiveIndustryIdx(idx);
+      setActiveIndustry(industry);
+      setYearOpen(false);
+      setCountryOpen(false);
     }
   };
 
-  useEffect(() => {
-    if (selectedYear !== "" && selectedYear !== undefined) {
-      getHolidayMasterData();
-      getHolidayData();
-    }
-  }, [selectedYear]);
+  // Current year list for active industry
+  const currentYearList = activeIndustry ? (yearCache[activeIndustry.id] || []) : [];
 
+  // ── Render ────────────────────────────────────────────────
   return (
     <Fragment>
-      <div>
-        <Navbar />
-        <div className={style.margin20}>
-          <div
-            className={`${isExpanded ? style.bigCardGrid : style.smallCardGrid
-              }`}
-          >
-            <div>
-              <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
-                <div></div>
-              </SideBar>
-            </div>
-            <div>
-              <LevelTwoHeader
-                heading={"HOLIDAY SCHEDULE FOR HEALTHCARE"}
-                updatedTime={`UPDATED ON ${lastUpdatedDate} `}
-                path={"/Screens/ReferenceList/customerAdminDashboard"}
-                callingFrom={"Customer Admin"}
-                needHeader={true}
-              />
+      <Navbar />
 
-              <div className={style.marginTop35}>
-                <div className={style.centreCardStyle}>
-                  <div className={style.margin20}>
-                    <div className={style.customersAdminColumngrid1}>
-                      <div>
-                        <div className={style.holidayScheduleHeader1}>
-                          <p
-                            className={`${style.holidayScheduleHeadertextStyle1} ${style.marginLeft20}`}
+      <div className={style.holPageBg}>
+        <div className={isExpanded ? style.holBigGrid : style.holSmallGrid}>
+
+          {/* App navigation sidebar */}
+          <div>
+            <SideBar isExpanded={isExpanded} getIsExpanded={(v) => setIsExpanded(v)}>
+              <div />
+            </SideBar>
+          </div>
+
+          {/* Main content */}
+          <div>
+
+            {/* PAGE HEADER — outside white card */}
+            <div className={style.holPageHeader}>
+              <div className={style.holPageHeaderLeft}>
+                <span className={style.holPageTitle}>
+                  HOLIDAY SCHEDULE BY INDUSTRIES
+                </span>
+                {lastUpdatedDate && (
+                  <span className={style.holPageUpdated}>
+                    UPDATED ON {lastUpdatedDate}
+                  </span>
+                )}
+              </div>
+              <div className={style.holPageHeaderRight}>
+                <div style={{ position: "relative" }}>
+                  <button
+                    className={style.holCountryBtn}
+                    onClick={() => setHeaderCountryOpen((p) => !p)}
+                  >
+                    <FlagImg code={headerCountry.code} size={20} />
+                    <span>{headerCountry.name}</span>
+                    <span className={style.holCountryArrow}>▾</span>
+                  </button>
+                  {headerCountryOpen && (
+                    <>
+                      <div style={{ position: "fixed", inset: 0, zIndex: 9998 }}
+                        onClick={() => setHeaderCountryOpen(false)} />
+                      <div className={style.holCountryDropdown}>
+                        {COUNTRY_LIST.map((c) => (
+                          <div key={c.code} className={style.holCountryOption}
+                            style={{
+                              backgroundColor: c.code === headerCountry.code ? "#e8f4f7" : "transparent",
+                              fontWeight: c.code === headerCountry.code ? 600 : 400,
+                            }}
+                            onClick={() => {
+                              setHeaderCountry(c);
+                              setSelectedCountry(c);
+                              setHeaderCountryOpen(false);
+                            }}
                           >
-                            STANDARD LIST IN USE- DEFAULT
-                          </p>
-                        </div>
-                        <div className={style.customersAdminCardStyle1}>
-                          {years?.map((data, index) => (
-                            <>
-                              <div
-                                className={`${style.boardCertificationSideRows1} ${style.displayInRow}`}
-                                key={index}
-                                onClick={() => handleClickSelected(index, data)}
-                              >
-                                <img
-                                  src={IndustriesEntityFolder}
-                                  alt=""
-                                  className={`${style.colorFileStyle} ${style.marginLeft5}`}
-                                />
-                                <p
-                                  className={`${style.tableHeaderIndustriesFontStyle} ${style.marginLeft10}`}
-                                >
-                                  {data?.year}
-                                </p>
-                                <img
-                                  src={
-                                    selectedIndex === index
-                                      ? CloseFolderBlue
-                                      : OpenFolderBlue
-                                  }
-                                  alt="OpenFolder"
-                                  className={`${style.colorFileStyle2} ${style.marginLeft5}`}
-                                />
-                              </div>
-
-                              <div
-                                className={
-                                  selectedIndex === index
-                                    ? `${style.listWrapper} ${style.open}`
-                                    : `${style.listWrapper}`
-                                }
-                              >
-                                {holidayDataMaster?.filter(
-                                  (data) =>
-                                    !holidayCustomerData.some(
-                                      (customerData) =>
-                                        customerData?.eventName ===
-                                        data?.eventName
-                                    )
-                                )?.length > 1 ? (
-                                  <>
-                                    <div
-                                      className={`${style.customersAdminInnerRowsStyle1}  ${style.customersAdminBackground3} ${style.displayInRow}`}
-                                    >
-                                      <CommonPurpleCheckBox
-                                        name="allSelect"
-                                        onChange={(event) =>
-                                          selectAll(event.target.checked)
-                                        }
-                                        checked={
-                                          selectAllList.length !== 0
-                                            ? checkedAll
-                                            : false
-                                        }
-                                      />
-                                      <p
-                                        className={`${style.TextStyle4} ${style.marginLeft10}`}
-                                      >
-                                        SELECT ALL
-                                      </p>
-                                    </div>
-                                  </>
-                                ) : (
-                                  <></>
-                                )}
-
-                                {holidayDataMaster
-                                  ?.filter(
-                                    (data) =>
-                                      !holidayCustomerData.some(
-                                        (customerData) =>
-                                          customerData?.eventName ===
-                                          data?.eventName
-                                      )
-                                  )
-                                  ?.map((data, index) => (
-                                    <div
-                                      className={`${style.customersAdminInnerRowsStyle1} ${style.customersAdminBackground1} ${style.displayInRow}`}
-                                      key={index}
-                                    >
-                                      <CommonPurpleCheckBox
-                                        checked={
-                                          selectedHolidayItems?.filter(
-                                            (innerData) =>
-                                              innerData?.id === data?.id
-                                          )?.length !== 0
-                                        }
-                                        onChange={(e) =>
-                                          handleSelectHolidayMaster(e, data)
-                                        }
-                                      />
-                                      <p
-                                        className={`${style.TextStyle4} ${style.marginLeft5}`}
-                                      >
-                                        {data?.eventName}
-                                      </p>
-                                      <p
-                                        className={`${style.TextStyle4} ${style.marginLeft5}`}
-                                      >
-                                        {format(new Date(`${data?.eventDate}T00:00`), "MMMM d, yyyy")}
-                                      </p>
-                                    </div>
-                                  ))}
-                              </div>
-                            </>
-                          ))}
-                        </div>
-                      </div>
-                      <div
-                        className={style.customersAdminCardStyle2}
-                        onClick={() => {
-                          handlePostHoliday();
-                        }}
-                      >
-                        <p
-                          className={`${style.holidayScheduleHeadertextStyle1} ${style.colorWhite} ${style.marginTop3}`}
-                        >
-                          Select
-                        </p>
-                        <img
-                          src={SelectArrow}
-                          alt=""
-                          className={`${style.colorFileStyle4}`}
-                        />
-                      </div>
-                      <div>
-                        {isSelected ? (
-                          ""
-                        ) : (
-                          <div className={`${style.holidayScheduleHeader2}`}>
-                            <p></p>
-                            <p
-                              className={`${style.holidayScheduleHeadertextStyle1}`}
-                            >
-                              MY CUSTOM LIST TO USE
-                            </p>
-                            <img
-                              src={AddNewEntity}
-                              alt=""
-                              className={`${style.colorFileStyle} ${style.marginLeft70} `}
-                              onClick={() => {
-                                getAddCompanyHolidayDialog(true);
-                                setIsEdit(false);
-                              }}
-                            ></img>
+                            <FlagImg code={c.code} size={20} />
+                            <span style={{ flex: 1 }}>{c.label}</span>
                           </div>
-                        )}
-
-                        <div className={style.customersAdminCardStyle3}>
-                          {holidayCustomerData?.length !== 0 ? (
-                            years?.map((data, index) => (
-                              <>
-                                <div>
-                                  <div
-                                    className={`${style.ContractedServiceProviderHeaderInsideContainer} ${style.displayInRow}`}
-                                  >
-                                    <img
-                                      src={IndustriesEntityFolder}
-                                      alt=""
-                                      className={`${style.colorFileStyle} ${style.marginLeft5}`}
-                                    />
-                                    <p
-                                      className={`${style.tableHeaderIndustriesFontStyle} ${style.marginLeft10}`}
-                                    >
-                                      {data?.year}
-                                    </p>
-                                    <img
-                                      src={
-                                        selectedIndex === index
-                                          ? CloseFolderBlue
-                                          : OpenFolderBlue
-                                      }
-                                      alt="OpenFolder"
-                                      className={`${style.colorFileStyle2} ${style.marginLeft5}`}
-                                      onClick={() => {
-                                        setSelectedIndex(index);
-                                        setSelectedYear(data?.year);
-                                      }}
-                                    />
-                                  </div>
-
-                                  {selectedIndex === index &&
-                                    holidayCustomerData?.map((data, index) => {
-                                      return (
-                                        <div
-                                          className={`${style.holidayScheduleTableData1} ${style.healthCareTableDataColor1} ${style.spaceBetween}`}
-                                          key={index}
-                                        >
-                                          <p className={style.tableDataFontStyle}>
-                                            {format(new Date(`${data?.eventDate}T00:00`), "MMMM d")}
-                                          </p>
-                                          <p
-                                            className={style.tableDataFontStyle}
-                                          >
-                                            {data?.eventName}
-                                          </p>
-                                          <p
-                                            className={style.tableDataFontStyle}
-                                          >
-                                            {data?.stateName}
-                                          </p>
-                                          <p
-                                            className={`${style.tableDataFontStyle} ${style.textCapitalize}`}
-                                          >
-                                            {(data?.eventType).toLowerCase()}
-                                          </p>
-
-                                          <div className={style.displayInRow}>
-                                            <img
-                                              src={EditHcRow}
-                                              alt=""
-                                              className={style.colorFileStyle}
-                                              onClick={() => {
-                                                setIsEdit(true);
-                                                getAddCompanyHolidayDialog(
-                                                  true
-                                                );
-                                                setSelectedHolidayMaster(data);
-                                              }}
-                                            />
-                                            <img
-                                              src={DeleteHcRow}
-                                              alt=""
-                                              className={`${style.colorFileStyle}`}
-                                              onClick={() =>
-                                                handleDeleteHoliday(data?.id)
-                                              }
-                                            />
-                                          </div>
-                                        </div>
-                                      );
-                                    })}
-                                </div>
-                              </>
-                            ))
-                          ) : (
-                            <p className={style.holidayScheduleCardtextStyle1}>
-                              if you would like to setup your custom list for
-                              your site(s) you can select from the default list
-                              on the left, edit to change labels as needed, and
-                              also add new Holiday Schedule for Customers by
-                              clicking on the add icon
-                            </p>
-                          )}
-                        </div>
+                        ))}
                       </div>
-                    </div>
-                  </div>
+                    </>
+                  )}
                 </div>
+                <button className={style.holCloseBtn} onClick={() => window.history.back()} title="Close">
+                  ×
+                </button>
               </div>
             </div>
-          </div>
-          <div className={style.spaceBetween}>
-            <p className={style.poweredBy}>Powered by - HapiCare</p>
-            <p className={style.poweredBy}>© HapiCare</p>
+
+            {/* WHITE CARD — industry sidebar + holiday table */}
+            <div className={style.holCard}>
+              {/* ✅ Gap between the two panels via padding in holDemoGrid */}
+              <div className={style.holDemoGrid}>
+
+                {/* ── LEFT: Industry sidebar ── */}
+                <div className={style.holIndustryPanel}>
+                  {industryList.map((industry, idx) => {
+                    const isActive = activeIndustryIdx === idx;
+                    return (
+                      <div key={industry.id || idx}>
+
+                        {/* Industry row */}
+                        <div
+                          className={`${style.holIndustryRow} ${isActive ? style.holIndustryRowActive : ""}`}
+                          onClick={() => handleIndustryClick(idx, industry)}
+                        >
+                          <img
+                            src={IndustriesEntityFolder}
+                            alt=""
+                            className={`${style.holFolderIconSm} ${isActive ? style.holFolderIconWhite : ""}`}
+                          />
+                          {/* ✅ Industry name LEFT-aligned via flex */}
+                          <span className={style.holIndustryName}>
+                            {(industry?.industry || industry?.name || "").toUpperCase()}
+                          </span>
+                          {/* ✅ + / − toggle button */}
+                          <span className={`${style.holIndustryToggle} ${isActive ? style.holIndustryToggleActive : ""}`}>
+                            {isActive ? "−" : "+"}
+                          </span>
+                        </div>
+
+                        {/* ✅ Expanded: Year + Country dropdowns — only shown when active */}
+                        {isActive && (
+                          <div className={style.holIndustryExpanded}>
+
+                            {/* YEAR dropdown row */}
+                            <div
+                              className={style.holDropdownRow}
+                              onClick={() => { setYearOpen((p) => !p); setCountryOpen(false); }}
+                            >
+                              <img src={IndustriesEntityFolder} alt=""
+                                className={style.holFolderIconSm}
+                                style={{ opacity: 0.7 }}
+                              />
+                              <span className={style.holDropdownLabel}>
+                                YEAR - {selectedYear || "—"}
+                              </span>
+                              <span className={style.holDropdownArrow}>▾</span>
+                            </div>
+                            {yearOpen && (
+                              <div className={style.holDropdownList}>
+                                {currentYearList.length === 0 ? (
+                                  <div className={style.holDropdownEmpty}>
+                                    No years available.{" "}
+                                    <span
+                                      className={style.holAddYearLink}
+                                      onClick={() => { setYearOpen(false); setShowAddYearDialog(true); }}
+                                    >
+                                      + Add Year
+                                    </span>
+                                  </div>
+                                ) : (
+                                  currentYearList.map((y, yi) => (
+                                    <div
+                                      key={yi}
+                                      className={`${style.holDropdownItem} ${y.year === selectedYear ? style.holDropdownItemActive : ""}`}
+                                      onClick={() => { setSelectedYear(y.year); setYearOpen(false); }}
+                                    >
+                                      {y.year}
+                                    </div>
+                                  ))
+                                )}
+                              </div>
+                            )}
+
+                            {/* COUNTRY dropdown row */}
+                            <div
+                              className={style.holDropdownRow}
+                              onClick={() => { setCountryOpen((p) => !p); setYearOpen(false); }}
+                            >
+                              <img src={IndustriesEntityFolder} alt=""
+                                className={style.holFolderIconSm}
+                                style={{ opacity: 0.7 }}
+                              />
+                              <span className={style.holDropdownLabel}>
+                                {selectedCountry.name}
+                              </span>
+                              <span className={style.holDropdownArrow}>▾</span>
+                            </div>
+                            {countryOpen && (
+                              <div className={style.holDropdownList}>
+                                {COUNTRY_LIST.map((c) => (
+                                  <div
+                                    key={c.code}
+                                    className={`${style.holDropdownItem} ${c.code === selectedCountry.code ? style.holDropdownItemActive : ""}`}
+                                    onClick={() => {
+                                      setSelectedCountry(c);
+                                      setHeaderCountry(c);
+                                      setCountryOpen(false);
+                                    }}
+                                  >
+                                    <FlagImg code={c.code} size={16} />
+                                    <span style={{ marginLeft: 6 }}>{c.label}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+
+                            {/* Add Year shortcut */}
+                            <div
+                              className={style.holAddYearRow}
+                              onClick={() => setShowAddYearDialog(true)}
+                            >
+                              + ADD YEAR
+                            </div>
+
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* ── RIGHT: Holiday table ── */}
+                <div className={style.holTablePanel}>
+
+                  {activeIndustry ? (
+                    <>
+                      {/* Table teal header */}
+                      <div className={style.holTableHeader}>
+                        <img
+                          src={IndustriesEntityFolder} alt=""
+                          className={`${style.holFolderIconSm} ${style.holFolderIconWhite}`}
+                        />
+                        <span className={style.holTableTitle}>
+                          HOLIDAY SCHEDULE BY {(activeIndustry?.industry || activeIndustry?.name || "").toUpperCase()}
+                        </span>
+                        <button
+                          className={style.holTableAddBtn}
+                          title="Add holiday"
+                          onClick={() => { setIsEdit(false); setSelectedHoliday({}); setShowAddDialog(true); }}
+                        >
+                          +
+                        </button>
+                      </div>
+
+                      {/* ✅ Sub-header: folder icon + country + year — matches XD demo */}
+                      <div className={style.holTableSubHeader}>
+                        <img
+                          src={IndustriesEntityFolder}
+                          alt=""
+                          className={style.holFolderIconSm}
+                        />
+                        <span>{selectedCountry.label} {selectedYear}</span>
+                      </div>
+
+                      {/* Holiday rows */}
+                      {!selectedYear ? (
+                        <div className={style.holTableEmpty}>
+                          Select a year from the left panel to view holidays.
+                          {currentYearList.length === 0 && (
+                            <span> No years set up — click <b>+ ADD YEAR</b> on the left to add one.</span>
+                          )}
+                        </div>
+                      ) : holidayData.length === 0 ? (
+                        <div className={style.holTableEmpty}>
+                          No holidays found for {activeIndustry?.industry || ""} in {selectedYear}.
+                          Click ⊕ to add.
+                        </div>
+                      ) : (
+                        holidayData.map((item, idx) => (
+                          <div
+                            key={item.id || idx}
+                            className={`${style.holTableRow} ${idx % 2 !== 0 ? style.holTableRowAlt : ""}`}
+                          >
+                            <span className={style.holTdName}>{item?.eventName || "—"}</span>
+                            <span className={style.holTdDate}>
+                              {item?.eventDate
+                                ? format(new Date(`${item.eventDate}T00:00`), "MMMM d, yyyy")
+                                : "—"}
+                            </span>
+                            <span className={style.holTdDay}>
+                              {item?.eventDate
+                                ? format(new Date(`${item.eventDate}T00:00`), "EEEE")
+                                : ""}
+                            </span>
+                            <span className={style.holTdType}>
+                              {(item?.eventType || "").toLowerCase()}
+                            </span>
+                            <span className={style.holTdState}>{item?.stateName || ""}</span>
+                            <div className={style.holTableActions}>
+                              <img src={EditHcRow} alt="Edit" className={style.holActionIcon}
+                                onClick={() => { setIsEdit(true); setSelectedHoliday(item); setShowAddDialog(true); }}
+                              />
+                              <img src={DeleteHcRow} alt="Delete" className={style.holActionIcon}
+                                onClick={() => handleDelete(item?.id)}
+                              />
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </>
+                  ) : (
+                    <div className={style.holTableEmpty} style={{ padding: "60px 20px" }}>
+                      Select an industry from the left to view its holiday schedule.
+                    </div>
+                  )}
+                </div>
+
+              </div>
+            </div>
+
           </div>
         </div>
       </div>
 
-      {showAddCompanyDialog && (
-        <AddCompanyHolidayForCustomer
-          getAddCompanyHolidayDialog={getAddCompanyHolidayDialog}
+      {/* ✅ Add/Edit holiday dialog — uses holidayMaster endpoint */}
+      {showAddDialog && (
+        <AddCompanyHoliday
+          open={showAddDialog}
+          getAddHolidayDialog={(v) => {
+            setShowAddDialog(v);
+            if (!v) fetchHolidayData();
+          }}
+          selectedIndustry={activeIndustry?.industry || activeIndustry?.name || ""}
           isEdit={isEdit}
-          selectedHoliday={selectedHolidayMaster}
+          selectedHoliday={selectedHoliday}
+          holidayData={holidayData}
+          IndustryId={activeIndustry?.id || ""}
+          getHolidayData={fetchHolidayData}
           selectedYear={selectedYear}
-          getHolidayData={getHolidayData}
         />
       )}
+
+      {/* Add Year dialog — pre-selects active industry, lets user add any year */}
+      {showAddYearDialog && (
+        <AddHolidayType
+          open={showAddYearDialog}
+          preSelectedIndustryId={activeIndustry?.id || ""}
+          getAddEntityDialog={(v) => {
+            setShowAddYearDialog(v);
+            // Refresh year list for current industry after adding
+            if (!v && activeIndustry) {
+              setYearCache((prev) => {
+                const updated = { ...prev };
+                delete updated[activeIndustry.id]; // clear cache so it re-fetches
+                return updated;
+              });
+              fetchYearsForIndustry(activeIndustry.id);
+            }
+          }}
+          onSuccess={() => {
+            setShowAddYearDialog(false);
+            if (activeIndustry) {
+              setYearCache((prev) => {
+                const updated = { ...prev };
+                delete updated[activeIndustry.id];
+                return updated;
+              });
+              fetchYearsForIndustry(activeIndustry.id);
+            }
+          }}
+        />
+      )}
+
       {showDeleteConfirmation && (
         <DeleteConfirmation
           getShowDeleteConfirmation={getShowDeleteConfirmation}

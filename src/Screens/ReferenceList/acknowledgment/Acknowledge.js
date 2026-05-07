@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useEffect } from "react";
+import React, { Fragment, useState, useEffect, useRef } from "react";
 import Navbar from "../../../Components/Navbar";
 import style from "./../index.module.scss";
 import { GET, PUT } from "../../dataSaver";
@@ -8,7 +8,6 @@ import { SuccessToaster } from "../../../utils/toaster";
 import LevelTwoHeader from "../../../Components/LevelTwoHeader";
 import ReferenceListCommonTable from "../common/Table";
 import ApplicantSideBar from "../common/SideBar";
-import { ReferenceListActionButton } from "../common/ReferenceListActionButton";
 import Typography from "@mui/material/Typography";
 import AcknowledgmentDialog from "./AcknowledgmentDialog";
 
@@ -23,10 +22,10 @@ const Acknowledge = () => {
   const [isEdit, setIsEdit]                             = useState(false);
   const [editData, setEditData]                         = useState(null);
   const [isDone, setIsDone]                             = useState(false);
-
-  // applicantId is only used to pass down to Table.js for delete/refetch —
-  // we no longer use it to FILTER the GET call (API returns [] when filtered)
   const [applicantId, setApplicantId]                   = useState("");
+
+  // Ref wrapping LevelTwoHeader — intercepts its internal "+ Add New" click
+  const headerRef = useRef(null);
 
   const tableHeadKeys = ["ACKNOWLEDGEMENT TITLE", "DISCLAIMER", "SIGNATURE", "LAST UPDATED"];
   const tableDataKeys = ["title", "disclaimer", "esignatureRequiredOnEachPage", "lastModifiedDate"];
@@ -36,7 +35,6 @@ const Acknowledge = () => {
     getEntity();
     getSites();
     getApplicantTypes();
-    // Fetch ALL acknowledgement forms — no applicantTypeId filter
     getAcknowledgement();
   }, []);
 
@@ -44,7 +42,6 @@ const Acknowledge = () => {
     if (entityId) getLastModifiedDate(entityId);
   }, [entityId]);
 
-  // Seed applicantId (for Table.js delete/refetch) from first applicantType record
   useEffect(() => {
     if (applicantTypeList.length > 0 && !applicantId) {
       setApplicantId(applicantTypeList[0]?.id || "");
@@ -56,6 +53,29 @@ const Acknowledge = () => {
       setSelectedSiteName(getSiteDisplayName(siteList[0]));
     }
   }, [siteList]);
+
+  // ── Intercept LevelTwoHeader's "+ Add New" in capture phase ─
+  // LevelTwoHeader renders its own internal dialog for tileType="Acknowedgement".
+  // Capturing the click before it reaches LevelTwoHeader's handler lets us
+  // open our AcknowledgmentDialog instead.
+  useEffect(() => {
+    const wrapper = headerRef.current;
+    if (!wrapper) return;
+
+    const intercept = (e) => {
+      const btn = e.target.closest("button, [role='button'], a");
+      if (!btn) return;
+      const text = btn.textContent?.trim().toLowerCase() || "";
+      if (text.includes("add new") || text.includes("add")) {
+        e.stopPropagation();
+        e.preventDefault();
+        openAddDialog();
+      }
+    };
+
+    wrapper.addEventListener("click", intercept, true); // capture phase
+    return () => wrapper.removeEventListener("click", intercept, true);
+  }, []);
 
   // ── Display helpers ───────────────────────────────────────
   const getSiteDisplayName = (site) => {
@@ -73,7 +93,9 @@ const Acknowledge = () => {
     title:                        row?.title || row?.name || "",
     disclaimer:                   row?.disclaimer,
     esignatureRequiredOnEachPage: row?.esignatureRequiredOnEachPage ?? row?.signatureRequired ?? false,
-    lastModifiedDate:             row?.lastModifiedDate || row?.lastModified || row?.updatedAt || row?.modifiedDate || null,
+    lastModifiedDate:
+      row?.lastModifiedDate || row?.lastModified ||
+      row?.updatedAt        || row?.modifiedDate || null,
   });
 
   // ── API calls ─────────────────────────────────────────────
@@ -104,34 +126,21 @@ const Acknowledge = () => {
       const ts = data?.acknowledgementForms?.lastModified || data?.departments?.lastModified;
       const date = new Date(ts);
       if (!isNaN(date))
-        setLastUpdatedDate(`${formatInTimeZone(date, siteTimeZone(), "MMM d, yyyy HH:mm")} ${timeZoneAbbreviation()}`);
+        setLastUpdatedDate(
+          `${formatInTimeZone(date, siteTimeZone(), "MMM d, yyyy HH:mm")} ${timeZoneAbbreviation()}`
+        );
     } catch (e) { console.error("lastModified:", e); }
   };
 
-  // ── CORE FETCH — NO applicantTypeId filter ────────────────
-  // The ?applicantTypeId= filter returns [] even after save.
-  // Fetching all forms works correctly.
   const getAcknowledgement = async () => {
     try {
       const { data } = await GET("entity-service/acknowledgementForm");
-      console.log("[Acknowledge] all forms:", data?.length, data);
       setAcknowledgementForms((data || []).map(normalizeRow));
     } catch (e) { console.error("acknowledgementForm:", e); }
   };
 
-  // ── Sidebar handlers ──────────────────────────────────────
-  const handleTileSelect = (_siteId) => {
-    setIsDone(false);
-    getAcknowledgement();
-  };
-
-  const handleSiteClick = (siteName) => {
-    setSelectedSiteName(typeof siteName === "string" ? siteName : String(siteName || ""));
-    getAcknowledgement();
-  };
-
   // ── Dialog handlers ───────────────────────────────────────
-  const handleOpenAddDialog = () => {
+  const openAddDialog = () => {
     setEditData(null);
     setIsEdit(false);
     setIsDialogOpen(true);
@@ -143,12 +152,22 @@ const Acknowledge = () => {
     setIsDialogOpen(true);
   };
 
-  // needRefetch=true is passed by AcknowledgmentDialog after successful save
   const handleCloseDialog = (needRefetch = false) => {
     setIsDialogOpen(false);
     setIsEdit(false);
     setEditData(null);
     if (needRefetch) getAcknowledgement();
+  };
+
+  // ── Sidebar handlers ──────────────────────────────────────
+  const handleTileSelect = () => {
+    setIsDone(false);
+    getAcknowledgement();
+  };
+
+  const handleSiteClick = (siteName) => {
+    setSelectedSiteName(typeof siteName === "string" ? siteName : String(siteName || ""));
+    getAcknowledgement();
   };
 
   // ── Footer buttons ────────────────────────────────────────
@@ -195,16 +214,21 @@ const Acknowledge = () => {
       <div className={style.applicantTypeBackground}>
         <div className={style.padding20}>
 
-          <LevelTwoHeader
-            heading={"Acknowledgement Forms by Industries"}
-            updatedTime={lastUpdatedDate ? `UPDATED ON ${lastUpdatedDate}` : ""}
-            path={"/Screens/ReferenceList/customerAdminDashboard"}
-            callingFrom={"Customer Admin"}
-            needHeader={false}
-            tileType={"Acknowedgement"}
-            onAddClick={handleOpenAddDialog}
-            onCloseLevel2={() => setIsDialogOpen(false)}
-          />
+          {/* Wrapper intercepts "+ Add New" click before LevelTwoHeader handles it */}
+          <div ref={headerRef}>
+            <LevelTwoHeader
+              heading={"Acknowledgement Forms by Industries"}
+              updatedTime={lastUpdatedDate ? `UPDATED ON ${lastUpdatedDate}` : ""}
+              path={"/Screens/ReferenceList/customerAdminDashboard"}
+              callingFrom={"Customer Admin"}
+              needHeader={false}
+              tileType={"Acknowedgement"}
+              handleOpenDialog={openAddDialog}
+              onAddClick={openAddDialog}
+              onCloseLevel2={() => handleCloseDialog(false)}
+              handleClose={() => handleCloseDialog(false)}
+            />
+          </div>
 
           <div className={style.bigCardGrid}>
 
@@ -254,13 +278,26 @@ const Acknowledge = () => {
                 </div>
               )}
 
-              <ReferenceListActionButton
-                button1={"Save In-Progress"}
-                button2={"Mark as Done"}
-                onButton1Click={handleSaveInProgress}
-                onButton2Click={handleMarkAsDone}
-                button2Active={isDone || hasRows}
-              />
+              <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 20 }}>
+                <button
+                  onClick={handleMarkAsDone}
+                  disabled={!(isDone || hasRows)}
+                  style={{
+                    backgroundColor: "#06617A",
+                    color: "#fff",
+                    border: "none",
+                    borderRadius: 6,
+                    padding: "10px 24px",
+                    fontSize: 14,
+                    fontWeight: 600,
+                    cursor: (isDone || hasRows) ? "pointer" : "not-allowed",
+                    opacity: (isDone || hasRows) ? 1 : 0.6,
+                    letterSpacing: "0.5px",
+                  }}
+                >
+                  MARK AS DONE
+                </button>
+              </div>
             </div>
           </div>
         </div>
