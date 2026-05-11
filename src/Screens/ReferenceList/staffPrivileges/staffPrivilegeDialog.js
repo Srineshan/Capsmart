@@ -1,110 +1,159 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Dialog, Classes, Icon, Intent } from "@blueprintjs/core";
 import style from "./../index.module.scss";
-import { Radio, Switch, makeStyles } from "@material-ui/core";
-import WritingFile from "./../../../images/writing-file.svg";
-import { Box } from "@mui/material";
-import { POST, GET, PUT } from "./../../dataSaver";
 import { ErrorToaster, SuccessToaster } from "../../../utils/toaster";
-import Editor from "../common/Editor";
+import { POST, GET, PUT } from "../../dataSaver";
 import FormControlLabel from "@mui/material/FormControlLabel";
+import { Switch, makeStyles, Radio } from "@material-ui/core";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
-import CommonInputField from "../../../Components/CommonFields/CommonInputField";
+import WritingFile from "./../../../images/writing-file.svg";
+import Editor from "../common/Editor";
+
+// ─── Teal switch/radio ────────────────────────────────────────────────────────
+const useStyles = makeStyles({
+  switch: {
+    "& .Mui-checked":     { color: "#06617A" },
+    "& .MuiSwitch-track": { backgroundColor: "#06617A !important" },
+  },
+});
 
 // ─────────────────────────────────────────────────────────────────────────────
 // StaffPrivilegeDialog
 //
 // Connection to PrivilegeListManager:
-//   Loads /privilegeMaster (split by CORE / RESTRICTED / NON_CORE type enum)
-//   so users can type-ahead select privileges by ID or Title rather than typing
-//   freehand. PrivilegeListManager must be set up first for this to work.
+//   - PrivilegeListManager manages GET/POST/PUT /privilegeMaster
+//   - That master list has shape: { id, privilegeId, title, description, type, status, applicantType[] }
+//   - type enum from PrivilegeListManager: "CORE" | "RESTRICTED" | "NON_CORE"
+//   - This dialog reads /privilegeMaster and splits by type to populate type-ahead
+//     so when user types a privilege ID/title in a Core row, only CORE privileges
+//     from PrivilegeListManager appear as suggestions (and vice versa for RESTRICTED/NON_CORE)
 //
-// Payload field mapping (confirmed from network responses):
-//   department    → { id }
-//   serviceArea   → [{ id, name }]   ← the "service area" dropdown selection
-//   sites         → [{ id }]         ← the actual site (Cambridge Memorial etc.)
-//   applicantType → [{ id, applicantType }]
-//   privilegeSpecificationType → "DISCRETE" | "DESCRIPTIVEDOCUMENT"
-//   privilegeSetStatus         → "IN_USE" | "NOT_IN_USE"
+// StaffPrivileges DTO (Swagger images 5–7):
+//   department                   → { id }
+//   serviceArea                  → [{ id, name }]
+//   sites                        → [{ id }]
+//   applicantType                → [{ id, applicantType }]
+//   privilegeSpecificationType   → "DISCRETE" | "DESCRIPTIVEDOCUMENT"
+//   proofOfDocumentationRequired → boolean
+//   privilegeSetStatus           → "IN_USE" | "NOT_IN_USE"
+//   bodApprovalDate              → string($date)
+//   restrictedPrivilegesRequired → boolean
+//   nonCorePrivilegesRequired    → boolean
+//   generalInstructionText       → string   (top-level per DTO)
+//   categoriesList               → [string]
+//   privilegeDetails → {
+//     corePrivileges: {
+//       generalInstructionText: string
+//       privilegesByCategories: [{ hasCategory, category, privileges: [{ privilegeId, title, description }], subCategories }]
+//     }
+//     restrictedPrivileges: {
+//       generalInstructionText: string
+//       privilegesByCategories: [{ hasCategory, category, privileges: [{ privilegeId, title, description, isevidenceRequired, iscompetencyDisclosureRequired }] }]
+//     }
+//     nonCorePrivileges: {
+//       generalInstructionText: string
+//       privilegesByCategories: [{ hasCategory, category, privileges: [{ privilegeId, title, description }] }]
+//     }
+//   }
+//   descriptiveContent → { content: string }
 // ─────────────────────────────────────────────────────────────────────────────
-
-const useStyles = makeStyles({
-  switch: {
-    "& .Mui-checked":       { color: "#06617A" },
-    "& .MuiSwitch-track":  { backgroundColor: "#06617A !important" },
-  },
-});
 
 const StaffPrivilegeDialog = ({
   open,
   handleClose,
-  currentSiteId,
   isEdit,
   selectedApplicant,
+  currentSiteId,
+  departmentMap,
 }) => {
   const classes = useStyles();
 
   // ── Reference data ──────────────────────────────────────────────────────────
-  const [applicantTypes,       setApplicantTypes]       = useState([]);
-  const [departments,          setDepartments]          = useState([]);
-  const [serviceAreaOptions,   setServiceAreaOptions]   = useState([]);
-  const [privilegeMasterCore,  setPrivilegeMasterCore]  = useState([]);
-  const [privilegeMasterRest,  setPrivilegeMasterRest]  = useState([]);
-  const [privilegeMasterNC,    setPrivilegeMasterNC]    = useState([]);
+  const [departments,         setDepartments]         = useState([]);
+  const [deptServiceAreaMap,  setDeptServiceAreaMap]  = useState({});
+  const [serviceAreaOptions,  setServiceAreaOptions]  = useState([]);
+  const [applicantTypes,      setApplicantTypes]      = useState([]);
 
-  // ── Form fields ─────────────────────────────────────────────────────────────
-  const [departmentId,         setDepartmentId]         = useState("");
-  const [selectedServiceAreas, setSelectedServiceAreas] = useState([]); // [{ id, name }]
-  const [applicantTypeId,      setApplicantTypeId]      = useState("");
-  const [bodDate,              setBodDate]              = useState("");
-  const [privilegeSetStatus,   setPrivilegeSetStatus]   = useState("In Use");
-  const [privilegeSetTitle,    setPrivilegeSetTitle]    = useState("");
-  const [specType,             setSpecType]             = useState("DISCRETE");
-  const [restrictedReq,        setRestrictedReq]        = useState(false);
-  const [nonCoreReq,           setNonCoreReq]           = useState(false);
-  const [proofDocReq,          setProofDocReq]          = useState(false);
-  const [advancedReq,          setAdvancedReq]          = useState(false);
-  const [generalInstruction,   setGeneralInstruction]   = useState("");
-  const [evidenceReq,          setEvidenceReq]          = useState(false);
-  const [competencyReq,        setCompetencyReq]        = useState(false);
+  // Connection to PrivilegeListManager — split by type enum (CORE/RESTRICTED/NON_CORE)
+  const [privilegeMasterCore, setPrivilegeMasterCore] = useState([]);
+  const [privilegeMasterRest, setPrivilegeMasterRest] = useState([]);
+  const [privilegeMasterNC,   setPrivilegeMasterNC]   = useState([]);
 
-  // ── Privilege rows — multi-row arrays ───────────────────────────────────────
-  const [coreRows,    setCoreRows]    = useState([{ privilegeId: "", title: "", description: "", category: "" }]);
-  const [restRows,    setRestRows]    = useState([{ privilegeId: "", title: "", description: "" }]);
-  const [ncRows,      setNcRows]      = useState([{ privilegeId: "", title: "", description: "" }]);
+  // ── Form fields — exact DTO field names ─────────────────────────────────────
+  const [departmentId,        setDepartmentId]        = useState("");
+  const [serviceAreas,        setServiceAreas]        = useState([]);      // [{ id, name }]
+  const [applicantTypeId,     setApplicantTypeId]     = useState("");
+  const [bodDate,             setBodDate]             = useState("");
+  // FIX: internal state uses DTO enum values directly ("IN_USE" / "NOT_IN_USE")
+  const [privilegeSetStatus,  setPrivilegeSetStatus]  = useState("IN_USE");
+  const [privilegeSetTitle,   setPrivilegeSetTitle]   = useState("");
+  // privilegeSpecificationType: "DISCRETE" | "DESCRIPTIVEDOCUMENT"
+  const [specType,            setSpecType]            = useState("DISCRETE");
+  const [restrictedReq,       setRestrictedReq]       = useState(false);
+  const [nonCoreReq,          setNonCoreReq]          = useState(false);
+  const [proofDocReq,         setProofDocReq]         = useState(false);
+  // generalInstructionText — top-level DTO field
+  const [generalInstruction,  setGeneralInstruction]  = useState("");
+  // descriptiveContent.content — used when specType === "DESCRIPTIVEDOCUMENT"
+  const [descriptiveContent,  setDescriptiveContent]  = useState("");
+
+  // Evidence / competency toggles for restricted privileges
+  // These map to isevidenceRequired / iscompetencyDisclosureRequired per privilege row
+  const [evidenceReq,         setEvidenceReq]         = useState(false);
+  const [competencyReq,       setCompetencyReq]       = useState(false);
+
+  // ── Privilege rows — each maps to a CorePrivileges / RestrictedPrivileges / NonCorePrivileges entry
+  // Shape mirrors DTO:
+  //   privilegeId, title, description (core & non-core)
+  //   privilegeId, title, description, isevidenceRequired, iscompetencyDisclosureRequired (restricted)
+  //   category (core only — maps to hasCategory/category in privilegesByCategories)
+  const [coreRows, setCoreRows] = useState([
+    { privilegeId: "", title: "", description: "", category: "" },
+  ]);
+  const [restRows, setRestRows] = useState([
+    { privilegeId: "", title: "", description: "" },
+  ]);
+  const [ncRows, setNcRows] = useState([
+    { privilegeId: "", title: "", description: "" },
+  ]);
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // ── Boot ─────────────────────────────────────────────────────────────────────
   useEffect(() => {
-    loadReferenceData();
+    fetchApplicantTypes();
+    fetchDepartments();
+    fetchPrivilegeMaster();
   }, []);
 
+  // ── Populate on open ─────────────────────────────────────────────────────────
   useEffect(() => {
-    if (open && isEdit && selectedApplicant) {
-      populateEditFields(selectedApplicant);
-    } else if (open && !isEdit) {
+    if (!open) return;
+    if (isEdit && selectedApplicant) {
+      populateFields(selectedApplicant);
+    } else {
       resetFields();
     }
   }, [open, isEdit, selectedApplicant]);
 
-  // ── Load all reference data in parallel ──────────────────────────────────────
-  const loadReferenceData = async () => {
-    await Promise.all([
-      loadApplicantTypes(),
-      loadDepartments(),
-      loadServiceAreas(),
-      loadPrivilegeMaster(),
-    ]);
-  };
+  // ── Cascade service areas when department changes ─────────────────────────────
+  useEffect(() => {
+    if (departmentId) fetchServiceAreasForDept(departmentId);
+    else setServiceAreaOptions([]);
+  }, [departmentId, deptServiceAreaMap]);
 
-  const loadApplicantTypes = async () => {
+  // ── API fetches ───────────────────────────────────────────────────────────────
+
+  const fetchApplicantTypes = async () => {
     try {
-      const res = await GET("entity-service/applicantType");
-      const raw = res?.data?.content || res?.data?.data || res?.data ||
+      const res  = await GET("entity-service/applicantType");
+      const raw  = res?.data?.content || res?.data?.data || res?.data ||
         res?.content || (Array.isArray(res) ? res : []);
       const list = (Array.isArray(raw) ? raw : []).map(item => ({
         id:   item.id,
+        // applicantType field from DTO: string or array
         name: typeof item.applicantType === "string"
           ? item.applicantType
           : Array.isArray(item.applicantType)
@@ -115,133 +164,236 @@ const StaffPrivilegeDialog = ({
     } catch (e) { console.warn("[Dialog] applicantTypes:", e?.message); }
   };
 
-  const loadDepartments = async () => {
+  const fetchDepartments = async () => {
     try {
-      const res = await GET("entity-service/department");
-      const raw = res?.data?.content || res?.data?.data || res?.data ||
+      const res   = await GET("entity-service/department");
+      const raw   = res?.data?.content || res?.data?.data || res?.data ||
         res?.content || (Array.isArray(res) ? res : []);
-      const list = (Array.isArray(raw) ? raw : []).map(item => ({
+      const items = Array.isArray(raw) ? raw : [];
+
+      const list = items.map(item => ({
         id:   item.id,
         name: item?.departmentName?.name || item?.name || "",
-        serviceAreas: item?.serviceAreas || [],
       }));
       setDepartments(list);
+
+      // Build deptId → serviceAreas map from department response (if nested)
+      const saMap = {};
+      items.forEach(item => {
+        if (item?.id) {
+          const sas = (item?.serviceAreas || item?.serviceArea || [])
+            .map(sa => normalizeSA(sa))
+            .filter(sa => sa.id && sa.name);
+          if (sas.length > 0) saMap[item.id] = sas;
+        }
+      });
+
+      // Also pre-load from /staffPrivilege/departmentAndServiceArea (primary source)
+      // This is the reliable endpoint for dept→serviceArea mapping
+      try {
+        const dsar = await GET("entity-service/staffPrivilege/departmentAndServiceArea");
+        const dsarRaw = dsar?.data?.content || dsar?.data?.data || dsar?.data ||
+          dsar?.content || (Array.isArray(dsar) ? dsar : []);
+        (Array.isArray(dsarRaw) ? dsarRaw : []).forEach(entry => {
+          const dId = entry?.department?.id || entry?.departmentId || entry?.id;
+          if (!dId) return;
+          const sas = (entry?.serviceAreas || entry?.serviceArea || [])
+            .map(sa => normalizeSA(sa))
+            .filter(sa => sa.id && sa.name);
+          if (sas.length > 0) saMap[dId] = sas;
+        });
+      } catch (e) { console.warn("[Dialog] deptAndSA pre-load:", e?.message); }
+
+      setDeptServiceAreaMap(saMap);
     } catch (e) { console.warn("[Dialog] departments:", e?.message); }
   };
 
-  // Service areas — from staffPrivilege/departmentAndServiceArea or from department
-  const loadServiceAreas = async () => {
-    let areas = [];
+  // Normalize a raw service area object to { id, name }
+  const normalizeSA = (sa) => ({
+    id:   sa?.id   || sa?._id  || "",
+    name: sa?.name || sa?.serviceName || sa?.serviceAreaName ||
+          sa?.serviceArea?.name || sa?.area?.name || "",
+  });
+
+  const fetchServiceAreasForDept = async (deptId) => {
+    if (!deptId) { setServiceAreaOptions([]); return; }
+
+    // Step 1: Use pre-built map (populated on boot from both /department and /departmentAndServiceArea)
+    const cached = deptServiceAreaMap[deptId];
+    if (cached && cached.length > 0) {
+      setServiceAreaOptions(cached);
+      return;
+    }
+
+    // Step 2: Fetch /staffPrivilege/departmentAndServiceArea directly —
+    // this is the canonical endpoint (Swagger image 4: GET /staffPrivilege/departmentAndServiceArea)
     try {
       const res = await GET("entity-service/staffPrivilege/departmentAndServiceArea");
       const raw = res?.data?.content || res?.data?.data || res?.data ||
         res?.content || (Array.isArray(res) ? res : []);
-      if (Array.isArray(raw) && raw.length > 0) {
-        const seen = new Set();
-        raw.forEach(item => {
-          const sas = item?.serviceAreas || item?.serviceArea || [];
-          (Array.isArray(sas) ? sas : [sas]).forEach(sa => {
-            if (sa?.id && !seen.has(sa.id)) {
-              seen.add(sa.id);
-              areas.push({ id: sa.id, name: sa.name || sa.serviceName || "" });
-            }
-          });
-        });
+      const list = Array.isArray(raw) ? raw : [];
+
+      // The response may be: array of { department: { id }, serviceAreas: [] }
+      // Or it may be a flat object keyed by deptId — handle both
+      let sas = [];
+      const entry = list.find(
+        r => r?.department?.id === deptId || r?.departmentId === deptId || r?.id === deptId
+      );
+      if (entry) {
+        sas = (entry?.serviceAreas || entry?.serviceArea || [])
+          .map(sa => normalizeSA(sa))
+          .filter(sa => sa.id && sa.name);
+      } else if (list.length > 0 && list[0]?.id && !list[0]?.department) {
+        // Response is a flat list of service area objects filtered to this dept
+        sas = list.map(sa => normalizeSA(sa)).filter(sa => sa.id && sa.name);
       }
-    } catch (e) { console.warn("[Dialog] departmentAndServiceArea:", e?.message); }
 
-    // Fallback: pull from department serviceAreas
-    if (areas.length === 0) {
-      try {
-        const res = await GET("entity-service/department");
-        const raw = res?.data?.content || res?.data?.data || res?.data ||
-          res?.content || (Array.isArray(res) ? res : []);
-        const seen = new Set();
-        (Array.isArray(raw) ? raw : []).forEach(dept => {
-          (dept?.serviceAreas || []).forEach(sa => {
-            if (sa?.id && !seen.has(sa.id)) {
-              seen.add(sa.id);
-              areas.push({ id: sa.id, name: sa.name || "" });
-            }
-          });
-        });
-      } catch (e) { console.warn("[Dialog] dept serviceAreas fallback:", e?.message); }
-    }
-    setServiceAreaOptions(areas);
-  };
+      if (sas.length > 0) {
+        setServiceAreaOptions(sas);
+        setDeptServiceAreaMap(prev => ({ ...prev, [deptId]: sas }));
+        return;
+      }
+    } catch (e) { console.warn("[Dialog] deptAndServiceArea:", e?.message); }
 
-  // Load from PrivilegeListManager's /privilegeMaster — split by type enum
-  const loadPrivilegeMaster = async () => {
+    // Step 3: Try GET /serviceArea?departmentId={deptId} — some backends expose this
     try {
-      const res = await GET("entity-service/privilegeMaster");
+      const res = await GET(`entity-service/serviceArea?departmentId=${deptId}`);
       const raw = res?.data?.content || res?.data?.data || res?.data ||
         res?.content || (Array.isArray(res) ? res : []);
-      const list = Array.isArray(raw) ? raw : [];
-      setPrivilegeMasterCore(list.filter(p => (p?.type || "").toUpperCase() === "CORE"));
-      setPrivilegeMasterRest(list.filter(p => (p?.type || "").toUpperCase() === "RESTRICTED"));
-      setPrivilegeMasterNC(list.filter(p => (p?.type || "").toUpperCase() === "NON_CORE"));
-      console.log("[Dialog] privilegeMaster:", list.length, "total");
+      const sas = (Array.isArray(raw) ? raw : [])
+        .map(sa => normalizeSA(sa))
+        .filter(sa => sa.id && sa.name);
+      if (sas.length > 0) {
+        setServiceAreaOptions(sas);
+        setDeptServiceAreaMap(prev => ({ ...prev, [deptId]: sas }));
+        return;
+      }
+    } catch (e) { console.warn("[Dialog] /serviceArea?deptId:", e?.message); }
+
+    // Step 4: Reload /department and look for embedded serviceAreas
+    try {
+      const res   = await GET("entity-service/department");
+      const raw   = res?.data?.content || res?.data?.data || res?.data ||
+        res?.content || (Array.isArray(res) ? res : []);
+      const found = (Array.isArray(raw) ? raw : []).find(d => d?.id === deptId);
+      const sas = (found?.serviceAreas || found?.serviceArea || [])
+        .map(sa => normalizeSA(sa))
+        .filter(sa => sa.id && sa.name);
+      if (sas.length > 0) {
+        setServiceAreaOptions(sas);
+        setDeptServiceAreaMap(prev => ({ ...prev, [deptId]: sas }));
+        return;
+      }
+    } catch (e) { console.warn("[Dialog] dept reload:", e?.message); }
+
+    // Nothing found — show empty (user can still save without a service area)
+    setServiceAreaOptions([]);
+  };
+
+  // ── Connection to PrivilegeListManager ────────────────────────────────────────
+  // Loads GET /privilegeMaster — the same endpoint PrivilegeListManager manages.
+  // Splits by "type" field (CORE / RESTRICTED / NON_CORE) to feed type-ahead
+  // inputs in each privilege section. This means privileges created in
+  // PrivilegeListManager are immediately available for selection here.
+  const fetchPrivilegeMaster = async () => {
+    try {
+      const res  = await GET("entity-service/privilegeMaster");
+      const raw  = res?.data?.content || res?.data?.data || res?.data ||
+        res?.content || (Array.isArray(res) ? res : []);
+      const list = (Array.isArray(raw) ? raw : [])
+        // Only show ACTIVE privileges in the type-ahead (per PrivilegeListManager status enum)
+        .filter(p => (p?.status || "ACTIVE").toUpperCase() !== "RETIRED");
+
+      // FIX: Match exactly the type enum values that PrivilegeListManager saves:
+      //   CORE → core rows
+      //   RESTRICTED → restricted rows
+      //   NON_CORE → non-core rows
+      setPrivilegeMasterCore(
+        list.filter(p => (p?.type || "").toUpperCase().replace(/-| /g, "_") === "CORE")
+      );
+      setPrivilegeMasterRest(
+        list.filter(p => (p?.type || "").toUpperCase().replace(/-| /g, "_") === "RESTRICTED")
+      );
+      setPrivilegeMasterNC(
+        list.filter(p => (p?.type || "").toUpperCase().replace(/-| /g, "_") === "NON_CORE")
+      );
     } catch (e) { console.warn("[Dialog] privilegeMaster:", e?.message); }
   };
 
-  // ── Populate fields from existing record (edit mode) ─────────────────────────
-  const populateEditFields = (rec) => {
+  // ── Populate fields (edit mode) ───────────────────────────────────────────────
+  const populateFields = (rec) => {
     setDepartmentId(rec?.department?.id || "");
 
-    // Service areas stored as [{ id, name }] in API response
+    // serviceArea: [ServiceArea { id, name }] per DTO
     const sas = Array.isArray(rec?.serviceArea) ? rec.serviceArea : [];
-    setSelectedServiceAreas(sas.map(s => ({ id: s.id, name: s.name || "" })));
+    setServiceAreas(sas.map(s => ({ id: s.id || "", name: s.name || "" })));
 
-    // Applicant type stored as [{ id, applicantType }]
+    // applicantType: [ApplicantType { id, applicantType }] per DTO
     const apt = Array.isArray(rec?.applicantType)
       ? rec.applicantType[0]
       : rec?.applicantType;
     setApplicantTypeId(apt?.id || "");
 
     setBodDate(rec?.bodApprovalDate || "");
-    setPrivilegeSetStatus(rec?.privilegeSetStatus === "NOT_IN_USE" ? "Not In Use" : "In Use");
+
+    // FIX: privilegeSetStatus comes from API as "IN_USE" or "NOT_IN_USE"
+    // Store internally as the exact enum string
+    setPrivilegeSetStatus(rec?.privilegeSetStatus === "NOT_IN_USE" ? "NOT_IN_USE" : "IN_USE");
+
     setPrivilegeSetTitle(rec?.privilegeSetTitle || "");
 
-    const st = rec?.privilegeSpecificationType || "DISCRETE";
-    setSpecType(
-      st === "DiscreteItemList"    ? "DISCRETE" :
-      st === "DescriptiveDocument" ? "DESCRIPTIVEDOCUMENT" : st
-    );
+    // privilegeSpecificationType: "DISCRETE" | "DESCRIPTIVEDOCUMENT"
+    setSpecType(rec?.privilegeSpecificationType || "DISCRETE");
 
     setRestrictedReq(rec?.restrictedPrivilegesRequired || false);
     setNonCoreReq(rec?.nonCorePrivilegesRequired || false);
     setProofDocReq(rec?.proofOfDocumentationRequired || false);
+
+    // generalInstructionText — top-level field in DTO
     setGeneralInstruction(rec?.generalInstructionText || "");
 
-    // Core privilege rows from privilegeDetails
-    const coreCategories = rec?.privilegeDetails?.corePrivileges?.privilegesByCategories || [];
-    const cRows = coreCategories.flatMap(cat =>
+    // descriptiveContent.content — for DESCRIPTIVEDOCUMENT type
+    setDescriptiveContent(rec?.descriptiveContent?.content || "");
+
+    // ── Core privilege rows ──
+    // DTO: corePrivileges.privilegesByCategories[].privileges[{ privilegeId, title, description }]
+    const cCats = rec?.privilegeDetails?.corePrivileges?.privilegesByCategories || [];
+    const cRows = cCats.flatMap(cat =>
       (cat?.privileges || []).map(p => ({
         privilegeId: p?.privilegeId || "",
-        title:       p?.title || "",
+        title:       p?.title       || "",
         description: p?.description || "",
-        category:    cat?.category || "",
+        category:    cat?.category  || "",
       }))
     );
     if (cRows.length > 0) setCoreRows(cRows);
 
-    // Restricted privilege rows
-    const restCategories = rec?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories || [];
-    const rRows = restCategories.flatMap(cat =>
+    // ── Restricted privilege rows ──
+    // DTO: restrictedPrivileges.privilegesByCategories[].privileges[{ privilegeId, title, description, isevidenceRequired, iscompetencyDisclosureRequired }]
+    const rCats = rec?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories || [];
+    const rRows = rCats.flatMap(cat =>
       (cat?.privileges || []).map(p => ({
         privilegeId: p?.privilegeId || "",
-        title:       p?.title || "",
+        title:       p?.title       || "",
         description: p?.description || "",
       }))
     );
-    if (rRows.length > 0) setRestRows(rRows);
+    if (rRows.length > 0) {
+      setRestRows(rRows);
+      // Restore evidence/competency flags from the first restricted privilege row
+      const firstPriv = rCats[0]?.privileges?.[0];
+      if (firstPriv) {
+        setEvidenceReq(firstPriv?.isevidenceRequired || false);
+        setCompetencyReq(firstPriv?.iscompetencyDisclosureRequired || false);
+      }
+    }
 
-    // Non-core privilege rows
-    const ncCategories = rec?.privilegeDetails?.nonCorePrivileges?.privilegesByCategories || [];
-    const nRows = ncCategories.flatMap(cat =>
+    // ── Non-core privilege rows ──
+    const nCats = rec?.privilegeDetails?.nonCorePrivileges?.privilegesByCategories || [];
+    const nRows = nCats.flatMap(cat =>
       (cat?.privileges || []).map(p => ({
         privilegeId: p?.privilegeId || "",
-        title:       p?.title || "",
+        title:       p?.title       || "",
         description: p?.description || "",
       }))
     );
@@ -250,17 +402,18 @@ const StaffPrivilegeDialog = ({
 
   const resetFields = () => {
     setDepartmentId("");
-    setSelectedServiceAreas([]);
+    setServiceAreas([]);
+    setServiceAreaOptions([]);
     setApplicantTypeId("");
     setBodDate("");
-    setPrivilegeSetStatus("In Use");
+    setPrivilegeSetStatus("IN_USE");
     setPrivilegeSetTitle("");
     setSpecType("DISCRETE");
     setRestrictedReq(false);
     setNonCoreReq(false);
     setProofDocReq(false);
-    setAdvancedReq(false);
     setGeneralInstruction("");
+    setDescriptiveContent("");
     setEvidenceReq(false);
     setCompetencyReq(false);
     setCoreRows([{ privilegeId: "", title: "", description: "", category: "" }]);
@@ -268,21 +421,9 @@ const StaffPrivilegeDialog = ({
     setNcRows([{ privilegeId: "", title: "", description: "" }]);
   };
 
-  // ── Service area select change ────────────────────────────────────────────────
-  const handleServiceAreaChange = (e) => {
-    const ids = typeof e.target.value === "string"
-      ? e.target.value.split(",")
-      : e.target.value;
-    setSelectedServiceAreas(
-      ids.map(id => {
-        const found = serviceAreaOptions.find(s => s.id === id);
-        return { id, name: found?.name || "" };
-      })
-    );
-  };
-
-  // ── Privilege row builders ───────────────────────────────────────────────────
-  const buildPrivilegeCategories = (rows) => {
+  // ── Privilege payload builders ─────────────────────────────────────────────────
+  // Groups core rows by category → privilegesByCategories shape in DTO
+  const buildPrivCategories = (rows) => {
     const valid = rows.filter(r => r.privilegeId?.trim());
     if (!valid.length) return [];
     const groups = {};
@@ -291,27 +432,28 @@ const StaffPrivilegeDialog = ({
       if (!groups[cat]) groups[cat] = [];
       groups[cat].push({
         privilegeId: r.privilegeId,
-        title:       r.title || "",
+        title:       r.title       || "",
         description: r.description || "",
       });
     });
     return Object.entries(groups).map(([cat, privs]) => ({
-      hasCategory: !!cat,
-      category: cat,
-      privileges: privs,
+      hasCategory:   !!cat,
+      category:      cat,
+      privileges:    privs,
       subCategories: [],
     }));
   };
 
-  const buildRestrictedCategories = (rows) => {
+  // Builds restricted privileges — includes isevidenceRequired / iscompetencyDisclosureRequired
+  const buildRestCategories = (rows) => {
     const valid = rows.filter(r => r.privilegeId?.trim());
     if (!valid.length) return [];
     return [{
-      hasCategory: false,
-      category: "",
-      privileges: valid.map(r => ({
+      hasCategory:   false,
+      category:      "",
+      privileges:    valid.map(r => ({
         privilegeId:                    r.privilegeId,
-        title:                          r.title || "",
+        title:                          r.title       || "",
         description:                    r.description || "",
         isevidenceRequired:             evidenceReq,
         iscompetencyDisclosureRequired: competencyReq,
@@ -320,7 +462,7 @@ const StaffPrivilegeDialog = ({
     }];
   };
 
-  // ── Save handler ─────────────────────────────────────────────────────────────
+  // ── Save — builds payload matching StaffPrivileges DTO exactly ───────────────
   const handleSave = async (isSaveAndExit) => {
     if (!privilegeSetTitle.trim()) {
       ErrorToaster("Privilege Set Title is required.");
@@ -331,138 +473,139 @@ const StaffPrivilegeDialog = ({
       return;
     }
 
-    // Get applicantType full object for payload
+    setIsSubmitting(true);
+
     const apt = applicantTypes.find(a => a.id === applicantTypeId);
 
+    // FIX: categoriesList — collect unique non-empty category strings from core rows
+    const categoriesList = [...new Set(
+      coreRows.map(r => r.category || "").filter(c => c.trim())
+    )];
+
     const payload = {
-      // Department — API expects { id } only (departmentName resolved server-side)
-      department:    { id: departmentId },
-      // Service area — [{ id, name }] — confirmed from response
-      serviceArea:   selectedServiceAreas,
-      // Sites — actual hospital site from parent page
-      sites:         currentSiteId ? [{ id: currentSiteId }] : [],
-      // Applicant type — [{ id, applicantType }]
+      // department: { id } — DepartmentLite shape from DTO
+      department: { id: departmentId },
+
+      // serviceArea: [ServiceArea { id, name }]
+      serviceArea: serviceAreas,
+
+      // sites: [Site { id }]
+      sites: currentSiteId ? [{ id: currentSiteId }] : [],
+
+      // applicantType: [ApplicantType { id, applicantType }]
       applicantType: apt ? [{ id: apt.id, applicantType: apt.name }] : [],
-      bodApprovalDate:              bodDate,
-      privilegeSetStatus:           privilegeSetStatus === "Not In Use" ? "NOT_IN_USE" : "IN_USE",
-      privilegeSetTitle:            privilegeSetTitle.trim(),
-      privilegeSpecificationType:   specType,  // "DISCRETE" | "DESCRIPTIVEDOCUMENT"
+
+      // bodApprovalDate: string($date)
+      bodApprovalDate: bodDate,
+
+      // privilegeSetStatus: "IN_USE" | "NOT_IN_USE"
+      privilegeSetStatus: privilegeSetStatus,   // already stored as enum
+
+      privilegeSetTitle: privilegeSetTitle.trim(),
+
+      // privilegeSpecificationType: "DISCRETE" | "DESCRIPTIVEDOCUMENT"
+      privilegeSpecificationType: specType,
+
       proofOfDocumentationRequired: proofDocReq,
       restrictedPrivilegesRequired: restrictedReq,
       nonCorePrivilegesRequired:    nonCoreReq,
-      generalInstructionText:       generalInstruction || "",
-      // categoriesList — send non-empty category names from core rows
-      categoriesList: coreRows.map(r => r.category || "").filter(c => c.trim()),
+
+      // generalInstructionText — top-level per DTO
+      generalInstructionText: generalInstruction || "",
+
+      // categoriesList — [string]
+      categoriesList,
+
       privilegeDetails: {
         corePrivileges: {
+          // generalInstructionText also nested in corePrivileges per DTO
           generalInstructionText: generalInstruction || "",
-          privilegesByCategories: buildPrivilegeCategories(coreRows),
+          privilegesByCategories: buildPrivCategories(coreRows),
         },
         restrictedPrivileges: {
           generalInstructionText: "",
-          privilegesByCategories: restrictedReq
-            ? buildRestrictedCategories(restRows)
-            : [],
+          privilegesByCategories: restrictedReq ? buildRestCategories(restRows) : [],
         },
         nonCorePrivileges: {
           generalInstructionText: "",
-          privilegesByCategories: nonCoreReq
-            ? buildPrivilegeCategories(ncRows)
-            : [],
+          privilegesByCategories: nonCoreReq ? buildPrivCategories(ncRows) : [],
         },
       },
-    };
 
-    console.log("[Dialog] payload:", JSON.stringify(payload));
+      // descriptiveContent — only for DESCRIPTIVEDOCUMENT type
+      ...(specType === "DESCRIPTIVEDOCUMENT"
+        ? { descriptiveContent: { content: descriptiveContent } }
+        : {}),
+    };
 
     try {
       if (!isEdit) {
         await POST("entity-service/staffPrivilege", JSON.stringify(payload));
-        SuccessToaster("Staff Privilege Added Successfully");
-        resetFields();
+        SuccessToaster("Staff Privilege Set Added Successfully");
         if (isSaveAndExit) {
-          handleClose(true);   // close + refresh
+          // Close dialog and tell parent to refetch the list
+          resetFields();
+          handleClose(true);
         } else {
-          handleClose(false);  // keep dialog open, refresh list
+          // Save & Add More: reset form and stay open.
+          // Pass "refetch-only" so parent refetches without closing dialog.
+          resetFields();
+          handleClose("refetch-only");
         }
       } else {
         await PUT(
           `entity-service/staffPrivilege/${selectedApplicant?.id}`,
           JSON.stringify(payload)
         );
-        SuccessToaster("Staff Privilege Updated Successfully");
+        SuccessToaster("Staff Privilege Set Updated Successfully");
         resetFields();
         handleClose(true);
       }
     } catch (e) {
       console.error("[Dialog] save error:", e);
-      ErrorToaster(e?.response?.data?.message || e?.message || "Save failed. Please try again.");
+      ErrorToaster(
+        e?.response?.data?.message || e?.message || "Save failed. Please try again."
+      );
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  // ── Privilege ID/Title row component ─────────────────────────────────────────
-  const PrivilegeRow = ({ row, idx, masterList, rows, setRows, idListId, titleListId }) => (
-    <div style={{
-      display: "grid", gridTemplateColumns: "200px 1fr auto",
-      gap: 10, marginTop: 8, alignItems: "flex-end",
-    }}>
-      {/* Privilege ID dropdown */}
-      <div>
-        <div className={style.entityLableStyle} style={{ marginBottom: 4 }}>PRIVILEGE ID *</div>
-        <div style={{ position: "relative" }}>
-          <input
-            list={idListId}
-            value={row.privilegeId}
-            placeholder="Type or select ID..."
-            onChange={e => {
-              const val = e.target.value;
-              const found = masterList.find(p => p.privilegeId === val);
-              const updated = [...rows];
-              updated[idx] = {
-                ...updated[idx],
-                privilegeId: val,
-                title:       found ? (found.title || "") : updated[idx].title,
-                description: found ? (found.description || "") : updated[idx].description,
-              };
-              setRows(updated);
-            }}
-            style={{
-              width: "100%", boxSizing: "border-box",
-              border: "1px solid #dee2e6", borderRadius: 4,
-              padding: "8px 32px 8px 10px", fontSize: 14,
-            }}
-          />
-          <span style={{
-            position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)",
-            fontSize: 10, color: "#888", pointerEvents: "none",
-          }}>▼</span>
-          <datalist id={idListId}>
-            {masterList.map(p => (
-              <option key={p.id} value={p.privilegeId}>
-                {p.privilegeId} — {p.title}
-              </option>
-            ))}
-          </datalist>
-        </div>
-      </div>
+  const handleCancel = () => {
+    resetFields();
+    handleClose(false);
+  };
 
-      {/* Privilege Title */}
+  // ── Privilege row UI component ─────────────────────────────────────────────────
+  // Type-ahead inputs for privilegeId and title — both wired to the privilege master
+  // list from PrivilegeListManager (filtered by type: CORE / RESTRICTED / NON_CORE)
+  const PrivRow = ({ row, idx, master, rows, setRows, listId, showCategory = false }) => (
+    <div style={{
+      display: "grid",
+      gridTemplateColumns: showCategory ? "160px 1fr 1fr auto" : "160px 1fr auto",
+      gap: 10, marginTop: 10, alignItems: "flex-end",
+    }}>
+      {/* PRIVILEGE ID — type-ahead from PrivilegeListManager */}
       <div>
-        <div className={style.entityLableStyle} style={{ marginBottom: 4 }}>PRIVILEGE TITLE *</div>
+        <div className={style.entityLableStyle} style={{ marginBottom: 4 }}>
+          PRIVILEGE ID *
+        </div>
         <input
-          list={titleListId}
-          value={row.title}
-          placeholder="Type or select title..."
+          list={`${listId}-id`}
+          value={row.privilegeId}
+          placeholder="Type ID..."
           onChange={e => {
-            const val = e.target.value;
-            const found = masterList.find(p => p.title === val);
-            const updated = [...rows];
-            updated[idx] = {
-              ...updated[idx],
-              title: val,
-              privilegeId: found ? (found.privilegeId || updated[idx].privilegeId) : updated[idx].privilegeId,
+            const val   = e.target.value;
+            // Auto-fill title/description when ID is matched in master
+            const found = master.find(p => p.privilegeId === val);
+            const next  = [...rows];
+            next[idx] = {
+              ...next[idx],
+              privilegeId: val,
+              title:       found ? (found.title       || "") : next[idx].title,
+              description: found ? (found.description || "") : next[idx].description,
             };
-            setRows(updated);
+            setRows(next);
           }}
           style={{
             width: "100%", boxSizing: "border-box",
@@ -470,8 +613,44 @@ const StaffPrivilegeDialog = ({
             padding: "8px 10px", fontSize: 14,
           }}
         />
-        <datalist id={titleListId}>
-          {masterList.map(p => (
+        <datalist id={`${listId}-id`}>
+          {master.map(p => (
+            <option key={p.id} value={p.privilegeId}>
+              {p.privilegeId} — {p.title}
+            </option>
+          ))}
+        </datalist>
+      </div>
+
+      {/* PRIVILEGE TITLE — type-ahead from PrivilegeListManager */}
+      <div>
+        <div className={style.entityLableStyle} style={{ marginBottom: 4 }}>
+          PRIVILEGE TITLE *
+        </div>
+        <input
+          list={`${listId}-title`}
+          value={row.title}
+          placeholder="Type or select title..."
+          onChange={e => {
+            const val   = e.target.value;
+            const found = master.find(p => p.title === val);
+            const next  = [...rows];
+            next[idx] = {
+              ...next[idx],
+              title:       val,
+              privilegeId: found ? (found.privilegeId || next[idx].privilegeId) : next[idx].privilegeId,
+              description: found ? (found.description || next[idx].description) : next[idx].description,
+            };
+            setRows(next);
+          }}
+          style={{
+            width: "100%", boxSizing: "border-box",
+            border: "1px solid #dee2e6", borderRadius: 4,
+            padding: "8px 10px", fontSize: 14,
+          }}
+        />
+        <datalist id={`${listId}-title`}>
+          {master.map(p => (
             <option key={p.id} value={p.title}>
               {p.privilegeId} — {p.title}
             </option>
@@ -479,24 +658,50 @@ const StaffPrivilegeDialog = ({
         </datalist>
       </div>
 
-      {/* Remove row */}
+      {/* CATEGORY — only for core rows (maps to privilegesByCategories grouping) */}
+      {showCategory && (
+        <div>
+          <div className={style.entityLableStyle} style={{ marginBottom: 4 }}>
+            CATEGORY
+          </div>
+          <input
+            value={row.category}
+            placeholder="e.g. General Surgery"
+            onChange={e => {
+              const next = [...rows];
+              next[idx] = { ...next[idx], category: e.target.value };
+              setRows(next);
+            }}
+            style={{
+              width: "100%", boxSizing: "border-box",
+              border: "1px solid #dee2e6", borderRadius: 4,
+              padding: "8px 10px", fontSize: 14,
+            }}
+          />
+        </div>
+      )}
+
+      {/* Remove row button */}
       {rows.length > 1 && (
         <button
           onClick={() => setRows(prev => prev.filter((_, i) => i !== idx))}
           style={{
-            background: "none", border: "1px solid #e53935", color: "#e53935",
-            borderRadius: 4, padding: "6px 10px", cursor: "pointer",
-            fontSize: 12, alignSelf: "center",
+            background: "none", border: "1px solid #e53935",
+            color: "#e53935", borderRadius: 4, padding: "6px 10px",
+            cursor: "pointer", fontSize: 12, alignSelf: "center",
           }}
-        >✕ Remove</button>
+        >
+          ✕
+        </button>
       )}
     </div>
   );
 
-  // ── Render ───────────────────────────────────────────────────────────────────
+  // ── Render ────────────────────────────────────────────────────────────────────
   return (
     <Dialog
       isOpen={open}
+      onClose={handleCancel}
       className={`${style.healthCareDialogStyle} ${style.dialogPaddingBottom}`}
     >
       <div className={`${Classes.DIALOG_BODY} ${style.extensionDialogBackground}`}>
@@ -509,13 +714,16 @@ const StaffPrivilegeDialog = ({
               : "Create Department / Service Area Specific Privileges Sets"}
           </p>
           <div className={style.displayInRow}>
-            <div style={{ marginRight: 40 }}>
-              <img src={WritingFile} className={style.dialogCrossStyle} alt="doc" />
-            </div>
+            <img
+              src={WritingFile}
+              className={style.dialogCrossStyle}
+              alt="doc"
+              style={{ marginRight: 40 }}
+            />
             <Icon
               icon="cross" size={30} intent={Intent.DANGER}
               className={style.dialogCrossStyle}
-              onClick={() => { resetFields(); handleClose(); }}
+              onClick={handleCancel}
             />
           </div>
         </div>
@@ -525,54 +733,70 @@ const StaffPrivilegeDialog = ({
         <div className={style.addHealthCareBoxStyle}>
 
           {/* Row 1: Department + Service Area */}
-          <Box display="flex" gap={2} className={style.marginTop20}>
-            <Box width="50%">
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}
+            className={style.marginTop20}>
+            <div>
               <div className={style.entityLableStyle}>DEPARTMENT / SERVICE AREA *</div>
               <FormControl fullWidth size="small">
                 <Select
                   value={departmentId}
-                  onChange={e => setDepartmentId(e.target.value)}
+                  onChange={e => {
+                    setDepartmentId(e.target.value);
+                    setServiceAreas([]); // Reset service areas when department changes
+                  }}
                   displayEmpty
                   renderValue={v => !v
                     ? <span style={{ color: "#9e9e9e" }}>Select Department</span>
-                    : departments.find(d => d.id === v)?.name || v
-                  }
-                  SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                    : departments.find(d => d.id === v)?.name || v}
+                  SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 14 } }}
                 >
-                  {departments.map((d, i) => (
-                    <MenuItem key={i} value={d.id}>{d.name}</MenuItem>
-                  ))}
+                  {departments.length === 0
+                    ? <MenuItem disabled value="">Loading departments...</MenuItem>
+                    : departments.map((d, i) => (
+                        <MenuItem key={d.id || i} value={d.id}>{d.name}</MenuItem>
+                      ))
+                  }
                 </Select>
               </FormControl>
-            </Box>
-            <Box width="50%">
+            </div>
+            <div>
               <div className={style.entityLableStyle}>SERVICE AREA *</div>
               <FormControl fullWidth size="small">
                 <Select
                   multiple
-                  value={selectedServiceAreas.map(s => s.id)}
-                  onChange={handleServiceAreaChange}
+                  value={serviceAreas.map(s => s.id)}
+                  onChange={e => {
+                    const ids = typeof e.target.value === "string"
+                      ? e.target.value.split(",")
+                      : e.target.value;
+                    setServiceAreas(ids.map(id => {
+                      const found = serviceAreaOptions.find(s => s.id === id);
+                      return { id, name: found?.name || "" };
+                    }));
+                  }}
                   displayEmpty
                   renderValue={sel => !sel?.length
                     ? <span style={{ color: "#9e9e9e" }}>Select service area</span>
-                    : serviceAreaOptions
-                        .filter(s => sel.includes(s.id))
-                        .map(s => s.name)
-                        .join(", ")
-                  }
-                  SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                    : serviceAreaOptions.filter(s => sel.includes(s.id)).map(s => s.name).join(", ")}
+                  SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 14 } }}
                 >
-                  {serviceAreaOptions.map((s, i) => (
-                    <MenuItem key={i} value={s.id}>{s.name}</MenuItem>
-                  ))}
+                  {serviceAreaOptions.length === 0
+                    ? <MenuItem disabled value="">
+                        {departmentId ? "No service areas found" : "Select a department first"}
+                      </MenuItem>
+                    : serviceAreaOptions.map((s, i) => (
+                        <MenuItem key={s.id || i} value={s.id}>{s.name}</MenuItem>
+                      ))
+                  }
                 </Select>
               </FormControl>
-            </Box>
-          </Box>
+            </div>
+          </div>
 
           {/* Row 2: Applicant Type + BOD Approval Date */}
-          <Box display="flex" gap={2} className={style.marginTop20}>
-            <Box width="50%">
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}
+            className={style.marginTop20}>
+            <div>
               <div className={style.entityLableStyle}>APPLICANT TYPE *</div>
               <FormControl fullWidth size="small">
                 <Select
@@ -581,88 +805,90 @@ const StaffPrivilegeDialog = ({
                   displayEmpty
                   renderValue={v => !v
                     ? <span style={{ color: "#9e9e9e" }}>Select Applicant</span>
-                    : applicantTypes.find(a => a.id === v)?.name || v
-                  }
-                  SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                    : applicantTypes.find(a => a.id === v)?.name || v}
+                  SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 14 } }}
                 >
                   {applicantTypes.map((a, i) => (
-                    <MenuItem key={i} value={a.id}>{a.name}</MenuItem>
+                    <MenuItem key={a.id || i} value={a.id}>{a.name}</MenuItem>
                   ))}
                 </Select>
               </FormControl>
-            </Box>
-            <Box width="50%">
+            </div>
+            <div>
               <div className={style.entityLableStyle}>BOD APPROVAL DATE *</div>
-              <CommonInputField
+              <input
                 type="date"
                 value={bodDate}
                 onChange={e => setBodDate(e.target.value)}
-                className={style.inputField}
-                fullWidth
+                style={{
+                  width: "100%", boxSizing: "border-box",
+                  border: "1px solid #dee2e6", borderRadius: 4,
+                  padding: "8px 10px", fontSize: 14,
+                }}
               />
-            </Box>
-          </Box>
+            </div>
+          </div>
 
-          {/* Privilege Set Status */}
-          <div className={`${style.marginTop20} ${style.validation}`}>
+          {/* Privilege Set Status — maps to "IN_USE" | "NOT_IN_USE" enum */}
+          <div className={style.marginTop20}>
             <div className={style.entityLableStyle}>PRIVILEGE SET STATUS *</div>
             <div style={{ display: "flex", gap: 24, marginTop: 8 }}>
-              {["In Use", "Not In Use"].map(status => (
-                <FormControlLabel
-                  key={status}
-                  control={
-                    <Radio
-                      checked={privilegeSetStatus === status}
-                      onChange={() => setPrivilegeSetStatus(status)}
-                      value={status}
-                      style={{ color: "#06617A" }}
-                    />
-                  }
-                  label={status}
-                />
+              {[
+                { label: "In Use",      value: "IN_USE"      },
+                { label: "Not In Use",  value: "NOT_IN_USE"  },
+              ].map(s => (
+                <label key={s.value} style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 14 }}>
+                  <Radio
+                    checked={privilegeSetStatus === s.value}
+                    onChange={() => setPrivilegeSetStatus(s.value)}
+                    value={s.value}
+                    style={{ color: "#06617A" }}
+                  />
+                  {s.label}
+                </label>
               ))}
             </div>
           </div>
 
-          {/* Privilege Set Title */}
+          {/* Department Specific Privilege Set Title */}
           <div className={style.marginTop20}>
             <div className={style.entityLableStyle}>DEPARTMENT SPECIFIC PRIVILEGE SET TITLE *</div>
-            <CommonInputField
+            <input
               value={privilegeSetTitle}
               onChange={e => setPrivilegeSetTitle(e.target.value)}
               placeholder="Add Privilege set Title"
-              className={style.inputField}
-              fullWidth
+              style={{
+                width: "100%", boxSizing: "border-box",
+                border: "1px solid #dee2e6", borderRadius: 4,
+                padding: "8px 10px", fontSize: 14,
+              }}
             />
           </div>
 
-          {/* Privilege Specification Type */}
-          <div className={`${style.marginTop20} ${style.validation}`}>
+          {/* Privilege Specification Type — "DISCRETE" | "DESCRIPTIVEDOCUMENT" */}
+          <div className={style.marginTop20}>
             <div className={style.entityLableStyle}>PRIVILEGE SPECIFICATION TYPE *</div>
             <div style={{ display: "flex", gap: 24, marginTop: 8 }}>
               {[
                 { value: "DESCRIPTIVEDOCUMENT", label: "Descriptive Document" },
                 { value: "DISCRETE",            label: "Discreet Item List"   },
               ].map(item => (
-                <FormControlLabel
-                  key={item.value}
-                  control={
-                    <Radio
-                      checked={specType === item.value}
-                      onChange={() => { setSpecType(item.value); setProofDocReq(false); }}
-                      value={item.value}
-                      style={{ color: "#06617A" }}
-                    />
-                  }
-                  label={item.label}
-                />
+                <label key={item.value} style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 14 }}>
+                  <Radio
+                    checked={specType === item.value}
+                    onChange={() => setSpecType(item.value)}
+                    value={item.value}
+                    style={{ color: "#06617A" }}
+                  />
+                  {item.label}
+                </label>
               ))}
             </div>
           </div>
 
           {/* Restricted + Non-Core toggles */}
           <div style={{ display: "flex", gap: 40, marginTop: 20, flexWrap: "wrap" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
               <span className={style.entityLableStyle}>RESTRICTED PRIVILEGES REQUIRED?</span>
               <FormControlLabel
                 control={
@@ -675,7 +901,7 @@ const StaffPrivilegeDialog = ({
                 label={restrictedReq ? "Yes" : "No"}
               />
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
               <span className={style.entityLableStyle}>NON-CORE PRIVILEGES REQUIRED?</span>
               <FormControlLabel
                 control={
@@ -690,73 +916,69 @@ const StaffPrivilegeDialog = ({
             </div>
           </div>
 
-          {/* General Instruction Text */}
+          {/* General Instruction Text — top-level DTO field */}
           <div className={style.marginTop20}>
             <div className={style.entityLableStyle}>GENERAL INSTRUCTION TEXT</div>
             <Editor
               value={generalInstruction}
               onChange={setGeneralInstruction}
-              placeholder="Enter GENERAL INSTRUCTION Here"
+              placeholder="Enter General Instruction Here"
             />
-          </div>
-
-          {/* Advanced Privileges toggle */}
-          <div className={style.marginTop20} style={{ borderBottom: "2px solid #06617A", paddingBottom: 8 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              <span className={style.entityLableStyle}>ADVANCED PRIVILEGES REQUIRED?</span>
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={advancedReq}
-                    onChange={e => setAdvancedReq(e.target.checked)}
-                    className={classes.switch}
-                  />
-                }
-                label={advancedReq ? "Yes" : "No"}
-              />
-            </div>
-          </div>
-
-          <div className={`${style.Borderthick}`} />
-
-          {/* ── APPLICABLE CORE PRIVILEGES ──────────────────────────────────── */}
-          <div className={style.marginTop20}>
-            <div className={style.entityLableStyle}>APPLICABLE CORE PRIVILEGES</div>
-            {coreRows.map((row, idx) => (
-              <PrivilegeRow
-                key={idx}
-                row={row} idx={idx}
-                masterList={privilegeMasterCore}
-                rows={coreRows} setRows={setCoreRows}
-                idListId={`core-id-${idx}`}
-                titleListId={`core-title-${idx}`}
-              />
-            ))}
-            <button
-              onClick={() => setCoreRows(prev => [
-                ...prev, { privilegeId: "", title: "", description: "", category: "" },
-              ])}
-              className={`${style.outlinedButton} ${style.borderRadius10}`}
-              style={{ marginTop: 10 }}
-            >
-              + ADD MORE
-            </button>
           </div>
 
           <div className={`${style.Borderthick} ${style.marginTop20}`} />
 
-          {/* ── RESTRICTED PRIVILEGES (conditional) ─────────────────────────── */}
-          {restrictedReq && (
+          {/* ── Descriptive Content (for DESCRIPTIVEDOCUMENT type only) ───── */}
+          {specType === "DESCRIPTIVEDOCUMENT" && (
+            <div className={style.marginTop20}>
+              <div className={style.entityLableStyle}>DESCRIPTIVE CONTENT</div>
+              <Editor
+                value={descriptiveContent}
+                onChange={setDescriptiveContent}
+                placeholder="Enter descriptive content here"
+              />
+            </div>
+          )}
+
+          {/* ── APPLICABLE CORE PRIVILEGES ───────────────────────────────── */}
+          {/* Only shown for DISCRETE type — type-ahead from PrivilegeListManager CORE records */}
+          {specType === "DISCRETE" && (
+            <div className={style.marginTop20}>
+              <div className={style.entityLableStyle}>APPLICABLE CORE PRIVILEGES</div>
+              {coreRows.map((row, idx) => (
+                <PrivRow
+                  key={idx}
+                  row={row} idx={idx}
+                  master={privilegeMasterCore}
+                  rows={coreRows} setRows={setCoreRows}
+                  listId={`core-${idx}`}
+                  showCategory={true}
+                />
+              ))}
+              <button
+                onClick={() => setCoreRows(prev => [
+                  ...prev, { privilegeId: "", title: "", description: "", category: "" },
+                ])}
+                className={`${style.outlinedButton} ${style.borderRadius10}`}
+                style={{ marginTop: 10 }}
+              >
+                + ADD MORE
+              </button>
+            </div>
+          )}
+
+          {/* ── RESTRICTED PRIVILEGES (conditional on toggle) ────────────── */}
+          {/* Type-ahead from PrivilegeListManager RESTRICTED records */}
+          {restrictedReq && specType === "DISCRETE" && (
             <div className={style.marginTop20}>
               <div className={style.entityLableStyle}>RESTRICTED PRIVILEGES</div>
               {restRows.map((row, idx) => (
-                <PrivilegeRow
+                <PrivRow
                   key={idx}
                   row={row} idx={idx}
-                  masterList={privilegeMasterRest}
+                  master={privilegeMasterRest}
                   rows={restRows} setRows={setRestRows}
-                  idListId={`rest-id-${idx}`}
-                  titleListId={`rest-title-${idx}`}
+                  listId={`rest-${idx}`}
                 />
               ))}
               <button
@@ -768,32 +990,19 @@ const StaffPrivilegeDialog = ({
               >
                 + ADD MORE
               </button>
-
-              {/* Evidence + Competency toggles */}
-              <div style={{ display: "flex", gap: 32, marginTop: 16, flexWrap: "wrap" }}>
+              {/* Evidence / competency toggles — map to isevidenceRequired / iscompetencyDisclosureRequired */}
+              <div style={{ display: "flex", gap: 24, marginTop: 16, flexWrap: "wrap" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <span className={style.entityLableStyle}>EVIDENCE OF QUALIFICATION AND COMPETENCY</span>
                   <FormControlLabel
-                    control={
-                      <Switch
-                        checked={evidenceReq}
-                        onChange={e => setEvidenceReq(e.target.checked)}
-                        className={classes.switch}
-                      />
-                    }
+                    control={<Switch checked={evidenceReq} onChange={e => setEvidenceReq(e.target.checked)} className={classes.switch} />}
                     label={evidenceReq ? "Yes" : "No"}
                   />
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <span className={style.entityLableStyle}>COMPETENCY DISCLOSURE NOTES</span>
                   <FormControlLabel
-                    control={
-                      <Switch
-                        checked={competencyReq}
-                        onChange={e => setCompetencyReq(e.target.checked)}
-                        className={classes.switch}
-                      />
-                    }
+                    control={<Switch checked={competencyReq} onChange={e => setCompetencyReq(e.target.checked)} className={classes.switch} />}
                     label={competencyReq ? "Yes" : "No"}
                   />
                 </div>
@@ -801,18 +1010,18 @@ const StaffPrivilegeDialog = ({
             </div>
           )}
 
-          {/* ── NON-CORE PRIVILEGES (conditional) ───────────────────────────── */}
-          {nonCoreReq && (
+          {/* ── NON-CORE PRIVILEGES (conditional on toggle) ─────────────── */}
+          {/* Type-ahead from PrivilegeListManager NON_CORE records */}
+          {nonCoreReq && specType === "DISCRETE" && (
             <div className={style.marginTop20}>
               <div className={style.entityLableStyle}>NON-CORE PRIVILEGES</div>
               {ncRows.map((row, idx) => (
-                <PrivilegeRow
+                <PrivRow
                   key={idx}
                   row={row} idx={idx}
-                  masterList={privilegeMasterNC}
+                  master={privilegeMasterNC}
                   rows={ncRows} setRows={setNcRows}
-                  idListId={`nc-id-${idx}`}
-                  titleListId={`nc-title-${idx}`}
+                  listId={`nc-${idx}`}
                 />
               ))}
               <button
@@ -843,14 +1052,16 @@ const StaffPrivilegeDialog = ({
             <button
               className={`${style.outlinedButton} ${style.borderRadius10}`}
               onClick={() => handleSave(true)}
+              disabled={isSubmitting}
             >
-              SAVE & EXIT
+              {isSubmitting ? "SAVING..." : "SAVE & EXIT"}
             </button>
             <button
               className={`${style.buttonStyle} ${style.marginLeft20} ${style.borderRadius10}`}
               onClick={() => handleSave(false)}
+              disabled={isSubmitting}
             >
-              SAVE & ADD MORE
+              {isSubmitting ? "SAVING..." : "SAVE & ADD MORE"}
             </button>
           </div>
         </div>
